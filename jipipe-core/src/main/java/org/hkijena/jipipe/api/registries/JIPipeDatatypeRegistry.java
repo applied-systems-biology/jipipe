@@ -18,12 +18,12 @@ import com.google.common.collect.HashBiMap;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.initialization.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -260,7 +260,7 @@ public class JIPipeDatatypeRegistry {
             }
         }
 
-        jiPipe.getDatatypeRegisteredEventEmitter().emit(new JIPipeService.DatatypeRegisteredEvent(jiPipe, id));
+        jiPipe.getDatatypeRegisteredEventEmitter().emit(new JIPipeDatatypeRegisteredEvent(jiPipe, id));
         getJIPipe().getProgressInfo().log("Registered data type id=" + id + " of class " + klass);
     }
 

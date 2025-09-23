@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.initialization.events.JIPipeDatatypeRegisteredEvent;
+import org.hkijena.jipipe.api.initialization.events.JIPipeDatatypeRegisteredEventListener;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -49,7 +51,7 @@ import java.util.Set;
  * Provides a standard selection of plots
  */
 @Plugin(type = JIPipeJavaPlugin.class)
-public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeService.DatatypeRegisteredEventListener {
+public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements JIPipeDatatypeRegisteredEventListener {
 
     /**
      * Dependency instance to be used for creating the set of dependencies
@@ -230,7 +232,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     }
 
     @Override
-    public void onJIPipeDatatypeRegistered(JIPipeService.DatatypeRegisteredEvent event) {
+    public void onJIPipeDatatypeRegistered(JIPipeDatatypeRegisteredEvent event) {
         Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(event.getId());
         tryRegisterPlotCreatorNode(event.getId());
     }

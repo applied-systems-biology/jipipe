@@ -16,14 +16,8 @@ package org.hkijena.jipipe;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
-import ij.Prefs;
 import net.imagej.ImageJ;
-import net.imagej.ui.swing.updater.SwingAuthenticator;
 import net.imagej.updater.FilesCollection;
-import net.imagej.updater.UpdateSite;
-import net.imagej.updater.util.AvailableSites;
-import net.imagej.updater.util.Progress;
-import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
@@ -32,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.initialization.events.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -72,31 +67,19 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 import javax.swing.*;
 import javax.swing.Timer;
-import javax.xml.XMLConstants;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.net.Authenticator;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 /**
  * A scijava service that discovers JIPipe plugins in the classpath
@@ -163,12 +146,10 @@ public final class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeRecentProjectsRegistry recentProjectsRegistry;
 
     private final JIPipeMetadataRegistry metadataRegistry;
-    private final DatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new DatatypeRegisteredEventEmitter();
-    private final ExtensionContentAddedEventEmitter extensionContentAddedEventEmitter = new ExtensionContentAddedEventEmitter();
-    private final ExtensionContentRemovedEventEmitter extensionContentRemovedEventEmitter = new ExtensionContentRemovedEventEmitter();
-    private final ExtensionDiscoveredEventEmitter extensionDiscoveredEventEmitter = new ExtensionDiscoveredEventEmitter();
-    private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
-    private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
+    private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
+    private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
+    private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
+    private final JIPipeNodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new JIPipeNodeInfoRegisteredEventEmitter();
     private FilesCollection imageJPlugins = null;
     @Parameter
     private LogService logService;
@@ -656,32 +637,22 @@ public final class JIPipe extends AbstractService implements JIPipeService {
 
 
     @Override
-    public DatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
+    public JIPipeDatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
         return datatypeRegisteredEventEmitter;
     }
 
     @Override
-    public ExtensionContentAddedEventEmitter getExtensionContentAddedEventEmitter() {
-        return extensionContentAddedEventEmitter;
-    }
-
-    @Override
-    public ExtensionContentRemovedEventEmitter getExtensionContentRemovedEventEmitter() {
-        return extensionContentRemovedEventEmitter;
-    }
-
-    @Override
-    public ExtensionDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
+    public JIPipePluginDiscoveredEventEmitter getExtensionDiscoveredEventEmitter() {
         return extensionDiscoveredEventEmitter;
     }
 
     @Override
-    public ExtensionRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
+    public JIPipePluginRegisteredEventEmitter getExtensionRegisteredEventEmitter() {
         return extensionRegisteredEventEmitter;
     }
 
     @Override
-    public NodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
+    public JIPipeNodeInfoRegisteredEventEmitter getNodeInfoRegisteredEventEmitter() {
         return nodeInfoRegisteredEventEmitter;
     }
 
@@ -740,7 +711,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
                 }
 
                 pluginInstances.add(extension);
-                extensionDiscoveredEventEmitter.emit(new ExtensionDiscoveredEvent(this, extension));
+                extensionDiscoveredEventEmitter.emit(new JIPipePluginDiscoveredEvent(this, extension));
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -753,7 +724,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
             extension.register(this, getContext(), registerFeaturesProgress.resolve(extension.getDependencyId()));
             registeredExtensions.add(extension);
             registeredExtensionIds.add(extension.getDependencyId());
-            extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
+            extensionRegisteredEventEmitter.emit(new JIPipePluginRegisteredEvent(this, extension));
         }
 
         registerFeaturesProgress.log("Registering remaining " + nodeRegistry.getScheduledRegistrationTasks().size() + " features ...");
@@ -965,7 +936,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
                     ((AbstractService) extension).setContext(getContext());
                 }
                 initializationInfo.setLoaded(true);
-                extensionDiscoveredEventEmitter.emit(new ExtensionDiscoveredEvent(this, extension));
+                extensionDiscoveredEventEmitter.emit(new JIPipePluginDiscoveredEvent(this, extension));
             } catch (Throwable e) {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(initializationInfo.getPluginInfo());
@@ -998,7 +969,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
                 extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
-                extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
+                extensionRegisteredEventEmitter.emit(new JIPipePluginRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
                 progressInfo.log("[!] ERROR: Unable to instantiate extension " + info);
                 e.printStackTrace();
@@ -1466,114 +1437,6 @@ public final class JIPipe extends AbstractService implements JIPipeService {
             parameter.setDataTypeId(id);
             access.set(parameter);
         }
-    }
-
-    private Document readXMLGZ(Path path) throws ParserConfigurationException, IOException, SAXException {
-        try (InputStream inputStream = new GZIPInputStream(new FileInputStream(path.toFile()))) {
-            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-            dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
-            DocumentBuilder db = dbf.newDocumentBuilder();
-            Document doc = db.parse(inputStream);
-            doc.getDocumentElement().normalize();
-            return doc;
-        }
-    }
-
-    /**
-     * Checks the update sites of all extensions and stores the results in the issues
-     *
-     * @param issues          the results
-     * @param extensions      list of known extensions
-     * @param progressAdapter the adapter that takes the progress
-     * @param progressInfo    the progress info
-     */
-    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter, JIPipeProgressInfo progressInfo) {
-        Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
-        Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
-        for (JIPipeDependency extension : extensions) {
-            if (extension == null)
-                continue;
-            dependencies.addAll(extension.getImageJUpdateSiteDependencies());
-            missingSites.addAll(extension.getImageJUpdateSiteDependencies());
-        }
-        if (!dependencies.isEmpty()) {
-            progressInfo.log("Following ImageJ update site dependencies were requested: ");
-            for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
-                progressInfo.log("  - " + dependency.getName() + " @ " + dependency.getUrl());
-            }
-
-            // Try to use the existing database
-            Path dbPath = Paths.get(Prefs.getImageJDir()).resolve("db.xml.gz");
-            boolean dbPathSuccess = false;
-            if (Files.isRegularFile(dbPath)) {
-                try {
-                    Document document = readXMLGZ(dbPath);
-                    NodeList activeSitesNodes = document.getElementsByTagName("update-site");
-                    for (int i = 0; i < activeSitesNodes.getLength(); i++) {
-                        String name = activeSitesNodes.item(i).getAttributes().getNamedItem("name").getNodeValue();
-                        missingSites.removeIf(site -> Objects.equals(site.getName(), name));
-                    }
-                    if (missingSites.isEmpty()) {
-                        dbPathSuccess = true;
-                    }
-                } catch (Exception e) {
-                    logService.warn("Unable to read " + dbPath);
-                }
-            }
-
-            // Query update sites again (via ImageJ)
-            if (!dbPathSuccess) {
-                try {
-                    UpdaterUtil.useSystemProxies();
-                    Authenticator.setDefault(new SwingAuthenticator());
-
-                    imageJPlugins = new FilesCollection(CoreImageJUtils.getImageJUpdaterRoot().toFile());
-                    AvailableSites.initializeAndAddSites(imageJPlugins);
-                    imageJPlugins.downloadIndexAndChecksum(progressAdapter);
-                } catch (Exception e) {
-                    logService.error("Unable to check update sites!");
-                    e.printStackTrace();
-                    missingSites.clear();
-                    progressInfo.log("No ImageJ update site check is applied.");
-                }
-                if (imageJPlugins != null) {
-                    progressInfo.log("Following ImageJ update sites are currently active: ");
-                    for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
-                        if (updateSite.isActive()) {
-                            progressInfo.log("  - " + updateSite.getName() + " @ " + updateSite.getURL());
-                            missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
-                        }
-                    }
-                } else {
-                    System.err.println("No update sites available! Skipping.");
-                    missingSites.clear();
-                }
-            }
-        }
-
-        if (!missingSites.isEmpty()) {
-            logService.warn("Following ImageJ update site dependencies are missing: ");
-            for (JIPipeImageJUpdateSiteDependency dependency : missingSites) {
-                logService.warn("  - " + dependency.getName() + " @ " + dependency.getUrl());
-            }
-        }
-
-        issues.setMissingImageJSites(missingSites);
-    }
-
-    /**
-     * Registers a JSON extension
-     *
-     * @param extension    The extension
-     * @param progressInfo the progress info
-     */
-    public void register(JIPipeJsonPlugin extension, JIPipeProgressInfo progressInfo) {
-        progressInfo.log("Registering Json Extension " + extension.getDependencyId());
-        extension.setRegistry(this);
-        extension.register();
-        registeredExtensions.add(extension);
-        registeredExtensionIds.add(extension.getDependencyId());
-        extensionRegisteredEventEmitter.emit(new ExtensionRegisteredEvent(this, extension));
     }
 
     @Override

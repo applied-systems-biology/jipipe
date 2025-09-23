@@ -16,10 +16,12 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.initialization.events.JIPipeDatatypeRegisteredEvent;
+import org.hkijena.jipipe.api.initialization.events.JIPipeDatatypeRegisteredEventListener;
+import org.hkijena.jipipe.api.initialization.events.JIPipeNodeInfoRegisteredEvent;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.validation.*;
@@ -32,7 +34,7 @@ import java.util.stream.Collectors;
 /**
  * Manages known algorithms and their annotations
  */
-public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.DatatypeRegisteredEventListener {
+public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegisteredEventListener {
     private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
     private final Multimap<String, JIPipeNodeExample> registeredExamples = HashMultimap.create();
@@ -112,7 +114,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
-        jiPipe.getNodeInfoRegisteredEventEmitter().emit(new JIPipe.NodeInfoRegisteredEvent(jiPipe, info));
+        jiPipe.getNodeInfoRegisteredEventEmitter().emit(new JIPipeNodeInfoRegisteredEvent(jiPipe, info));
         getJIPipe().getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
@@ -228,7 +230,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeService.Data
      * @param event Generated event
      */
     @Override
-    public void onJIPipeDatatypeRegistered(JIPipeService.DatatypeRegisteredEvent event) {
+    public void onJIPipeDatatypeRegistered(JIPipeDatatypeRegisteredEvent event) {
         runRegistrationTasks();
     }
 
