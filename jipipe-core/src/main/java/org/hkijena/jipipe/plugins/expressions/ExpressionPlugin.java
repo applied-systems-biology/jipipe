@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.expressions;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.expressions.functions.*;
 import org.hkijena.jipipe.plugins.expressions.functions.collections.*;
@@ -72,7 +72,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("expression",
                 JIPipeExpressionParameter.class,
                 JIPipeParameterArchetype.Value,

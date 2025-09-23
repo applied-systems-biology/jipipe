@@ -1,0 +1,404 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.service.components;
+
+import com.google.common.collect.*;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
+import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEvent;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.validation.*;
+
+import javax.swing.*;
+import java.net.URL;
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Manages known algorithms and their annotations
+ */
+public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent implements JIPipeValidatable, JIPipeDatatypeRegisteredEventListener {
+    private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
+    private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
+    private final Multimap<String, JIPipeNodeExample> registeredExamples = HashMultimap.create();
+    private final Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
+    private final Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
+    private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
+    private final Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
+    private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
+    private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
+    private final List<JIPipeNodeTemplate> scheduledRegisterTemplates = new ArrayList<>();
+    private final URL defaultIconURL;
+    private boolean stateChanged;
+    private boolean isRunning;
+
+    public JIPipeNodesServiceComponent(JIPipeService service) {
+        super(service);
+        this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
+    }
+
+    /**
+     * Schedules registration after all dependencies of the registration task are satisfied
+     *
+     * @param task A registration task
+     */
+    public void scheduleRegister(JIPipeNodeRegistrationTask task) {
+        registrationTasks.add(task);
+        runRegistrationTasks();
+    }
+
+    /**
+     * Attempts to run registration tasks that have registered dependencies
+     */
+    public void runRegistrationTasks() {
+        if (registrationTasks.isEmpty())
+            return;
+        stateChanged = true;
+        run();
+    }
+
+    private void run() {
+        if (isRunning)
+            return;
+        isRunning = true;
+        while (stateChanged) {
+            stateChanged = false;
+            for (JIPipeNodeRegistrationTask task : ImmutableList.copyOf(registrationTasks)) {
+                if (task.canRegister()) {
+                    registrationTasks.remove(task);
+                    task.register();
+                    stateChanged = true;
+                }
+            }
+        }
+        isRunning = false;
+    }
+
+    /**
+     * @return The list of current registration tasks
+     */
+    public Set<JIPipeNodeRegistrationTask> getScheduledRegistrationTasks() {
+        return Collections.unmodifiableSet(registrationTasks);
+    }
+
+    /**
+     * Registers an algorithm info
+     *
+     * @param info   The algorithm info
+     * @param source The dependency that registers the info
+     */
+    public void register(JIPipeNodeInfo info, JIPipeDependency source) {
+        registeredNodeInfos.put(info.getId(), info);
+        registeredNodeClasses.put(info.getInstanceClass(), info);
+        registeredNodeInfoSources.put(info.getId(), source);
+        getService().getNodeInfoRegisteredEventEmitter().emit(new JIPipeNodeInfoRegisteredEvent(getService(), info));
+        getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
+        runRegistrationTasks();
+    }
+
+    public JIPipeNodeTypeCategory getCategory(String id) {
+        return registeredCategories.getOrDefault(id, null);
+    }
+
+    /**
+     * Registers a category
+     *
+     * @param category the category instance
+     */
+    public void registerCategory(JIPipeNodeTypeCategory category) {
+        registeredCategories.put(category.getId(), category);
+        getProgressInfo().log("Registered node type category " + category);
+    }
+
+    /**
+     * Gets the set of all known algorithms
+     *
+     * @return Map from algorithm ID to algorithm info
+     */
+    public Map<String, JIPipeNodeInfo> getRegisteredNodeInfos() {
+        return Collections.unmodifiableMap(registeredNodeInfos);
+    }
+
+    /**
+     * Returns data source algorithms that can generate the specified data type
+     * Adheres to the data source menu location
+     *
+     * @param <T>       The data class
+     * @param dataClass The data class
+     * @return Available datasource algorithms that generate the data
+     */
+    public <T extends JIPipeData> Set<JIPipeNodeInfo> getMenuDataSourcesFor(Class<? extends T> dataClass) {
+        Set<JIPipeNodeInfo> result = new HashSet<>();
+        for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+                if (info.getDataSourceMenuLocation() == dataClass) {
+                    result.add(info);
+                } else if (info.getDataSourceMenuLocation() == JIPipeEmptyData.class) {
+                    if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
+                        result.add(info);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Gets all algorithms of specified category
+     *
+     * @param category             The category
+     * @param includingAlternative if alternative categorizations should be included (from alternative menu paths)
+     * @return Algorithms within the specified category
+     */
+    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category, boolean includingAlternative) {
+        return registeredNodeInfos.values().stream().filter(d -> {
+            if (includingAlternative) {
+                for (JIPipeNodeMenuLocation location : d.getAliases()) {
+                    if (Objects.equals(location.getCategory().getId(), category.getId())) {
+                        return true;
+                    }
+                }
+            }
+            return Objects.equals(d.getCategory().getId(), category.getId());
+        }).collect(Collectors.toSet());
+    }
+
+    /**
+     * Gets a matching info by Id
+     *
+     * @param id The info ID. Must exist.
+     * @return The info
+     */
+    public JIPipeNodeInfo getInfoById(String id) {
+        JIPipeNodeInfo info = registeredNodeInfos.getOrDefault(id, null);
+        if (info == null) {
+            throw new JIPipeValidationRuntimeException(new NullPointerException("Could not find algorithm info with id '" + id + "' in " +
+                    String.join(", ", registeredNodeInfos.keySet())),
+                    "Unable to find an algorithm type!",
+                    "A project or extension requires an algorithm of type '" + id + "'. It could not be found.",
+                    "Check if JIPipe is up-to-date and the newest version of all plugins are installed. If you know that an algorithm was assigned a new ID, " +
+                            "search for '" + id + "' in the JSON file and replace it with the new identifier.");
+        }
+        return info;
+    }
+
+    /**
+     * Returns true if the algorithm ID already exists
+     *
+     * @param id The info ID
+     * @return If true, the ID exists
+     */
+    public boolean hasNodeInfoWithId(String id) {
+        return registeredNodeInfos.containsKey(id);
+    }
+
+    /**
+     * Install registration events.
+     * This method is only used internally.
+     */
+    public void installEvents() {
+        getService().getDatatypeRegisteredEventEmitter().subscribe(this);
+    }
+
+    /**
+     * Triggered when a datatype was registered.
+     * Attempts to register more algorithms.
+     *
+     * @param event Generated event
+     */
+    @Override
+    public void onJIPipeDatatypeRegistered(JIPipeDatatypeRegisteredEvent event) {
+        runRegistrationTasks();
+    }
+
+    /**
+     * Returns the source of a registered algorithm
+     *
+     * @param algorithmId The algorithm info ID
+     * @return The dependency that registered the algorithm
+     */
+    public JIPipeDependency getSourceOf(String algorithmId) {
+        return registeredNodeInfoSources.getOrDefault(algorithmId, null);
+    }
+
+    /**
+     * Gets all algorithms declared by the dependency
+     *
+     * @param dependency The dependency
+     * @return All algorithms that were registered by this dependency
+     */
+    public Set<JIPipeNodeInfo> getDeclaredBy(JIPipeDependency dependency) {
+        Set<JIPipeNodeInfo> result = new HashSet<>();
+        for (Map.Entry<String, JIPipeNodeInfo> entry : registeredNodeInfos.entrySet()) {
+            JIPipeDependency source = getSourceOf(entry.getKey());
+            if (source == dependency)
+                result.add(entry.getValue());
+        }
+        return result;
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+        for (JIPipeNodeRegistrationTask task : registrationTasks) {
+            report.report(reportContext, task);
+        }
+    }
+
+    public ImmutableBiMap<String, JIPipeNodeTypeCategory> getRegisteredCategories() {
+        return ImmutableBiMap.copyOf(registeredCategories);
+    }
+
+    /**
+     * Registers a custom icon for a node
+     *
+     * @param info         the node type
+     * @param resourcePath icon url
+     */
+    public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
+        if (resourcePath == null) {
+            getProgressInfo().log("Unable to register icon for " + info.getId() + ": URL is null.");
+            return;
+        }
+        iconURLs.put(info, resourcePath);
+        iconInstances.put(info, new ImageIcon(resourcePath));
+    }
+
+    /**
+     * Registers a node template as example
+     * Will reject if the template does not contain exactly one node
+     *
+     * @param nodeTemplate the node template that contains the node example
+     */
+    public void registerExample(JIPipeNodeTemplate nodeTemplate) {
+        JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
+        if (example.getNodeId() == null) {
+            getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + " as example'. No [unique] node ID.");
+        } else {
+            getProgressInfo().log("Registered example for " + example.getNodeId() + ": '" + nodeTemplate.getName() + "'");
+            registeredExamples.put(example.getNodeId(), example);
+        }
+    }
+
+    /**
+     * Registers a node template as example
+     * Will reject
+     *
+     * @param nodeTemplate the node template that contains the node example
+     */
+    public void registerTemplate(JIPipeNodeTemplate nodeTemplate) {
+        if (nodeTemplate.getGraph() != null) {
+            getService().getNodeTemplates().addFromPlugin(nodeTemplate);
+            getProgressInfo().log("Registered plugin-provided template '" + nodeTemplate.getName() + "'");
+        }
+    }
+
+    /**
+     * Returns the icon resource path URL for a node
+     *
+     * @param info node type
+     * @return icon url
+     */
+    public URL getIconURLFor(JIPipeNodeInfo info) {
+        return iconURLs.getOrDefault(info, defaultIconURL);
+    }
+
+    /**
+     * Returns the icon for a node
+     *
+     * @param info node type
+     * @return icon instance
+     */
+    public ImageIcon getIconFor(JIPipeNodeInfo info) {
+        ImageIcon icon = iconInstances.getOrDefault(info, null);
+        if (icon == null) {
+            ImageIcon defaultIcon;
+            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+                if (!info.getOutputSlots().isEmpty()) {
+                    defaultIcon = JIPipe.getDataTypes().getIconFor(info.getOutputSlots().get(0).value());
+                } else {
+                    defaultIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
+                }
+            } else {
+                defaultIcon = JIPipe.RESOURCES.getIcon16("actions/configure.png");
+            }
+            iconInstances.put(info, defaultIcon);
+            icon = defaultIcon;
+        }
+        return icon;
+    }
+
+    public Collection<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
+        return registeredExamples.get(nodeTypeId);
+    }
+
+    /**
+     * Returns all node infos that create a node of the specified class
+     *
+     * @param klass the class
+     * @return node infos
+     */
+    public Set<JIPipeNodeInfo> getNodeInfosFromClass(Class<? extends JIPipeGraphNode> klass) {
+        return new HashSet<>(registeredNodeClasses.get(klass));
+    }
+
+    public Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> getRegisteredNodeClasses() {
+        return ImmutableMultimap.copyOf(registeredNodeClasses);
+    }
+
+    /**
+     * Removes a node from the registry
+     *
+     * @param id the node id
+     */
+    public void unregister(String id) {
+        JIPipeNodeInfo info = registeredNodeInfos.get(id);
+        registeredNodeInfos.remove(id);
+        registeredNodeClasses.remove(info.getInstanceClass(), info);
+        registeredNodeInfoSources.remove(id);
+        iconURLs.remove(info);
+    }
+
+    public void scheduleRegisterExample(JIPipeNodeTemplate template) {
+        getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as example.");
+        scheduledRegisterExamples.add(template);
+    }
+
+    public void scheduleRegisterTemplate(JIPipeNodeTemplate template) {
+        getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as template.");
+        scheduledRegisterTemplates.add(template);
+    }
+
+    public void executeScheduledRegisterExamples() {
+        for (JIPipeNodeTemplate example : scheduledRegisterExamples) {
+            registerExample(example);
+        }
+        scheduledRegisterExamples.clear();
+    }
+
+    public void executeScheduledRegisterTemplates() {
+        for (JIPipeNodeTemplate template : scheduledRegisterTemplates) {
+            registerTemplate(template);
+        }
+        scheduledRegisterTemplates.clear();
+    }
+}

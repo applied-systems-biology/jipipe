@@ -117,15 +117,15 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
         }
 
         private void initialize() {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
-                setAllowedValues(new ArrayList<>(JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().keySet()));
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplates() != null) {
+                setAllowedValues(new ArrayList<>(JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().keySet()));
             }
         }
 
         @Override
         public String renderLabel(String value) {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
-                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().getOrDefault(value, null);
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplates() != null) {
+                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().getOrDefault(value, null);
                 if (template != null) {
                     return template.getMetadata().getName();
                 } else {

@@ -226,7 +226,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
                                     return JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects;
                                 }
                             }).build();
-                    JIPipeDesktopParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypeRegistry().createEditorInstance(access, getDesktopWorkbench(), getParameterTree(), null);
+                    JIPipeDesktopParameterEditorUI pathEditor = JIPipe.getInstance().getParameterTypes().createEditorInstance(access, getDesktopWorkbench(), getParameterTree(), null);
                     JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
                     formPanel.addToForm(pathEditor, new JLabel("External script path"), null);
                     add(formPanel, BorderLayout.CENTER);

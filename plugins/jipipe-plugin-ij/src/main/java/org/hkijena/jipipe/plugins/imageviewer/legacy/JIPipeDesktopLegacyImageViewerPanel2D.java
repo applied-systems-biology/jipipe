@@ -224,9 +224,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         exportDisplayedScaleToggle.addActionListener(e -> {
             if (settings != null) {
                 settings.setExportAsDisplayed(exportDisplayedScaleToggle.getState());
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.autoSaveSettings();
             }
         });
 
@@ -255,9 +253,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             double fps = ((SpinnerNumberModel) animationFPSControl.getModel()).getNumber().doubleValue();
             if (settings != null) {
                 settings.setDefaultAnimationFPS(fps);
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.autoSaveSettings();
             }
             stopAnimations();
             animationTimer.setDelay(Math.max(1, (int) (1000.0 / fps)));
@@ -612,9 +608,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                 null);
         if (response == JOptionPane.OK_OPTION) {
             JIPipeFileChooserApplicationSettings.getInstance().setLastDataDirectory(exportPathEditor.getPath());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
             Path targetPath = exportPathEditor.getPath();
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());

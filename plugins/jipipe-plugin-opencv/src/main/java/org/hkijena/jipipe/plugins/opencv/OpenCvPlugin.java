@@ -17,6 +17,7 @@ import com.google.common.collect.Sets;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.opencv.datatypes.ImageJToOpenCvDataTypeConverter;
@@ -100,7 +101,7 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         try {
             registerDatatype("opencv-image", OpenCvImageData.class, RESOURCES.getIcon16URL("opencv-image.png"));
             registerDatatypeConversion(new ImageJToOpenCvDataTypeConverter());

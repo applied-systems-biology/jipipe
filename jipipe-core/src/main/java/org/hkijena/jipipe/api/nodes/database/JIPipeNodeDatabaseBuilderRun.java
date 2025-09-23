@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
 
     @Override
     public void run() {
-        JIPipeNodeRegistry nodeRegistry = JIPipe.getNodes();
+        JIPipeNodesServiceComponent nodeRegistry = JIPipe.getNodes();
         List<JIPipeNodeDatabaseEntry> newEntries = new ArrayList<>();
 
         if (CACHED_GLOBAL_ENTRIES == null) {

@@ -56,8 +56,8 @@ public class JIPipeDesktopProjectTemplateDownloaderUI extends JDialog {
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         formPanel.addWideToForm(UIUtils.createJLabel("Available templates", 22));
 
-        List<JIPipeDesktopProjectTemplateDownloaderPackage> newPackages = installer.getAvailablePackages().stream().filter(p -> !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(p.getId())).collect(Collectors.toList());
-        List<JIPipeDesktopProjectTemplateDownloaderPackage> existingPackages = installer.getAvailablePackages().stream().filter(p -> JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(p.getId())).collect(Collectors.toList());
+        List<JIPipeDesktopProjectTemplateDownloaderPackage> newPackages = installer.getAvailablePackages().stream().filter(p -> !JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().containsKey(p.getId())).collect(Collectors.toList());
+        List<JIPipeDesktopProjectTemplateDownloaderPackage> existingPackages = installer.getAvailablePackages().stream().filter(p -> JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().containsKey(p.getId())).collect(Collectors.toList());
 
         if (newPackages.isEmpty()) {
             formPanel.addWideToForm(UIUtils.createJLabel("No additional templates found.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png")));

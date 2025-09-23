@@ -141,9 +141,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
                 setLastParametersDirectory(lastDirectory);
                 break;
         }
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-            JIPipe.getSettings().save();
-        }
+        JIPipe.autoSaveSettings();
     }
 
     @SetJIPipeDocumentation(name = "Last external directory", description = "The file chooser will open in this folder when selecting external utilities.")

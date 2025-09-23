@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.dev;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -43,7 +43,7 @@ public class DevelopmentPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerMenuExtension(ExportNodeJsonsTool.class);
         registerMenuExtension(ExportNodeParameterJsonsTool.class);
         registerMenuExtension(ExportNodeSignatureJsonsTool.class);

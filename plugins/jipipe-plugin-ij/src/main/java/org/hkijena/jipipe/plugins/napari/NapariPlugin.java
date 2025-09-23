@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -150,7 +151,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new NapariPluginApplicationSettings());
         registerMenuExtension(RunNapariDesktopMenuExtension.class);
     }

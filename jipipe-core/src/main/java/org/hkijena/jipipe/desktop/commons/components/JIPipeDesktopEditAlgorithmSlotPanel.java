@@ -124,7 +124,7 @@ public class JIPipeDesktopEditAlgorithmSlotPanel extends JPanel {
         add(UIUtils.wrapInIslandPanelIfNeeded(listPanel), BorderLayout.WEST);
 
         JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
-        JIPipeDesktopFormPanel.GroupHeaderPanel header = formPanel.addGroupHeader("Edit slot '" + existingSlot.getName() + "' in '" + existingSlot.getNode().getName() + "'", JIPipe.getInstance().getNodeRegistry().getIconFor(existingSlot.getNode().getInfo()));
+        JIPipeDesktopFormPanel.GroupHeaderPanel header = formPanel.addGroupHeader("Edit slot '" + existingSlot.getName() + "' in '" + existingSlot.getNode().getName() + "'", JIPipe.getInstance().getNodes().getIconFor(existingSlot.getNode().getInfo()));
         header.addDescriptionRow("You can change the data type of the slot at the left-hand side. Other properties can be changed below. Please note, that existing connections might be removed when editing a slot.");
         nameEditor = new JXTextField();
         nameEditor.addKeyListener(new KeyAdapter() {

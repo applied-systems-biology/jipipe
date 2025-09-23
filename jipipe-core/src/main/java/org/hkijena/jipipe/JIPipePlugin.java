@@ -43,7 +43,7 @@ public interface JIPipePlugin extends JIPipeDependency {
     default boolean isActivated() {
         if (isCorePlugin())
             return true;
-        return JIPipe.getInstance().getPluginRegistry().getActivatedPlugins().contains(getDependencyId());
+        return JIPipe.getInstance().getPlugins().getActivatedPlugins().contains(getDependencyId());
     }
 
     /**
@@ -52,7 +52,7 @@ public interface JIPipePlugin extends JIPipeDependency {
      * @return if the extension is scheduled to be activated
      */
     default boolean isScheduledForActivation() {
-        return JIPipe.getInstance().getPluginRegistry().getScheduledActivatePlugins().contains(getDependencyId());
+        return JIPipe.getInstance().getPlugins().getScheduledActivatePlugins().contains(getDependencyId());
     }
 
     /**
@@ -61,7 +61,7 @@ public interface JIPipePlugin extends JIPipeDependency {
      * @return if the extension is scheduled to be deactivated
      */
     default boolean isScheduledForDeactivation() {
-        return JIPipe.getInstance().getPluginRegistry().getScheduledDeactivatePlugins().contains(getDependencyId());
+        return JIPipe.getInstance().getPlugins().getScheduledDeactivatePlugins().contains(getDependencyId());
     }
 
     /**

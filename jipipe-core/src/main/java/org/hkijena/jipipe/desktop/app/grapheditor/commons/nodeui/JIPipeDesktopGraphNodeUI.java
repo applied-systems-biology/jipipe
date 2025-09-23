@@ -1554,7 +1554,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         graphics2D.drawRect(x, y, width, height);
 
         // Icon
-        ImageIcon icon = JIPipe.getInstance().getNodeRegistry().getIconFor(getNode().getInfo());
+        ImageIcon icon = JIPipe.getInstance().getNodes().getIconFor(getNode().getInfo());
         int iconSize = Math.min(16, Math.min(width, height)) - 3;
         if (iconSize > 4) {
             graphics2D.drawImage(icon.getImage(),

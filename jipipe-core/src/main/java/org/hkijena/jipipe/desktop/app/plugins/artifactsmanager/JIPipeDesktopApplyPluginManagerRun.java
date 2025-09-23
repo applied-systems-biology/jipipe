@@ -43,7 +43,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends DefaultJIPipeRunnable {
             getProgressInfo().log("Deactivating plugins ...");
             for (JIPipePlugin plugin : pluginsToDeactivate) {
                 getProgressInfo().log("-> " + plugin.getDependencyId());
-                JIPipe.getInstance().getPluginRegistry().scheduleDeactivatePlugin(plugin.getDependencyId());
+                JIPipe.getInstance().getPlugins().scheduleDeactivatePlugin(plugin.getDependencyId());
             }
         }
 
@@ -51,7 +51,7 @@ public class JIPipeDesktopApplyPluginManagerRun extends DefaultJIPipeRunnable {
             getProgressInfo().log("Activating plugins ...");
             for (JIPipePlugin plugin : pluginsToActivate) {
                 getProgressInfo().log("-> " + plugin.getDependencyId());
-                JIPipe.getInstance().getPluginRegistry().scheduleActivatePlugin(plugin.getDependencyId());
+                JIPipe.getInstance().getPlugins().scheduleActivatePlugin(plugin.getDependencyId());
             }
         }
 

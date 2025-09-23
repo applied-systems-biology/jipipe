@@ -101,7 +101,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun extends DefaultJIPipeRunn
 
             // Register new template
             progressInfo.log("Download successful. Registering ...");
-            JIPipe.getInstance().getProjectTemplateRegistry().register(outputFile);
+            JIPipe.getInstance().getProjectTemplates().register(outputFile);
         }
     }
 

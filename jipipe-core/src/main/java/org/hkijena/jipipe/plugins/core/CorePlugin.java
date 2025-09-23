@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -85,7 +86,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data",
                 JIPipeData.class,
                 JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));

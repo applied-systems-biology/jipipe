@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.*;
-import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -58,7 +58,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     private final List<ArtifactEntry> artifactEntryList = new ArrayList<>();
     private final JList<ArtifactEntry> artifactEntryJList = new JList<>();
     private final JIPipeDesktopFormPanel propertyPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
-    private final JIPipeArtifactsRegistry artifactsRegistry = JIPipe.getArtifacts();
+    private final JIPipeArtifactsServiceComponent artifactsRegistry = JIPipe.getArtifacts();
     private final JCheckBox onlyCompatibleToggle = new JCheckBox("Only compatible", true);
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private JScrollPane artifactListScrollPane;

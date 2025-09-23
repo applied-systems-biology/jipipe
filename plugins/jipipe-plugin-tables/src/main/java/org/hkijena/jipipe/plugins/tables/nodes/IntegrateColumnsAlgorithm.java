@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -86,7 +86,7 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "Please check if the filter is correct.");
             }
             TableColumnData sourceColumnData = input.getColumnReference(input.getColumnIndex(sourceColumn));
-            ColumnOperation columnOperation = ((JIPipeExpressionRegistry.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
+            ColumnOperation columnOperation = ((JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) processor.getParameter().getValue()).getOperation();
             TableColumnData resultColumn = columnOperation.apply(sourceColumnData);
             resultColumns.add(new RelabeledTableColumnData(resultColumn, processor.getOutput()));
         }

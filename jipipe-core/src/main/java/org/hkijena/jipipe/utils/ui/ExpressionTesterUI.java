@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -89,7 +89,7 @@ public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
             String name = "";
             String description = "";
             if (function instanceof ExpressionFunction) {
-                JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
+                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
                 if (functionEntry != null) {
                     signature = functionEntry.getFunction().getSignature();
                     name = functionEntry.getName();

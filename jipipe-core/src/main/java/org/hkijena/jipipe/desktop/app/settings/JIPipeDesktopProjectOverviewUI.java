@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
-import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;

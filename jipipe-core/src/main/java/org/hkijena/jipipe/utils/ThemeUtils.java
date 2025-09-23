@@ -5,7 +5,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernMetalTheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
@@ -46,7 +46,7 @@ public class ThemeUtils {
         // Fix for macOS
         System.setProperty("apple.laf.useScreenMenuBar", "false");
 
-        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(true);
+        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getPropertyFile(true);
         if (Files.exists(propertyFile)) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);

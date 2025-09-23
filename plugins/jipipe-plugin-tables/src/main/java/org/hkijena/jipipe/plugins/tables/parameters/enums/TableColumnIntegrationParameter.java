@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 
@@ -38,7 +38,7 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
      */
     public TableColumnIntegrationParameter() {
         List<Object> allowedValues = JIPipe.getTableOperations().getTableColumnOperationsOfType(SummarizingColumnOperation.class).values()
-                .stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList());
+                .stream().sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry::getName)).collect(Collectors.toList());
         setAllowedValues(allowedValues);
         setValue(allowedValues.get(0));
     }
@@ -54,8 +54,8 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
 
     @Override
     public String renderLabel(Object value) {
-        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
-            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
+            JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry entry = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value;
             return entry.getName();
         } else {
             return "[None selected]";
@@ -71,7 +71,7 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
     public String getId() {
         if (getValue() == null)
             return null;
-        return ((JIPipeExpressionRegistry.ColumnOperationEntry) getValue()).getId();
+        return ((JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) getValue()).getId();
     }
 
     /**
@@ -100,8 +100,8 @@ public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object
 
     @Override
     public String renderTooltip(Object value) {
-        if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
-            JIPipeExpressionRegistry.ColumnOperationEntry entry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
+        if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
+            JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry entry = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value;
             return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
         } else {
             return null;

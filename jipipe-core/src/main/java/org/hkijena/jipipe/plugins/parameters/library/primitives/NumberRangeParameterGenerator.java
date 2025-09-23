@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -29,7 +30,7 @@ import java.util.List;
 
 /**
  * Generator that creates instances of {@link Number}.
- * This cannot be used directly in {@link org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry}, as the constructor does
+ * This cannot be used directly in {@link JIPipeParameterTypesServiceComponent}, as the constructor does
  * not match. You have to inherit from this type and define the number type.
  */
 public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerator {

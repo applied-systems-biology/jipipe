@@ -235,9 +235,7 @@ public class FilamentsManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlug
             ImageViewerUIFilamentDisplayApplicationSettings settings = ImageViewerUIFilamentDisplayApplicationSettings.getInstance();
             settings.getFilamentDrawer().copyFrom(filamentsDrawer);
             settings.setShowFilaments(displayFilamentsViewMenuItem.getState());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
         }
     }
 

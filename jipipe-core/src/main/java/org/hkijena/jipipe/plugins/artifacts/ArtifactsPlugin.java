@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReferenceList;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -68,7 +69,7 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerEnumParameterType("artifact-repository-type",
                 JIPipeArtifactRepositoryType.class,
                 "Artifact repository type",

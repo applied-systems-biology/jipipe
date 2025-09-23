@@ -236,8 +236,8 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 openWithMenu.setText("Open with ...");
 
                 Class<? extends JIPipeData> dataClass = dataTable.getDataClass(modelRow);
-                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-                for (JIPipeDesktopDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                String datatypeId = JIPipe.getInstance().getDataTypes().getIdOf(dataClass);
+                for (JIPipeDesktopDataDisplayOperation displayOperation : JIPipe.getInstance().getDataTypes().getSortedDisplayOperationsFor(datatypeId)) {
                     openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
                             () -> displayOperation.display(dataTable, modelRow, getDesktopWorkbench(), false)));
                 }
@@ -250,8 +250,8 @@ public class JIPipeDesktopExtendedDataTableUI extends JIPipeDesktopWorkbenchPane
                 openWithMenu.setText("Open " + dataAnnotation.getName() + " with ...");
 
                 Class<? extends JIPipeData> dataClass = dataAnnotation.getDataClass();
-                String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-                for (JIPipeDesktopDataDisplayOperation displayOperation : JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId)) {
+                String datatypeId = JIPipe.getInstance().getDataTypes().getIdOf(dataClass);
+                for (JIPipeDesktopDataDisplayOperation displayOperation : JIPipe.getInstance().getDataTypes().getSortedDisplayOperationsFor(datatypeId)) {
                     openWithMenu.add(UIUtils.createMenuItem(displayOperation.getName(), displayOperation.getDescription(), displayOperation.getIcon(),
                             () -> displayOperation.displayDataAnnotation(dataTable, modelRow, dataAnnotation, getDesktopWorkbench())));
                 }

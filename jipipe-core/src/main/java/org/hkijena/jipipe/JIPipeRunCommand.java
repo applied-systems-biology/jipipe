@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -67,12 +69,11 @@ public class JIPipeRunCommand implements Command {
 
     @Override
     public void run() {
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeInitializationReport issues = new JIPipeInitializationReport();
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (JIPipe.getInstance() == null) {
-            JIPipe jiPipe = JIPipe.createInstance(context, JIPipeMode.GUI);
-            jiPipe.initialize(extensionSettings, issues, true);
-            JIPipe.getInstance().initialize(extensionSettings, issues, true);
+            JIPipeService service = JIPipe.createInstance(context);
+            service.ensureInitialized(); // Manual initialization
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();

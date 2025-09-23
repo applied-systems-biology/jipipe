@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelFromFileAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeSizeModelFromFileAlgorithm;
@@ -183,7 +184,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
         registerApplicationSettingsSheet(new Cellpose3PluginApplicationSettings());
         registerProjectSettingsSheet(CellposePluginProjectSettings.class);

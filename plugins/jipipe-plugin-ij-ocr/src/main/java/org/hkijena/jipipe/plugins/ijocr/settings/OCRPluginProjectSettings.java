@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
@@ -44,7 +44,7 @@ public class OCRPluginProjectSettings extends JIPipeDefaultProjectSettingsSheet 
             List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment().getArtifactQuery().getQuery());
             artifacts.removeIf(artifact -> !artifact.isCompatible());
             if (!artifacts.isEmpty()) {
-                JIPipeArtifact target = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
+                JIPipeArtifact target = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(artifacts);
                 TesseractOCREnvironment environment = new TesseractOCREnvironment();
                 environment.setName("");
                 environment.setLoadFromArtifact(true);

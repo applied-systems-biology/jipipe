@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -117,8 +117,8 @@ public class FastKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlg
         TFloatList foregrounds = new TFloatArrayList();
         TFloatList backgrounds = new TFloatArrayList();
 
-        JIPipeExpressionRegistry.ColumnOperationEntry functionForeground = (JIPipeExpressionRegistry.ColumnOperationEntry) integrationFunctionForeground.getValue();
-        JIPipeExpressionRegistry.ColumnOperationEntry functionBackground = (JIPipeExpressionRegistry.ColumnOperationEntry) integrationFunctionBackground.getValue();
+        JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry functionForeground = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) integrationFunctionForeground.getValue();
+        JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry functionBackground = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) integrationFunctionBackground.getValue();
 
         long lastMessageTime = System.currentTimeMillis();
         double[] keys = bucketedValues.keys();

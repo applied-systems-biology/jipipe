@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeMode;
-import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
+import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -37,6 +39,9 @@ import java.util.Map;
 
 public class JIPipeCLIPipelineRun {
     public static void doRunPipeline(List<String> argsList) {
+        JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
+        initializationSettings.setMode(JIPipeServiceMode.Headless);
+
         Path projectFile = null;
         Path outputFolder = null;
         int numThreads = 1;
@@ -142,18 +147,19 @@ public class JIPipeCLIPipelineRun {
         if (overrideProfileDir != null) {
             System.out.println("Overriding base path for JIPipe profiles with " + overrideProfileDir);
             PathUtils.createDirectories(overrideProfileDir);
-            JIPipe.OVERRIDE_USER_DIR_BASE = overrideProfileDir;
+            initializationSettings.setOverrideUserDirBase(overrideProfileDir);
         }
 
+        initializationSettings.setVerbose(verbose);
+
         final ImageJ ij = new ImageJ();
-        JIPipe jiPipe = JIPipe.createInstance(ij.context(), JIPipeMode.Headless);
+        JIPipeService service = JIPipe.createInstance(ij.context(), initializationSettings);
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
         if (fastInit) {
             extensionSettings.setValidateNodeTypes(false);
         }
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        jiPipe.initialize(extensionSettings, issues, verbose);
+        service.ensureInitialized();
 
         JIPipeValidationReport projectIssues = new JIPipeValidationReport();
         JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();

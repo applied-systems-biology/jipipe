@@ -17,11 +17,12 @@ import net.imagej.ui.swing.updater.ImageJUpdater;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -95,7 +96,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * UI around an {@link JIPipeProject}
  */
-public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipeService.PluginRegisteredEventListener {
+public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDesktopWorkbench, JIPipeProject.CompartmentRemovedEventListener, JIPipePluginRegisteredEventListener {
 
     public static final String TAB_INTRODUCTION = "INTRODUCTION";
     public static final String TAB_LICENSE = "LICENSE";
@@ -256,7 +257,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 buttons.add(UIUtils.createButton("Never do this again", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), () -> {
                     balloonTip.closeBalloon();
                     JIPipeGeneralUIApplicationSettings.getInstance().setSwitchToProjectInfoOnUnknownProject(false);
-                    JIPipe.getInstance().getApplicationSettingsRegistry().saveLater();
+                    JIPipe.getInstance().getApplicationSettings().saveLater();
                     restoreTabsFromProjectMetadata();
                 }));
                 buttons.add(Box.createHorizontalGlue());
@@ -847,7 +848,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private boolean hasNewExtensions() {
-        return !JIPipe.getInstance().getPluginRegistry().getNewPlugins().isEmpty();
+        return !JIPipe.getInstance().getPlugins().getNewPlugins().isEmpty();
     }
 
 
@@ -894,9 +895,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
         JButton saveButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         saveButton.addActionListener(e -> {
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
             saved.set(true);
             dialog.setVisible(false);
         });
@@ -1159,7 +1158,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     @Override
-    public void onJIPipePluginRegistered(JIPipeService.ExtensionRegisteredEvent event) {
+    public void onJIPipePluginRegistered(JIPipePluginRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
     }
 

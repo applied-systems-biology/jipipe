@@ -100,18 +100,18 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
     }
 
     private void loadAvailablePlugins() {
-        Set<String> newPlugins = new HashSet<>(JIPipe.getInstance().getPluginRegistry().getNewPlugins());
-        newPlugins.removeAll(JIPipe.getInstance().getPluginRegistry().getSettings().getSilencedPlugins());
+        Set<String> newPlugins = new HashSet<>(JIPipe.getInstance().getPlugins().getNewPlugins());
+        newPlugins.removeAll(JIPipe.getInstance().getPlugins().getSettings().getSilencedPlugins());
         if (!newPlugins.isEmpty()) {
             onlyNewToggle.setSelected(true);
         }
-        for (JIPipePlugin plugin : JIPipe.getInstance().getPluginRegistry().getKnownPluginsList()) {
+        for (JIPipePlugin plugin : JIPipe.getInstance().getPlugins().getKnownPluginsList()) {
             PluginEntry pluginEntry = new PluginEntry(plugin);
             pluginEntry.setNewPlugin(newPlugins.contains(plugin.getDependencyId()));
             pluginEntryList.add(pluginEntry);
         }
         pluginEntryList.sort(Comparator.comparing((PluginEntry entry) -> entry.getPlugin().isCorePlugin()).thenComparing((PluginEntry entry) -> entry.getPlugin().getMetadata().getName()));
-        JIPipe.getInstance().getPluginRegistry().dismissNewPlugins();
+        JIPipe.getInstance().getPlugins().dismissNewPlugins();
     }
 
     private void initialize() {
@@ -331,7 +331,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
 
                     // Get all dependencies and add them
                     for (JIPipeDependency dependency : pluginEntry.plugin.getAllDependencies()) {
-                        JIPipePlugin pluginById = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
+                        JIPipePlugin pluginById = JIPipe.getInstance().getPlugins().getKnownPluginById(dependency.getDependencyId());
                         if (pluginById != null) {
                             if (!pluginById.isCorePlugin() && !pluginById.isActivated()) {
                                 pluginsToInstall.add(pluginById);

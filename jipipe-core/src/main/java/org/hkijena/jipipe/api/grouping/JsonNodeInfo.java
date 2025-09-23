@@ -159,7 +159,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     @Override
     public JIPipeNodeTypeCategory getCategory() {
         if (category != null && category.getValue() != null && !StringUtils.isNullOrEmpty("" + category.getValue())) {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodeRegistry() != null) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodes() != null) {
                 JIPipeNodeTypeCategory result = JIPipe.getNodes().getRegisteredCategories().getOrDefault("" + category.getValue(), null);
                 if (result != null)
                     return result;
@@ -174,7 +174,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     @JsonGetter("category")
     public DynamicCategoryEnumParameter getCategoryParameter() {
         if (category != null) {
-            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodeRegistry() != null) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getNodes() != null) {
                 if (category.getAllowedValues() == null)
                     category.setAllowedValues(new ArrayList<>());
                 category.getAllowedValues().clear();

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -333,7 +334,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         IlastikPluginApplicationSettings settings = new IlastikPluginApplicationSettings();
         registerApplicationSettingsSheet(settings);
         registerProjectSettingsSheet(IlastikPluginProjectSettings.class);

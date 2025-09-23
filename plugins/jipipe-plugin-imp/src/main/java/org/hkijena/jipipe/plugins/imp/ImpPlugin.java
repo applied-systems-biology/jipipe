@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.imp.datatypes.ImageJImageToImpImageDataTypeConverter;
@@ -83,7 +84,7 @@ public class ImpPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("imp-image", ImpImageData.class, RESOURCES.getIcon16URL("imp-image.png"));
         registerDefaultDataTypeViewer(ImpImageData.class, ImpImageDataViewer.class);
         registerDatatypeConversion(new ImageJImageToImpImageDataTypeConverter());

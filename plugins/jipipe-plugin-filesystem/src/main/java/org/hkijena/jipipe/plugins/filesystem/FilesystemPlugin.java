@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.filesystem.algorithms.local.*;
 import org.hkijena.jipipe.plugins.filesystem.algorithms.zarr.ListZARRDirectoryZIPDatasetsAlgorithm;
@@ -90,7 +91,7 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         // Register main data types
         registerDatatype("path", PathData.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation());

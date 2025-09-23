@@ -18,6 +18,7 @@ import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -126,7 +127,7 @@ public class MultiTemplateMatchingPlugin extends JIPipePrepackagedDefaultJavaPlu
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerEnumParameterType("ij-multi-template-matching:matching-method", TemplateMatchingMethod.class, "Template matching method", "Formula used to compute the probability map");
         registerNodeType("ij-multi-template-matching", MultiTemplateMatchingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/paint-pattern.png"));
     }

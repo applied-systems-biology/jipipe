@@ -290,9 +290,7 @@ public class ROIManagerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             settings.getRoiDrawer().copyFrom(roiDrawer);
             settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
             settings.setShowROI(displayROIViewMenuItem.getState());
-            if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                JIPipe.getSettings().save();
-            }
+            JIPipe.autoSaveSettings();
         }
     }
 

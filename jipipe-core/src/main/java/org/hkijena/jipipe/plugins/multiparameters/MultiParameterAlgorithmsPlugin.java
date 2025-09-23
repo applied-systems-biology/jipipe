@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.*;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -64,7 +65,7 @@ public class MultiParameterAlgorithmsPlugin extends JIPipePrepackagedDefaultJava
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register algorithms
         registerNodeType("parameters-define", DefineParametersAlgorithm.class);
