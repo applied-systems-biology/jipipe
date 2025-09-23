@@ -2,7 +2,7 @@ package org.hkijena.jipipe.cli;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeMode;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
@@ -82,7 +82,7 @@ public class JIPipeCLIPipelineRender {
         }
 
         final ImageJ ij = new ImageJ();
-        JIPipe jiPipe = JIPipe.createInstance(ij.context(), JIPipeMode.GUI);
+        JIPipe jiPipe = JIPipe.createInstance(ij.context(), JIPipeServiceMode.GUI);
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
         if (fastInit) {

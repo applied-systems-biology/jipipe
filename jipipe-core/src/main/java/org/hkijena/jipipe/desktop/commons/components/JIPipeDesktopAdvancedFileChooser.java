@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeServiceState;
+import org.hkijena.jipipe.api.service.JIPipeServiceState;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;

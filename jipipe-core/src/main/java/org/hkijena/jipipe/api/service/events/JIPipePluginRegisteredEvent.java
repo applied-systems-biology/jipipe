@@ -1,7 +1,7 @@
-package org.hkijena.jipipe.api.initialization.events;
+package org.hkijena.jipipe.api.service.events;
 
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 
 /**

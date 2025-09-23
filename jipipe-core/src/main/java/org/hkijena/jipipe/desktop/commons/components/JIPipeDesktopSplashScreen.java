@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.api.initialization.events.JIPipePluginDiscoveredEvent;
-import org.hkijena.jipipe.api.initialization.events.JIPipePluginDiscoveredEventListener;
+import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;

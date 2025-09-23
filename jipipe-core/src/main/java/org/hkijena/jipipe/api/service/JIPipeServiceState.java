@@ -1,4 +1,4 @@
-package org.hkijena.jipipe;
+package org.hkijena.jipipe.api.service;
 
 /**
  * The states that the JIPipe service can be at

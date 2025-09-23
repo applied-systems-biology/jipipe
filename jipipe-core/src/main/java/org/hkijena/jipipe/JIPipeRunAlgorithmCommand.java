@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -92,7 +93,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             if (!JIPipe.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(getContext()));
             }
-            JIPipe jiPipe = JIPipe.createInstance(getContext(), JIPipeMode.GUI);
+            JIPipe jiPipe = JIPipe.createInstance(getContext(), JIPipeServiceMode.GUI);
             JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
             jiPipe.initialize(extensionSettings, issues, true);
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());

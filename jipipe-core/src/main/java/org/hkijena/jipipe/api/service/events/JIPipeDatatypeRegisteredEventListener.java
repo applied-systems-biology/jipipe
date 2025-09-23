@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.api.initialization.events;
+package org.hkijena.jipipe.api.service.events;
 
 public interface JIPipeDatatypeRegisteredEventListener {
     void onJIPipeDatatypeRegistered(JIPipeDatatypeRegisteredEvent event);

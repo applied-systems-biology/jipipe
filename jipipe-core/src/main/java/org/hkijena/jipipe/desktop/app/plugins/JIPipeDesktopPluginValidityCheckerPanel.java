@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.plugins;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.initialization.events.JIPipePluginRegisteredEvent;
-import org.hkijena.jipipe.api.initialization.events.JIPipePluginRegisteredEventListener;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;

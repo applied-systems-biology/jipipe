@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeMode;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.JIPipeRegistryIssues;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
@@ -146,7 +146,7 @@ public class JIPipeCLIPipelineRun {
         }
 
         final ImageJ ij = new ImageJ();
-        JIPipe jiPipe = JIPipe.createInstance(ij.context(), JIPipeMode.Headless);
+        JIPipe jiPipe = JIPipe.createInstance(ij.context(), JIPipeServiceMode.Headless);
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         extensionSettings.setSilent(true);
         if (fastInit) {
