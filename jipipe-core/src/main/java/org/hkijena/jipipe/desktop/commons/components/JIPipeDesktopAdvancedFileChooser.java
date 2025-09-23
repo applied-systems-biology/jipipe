@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeServiceState;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -367,7 +368,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
     }
 
     private void toggleBookmark(File directory, boolean bookmarked) {
-        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && JIPipe.getInstance().getState() == JIPipeServiceState.Initialized) {
             JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
             Path path = directory.toPath();
             if (bookmarked) {
@@ -496,7 +497,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
         addLink("ImageJ", JIPipe.RESOURCES.getIcon16("apps/imagej.png"),
                 Paths.get(Prefs.getImageJDir() != null ? Prefs.getImageJDir() : "").toAbsolutePath().toFile());
 
-        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && JIPipe.getInstance().getState() == JIPipeServiceState.Initialized) {
             JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
 
             // Last directories
@@ -570,7 +571,7 @@ public class JIPipeDesktopAdvancedFileChooser extends JPanel implements Property
     }
 
     private void updateBookmarkToggle() {
-        if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
+        if (JIPipe.isInstantiated() && JIPipe.getInstance().getState() == JIPipeServiceState.Initialized) {
             JIPipeFileChooserApplicationSettings settings = JIPipeFileChooserApplicationSettings.getInstance();
             if (fileChooserComponent.getCurrentDirectory() != null) {
                 bookmarkToggle.setSelected(settings.getBookmarks().stream().anyMatch(bookmark -> Objects.equals(fileChooserComponent.getCurrentDirectory().toPath(), bookmark.getPath())));

@@ -139,6 +139,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
 
 
     private static JIPipe instance;
+    private JIPipeServiceState state =  JIPipeServiceState.Uninitialized;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final Set<String> registeredExtensionIds = new HashSet<>();
@@ -169,7 +170,6 @@ public final class JIPipe extends AbstractService implements JIPipeService {
     private final ExtensionRegisteredEventEmitter extensionRegisteredEventEmitter = new ExtensionRegisteredEventEmitter();
     private final NodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new NodeInfoRegisteredEventEmitter();
     private FilesCollection imageJPlugins = null;
-    private boolean initializing = false;
     @Parameter
     private LogService logService;
     @Parameter
@@ -716,7 +716,11 @@ public final class JIPipe extends AbstractService implements JIPipeService {
      * @param plugins the list of plugins to load
      */
     public void initializeLibNoImageJ(List<Class<? extends JIPipeJavaPlugin>> plugins) {
-        initializing = true;
+        if(state != JIPipeServiceState.Uninitialized) {
+            progressInfo.log("ERROR: JIPipe initialization has already been called");
+            return;
+        }
+        state = JIPipeServiceState.Initializing;
 
         progressInfo.setProgress(0, 5);
         nodeRegistry.installEvents();
@@ -785,7 +789,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
         postprocessingProgress.log("Registering extension-provided templates ...");
         nodeRegistry.executeScheduledRegisterTemplates();
 
-        initializing = false;
+        state = JIPipeServiceState.Initialized;
 
         // Push progress into log
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
@@ -815,7 +819,12 @@ public final class JIPipe extends AbstractService implements JIPipeService {
      * @param verbose           if all steps should be logged (otherwise the initialization will be silent)
      */
     public void initialize(JIPipeExtensionApplicationSettings extensionSettings, JIPipeRegistryIssues issues, boolean verbose) {
-        initializing = true;
+
+        if(state != JIPipeServiceState.Uninitialized) {
+            progressInfo.log("ERROR: JIPipe initialization has already been called");
+            return;
+        }
+        state = JIPipeServiceState.Initializing;
 
         progressInfo.setProgress(0, 5);
         if (verbose) {
@@ -1100,7 +1109,7 @@ public final class JIPipe extends AbstractService implements JIPipeService {
 
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");
-        initializing = false;
+        state = JIPipeServiceState.Initialized;
 
         // Check if we have viewers for everything
         for (Class<? extends JIPipeData> dataClass : datatypeRegistry.getRegisteredDataTypes().values()) {
@@ -1379,10 +1388,6 @@ public final class JIPipe extends AbstractService implements JIPipeService {
                 issues.getErroneousNodes().add(info);
             }
         }
-    }
-
-    public boolean isInitializing() {
-        return initializing;
     }
 
     /**
@@ -1691,7 +1696,20 @@ public final class JIPipe extends AbstractService implements JIPipeService {
         return recentProjectsRegistry;
     }
 
+    /**
+     * Gets the global JIPipe core resource manager
+     * Convenience wrapper
+     * @return the resource manager
+     */
+    public JIPipeResourceManager getResources() {
+        return RESOURCES;
+    }
+
     public JIPipeMode getMode() {
         return mode;
+    }
+
+    public JIPipeServiceState getState() {
+        return state;
     }
 }
