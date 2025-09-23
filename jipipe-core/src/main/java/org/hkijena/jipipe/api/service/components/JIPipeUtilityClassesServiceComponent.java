@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
@@ -25,10 +24,10 @@ import java.util.Set;
 /**
  * A registry of additional utilities (e.g., installers for external environments)
  */
-public final class JIPipeUtilitiesServiceComponent extends JIPipeServiceComponent {
+public final class JIPipeUtilityClassesServiceComponent extends JIPipeServiceComponent {
     private final Multimap<Class<?>, Class<?>> registeredItems = HashMultimap.create();
 
-    public JIPipeUtilitiesServiceComponent(JIPipeService service) {
+    public JIPipeUtilityClassesServiceComponent(JIPipeService service) {
         super(service);
     }
 

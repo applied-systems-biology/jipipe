@@ -146,8 +146,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
      */
     public static void initializeMenuForCategory(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
-        JIPipe registryService = JIPipe.getInstance();
-        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
+        Set<JIPipeNodeInfo> algorithmsOfCategory = JIPipe.getNodes().getNodesOfCategory(category, true);
         if (algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
             return;
@@ -222,7 +221,6 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
      */
     public static void initializeAddDataSourceMenu(JIPipeDesktopGraphEditorUI graphEditorUI, JPopupMenu menu, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
-        JIPipe registryService = JIPipe.getInstance();
         Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
         Map<String, JComponent> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
 
@@ -231,9 +229,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             for (Class<? extends JIPipeData> dataClass : JIPipeData.getSortedList(entry.getValue())) {
                 if (JIPipeData.isHidden(dataClass))
                     continue;
-                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getMenuDataSourcesFor(dataClass);
+                Set<JIPipeNodeInfo> dataSources = JIPipe.getNodes().getMenuDataSourcesFor(dataClass);
                 boolean isEmpty = true;
-                Icon icon = registryService.getDatatypeRegistry().getIconFor(dataClass);
+                Icon icon = JIPipe.getDataTypes().getIconFor(dataClass);
                 JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataClass));
                 dataMenu.setIcon(icon);
 

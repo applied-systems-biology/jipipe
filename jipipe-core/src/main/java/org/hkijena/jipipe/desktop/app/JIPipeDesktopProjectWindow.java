@@ -117,9 +117,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().containsKey(id)) {
                     id = JIPipeProjectTemplate.getFallbackTemplateId();
                     JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplate().setValue(id);
-                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getInstance().getApplicationSettings().save();
-                    }
+                    JIPipe.autoSaveSettings();
                 }
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().get(id);
                 JIPipeValidationReport report = new JIPipeValidationReport();

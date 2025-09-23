@@ -504,4 +504,12 @@ public final class JIPipe {
     }
 
 
+    /**
+     * Auto-saves application settings if they are enabled
+     */
+    public static void autoSaveSettings() {
+        if(instance != null && instance.isAutosaveSettings()) {
+            instance.getApplicationSettings().save();
+        }
+    }
 }

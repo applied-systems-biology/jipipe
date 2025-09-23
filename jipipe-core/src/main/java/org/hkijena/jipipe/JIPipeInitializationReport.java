@@ -22,21 +22,23 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.scijava.plugin.PluginInfo;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
- * Class that describes issues with the current registration process
+ * Contains reportable items that happen during initialization
  */
-public class JIPipeRegistryIssues implements JIPipeValidatable {
-    private Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
-    private Set<PluginInfo<JIPipeJavaPlugin>> erroneousPlugins = new HashSet<>();
-    private Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
-    private Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
-    private Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
-    private Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
+public class JIPipeInitializationReport implements JIPipeValidatable {
+    private final Set<String> registeredExtensionIds = new HashSet<>();
+    private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
+    private final List<JIPipeDependency> failedExtensions = new ArrayList<>();
+    private final List<Throwable> errors = new ArrayList<>();
+
+    private final Set<JIPipeImageJUpdateSiteDependency> missingImageJSites = new HashSet<>();
+    private final Set<PluginInfo<JIPipeJavaPlugin>> erroneousPlugins = new HashSet<>();
+    private final Set<Class<? extends JIPipeData>> erroneousDataTypes = new HashSet<>();
+    private final Set<JIPipeParameterTypeInfo> erroneousParameterTypes = new HashSet<>();
+    private final Set<JIPipeNodeInfo> erroneousNodes = new HashSet<>();
+    private final Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
@@ -64,47 +66,27 @@ public class JIPipeRegistryIssues implements JIPipeValidatable {
         return preActivationIssues;
     }
 
-    public void setPreActivationIssues(Map<String, JIPipeValidationReport> preActivationIssues) {
-        this.preActivationIssues = preActivationIssues;
-    }
-
     public Set<JIPipeImageJUpdateSiteDependency> getMissingImageJSites() {
         return missingImageJSites;
-    }
-
-    public void setMissingImageJSites(Set<JIPipeImageJUpdateSiteDependency> missingImageJSites) {
-        this.missingImageJSites = missingImageJSites;
     }
 
     public Set<PluginInfo<JIPipeJavaPlugin>> getErroneousPlugins() {
         return erroneousPlugins;
     }
 
-    public void setErroneousPlugins(Set<PluginInfo<JIPipeJavaPlugin>> erroneousPlugins) {
-        this.erroneousPlugins = erroneousPlugins;
-    }
-
     public Set<JIPipeParameterTypeInfo> getErroneousParameterTypes() {
         return erroneousParameterTypes;
-    }
-
-    public void setErroneousParameterTypes(Set<JIPipeParameterTypeInfo> erroneousParameterTypes) {
-        this.erroneousParameterTypes = erroneousParameterTypes;
     }
 
     public Set<JIPipeNodeInfo> getErroneousNodes() {
         return erroneousNodes;
     }
 
-    public void setErroneousNodes(Set<JIPipeNodeInfo> erroneousNodes) {
-        this.erroneousNodes = erroneousNodes;
-    }
-
     public Set<Class<? extends JIPipeData>> getErroneousDataTypes() {
         return erroneousDataTypes;
     }
 
-    public void setErroneousDataTypes(Set<Class<? extends JIPipeData>> erroneousDataTypes) {
-        this.erroneousDataTypes = erroneousDataTypes;
+    public List<Throwable> getErrors() {
+        return errors;
     }
 }

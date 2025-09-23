@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComponent;
@@ -102,7 +103,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
 
     private final JIPipeStandardMetadata metadata;
     private final List<Runnable> postprocessingTasks = new ArrayList<>();
-    private JIPipe registry;
+    private JIPipeService service;
     private boolean reachedPostprocessing;
 
     /**
@@ -211,16 +212,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     public String getDependencyVersion() {
         return VersionUtils.getVersionString(getClass());
     }
-
-    @Override
-    public JIPipe getRegistry() {
-        return registry;
-    }
-
-    @Override
-    public void setRegistry(JIPipe registry) {
-        this.registry = registry;
-    }
+    
 
     /**
      * Registers a custom menu entry.
@@ -228,7 +220,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param klass The menu entry
      */
     public void registerMenuExtension(Class<? extends JIPipeDesktopMenuExtension> klass) {
-        registry.getCustomMenuRegistry().registerMenu(klass);
+        service.getCustomMenuItems().registerMenu(klass);
     }
 
     /**
@@ -237,7 +229,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param klass the toolbar button class
      */
     public void registerGraphEditorToolBarButtonExtension(Class<? extends JIPipeDesktopGraphEditorToolBarButtonExtension> klass) {
-        registry.getCustomMenuRegistry().registerGraphEditorToolBarButton(klass);
+        service.getCustomMenuItems().registerGraphEditorToolBarButton(klass);
     }
 
     /**
@@ -246,7 +238,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param action the action
      */
     public void registerContextMenuAction(GraphInteractiveObjectUIContextAction action) {
-        registry.getCustomMenuRegistry().registerContextMenuAction(action);
+        service.getCustomMenuItems().registerContextMenuAction(action);
     }
 
     /**
@@ -256,7 +248,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param converter the converter
      */
     public void registerDatatypeConversion(JIPipeDataConverter converter) {
-        registry.getDatatypeRegistry().registerConversion(converter);
+        service.getDataTypes().registerConversion(converter);
     }
 
     /**
@@ -284,15 +276,15 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
     public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, Class<? extends JIPipeDesktopResultDataSlotRowUI> rowUI, Class<? extends JIPipeDesktopResultDataSlotPreview> cellUI, JIPipeLegacyDataOperation... operations) {
-        registry.getDatatypeRegistry().register(id, dataClass, this);
+        service.getDataTypes().register(id, dataClass, this);
         if (icon != null) {
-            registry.getDatatypeRegistry().registerIcon(dataClass, icon);
+            service.getDataTypes().registerIcon(dataClass, icon);
         }
         if (rowUI != null) {
-            registry.getDatatypeRegistry().registerResultSlotUI(dataClass, rowUI);
+            service.getDataTypes().registerResultSlotUI(dataClass, rowUI);
         }
         if (cellUI != null) {
-            registry.getDatatypeRegistry().registerResultTableCellUI(dataClass, cellUI);
+            service.getDataTypes().registerResultTableCellUI(dataClass, cellUI);
         }
         registerDatatypeOperation(id, operations);
     }
@@ -306,9 +298,9 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param operations list of operations to register. passed to registerDatatypeOperation.
      */
     public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, JIPipeLegacyDataOperation... operations) {
-        registry.getDatatypeRegistry().register(id, dataClass, this);
+        service.getDataTypes().register(id, dataClass, this);
         if (icon != null) {
-            registry.getDatatypeRegistry().registerIcon(dataClass, icon);
+            service.getDataTypes().registerIcon(dataClass, icon);
         }
         registerDatatypeOperation(id, operations);
     }
@@ -339,7 +331,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param dataViewerClass the viewer class
      */
     public void registerDefaultDataTypeViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
-        registry.getDatatypeRegistry().registerDefaultDataViewer(dataClass, dataViewerClass);
+        service.getDataTypes().registerDefaultDataViewer(dataClass, dataViewerClass);
     }
 
     /**
@@ -350,7 +342,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param operation  the operation
      */
     public void registerDatatypeImportOperation(String dataTypeId, JIPipeLegacyDataImportOperation operation) {
-        registry.getDatatypeRegistry().registerImportOperation(dataTypeId, operation);
+        service.getDataTypes().registerImportOperation(dataTypeId, operation);
     }
 
     /**
@@ -360,7 +352,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param operation  the operation
      */
     public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDesktopDataDisplayOperation operation) {
-        registry.getDatatypeRegistry().registerDisplayOperation(dataTypeId, operation);
+        service.getDataTypes().registerDisplayOperation(dataTypeId, operation);
     }
 
     /**
@@ -369,7 +361,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param category the category
      */
     public void registerNodeTypeCategory(JIPipeNodeTypeCategory category) {
-        registry.getNodeRegistry().registerCategory(category);
+        service.getNodes().registerCategory(category);
     }
 
     /**
@@ -400,7 +392,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param info Algorithm info
      */
     public void registerNodeType(JIPipeNodeInfo info) {
-        registry.getNodeRegistry().register(info, this);
+        service.getNodes().register(info, this);
     }
 
     /**
@@ -411,8 +403,8 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param icon custom algorithm icon
      */
     public void registerNodeType(JIPipeNodeInfo info, URL icon) {
-        registry.getNodeRegistry().register(info, this);
-        registry.getNodeRegistry().registerIcon(info, icon);
+        service.getNodes().register(info, this);
+        service.getNodes().registerIcon(info, icon);
     }
 
     /**
@@ -422,7 +414,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param task Algorithm registration task
      */
     public void registerNodeType(JIPipeNodeRegistrationTask task) {
-        registry.getNodeRegistry().scheduleRegister(task);
+        service.getNodes().scheduleRegister(task);
     }
 
     /**
@@ -544,7 +536,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param uiClass Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(JIPipeParameterTypeInfo info, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        registry.getParameterTypeRegistry().register(info);
+        service.getParameterTypes().register(info);
         if (uiClass != null) {
             registerParameterEditor(info.getFieldClass(), uiClass);
         }
@@ -558,7 +550,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param uiClass   Parameter editor UI. Can be null if the editor is already provided.
      */
     public void registerParameterType(JIPipeParameterTypeInfo info, Class<?> listClass, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        registry.getParameterTypeRegistry().register(info);
+        service.getParameterTypes().register(info);
         if (uiClass != null) {
             registerParameterEditor(info.getFieldClass(), uiClass);
         }
@@ -580,7 +572,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param uiClass        the editor class
      */
     public void registerParameterEditor(Class<?> parameterClass, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
-        registry.getParameterTypeRegistry().registerParameterEditor(parameterClass, uiClass);
+        service.getParameterTypes().registerParameterEditor(parameterClass, uiClass);
     }
 
     /**
@@ -590,7 +582,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param generator      The generator object
      */
     public void registerParameterGenerator(Class<?> parameterClass, JIPipeParameterGenerator generator) {
-        JIPipeParameterTypesServiceComponent parametertypeRegistry = registry.getParameterTypeRegistry();
+        JIPipeParameterTypesServiceComponent parametertypeRegistry = service.getParameterTypes();
         parametertypeRegistry.registerGenerator(parameterClass, generator);
     }
 
@@ -604,7 +596,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description a description
      */
     public void registerTableColumnOperation(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        service.getExpressionFunctions().registerColumnOperation(id, operation, name, shortName, description);
     }
 
     /**
@@ -618,7 +610,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description a description
      */
     public void registerTableColumnOperationAndExpressionFunction(String id, ColumnOperation operation, String name, String shortName, String description) {
-        registry.getExpressionRegistry().registerColumnOperation(id, operation, name, shortName, description);
+        service.getExpressionFunctions().registerColumnOperation(id, operation, name, shortName, description);
         registerExpressionFunction(new ColumnOperationAdapterFunction(operation, shortName.toUpperCase(Locale.ROOT).replace(' ', '_')), name, description);
     }
 
@@ -630,7 +622,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description the description
      */
     public void registerExpressionFunction(ExpressionFunction function, String name, String description) {
-        registry.getExpressionRegistry().registerExpressionFunction(function, name, description);
+        service.getExpressionFunctions().registerExpressionFunction(function, name, description);
     }
 
     /**
@@ -640,7 +632,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerExpressionFunction(ExpressionFunction function) {
         SetJIPipeDocumentation documentation = function.getClass().getAnnotation(SetJIPipeDocumentation.class);
-        registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(),
+        service.getExpressionFunctions().registerExpressionFunction(function, documentation.name(),
                 DocumentationUtils.getDocumentationDescription(documentation));
     }
 
@@ -653,9 +645,9 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, String defaultImporterId, String defaultExporterId) {
         if (!StringUtils.isNullOrEmpty(defaultImporterId))
-            registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, defaultImporterId);
+            service.getImageJDataAdapters().setDefaultImporterFor(dataClass, defaultImporterId);
         if (!StringUtils.isNullOrEmpty(defaultExporterId))
-            registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, defaultExporterId);
+            service.getImageJDataAdapters().setDefaultExporterFor(dataClass, defaultExporterId);
     }
 
     /**
@@ -667,9 +659,9 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, ImageJDataImporter defaultImporter, ImageJDataExporter defaultExporter) {
         if (defaultImporter != null)
-            registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultImporter));
+            service.getImageJDataAdapters().setDefaultImporterFor(dataClass, service.getImageJDataAdapters().getIdOf(defaultImporter));
         if (defaultExporter != null)
-            registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultExporter));
+            service.getImageJDataAdapters().setDefaultExporterFor(dataClass, service.getImageJDataAdapters().getIdOf(defaultExporter));
     }
 
     /**
@@ -680,7 +672,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param importerUIClass the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI})
      */
     public void registerImageJDataImporter(String id, ImageJDataImporter dataImporter, Class<? extends ImageJDataImporterUI> importerUIClass) {
-        registry.getImageJDataAdapterRegistry().register(id, dataImporter, importerUIClass);
+        service.getImageJDataAdapters().register(id, dataImporter, importerUIClass);
     }
 
     /**
@@ -691,7 +683,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param uiClass      the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI})
      */
     public void registerImageJDataExporter(String id, ImageJDataExporter dataExporter, Class<? extends ImageJDataExporterUI> uiClass) {
-        registry.getImageJDataAdapterRegistry().register(id, dataExporter, uiClass);
+        service.getImageJDataAdapters().register(id, dataExporter, uiClass);
     }
 
     /**
@@ -700,7 +692,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param sheet the settings sheet
      */
     public void registerApplicationSettingsSheet(JIPipeApplicationSettingsSheet sheet) {
-        registry.getApplicationSettingsRegistry().register(sheet);
+        service.getApplicationSettings().register(sheet);
     }
 
     /**
@@ -709,7 +701,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param settingsSheetClass the settings sheet class. must have a default constructor.
      */
     public void registerProjectSettingsSheet(Class<? extends JIPipeProjectSettingsSheet> settingsSheetClass) {
-        registry.getProjectSettingsRegistry().register(settingsSheetClass);
+        service.getProjectSettings().register(settingsSheetClass);
     }
 
     /**
@@ -721,7 +713,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param utilityClass  the utility class
      */
     public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
-        registry.getUtilityRegistry().register(categoryClass, utilityClass);
+        service.getUtilityClasses().register(categoryClass, utilityClass);
     }
 
     /**
@@ -732,7 +724,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param alternativeIds alternative Ids that are captured during the reading process
      */
     public void registerMetadataObjectType(Class<? extends JIPipeMetadataObject> objectClass, String id, String... alternativeIds) {
-        registry.getMetadataRegistry().register(objectClass, id, alternativeIds);
+        service.getMetadataTypes().register(objectClass, id, alternativeIds);
     }
 
     /**
@@ -742,7 +734,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param template the template
      */
     public void registerNodeExample(JIPipeNodeTemplate template) {
-        registry.getNodeRegistry().scheduleRegisterExample(template);
+        service.getNodes().scheduleRegisterExample(template);
     }
 
     /**
@@ -843,7 +835,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param template the template
      */
     public void registerNodeTemplate(JIPipeNodeTemplate template) {
-        registry.getNodeRegistry().scheduleRegisterTemplate(template);
+        service.getNodes().scheduleRegisterTemplate(template);
     }
 
     /**
@@ -934,7 +926,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                         JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(stream);
                         JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
                         JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null, null);
-                        registry.getProjectTemplateRegistry().register(template);
+                        service.getProjectTemplates().register(template);
                     }
                 } catch (Throwable throwable) {
                     JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
@@ -944,7 +936,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     }
 
     public void registerGraphEditorTool(Class<? extends JIPipeGraphEditorTool> klass) {
-        registry.getGraphEditorToolRegistry().register(klass);
+        service.getGraphEditorTools().register(klass);
     }
 
     /**
@@ -970,7 +962,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                               String description,
                                                                                               Icon icon) {
         registerParameterType(id, environmentClass, JIPipeParameterArchetype.Reference, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
-        registry.getExternalEnvironmentRegistry().registerEnvironment(environmentClass, settings);
+        service.getEnvironments().registerEnvironment(environmentClass, settings);
     }
 
     /**
@@ -981,7 +973,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param icon             icon for the installer
      */
     public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
-        registry.getExternalEnvironmentRegistry().registerInstaller(environmentClass, installerClass, icon);
+        service.getEnvironments().registerInstaller(environmentClass, installerClass, icon);
     }
 
     /**
@@ -1056,5 +1048,15 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         } catch (URISyntaxException e) {
             return null;
         }
+    }
+
+    @Override
+    public JIPipeService getService() {
+        return service;
+    }
+
+    @Override
+    public void setService(JIPipeService service) {
+        this.service = service;
     }
 }

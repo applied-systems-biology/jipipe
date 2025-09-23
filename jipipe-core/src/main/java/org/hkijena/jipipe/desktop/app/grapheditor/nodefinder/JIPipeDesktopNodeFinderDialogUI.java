@@ -266,16 +266,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             createNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindNewNodes());
             findExistingNodesToggle.addActionListener(e -> {
                 JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.autoSaveSettings();
                 reloadList();
             });
             createNodesToggle.addActionListener(e -> {
                 JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
-                if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                    JIPipe.getSettings().save();
-                }
+                JIPipe.autoSaveSettings();
                 reloadList();
             });
             mainToolBar.add(findExistingNodesToggle);

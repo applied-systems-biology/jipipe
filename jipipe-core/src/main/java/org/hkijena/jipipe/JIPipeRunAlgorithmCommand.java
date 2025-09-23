@@ -86,7 +86,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
     }
 
     private void initializeRegistry(boolean withSplash) {
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeInitializationReport issues = new JIPipeInitializationReport();
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (!JIPipe.isInstantiated()) {
             ThemeUtils.applyThemeFromSettings();

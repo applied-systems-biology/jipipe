@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     private final JIPipeExtensionApplicationSettings extensionSettings;
-    private final JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+    private final JIPipeInitializationReport issues = new JIPipeInitializationReport();
 
     public JIPipeServiceDefaultInitializer(JIPipeService service) {
         super(service);

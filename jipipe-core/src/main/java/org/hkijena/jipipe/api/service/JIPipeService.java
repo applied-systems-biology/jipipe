@@ -15,15 +15,15 @@ package org.hkijena.jipipe.api.service;
 
 import net.imagej.updater.FilesCollection;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventEmitter;
 import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEventEmitter;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventEmitter;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventEmitter;
-import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
-import org.hkijena.jipipe.api.service.components.JIPipeCustomMenuItemsServiceComponent;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -39,15 +39,11 @@ import java.util.*;
 @Plugin(type = Service.class)
 public class JIPipeService extends AbstractService implements JIPipeValidatable {
 
-    private JIPipeServiceState state =  JIPipeServiceState.Uninitialized;
+    private JIPipeServiceState state = JIPipeServiceState.Uninitialized;
+    private final JIPipeInitializationReport initializationReport = new JIPipeInitializationReport();
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     private JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
-
-    private final Set<String> registeredExtensionIds = new HashSet<>();
-    private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
-    private final List<JIPipeDependency> failedExtensions = new ArrayList<>();
-
     private final JIPipeNodesServiceComponent nodes;
     private final JIPipeDatatypesServiceComponent dataTypes;
     private final JIPipeImageJAdaptersServiceComponent imageJDataAdapters;
@@ -56,7 +52,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeApplicationSettingsServiceComponent applicationSettings;
     private final JIPipeProjectSettingsServiceComponent projectSettings;
     private final JIPipeExpressionFunctionsServiceComponent expressionFunctions;
-    private final JIPipeUtilitiesServiceComponent utilities;
+    private final JIPipeUtilityClassesServiceComponent utilityClasses;
     private final JIPipeEnvironmentsServiceComponent environments;
     private final JIPipePluginsServiceComponent plugins;
     private final JIPipeGraphEditorToolsServiceComponent graphEditorTools;
@@ -64,7 +60,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeArtifactsServiceComponent artifacts;
     private final JIPipeNodeTemplatesServiceComponent nodeTemplates;
     private final JIPipeRecentProjectsRegistry recentProjects;
-    private final JIPipeMetadataTypesServiceComponent metadata;
+    private final JIPipeMetadataTypesServiceComponent metadataTypes;
 
     private FilesCollection imageJPlugins = null;
 
@@ -89,21 +85,23 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         applicationSettings = new JIPipeApplicationSettingsServiceComponent(this);
         projectSettings = new JIPipeProjectSettingsServiceComponent(this);
         expressionFunctions = new JIPipeExpressionFunctionsServiceComponent(this);
-        utilities = new JIPipeUtilitiesServiceComponent(this);
+        utilityClasses = new JIPipeUtilityClassesServiceComponent(this);
         environments = new JIPipeEnvironmentsServiceComponent(this);
         plugins = new JIPipePluginsServiceComponent(this);
         projectTemplates = new JIPipeProjectTemplatesServiceComponent(this);
         graphEditorTools = new JIPipeGraphEditorToolsServiceComponent(this);
-        metadata = new JIPipeMetadataTypesServiceComponent(this);
+        metadataTypes = new JIPipeMetadataTypesServiceComponent(this);
         artifacts = new JIPipeArtifactsServiceComponent(this);
         nodeTemplates = new JIPipeNodeTemplatesServiceComponent(this);
     }
 
     public JIPipeServiceState getState() {
+        ensureInitialized();
         return state;
     }
 
     public FilesCollection getImageJPlugins() {
+        ensureInitialized();
         return imageJPlugins;
     }
 
@@ -112,14 +110,17 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     }
 
     public JIPipeEnvironmentsServiceComponent getEnvironments() {
+        ensureInitialized();
         return environments;
     }
 
-    public JIPipeUtilitiesServiceComponent getUtilities() {
-        return utilities;
+    public JIPipeUtilityClassesServiceComponent getUtilityClasses() {
+        ensureInitialized();
+        return utilityClasses;
     }
 
     public JIPipeArtifactsServiceComponent getArtifacts() {
+        ensureInitialized();
         return artifacts;
     }
 
@@ -128,58 +129,67 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     }
 
     public JIPipeParameterTypesServiceComponent getParameterTypes() {
+        ensureInitialized();
         return parameterTypes;
     }
 
     public JIPipeApplicationSettingsServiceComponent getApplicationSettings() {
+        ensureInitialized();
         return applicationSettings;
     }
 
     public JIPipeProjectSettingsServiceComponent getProjectSettings() {
+        ensureInitialized();
         return projectSettings;
     }
 
-    public JIPipeMetadataTypesServiceComponent getMetadata() {
-        return metadata;
-    }
-
-    public JIPipeExpressionFunctionsServiceComponent getExpressionRegistry() {
-        return expressionFunctions;
+    public JIPipeMetadataTypesServiceComponent getMetadataTypes() {
+        ensureInitialized();
+        return metadataTypes;
     }
 
     public JIPipeRecentProjectsRegistry getRecentProjects() {
+        ensureInitialized();
         return recentProjects;
     }
 
     public JIPipePluginsServiceComponent getPlugins() {
+        ensureInitialized();
         return plugins;
     }
 
     public JIPipeNodesServiceComponent getNodes() {
+        ensureInitialized();
         return nodes;
     }
 
     public JIPipeDatatypesServiceComponent getDataTypes() {
+        ensureInitialized();
         return dataTypes;
     }
 
     public JIPipeImageJAdaptersServiceComponent getImageJDataAdapters() {
+        ensureInitialized();
         return imageJDataAdapters;
     }
 
     public List<JIPipeDependency> getRegisteredExtensions() {
+        ensureInitialized();
         return Collections.unmodifiableList(registeredExtensions);
     }
 
     public JIPipeCustomMenuItemsServiceComponent getCustomMenuItems() {
+        ensureInitialized();
         return customMenuItems;
     }
 
     public JIPipeNodeTemplatesServiceComponent getNodeTemplates() {
+        ensureInitialized();
         return nodeTemplates;
     }
 
     public Set<String> getRegisteredExtensionIds() {
+        ensureInitialized();
         return registeredExtensionIds;
     }
 
@@ -202,16 +212,17 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     }
 
     public JIPipeExpressionFunctionsServiceComponent getExpressionFunctions() {
+        ensureInitialized();
         return expressionFunctions;
     }
 
-
     public JIPipeGraphEditorToolsServiceComponent getGraphEditorTools() {
+        ensureInitialized();
         return graphEditorTools;
     }
 
-
     public JIPipeProjectTemplatesServiceComponent getProjectTemplates() {
+        ensureInitialized();
         return projectTemplates;
     }
 
@@ -250,7 +261,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     }
 
     public void setInitializationSettings(JIPipeServiceInitializationSettings initializationSettings) {
-        if(state != JIPipeServiceState.Uninitialized) {
+        if (state != JIPipeServiceState.Uninitialized) {
             throw new IllegalStateException("The JIPipe service has already been initialized.");
         }
         this.initializationSettings = new JIPipeServiceInitializationSettings(initializationSettings);
@@ -262,5 +273,15 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public void setAutosaveSettings(boolean autosaveSettings) {
         this.autosaveSettings = autosaveSettings;
+    }
+
+    public void ensureInitialized() {
+        if (state == JIPipeServiceState.Uninitialized) {
+
+        }
+    }
+
+    public JIPipeInitializationReport getInitializationReport() {
+        return initializationReport;
     }
 }

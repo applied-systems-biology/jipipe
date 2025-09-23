@@ -327,9 +327,7 @@ public class JIPipeDesktopDefaultResultDataSlotRowUI extends JIPipeDesktopResult
                 if (parameter != null && !Objects.equals(operation.getId(), parameter.getValue())) {
                     parameter.setValue(operation.getId());
                     JIPipeDefaultResultImporterApplicationSettings.getInstance().setValue(dataTypeId, parameter);
-                    if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getSettings().save();
-                    }
+                    JIPipe.autoSaveSettings();
                 }
             }
         }

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.api.service;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -30,13 +29,13 @@ public abstract class JIPipeServiceValidator {
         this.service = service;
     }
 
-    public abstract void validate(JIPipeRegistryIssues issues);
+    public abstract void validate(JIPipeInitializationReport issues);
 
     public JIPipeService getService() {
         return service;
     }
 
-    protected void defaultValidateParameterTypes(JIPipeRegistryIssues issues) {
+    protected void defaultValidateParameterTypes(JIPipeInitializationReport issues) {
         for (Map.Entry<String, JIPipeParameterTypeInfo> entry : parameterTypeRegistry.getRegisteredParameters().entrySet()) {
             try {
                 entry.getValue().newInstance();
@@ -57,7 +56,7 @@ public abstract class JIPipeServiceValidator {
     }
 
 
-    protected void defaultValidateDataTypes(JIPipeRegistryIssues issues) {
+    protected void defaultValidateDataTypes(JIPipeInitializationReport issues) {
         for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
             if (info.getStorageDocumentation() == null) {
@@ -85,7 +84,7 @@ public abstract class JIPipeServiceValidator {
         }
     }
 
-    protected void defaultValidateNodeTypes(JIPipeRegistryIssues issues) {
+    protected void defaultValidateNodeTypes(JIPipeInitializationReport issues) {
         for (JIPipeNodeInfo info : ImmutableList.copyOf(nodeRegistry.getRegisteredNodeInfos().values())) {
             try {
                 // Test instantiation

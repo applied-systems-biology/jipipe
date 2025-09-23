@@ -965,7 +965,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     private void writeAdditionalMetadataJson(JsonGenerator generator) throws IOException {
         for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
-            String typeId = JIPipe.getInstance().getMetadata().getId(entry.getValue().getClass());
+            String typeId = JIPipe.getInstance().getMetadataTypes().getId(entry.getValue().getClass());
 
             if (typeId != null) {
                 if (entry.getValue() instanceof JIPipeParameterCollection) {
@@ -1094,7 +1094,7 @@ public class JIPipeProject implements JIPipeValidatable {
             for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
                 try {
                     String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
-                    Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadata().findById(typeId);
+                    Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataTypes().findById(typeId);
 
                     if (metadataClass == null) {
                         throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");

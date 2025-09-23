@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.JIPipeServiceMode;
-import org.hkijena.jipipe.JIPipeRegistryIssues;
+import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -152,7 +152,7 @@ public class JIPipeCLIPipelineRun {
         if (fastInit) {
             extensionSettings.setValidateNodeTypes(false);
         }
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeInitializationReport issues = new JIPipeInitializationReport();
         jiPipe.initialize(extensionSettings, issues, verbose);
 
         JIPipeValidationReport projectIssues = new JIPipeValidationReport();

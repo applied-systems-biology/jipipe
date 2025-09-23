@@ -68,7 +68,7 @@ public class JIPipeRunCommand implements Command {
 
     @Override
     public void run() {
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeInitializationReport issues = new JIPipeInitializationReport();
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         if (JIPipe.getInstance() == null) {
             JIPipe jiPipe = JIPipe.createInstance(context, JIPipeServiceMode.GUI);

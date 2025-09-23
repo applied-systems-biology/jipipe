@@ -16,7 +16,7 @@ package org.hkijena.jipipe;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.service.JIPipeServiceMode;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -82,12 +82,12 @@ public class JIPipeGUICommand implements Command {
 
         // Run registration
         JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
+        JIPipeInitializationReport initializationReport;
         try {
             if (JIPipe.getInstance() == null) {
-                JIPipe jiPipe = JIPipe.createInstance(context, JIPipeServiceMode.GUI);
-                JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
-                jiPipe.initialize(extensionSettings, issues, true);
+                JIPipeService service = JIPipe.createInstance(context);
+                JIPipeDesktopSplashScreen.getInstance().setService(service);
+                initializationReport = service.initialize();
             }
         } catch (Exception e) {
             e.printStackTrace();
