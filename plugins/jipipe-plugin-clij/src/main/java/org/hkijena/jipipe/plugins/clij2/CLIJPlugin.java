@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.clij2.algorithms.Clij2ExecuteKernelIterating;
 import org.hkijena.jipipe.plugins.clij2.algorithms.Clij2ExecuteKernelSimpleIterating;
@@ -152,7 +153,7 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("clij2:opencl-kernel", OpenCLKernelScript.class, JIPipeParameterArchetype.Value, null, null, "OpenCL Kernel", "A OpenCL kernel", null);
         registerDatatype("clij2-image", CLIJImageData.class, JIPipe.RESOURCES.getIcon16URL("data-types/clij2-image.png"));
         registerDefaultDataTypeViewer(CLIJImageData.class, CLIJImageDataViewer.class);

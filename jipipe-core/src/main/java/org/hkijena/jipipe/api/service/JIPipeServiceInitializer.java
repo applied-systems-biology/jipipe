@@ -27,18 +27,13 @@ import java.util.stream.Collectors;
 /**
  * Base class for all initialization tasks related to JIPipe
  */
-public abstract class JIPipeServiceInitializer {
-    private final JIPipeService service;
+public abstract class JIPipeServiceInitializer extends JIPipeServiceComponent {
 
     public JIPipeServiceInitializer(JIPipeService service) {
-        this.service = service;
+        super(service);
     }
 
-    public JIPipeService getService() {
-        return service;
-    }
-
-    public abstract void run();
+    public abstract void runInitialization();
 
     /**
      * Copies templates from the old storage inside jipipe.properties.json into the legacy template directory
@@ -50,24 +45,24 @@ public abstract class JIPipeServiceInitializer {
 
         // Convert node templates
         if (Files.isRegularFile(legacySettingsPath)) {
-            progressInfo.log("Reading legacy settings " + legacySettingsPath);
+            getProgressInfo().log("Reading legacy settings " + legacySettingsPath);
             try {
                 JsonNode jsonNode = JsonUtils.readFromFile(legacySettingsPath, JsonNode.class);
 
                 JsonNode nodeTemplatesListNode = jsonNode.path("node-templates/node-templates");
                 if (!nodeTemplatesListNode.isMissingNode()) {
-                    progressInfo.log("Found legacy node templates!");
-                    Path targetDir = nodeTemplateRegistry.getLegacyStoragePath();
+                    getProgressInfo().log("Found legacy node templates!");
+                    Path targetDir = getService().getNodeTemplates().getLegacyStoragePath();
                     Files.createDirectories(targetDir);
                     for (JsonNode node : ImmutableList.copyOf(nodeTemplatesListNode.elements())) {
                         Path targetFile = targetDir.resolve(UUID.randomUUID() + ".json");
-                        progressInfo.log("Writing legacy node template: " + targetFile);
+                        getProgressInfo().log("Writing legacy node template: " + targetFile);
                         JsonUtils.saveToFile(node, targetFile);
                     }
                 }
             } catch (Throwable e) {
-                progressInfo.log("Unable to copy settings!");
-                progressInfo.log(ExceptionUtils.getStackTrace(e));
+                getProgressInfo().log("Unable to copy settings!");
+                getProgressInfo().log(ExceptionUtils.getStackTrace(e));
             }
         }
     }
@@ -97,9 +92,9 @@ public abstract class JIPipeServiceInitializer {
                 Path oldProfileDirectory = profileBasePath.resolve(previousVersion);
                 Path newProfileDirectory = profileBasePath.resolve(currentVersion);
                 Path oldProfileBackupsDirectory = oldProfileDirectory.resolve("backups");
-                progressInfo.log("Upgrading from profile " + oldProfileDirectory);
-                PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), progressInfo.resolve("Copy profile"));
-                progressInfo.log("Profile upgrade successful. Continuing.");
+                getProgressInfo().log("Upgrading from profile " + oldProfileDirectory);
+                PathUtils.copyDirectory(oldProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), getProgressInfo().resolve("Copy profile"));
+                getProgressInfo().log("Profile upgrade successful. Continuing.");
                 return true;
             }
 
@@ -108,23 +103,23 @@ public abstract class JIPipeServiceInitializer {
             if (Files.isDirectory(legacyProfileDirectory)) {
 
                 // Delete old 3rd party software
-                progressInfo.log("Removing EasyInstaller directories in " + legacyProfileDirectory);
+                getProgressInfo().log("Removing EasyInstaller directories in " + legacyProfileDirectory);
                 for (Path subDirectory : PathUtils.listSubDirectories(legacyProfileDirectory)) {
                     if (subDirectory.getFileName().toString().startsWith("easyinstall-")) {
-                        PathUtils.deleteDirectoryRecursively(subDirectory, progressInfo.resolve("Cleanup old 3rd party software"));
+                        PathUtils.deleteDirectoryRecursively(subDirectory, getProgressInfo().resolve("Cleanup old 3rd party software"));
                     }
                 }
 
                 // Copy the profile
-                progressInfo.log("Upgrading from profile " + legacyProfileDirectory);
+                getProgressInfo().log("Upgrading from profile " + legacyProfileDirectory);
                 Path oldProfileBackupsDirectory = legacyProfileDirectory.resolve("backups");
                 Path newProfileDirectory = profileBasePath.resolve(currentVersion);
-                PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), progressInfo.resolve("Copy profile"));
-                progressInfo.log("Profile upgrade successful. Continuing.");
+                PathUtils.copyDirectory(legacyProfileDirectory, newProfileDirectory, dir -> !dir.equals(oldProfileBackupsDirectory) && !dir.startsWith(oldProfileBackupsDirectory), getProgressInfo().resolve("Copy profile"));
+                getProgressInfo().log("Profile upgrade successful. Continuing.");
             }
             return true;
         } else {
-            progressInfo.log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
+            getProgressInfo().log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
             return false;
         }
     }
@@ -133,8 +128,8 @@ public abstract class JIPipeServiceInitializer {
      * Creates settings for each known data type, so users can change how they will be imported
      */
     protected void createDefaultImporterSettings() {
-        JIPipeDefaultResultImporterApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
-        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+        JIPipeDefaultResultImporterApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
+        for (String id : getService().getDataTypes().getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
             JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataImportOperationIdEnumParameter.class);
             access.setName(info.getName());
@@ -146,8 +141,8 @@ public abstract class JIPipeServiceInitializer {
      * Creates settings for each known data type, so users can change how they will be imported
      */
     protected void createDefaultCacheDisplaySettings() {
-        JIPipeDefaultCacheDisplayApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
-        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
+        JIPipeDefaultCacheDisplayApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
+        for (String id : getService().getDataTypes().getRegisteredDataTypes().keySet()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(id);
             JIPipeMutableParameterAccess access = settings.addParameter(id, DynamicDataDisplayOperationIdEnumParameter.class);
             access.setName(info.getName());
@@ -156,9 +151,9 @@ public abstract class JIPipeServiceInitializer {
     }
 
     protected void updateDefaultImporterSettings() {
-        JIPipeDefaultResultImporterApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
-        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeLegacyDataImportOperation> operations = datatypeRegistry.getSortedImportOperationsFor(id);
+        JIPipeDefaultResultImporterApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultResultImporterApplicationSettings.ID, JIPipeDefaultResultImporterApplicationSettings.class);
+        for (String id : getService().getDataTypes().getRegisteredDataTypes().keySet()) {
+            List<JIPipeLegacyDataImportOperation> operations = getService().getDataTypes().getSortedImportOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
 
             Object currentParameterValue = access.get(Object.class);
@@ -182,9 +177,9 @@ public abstract class JIPipeServiceInitializer {
     }
 
     protected void updateDefaultCacheDisplaySettings() {
-        JIPipeDefaultCacheDisplayApplicationSettings settings = applicationSettingsRegistry.getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
-        for (String id : datatypeRegistry.getRegisteredDataTypes().keySet()) {
-            List<JIPipeDesktopDataDisplayOperation> operations = datatypeRegistry.getSortedDisplayOperationsFor(id);
+        JIPipeDefaultCacheDisplayApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultCacheDisplayApplicationSettings.ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
+        for (String id : getService().getDataTypes().getRegisteredDataTypes().keySet()) {
+            List<JIPipeDesktopDataDisplayOperation> operations = getService().getDataTypes().getSortedDisplayOperationsFor(id);
             JIPipeMutableParameterAccess access = (JIPipeMutableParameterAccess) settings.get(id);
 
             Object currentParameterValue = access.get(Object.class);
@@ -216,20 +211,20 @@ public abstract class JIPipeServiceInitializer {
                 if (Files.isRegularFile(path)) {
                     if (PathUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
                         try {
-                            progressInfo.log("[Node examples] Importing node template list from " + path);
+                            getProgressInfo().log("[Node examples] Importing node template list from " + path);
                             for (JIPipeNodeTemplate template : JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeNodeTemplate.List.class)) {
-                                nodeRegistry.registerExample(template);
+                                getService().getNodes().registerExample(template);
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
-                            progressInfo.log("Error while loading node examples from " + path + ": " + e);
+                            getProgressInfo().log("Error while loading node examples from " + path + ": " + e);
                         }
                     }
                 }
             });
         } catch (Throwable e) {
             e.printStackTrace();
-            progressInfo.log("Error while loading node examples from " + examplesDir + ": " + e);
+            getProgressInfo().log("Error while loading node examples from " + examplesDir + ": " + e);
         }
     }
 
@@ -242,18 +237,24 @@ public abstract class JIPipeServiceInitializer {
                 if (Files.isRegularFile(path)) {
                     if (PathUtils.EXTENSION_FILTER_JIP.accept(path.toFile()) || PathUtils.EXTENSION_FILTER_ZIP.accept(path.toFile())) {
                         try {
-                            progressInfo.log("[Project templates] Importing template from " + path);
-                            projectTemplateRegistry.register(path);
+                            getProgressInfo().log("[Project templates] Importing template from " + path);
+                            getService().getProjectTemplates().register(path);
                         } catch (Throwable e) {
                             e.printStackTrace();
-                            progressInfo.log("Error while loading project template from " + path + ": " + e);
+                            getProgressInfo().log("Error while loading project template from " + path + ": " + e);
                         }
                     }
                 }
             });
         } catch (Throwable e) {
             e.printStackTrace();
-            progressInfo.log("Error while loading project templates from " + examplesDir + ": " + e);
+            getProgressInfo().log("Error while loading project templates from " + examplesDir + ": " + e);
         }
     }
+
+    public boolean isVerbose() {
+        return getService().getInitializationSettings().isVerbose();
+    }
+
+    public abstract void runPostprocessing();
 }

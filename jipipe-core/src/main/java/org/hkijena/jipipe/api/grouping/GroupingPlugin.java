@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGro
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContentsDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -54,7 +55,7 @@ public class GroupingPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("graph-wrapper:input", GraphWrapperAlgorithmInput.class, JIPipe.RESOURCES.getIcon16URL("actions/plug.png"));
         registerNodeType("graph-wrapper:output", GraphWrapperAlgorithmOutput.class, JIPipe.RESOURCES.getIcon16URL("actions/plug.png"));
 

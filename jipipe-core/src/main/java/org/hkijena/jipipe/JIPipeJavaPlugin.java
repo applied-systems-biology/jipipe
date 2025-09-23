@@ -57,11 +57,11 @@ public interface JIPipeJavaPlugin extends SciJavaPlugin, JIPipePlugin {
     /**
      * Registers custom modules into JIPipe
      *
-     * @param jiPipe       the {@link JIPipe} instance that calls this function
+     * @param service      the {@link JIPipe} instance that calls this function
      * @param context      the SciJava {@link Context}
      * @param progressInfo the progress info
      */
-    void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo);
+    void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo);
 
     /**
      * Called after registration.

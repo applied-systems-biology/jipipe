@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventEmitte
 import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEventEmitter;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventEmitter;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventEmitter;
+import org.hkijena.jipipe.api.service.init.JIPipeServiceDefaultInitializer;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
 import org.scijava.log.LogService;
@@ -44,6 +45,8 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     private JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
+    private JIPipeServiceInitializer initializer = new JIPipeServiceDefaultInitializer(this);
+
     private final JIPipeNodesServiceComponent nodes;
     private final JIPipeDatatypesServiceComponent dataTypes;
     private final JIPipeImageJAdaptersServiceComponent imageJDataAdapters;
@@ -61,8 +64,6 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeNodeTemplatesServiceComponent nodeTemplates;
     private final JIPipeRecentProjectsRegistry recentProjects;
     private final JIPipeMetadataTypesServiceComponent metadataTypes;
-
-    private FilesCollection imageJPlugins = null;
 
     @Parameter
     private LogService logService;
@@ -98,11 +99,6 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeServiceState getState() {
         ensureInitialized();
         return state;
-    }
-
-    public FilesCollection getImageJPlugins() {
-        ensureInitialized();
-        return imageJPlugins;
     }
 
     public LogService getLogService() {
@@ -269,11 +265,31 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public void ensureInitialized() {
         if (state == JIPipeServiceState.Uninitialized) {
-
+            state = JIPipeServiceState.Initializing;
+            try {
+                initializer.runInitialization();
+                state = JIPipeServiceState.Initialized;
+                initializer.runPostprocessing();
+            }
+            catch (Throwable e) {
+                state = JIPipeServiceState.Error;
+                e.printStackTrace();
+            }
         }
     }
 
     public JIPipeInitializationReport getInitializationReport() {
         return initializationReport;
+    }
+
+    public JIPipeServiceInitializer getInitializer() {
+        return initializer;
+    }
+
+    public void setInitializer(JIPipeServiceInitializer initializer) {
+        if (state != JIPipeServiceState.Uninitialized) {
+            throw new IllegalStateException("The JIPipe service has already been initialized.");
+        }
+        this.initializer = initializer;
     }
 }

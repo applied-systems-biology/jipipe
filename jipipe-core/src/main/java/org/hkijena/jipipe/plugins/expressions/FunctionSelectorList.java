@@ -82,8 +82,8 @@ public class FunctionSelectorList extends JList<JIPipeExpressionFunctionsService
 
     private void initialize() {
         DefaultListModel<JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry> model = new DefaultListModel<>();
-        for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
-                .sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry::getName)).collect(Collectors.toList())) {
+        for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().values().stream()
+                .sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry::getName)).toList()) {
             model.addElement(functionEntry);
         }
         setCellRenderer(new ExpressionFunctionRenderer());

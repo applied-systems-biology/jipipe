@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.multiparameters;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.multiparameters.converters.ParametersDataToResultsTableDataConverter;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
@@ -48,7 +49,7 @@ public class MultiParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,

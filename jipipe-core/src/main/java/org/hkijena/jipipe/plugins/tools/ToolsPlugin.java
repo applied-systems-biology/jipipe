@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.tools;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -43,14 +43,13 @@ public class ToolsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerMenuExtension(OpenImageJTool.class);
         registerMenuExtension(CreateLaunchersTool.class);
         registerMenuExtension(CloseAllImageJWindowsTool.class);
         registerMenuExtension(RebuildAliasIdsTool.class);
         registerMenuExtension(DissolveCompartmentsTool.class);
         registerMenuExtension(OpenImageJConsoleTool.class);
-        registerMenuExtension(RestartJIPipeDesktopTool.class);
         registerMenuExtension(OpenImageJUpdateManagerTool.class);
         registerMenuExtension(SetWindowSizeTool.class);
     }

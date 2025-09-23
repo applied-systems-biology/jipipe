@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.service.init;
 
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -28,53 +29,49 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
     }
 
     @Override
-    public void run() {
-        if(state != JIPipeServiceState.Uninitialized) {
-            progressInfo.log("ERROR: JIPipe initialization has already been called");
-            return;
-        }
-        state = JIPipeServiceState.Initializing;
+    public void runInitialization() {
+        JIPipeInitializationReport report = getService().getInitializationReport();
 
-        progressInfo.setProgress(0, 5);
-        nodeRegistry.installEvents();
-        pluginRegistry.initialize(); // Init extension registry
-        pluginRegistry.load();
-        progressInfo.setProgress(1);
-        progressInfo.log("Pre-initialization phase ...");
+        getProgressInfo().setProgress(0, 5);
+        getService().getNodes().installEvents();
+        getService().getPlugins().initialize(); // Init extension registry
+        getService().getPlugins().load();
+        getProgressInfo().setProgress(1);
+        getProgressInfo().log("Pre-initialization phase ...");
 
         List<JIPipeJavaPlugin> pluginInstances = new ArrayList<>();
         for (Class<? extends JIPipeJavaPlugin> pluginClass : plugins) {
             try {
                 JIPipeJavaPlugin extension = pluginClass.newInstance();
                 getContext().inject(extension);
-                extension.setRegistry(this);
+                extension.setService(getService());
                 if (extension instanceof AbstractService) {
                     ((AbstractService) extension).setContext(getContext());
                 }
 
                 pluginInstances.add(extension);
-                extensionDiscoveredEventEmitter.emit(new JIPipePluginDiscoveredEvent(this, extension));
+                getService().getExtensionDiscoveredEventEmitter().emit(new JIPipePluginDiscoveredEvent(getService(), extension));
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        progressInfo.setProgress(2);
-        JIPipeProgressInfo registerFeaturesProgress = progressInfo.resolveAndLog("Register features");
+        getProgressInfo().setProgress(2);
+        JIPipeProgressInfo registerFeaturesProgress = getProgressInfo().resolveAndLog("Register features");
 
         for (JIPipeJavaPlugin extension : pluginInstances) {
-            extension.register(this, getContext(), registerFeaturesProgress.resolve(extension.getDependencyId()));
-            registeredExtensions.add(extension);
-            registeredExtensionIds.add(extension.getDependencyId());
-            extensionRegisteredEventEmitter.emit(new JIPipePluginRegisteredEvent(this, extension));
+            extension.register(getService(), getContext(), registerFeaturesProgress.resolve(extension.getDependencyId()));
+            report.getRegisteredExtensions().add(extension);
+            report.getRegisteredExtensionIds().add(extension.getDependencyId());
+            getService().getExtensionRegisteredEventEmitter().emit(new JIPipePluginRegisteredEvent(getService(), extension));
         }
 
-        registerFeaturesProgress.log("Registering remaining " + nodeRegistry.getScheduledRegistrationTasks().size() + " features ...");
-        for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
+        registerFeaturesProgress.log("Registering remaining " + getService().getNodes().getScheduledRegistrationTasks().size() + " features ...");
+        for (JIPipeNodeRegistrationTask task : getService().getNodes().getScheduledRegistrationTasks()) {
             try {
                 task.register();
             } catch (Throwable ex) {
-                logService.error("Could not register: " + task.toString() + " -> " + ex);
+                getService().getLogService().error("Could not register: " + task.toString() + " -> " + ex);
                 registerFeaturesProgress.log("Could not register: " + task + " -> " + ex);
             }
         }
@@ -88,26 +85,27 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
         updateDefaultCacheDisplaySettings();
 
         // Postprocessing
-        progressInfo.setProgress(5);
-        JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
-        for (JIPipeDependency extension : registeredExtensions) {
-            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
+        getProgressInfo().setProgress(5);
+        JIPipeProgressInfo postprocessingProgress = getProgressInfo().resolveAndLog("Postprocessing");
+        for (JIPipeDependency extension : report.getRegisteredExtensions()) {
+            if (!report.getFailedExtensions().contains(extension) && extension instanceof JIPipeJavaPlugin) {
                 ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress.resolveAndLog(extension.getDependencyId()));
             }
         }
         postprocessingProgress.log("Converting display operations to import operations ...");
-        datatypeRegistry.convertDisplayOperationsToImportOperations();
+        getService().getDataTypes().convertDisplayOperationsToImportOperations();
         postprocessingProgress.log("Registering examples ...");
-        nodeRegistry.executeScheduledRegisterExamples();
+        getService().getNodes().executeScheduledRegisterExamples();
         postprocessingProgress.log("Registering extension-provided templates ...");
-        nodeRegistry.executeScheduledRegisterTemplates();
+        getService().getNodes().executeScheduledRegisterTemplates();
+    }
 
-        state = JIPipeServiceState.Initialized;
-
+    @Override
+    public void runPostprocessing() {
         // Push progress into log
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
                 LocalDateTime.now(),
-                progressInfo.getLog().toString(),
+                getProgressInfo().getLog().toString(),
                 new JIPipeNotificationInbox(), true));
 
         // Mark log as read

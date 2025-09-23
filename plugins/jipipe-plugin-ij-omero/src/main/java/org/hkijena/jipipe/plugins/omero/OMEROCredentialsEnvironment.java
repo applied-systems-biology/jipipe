@@ -184,7 +184,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        if (JIPipe.getInstance().getMode() == JIPipeServiceMode.Headless) {
+        if (JIPipe.getInstance().getInitializationSettings().getMode() == JIPipeServiceMode.Headless) {
             if (StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
                 reportContext.error().title("Invalid OMERO credentials").explanation("Please ensure to always provide a user name, host, and email address.").report(report);
             }
@@ -200,7 +200,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         }
 
         if (StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(userName) || password == null || StringUtils.isNullOrEmpty(password.getPassword())) {
-            if (JIPipe.getInstance().getMode() == JIPipeServiceMode.GUI) {
+            if (JIPipe.getInstance().getInitializationSettings().getMode() == JIPipeServiceMode.GUI) {
                 progressInfo.log("-> OMERO connection to " + host + " has missing credentials. Asking for password interactively.");
                 progressInfo.log("OMERO: Waiting for user input ...");
 

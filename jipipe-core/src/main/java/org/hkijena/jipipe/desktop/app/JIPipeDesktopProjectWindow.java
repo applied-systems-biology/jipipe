@@ -337,19 +337,19 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
-                if (JIPipe.getInstance().getImageJPlugins() != null) {
-                    // Populate
-                    for (JIPipeDependency dependency : dependencySet) {
-                        missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
-                    }
-                    missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
-                    // Remove existing
-                    for (UpdateSite updateSite : JIPipe.getInstance().getImageJPlugins().getUpdateSites(true)) {
-                        if (updateSite.isActive()) {
-                            missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
-                        }
-                    }
-                }
+//                if (JIPipe.getInstance().getImageJPlugins() != null) {
+//                    // Populate
+//                    for (JIPipeDependency dependency : dependencySet) {
+//                        missingUpdateSites.addAll(dependency.getImageJUpdateSiteDependencies());
+//                    }
+//                    missingUpdateSites.addAll(metadata.getUpdateSiteDependencies());
+//                    // Remove existing
+//                    for (UpdateSite updateSite : JIPipe.getInstance().getImageJPlugins().getUpdateSites(true)) {
+//                        if (updateSite.isActive()) {
+//                            missingUpdateSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
+//                        }
+//                    }
+//                }
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))

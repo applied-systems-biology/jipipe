@@ -7,6 +7,7 @@ public enum JIPipeServiceState {
     Uninitialized,
     Initializing,
     Initialized,
+    Error,
     ShuttingDown,
     Shutdown,
 }

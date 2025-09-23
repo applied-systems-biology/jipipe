@@ -5,7 +5,14 @@ import ij.IJ;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -14,7 +21,11 @@ import org.hkijena.jipipe.api.service.JIPipeServiceState;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
+import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
@@ -23,72 +34,71 @@ import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.CUDAUtils;
+import org.hkijena.jipipe.utils.JIPipeUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.AbstractService;
 
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
-    private final JIPipeExtensionApplicationSettings extensionSettings;
     private final JIPipeInitializationReport issues = new JIPipeInitializationReport();
 
     public JIPipeServiceDefaultInitializer(JIPipeService service) {
         super(service);
-        this.extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
     }
 
     @Override
-    public void run() {
-        if(state != JIPipeServiceState.Uninitialized) {
-            progressInfo.log("ERROR: JIPipe initialization has already been called");
-            return;
-        }
-        state = JIPipeServiceState.Initializing;
+    public void runInitialization() {
+        JIPipeInitializationReport report = getService().getInitializationReport();
+        JIPipeExtensionApplicationSettings extensionSettings =  JIPipeExtensionApplicationSettings.getInstanceFromRaw();
 
-        progressInfo.setProgress(0, 5);
-        if (verbose) {
-            progressInfo.getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
-                logService.info(event.getMessage());
+        getProgressInfo().setProgress(0, 5);
+        if (isVerbose()) {
+            getProgressInfo().getStatusUpdatedEventEmitter().subscribeLambda((emitter, event) -> {
+                getService().getLogService().info(event.getMessage());
             });
         }
 
         IJ.showStatus("Initializing JIPipe ...");
-        nodeRegistry.installEvents();
-        List<PluginInfo<JIPipeJavaPlugin>> pluginList = pluginService.getPluginsOfType(JIPipeJavaPlugin.class).stream()
-                .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
-        pluginRegistry.initialize(); // Init extension registry
-        pluginRegistry.load();
-        progressInfo.setProgress(1);
-        progressInfo.log("Legacy settings conversion ...");
-        copyTemplatesFromPropertiesToLegacyProfile(progressInfo.resolve("Legacy conversion"));
-        if (applyProfileUpgrades(progressInfo.resolve("Preparing profiles"))) {
-            progressInfo.log("Upgrade was applied. Reloading extension settings.");
+        getService().getNodes().installEvents();
+        List<PluginInfo<JIPipeJavaPlugin>> pluginList = getService().getPluginService().getPluginsOfType(JIPipeJavaPlugin.class).stream()
+                .sorted(JIPipe::comparePlugins).toList();
+        getService().getPlugins().initialize(); // Init extension registry
+        getService().getPlugins().load();
+        getProgressInfo().setProgress(1);
+        getProgressInfo().log("Legacy settings conversion ...");
+        copyTemplatesFromPropertiesToLegacyProfile(getProgressInfo().resolve("Legacy conversion"));
+        if (applyProfileUpgrades(getProgressInfo().resolve("Preparing profiles"))) {
+            getProgressInfo().log("Upgrade was applied. Reloading extension settings.");
             extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
         }
 
-        progressInfo.log("Pre-initialization phase ...");
+        getProgressInfo().log("Pre-initialization phase ...");
 
         // Creating instances of extensions
         Map<String, JIPipeJavaExtensionInitializationInfo> allJavaExtensionsByID = new HashMap<>();
 
         for (PluginInfo<JIPipeJavaPlugin> pluginInfo : pluginList) {
             try {
-                progressInfo.log("Creating instance of " + pluginInfo + " ...");
+                getProgressInfo().log("Creating instance of " + pluginInfo + " ...");
                 JIPipeJavaPlugin extension = pluginInfo.createInstance();
 
                 // Validate ID
-                if (!isValidExtensionId(extension.getDependencyId())) {
+                if (!JIPipeUtils.isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
-                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
+                    getProgressInfo().log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + ". REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
 
                     continue;
                 } else {
                     if (allJavaExtensionsByID.containsKey(extension.getDependencyId())) {
                         System.err.println("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder. REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
-                        progressInfo.log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder. REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
+                        getProgressInfo().log("Duplicate extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension + " or check your ImageJ folder. REFUSING TO REGISTER AS OF JIPIPE VERSION 3!");
 
                         continue;
                     }
@@ -106,7 +116,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
         // First loading check
-        progressInfo.log("Determining extensions to be loaded ...");
+        getProgressInfo().log("Determining extensions to be loaded ...");
         Set<String> impliedLoadedJavaExtensions = new HashSet<>();
         boolean impliedLoadedJavaExtensionsChanged;
         do {
@@ -117,19 +127,19 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                     continue;
                 }
                 if (extension.isCorePlugin() || impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
-                    if (isValidExtensionId(extension.getDependencyId())) {
+                    if (JIPipeUtils.isValidExtensionId(extension.getDependencyId())) {
                         if (!impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
-                            progressInfo.log("-> Core/User: " + extension.getDependencyId());
+                            getProgressInfo().log("-> Core/User: " + extension.getDependencyId());
                             impliedLoadedJavaExtensions.add(extension.getDependencyId());
                             impliedLoadedJavaExtensionsChanged = true;
                         }
                     }
                     for (JIPipeDependency dependency : extension.getDependencies()) {
-                        if (isValidExtensionId(dependency.getDependencyId())) {
+                        if (JIPipeUtils.isValidExtensionId(dependency.getDependencyId())) {
                             if (!impliedLoadedJavaExtensions.contains(dependency.getDependencyId())) {
                                 impliedLoadedJavaExtensions.add(dependency.getDependencyId());
                                 impliedLoadedJavaExtensionsChanged = true;
-                                progressInfo.log("-> Required by " + extension.getDependencyId() + ": " + dependency.getDependencyId());
+                                getProgressInfo().log("-> Required by " + extension.getDependencyId() + ": " + dependency.getDependencyId());
                             }
                         }
                     }
@@ -150,11 +160,11 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 continue;
             }
             try {
-                pluginRegistry.registerKnownPlugin(extension);
+                getService().getPlugins().registerKnownPlugin(extension);
 
                 // Check if the extension should be loaded
-                if (!extension.isCorePlugin() && pluginRegistry.getSettings().getDeactivatedPlugins().contains(extension.getDependencyId()) && !impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
-                    progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
+                if (!extension.isCorePlugin() && getService().getPlugins().getSettings().getDeactivatedPlugins().contains(extension.getDependencyId()) && !impliedLoadedJavaExtensions.contains(extension.getDependencyId())) {
+                    getProgressInfo().log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
                     initializationInfo.setLoaded(false);
                     continue;
                 }
@@ -162,32 +172,32 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 // Extension self-check
                 JIPipeValidationReport preActivationIssues = new JIPipeValidationReport();
                 issues.getPreActivationIssues().put(extension.getDependencyId(), preActivationIssues);
-                if (!extension.canActivate(preActivationIssues, progressInfo.resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
+                if (!extension.canActivate(preActivationIssues, getProgressInfo().resolve("Pre-activation check").resolve(extension.getDependencyId()))) {
                     if (!extensionSettings.isIgnorePreActivationChecks()) {
                         new JavaExtensionValidationReportContext(extension).warning()
                                 .title("Extension '" + extension.getMetadata().getName() + "' refuses to activate!")
                                 .explanation("The extension's pre-activation check failed. It will not be activated. Please refer to the other items if available.")
                                 .report(preActivationIssues);
-                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
+                        getProgressInfo().log("Extension with ID " + extension.getDependencyId() + " will not be loaded (pre-activation check failed; extension refuses to activate)");
                         initializationInfo.setLoaded(false);
                         if (!StringUtils.isNullOrEmpty(extension.getDependencyId())) {
-                            progressInfo.log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
-                            pluginRegistry.getSettings().getDeactivatedPlugins().add(extension.getDependencyId());
+                            getProgressInfo().log("Extension with ID " + extension.getDependencyId() + " was removed from the list of activated extensions");
+                            getService().getPlugins().getSettings().getDeactivatedPlugins().add(extension.getDependencyId());
                             preActivationScheduledSave = true;
                         }
                         continue;
                     } else {
-                        progressInfo.log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED anyway DUE TO APPLICATION SETTINGS!");
+                        getProgressInfo().log("Extension with ID " + extension.getDependencyId() + " indicated that its pre-activation checks failed. WILL BE LOADED anyway DUE TO APPLICATION SETTINGS!");
                     }
                 }
 
                 getContext().inject(extension);
-                extension.setRegistry(this);
+                extension.setService(getService());
                 if (extension instanceof AbstractService) {
                     ((AbstractService) extension).setContext(getContext());
                 }
                 initializationInfo.setLoaded(true);
-                extensionDiscoveredEventEmitter.emit(new JIPipePluginDiscoveredEvent(this, extension));
+                getService().getExtensionDiscoveredEventEmitter().emit(new JIPipePluginDiscoveredEvent(getService(), extension));
             } catch (Throwable e) {
                 e.printStackTrace();
                 issues.getErroneousPlugins().add(initializationInfo.getPluginInfo());
@@ -195,12 +205,12 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
         // Save extension settings
-        if (preActivationScheduledSave && !NO_SETTINGS_AUTOSAVE) {
-            pluginRegistry.save();
+        if (preActivationScheduledSave && getService().isAutosaveSettings()) {
+            getService().getPlugins().save();
         }
 
-        progressInfo.setProgress(2);
-        JIPipeProgressInfo registerFeaturesProgress = progressInfo.resolveAndLog("Register features");
+        getProgressInfo().setProgress(2);
+        JIPipeProgressInfo registerFeaturesProgress = getProgressInfo().resolveAndLog("Register features");
         for (int i = 0; i < allJavaExtensionsList.size(); i++) {
             JIPipeJavaExtensionInitializationInfo initializationInfo = allJavaExtensionsList.get(i);
 
@@ -217,94 +227,95 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             try {
                 extension = initializationInfo.getInstance();
                 registerFeaturesProgress.log("ID=" + extension.getDependencyId());
-                extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
-                registeredExtensions.add(extension);
-                registeredExtensionIds.add(extension.getDependencyId());
-                extensionRegisteredEventEmitter.emit(new JIPipePluginRegisteredEvent(this, extension));
+                extension.register(getService(), getContext(), getProgressInfo().resolve(extension.getDependencyId()));
+                report.getRegisteredExtensions().add(extension);
+                report.getRegisteredExtensionIds().add(extension.getDependencyId());
+                getService().getExtensionRegisteredEventEmitter().emit(new JIPipePluginRegisteredEvent(getService(), extension));
             } catch (NoClassDefFoundError | Exception e) {
-                progressInfo.log("[!] ERROR: Unable to instantiate extension " + info);
+                getProgressInfo().log("[!] ERROR: Unable to instantiate extension " + info);
                 e.printStackTrace();
-                progressInfo.log(e.toString());
+                getProgressInfo().log(e.toString());
                 issues.getErroneousPlugins().add(info);
-                if (extension != null)
-                    failedExtensions.add(extension);
+                if (extension != null) {
+                    report.getFailedExtensions().add(extension);
+                }
             }
         }
 
-        registerFeaturesProgress.log("Registering remaining " + nodeRegistry.getScheduledRegistrationTasks().size() + " features ...");
-        for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
+        registerFeaturesProgress.log("Registering remaining " + getService().getNodes().getScheduledRegistrationTasks().size() + " features ...");
+        for (JIPipeNodeRegistrationTask task : getService().getNodes().getScheduledRegistrationTasks()) {
             try {
                 task.register();
             } catch (Throwable ex) {
-                logService.error("Could not register: " + task.toString() + " -> " + ex);
+                getService().getLogService().error("Could not register: " + task.toString() + " -> " + ex);
                 registerFeaturesProgress.log("Could not register: " + task + " -> " + ex);
             }
         }
 
         // Check for errors
 
-        progressInfo.setProgress(3);
-        progressInfo.log("Validating node types ...");
+        getProgressInfo().setProgress(3);
+        getProgressInfo().log("Validating node types ...");
         validateDataTypes(issues);
         if (extensionSettings.isValidateNodeTypes()) {
             validateNodeTypes(issues);
         }
-        progressInfo.log("Validating parameter types ...");
+        getProgressInfo().log("Validating parameter types ...");
         validateParameterTypes(issues);
 
         // Create dependency graph
-        progressInfo.log("Creating dependency graph ...");
-        pluginRegistry.getDependencyGraph();
+        getProgressInfo().log("Creating dependency graph ...");
+        getService().getPlugins().getDependencyGraph();
 
         // Create settings for default importers
-        progressInfo.log("Creating dynamic settings ...");
+        getProgressInfo().log("Creating dynamic settings ...");
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
         registerNodeExamplesFromFileSystem();
         registerProjectTemplatesFromFileSystem();
 
         // Reload settings
-        progressInfo.setProgress(4);
-        progressInfo.log("Loading settings ...");
-        applicationSettingsRegistry.reload();
+        getProgressInfo().setProgress(4);
+        getProgressInfo().log("Loading settings ...");
+        getService().getApplicationSettings().reload();
 
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();
         updateDefaultCacheDisplaySettings();
 
         // Postprocessing
-        progressInfo.setProgress(5);
-        JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
-        for (JIPipeDependency extension : registeredExtensions) {
-            if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaPlugin) {
+        getProgressInfo().setProgress(5);
+        JIPipeProgressInfo postprocessingProgress = getProgressInfo().resolveAndLog("Postprocessing");
+        for (JIPipeDependency extension : report.getRegisteredExtensions()) {
+            if (!report.getFailedExtensions().contains(extension) && extension instanceof JIPipeJavaPlugin) {
                 ((JIPipeJavaPlugin) extension).postprocess(postprocessingProgress.resolveAndLog(extension.getDependencyId()));
             }
         }
         postprocessingProgress.log("Converting display operations to import operations ...");
-        datatypeRegistry.convertDisplayOperationsToImportOperations();
+        getService().getDataTypes().convertDisplayOperationsToImportOperations();
         postprocessingProgress.log("Registering examples ...");
-        nodeRegistry.executeScheduledRegisterExamples();
+        getService().getNodes().executeScheduledRegisterExamples();
         postprocessingProgress.log("Registering extension-provided templates ...");
-        nodeRegistry.executeScheduledRegisterTemplates();
+        getService().getNodes().executeScheduledRegisterTemplates();
 
         // Check recent projects and backups
-        progressInfo.setProgress(6);
-        progressInfo.log("Checking recent projects ...");
-        recentProjectsRegistry.reload();
-        recentProjectsRegistry.cleanup();
-        recentProjectsRegistry.migrateFromLegacy();
+        getProgressInfo().setProgress(6);
+        getProgressInfo().log("Checking recent projects ...");
+        getService().getRecentProjects().reload();
+        getService().getRecentProjects().cleanup();
+        getService().getRecentProjects().migrateFromLegacy();
 
         // Check artifacts
-        progressInfo.setProgress(7);
-        artifactsRegistry.updateCachedArtifacts(progressInfo.resolve("Updating artifacts"));
+        getProgressInfo().setProgress(7);
+        getService().getArtifacts().updateCachedArtifacts(getProgressInfo().resolve("Updating artifacts"));
 
         // Check acceleration
         if (JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
-            progressInfo.log("Determining acceleration profile ...");
+            getProgressInfo().log("Determining acceleration profile ...");
             try {
 
                 if (CUDAUtils.hasCudaSupport()) {
-                    progressInfo.log("Determining acceleration profile ... CUDA support detected");
+                    getProgressInfo().log("Determining acceleration profile ... CUDA support detected");
                     JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
 
                     try {
@@ -312,48 +323,167 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                                 CUDAUtils.getMinimumCudaVersion(),
                                 0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
                         ));
-                        progressInfo.log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
+                        getProgressInfo().log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
                     } catch (Exception e) {
-                        progressInfo.log(e);
+                        getProgressInfo().log(e);
                     }
                 }
 
                 JIPipeArtifactApplicationSettings.getInstance().setAutoConfigureAccelerationOnNextStartup(false);
-                applicationSettingsRegistry.save();
+                getService().getApplicationSettings().save();
             } catch (Exception e) {
-                progressInfo.log(e);
+                getProgressInfo().log(e);
             }
         }
 
         // Load templates
-        progressInfo.log("Loading node templates ...");
-        nodeTemplateRegistry.reloadGlobalTemplates(progressInfo.resolve("Node templates"));
+        getProgressInfo().log("Loading node templates ...");
+        getService().getNodeTemplates().reloadGlobalTemplates(getProgressInfo().resolve("Node templates"));
 
-        progressInfo.setProgress(8);
-        progressInfo.log("JIPipe loading finished");
-        state = JIPipeServiceState.Initialized;
+        getProgressInfo().setProgress(8);
+        getProgressInfo().log("JIPipe loading finished");
+    }
 
+    @Override
+    public void runPostprocessing() {
         // Check if we have viewers for everything
-        for (Class<? extends JIPipeData> dataClass : datatypeRegistry.getRegisteredDataTypes().values()) {
-            Class<? extends JIPipeDesktopDataViewer> defaultDataViewer = datatypeRegistry.getDefaultDataViewer(dataClass);
+        for (Class<? extends JIPipeData> dataClass : getService().getDataTypes().getRegisteredDataTypes().values()) {
+            Class<? extends JIPipeDesktopDataViewer> defaultDataViewer = getService().getDataTypes().getDefaultDataViewer(dataClass);
             if (defaultDataViewer == JIPipeDesktopDefaultDataViewer.class) {
-                progressInfo.log("Info: Data type " + datatypeRegistry.getIdOf(dataClass) + " does not have a default data viewer");
+                getProgressInfo().log("Info: Data type " + getService().getDataTypes().getIdOf(dataClass) + " does not have a default data viewer");
             }
         }
 
         // Check for new extensions
-        pluginRegistry.findNewPlugins();
-        for (String newExtension : pluginRegistry.getNewPlugins()) {
-            progressInfo.log("New extension found: " + newExtension);
+        getService().getPlugins().findNewPlugins();
+        for (String newExtension : getService().getPlugins().getNewPlugins()) {
+            getProgressInfo().log("New extension found: " + newExtension);
         }
 
         // Push progress into log
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
                 LocalDateTime.now(),
-                progressInfo.getLog().toString(),
+                getProgressInfo().getLog().toString(),
                 new JIPipeNotificationInbox(), true));
 
         // Mark log as read
         JIPipeDesktopRunnableLogsCollection.getInstance().markAllAsRead();
+    }
+
+    private void validateParameterTypes(JIPipeInitializationReport issues) {
+        for (Map.Entry<String, JIPipeParameterTypeInfo> entry : getService().getParameterTypes().getRegisteredParameters().entrySet()) {
+            try {
+                entry.getValue().newInstance();
+            } catch (Throwable t) {
+                getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be initialized.");
+                issues.getErroneousParameterTypes().add(entry.getValue());
+                t.printStackTrace();
+            }
+            try {
+                Object o = entry.getValue().newInstance();
+                entry.getValue().duplicate(o);
+            } catch (Throwable t) {
+                getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be duplicated.");
+                issues.getErroneousParameterTypes().add(entry.getValue());
+                t.printStackTrace();
+            }
+        }
+    }
+
+
+    private void validateDataTypes(JIPipeInitializationReport issues) {
+        for (Class<? extends JIPipeData> dataType : getService().getDataTypes().getRegisteredDataTypes().values()) {
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
+            if (info.getStorageDocumentation() == null) {
+                getService().getLogService().warn("Data type '" + dataType + "' has no storage documentation.");
+                issues.getErroneousDataTypes().add(dataType);
+            }
+            if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
+                continue;
+            // Check if we can find a method "import"
+            try {
+                Method method = dataType.getDeclaredMethod("importData", JIPipeReadDataStorage.class, JIPipeProgressInfo.class);
+                if (!Modifier.isStatic(method.getModifiers())) {
+                    throw new IllegalArgumentException("Import method is not static!");
+                }
+                if (!JIPipeData.class.isAssignableFrom(method.getReturnType())) {
+                    throw new IllegalArgumentException("Import method does not return JIPipeData!");
+                }
+            } catch (NoClassDefFoundError | Exception e) {
+                // Unregister node
+                getService().getLogService().warn("Data type '" + dataType + "' cannot be instantiated.");
+                getService().getLogService().warn("Ensure that a method static JIPipeData importData(Path, JIPipeProgressInfo) is present!");
+                issues.getErroneousDataTypes().add(dataType);
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void validateNodeTypes(JIPipeInitializationReport issues) {
+        for (JIPipeNodeInfo info : ImmutableList.copyOf(getService().getNodes().getRegisteredNodeInfos().values())) {
+            try {
+                // Test instantiation
+                JIPipeGraphNode algorithm = info.newInstance();
+
+                // Test parameters
+                JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
+                for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
+                    if (JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getFieldClass()) == null) {
+                        getProgressInfo().log("[!] ERROR: Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                + algorithm + " -> " + entry.getKey());
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedValidationReportContext(),
+                                "A plugin is invalid!",
+                                "Unregistered parameter found: " + entry.getValue().getFieldClass() + " @ "
+                                        + algorithm + " -> " + entry.getKey(),
+                                "There is an error in the plugin's code that makes it use an unsupported parameter type.",
+                                "Please contact the plugin author for further help."));
+                    }
+                }
+
+                // Test duplication
+                try {
+                    algorithm.duplicate();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new JIPipeValidationRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "There is an error in the plugin's code that prevents the copying of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                // Test serialization
+                try {
+                    JsonUtils.toJsonString(algorithm);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new JIPipeValidationRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "There is an error in the plugin's code that prevents the saving of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                // Test cache state generation
+                try {
+                    if (!algorithm.functionallyEquals(algorithm)) {
+                        throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                    throw new JIPipeValidationRuntimeException(e1,
+                            "A plugin is invalid!",
+                            "There is an error in the plugin's code that prevents the cache state generation of a node.",
+                            "Please contact the plugin author for further help.");
+                }
+
+                getService().getLogService().debug("OK: Algorithm '" + info.getId() + "'");
+            } catch (NoClassDefFoundError | Exception e) {
+                e.printStackTrace();
+                // Unregister node
+                getService().getLogService().warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");
+                getService().getNodes().unregister(info.getId());
+                issues.getErroneousNodes().add(info);
+            }
+        }
     }
 }

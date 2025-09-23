@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.tunnels;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -45,7 +46,7 @@ public class TunnelsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerNodeType("data-flow-tunnel-1-entrance", JIPipeDataFlowTunnel1Entrance.class, JIPipe.RESOURCES.getIcon16URL("actions/xfce-wm-unstick.png"));
         registerNodeType("data-flow-tunnel-1-exit", JIPipeDataFlowTunnel1Exit.class, JIPipe.RESOURCES.getIcon16URL("actions/xfce-wm-stick.png"));
     }

@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.settings;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -55,7 +55,7 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("jipipe:settings:downloads:downloader-environment", JIPipeDownloadsApplicationSettings.DownloadEnvironment.class, JIPipeParameterArchetype.Value, "Downloader process", "A downloader process");
         registerEnumParameterType("settings:" + JIPipeFileChooserApplicationSettings.ID + ":file-chooser-type",
                 JIPipeFileChooserApplicationSettings.FileChooserType.class,

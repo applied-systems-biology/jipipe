@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
@@ -97,7 +98,7 @@ public class UtilitiesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe-run-output", JIPipeOutputData.class, JIPipe.RESOURCES.getIcon16URL("apps/jipipe.png"), new OpenPathDataDisplayOperation(), new CopyPathDataDisplayOperation(), new ImportJIPipeProjectDataDisplayOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 

@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -79,7 +80,7 @@ public class StringsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("string", StringData.class, JIPipe.RESOURCES.getIcon16URL("data-types/string.png"),
                 new OpenInNativeApplicationDataImportOperation(".txt"));
         registerDatatype("xml", XMLData.class, JIPipe.RESOURCES.getIcon16URL("data-types/xml.png"),

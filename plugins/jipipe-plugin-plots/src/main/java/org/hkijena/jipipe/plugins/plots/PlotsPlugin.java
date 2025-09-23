@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
@@ -100,7 +101,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     }
 
     @Override
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+    public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register extension so users can create plots
         registerMenuExtension(NewPlotJIPipeDesktopMenuExtension.class);
@@ -119,12 +120,12 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
         registerDatatypeConversion(new PlotToTableConverter());
 
         // Register any existing plot data types
-        for (Map.Entry<String, Class<? extends JIPipeData>> entry : jiPipe.getDatatypeRegistry().getRegisteredDataTypes().entrySet()) {
+        for (Map.Entry<String, Class<? extends JIPipeData>> entry : service.getDataTypes().getRegisteredDataTypes().entrySet()) {
             tryRegisterPlotCreatorNode(entry.getKey());
         }
 
         // Register listener for future operations
-        jiPipe.getDatatypeRegisteredEventEmitter().subscribe(this);
+        service.getDatatypeRegisteredEventEmitter().subscribe(this);
 
 
         // Register
@@ -224,7 +225,7 @@ public class PlotsPlugin extends JIPipePrepackagedDefaultJavaPlugin implements J
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
         super.postprocess(progressInfo);
-        for (Class<? extends JIPipeData> value : getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()) {
+        for (Class<? extends JIPipeData> value : getService().getDataTypes().getRegisteredDataTypes().values()) {
             if (JFreeChartPlotData.class.isAssignableFrom(value)) {
                 configureDefaultImageJAdapters(value, DataTableImageJDataImporter.ID, "image-to-imagej-window");
             }

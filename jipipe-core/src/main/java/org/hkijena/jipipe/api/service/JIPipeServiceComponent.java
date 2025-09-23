@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.service;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.scijava.Context;
 
 /**
  * A JIPipe service component
@@ -18,5 +19,9 @@ public abstract class JIPipeServiceComponent {
 
     public JIPipeProgressInfo getProgressInfo() {
         return service.getProgressInfo();
+    }
+
+    public Context getContext() {
+        return service.getContext();
     }
 }
