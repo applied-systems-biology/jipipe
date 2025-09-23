@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -21,6 +21,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventEmitter;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -31,19 +33,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
-public class JIPipeNodeTemplateRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComponent {
     private final Set<JIPipeNodeTemplate> pluginTemplates = new HashSet<>();
     private final List<JIPipeNodeTemplate> globalTemplates = new ArrayList<>();
     private final BiMap<JIPipeNodeTemplate, Path> globalTemplatesPaths = HashBiMap.create();
     private final NodeTemplatesRefreshedEventEmitter nodeTemplatesRefreshedEventEmitter = new NodeTemplatesRefreshedEventEmitter();
 
-    public JIPipeNodeTemplateRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJiPipe() {
-        return jiPipe;
+    public JIPipeNodeTemplatesServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     public Path getStoragePath() {

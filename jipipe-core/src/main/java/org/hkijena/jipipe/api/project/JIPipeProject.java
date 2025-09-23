@@ -149,7 +149,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Init default settings
-        for (Map.Entry<String, Class<? extends JIPipeProjectSettingsSheet>> entry : JIPipe.getInstance().getProjectSettingsRegistry().getRegisteredSheetTypes().entrySet()) {
+        for (Map.Entry<String, Class<? extends JIPipeProjectSettingsSheet>> entry : JIPipe.getInstance().getProjectSettings().getRegisteredSheetTypes().entrySet()) {
             JIPipeProjectSettingsSheet sheet = (JIPipeProjectSettingsSheet) ReflectionUtils.newInstance(entry.getValue());
             settingsSheets.put(entry.getKey(), sheet);
         }
@@ -965,7 +965,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     private void writeAdditionalMetadataJson(JsonGenerator generator) throws IOException {
         for (Map.Entry<String, JIPipeMetadataObject> entry : getAdditionalMetadata().entrySet()) {
-            String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
+            String typeId = JIPipe.getInstance().getMetadata().getId(entry.getValue().getClass());
 
             if (typeId != null) {
                 if (entry.getValue() instanceof JIPipeParameterCollection) {
@@ -1094,7 +1094,7 @@ public class JIPipeProject implements JIPipeValidatable {
             for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
                 try {
                     String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
-                    Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
+                    Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadata().findById(typeId);
 
                     if (metadataClass == null) {
                         throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
@@ -1287,7 +1287,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public List<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
         List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
-        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getInstance().getNodeTemplateRegistry().getGlobalTemplates()) {
+        for (JIPipeNodeTemplate nodeTemplate : JIPipe.getInstance().getNodeTemplates().getGlobalTemplates()) {
             JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
             if (Objects.equals(example.getNodeId(), nodeTypeId)) {
                 example.setSourceInfo("From node templates (global)");

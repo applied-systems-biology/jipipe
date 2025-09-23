@@ -13,69 +13,40 @@
 
 package org.hkijena.jipipe;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
-import ij.IJ;
 import net.imagej.ImageJ;
-import net.imagej.updater.FilesCollection;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.JIPipeServiceMode;
-import org.hkijena.jipipe.api.service.JIPipeServiceState;
-import org.hkijena.jipipe.api.service.events.*;
+import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
-import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
-import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
-import org.hkijena.jipipe.desktop.api.registries.JIPipeCustomMenuRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeCustomMenuItemsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.log.LogService;
-import org.scijava.plugin.Parameter;
-import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
-import org.scijava.service.AbstractService;
 
 import javax.swing.*;
 import javax.swing.Timer;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Wrapper/helper class around a static {@link JIPipeService}
@@ -111,68 +82,57 @@ public final class JIPipe {
         }
     }
 
-    /**
-     * Returns true if a JIPipe restart is in progress.
-     * Can be utilized by methods to prevent the closing of the Java app
-     *
-     * @return if JIPipe is restarting
-     */
-    public static boolean isRestarting() {
-        return IS_RESTARTING;
+    public static JIPipeParameterTypesServiceComponent getParameterTypes() {
+        return instance.getParameterTypes();
     }
 
-    public static JIPipeParameterTypeRegistry getParameterTypes() {
-        return instance.parameterTypeRegistry;
+    public static JIPipeExpressionFunctionsServiceComponent getTableOperations() {
+        return instance.getExpressionFunctions();
     }
 
-    public static JIPipeExpressionRegistry getTableOperations() {
-        return instance.tableOperationRegistry;
+    public static JIPipeCustomMenuItemsServiceComponent getCustomMenus() {
+        return instance.getCustomMenuItems();
     }
 
-    public static JIPipeCustomMenuRegistry getCustomMenus() {
-        return instance.customMenuRegistry;
+    public static JIPipeImageJAdaptersServiceComponent getImageJAdapters() {
+        return instance.getImageJDataAdapters();
     }
 
-    public static JIPipeImageJAdapterRegistry getImageJAdapters() {
-        return instance.imageJDataAdapterRegistry;
+    public static JIPipeApplicationSettingsServiceComponent getSettings() {
+        return instance.getApplicationSettings();
     }
 
-    public static JIPipeApplicationSettingsRegistry getSettings() {
-        return instance.applicationSettingsRegistry;
+    public static JIPipeNodesServiceComponent getNodes() {
+        return instance.getNodes();
     }
 
-    public static JIPipeNodeRegistry getNodes() {
-        return instance.nodeRegistry;
+    public static JIPipeDatatypesServiceComponent getDataTypes() {
+        return instance.getDataTypes();
     }
 
-    public static JIPipeDatatypeRegistry getDataTypes() {
-        return instance.datatypeRegistry;
+    public static JIPipeArtifactsServiceComponent getArtifacts() {
+        return instance.getArtifacts();
     }
 
-    public static JIPipeArtifactsRegistry getArtifacts() {
-        return instance.artifactsRegistry;
-    }
-
-    public static JIPipeNodeTemplateRegistry getNodeTemplates() {
-        return instance.nodeTemplateRegistry;
+    public static JIPipeNodeTemplatesServiceComponent getNodeTemplates() {
+        return instance.getNodeTemplates();
     }
 
     /**
      * @return Singleton instance
      */
-    public static JIPipe getInstance() {
+    public static JIPipeService getInstance() {
         return instance;
     }
 
     public static void restartGUI() {
 
         // Save all settings first
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (instance.isAutosaveSettings()) {
             getSettings().save();
         }
 
         try {
-            IS_RESTARTING = true;
             // Kill all JIPipe windows
             for (JIPipeDesktopProjectWindow openWindow : JIPipeDesktopProjectWindow.getOpenWindows()) {
                 openWindow.dispose();
@@ -180,7 +140,7 @@ public final class JIPipe {
             // Set the instance to null
             instance = null;
         } finally {
-            IS_RESTARTING = false;
+
         }
         // Restart the GUI
         final ImageJ ij = new ImageJ();
@@ -193,7 +153,7 @@ public final class JIPipe {
      *
      * @return the current instance
      */
-    public static JIPipe ensureInstance() {
+    public static JIPipeService ensureInstance() {
         if (getInstance() != null)
             return getInstance();
         final ImageJ ij = new ImageJ();
@@ -207,10 +167,10 @@ public final class JIPipe {
      * @param context the context to initialize JIPipe
      * @return the current instance
      */
-    public static JIPipe ensureInstance(Context context) {
+    public static JIPipeService ensureInstance(Context context) {
         if (getInstance() != null)
             return getInstance();
-        JIPipe instance = JIPipe.createInstance(context, JIPipeServiceMode.GUI);
+        JIPipeService instance = JIPipe.createInstance(context);
         JIPipe.getInstance().initialize();
         return instance;
     }
@@ -224,8 +184,8 @@ public final class JIPipe {
      *
      * @param context the context
      */
-    public static JIPipe createInstance(Context context) {
-        return createInstance(context, JIPipeServiceMode.GUI);
+    public static JIPipeService createInstance(Context context) {
+        return createInstance(context, new JIPipeServiceInitializationSettings());
     }
 
     /**
@@ -234,13 +194,13 @@ public final class JIPipe {
      * We recommend using the ensureInstance() method.
      *
      * @param context the context
-     * @param mode    the mode
+     * @param settings    the initialization settings
      */
-    public static JIPipe createInstance(Context context, JIPipeServiceMode mode) {
+    public static JIPipeService createInstance(Context context, JIPipeServiceInitializationSettings settings) {
         PluginService pluginService = context.getService(PluginService.class);
         try {
-            instance = (JIPipe) pluginService.getPlugin(JIPipe.class).createInstance();
-            instance.mode = mode;
+            instance = (JIPipeService) pluginService.getPlugin(JIPipeService.class).createInstance();
+            instance.setInitializationSettings(settings);
             context.inject(instance);
             instance.setContext(context);
         } catch (InstantiableException e) {
@@ -523,8 +483,8 @@ public final class JIPipe {
      * @param exitCode the exit code
      */
     public static void exitLater(int exitCode) {
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-            JIPipe.getSettings().save();
+        if(instance != null && instance.isAutosaveSettings()) {
+            instance.getApplicationSettings().save();
         }
         Timer timer = new Timer(500, e -> {
 //            System.exit(exitCode);

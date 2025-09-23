@@ -11,26 +11,22 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JIPipeGraphEditorToolRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeGraphEditorToolsServiceComponent extends JIPipeServiceComponent {
     private final List<Class<? extends JIPipeGraphEditorTool>> registeredTools = new ArrayList<>();
 
-    public JIPipeGraphEditorToolRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJiPipe() {
-        return jiPipe;
+    public JIPipeGraphEditorToolsServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     public List<Class<? extends JIPipeGraphEditorTool>> getRegisteredTools() {

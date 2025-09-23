@@ -239,7 +239,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
             // Collect dependencies
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPlugins().getKnownPluginById(dependency.getDependencyId());
                 if (!StringUtils.isNullOrEmpty(fullInstance.getMetadata().getCitation())) {
                     citations.add(fullInstance.getMetadata().getCitation());
                 }
@@ -272,7 +272,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>Version</th><th>Author(s)</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPlugins().getKnownPluginById(dependency.getDependencyId());
                 stringBuilder.append("<tr>");
                 stringBuilder.append("<td><strong>").append(escaper.escape(fullInstance.getMetadata().getName())).append("</strong></td>");
                 stringBuilder.append("<td>").append(escaper.escape(fullInstance.getDependencyVersion())).append("</td>");
@@ -285,7 +285,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             stringBuilder.append("<table>");
             stringBuilder.append("<tr><th>Name</th><th>URL</th></tr>");
             for (JIPipeDependency dependency : project.getSimplifiedMinimalDependencies()) {
-                JIPipePlugin fullInstance = JIPipe.getInstance().getPluginRegistry().getKnownPluginById(dependency.getDependencyId());
+                JIPipePlugin fullInstance = JIPipe.getInstance().getPlugins().getKnownPluginById(dependency.getDependencyId());
                 for (JIPipeImageJUpdateSiteDependency siteDependency : fullInstance.getImageJUpdateSiteDependencies()) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(siteDependency.getName())).append("</strong></td>");

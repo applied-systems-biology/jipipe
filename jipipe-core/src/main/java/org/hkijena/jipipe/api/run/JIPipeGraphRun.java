@@ -42,7 +42,7 @@ import org.hkijena.jipipe.api.nodes.infos.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -174,7 +174,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             progressInfo.log("Java version: " + StringUtils.orElse(System.getProperty("java.version"), "N/A"));
             progressInfo.log("Registered nodes types: " + JIPipe.getNodes().getRegisteredNodeInfos().size() + " nodes");
             progressInfo.log("Registered data types: " + JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types");
-            progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPluginRegistry().getActivatedPlugins()));
+            progressInfo.log("Enabled extensions: " + String.join(", ", JIPipe.getInstance().getPlugins().getActivatedPlugins()));
             progressInfo.log("Operating system: " + SystemUtils.OS_NAME + " " + SystemUtils.OS_VERSION + " [" + SystemUtils.OS_ARCH + "]");
             progressInfo.log("Profile directory: " + JIPipe.getJIPipeUserDir(false));
             progressInfo.log("");
@@ -260,7 +260,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                         for (JIPipeArtifact artifact : artifacts) {
                             artifactProgress.log("- " + artifact.getFullId());
                         }
-                        targetArtifact = JIPipeArtifactsRegistry.selectPreferredArtifactByClassifier(artifacts);
+                        targetArtifact = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(artifacts);
                         artifactProgress.log("Based on current preferences, selecting -> " + targetArtifact.getFullId());
                     } else {
                         targetArtifact = artifacts.getFirst();

@@ -11,16 +11,17 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -29,17 +30,14 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class JIPipeProjectTemplateRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeProjectTemplatesServiceComponent extends JIPipeServiceComponent {
 
     private final TemplatesUpdatedEventEmitter templatesUpdatedEventEmitter = new TemplatesUpdatedEventEmitter();
-
     private final Map<String, JIPipeProjectTemplate> registeredTemplates = new HashMap<>();
-
     private final Set<String> blockedTemplateNames = new HashSet<>();
 
-    public JIPipeProjectTemplateRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeProjectTemplatesServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     public Map<String, JIPipeProjectTemplate> getRegisteredTemplates() {
@@ -53,10 +51,10 @@ public class JIPipeProjectTemplateRegistry {
     public void register(JIPipeProjectTemplate template) {
         registeredTemplates.put(template.getId(), template);
         templatesUpdatedEventEmitter.emit(new TemplatesUpdatedEvent(this));
-        jiPipe.getProgressInfo().log("Registered project template " + template.getId() +
+        getProgressInfo().log("Registered project template " + template.getId() +
                 (template.getZipFile() != null ? " [has ZIP data stored in " + template.getZipFile() + "]" : ""));
         blockedTemplateNames.add(template.getMetadata().getName());
-        jiPipe.getProgressInfo().log(" -> Template name '" + template.getMetadata().getName() + "' is marked as blocked for file-based templates (this has only an effect to the GUI)");
+        getProgressInfo().log(" -> Template name '" + template.getMetadata().getName() + "' is marked as blocked for file-based templates (this has only an effect to the GUI)");
     }
 
     public void register(Path file) throws IOException {
@@ -93,14 +91,14 @@ public class JIPipeProjectTemplateRegistry {
     }
 
     public static class TemplatesUpdatedEvent extends AbstractJIPipeEvent {
-        private final JIPipeProjectTemplateRegistry registry;
+        private final JIPipeProjectTemplatesServiceComponent registry;
 
-        public TemplatesUpdatedEvent(JIPipeProjectTemplateRegistry registry) {
+        public TemplatesUpdatedEvent(JIPipeProjectTemplatesServiceComponent registry) {
             super(registry);
             this.registry = registry;
         }
 
-        public JIPipeProjectTemplateRegistry getRegistry() {
+        public JIPipeProjectTemplatesServiceComponent getRegistry() {
             return registry;
         }
     }

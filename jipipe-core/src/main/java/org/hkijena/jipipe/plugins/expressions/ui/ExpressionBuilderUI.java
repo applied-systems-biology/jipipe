@@ -19,7 +19,7 @@ import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -128,7 +128,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         dataItems.addAll(constantEntryList);
         dataItems.addAll(operatorEntryList);
         dataItems.addAll(JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
-                .sorted(Comparator.comparing(JIPipeExpressionRegistry.ExpressionFunctionEntry::getName)).collect(Collectors.toList()));
+                .sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry::getName)).collect(Collectors.toList()));
         String[] searchStrings = searchField.getSearchStrings();
         if (searchStrings == null || searchStrings.length == 0) {
             DefaultListModel<Object> model = new DefaultListModel<>();
@@ -285,8 +285,8 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             } else if (value instanceof ExpressionOperatorEntry) {
                 title = "Operator " + ((ExpressionOperatorEntry) value).getName();
                 icon = JIPipe.RESOURCES.getIcon16("actions/insert-operator.png");
-            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
-                title = "Function " + ((JIPipeExpressionRegistry.ExpressionFunctionEntry) value).getName();
+            } else if (value instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
+                title = "Function " + ((JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) value).getName();
                 icon = JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
             } else {
                 return;
@@ -332,7 +332,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         expressionEditor.requestFocusInWindow();
     }
 
-    public void insertFunction(JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
+    public void insertFunction(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry, List<ExpressionBuilderParameterUI> parameterEditorUIList) {
         StringBuilder result = new StringBuilder();
         result.append(functionEntry.getFunction().getName());
         result.append("(");
@@ -409,8 +409,8 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
                     insertAtCaret(constantEntry.getConstant().getName(), true);
                 } else if (currentlyInsertedObject instanceof ExpressionOperatorEntry) {
                     insertOperator((ExpressionOperatorEntry) currentlyInsertedObject, inserterUI.getInserterParameterEditorUIList());
-                } else if (currentlyInsertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
-                    insertFunction((JIPipeExpressionRegistry.ExpressionFunctionEntry) currentlyInsertedObject, inserterUI.getInserterParameterEditorUIList());
+                } else if (currentlyInsertedObject instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
+                    insertFunction((JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) currentlyInsertedObject, inserterUI.getInserterParameterEditorUIList());
                 }
             }
         }
@@ -461,8 +461,8 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
             } else if (value instanceof ExpressionOperatorEntry) {
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 return operatorEntry.getOperator().getSymbol() + " " + operatorEntry.getName();
-            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
-                JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
+            } else if (value instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
+                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) value;
                 return functionEntry.getFunction().getName() + " " + functionEntry.getName();
             } else {
                 return "";
@@ -512,8 +512,8 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
                     if (operatorEntry.getDescription().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[2];
                 }
-            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
-                JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
+            } else if (value instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
+                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) value;
                 for (String string : filterStrings) {
                     if (functionEntry.getFunction().getName().toLowerCase(Locale.ROOT).contains(string.toLowerCase(Locale.ROOT)))
                         --result[0];
@@ -622,10 +622,10 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
                 ExpressionOperatorEntry operatorEntry = (ExpressionOperatorEntry) value;
                 idLabel.setText(operatorEntry.getSignature());
                 nameLabel.setText(operatorEntry.getName());
-            } else if (value instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
+            } else if (value instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
                 typeLabel.setText("Function");
                 typeLabel.setForeground(COLOR_FUNCTION);
-                JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) value;
+                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) value;
                 idLabel.setText(functionEntry.getFunction().getName());
                 nameLabel.setText(functionEntry.getName());
             }

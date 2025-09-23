@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.expressions.ui;
 
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -126,8 +126,8 @@ public class ExpressionBuilderInserterUI extends JPanel {
                 expressionBuilderUI.insertAtCaret(operatorEntry.getOperator().getSymbol(), true);
             });
             inserterButtonPanel.add(insertSymbolButton);
-        } else if (insertedObject instanceof JIPipeExpressionRegistry.ExpressionFunctionEntry) {
-            JIPipeExpressionRegistry.ExpressionFunctionEntry functionEntry = (JIPipeExpressionRegistry.ExpressionFunctionEntry) insertedObject;
+        } else if (insertedObject instanceof JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) {
+            JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry) insertedObject;
             ExpressionFunction function = functionEntry.getFunction();
             JIPipeDesktopFormPanel.GroupHeaderPanel groupHeader = inserterForm.addGroupHeader(String.format("<html><i style=\"color: #14A0B3; \">Function</i> %s (<code><strong>%s</strong></code>)</html>",
                     HtmlEscapers.htmlEscaper().escape(functionEntry.getName()),

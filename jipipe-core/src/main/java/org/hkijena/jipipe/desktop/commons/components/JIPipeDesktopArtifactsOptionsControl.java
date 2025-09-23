@@ -18,7 +18,7 @@ import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
-import org.hkijena.jipipe.api.registries.JIPipeArtifactsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
@@ -32,7 +32,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
 
-public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIPipeArtifactsRegistry.UpdatedEventListener {
+public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIPipeArtifactsServiceComponent.UpdatedEventListener {
 
     private static boolean balloonTipDismissed;
     private final JIPipeDesktopProjectWorkbench workbench;
@@ -158,7 +158,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     @Override
-    public void onArtifactsRegistryUpdated(JIPipeArtifactsRegistry.UpdatedEvent event) {
+    public void onArtifactsRegistryUpdated(JIPipeArtifactsServiceComponent.UpdatedEvent event) {
         updateText();
         showBalloonIfNeeded();
 

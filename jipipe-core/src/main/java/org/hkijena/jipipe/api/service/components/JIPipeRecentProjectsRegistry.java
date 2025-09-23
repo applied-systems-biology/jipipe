@@ -11,13 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -33,17 +35,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JIPipeRecentProjectsRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeRecentProjectsRegistry extends JIPipeServiceComponent {
     private final List<Path> recentProjects = new ArrayList<>();
     private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
 
-    public JIPipeRecentProjectsRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJiPipe() {
-        return jiPipe;
+    public JIPipeRecentProjectsRegistry(JIPipeService service) {
+        super(service);
     }
 
     public ChangedEventEmitter getChangedEventEmitter() {
@@ -101,12 +98,12 @@ public class JIPipeRecentProjectsRegistry {
                         try {
                             recentProjects.add(Paths.get(line));
                         } catch (Exception ignored) {
-                            jiPipe.getProgressInfo().log("Unable to load recent project " + line);
+                            getProgressInfo().log("Unable to load recent project " + line);
                         }
                     }
                 }
             } catch (IOException e) {
-                jiPipe.getProgressInfo().log(e);
+                getProgressInfo().log(e);
             }
         }
     }
@@ -124,7 +121,7 @@ public class JIPipeRecentProjectsRegistry {
     }
 
     public void migrateFromLegacy() {
-        Path propertyFile = JIPipeApplicationSettingsRegistry.getPropertyFile(false);
+        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getPropertyFile(false);
         boolean success = false;
         if (Files.exists(propertyFile)) {
             try {
@@ -136,7 +133,7 @@ public class JIPipeRecentProjectsRegistry {
                             Path path = Paths.get(node.textValue());
                             if (Files.exists(path) && !recentProjects.contains(path)) {
                                 recentProjects.add(path);
-                                jiPipe.getProgressInfo().log("- Migrated recent project " + path);
+                                getProgressInfo().log("- Migrated recent project " + path);
                                 success = true;
                             }
                         } catch (Exception ignored) {
@@ -149,8 +146,8 @@ public class JIPipeRecentProjectsRegistry {
             }
         }
         if (success) {
-            jiPipe.getProgressInfo().log("Migrated recent projects. Saving application settings.");
-            jiPipe.getApplicationSettingsRegistry().save();
+            getProgressInfo().log("Migrated recent projects. Saving application settings.");
+            getService().getApplicationSettings().save();
             save();
         }
     }

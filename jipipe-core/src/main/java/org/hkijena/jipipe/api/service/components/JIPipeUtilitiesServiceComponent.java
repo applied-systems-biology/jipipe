@@ -11,11 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -23,17 +25,11 @@ import java.util.Set;
 /**
  * A registry of additional utilities (e.g., installers for external environments)
  */
-public class JIPipeUtilityRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeUtilitiesServiceComponent extends JIPipeServiceComponent {
     private final Multimap<Class<?>, Class<?>> registeredItems = HashMultimap.create();
 
-    public JIPipeUtilityRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
+    public JIPipeUtilitiesServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     public Set<Class<?>> getUtilitiesFor(Class<?> categoryClass) {
@@ -48,7 +44,7 @@ public class JIPipeUtilityRegistry {
      */
     public void register(Class<?> categoryClass, Class<?> utilityClass) {
         registeredItems.put(categoryClass, utilityClass);
-        getJIPipe().getProgressInfo().log("Registered utility " + utilityClass + " of type " + categoryClass);
+        getProgressInfo().log("Registered utility " + utilityClass + " of type " + categoryClass);
     }
 
     /**

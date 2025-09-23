@@ -11,9 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionEvaluator;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
@@ -25,14 +27,12 @@ import java.util.Map;
 /**
  * Registry for table operations and other functional expressions
  */
-public class JIPipeExpressionRegistry {
-    private final JIPipe jiPipe;
-    private Map<String, ColumnOperationEntry> registeredTableColumnOperations = new HashMap<>();
-    private Map<String, ExpressionFunctionEntry> registeredExpressionFunctions = new HashMap<>();
+public final class JIPipeExpressionFunctionsServiceComponent extends JIPipeServiceComponent {
+    private final Map<String, ColumnOperationEntry> registeredTableColumnOperations = new HashMap<>();
+    private final Map<String, ExpressionFunctionEntry> registeredExpressionFunctions = new HashMap<>();
 
-    public JIPipeExpressionRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
+    public JIPipeExpressionFunctionsServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -105,19 +105,15 @@ public class JIPipeExpressionRegistry {
         return result;
     }
 
-    public JIPipe getJIPipe() {
-        return jiPipe;
-    }
-
     /**
      * A column operation entry
      */
     public static class ColumnOperationEntry {
-        private String id;
-        private ColumnOperation operation;
-        private String name;
-        private String shortName;
-        private String description;
+        private final String id;
+        private final ColumnOperation operation;
+        private final String name;
+        private final String shortName;
+        private final String description;
 
         /**
          * Creates a new entry
@@ -158,10 +154,10 @@ public class JIPipeExpressionRegistry {
     }
 
     public static class ExpressionFunctionEntry {
-        private String id;
-        private String name;
-        private String description;
-        private ExpressionFunction function;
+        private final String id;
+        private final String name;
+        private final String description;
+        private final ExpressionFunction function;
 
         public ExpressionFunctionEntry(String id, String name, String description, ExpressionFunction function) {
             this.id = id;

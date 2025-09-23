@@ -11,12 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -25,15 +27,13 @@ import org.hkijena.jipipe.utils.StringUtils;
  * Registry for project settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeProjectSettingsRegistry {
+public final class JIPipeProjectSettingsServiceComponent extends JIPipeServiceComponent {
 
-    private final JIPipe jiPipe;
     private final BiMap<String, Class<? extends JIPipeProjectSettingsSheet>> registeredSheetTypes = HashBiMap.create();
 
-    public JIPipeProjectSettingsRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeProjectSettingsServiceComponent(JIPipeService service) {
+        super(service);
     }
-
 
     /**
      * Registers a new settings sheet
@@ -54,7 +54,7 @@ public class JIPipeProjectSettingsRegistry {
             throw new IllegalArgumentException("Invalid category for settings sheet " + sheetClass);
         }
         registeredSheetTypes.put(sheet.getId(), sheetClass);
-        getJIPipe().getProgressInfo().log("Registered project settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheetClass);
+        getProgressInfo().log("Registered project settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheetClass);
     }
 
     /**
@@ -67,14 +67,8 @@ public class JIPipeProjectSettingsRegistry {
         return registeredSheetTypes.getOrDefault(id, null);
     }
 
-
     public BiMap<String, Class<? extends JIPipeProjectSettingsSheet>> getRegisteredSheetTypes() {
         return ImmutableBiMap.copyOf(registeredSheetTypes);
-    }
-
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 
 }

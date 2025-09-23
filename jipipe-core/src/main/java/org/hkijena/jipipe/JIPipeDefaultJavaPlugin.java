@@ -42,9 +42,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
-import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
-import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.api.service.components.nodes.JIPipeJavaNodeRegistrationTask;
+import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -590,7 +590,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param generator      The generator object
      */
     public void registerParameterGenerator(Class<?> parameterClass, JIPipeParameterGenerator generator) {
-        JIPipeParameterTypeRegistry parametertypeRegistry = registry.getParameterTypeRegistry();
+        JIPipeParameterTypesServiceComponent parametertypeRegistry = registry.getParameterTypeRegistry();
         parametertypeRegistry.registerGenerator(parameterClass, generator);
     }
 

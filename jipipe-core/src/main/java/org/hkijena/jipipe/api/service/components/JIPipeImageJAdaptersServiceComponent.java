@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -20,6 +20,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -27,7 +29,7 @@ import java.util.*;
 /**
  * Registers all known adapters between ImageJ and JIPipe data types
  */
-public class JIPipeImageJAdapterRegistry {
+public final class JIPipeImageJAdaptersServiceComponent extends JIPipeServiceComponent {
     private final BiMap<String, ImageJDataImporter> registeredImporters = HashBiMap.create();
     private final BiMap<String, ImageJDataExporter> registeredExporters = HashBiMap.create();
     private final Map<String, Class<? extends ImageJDataImporterUI>> registeredImporterUIs = new HashMap<>();
@@ -38,11 +40,9 @@ public class JIPipeImageJAdapterRegistry {
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertibleExporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageJDataImporter> defaultImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageJDataExporter> defaultExporters = new HashMap<>();
-    private final JIPipe jiPipe;
 
-    public JIPipeImageJAdapterRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
+    public JIPipeImageJAdaptersServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -57,7 +57,7 @@ public class JIPipeImageJAdapterRegistry {
         if (uiClass != null) {
             registeredImporterUIs.put(id, uiClass);
         }
-        getJIPipe().getProgressInfo().log("Registered ImageJ importer id=" + id + " object=" + importer + " ui=" + uiClass);
+        getProgressInfo().log("Registered ImageJ importer id=" + id + " object=" + importer + " ui=" + uiClass);
     }
 
     /**
@@ -72,7 +72,7 @@ public class JIPipeImageJAdapterRegistry {
         if (uiClass != null) {
             registeredExporterUIs.put(id, uiClass);
         }
-        getJIPipe().getProgressInfo().log("Registered ImageJ exporter id=" + id + " object=" + exporter + " ui=" + uiClass);
+        getProgressInfo().log("Registered ImageJ exporter id=" + id + " object=" + exporter + " ui=" + uiClass);
     }
 
     public String getIdOf(ImageJDataImporter importer) {
@@ -211,7 +211,7 @@ public class JIPipeImageJAdapterRegistry {
         if (available.isEmpty()) {
             importer = getImporterById(DataTableImageJDataImporter.ID); // the default importer
         } else {
-            JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
+            JIPipeDatatypesServiceComponent datatypeRegistry = JIPipe.getDataTypes();
             importer = available.stream().min(Comparator.comparing(op -> {
                 int conversionDistance = datatypeRegistry.getConversionDistance(op.getImportedJIPipeDataType(), dataClass);
                 if (conversionDistance < 0)
@@ -260,7 +260,7 @@ public class JIPipeImageJAdapterRegistry {
         if (available.isEmpty()) {
             exporter = getExporterById(DataTableImageJDataExporter.ID); // the default importer
         } else {
-            JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
+            JIPipeDatatypesServiceComponent datatypeRegistry = JIPipe.getDataTypes();
             exporter = available.stream().min(Comparator.comparing(op -> {
                 int conversionDistance = datatypeRegistry.getConversionDistance(dataClass, op.getExportedJIPipeDataType());
                 if (conversionDistance < 0)
@@ -281,9 +281,5 @@ public class JIPipeImageJAdapterRegistry {
 
     public ImageJDataExporter getExporterById(String id) {
         return registeredExporters.get(id);
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.tableeditor;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -58,9 +58,9 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
             operationJComboBox.addItem(null);
             operationJComboBox.addItem(new CategorizeColumnRole());
 
-            for (JIPipeExpressionRegistry.ColumnOperationEntry entry :
+            for (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry entry :
                     JIPipe.getTableOperations().getTableColumnOperationsOfType(SummarizingColumnOperation.class)
-                            .values().stream().sorted(Comparator.comparing(JIPipeExpressionRegistry.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
+                            .values().stream().sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry::getName)).collect(Collectors.toList())) {
                 operationJComboBox.addItem(entry);
             }
 
@@ -110,8 +110,8 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
                 Object value = entry.getValue().getSelectedItem();
                 if (value instanceof CategorizeColumnRole) {
                     categoryColumns.add(entry.getKey());
-                } else if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
-                    JIPipeExpressionRegistry.ColumnOperationEntry operationEntry = (JIPipeExpressionRegistry.ColumnOperationEntry) value;
+                } else if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
+                    JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry operationEntry = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value;
                     operations.add(new ResultsTableData.IntegratingColumnOperationEntry(entry.getKey(),
                             String.format("%s(%s)", operationEntry.getShortName(), entry.getKey()),
                             (SummarizingColumnOperation) operationEntry.getOperation()));
@@ -151,8 +151,8 @@ public class JIPipeDesktopSummarizeTableColumnsDialogUI extends JDialog {
         public Component getListCellRendererComponent(JList<?> list, Object value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
 
-            if (value instanceof JIPipeExpressionRegistry.ColumnOperationEntry) {
-                setText(((JIPipeExpressionRegistry.ColumnOperationEntry) value).getName());
+            if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
+                setText(((JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value).getName());
                 setIcon(JIPipe.RESOURCES.getIcon16("actions/statistics.png"));
             } else if (value instanceof CategorizeColumnRole) {
                 setText("Use as category");

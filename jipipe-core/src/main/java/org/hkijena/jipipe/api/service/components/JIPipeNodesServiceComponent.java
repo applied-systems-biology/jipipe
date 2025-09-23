@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
@@ -19,6 +19,9 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
 import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEvent;
@@ -34,7 +37,7 @@ import java.util.stream.Collectors;
 /**
  * Manages known algorithms and their annotations
  */
-public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegisteredEventListener {
+public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent implements JIPipeValidatable, JIPipeDatatypeRegisteredEventListener {
     private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
     private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
     private final Multimap<String, JIPipeNodeExample> registeredExamples = HashMultimap.create();
@@ -46,17 +49,11 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
     private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
     private final List<JIPipeNodeTemplate> scheduledRegisterTemplates = new ArrayList<>();
     private final URL defaultIconURL;
-    private final JIPipe jiPipe;
     private boolean stateChanged;
     private boolean isRunning;
 
-    /**
-     * Creates a new registry
-     *
-     * @param jiPipe the JIPipe instance
-     */
-    public JIPipeNodeRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeNodesServiceComponent(JIPipeService service) {
+        super(service);
         this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
     }
 
@@ -114,8 +111,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
-        jiPipe.getNodeInfoRegisteredEventEmitter().emit(new JIPipeNodeInfoRegisteredEvent(jiPipe, info));
-        getJIPipe().getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
+        getService().getNodeInfoRegisteredEventEmitter().emit(new JIPipeNodeInfoRegisteredEvent(getService(), info));
+        getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 
@@ -130,7 +127,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
      */
     public void registerCategory(JIPipeNodeTypeCategory category) {
         registeredCategories.put(category.getId(), category);
-        getJIPipe().getProgressInfo().log("Registered node type category " + category);
+        getProgressInfo().log("Registered node type category " + category);
     }
 
     /**
@@ -220,7 +217,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
      * This method is only used internally.
      */
     public void installEvents() {
-        jiPipe.getDatatypeRegisteredEventEmitter().subscribe(this);
+        getService().getDatatypeRegisteredEventEmitter().subscribe(this);
     }
 
     /**
@@ -279,7 +276,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
         if (resourcePath == null) {
-            jiPipe.getProgressInfo().log("Unable to register icon for " + info.getId() + ": URL is null.");
+            getProgressInfo().log("Unable to register icon for " + info.getId() + ": URL is null.");
             return;
         }
         iconURLs.put(info, resourcePath);
@@ -295,9 +292,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
     public void registerExample(JIPipeNodeTemplate nodeTemplate) {
         JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
         if (example.getNodeId() == null) {
-            jiPipe.getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + " as example'. No [unique] node ID.");
+            getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + " as example'. No [unique] node ID.");
         } else {
-            jiPipe.getProgressInfo().log("Registered example for " + example.getNodeId() + ": '" + nodeTemplate.getName() + "'");
+            getProgressInfo().log("Registered example for " + example.getNodeId() + ": '" + nodeTemplate.getName() + "'");
             registeredExamples.put(example.getNodeId(), example);
         }
     }
@@ -310,8 +307,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
      */
     public void registerTemplate(JIPipeNodeTemplate nodeTemplate) {
         if (nodeTemplate.getGraph() != null) {
-            jiPipe.getNodeTemplateRegistry().addFromPlugin(nodeTemplate);
-            jiPipe.getProgressInfo().log("Registered plugin-provided template '" + nodeTemplate.getName() + "'");
+            getService().getNodeTemplates().addFromPlugin(nodeTemplate);
+            getProgressInfo().log("Registered plugin-provided template '" + nodeTemplate.getName() + "'");
         }
     }
 
@@ -381,17 +378,13 @@ public class JIPipeNodeRegistry implements JIPipeValidatable, JIPipeDatatypeRegi
         iconURLs.remove(info);
     }
 
-    public JIPipe getJIPipe() {
-        return jiPipe;
-    }
-
     public void scheduleRegisterExample(JIPipeNodeTemplate template) {
-        jiPipe.getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as example.");
+        getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as example.");
         scheduledRegisterExamples.add(template);
     }
 
     public void scheduleRegisterTemplate(JIPipeNodeTemplate template) {
-        jiPipe.getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as template.");
+        getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as template.");
         scheduledRegisterTemplates.add(template);
     }
 

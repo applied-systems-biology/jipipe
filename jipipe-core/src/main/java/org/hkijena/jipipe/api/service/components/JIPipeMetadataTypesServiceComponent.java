@@ -11,12 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -24,18 +26,12 @@ import java.util.Map;
 /**
  * A registry of {@link org.hkijena.jipipe.api.JIPipeMetadataObject} types
  */
-public class JIPipeMetadataRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeMetadataTypesServiceComponent extends JIPipeServiceComponent {
     private final BiMap<String, Class<? extends JIPipeMetadataObject>> registeredItems = HashBiMap.create();
     private final Map<String, Class<? extends JIPipeMetadataObject>> alternativeTypeIds = new HashMap<>();
 
-    public JIPipeMetadataRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
+    public JIPipeMetadataTypesServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     public Class<? extends JIPipeMetadataObject> findById(String id) {
@@ -53,17 +49,17 @@ public class JIPipeMetadataRegistry {
 
     public void register(Class<? extends JIPipeMetadataObject> objectClass, String id, String... alternativeIds) {
         registeredItems.put(id, objectClass);
-        jiPipe.getProgressInfo().log("Registered MO " + objectClass + " as " + id);
+        getProgressInfo().log("Registered MO " + objectClass + " as " + id);
         for (String alternativeId : alternativeIds) {
             alternativeTypeIds.put(alternativeId, objectClass);
-            jiPipe.getProgressInfo().log("Registered MO " + objectClass + " readable as " + alternativeId);
+            getProgressInfo().log("Registered MO " + objectClass + " readable as " + alternativeId);
         }
     }
 
     public void registerAlternativeIds(Class<? extends JIPipeMetadataObject> objectClass, String... alternativeIds) {
         for (String alternativeId : alternativeIds) {
             alternativeTypeIds.put(alternativeId, objectClass);
-            jiPipe.getProgressInfo().log("Registered MO " + objectClass + " readable as " + alternativeId);
+            getProgressInfo().log("Registered MO " + objectClass + " readable as " + alternativeId);
         }
     }
 }

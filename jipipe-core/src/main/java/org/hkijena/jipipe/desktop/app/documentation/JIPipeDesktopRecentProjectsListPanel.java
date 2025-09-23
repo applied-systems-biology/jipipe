@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.documentation;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.registries.JIPipeRecentProjectsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -39,7 +39,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
     public JIPipeDesktopRecentProjectsListPanel(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
-        JIPipe.getInstance().getRecentProjectsRegistry().getChangedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getRecentProjects().getChangedEventEmitter().subscribeWeak(this);
         refreshRecentProjects();
     }
 
@@ -94,7 +94,7 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
                 "Clear recent projects",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            JIPipe.getInstance().getRecentProjectsRegistry().clear();
+            JIPipe.getInstance().getRecentProjects().clear();
         }
     }
 
@@ -105,13 +105,13 @@ public class JIPipeDesktopRecentProjectsListPanel extends JIPipeDesktopProjectWo
                 "Remove recent projects",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
-            JIPipe.getInstance().getRecentProjectsRegistry().removeAll(selectedValues);
+            JIPipe.getInstance().getRecentProjects().removeAll(selectedValues);
         }
     }
 
     private void refreshRecentProjects() {
         DefaultListModel<Path> model = new DefaultListModel<>();
-        for (Path path : JIPipe.getInstance().getRecentProjectsRegistry().getRecentProjects()) {
+        for (Path path : JIPipe.getInstance().getRecentProjects().getRecentProjects()) {
             if (recentProjectsSearch.test(path.toString())) {
                 model.addElement(path);
             }

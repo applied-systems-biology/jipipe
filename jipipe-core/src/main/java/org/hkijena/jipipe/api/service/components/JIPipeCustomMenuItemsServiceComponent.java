@@ -11,10 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopGraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -31,15 +33,13 @@ import java.util.*;
 /**
  * Registry for menu extensions
  */
-public class JIPipeCustomMenuRegistry {
+public class JIPipeCustomMenuItemsServiceComponent extends JIPipeServiceComponent {
     private final Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeDesktopMenuExtension>>> registeredMenuExtensions = new HashMap<>();
     private final List<Class<? extends JIPipeDesktopGraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
     private final List<GraphInteractiveObjectUIContextAction> registeredContextMenuActions = new ArrayList<>();
-    private final JIPipe jiPipe;
 
-    public JIPipeCustomMenuRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
+    public JIPipeCustomMenuItemsServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -57,7 +57,7 @@ public class JIPipeCustomMenuRegistry {
                 registeredMenuExtensions.put(instance.getMenuTarget(), list);
             }
             list.add(extension);
-            getJIPipe().getProgressInfo().log("Registered menu extension " + extension);
+            getProgressInfo().log("Registered menu extension " + extension);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -121,9 +121,5 @@ public class JIPipeCustomMenuRegistry {
      */
     public List<GraphInteractiveObjectUIContextAction> getRegisteredContextMenuActions() {
         return registeredContextMenuActions;
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 }

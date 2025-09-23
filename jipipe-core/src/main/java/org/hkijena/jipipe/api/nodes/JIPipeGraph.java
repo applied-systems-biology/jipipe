@@ -958,7 +958,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         for (Map.Entry<String, JsonNode> metadataEntry : ImmutableList.copyOf(additionalMetadataNode.fields())) {
             try {
                 String typeId = metadataEntry.getValue().get("jipipe:type").textValue();
-                Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadataRegistry().findById(typeId);
+                Class<? extends JIPipeMetadataObject> metadataClass = JIPipe.getInstance().getMetadata().findById(typeId);
 
                 if (metadataClass == null) {
                     throw new NullPointerException("Unable to find metadata object ID '" + typeId + "'");
@@ -2112,7 +2112,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             if (!algorithmGraph.additionalMetadata.isEmpty()) {
                 generator.writeObjectFieldStart("additional-metadata");
                 for (Map.Entry<String, JIPipeMetadataObject> entry : algorithmGraph.additionalMetadata.entrySet()) {
-                    String typeId = JIPipe.getInstance().getMetadataRegistry().getId(entry.getValue().getClass());
+                    String typeId = JIPipe.getInstance().getMetadata().getId(entry.getValue().getClass());
 
                     if (typeId != null) {
 

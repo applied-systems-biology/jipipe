@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
@@ -23,6 +23,8 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -41,9 +43,8 @@ import java.util.*;
 /**
  * Registry for managing extensions
  */
-public class JIPipePluginRegistry {
+public final class JIPipePluginsServiceComponent extends JIPipeServiceComponent {
 
-    private final JIPipe jiPipe;
     private final Map<String, JIPipePlugin> knownPlugins = new HashMap<>();
     private final Set<String> scheduledActivatePlugins = new HashSet<>();
     private final Set<String> scheduledDeactivatePlugins = new HashSet<>();
@@ -53,10 +54,10 @@ public class JIPipePluginRegistry {
     private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
 
-
-    public JIPipePluginRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipePluginsServiceComponent(JIPipeService service) {
+        super(service);
     }
+
 
     /**
      * Finds all dependencies that cannot be met
@@ -91,7 +92,7 @@ public class JIPipePluginRegistry {
     }
 
     public void initialize() {
-        List<PluginInfo<JIPipeJavaPlugin>> pluginList = jiPipe.getPluginService().getPluginsOfType(JIPipeJavaPlugin.class);
+        List<PluginInfo<JIPipeJavaPlugin>> pluginList = getService().getPluginService().getPluginsOfType(JIPipeJavaPlugin.class);
         for (PluginInfo<JIPipeJavaPlugin> pluginInfo : pluginList) {
             try {
                 JIPipeJavaPlugin extension = pluginInfo.createInstance();
@@ -103,7 +104,7 @@ public class JIPipePluginRegistry {
                 throw new RuntimeException("On pre-initializing " + pluginInfo, e);
             }
         }
-        if (!Files.isRegularFile(getPropertyFile()) && !JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (!Files.isRegularFile(getPropertyFile()) && getService().isAutosaveSettings()) {
             save();
         }
     }
@@ -126,7 +127,7 @@ public class JIPipePluginRegistry {
      * @return unmodifiable set
      */
     public Set<String> getActivatedPlugins() {
-        return Collections.unmodifiableSet(jiPipe.getRegisteredExtensionIds());
+        return Collections.unmodifiableSet(getService().getRegisteredExtensionIds());
     }
 
     /**
@@ -136,7 +137,7 @@ public class JIPipePluginRegistry {
      * @param extension the extension
      */
     public void registerKnownPlugin(JIPipePlugin extension) {
-        jiPipe.getProgressInfo().resolve("Plugin management").log("Discovered plugin: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
+        getProgressInfo().resolve("Plugin management").log("Discovered plugin: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
         knownPlugins.put(extension.getDependencyId(), extension);
         dependencyGraph = null;
     }
@@ -167,7 +168,7 @@ public class JIPipePluginRegistry {
 
     public void dismissNewPlugins() {
         settings.getSilencedPlugins().addAll(getNewPlugins());
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (getService().isAutosaveSettings()) {
             save();
         }
     }
@@ -239,7 +240,7 @@ public class JIPipePluginRegistry {
             settings.getDeactivatedPlugins().remove(s);
             settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (getService().isAutosaveSettings()) {
             save();
         }
         for (String s : ids) {
@@ -258,7 +259,7 @@ public class JIPipePluginRegistry {
             settings.getDeactivatedPlugins().add(s);
             settings.getSilencedPlugins().add(s); // That the user is not warned by it
         }
-        if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
+        if (getService().isAutosaveSettings()) {
             save();
         }
         for (String s : ids) {
@@ -299,12 +300,12 @@ public class JIPipePluginRegistry {
             }
             CycleDetector<JIPipeDependency, DefaultEdge> cycleDetector = new CycleDetector<>(dependencyGraph);
             boolean hasCycles = cycleDetector.detectCycles();
-            jiPipe.getProgressInfo().log("Created dependency graph: " + dependencyGraph.vertexSet().size() + " nodes, " + dependencyGraph.edgeSet().size() + " edges, has cycles: " + hasCycles);
+            getProgressInfo().log("Created dependency graph: " + dependencyGraph.vertexSet().size() + " nodes, " + dependencyGraph.edgeSet().size() + " edges, has cycles: " + hasCycles);
             if (hasCycles) {
-                jiPipe.getProgressInfo().log("WARNING: Cyclic dependencies detected in dependency graph!");
-                jiPipe.getProgressInfo().log("Dependencies that are part of a cycle:");
+                getProgressInfo().log("WARNING: Cyclic dependencies detected in dependency graph!");
+                getProgressInfo().log("Dependencies that are part of a cycle:");
                 for (JIPipeDependency dependency : cycleDetector.findCycles()) {
-                    jiPipe.getProgressInfo().log(" - " + dependency.getDependencyId());
+                    getProgressInfo().log(" - " + dependency.getDependencyId());
                 }
             }
         }
@@ -394,10 +395,6 @@ public class JIPipePluginRegistry {
         }
     }
 
-    public JIPipe getJIPipe() {
-        return jiPipe;
-    }
-
     public interface ScheduledActivatePluginEventListener {
         void onScheduledActivatePlugin(ScheduledActivatePluginEvent event);
     }
@@ -407,12 +404,12 @@ public class JIPipePluginRegistry {
     }
 
     /**
-     * Triggered by {@link JIPipePluginRegistry} when an extension is scheduled to be activated
+     * Triggered by {@link JIPipePluginsServiceComponent} when an extension is scheduled to be activated
      */
     public static class ScheduledActivatePluginEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledActivatePluginEvent(JIPipePluginRegistry registry, String extensionId) {
+        public ScheduledActivatePluginEvent(JIPipePluginsServiceComponent registry, String extensionId) {
             super(registry);
             this.extensionId = extensionId;
         }
@@ -431,12 +428,12 @@ public class JIPipePluginRegistry {
     }
 
     /**
-     * Triggered by {@link JIPipePluginRegistry} when an extension is scheduled to be deactivated
+     * Triggered by {@link JIPipePluginsServiceComponent} when an extension is scheduled to be deactivated
      */
     public static class ScheduledDeactivatePluginEvent extends AbstractJIPipeEvent {
         private final String extensionId;
 
-        public ScheduledDeactivatePluginEvent(JIPipePluginRegistry registry, String extensionId) {
+        public ScheduledDeactivatePluginEvent(JIPipePluginsServiceComponent registry, String extensionId) {
             super(registry);
             this.extensionId = extensionId;
         }

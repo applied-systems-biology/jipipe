@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
@@ -53,7 +55,7 @@ import java.util.function.Predicate;
 /**
  * Contains known {@link JIPipeData} types, and associates them to their respective {@link JIPipeDataSlot}.
  */
-public class JIPipeDatatypeRegistry {
+public final class JIPipeDatatypesServiceComponent extends JIPipeServiceComponent {
     private final BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
     private final Map<String, Map<String, JIPipeDesktopDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
     private final Map<String, Map<String, JIPipeLegacyDataImportOperation>> registeredImportOperations = new HashMap<>();
@@ -68,18 +70,13 @@ public class JIPipeDatatypeRegistry {
     private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeDesktopDataViewer>> defaultDataViewers = new HashMap<>();
     private final URL defaultIconURL;
     private final ImageIcon defaultIcon;
-    private final JIPipe jiPipe;
 
-    /**
-     * Creates a new instance
-     *
-     * @param jiPipe the JIPipe instance
-     */
-    public JIPipeDatatypeRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeDatatypesServiceComponent(JIPipeService service) {
+        super(service);
         this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png");
         this.defaultIcon = JIPipe.RESOURCES.getIcon16("data-types/data-type.png");
     }
+
 
     /**
      * Returns true if the input data type can be trivially converted into the output data type.
@@ -148,7 +145,7 @@ public class JIPipeDatatypeRegistry {
                 JIPipeDataInfo.getInstance(converter.getOutputType()));
         conversionGraph.getEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
                 JIPipeDataInfo.getInstance(converter.getOutputType())).setConverter(converter);
-        getJIPipe().getProgressInfo().log("Registered data type conversion from" + converter.getInputType() + " to " + converter.getOutputType());
+        getProgressInfo().log("Registered data type conversion from" + converter.getInputType() + " to " + converter.getOutputType());
     }
 
     public boolean isRegistered(Class<? extends JIPipeData> klass) {
@@ -260,8 +257,8 @@ public class JIPipeDatatypeRegistry {
             }
         }
 
-        jiPipe.getDatatypeRegisteredEventEmitter().emit(new JIPipeDatatypeRegisteredEvent(jiPipe, id));
-        getJIPipe().getProgressInfo().log("Registered data type id=" + id + " of class " + klass);
+        getService().getDatatypeRegisteredEventEmitter().emit(new JIPipeDatatypeRegisteredEvent(getService(), id));
+        getProgressInfo().log("Registered data type id=" + id + " of class " + klass);
     }
 
     /**
@@ -279,7 +276,7 @@ public class JIPipeDatatypeRegistry {
         if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Import operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
-        getJIPipe().getProgressInfo().log("Registered data import operation id=" + operation.getId() + " for data type " + dataTypeId);
+        getProgressInfo().log("Registered data import operation id=" + operation.getId() + " for data type " + dataTypeId);
     }
 
     /**
@@ -297,7 +294,7 @@ public class JIPipeDatatypeRegistry {
         if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Display operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
-        getJIPipe().getProgressInfo().log("Registered data display operation id=" + operation.getId() + " for data type " + dataTypeId);
+        getProgressInfo().log("Registered data display operation id=" + operation.getId() + " for data type " + dataTypeId);
     }
 
     public Map<String, JIPipeDesktopDataDisplayOperation> getAllRegisteredDisplayOperations(String dataTypeId) {
@@ -485,7 +482,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void registerResultSlotUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeDesktopResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
-        getJIPipe().getProgressInfo().log("Registered result slot UI for data type " + klass + " UIClass=" + uiClass);
+        getProgressInfo().log("Registered result slot UI for data type " + klass + " UIClass=" + uiClass);
     }
 
     /**
@@ -496,7 +493,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeDesktopResultDataSlotPreview> renderer) {
         resultTableCellUIs.put(klass, renderer);
-        getJIPipe().getProgressInfo().log("Registered result table cell UI for data type " + klass + " RendererClass=" + renderer);
+        getProgressInfo().log("Registered result table cell UI for data type " + klass + " RendererClass=" + renderer);
     }
 
     /**
@@ -506,7 +503,7 @@ public class JIPipeDatatypeRegistry {
      * @param dataViewerClass the data viewer class
      */
     public void registerDefaultDataViewer(Class<? extends JIPipeData> dataClass, Class<? extends JIPipeDesktopDataViewer> dataViewerClass) {
-        getJIPipe().getProgressInfo().log("Registered default data viewer for data type " + dataClass + " as " + dataViewerClass);
+        getProgressInfo().log("Registered default data viewer for data type " + dataClass + " as " + dataViewerClass);
         defaultDataViewers.put(dataClass, dataViewerClass);
     }
 
@@ -610,10 +607,6 @@ public class JIPipeDatatypeRegistry {
      */
     public URL getIconURLFor(JIPipeDataInfo info) {
         return getIconURLFor(info.getDataClass());
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 
     /**

@@ -73,7 +73,7 @@ public class JIPipeProjectTemplate {
     public String getFixedName() {
         if (templateFile == null)
             return metadata.getName();
-        if (JIPipe.getInstance().getProjectTemplateRegistry().getBlockedTemplateNames().contains(metadata.getName())) {
+        if (JIPipe.getInstance().getProjectTemplates().getBlockedTemplateNames().contains(metadata.getName())) {
             return templateFile.getFileName().toString();
         } else {
             return metadata.getName();

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
@@ -617,7 +617,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 if (otherEntry.getKey() >= dimensionalityHere || otherEntry.getKey() == -1) {
                     for (Class<? extends JIPipeData> inputClass : typesHere) {
                         for (Class<? extends JIPipeData> outputClass : otherEntry.getValue()) {
-                            if (!JIPipeDatatypeRegistry.isTriviallyConvertible(inputClass, outputClass)) {
+                            if (!JIPipeDatatypesServiceComponent.isTriviallyConvertible(inputClass, outputClass)) {
                                 ImplicitImageTypeConverter converter = new ImplicitImageTypeConverter(inputClass, outputClass);
                                 registerDatatypeConversion(converter);
                             }

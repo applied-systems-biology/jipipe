@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.registries.JIPipePluginRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -114,14 +114,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         if (JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplate().getValue() != null) {
             try {
                 String id = JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplate().getValue();
-                if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
+                if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().containsKey(id)) {
                     id = JIPipeProjectTemplate.getFallbackTemplateId();
                     JIPipeProjectDefaultsApplicationSettings.getInstance().getProjectTemplate().setValue(id);
                     if (!JIPipe.NO_SETTINGS_AUTOSAVE) {
-                        JIPipe.getInstance().getApplicationSettingsRegistry().save();
+                        JIPipe.getInstance().getApplicationSettings().save();
                     }
                 }
-                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
+                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().get(id);
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
@@ -352,7 +352,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         }
                     }
                 }
-                Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
                         return;
@@ -397,7 +397,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 window.projectSavePath = path;
                                 window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                                 window.updateTitle();
-                                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
+                                JIPipe.getInstance().getRecentProjects().add(path);
                                 if (!notifications.isEmpty()) {
                                     UIUtils.openNotificationsDialog(window.getProjectWorkbench(),
                                             currentWindow,
@@ -431,7 +431,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Path projectPath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(projectPath.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-                Set<JIPipeDependency> missingDependencies = JIPipePluginRegistry.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
                         return;
@@ -452,7 +452,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
-                JIPipe.getInstance().getRecentProjectsRegistry().add(path);
+                JIPipe.getInstance().getRecentProjects().add(path);
 
                 // Give user the option to either open in tab or cache
                 int selectedOption = JOptionPane.showOptionDialog(window,
@@ -568,7 +568,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             updateTitle();
             projectWorkbench.setProjectModified(false);
             projectWorkbench.sendStatusBarText("Saved project to " + savePath);
-            JIPipe.getInstance().getRecentProjectsRegistry().add(savePath);
+            JIPipe.getInstance().getRecentProjects().add(savePath);
 
             // Remove tmp file
             Files.delete(tempFile);

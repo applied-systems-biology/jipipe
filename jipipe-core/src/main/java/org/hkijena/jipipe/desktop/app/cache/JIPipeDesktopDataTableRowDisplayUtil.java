@@ -64,13 +64,13 @@ public class JIPipeDesktopDataTableRowDisplayUtil implements JIPipeDesktopWorkbe
             dataAnnotationStores.add(new WeakStore<>(dataAnnotation));
         }
         Class<? extends JIPipeData> dataClass = dataTableStore.get().getDataClass(row);
-        String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-        displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
+        String datatypeId = JIPipe.getInstance().getDataTypes().getIdOf(dataClass);
+        displayOperations = JIPipe.getInstance().getDataTypes().getSortedDisplayOperationsFor(datatypeId);
     }
 
     public static JIPipeDesktopDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
-        String dataTypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-        List<JIPipeDesktopDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(dataTypeId);
+        String dataTypeId = JIPipe.getInstance().getDataTypes().getIdOf(dataClass);
+        List<JIPipeDesktopDataDisplayOperation> displayOperations = JIPipe.getInstance().getDataTypes().getSortedDisplayOperationsFor(dataTypeId);
         if (!displayOperations.isEmpty()) {
             JIPipeDesktopDataDisplayOperation result = displayOperations.get(0);
             DynamicDataDisplayOperationIdEnumParameter parameter = JIPipeDefaultCacheDisplayApplicationSettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);

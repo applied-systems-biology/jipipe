@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import javax.swing.*;
@@ -29,18 +31,12 @@ import java.util.stream.Collectors;
 /**
  * A registry for external environments
  */
-public class JIPipeExternalEnvironmentRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceComponent {
     private final Multimap<Class<? extends JIPipeEnvironment>, InstallerEntry> installers = HashMultimap.create();
     private final Map<Class<? extends JIPipeEnvironment>, JIPipeExternalEnvironmentSettings> settings = new HashMap<>();
 
-    public JIPipeExternalEnvironmentRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
+    public JIPipeEnvironmentsServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -51,7 +47,7 @@ public class JIPipeExternalEnvironmentRegistry {
      */
     public void registerEnvironment(Class<? extends JIPipeEnvironment> environmentClass, JIPipeExternalEnvironmentSettings settings) {
         this.settings.put(environmentClass, settings);
-        getJIPipe().getProgressInfo().log("Registered environment " + environmentClass + " with settings class " + settings);
+        getProgressInfo().log("Registered environment " + environmentClass + " with settings class " + settings);
     }
 
     /**
@@ -63,7 +59,7 @@ public class JIPipeExternalEnvironmentRegistry {
      */
     public void registerInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
         installers.put(environmentClass, new InstallerEntry(installerClass, icon));
-        getJIPipe().getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
+        getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
     }
 
     /**

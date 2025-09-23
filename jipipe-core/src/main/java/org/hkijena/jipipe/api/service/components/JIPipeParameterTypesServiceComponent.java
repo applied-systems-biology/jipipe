@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
@@ -30,16 +32,14 @@ import java.util.*;
 /**
  * Registry for all known parameter types
  */
-public class JIPipeParameterTypeRegistry {
+public final class JIPipeParameterTypesServiceComponent extends JIPipeServiceComponent {
     private final BiMap<String, JIPipeParameterTypeInfo> registeredParameters = HashBiMap.create();
     private final BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
     private final Map<Class<?>, Class<? extends JIPipeDesktopParameterEditorUI>> parameterTypesUIs = new HashMap<>();
     private final Map<Class<?>, Set<JIPipeParameterGenerator>> parameterGeneratorUIs = new HashMap<>();
-    private final JIPipe jiPipe;
 
-    public JIPipeParameterTypeRegistry(JIPipe jiPipe) {
-
-        this.jiPipe = jiPipe;
+    public JIPipeParameterTypesServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -54,7 +54,7 @@ public class JIPipeParameterTypeRegistry {
             throw new RuntimeException("Parameter type with class '" + info.getFieldClass() + "' already exists!");
         registeredParameters.put(info.getId(), info);
         registeredParameterClasses.put(info.getFieldClass(), info);
-        getJIPipe().getProgressInfo().log("Registered parameter type id=" + info.getId() + " of type " + info.getFieldClass());
+        getProgressInfo().log("Registered parameter type id=" + info.getId() + " of type " + info.getFieldClass());
     }
 
     public BiMap<String, JIPipeParameterTypeInfo> getRegisteredParameters() {
@@ -161,9 +161,5 @@ public class JIPipeParameterTypeRegistry {
      */
     public Set<JIPipeParameterGenerator> getGeneratorsFor(Class<?> parameterClass) {
         return parameterGeneratorUIs.getOrDefault(parameterClass, Collections.emptySet());
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 }

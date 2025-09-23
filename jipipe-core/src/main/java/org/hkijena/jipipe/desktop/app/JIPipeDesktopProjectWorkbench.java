@@ -257,7 +257,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 buttons.add(UIUtils.createButton("Never do this again", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), () -> {
                     balloonTip.closeBalloon();
                     JIPipeGeneralUIApplicationSettings.getInstance().setSwitchToProjectInfoOnUnknownProject(false);
-                    JIPipe.getInstance().getApplicationSettingsRegistry().saveLater();
+                    JIPipe.getInstance().getApplicationSettings().saveLater();
                     restoreTabsFromProjectMetadata();
                 }));
                 buttons.add(Box.createHorizontalGlue());
@@ -848,7 +848,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     }
 
     private boolean hasNewExtensions() {
-        return !JIPipe.getInstance().getPluginRegistry().getNewPlugins().isEmpty();
+        return !JIPipe.getInstance().getPlugins().getNewPlugins().isEmpty();
     }
 
 

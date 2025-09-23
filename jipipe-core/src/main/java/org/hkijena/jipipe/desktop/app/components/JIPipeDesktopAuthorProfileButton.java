@@ -5,7 +5,7 @@ import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.registries.JIPipeApplicationSettingsRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -19,7 +19,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeApplicationSettingsRegistry.ChangedEventListener {
+public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeApplicationSettingsServiceComponent.ChangedEventListener {
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JIPipeProjectAuthorsApplicationSettings settings;
     private BalloonTip balloonTip;
@@ -111,7 +111,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
     private void disableWarning() {
         balloonTip.setVisible(false);
         settings.setWarnNoAuthors(false);
-        JIPipe.getInstance().getApplicationSettingsRegistry().saveLater();
+        JIPipe.getInstance().getApplicationSettings().saveLater();
     }
 
     public void showMissingAuthorBalloon() {

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
@@ -45,16 +47,15 @@ import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class JIPipeArtifactsRegistry {
-    private final JIPipe jiPipe;
+public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponent {
     private final Map<String, JIPipeArtifact> cachedArtifacts = new HashMap<>();
     private final Map<String, JIPipeRemoteArtifact> cachedRemoteArtifacts = new HashMap<>();
     private final Map<String, JIPipeLocalArtifact> cachedLocalArtifacts = new HashMap<>();
     private final StampedLock lock = new StampedLock();
     private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
 
-    public JIPipeArtifactsRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeArtifactsServiceComponent(JIPipeService service) {
+        super(service);
     }
 
     /**
@@ -227,10 +228,6 @@ public class JIPipeArtifactsRegistry {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    public JIPipe getJiPipe() {
-        return jiPipe;
     }
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
@@ -467,8 +464,8 @@ public class JIPipeArtifactsRegistry {
         if (System.getenv().containsKey("JIPIPE_OVERRIDE_ARTIFACTS_DIR")) {
             return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_ARTIFACTS_DIR"));
         }
-        if (JIPipe.JIPIPE_OVERRIDE_ARTIFACTS_DIR != null) {
-            return JIPipe.JIPIPE_OVERRIDE_ARTIFACTS_DIR;
+        if (getService().getInitializationSettings().getOverrideArtifactsDir() != null) {
+            return getService().getInitializationSettings().getOverrideArtifactsDir();
         }
         if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().isEnabled() && !JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().toString().isEmpty()) {
             if (JIPipeArtifactApplicationSettings.getInstance().getOverrideInstallationPath().getContent().isAbsolute()) {

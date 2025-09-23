@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.registries;
+package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -24,6 +24,8 @@ import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -42,21 +44,21 @@ import java.util.Map;
  * Registry for settings.
  * Settings are organized in "sheets" (parameter collections)
  */
-public class JIPipeApplicationSettingsRegistry {
+public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServiceComponent {
 
-    private final JIPipe jiPipe;
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
     private final Timer saveLaterTimer;
     private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
 
-    public JIPipeApplicationSettingsRegistry(JIPipe jiPipe) {
-        this.jiPipe = jiPipe;
+    public JIPipeApplicationSettingsServiceComponent(JIPipeService service) {
+        super(service);
         this.saveLaterTimer = new Timer(250, (e) -> {
             save();
         });
         this.saveLaterTimer.setRepeats(false);
     }
+
 
     /**
      * Gets the raw property files Json node
@@ -100,7 +102,7 @@ public class JIPipeApplicationSettingsRegistry {
         }
         registeredSheets.put(sheet.getId(), sheet);
         registeredSheetsByType.put(sheet.getClass(), sheet);
-        getJIPipe().getProgressInfo().log("Registered application settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
+        getProgressInfo().log("Registered application settings sheet id=" + sheet.getId() + " in category '" + sheet.getCategory() + "' object=" + sheet);
     }
 
     /**
@@ -206,10 +208,6 @@ public class JIPipeApplicationSettingsRegistry {
      */
     public void reload() {
         load(getPropertyFile(false));
-    }
-
-    public JIPipe getJIPipe() {
-        return jiPipe;
     }
 
     public void saveLater() {

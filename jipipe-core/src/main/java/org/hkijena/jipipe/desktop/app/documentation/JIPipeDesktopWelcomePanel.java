@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeProjectTemplatesServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -46,7 +46,7 @@ import java.util.jar.Attributes;
 /**
  * UI that shows some introduction
  */
-public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeProjectTemplateRegistry.TemplatesUpdatedEventListener {
+public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeProjectTemplatesServiceComponent.TemplatesUpdatedEventListener {
 
     private final JIPipeDesktopSearchTextField templateSearch = new JIPipeDesktopSearchTextField();
     private final JList<JIPipeProjectTemplate> templateList = new JList<>();
@@ -60,12 +60,12 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         super(workbenchUI);
         initialize();
         refreshTemplateProjects();
-        JIPipe.getInstance().getProjectTemplateRegistry().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
+        JIPipe.getInstance().getProjectTemplates().getTemplatesUpdatedEventEmitter().subscribeWeak(this);
     }
 
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
-        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
+        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplates().getSortedRegisteredTemplates()) {
             if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
                 model.addElement(template);
             }
@@ -362,7 +362,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
     }
 
     @Override
-    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+    public void onJIPipeTemplatesUpdated(JIPipeProjectTemplatesServiceComponent.TemplatesUpdatedEvent event) {
         refreshTemplateProjects();
     }
 }

@@ -523,7 +523,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     private void initializeEditingToolbar(Class<? extends JIPipeGraphEditorTool> baseClass) {
         List<JIPipeGraphEditorTool> newTools = new ArrayList<>();
-        for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
+        for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorTools().getRegisteredTools()) {
             if (baseClass.isAssignableFrom(klass) && !toolMap.containsKey(klass)) {
                 JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
                 if (tool.supports(this)) {

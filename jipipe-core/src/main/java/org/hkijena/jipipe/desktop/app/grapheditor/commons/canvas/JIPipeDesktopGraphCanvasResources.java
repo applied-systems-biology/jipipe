@@ -3,7 +3,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -151,7 +151,7 @@ public class JIPipeDesktopGraphCanvasResources {
         } else if (multicolor) {
             result = Color.getHSBColor(1.0f * multiColorIndex / multiColorMax, 0.45f, 0.65f);
         } else {
-            if (JIPipeDatatypeRegistry.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
+            if (JIPipeDatatypesServiceComponent.isTriviallyConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
                 result = COLOR_EDGE_DEFAULT;
             else if (JIPipe.getDataTypes().isConvertible(source.getAcceptedDataType(), target.getAcceptedDataType()))
                 result = COLOR_EDGE_CONVERT;
