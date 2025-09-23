@@ -87,12 +87,17 @@ public class JIPipeGUICommand implements Command {
             if (JIPipe.getInstance() == null) {
                 JIPipeService service = JIPipe.createInstance(context);
                 JIPipeDesktopSplashScreen.getInstance().setService(service);
-                initializationReport = service.initialize();
+                service.ensureInitialized(); // Trigger manual initialization
+                initializationReport = service.getInitializationReport();
+            }
+            else {
+                initializationReport = JIPipe.getInstance().getInitializationReport();
             }
         } catch (Exception e) {
             e.printStackTrace();
-            if (!extensionSettings.isSilent())
+            if (!extensionSettings.isSilent()) {
                 UIUtils.showErrorDialog(new JIPipeDesktopDummyWorkbench(), null, e);
+            }
             return;
         }
 
@@ -100,7 +105,7 @@ public class JIPipeGUICommand implements Command {
         if (!extensionSettings.isSilent()) {
             SwingUtilities.invokeLater(() -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+                initializationReport.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
                 if (!report.isValid()) {
                     UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe. " +

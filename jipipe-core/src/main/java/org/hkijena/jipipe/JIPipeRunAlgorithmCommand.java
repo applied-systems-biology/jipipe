@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
@@ -93,9 +94,9 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             if (!JIPipe.isInstantiated() && withSplash) {
                 SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().showSplash(getContext()));
             }
-            JIPipe jiPipe = JIPipe.createInstance(getContext(), JIPipeServiceMode.GUI);
-            JIPipeDesktopSplashScreen.getInstance().setJIPipe(JIPipe.getInstance());
-            jiPipe.initialize(extensionSettings, issues, true);
+            JIPipeService service = JIPipe.createInstance(getContext());
+            JIPipeDesktopSplashScreen.getInstance().setService(service);
+            service.ensureInitialized(); // Trigger manual initialization
             SwingUtilities.invokeLater(() -> JIPipeDesktopSplashScreen.getInstance().hideSplash());
         }
         if (!extensionSettings.isSilent()) {

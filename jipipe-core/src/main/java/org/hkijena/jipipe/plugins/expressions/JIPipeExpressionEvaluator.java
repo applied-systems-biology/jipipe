@@ -145,7 +145,7 @@ public class JIPipeExpressionEvaluator extends ExpressionEvaluator {
 
         // Add operators from JIPipe (if available)
         if (JIPipe.getInstance() != null) {
-            for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values()) {
+            for (JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry : JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().values()) {
                 parameters.add(functionEntry.getFunction());
             }
         }

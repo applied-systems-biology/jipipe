@@ -89,7 +89,7 @@ public class ExpressionTesterUI extends JIPipeDesktopWorkbenchPanel {
             String name = "";
             String description = "";
             if (function instanceof ExpressionFunction) {
-                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
+                JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry functionEntry = JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().getOrDefault(function.getName(), null);
                 if (functionEntry != null) {
                     signature = functionEntry.getFunction().getSignature();
                     name = functionEntry.getName();

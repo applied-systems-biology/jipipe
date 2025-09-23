@@ -89,4 +89,16 @@ public class JIPipeInitializationReport implements JIPipeValidatable {
     public List<Throwable> getErrors() {
         return errors;
     }
+
+    public Set<String> getRegisteredExtensionIds() {
+        return registeredExtensionIds;
+    }
+
+    public List<JIPipeDependency> getRegisteredExtensions() {
+        return registeredExtensions;
+    }
+
+    public List<JIPipeDependency> getFailedExtensions() {
+        return failedExtensions;
+    }
 }

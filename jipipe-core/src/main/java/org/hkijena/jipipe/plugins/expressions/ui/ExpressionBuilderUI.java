@@ -127,7 +127,7 @@ public class ExpressionBuilderUI extends JIPipeDesktopWorkbenchPanel {
         }
         dataItems.addAll(constantEntryList);
         dataItems.addAll(operatorEntryList);
-        dataItems.addAll(JIPipe.getInstance().getExpressionRegistry().getRegisteredExpressionFunctions().values().stream()
+        dataItems.addAll(JIPipe.getInstance().getExpressionFunctions().getRegisteredExpressionFunctions().values().stream()
                 .sorted(Comparator.comparing(JIPipeExpressionFunctionsServiceComponent.ExpressionFunctionEntry::getName)).collect(Collectors.toList()));
         String[] searchStrings = searchField.getSearchStrings();
         if (searchStrings == null || searchStrings.length == 0) {

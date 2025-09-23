@@ -175,7 +175,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public List<JIPipeDependency> getRegisteredExtensions() {
         ensureInitialized();
-        return Collections.unmodifiableList(registeredExtensions);
+        return Collections.unmodifiableList(initializationReport.getRegisteredExtensions());
     }
 
     public JIPipeCustomMenuItemsServiceComponent getCustomMenuItems() {
@@ -190,7 +190,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public Set<String> getRegisteredExtensionIds() {
         ensureInitialized();
-        return registeredExtensionIds;
+        return initializationReport.getRegisteredExtensionIds();
     }
 
     public JIPipeDatatypeRegisteredEventEmitter getDatatypeRegisteredEventEmitter() {
@@ -230,14 +230,10 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         return progressInfo;
     }
 
-    public List<JIPipeDependency> getFailedExtensions() {
-        return Collections.unmodifiableList(failedExtensions);
-    }
-
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
         report.report(reportContext, nodes);
-        for (JIPipeDependency extension : failedExtensions) {
+        for (JIPipeDependency extension : initializationReport.getFailedExtensions()) {
             if (extension != null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         new JavaExtensionValidationReportContext(extension),
@@ -247,13 +243,9 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
                         null));
             }
         }
-        for (JIPipeDependency extension : registeredExtensions) {
+        for (JIPipeDependency extension : initializationReport.getRegisteredExtensions()) {
             report.report(reportContext, extension);
         }
-    }
-
-    public JIPipeDependency findExtensionById(String dependencyId) {
-        return registeredExtensions.stream().filter(d -> Objects.equals(dependencyId, d.getDependencyId())).findFirst().orElse(null);
     }
 
     public JIPipeServiceInitializationSettings getInitializationSettings() {
