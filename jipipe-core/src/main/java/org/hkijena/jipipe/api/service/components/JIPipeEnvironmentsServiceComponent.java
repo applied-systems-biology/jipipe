@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 
 import javax.swing.*;
@@ -94,7 +96,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
     }
 
     public <T extends JIPipeEnvironment, V extends OptionalParameter<T>, U extends ListParameter<T>> void registerEnvironment(String id, Class<T> environmentClass, Class<V> optionalEnvironmentClass, Class<U> environmentListClass, String name, String description, Icon icon) {
-        jiPipe.getProgressInfo().log("Registering environment type '" + id + "' (" + environmentClass + ", " + optionalEnvironmentClass + ", " + environmentListClass + ") as '" + name + "'");
+        getProgressInfo().log("Registering environment type '" + id + "' (" + environmentClass + ", " + optionalEnvironmentClass + ", " + environmentListClass + ") as '" + name + "'");
         if(infosById.containsKey(id)) {
             throw new RuntimeException("Unable to register environment " + environmentClass + " as '" + id + "': duplicate key!");
         }

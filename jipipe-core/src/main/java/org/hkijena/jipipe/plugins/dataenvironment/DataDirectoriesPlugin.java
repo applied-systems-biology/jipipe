@@ -43,11 +43,8 @@ public class DataDirectoriesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironmentApplicationSettings settings = new JIPipeDataDirectoryEnvironmentApplicationSettings();
-        registerApplicationSettingsSheet(settings);
-        registerEnvironment(JIPipeDataDirectoryEnvironment.class,
-    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnvironment("data-directory", JIPipeDataDirectoryEnvironment.class,
+        registerEnvironment("data-directory",
+                JIPipeDataDirectoryEnvironment.class,
                 OptionalJIPipeDataDirectoryEnvironment.class,
                 JIPipeDataDirectoryEnvironment.List.class,
                 "Data directory",
