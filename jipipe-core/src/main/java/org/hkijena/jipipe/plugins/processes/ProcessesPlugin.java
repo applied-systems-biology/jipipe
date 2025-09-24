@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.processes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -54,11 +54,12 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerEnvironment("process",
+                JIPipeEnvironmentArchetype.Base,
                 ProcessEnvironment.class,
                 OptionalProcessEnvironment.class,
                 ProcessEnvironment.List.class,
-                "Process environment",
-                "A process environment",
+                "Process",
+                "A generic process environment",
                 JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png"));
     }
 

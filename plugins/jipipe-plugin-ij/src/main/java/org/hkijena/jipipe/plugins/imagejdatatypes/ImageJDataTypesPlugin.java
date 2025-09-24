@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -589,7 +590,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register environment for ImageJ samples
         registerArtifactEnvironment("ij1-samples",
                 "sc.fiji.sample_images:*",
-                ImageJSamplesEnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, ImageJSamplesEnvironment.class,
                 OptionalImageJSamplesEnvironment.class,
                 ImageJSamplesListEnvironment.class,
                 "ImageJ sample images",

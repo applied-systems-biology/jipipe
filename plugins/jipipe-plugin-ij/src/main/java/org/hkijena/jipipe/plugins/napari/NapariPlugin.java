@@ -18,16 +18,10 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.napari.environments.NapariEnvironment;
 import org.hkijena.jipipe.plugins.napari.environments.NapariEnvironmentList;
@@ -39,7 +33,6 @@ import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.*;
 
 @Plugin(type = JIPipeJavaPlugin.class)
@@ -107,7 +100,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerArtifactEnvironment("napari",
                 "org.napari.napari:*",
-                NapariEnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, NapariEnvironment.class,
                 OptionalNapariEnvironment.class,
                 NapariEnvironmentList.class,
                 "Napari",

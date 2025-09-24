@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -130,10 +130,10 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerArtifactEnvironment("tsoax",
                 "com.github.tix209.tsoax:*",
-                TSOAXEnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, TSOAXEnvironment.class,
                 OptionalTSOAXEnvironment.class,
                 TSOAXEnvironment.List.class,
-                "TSOAX Environment",
+                "TSOAX",
                 "Installation of TSOAX",
                 RESOURCES.getIcon16("tsoax.png"));
 

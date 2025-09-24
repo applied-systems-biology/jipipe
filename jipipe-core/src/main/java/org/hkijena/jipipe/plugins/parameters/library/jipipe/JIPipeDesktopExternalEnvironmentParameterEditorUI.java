@@ -251,7 +251,8 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 //        ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
         JIPipeEnvironment parameter = getParameter(JIPipeEnvironment.class);
-        nameLabel.setIcon(parameter.getIcon());
+        JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = JIPipe.getInstance().getEnvironments().getInfoByClass(parameter.getClass());
+        nameLabel.setIcon(info != null ? info.getIcon() : parameter.getIcon());
         nameLabel.setText(parameter.getName());
         pathLabel.setText(StringUtils.orElse(parameter.getInfo(), "<Nothing set>"));
         JIPipeValidationReport report = new JIPipeValidationReport();

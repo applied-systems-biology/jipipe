@@ -21,12 +21,10 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelFromFileAlgorithm;
@@ -61,8 +59,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
@@ -170,7 +166,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerArtifactEnvironment("cellpose2",
                 "com.github.mouseland.cellpose:*",
-                Cellpose2Environment.class,
+                JIPipeEnvironmentArchetype.Managed, Cellpose2Environment.class,
                 OptionalCellpose2Environment.class,
                 Cellpose2EnvironmentList.class,
                 "Cellpose 2.x",
@@ -178,7 +174,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
         registerArtifactEnvironment("cellpose3",
                 "com.github.mouseland.cellpose3:*",
-                Cellpose3Environment.class,
+                JIPipeEnvironmentArchetype.Managed, Cellpose3Environment.class,
                 OptionalCellpose3Environment.class,
                 Cellpose3EnvironmentList.class,
                 "Cellpose 3.x",

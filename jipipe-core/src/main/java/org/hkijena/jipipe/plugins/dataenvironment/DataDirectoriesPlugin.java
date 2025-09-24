@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.dataenvironment;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -44,6 +44,7 @@ public class DataDirectoriesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerEnvironment("data-directory",
+                JIPipeEnvironmentArchetype.Base,
                 JIPipeDataDirectoryEnvironment.class,
                 OptionalJIPipeDataDirectoryEnvironment.class,
                 JIPipeDataDirectoryEnvironment.List.class,

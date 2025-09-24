@@ -21,10 +21,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -109,11 +107,11 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerArtifactEnvironment(REnvironment.ENVIRONMENT_ID,
                 "org.r.*",
-                REnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, REnvironment.class,
                 OptionalREnvironment.class,
                 REnvironment.List.class,
-                "R environment",
-                "A R environment",
+                "R",
+                "An R environment",
                 JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();

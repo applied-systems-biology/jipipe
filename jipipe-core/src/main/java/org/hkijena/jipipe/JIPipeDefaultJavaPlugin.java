@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -948,7 +949,8 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                      environment class
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
-     * @param artifactQuery the artifact query for this environment (can be null)
+     * @param artifactQuery            the artifact query for this environment (can be null)
+     * @param archetype the environment's archetype
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
@@ -957,13 +959,13 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public <T extends JIPipeArtifactEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerArtifactEnvironment(String id,
                                                                                                                                               String artifactQuery,
-                                                                                                                                              Class<T> environmentClass,
+                                                                                                                                              JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
                                                                                                                                               Class<V> optionalEnvironmentClass,
                                                                                                                                               Class<U> environmentListClass,
                                                                                                                                               String name,
                                                                                                                                               String description,
                                                                                                                                               Icon icon) {
-        service.getEnvironments().registerEnvironment(id, artifactQuery, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        service.getEnvironments().registerEnvironment(id, artifactQuery, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
     /**
@@ -975,19 +977,20 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                      environment class
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
+     * @param archetype the environment's archetype
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
      * @param name                     the name of the environment
      * @param description              the description of the environment
      */
-    public <T extends JIPipeEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerEnvironment(String id, Class<T> environmentClass,
+    public <T extends JIPipeEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerEnvironment(String id, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
                                                                                                                               Class<V> optionalEnvironmentClass,
                                                                                                                               Class<U> environmentListClass,
                                                                                                                               String name,
                                                                                                                               String description,
                                                                                                                               Icon icon) {
-        service.getEnvironments().registerEnvironment(id, null, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        service.getEnvironments().registerEnvironment(id, null, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
 

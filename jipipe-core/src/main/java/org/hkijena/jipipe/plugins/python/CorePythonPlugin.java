@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -32,7 +33,6 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -82,17 +82,17 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerArtifactEnvironment(PythonEnvironment.ENVIRONMENT_ID,
                 "org.python.*",
-                PythonEnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, PythonEnvironment.class,
                 OptionalPythonEnvironment.class,
                 PythonEnvironment.List.class,
-                "Python environment",
+                "Python",
                 "A Python environment",
                 JIPipe.RESOURCES.getIcon16("apps/python.png"));
 
         // JIPipe Python adapter
         registerArtifactEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 "org.hkijena.jipipe-python-adapter:*",
-                JIPipePythonAdapterLibraryEnvironment.class,
+                JIPipeEnvironmentArchetype.Managed, JIPipePythonAdapterLibraryEnvironment.class,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironment.List.class,
                 "JIPipe Python adapter library",

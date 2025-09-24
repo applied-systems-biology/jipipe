@@ -8,12 +8,15 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -273,6 +276,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getProgressInfo().log("Creating dynamic settings ...");
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
+        createDefaultEnvironmentSettings();
         registerNodeExamplesFromFileSystem();
         registerProjectTemplatesFromFileSystem();
 
@@ -440,6 +444,20 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             try {
                 // Test instantiation
                 JIPipeGraphNode algorithm = info.newInstance();
+
+                // Test environments
+                for (Class<? extends JIPipeEnvironment> environmentClass : algorithm.getInfo().getEnvironments()) {
+                    JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = getService().getEnvironments().getInfoByClass(environmentClass);
+                    if(environmentInfo.getArchetype() != JIPipeEnvironmentArchetype.Managed) {
+                        getProgressInfo().log("[!] ERROR: Node is associated to unmanaged environment " + environmentInfo.getId());
+                        throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                new UnspecifiedValidationReportContext(),
+                                "A plugin is invalid!",
+                                "Node is associated to unmanaged environment " + environmentInfo.getId(),
+                                "There is an error in the plugin's code that registers an unsupported feature.",
+                                "Please contact the plugin author for further help."));
+                    }
+                }
 
                 // Test parameters
                 JIPipeParameterTree collection = new JIPipeParameterTree(algorithm);
