@@ -1370,6 +1370,27 @@ public class JIPipeProject implements JIPipeValidatable {
         saveProject(projectFile, false);
     }
 
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param configurationCache the environment cache
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
+    }
+
+    /**
+     * Returns the environment reference for the environment class
+     * @param klass the environment class
+     * @return the environment reference
+     * @param <T> the environment type
+     */
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
+        return new JIPipeEnvironmentConfigurator<>(klass, this, configurationCache); // TODO
+    }
 
     public interface CompartmentAddedEventListener {
         void onProjectCompartmentAdded(CompartmentAddedEvent event);

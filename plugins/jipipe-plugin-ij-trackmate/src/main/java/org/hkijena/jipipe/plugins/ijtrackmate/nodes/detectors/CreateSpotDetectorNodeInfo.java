@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -120,6 +121,11 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     @Override
     public List<AddJIPipeOutputSlot> getOutputSlots() {
         return Collections.singletonList(OUTPUT_SLOT);
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeEnvironment>> getEnvironments() {
+        return Set.of();
     }
 
     @Override

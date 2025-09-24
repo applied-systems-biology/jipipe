@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -96,37 +97,9 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
-
-        IlastikEnvironment environment = null;
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, JIPipeProgressInfo.SILENT).isValid()) {
-            JOptionPane.showMessageDialog(workbench.getWindow(),
-                    "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
-                    "Launch Ilastik",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (environment.isLoadFromArtifact()) {
-            JIPipeArtifact artifact = JIPipe.getArtifacts().searchClosestCompatibleArtifactFromQuery(environment.getArtifactQuery().getQuery());
-            if (artifact instanceof JIPipeLocalArtifact) {
-                environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-            } else if (artifact instanceof JIPipeRemoteArtifact) {
-                if (JOptionPane.showConfirmDialog(workbench.getWindow(), "The Ilastik version " + artifact.getVersion() + " is currently not downloaded. " +
-                        "Download it now?", "Run Ilastik", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
-                    JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
-                    artifact = JIPipe.getArtifacts().queryPreferredCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
-                    if (artifact instanceof JIPipeLocalArtifact) {
-                        environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-                    } else {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
+        IlastikEnvironment environment = workbench.getEnvironment(IlastikEnvironment.class, new JIPipeEnvironmentConfigurationCache(), progressInfo);
         workbench.sendStatusBarText("Launching Ilastik ...");
         IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
     }

@@ -21,6 +21,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -1138,6 +1141,30 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     @Override
     public void showErrorDialog(String message, String title) {
         JOptionPane.showMessageDialog(getWindow(), message, title, JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param configurationCache the environment cache
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    @Override
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
+        return getProject().getEnvironment(klass, configurationCache, progressInfo);
+    }
+
+    /**
+     * Returns the environment reference for the environment class
+     * @param klass the environment class
+     * @return the environment reference
+     * @param <T> the environment type
+     */
+    @Override
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
+        return getProject().getEnvironmentConfigurator(klass, configurationCache);
     }
 
     public void unload() {

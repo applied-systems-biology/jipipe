@@ -87,8 +87,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPrevie
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesApplicationSettings;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesProjectSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
@@ -411,8 +409,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register settings
         registerApplicationSettingsSheet(new LegacyImageViewer2DUIApplicationSettings());
-        registerApplicationSettingsSheet(new ImageSamplesApplicationSettings());
-        registerProjectSettingsSheet(ImageSamplesProjectSettings.class);
 
         // Register data types
         registerDatatype("imagej-ome",
