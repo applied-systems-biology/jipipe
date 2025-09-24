@@ -116,7 +116,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         }
         menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
 
-        if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
+        if ((settings == null || settings.allowArtifact()) && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
             JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass((Class<? extends JIPipeEnvironment>) getParameterAccess().getFieldClass());
             // Only show version-pinned artifacts here (users can still select specific versions through "Edit")
             for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(environmentInfo.getArtifactQuery())) {
