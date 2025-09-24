@@ -68,12 +68,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameters(convergenceParameters, evolutionParameters, initializationParameters);
     }
 
-    @Override
-    protected void registerEnvironments() {
-        super.registerEnvironments();
-        registerEnvironment(TSOAXEnvironment.class);
-    }
-
     public void saveParameterFile(Path outputFile) {
         Map<String, String> data = new HashMap<>();
         data.put("intensity-scaling", String.valueOf(initializationParameters.getIntensityScaling()));

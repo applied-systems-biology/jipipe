@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -78,6 +79,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, name = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @LabelAsJIPipeHidden
+@RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
 public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
 

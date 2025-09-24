@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -60,7 +60,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -84,6 +83,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
+@RegisterJIPipeEnvironmentUsage(Cellpose3Environment.class)
 public class Cellpose3SegmentationTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);

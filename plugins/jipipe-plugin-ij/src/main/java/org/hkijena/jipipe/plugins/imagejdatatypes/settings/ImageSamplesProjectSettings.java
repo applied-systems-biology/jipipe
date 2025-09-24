@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.settings;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
@@ -59,7 +59,7 @@ public class ImageSamplesProjectSettings extends JIPipeDefaultProjectSettingsShe
 
     @SetJIPipeDocumentation(name = "Project default environment", description = "If enabled, overwrite the application-wide Ilastik environment and store them inside the project. ")
     @JIPipeParameter("project-default-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"sc.fiji.sample_images:*"})
+    @JIPipeEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"sc.fiji.sample_images:*"})
     public OptionalJIPipeDataDirectoryEnvironment getProjectDefaultEnvironment() {
         return projectDefaultEnvironment;
     }

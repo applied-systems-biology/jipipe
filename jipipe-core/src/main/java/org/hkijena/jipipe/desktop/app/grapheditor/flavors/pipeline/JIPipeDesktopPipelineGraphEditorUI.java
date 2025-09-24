@@ -56,7 +56,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.Sen
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.LockNodeLocationSizeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.UnlockNodeLocationSizeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.misc.CollapseIOInterfaceNodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.misc.JsonAlgorithmToGroupNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.InvertSelectionNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAllNodeUIContextAction;
@@ -182,7 +181,6 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new ClearCacheNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new IsolateNodesUIContextAction(),
-                new JsonAlgorithmToGroupNodeUIContextAction(),
                 new GroupNodeUIContextAction(),
                 new CollapseIOInterfaceNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,

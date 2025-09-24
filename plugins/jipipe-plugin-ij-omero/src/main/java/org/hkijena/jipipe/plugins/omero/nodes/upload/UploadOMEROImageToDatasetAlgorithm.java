@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -58,6 +59,7 @@ import java.util.*;
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Images", create = true, description = "The image(s) to upload")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true, description = "Reference to the uploaded image(s)")
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;

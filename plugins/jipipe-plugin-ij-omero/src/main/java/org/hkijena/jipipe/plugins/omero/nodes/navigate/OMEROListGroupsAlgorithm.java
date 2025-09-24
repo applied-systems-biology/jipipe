@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 @SetJIPipeDocumentation(name = "List OMERO groups", description = "Returns the ID(s) of groups(s) according to search criteria.")
 @AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Groups", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();

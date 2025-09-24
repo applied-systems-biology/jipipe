@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -65,6 +66,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class DownloadOMEROImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final ImageImportParameters imageImportParameters;
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;

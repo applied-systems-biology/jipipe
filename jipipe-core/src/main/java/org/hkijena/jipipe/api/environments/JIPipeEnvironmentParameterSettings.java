@@ -20,7 +20,7 @@ import java.lang.annotation.RetentionPolicy;
  * Can be attached to control the UI of
  */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExternalEnvironmentParameterSettings {
+public @interface JIPipeEnvironmentParameterSettings {
     /**
      * @return if the edit button should be visible
      * @deprecated has no effect
@@ -55,7 +55,5 @@ public @interface ExternalEnvironmentParameterSettings {
     /**
      * @return if this external environment parameter allows to be filled with artifact infos
      */
-    boolean allowArtifact() default false;
-
-    String[] artifactFilters() default {"*"};
+    boolean allowArtifact() default true;
 }

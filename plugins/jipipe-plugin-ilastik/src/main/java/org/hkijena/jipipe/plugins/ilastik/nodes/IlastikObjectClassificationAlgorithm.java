@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -36,16 +36,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 
-import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
@@ -77,6 +73,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
+@RegisterJIPipeEnvironmentUsage(IlastikEnvironment.class)
 public class IlastikObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final List<String> PROJECT_TYPES = Arrays.asList("ObjectClassification"); // , "PixelClassification"

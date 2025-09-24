@@ -16,10 +16,10 @@ package org.hkijena.jipipe.utils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.net.URL;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
@@ -417,5 +417,47 @@ public class ReflectionUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Gets all annotations from the target class, including from all interfaces and superclass hierarchy
+     * @param clazz the target class
+     * @param annotationType the annotation class
+     * @return the annotations
+     * @param <A> the annotation type
+     */
+    public static <A extends Annotation> List<A> getAllAnnotations(
+            Class<?> clazz,
+            Class<A> annotationType) {
+
+        Set<Class<?>> visited = new HashSet<>();
+        List<A> result = new ArrayList<>();
+        collectAnnotations(clazz, annotationType, visited, result);
+        return result;
+    }
+
+    private static <A extends Annotation> void collectAnnotations(
+            Class<?> clazz,
+            Class<A> annotationType,
+            Set<Class<?>> visited,
+            List<A> result) {
+
+        if (clazz == null || !visited.add(clazz)) {
+            return;
+        }
+
+        // Add annotation(s) on this class
+        A ann = clazz.getAnnotation(annotationType);
+        if (ann != null) {
+            result.add(ann);
+        }
+
+        // Recurse into superclass
+        collectAnnotations(clazz.getSuperclass(), annotationType, visited, result);
+
+        // Recurse into interfaces
+        for (Class<?> iface : clazz.getInterfaces()) {
+            collectAnnotations(iface, annotationType, visited, result);
+        }
     }
 }

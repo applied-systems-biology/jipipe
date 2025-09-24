@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -77,6 +78,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)
 public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);

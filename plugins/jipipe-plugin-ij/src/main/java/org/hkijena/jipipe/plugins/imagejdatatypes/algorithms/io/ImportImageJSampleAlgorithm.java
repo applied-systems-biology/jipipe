@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -42,6 +43,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "Import ImageJ sample image", description = "Imports a sample image from the standard set of sample images provided by ImageJ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@RegisterJIPipeEnvironmentUsage(ImageJSamplesEnvironment.class)
 public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Sample sample = Sample.Blobs;

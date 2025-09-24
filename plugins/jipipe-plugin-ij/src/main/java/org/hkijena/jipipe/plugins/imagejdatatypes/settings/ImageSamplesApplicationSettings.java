@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.settings;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -81,7 +81,7 @@ public class ImageSamplesApplicationSettings extends JIPipeDefaultApplicationsSe
 
     @SetJIPipeDocumentation(name = "Environment", description = "Contains information about the location of the sample data. If disabled, falls back to <code>sc.fiji.sample_images:*</code>")
     @JIPipeParameter("default-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"sc.fiji.sample_images:*"})
+    @JIPipeEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"sc.fiji.sample_images:*"})
     public OptionalJIPipeDataDirectoryEnvironment getDefaultEnvironment() {
         return defaultEnvironment;
     }

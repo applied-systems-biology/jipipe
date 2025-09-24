@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.napari;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
@@ -83,7 +83,7 @@ public class NapariPluginApplicationSettings extends JIPipeDefaultApplicationsSe
             "Leave at default (<code>org.napari.napari:*</code>) to automatically select the best available environment from an artifact. " +
             "If disabled, falls back to <code>org.napari.napari:*</code>.")
     @JIPipeParameter("default-napari-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Napari", allowArtifact = true, artifactFilters = {"org.napari.napari:*"})
+    @JIPipeEnvironmentParameterSettings(showCategory = "Napari", allowArtifact = true, artifactFilters = {"org.napari.napari:*"})
     public OptionalPythonEnvironment getDefaultEnvironment() {
         return defaultEnvironment;
     }

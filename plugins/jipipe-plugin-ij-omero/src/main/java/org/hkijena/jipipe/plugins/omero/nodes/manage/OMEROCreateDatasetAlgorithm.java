@@ -22,6 +22,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -53,6 +54,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
 @AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Project", description = "The project that will contain the dataset", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Dataset", description = "The created dataset", create = true)
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;

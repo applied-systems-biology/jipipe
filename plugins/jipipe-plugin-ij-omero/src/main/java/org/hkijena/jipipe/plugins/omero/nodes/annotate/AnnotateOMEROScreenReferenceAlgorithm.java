@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -53,6 +54,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
 @AddJIPipeInputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @AddJIPipeOutputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;

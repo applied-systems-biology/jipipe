@@ -89,7 +89,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         List<Component> menuItems = new ArrayList<>();
 
 
-        ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
+        JIPipeEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeEnvironmentParameterSettings.class);
 
         JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editEnvironment);
         menuItems.add(editMenuItem);
@@ -115,9 +115,11 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
             menuItems.add(savePresetItem);
         }
         menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
+
         if (settings != null && settings.allowArtifact() && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
+            JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass((Class<? extends JIPipeEnvironment>) getParameterAccess().getFieldClass());
             // Only show version-pinned artifacts here (users can still select specific versions through "Edit")
-            for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(settings.artifactFilters())) {
+            for (JIPipeArtifact artifact : JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(environmentInfo.getArtifactQuery())) {
                 if (artifact.isCompatible()) {
                     menuItems.add(UIUtils.createMenuItem("Artifact " + artifact.getFullId(), "Uses the predefined artifact " + artifact.getFullId(),
                             JIPipe.RESOURCES.getIcon16("actions/run-install.png"), () -> {
@@ -126,57 +128,58 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 }
             }
         }
-        menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
-        if (settings == null || settings.allowInstall()) {
-            String menuCategory = settings != null ? settings.showCategory() : "";
-            boolean foundAdditionalEnvironments = false;
-            for (JIPipeEnvironmentsServiceComponent.InstallerEntry installer : JIPipe.getInstance()
-                    .getEnvironments().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
-
-                if (!StringUtils.isNullOrEmpty(menuCategory)) {
-                    // Check if the category matches
-                    ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
-                    String installerCategory = "";
-                    if (installerInfo != null) {
-                        installerCategory = installerInfo.category();
-                    }
-                    if (!Objects.equals(menuCategory, installerCategory)) {
-                        foundAdditionalEnvironments = true;
-                        continue;
-                    }
-                }
-
-                JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
-                item.setToolTipText(installer.getDescription());
-                item.addActionListener(e -> JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(),
-                        (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
-                menuItems.add(item);
-            }
-            if (foundAdditionalEnvironments) {
-                JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
-                for (JIPipeEnvironmentsServiceComponent.InstallerEntry installer : JIPipe.getInstance()
-                        .getEnvironments().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
-                    if (!StringUtils.isNullOrEmpty(menuCategory)) {
-                        // Check if the category matches
-                        ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
-                        String installerCategory = "";
-                        if (installerInfo != null) {
-                            installerCategory = installerInfo.category();
-                        }
-                        if (Objects.equals(menuCategory, installerCategory)) {
-                            continue;
-                        }
-                    }
-
-                    JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
-                    item.setToolTipText(installer.getDescription());
-                    item.addActionListener(e -> JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(),
-                            (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
-                    additionalEnvironmentsMenu.add(item);
-                }
-                menuItems.add(additionalEnvironmentsMenu);
-            }
-        }
+        // TODO: new installer interface (based on upgrade capabilities)
+//        menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
+//        if (settings == null || settings.allowInstall()) {
+//            String menuCategory = settings != null ? settings.showCategory() : "";
+//            boolean foundAdditionalEnvironments = false;
+//            for (JIPipeEnvironmentsServiceComponent.InstallerEntry installer : JIPipe.getInstance()
+//                    .getEnvironments().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
+//
+//                if (!StringUtils.isNullOrEmpty(menuCategory)) {
+//                    // Check if the category matches
+//                    ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
+//                    String installerCategory = "";
+//                    if (installerInfo != null) {
+//                        installerCategory = installerInfo.category();
+//                    }
+//                    if (!Objects.equals(menuCategory, installerCategory)) {
+//                        foundAdditionalEnvironments = true;
+//                        continue;
+//                    }
+//                }
+//
+//                JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
+//                item.setToolTipText(installer.getDescription());
+//                item.addActionListener(e -> JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(),
+//                        (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
+//                menuItems.add(item);
+//            }
+//            if (foundAdditionalEnvironments) {
+//                JMenu additionalEnvironmentsMenu = new JMenu("Additional compatible installers");
+//                for (JIPipeEnvironmentsServiceComponent.InstallerEntry installer : JIPipe.getInstance()
+//                        .getEnvironments().getInstallers((Class<? extends JIPipeEnvironment>) fieldClass)) {
+//                    if (!StringUtils.isNullOrEmpty(menuCategory)) {
+//                        // Check if the category matches
+//                        ExternalEnvironmentInfo installerInfo = installer.getInstallerClass().getAnnotation(ExternalEnvironmentInfo.class);
+//                        String installerCategory = "";
+//                        if (installerInfo != null) {
+//                            installerCategory = installerInfo.category();
+//                        }
+//                        if (Objects.equals(menuCategory, installerCategory)) {
+//                            continue;
+//                        }
+//                    }
+//
+//                    JMenuItem item = new JMenuItem(installer.getName(), installer.getIcon());
+//                    item.setToolTipText(installer.getDescription());
+//                    item.addActionListener(e -> JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(),
+//                            (JIPipeRunnable) ReflectionUtils.newInstance(installer.getInstallerClass(), getDesktopWorkbench(), getParameterAccess())));
+//                    additionalEnvironmentsMenu.add(item);
+//                }
+//                menuItems.add(additionalEnvironmentsMenu);
+//            }
+//        }
 
         UIUtils.rebuildMenu(configureMenu, menuItems);
     }

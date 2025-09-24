@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -62,7 +62,6 @@ import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresh
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -92,6 +91,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)
 public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");

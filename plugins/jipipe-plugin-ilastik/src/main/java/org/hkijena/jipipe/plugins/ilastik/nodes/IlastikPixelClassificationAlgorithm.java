@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -39,16 +39,12 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 
-import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
@@ -76,6 +72,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Uncertainty", description = "Image where pixel intensity is proportional to the uncertainty found when trying to classify that pixel")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Features", description = "Multi-channel image where each channel represents one of the computed pixel features")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Labels", description = "Image representing the users’ manually created annotations")
+@RegisterJIPipeEnvironmentUsage(IlastikEnvironment.class)
 public class IlastikPixelClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final String PROJECT_TYPE = "PixelClassification";

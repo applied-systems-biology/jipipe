@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.r.algorithms;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
-import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
@@ -44,6 +43,7 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "R data set", description = "Imports a standard R data set (datasets package) as table.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
+@RegisterJIPipeEnvironmentUsage(REnvironment.class)
 public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Dataset dataset = Dataset.iris;

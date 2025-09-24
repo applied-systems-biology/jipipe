@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -51,11 +50,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -87,6 +86,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
 public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");

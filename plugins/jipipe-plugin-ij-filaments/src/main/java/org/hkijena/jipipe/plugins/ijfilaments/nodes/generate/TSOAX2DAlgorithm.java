@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -61,6 +62,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", description = "The image to be analyzed", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Filaments", description = "The snakes extracted as filaments", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Snakes", description = "The snakes extracted as table", create = true)
+@RegisterJIPipeEnvironmentUsage(TSOAXEnvironment.class)
 public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
 
     private OptionalTextAnnotationNameParameter zAnnotationName = new OptionalTextAnnotationNameParameter("Z", true);

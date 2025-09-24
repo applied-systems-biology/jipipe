@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -89,6 +91,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
+@RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
 public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private CellposeSegmentationModelSettings_Old segmentationModelSettings = new CellposeSegmentationModelSettings_Old();

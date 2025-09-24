@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -38,7 +38,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
@@ -80,6 +79,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
+@RegisterJIPipeEnvironmentUsage(REnvironment.class)
 public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();

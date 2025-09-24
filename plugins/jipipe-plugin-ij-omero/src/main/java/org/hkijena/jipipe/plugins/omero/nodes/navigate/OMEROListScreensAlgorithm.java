@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 @AddJIPipeInputSlot(value = OMEROGroupReferenceData.class, name = "Group", create = true, description = "The group to be utilized. If not provided, the user's default group is used.", optional = true)
 @AddJIPipeOutputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListScreensAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();

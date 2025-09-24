@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -83,6 +84,11 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     @Override
     public List<AddJIPipeOutputSlot> getOutputSlots() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeEnvironment>> getEnvironments() {
+        return Set.of();
     }
 
     @Override

@@ -19,13 +19,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 
 import java.io.IOException;
 
-/**
- * Used by {@link JsonNodeInfo} to setup icons
- */
 @JsonSerialize(using = IconRef.Serializer.class)
 @JsonDeserialize(using = IconRef.Deserializer.class)
 public class IconRef {

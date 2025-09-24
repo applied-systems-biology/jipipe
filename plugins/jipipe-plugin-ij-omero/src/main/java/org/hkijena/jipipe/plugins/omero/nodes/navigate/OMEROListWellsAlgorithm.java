@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 @AddJIPipeInputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();

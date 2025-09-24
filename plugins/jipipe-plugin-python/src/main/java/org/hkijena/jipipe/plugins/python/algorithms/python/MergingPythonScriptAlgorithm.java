@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
@@ -49,6 +48,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
+@RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
@@ -81,12 +81,6 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
-    }
-
-    @Override
-    protected void registerEnvironments() {
-        super.registerEnvironments();
-        registerEnvironment(PythonEnvironment.class);
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

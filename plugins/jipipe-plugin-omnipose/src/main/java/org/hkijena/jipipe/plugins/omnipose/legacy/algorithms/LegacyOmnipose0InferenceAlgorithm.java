@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -93,6 +94,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
+@RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)
 public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
@@ -47,7 +48,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -71,6 +71,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x image restoration model'.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@RegisterJIPipeEnvironmentUsage(Cellpose3Environment.class)
 public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private final Cellpose2GPUSettings gpuSettings;

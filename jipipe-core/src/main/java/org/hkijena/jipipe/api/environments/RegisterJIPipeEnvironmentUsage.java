@@ -13,15 +13,16 @@
 
 package org.hkijena.jipipe.api.environments;
 
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
+/**
+ * Annotates a {@link org.hkijena.jipipe.api.nodes.JIPipeGraphNode} as
+ */
 @Retention(RetentionPolicy.RUNTIME)
-public @interface ExternalEnvironmentInfo {
-    /**
-     * Allows to tag the environment for the GUI.
-     *
-     * @return the category
-     */
-    String category() default "";
+@Target(ElementType.TYPE)
+public @interface RegisterJIPipeEnvironmentUsage {
+    Class<? extends JIPipeEnvironment> value();
 }

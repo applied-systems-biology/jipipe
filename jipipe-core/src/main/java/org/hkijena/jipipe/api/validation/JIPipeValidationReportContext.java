@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.validation;
 
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -193,16 +192,6 @@ public abstract class JIPipeValidationReportContext {
      */
     public JavaExtensionValidationReportContext extension(JIPipeDependency extension) {
         return new JavaExtensionValidationReportContext(this, extension);
-    }
-
-    /**
-     * Creates a JSON node info validation context.
-     *
-     * @param nodeInfo the JSON node information
-     * @return new JsonNodeInfoValidationReportContext instance
-     */
-    public JsonNodeInfoValidationReportContext jsonNode(JsonNodeInfo nodeInfo) {
-        return new JsonNodeInfoValidationReportContext(this, nodeInfo);
     }
 
     // Common builder starters for frequent use cases

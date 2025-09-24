@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -60,6 +61,7 @@ import java.util.Objects;
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The results obtained using the TSV exporter")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "OCR")
+@RegisterJIPipeEnvironmentUsage(TesseractOCREnvironment.class)
 public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TesseractPageSegmentationMethod pageSegmentationMethod = TesseractPageSegmentationMethod.PSM11;
