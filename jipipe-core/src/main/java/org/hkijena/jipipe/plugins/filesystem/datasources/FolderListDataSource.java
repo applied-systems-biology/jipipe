@@ -227,7 +227,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Path folderPath : getAbsoluteFolderPaths()) {
             if (folderPath == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,

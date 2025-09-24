@@ -17,7 +17,8 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -252,21 +253,23 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
         for (JIPipeGraphNode targetNodeCopy : targetNodeCopies) {
-            targetNodeCopy.reportValidity(reportContext, reportSettings, report);
+            targetNodeCopy.reportValidity(reportContext, reportSettings, report, progressInfo);
         }
 
         // Check environments
-        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
+        Set<JIPipeEnvironment> checkedEnvironments = new HashSet<>();
         List<JIPipeEnvironmentConfigurator<?>> allEnvironmentReferences = new ArrayList<>();
         for (JIPipeGraphNode node : targetNodeCopies) {
-            node.getEnvironmentDependencies(allEnvironmentReferences);
+            node.getEnvironmentDependencies(allEnvironmentReferences, configurationCache);
         }
         for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
-            if (!checkedEnvironments.contains(environmentReference.get(progressInfo))) {
-                environmentReference.reportValidity(reportContext, reportSettings, report);
-                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.get(progressInfo));
+            JIPipeEnvironment environment = environmentReference.get(progressInfo);
+            if (!checkedEnvironments.contains(environment)) {
+                environmentReference.reportValidity(reportContext, reportSettings, report, progressInfo);
+                checkedEnvironments.add(environment);
             }
         }
 

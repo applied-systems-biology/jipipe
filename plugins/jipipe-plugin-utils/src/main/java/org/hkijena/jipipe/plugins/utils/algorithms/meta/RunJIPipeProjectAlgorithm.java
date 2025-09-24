@@ -118,7 +118,7 @@ public class RunJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Main validation
         if (!ignoreValidation) {
-            project.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            project.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo.resolve("Project validation"));
             if (!report.isValid()) {
                 report.print();
                 throw new JIPipeValidationRuntimeException(report);

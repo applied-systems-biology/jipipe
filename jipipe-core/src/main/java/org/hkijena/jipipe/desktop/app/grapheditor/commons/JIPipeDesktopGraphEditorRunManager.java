@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -56,7 +57,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
-        createValidationReport(report);
+        createValidationReport(report, run.getProgressInfo().resolve("Pre-Validation"));
         if (!report.isEmpty()) {
             dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
             dockPanel.activatePanel(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
@@ -89,7 +90,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         return false;
     }
 
-    protected abstract void createValidationReport(JIPipeValidationReport report);
+    protected abstract void createValidationReport(JIPipeValidationReport report, JIPipeProgressInfo progressInfo);
 
     public JIPipeProject getProject() {
         return project;

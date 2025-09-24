@@ -62,20 +62,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
     }
 
-    public static JIPipeEnvironmentConfigurator<REnvironment> getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(REnvironment.class)
-                .application(RPluginApplicationSettings.getInstance().getReadOnlyEnvironment());
-
-        if (project != null) {
-            selector.project(project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-
-        return selector.select();
-    }
-
     @Override
     public boolean isBeta() {
         return true;
@@ -120,22 +106,14 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        RPluginApplicationSettings extensionSettings = new RPluginApplicationSettings();
 
-        registerEnvironment(REnvironment.ENVIRONMENT_ID, REnvironment.class,
+        registerEnvironment(REnvironment.ENVIRONMENT_ID,
+                REnvironment.class,
+                OptionalREnvironment.class,
                 REnvironment.List.class,
-                extensionSettings,
                 "R environment",
                 "A R environment",
                 JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));
-        registerParameterType("optional-r-environment",
-                OptionalREnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional R environment",
-                "An optional R environment",
-                null);
-
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
@@ -147,9 +125,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "R script",
                 "An R script",
                 null);
-        registerApplicationSettingsSheet(extensionSettings);
-        registerProjectSettingsSheet(RPluginProjectSettings.class);
-
 
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
         registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));

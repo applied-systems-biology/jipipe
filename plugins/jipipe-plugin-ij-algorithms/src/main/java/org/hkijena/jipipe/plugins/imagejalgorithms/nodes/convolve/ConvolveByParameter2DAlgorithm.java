@@ -101,7 +101,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (matrix.getRowCount() == 0 || matrix.getColumnCount() == 0) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(reportContext, this, "Matrix", "matrix"),

@@ -57,7 +57,7 @@ public class WebUtils {
                 ex.printStackTrace();
             }
             if (settings != null) {
-                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid();
+                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, progressInfo).isValid();
                 try {
                     if (!useExternalDownloader) {
                         downloadNative(url, outputFile, label, progressInfo);

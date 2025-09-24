@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
+
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
@@ -52,7 +52,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For OMERO")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
-public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm implements OMEROCredentialAccessNode {
+public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
@@ -85,7 +85,7 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
+        OMEROCredentialsEnvironment environment = getEnvironment(OMEROCredentialsEnvironment.class, runContext, progressInfo);
         LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
 
@@ -183,14 +183,5 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
     public void setAnnotationMergeMode(JIPipeTextAnnotationMergeMode annotationMergeMode) {
         this.annotationMergeMode = annotationMergeMode;
     }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredOMEROEnvironmentValidity(reportContext, report);
-        }
-    }
-
 
 }

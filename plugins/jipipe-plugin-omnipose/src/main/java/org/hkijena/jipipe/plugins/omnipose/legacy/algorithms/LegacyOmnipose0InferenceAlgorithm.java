@@ -36,9 +36,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
@@ -54,14 +51,14 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
+
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
+import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresholdSettings;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -96,7 +93,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
-public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
+public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -118,7 +115,6 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
     public LegacyOmnipose0InferenceAlgorithm(JIPipeNodeInfo info) {
@@ -150,7 +146,6 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.suppressLogs = other.suppressLogs;
@@ -189,18 +184,6 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
@@ -217,15 +200,11 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
-        }
-    }
-
-    @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Omnipose0Environment environment = getEnvironment(Omnipose0Environment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -260,19 +239,19 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         if (!runWith2D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runOmnipose(progressInfo.resolve("Omnipose"), io2DPath, false, customModelPath);
+                    runOmnipose(environment, progressInfo.resolve("Omnipose"), io2DPath, false, customModelPath);
                 }
             } else {
-                runOmnipose(progressInfo.resolve("Omnipose"), io2DPath, false, null);
+                runOmnipose(environment, progressInfo.resolve("Omnipose"), io2DPath, false, null);
             }
         }
         if (!runWith3D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runOmnipose(progressInfo.resolve("Omnipose"), io3DPath, true, customModelPath);
+                    runOmnipose(environment, progressInfo.resolve("Omnipose"), io3DPath, true, customModelPath);
                 }
             } else {
-                runOmnipose(progressInfo.resolve("Omnipose"), io3DPath, true, null);
+                runOmnipose(environment, progressInfo.resolve("Omnipose"), io3DPath, true, null);
             }
         }
 
@@ -288,7 +267,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredOmniposeEnvironment().get(progressInfo),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -302,7 +281,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredOmniposeEnvironment().get(progressInfo),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -422,7 +401,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         }
     }
 
-    private void runOmnipose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
+    private void runOmnipose(Omnipose0Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
         List<String> arguments = new ArrayList<>();
         Map<String, String> envVars = new HashMap<>();
 
@@ -533,7 +512,7 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().get(progressInfo),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);

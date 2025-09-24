@@ -80,13 +80,13 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (importerType.getInstance() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(reportContext, this, "Importer type", "importer-type"),
                     "No importer type selected!", "No importer type was selected", "Please select an importer"));
         }
-        super.reportValidity(reportContext, reportSettings, report);
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Set import parameters", description = "Sets the import parameters via its default UI")

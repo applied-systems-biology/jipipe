@@ -37,6 +37,12 @@ import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpo
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2EnvironmentList;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.OptionalCellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3EnvironmentList;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.OptionalCellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.*;
@@ -81,30 +87,6 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public CellposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-    }
-
-    public static JIPipeEnvironmentConfigurator<PythonEnvironment> getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(PythonEnvironment.class)
-                .application(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment(), project);
-        }
-        return selector.select();
-    }
-
-    public static JIPipeEnvironmentConfigurator<PythonEnvironment> getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(PythonEnvironment.class)
-                .application(Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -185,9 +167,9 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
-        registerApplicationSettingsSheet(new Cellpose3PluginApplicationSettings());
-        registerProjectSettingsSheet(CellposePluginProjectSettings.class);
+
+        registerEnvironment("cellpose2", Cellpose2Environment.class, OptionalCellpose2Environment.class, Cellpose2EnvironmentList.class, "Cellpose 2.x", "A Python environment with Cellpose 2.x",  JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
+        registerEnvironment("cellpose3", Cellpose3Environment.class, OptionalCellpose3Environment.class, Cellpose3EnvironmentList.class, "Cellpose 3.x", "A Python environment with Cellpose 3.x",  JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
 
         // Modern nodes and data types
         registerDatatype("cellpose-model-v2", CellposeModelData.class, JIPipe.RESOURCES.getIcon16URL("data-types/cellpose-model.png"));

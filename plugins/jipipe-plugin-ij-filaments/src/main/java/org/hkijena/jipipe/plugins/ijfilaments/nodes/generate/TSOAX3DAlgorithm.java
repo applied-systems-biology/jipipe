@@ -69,6 +69,10 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        TSOAXEnvironment environment = getEnvironment(TSOAXEnvironment.class, runContext, progressInfo);
+
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         if (img.getType() == ImagePlus.GRAY32) {
             progressInfo.log("Received 32-bit image, which is not supported. Converting to 16-bit.");
@@ -102,7 +106,6 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
         args.add(parameterFile.toString());
 
         // Run TSOAX
-        TSOAXEnvironment environment = getConfiguredTSOAXEnvironment().getEnvironment();
         Map<String, String> environmentVariables = new HashMap<>();
         environmentVariables.put("LANG", "en_US.UTF-8");
         environmentVariables.put("LC_ALL", "en_US.UTF-8");

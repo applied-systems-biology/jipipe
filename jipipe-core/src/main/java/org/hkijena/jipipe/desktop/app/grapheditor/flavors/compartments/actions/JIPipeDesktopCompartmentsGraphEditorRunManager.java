@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.actions;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -44,22 +46,24 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
     }
 
     @Override
-    protected void createValidationReport(JIPipeValidationReport report) {
+    protected void createValidationReport(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
         JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) getNodeUI().getNode();
         for (JIPipeProjectCompartmentOutput compartmentOutput : compartment.getOutputNodes().values()) {
-            getProject().reportValidity(new UnspecifiedValidationReportContext(), report, compartmentOutput);
+            getProject().reportValidity(new UnspecifiedValidationReportContext(), report, compartmentOutput, progressInfo);
         }
 
         // Check environments
-        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
+        Set<JIPipeEnvironment> checkedEnvironments = new HashSet<>();
         List<JIPipeEnvironmentConfigurator<?>> allEnvironmentReferences = new ArrayList<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            node.getEnvironmentDependencies(allEnvironmentReferences);
+            node.getEnvironmentDependencies(allEnvironmentReferences, configurationCache);
         }
         for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
-            if (!checkedEnvironments.contains(environmentReference.get(progressInfo))) {
-                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
-                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.get(progressInfo));
+            JIPipeEnvironment environment = environmentReference.get(progressInfo);
+            if (!checkedEnvironments.contains(environment)) {
+                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo);
+                checkedEnvironments.add(environment);
             }
         }
     }

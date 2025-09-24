@@ -207,7 +207,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (getPlotType().getInfo() == null) {
             reportContext.error()
                     .title("Plot type not selected!")
@@ -215,10 +215,10 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
                     .report(report);
         }
         if (currentPlot != null) {
-            report.report(reportContext.custom("Plot parameters"), currentPlot);
+            report.report(reportContext.custom("Plot parameters"), currentPlot, progressInfo);
         }
         for (int i = 0; i < seriesBuilders.size(); ++i) {
-            report.report(reportContext.custom("Series #" + (i + 1)), seriesBuilders.get(i));
+            report.report(reportContext.custom("Series #" + (i + 1)), seriesBuilders.get(i), progressInfo);
         }
 
     }
@@ -331,7 +331,7 @@ public class JFreeChartPlotEditor extends JIPipeDesktopWorkbenchPanel implements
             removeAll();
 
             JIPipeValidationReport report = new JIPipeValidationReport();
-            this.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            this.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
             if (!report.isValid()) {
                 JIPipeDesktopUserFriendlyErrorUI errorUI = new JIPipeDesktopUserFriendlyErrorUI(getDesktopWorkbench(), null, JIPipeDesktopUserFriendlyErrorUI.WITH_SCROLLING);
                 errorUI.displayErrors(report);

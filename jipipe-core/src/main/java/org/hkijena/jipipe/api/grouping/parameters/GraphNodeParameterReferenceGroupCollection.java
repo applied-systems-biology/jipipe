@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventEmitter;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEventListener;
@@ -133,7 +134,7 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (graph != null) {
             JIPipeParameterTree tree = graph.getParameterTree(false, null);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {

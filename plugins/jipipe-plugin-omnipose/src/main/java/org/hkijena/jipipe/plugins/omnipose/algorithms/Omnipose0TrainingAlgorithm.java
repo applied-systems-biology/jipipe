@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,9 +36,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
@@ -56,12 +52,12 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.omnipose.OmniposeEnvironmentAccessNode;
+
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
+import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -81,7 +77,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = CellposeModelData.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements OmniposeEnvironmentAccessNode {
+public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
@@ -93,7 +89,6 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private boolean cleanUpAfterwards = true;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
     private boolean trainSizeModel = false;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
 
@@ -120,7 +115,6 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = new OptionalDoubleParameter(other.diameter);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
         this.suppressLogs = other.suppressLogs;
@@ -189,19 +183,6 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Omnipose is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose", allowArtifact = true, artifactFilters = {"com.github.kevinjohncutler.omnipose:*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Omnipose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
@@ -247,6 +228,9 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
+        // Get environment
+        Omnipose0Environment environment = getEnvironment(Omnipose0Environment.class, runContext, progressInfo);
+
         // Prepare folders
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
@@ -291,7 +275,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), environment, modelInfo, iterationStep, iterationContext, runContext, modelProgress);
         }
 
 
@@ -300,7 +284,8 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, Omnipose0Environment environment, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
         // Prepare folders
         Path trainingDir = workDirectory.resolve("training");
         Path testDir = workDirectory.resolve("test");
@@ -438,7 +423,7 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredOmniposeEnvironment().get(progressInfo),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);
@@ -539,14 +524,6 @@ public class Omnipose0TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     @JIPipeParameter("epochs")
     public void setNumEpochs(int numEpochs) {
         this.numEpochs = numEpochs;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredOmniposeEnvironmentValidity(reportContext, report);
-        }
     }
 
     private static class CellposeModelInfo {

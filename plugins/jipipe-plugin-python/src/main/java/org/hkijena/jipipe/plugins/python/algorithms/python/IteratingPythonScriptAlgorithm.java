@@ -56,7 +56,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
     /**
@@ -80,7 +79,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
     }
@@ -103,18 +101,6 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
             "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
     @JIPipeParameter("suppress-logs")
@@ -128,20 +114,21 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-        if (!isPassThrough()) {
-            reportConfiguredPythonEnvironmentValidity(reportContext, report);
-        }
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
+        // Get the environments
+        JIPipePythonAdapterLibraryEnvironment adapterLibraryEnvironment = getEnvironment(JIPipePythonAdapterLibraryEnvironment.class, runContext, progressInfo);
+        PythonEnvironment pythonEnvironment = getEnvironment(PythonEnvironment.class, runContext, progressInfo);
+
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded((JIPipePythonAdapterLibraryEnvironment) getConfiguredPythonAdapterEnvironment().getEnvironment(), code);
+        PythonUtils.installAdapterCodeIfNeeded(adapterLibraryEnvironment, code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
@@ -165,7 +152,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Run Python
         PythonUtils.runPython(code.toString(),
-                (PythonEnvironment) getConfiguredPythonEnvironment().getEnvironment(),
+                pythonEnvironment,
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

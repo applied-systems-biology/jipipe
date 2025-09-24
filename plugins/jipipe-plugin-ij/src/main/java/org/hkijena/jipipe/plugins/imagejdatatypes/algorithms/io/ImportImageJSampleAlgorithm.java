@@ -68,7 +68,7 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment().get(progressInfo);
+        JIPipeDataDirectoryEnvironment environment = getEnvironment(JIPipeDataDirectoryEnvironment.class, runContext, progressInfo);
         Path fileName = environment.getDirectory().resolve(sample.getFileName());
         if (!Files.isRegularFile(fileName)) {
             throw new RuntimeException(new FileNotFoundException(fileName.toString()));
@@ -76,17 +76,6 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         ImagePlus imagePlus = ImportImagePlusAlgorithm.readImageFrom(fileName, false, runContext, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
-    }
-
-    public JIPipeEnvironmentConfigurator<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
-        ImageSamplesApplicationSettings applicationSettings = ImageSamplesApplicationSettings.getInstance();
-        ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);
-
-        return JIPipeEnvironmentConfigurator.defaultOptions(JIPipeDataDirectoryEnvironment.class)
-                .application(applicationSettings.getReadOnlyDefaultEnvironment())
-                .project(settingsSheet.getProjectDefaultEnvironment(), getProject())
-                .node(dataDirectoryEnvironment, this)
-                .select();
     }
 
     public enum Sample {

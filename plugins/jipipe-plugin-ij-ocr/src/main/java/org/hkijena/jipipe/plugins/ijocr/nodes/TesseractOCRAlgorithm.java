@@ -88,6 +88,8 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
+        TesseractOCREnvironment environment = getEnvironment(TesseractOCREnvironment.class, runContext, progressInfo);
+
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
 
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
@@ -95,7 +97,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         int dpi = overrideDPI.isEnabled() ? overrideDPI.getContent().evaluateToInteger(variablesMap) : 0;
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;
-        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment().get(progressInfo);
         String languagesString = String.join("+", languages.getValues());
         if (StringUtils.isNullOrEmpty(languagesString)) {
             progressInfo.log("INFO: no language selected. Defaulting to eng");
@@ -135,7 +136,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 args.add("tessedit_char_whitelist=" + allowedChars);
             }
 
-            tesseractOCREnvironment.runExecutable(args, Collections.emptyMap(), false, sliceProcess);
+            environment.runExecutable(args, Collections.emptyMap(), false, sliceProcess);
 
             // Find the TSV file
             Path tsvFile = PathUtils.findFileByExtensionIn(tmpPath, ".tsv");
@@ -159,15 +160,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
-    }
-
-    public JIPipeEnvironmentConfigurator<TesseractOCREnvironment> getConfiguredTesseractOCREnvironment() {
-        JIPipeGraphNode node = this;
-        JIPipeProject project = node.getRuntimeProject();
-        if (project == null) {
-            project = node.getParentGraph().getProject();
-        }
-        return OCRPlugin.getTesseractOCREnvironment(project, getOverrideTesseractOCREnvironment(), this);
     }
 
     @SetJIPipeDocumentation(name = "Override Tesseract OCR environment", description = "Allows to override the Tesseract OCR environment")

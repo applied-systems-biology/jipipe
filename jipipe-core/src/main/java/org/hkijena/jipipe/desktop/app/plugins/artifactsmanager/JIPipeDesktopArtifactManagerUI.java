@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -251,7 +252,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                             "Please ensure that the provided information is correct and follows the Maven standards."), "Manually install artifact",
                     JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS)) {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                dummyArtifact.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+                dummyArtifact.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
                 if (!report.isValid()) {
                     UIUtils.showValidityReportDialog(getDesktopWorkbench(), this, report, "Invalid artifact metadata", "The provided artifact metadata is invalid!", true);
                     return;

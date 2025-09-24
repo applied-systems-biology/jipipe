@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationOutputSettings;
@@ -91,7 +92,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
+public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
@@ -110,7 +111,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     private boolean enable3D = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
     private boolean enableMultiChannel = true;
 
@@ -145,7 +145,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3D = other.enable3D;
         this.enableMultiChannel = other.enableMultiChannel;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -195,19 +194,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         this.enableMultiChannel = enableMultiChannel;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose 3.x is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose 3", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose3:*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
@@ -217,15 +203,16 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
-        }
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose3Environment environment = getEnvironment(Cellpose3Environment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -244,7 +231,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), environment, modelInfo, iterationStep, modelProgress);
         }
 
         // Cleanup
@@ -253,7 +240,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, Cellpose3Environment environment, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         // We need a 2D and a 3D branch due to incompatibilities on the side of Cellpose
         final Path io2DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-2d");
         final Path io3DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-3d");
@@ -276,10 +263,10 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
+            runCellpose(environment, progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
         }
         if (!runWith3D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
+            runCellpose(environment, progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
         }
 
         // Deploy and run extraction script
@@ -295,7 +282,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -310,7 +297,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -370,7 +357,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         }
     }
 
-    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
+    private void runCellpose(Cellpose3Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
         arguments.add("cellpose");
@@ -476,7 +463,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);

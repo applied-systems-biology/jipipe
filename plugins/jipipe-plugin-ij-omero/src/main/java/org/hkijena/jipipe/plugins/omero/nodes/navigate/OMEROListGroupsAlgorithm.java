@@ -36,7 +36,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
+
+import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
@@ -47,7 +48,7 @@ import java.util.ArrayList;
 @SetJIPipeDocumentation(name = "List OMERO groups", description = "Returns the ID(s) of groups(s) according to search criteria.")
 @AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Groups", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
-public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm implements OMEROCredentialAccessNode {
+public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
@@ -64,7 +65,8 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm imp
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        LoginCredentials credentials = getConfiguredOMEROCredentialsEnvironment().getEnvironment().toLoginCredentials();
+        OMEROCredentialsEnvironment environment = getEnvironment(OMEROCredentialsEnvironment.class, runContext, progressInfo);
+        LoginCredentials credentials = environment.toLoginCredentials();
         progressInfo.log("Connecting to " + credentials.getUser().getUsername() + "@" + credentials.getServer().getHost());
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
             ExperimenterData user = gateway.getUser();
@@ -114,11 +116,4 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm imp
         this.overrideCredentials = overrideCredentials;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredOMEROEnvironmentValidity(reportContext, report);
-        }
-    }
 }

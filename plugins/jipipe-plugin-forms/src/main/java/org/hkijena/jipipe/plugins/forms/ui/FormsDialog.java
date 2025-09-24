@@ -318,7 +318,10 @@ public class FormsDialog extends JFrame {
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
-            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"), JIPipeValidationReportSettings.DEFAULT, report);
+            formData.reportValidity(new CustomValidationReportContext(tab + " -> " + name + " (#" + row + ")"),
+                    JIPipeValidationReportSettings.DEFAULT,
+                    report,
+                    JIPipeProgressInfo.SILENT);
         }
         return report;
     }
@@ -330,7 +333,10 @@ public class FormsDialog extends JFrame {
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 for (int row = 0; row < iterationStepForms.get(i).getRowCount(); row++) {
                     FormData formData = iterationStepForms.get(i).getData(row, FormData.class, progressInfo);
-                    formData.reportValidity(new CustomValidationReportContext("Form " + row), JIPipeValidationReportSettings.DEFAULT, report);
+                    formData.reportValidity(new CustomValidationReportContext("Form " + row),
+                            JIPipeValidationReportSettings.DEFAULT,
+                            report,
+                            JIPipeProgressInfo.SILENT);
                     if (!report.isValid()) {
                         iterationStepStatuses.set(i, DataBatchStatus.Invalid);
                         break;

@@ -183,7 +183,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (JIPipe.getInstance().getInitializationSettings().getMode() == JIPipeServiceMode.Headless) {
             if (StringUtils.isNullOrEmpty(userName) || StringUtils.isNullOrEmpty(host) || StringUtils.isNullOrEmpty(email)) {
                 reportContext.error().title("Invalid OMERO credentials").explanation("Please ensure to always provide a user name, host, and email address.").report(report);

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
@@ -164,18 +165,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter(value = "initialization", uiOrder = -50)
     public TSOAXInitializationParameters getInitializationParameters() {
         return initializationParameters;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!getConfiguredTSOAXEnvironment().getEnvironment().generateValidityReport(reportContext, reportSettings).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext,
-                    "TSOAX not configured",
-                    "The TSOAX integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Filaments and setup an appropriate default TSOAX environment."));
-        }
     }
 
     @AddJIPipeDesktopNodeQuickAction(name = "Save TSOAX parameters *.txt", description = "Saves parameters into the TSOAX parameters file format",

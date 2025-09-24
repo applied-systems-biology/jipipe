@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -41,7 +42,7 @@ public class JIPipeInitializationReport implements JIPipeValidatable {
     private final Map<String, JIPipeValidationReport> preActivationIssues = new HashMap<>();
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Map.Entry<String, JIPipeValidationReport> entry : preActivationIssues.entrySet()) {
             report.addAll(entry.getValue());
         }

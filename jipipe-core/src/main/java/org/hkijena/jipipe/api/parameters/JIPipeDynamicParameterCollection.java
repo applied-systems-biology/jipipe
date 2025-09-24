@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.validation.*;
@@ -357,11 +358,11 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Map.Entry<String, JIPipeMutableParameterAccess> entry : dynamicParameters.entrySet()) {
             Object o = entry.getValue().get(Object.class);
             if (o instanceof JIPipeValidatable) {
-                report.report(reportContext.parameter(this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o);
+                report.report(reportContext.parameter(this, entry.getValue().getName(), entry.getKey()), (JIPipeValidatable) o, progressInfo);
             }
         }
     }

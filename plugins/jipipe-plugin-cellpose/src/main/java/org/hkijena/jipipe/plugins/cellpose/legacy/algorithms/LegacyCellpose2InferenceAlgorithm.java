@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
-import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.Cellpose2EnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.*;
@@ -92,7 +92,7 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
-public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
+public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(LegacyCellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
     //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
@@ -115,7 +115,6 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
     public LegacyCellpose2InferenceAlgorithm(JIPipeNodeInfo info) {
@@ -148,7 +147,6 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
 
@@ -186,18 +184,6 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
@@ -214,15 +200,16 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
-        }
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose2Environment environment = getEnvironment(Cellpose2Environment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -276,19 +263,19 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         if (!runWith2D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, customModelPath);
+                    runCellpose(environment, progressInfo.resolve("Cellpose"), io2DPath, false, customModelPath);
                 }
             } else {
-                runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, null);
+                runCellpose(environment, progressInfo.resolve("Cellpose"), io2DPath, false, null);
             }
         }
         if (!runWith3D.isEmpty()) {
             if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
-                    runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, customModelPath);
+                    runCellpose(environment, progressInfo.resolve("Cellpose"), io3DPath, true, customModelPath);
                 }
             } else {
-                runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, null);
+                runCellpose(environment, progressInfo.resolve("Cellpose"), io3DPath, true, null);
             }
         }
 
@@ -304,7 +291,7 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -318,7 +305,7 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -438,7 +425,7 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         }
     }
 
-    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
+    private void runCellpose(Cellpose2Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
         arguments.add("cellpose");
@@ -533,7 +520,7 @@ public class LegacyCellpose2InferenceAlgorithm extends JIPipeSingleIterationAlgo
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);

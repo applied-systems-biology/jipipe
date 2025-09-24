@@ -214,7 +214,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Path fileName : getAbsoluteFileNames()) {
             if (fileName == null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,

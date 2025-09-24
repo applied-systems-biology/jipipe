@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -53,7 +54,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
     }
 
     /**
@@ -101,7 +102,7 @@ public abstract class DefaultJIPipeParameterGenerator extends AbstractJIPipePara
             JButton confirmButton = new JButton("Generate", JIPipe.RESOURCES.getIcon16("actions/run-build.png"));
             confirmButton.addActionListener(e -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                generator.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+                generator.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
                 if (!report.isEmpty()) {
                     UIUtils.showValidityReportDialog(workbench, this, report, "Invalid settings detected", "Please resolve the following issues:", true);
                     return;

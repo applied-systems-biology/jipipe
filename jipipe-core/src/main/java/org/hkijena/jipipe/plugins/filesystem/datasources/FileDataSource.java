@@ -178,7 +178,7 @@ public class FileDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (needsToExist && (fileName == null || !Files.isRegularFile(getAbsoluteFileName()))) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
                     reportContext,

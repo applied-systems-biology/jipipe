@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -1133,11 +1134,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Gathers all known external environments
      *
-     * @param target the list where the external environments will be gathered
+     * @param target             the list where the external environments will be gathered
+     * @param configurationCache the cache for the environment configurations
      */
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentConfigurator<?>> target) {
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentConfigurator<?>> target, JIPipeEnvironmentConfigurationCache configurationCache) {
         for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
-            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> reference = getEnvironmentConfigurator(environmentType);
+            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> reference = getEnvironmentConfigurator(environmentType, configurationCache);
             if(reference != null) {
                 target.add(reference);
             }
@@ -1360,7 +1362,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         utilizedEnvironmentTypes.add(Objects.requireNonNull(klass));
 
         // Register parameter
-        JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(klass);
+        JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(klass);
         if(!environmentOverrides.containsKey(environmentInfo.getId())) {
             environmentOverrides.addParameter(environmentInfo.getId(),
                     environmentInfo.getOptionalEnvironmentClass(),
@@ -1371,20 +1373,24 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        reportEnvironmentValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        reportEnvironmentValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     /**
      * Checks if all registered environments are available
-     * @param reportContext the report context
+     *
+     * @param reportContext  the report context
      * @param reportSettings report settings
-     * @param report the report
+     * @param report         the report
+     * @param progressInfo the progress info
      */
-    public void reportEnvironmentValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportEnvironmentValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
         for (Class<? extends JIPipeEnvironment> environmentType : getUtilizedEnvironmentTypes()) {
-            if(!getEnvironmentConfigurator(environmentType).generateValidityReport(reportContext, reportSettings).isValid()) {
-                JIPipeExternalEnvironmentRegistry.EnvironmentInfo environmentInfo = JIPipe.getEnvironments().getInfoByClass(environmentType);
+            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> environmentConfigurator = getEnvironmentConfigurator(environmentType, configurationCache);
+            if(!environmentConfigurator.generateValidityReport(reportContext, reportSettings, progressInfo).isValid()) {
+                JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentType);
                 reportContext.error().title(environmentInfo.getName() + " environment not configured").explanation("The environment '" + environmentInfo.getId() + "' is not properly configured for the current node.")
                         .solution("Check if the node's environment overrides the " + environmentInfo.getName() + " environment and is correctly configured. Otherwise, check the project and application settings for the respective environment configuration.").report(report);
             }

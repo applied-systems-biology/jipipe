@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -47,7 +48,9 @@ public class ProjectValidationAssistantCondition extends JIPipeDesktopPublisherA
 
     @Override
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
-        this.lastReport = getProject().generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.STRICT);
+        this.lastReport = getProject().generateValidityReport(new UnspecifiedValidationReportContext(),
+                JIPipeValidationReportSettings.STRICT,
+                new JIPipeProgressInfo());
         if (lastReport.isValid()) {
             if (lastReport.getNumberOf(JIPipeValidationReportEntryLevel.Warning) > 0) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Warning;

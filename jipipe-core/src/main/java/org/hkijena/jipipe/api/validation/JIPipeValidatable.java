@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api.validation;
 
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 /**
  * An interface about a type that reports of the validity of its internal state
  */
@@ -25,19 +27,21 @@ public interface JIPipeValidatable {
      * @param reportContext  the report context
      * @param reportSettings the report settings
      * @param report         the report to be added to
+     * @param progressInfo the progress info
      */
-    void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report);
+    void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo);
 
     /**
      * Generates a report for this object
      *
      * @param reportContext  the report context
      * @param reportSettings the report settings
+     * @param progressInfo the progress info
      * @return the report
      */
-    default JIPipeValidationReport generateValidityReport(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings) {
+    default JIPipeValidationReport generateValidityReport(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeProgressInfo progressInfo) {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        reportValidity(reportContext, reportSettings, report);
+        reportValidity(reportContext, reportSettings, report, progressInfo);
         return report;
     }
 }

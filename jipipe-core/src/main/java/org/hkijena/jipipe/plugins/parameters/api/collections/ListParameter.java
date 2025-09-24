@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -83,11 +84,11 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (JIPipeValidatable.class.isAssignableFrom(contentClass)) {
             for (int i = 0; i < size(); i++) {
                 JIPipeValidatable validatable = (JIPipeValidatable) get(i);
-                report.report(reportContext.custom("Item #" + (i + 1)), validatable);
+                report.report(reportContext.custom("Item #" + (i + 1)), validatable, progressInfo);
             }
         }
     }

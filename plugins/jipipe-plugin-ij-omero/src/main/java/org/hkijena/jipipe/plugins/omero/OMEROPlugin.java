@@ -72,18 +72,6 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public OMEROPlugin() {
     }
 
-    public static JIPipeEnvironmentConfigurator<OMEROCredentialsEnvironment> getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(OMEROCredentialsEnvironment.class)
-                .application(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        return selector.select();
-    }
-
     @Override
     public PluginCategoriesEnumParameter.List getCategories() {
         return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_SCIJAVA, PluginCategoriesEnumParameter.CATEGORY_OME);
@@ -214,19 +202,12 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
-        registerApplicationSettingsSheet(omeroSettings);
         registerEnvironment("omero-credentials", OMEROCredentialsEnvironment.class,
+                OptionalOMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
-                omeroSettings,
                 "OMERO Credentials",
                 "Credentials for an OMERO server",
                 RESOURCES.getIcon16("omero.png"));
-        registerParameterType("optional-omero-credentials",
-                OptionalOMEROCredentialsEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, "Optimal OMERO credentials",
-                "Optional OMERO credentials");
-        registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIcon16URL("omero-group.png"));

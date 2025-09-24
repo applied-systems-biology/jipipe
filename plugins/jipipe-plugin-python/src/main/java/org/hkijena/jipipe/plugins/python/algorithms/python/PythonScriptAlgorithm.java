@@ -56,7 +56,6 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
     /**
@@ -80,7 +79,6 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
     }
@@ -103,19 +101,6 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.suppressLogs = suppressLogs;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Python is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
@@ -129,8 +114,8 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 

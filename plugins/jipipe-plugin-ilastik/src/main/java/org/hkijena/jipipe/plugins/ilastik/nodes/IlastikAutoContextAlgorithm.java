@@ -47,7 +47,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
-import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessNode;
+
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -86,7 +86,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Labels Stage 2", description = "Image representing the users’ manually created annotations")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Input Stage 1", description = "Raw input image that was fed into the first stage of the workflow")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Input Stage 2", description = "Input received by the second Pixel Classification stage in the workflow")
-public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
+public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final String PROJECT_TYPE = "PixelClassification01";
 
@@ -147,7 +147,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
-    private OptionalIlastikEnvironment overrideEnvironment = new OptionalIlastikEnvironment();
 
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
@@ -162,7 +161,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
-        this.overrideEnvironment = new OptionalIlastikEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         registerSubParameter(outputParameters);
         updateSlots();
@@ -170,6 +168,10 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        IlastikEnvironment environment = getEnvironment(IlastikEnvironment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -271,7 +273,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
                 }
 
                 // Run ilastik
-                IlastikEnvironment environment = getConfiguredIlastikEnvironment().get(progressInfo);
                 IlastikPlugin.runIlastik(environment,
                         args,
                         false, exportSourceProgress.resolve("Run Ilastik")
@@ -310,14 +311,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
-        }
-    }
-
     @SetJIPipeDocumentation(name = "Validate Ilastik project", description = "Determines how/if the node validates the input projects. This is done to check if the project is supported by this node.")
     @JIPipeParameter("project-validation-mode")
     public IlastikProjectValidationMode getProjectValidationMode() {
@@ -346,19 +339,6 @@ public class IlastikAutoContextAlgorithm extends JIPipeSingleIterationAlgorithm 
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
-    }
-
-    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Ilastik is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})
-    public OptionalIlastikEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalIlastikEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
     }
 
     @Override

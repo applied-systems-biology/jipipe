@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -71,12 +72,12 @@ public abstract class PairParameter<K, V> implements JIPipeValidatable, Map.Entr
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (key instanceof JIPipeValidatable) {
-            report.report(reportContext.custom("Key"), (JIPipeValidatable) key);
+            report.report(reportContext.custom("Key"), (JIPipeValidatable) key, progressInfo);
         }
         if (value instanceof JIPipeValidatable) {
-            report.report(reportContext.custom("Value"), (JIPipeValidatable) value);
+            report.report(reportContext.custom("Value"), (JIPipeValidatable) value, progressInfo);
         }
     }
 

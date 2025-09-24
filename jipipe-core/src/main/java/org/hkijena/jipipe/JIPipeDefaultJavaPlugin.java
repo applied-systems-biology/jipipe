@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -68,7 +67,6 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -205,7 +203,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
 
     }
 

@@ -174,7 +174,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (scales.isEmpty()) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(reportContext, this, "Scales", "scales"),

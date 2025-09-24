@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
@@ -341,7 +342,7 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (id == null || id.isEmpty()) {
             new JsonNodeInfoValidationReportContext(this).error()
                     .title("ID is null or empty!")
@@ -356,10 +357,10 @@ public class JsonNodeInfo extends AbstractJIPipeParameterCollection implements J
                     .solution("Please choose another algorithm category.")
                     .report(report);
         }
-        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters);
+        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters, progressInfo);
 
         // Only check if the graph creates a valid group output
-        report.report(reportContext.parameter(this, "Wrapped graph", "wrapped-graph"), getGraph());
+        report.report(reportContext.parameter(this, "Wrapped graph", "wrapped-graph"), getGraph(), progressInfo);
     }
 
     @Override

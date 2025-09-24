@@ -185,8 +185,8 @@ public class DBSCANClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         if (inputColumns.isEmpty()) {
             reportContext.error().title("Input columns cannot be empty!").explanation("The list of input columns cannot be empty.").solution("Add at least one column.").report(report);
         }

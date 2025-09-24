@@ -34,6 +34,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.ImportPretrainedOmnipose0ModelAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0InferenceAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.algorithms.Omnipose0TrainingAlgorithm;
+import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
+import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0EnvironmentList;
+import org.hkijena.jipipe.plugins.omnipose.environments.OptionalOmnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0InferenceAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.legacy.algorithms.LegacyOmnipose0TrainingAlgorithm;
 import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
@@ -69,18 +72,6 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public OmniposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-    }
-
-    public static JIPipeEnvironmentConfigurator<PythonEnvironment> getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(PythonEnvironment.class)
-                .application(OmniposePluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(OmniposePluginProjectSettings.class).getOmnipose0Environment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -190,12 +181,18 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new OmniposePluginApplicationSettings());
-        registerProjectSettingsSheet(OmniposePluginProjectSettings.class);
+
+        registerEnvironment("omnipose0",
+                Omnipose0Environment.class,
+                OptionalOmnipose0Environment.class,
+                Omnipose0EnvironmentList.class,
+                "Omnipose 0.x",
+                "A Python environment that comes with Omnipose 0.x",
+                RESOURCES.getIcon16("omnipose.png"));
 
         // Modern data types and algorithms
-        registerEnumParameterType("omnipose-0.x-pretrained-model", PretrainedOmnipose0Model.class, "Omnipose 2.x pretrained model", "A pretrained model provided with Omnipose 0.x");
-        registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, JIPipeParameterArchetype.List, "Omnipose 2.x pretrained model list", "A list of pretrained Omnipose 0.x models");
+        registerEnumParameterType("omnipose-0.x-pretrained-model", PretrainedOmnipose0Model.class, "Omnipose 0.x pretrained model", "A pretrained model provided with Omnipose 0.x");
+        registerParameterType("omnipose-0.x-pretrained-model-list", PretrainedOmnipose0ModelList.class, JIPipeParameterArchetype.List, "Omnipose 0.x pretrained model list", "A list of pretrained Omnipose 0.x models");
 
         registerNodeType("import-omnipose-0.x-pretrained-model", ImportPretrainedOmnipose0ModelAlgorithm.class);
         registerNodeType("omnipose-inference-0.x", Omnipose0InferenceAlgorithm.class, RESOURCES.getIcon16URL("omnipose.png"));

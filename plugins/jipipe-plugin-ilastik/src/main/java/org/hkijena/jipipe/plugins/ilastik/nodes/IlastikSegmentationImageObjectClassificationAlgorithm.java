@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
-import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessNode;
+
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
@@ -78,7 +78,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
-public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
+public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final List<String> PROJECT_TYPES = Collections.singletonList("ObjectClassification");
 
@@ -114,8 +114,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
     private DataAnnotationQueryExpression segmentationImageDataAnnotation = new DataAnnotationQueryExpression("\"Segmentation\"");
-    private OptionalIlastikEnvironment overrideEnvironment = new OptionalIlastikEnvironment();
-
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
     public IlastikSegmentationImageObjectClassificationAlgorithm(JIPipeNodeInfo info) {
@@ -129,7 +127,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
-        this.overrideEnvironment = new OptionalIlastikEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         this.segmentationImageDataAnnotation = new DataAnnotationQueryExpression(other.segmentationImageDataAnnotation);
         registerSubParameter(outputParameters);
@@ -138,6 +135,10 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        IlastikEnvironment environment = getEnvironment(IlastikEnvironment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -251,7 +252,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
                     args.add("--segmentation_image=" + segmentedImagePath);
 
                     // Run ilastik
-                    IlastikEnvironment environment = getConfiguredIlastikEnvironment().get(progressInfo);
                     IlastikPlugin.runIlastik(environment,
                             args,
                             false, imageProgress.resolve("Run Ilastik")
@@ -305,14 +305,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredIlastikEnvironmentValidity(reportContext, report);
-        }
-    }
-
     @SetJIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")
     @JIPipeParameter(value = "segmentation-image-data-annotation", important = true)
     public DataAnnotationQueryExpression getSegmentationImageDataAnnotation() {
@@ -352,19 +344,6 @@ public class IlastikSegmentationImageObjectClassificationAlgorithm extends JIPip
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
-    }
-
-    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Ilastik is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})
-    public OptionalIlastikEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalIlastikEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
     }
 
     @Override

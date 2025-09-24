@@ -28,6 +28,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -1477,7 +1478,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
             JIPipeGraphNode node = entry.getValue();
             if (node instanceof JIPipeAlgorithm algorithm) {
@@ -1485,7 +1486,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     continue;
                 }
             }
-            report.report(reportContext.node(node), node);
+            report.report(reportContext.node(node), node, progressInfo);
         }
         if (reportSettings.isStrict() || !JIPipeRuntimeApplicationSettings.getInstance().isAllowSkipAlgorithmsWithoutInput()) {
             for (JIPipeDataSlot slot : graph.vertexSet()) {
@@ -1522,23 +1523,25 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param context    the context
-     * @param report     the report
-     * @param targetNode the target node
+     * @param context      the context
+     * @param report       the report
+     * @param targetNode   the target node
+     * @param progressInfo the progress info
      */
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode) {
-        reportValidity(context, report, targetNode, Collections.emptySet());
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, JIPipeProgressInfo progressInfo) {
+        reportValidity(context, report, targetNode, Collections.emptySet(), progressInfo);
     }
 
     /**
      * Reports the validity for the target node and its dependencies
      *
-     * @param context    the context
-     * @param report     the report
-     * @param targetNode the target node
-     * @param satisfied  all algorithms that are considered to have a satisfied input
+     * @param context      the context
+     * @param report       the report
+     * @param targetNode   the target node
+     * @param satisfied    all algorithms that are considered to have a satisfied input
+     * @param progressInfo the progress info
      */
-    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied) {
+    public void reportValidity(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeGraphNode targetNode, Set<JIPipeGraphNode> satisfied, JIPipeProgressInfo progressInfo) {
         List<JIPipeGraphNode> predecessorAlgorithms = getAllPredecessorNodes(targetNode, traverse());
         predecessorAlgorithms.add(targetNode);
         for (JIPipeGraphNode node : predecessorAlgorithms) {
@@ -1572,7 +1575,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 }
             }
 
-            report.report(context.node(node), node);
+            report.report(context.node(node), node, progressInfo);
         }
     }
 

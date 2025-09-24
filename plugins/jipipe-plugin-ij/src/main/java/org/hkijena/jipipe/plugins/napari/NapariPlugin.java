@@ -60,7 +60,7 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
         PythonEnvironment environment = getEnvironment();
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
+        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, progressInfo).isValid()) {
             if (interactive) {
                 JOptionPane.showMessageDialog(workbench.getWindow(),
                         "Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.",

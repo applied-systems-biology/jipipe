@@ -211,9 +211,9 @@ public class HessianSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Compare absolute", description = "Determines whether eigenvalues are compared in absolute sense")

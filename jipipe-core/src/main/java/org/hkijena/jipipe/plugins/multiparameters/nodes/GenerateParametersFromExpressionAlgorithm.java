@@ -70,8 +70,8 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         for (Column column : columns.mapToCollection(Column.class)) {
             if (StringUtils.isNullOrEmpty(column.key)) {
                 reportContext.error().title("Column key cannot be empty!").explanation("You cannot have empty parameter keys!").solution("Provide an appropriate parameter key.").report(report);

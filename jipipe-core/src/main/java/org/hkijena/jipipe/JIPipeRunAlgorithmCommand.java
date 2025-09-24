@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -101,7 +100,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         if (!extensionSettings.isSilent()) {
             JIPipeValidationReport report = new JIPipeValidationReport();
-            issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            issues.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
             if (!report.isValid()) {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
@@ -137,7 +136,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             settings = new SingleImageJAlgorithmRunConfiguration(nodeId, parameters, inputs, outputs, threads);
             algorithm = settings.getAlgorithm();
             JIPipeValidationReport report = new JIPipeValidationReport();
-            settings.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            settings.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
             if (!report.isValid()) {
                 StringBuilder message = new StringBuilder();
                 message.append("The provided node options are invalid:\n\n");

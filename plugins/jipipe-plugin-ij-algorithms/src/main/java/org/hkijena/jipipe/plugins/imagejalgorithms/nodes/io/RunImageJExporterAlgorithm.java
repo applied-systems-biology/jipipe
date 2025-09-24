@@ -83,13 +83,13 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (exporterType.getInstance() == null) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                     new ParameterValidationReportContext(reportContext, this, "Exporter type", "exporter-type"),
                     "No exporter type selected!", "No exporter type was selected", "Please select an exporter"));
         }
-        super.reportValidity(reportContext, reportSettings, report);
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")

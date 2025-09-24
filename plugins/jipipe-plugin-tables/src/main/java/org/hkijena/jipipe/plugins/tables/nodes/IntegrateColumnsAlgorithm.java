@@ -97,8 +97,8 @@ public class IntegrateColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        report.report(new ParameterValidationReportContext(reportContext, this, "Processors", "processors"), processorParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        report.report(new ParameterValidationReportContext(reportContext, this, "Processors", "processors"), processorParameters, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")

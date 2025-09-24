@@ -99,9 +99,9 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Renaming entries", "renaming-entries"), renamingEntries);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Renaming entries", "renaming-entries"), renamingEntries, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")

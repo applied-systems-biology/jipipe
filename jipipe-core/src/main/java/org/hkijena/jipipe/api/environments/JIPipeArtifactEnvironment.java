@@ -82,7 +82,7 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (isLoadFromArtifact() && StringUtils.isNullOrEmpty(getArtifactQuery().getQuery())) {
             reportContext.error()
                     .title("Invalid artifact query")

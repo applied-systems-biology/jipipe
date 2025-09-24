@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.service.components.nodes;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -99,7 +100,7 @@ public abstract class JIPipeDefaultNodeRegistrationTask implements JIPipeNodeReg
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (String id : dependencyAlgorithmIds) {
             if (!JIPipe.getNodes().hasNodeInfoWithId(id))
                 reportContext.error().title("A dependency is missing!").explanation("Dependency algorithm '" + id + "' is missing!").solution("Please make sure to install dependency plugins.").report(report);

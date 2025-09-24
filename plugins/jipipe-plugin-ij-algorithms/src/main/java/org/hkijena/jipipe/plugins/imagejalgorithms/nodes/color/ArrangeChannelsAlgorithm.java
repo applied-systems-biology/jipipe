@@ -135,7 +135,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
             IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).get();

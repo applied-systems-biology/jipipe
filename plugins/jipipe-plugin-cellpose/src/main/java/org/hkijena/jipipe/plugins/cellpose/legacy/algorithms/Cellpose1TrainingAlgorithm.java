@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -95,7 +95,6 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private int diameter = 30;
     private boolean trainSizeModel = false;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean generateConnectedComponents = true;
 
@@ -127,7 +126,6 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = other.diameter;
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
         this.generateConnectedComponents = other.generateConnectedComponents;
@@ -320,18 +318,6 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
@@ -397,6 +383,9 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose2Environment environment = getEnvironment(Cellpose2Environment.class, runContext, progressInfo);
 
         // Prepare folders
         Path workDirectory = getNewScratch();
@@ -556,8 +545,7 @@ public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(minTrainMasks + "");
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), Collections.emptyMap(), false, false, progressInfo);
+        PythonUtils.runPython(arguments.toArray(new String[0]), environment, Collections.emptyList(), Collections.emptyMap(), false, false, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

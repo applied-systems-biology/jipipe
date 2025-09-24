@@ -232,7 +232,7 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (Path path : getAbsolutePaths()) {
             if (path == null) {
                 reportContext.warning().title("Input path not set!").explanation("One of the paths is not set.").solution("Please provide a valid input path.").report(report);

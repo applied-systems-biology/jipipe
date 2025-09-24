@@ -101,7 +101,7 @@ public class IntegerFormData extends ParameterFormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap();
         variableSet.set("value", value);
         if (!validationExpression.test(variableSet)) {

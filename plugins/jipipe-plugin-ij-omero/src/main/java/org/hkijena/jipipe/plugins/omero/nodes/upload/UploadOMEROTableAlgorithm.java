@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omero.nodes.upload;
 
+import omero.gateway.LoginCredentials;
 import omero.gateway.SecurityContext;
 import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
@@ -36,7 +37,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
-import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
+
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROAnnotationReferenceData;
@@ -55,7 +56,7 @@ import java.util.concurrent.ExecutionException;
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Tables", create = true, description = "The table to attach")
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Target", create = true, description = "The target OMERO image")
 @AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, name = "Tables", create = true, description = "Reference to the generated table annotation")
-public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
+public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
@@ -74,7 +75,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implemen
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         long imageId = iterationStep.getInputData("Target", OMEROImageReferenceData.class, progressInfo).getImageId();
         ResultsTableData resultsTableData = iterationStep.getInputData("Tables", ResultsTableData.class, progressInfo);
-        OMEROCredentialsEnvironment credentials = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
+        OMEROCredentialsEnvironment environment = getEnvironment(OMEROCredentialsEnvironment.class, runContext, progressInfo);
 
         // Determine file name
         String fileName;
@@ -91,7 +92,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implemen
             fileName = outputPath.getFileName().toString();
         }
 
-        try (OMEROGateway gateway = new OMEROGateway(credentials.toLoginCredentials(), progressInfo)) {
+        try (OMEROGateway gateway = new OMEROGateway(environment.toLoginCredentials(), progressInfo)) {
             TablesFacility tablesFacility = gateway.getGateway().getFacility(TablesFacility.class);
             progressInfo.log("Attaching tables to Image ID=" + imageId);
             ImageData imageData = gateway.getImage(imageId, -1);
@@ -128,12 +129,5 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm implemen
     @JIPipeParameter("override-credentials")
     public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
         this.overrideCredentials = overrideCredentials;
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
-        report.report(new GraphNodeValidationReportContext(reportContext, this), environment);
     }
 }

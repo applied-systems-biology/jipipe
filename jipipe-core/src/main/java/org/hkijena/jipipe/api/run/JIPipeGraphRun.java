@@ -205,7 +205,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
         // Pre-build environment configuration cache
         JIPipeEnvironmentConfigurationCache environmentConfigurationCache = new JIPipeEnvironmentConfigurationCache();
 
-        // List of all environments TODO
+        // List of all environments
         List<JIPipeEnvironmentConfigurator<?>> allEnvironments = new ArrayList<>();
 
         if (parent == null) {
@@ -213,7 +213,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
             // Gather all environments from all active nodes
             for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                graphNode.getEnvironmentDependencies(allEnvironments);
+                graphNode.getEnvironmentDependencies(allEnvironments, environmentConfigurationCache);
             }
             allEnvironments.removeIf(Objects::isNull);
 

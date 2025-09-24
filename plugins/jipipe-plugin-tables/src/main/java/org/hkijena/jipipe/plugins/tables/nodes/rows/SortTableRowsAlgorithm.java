@@ -155,9 +155,9 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(this, "Filters", "sort-order"), sortOrderList);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(this, "Filters", "sort-order"), sortOrderList, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +

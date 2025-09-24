@@ -131,8 +131,8 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         if (!maximumLength.isEnabled() && !maximumNumIterations.isEnabled()) {
             report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error, reportContext, "Subdivide has no critera",
                     "The filament subdivision operator has no stopping criteria and will run infinitely",

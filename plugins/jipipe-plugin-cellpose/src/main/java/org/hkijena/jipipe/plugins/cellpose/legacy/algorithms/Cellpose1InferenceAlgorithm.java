@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -100,7 +100,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public Cellpose1InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -122,7 +121,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.SegmentationPerformanceSettings_Old = new CellposeSegmentationPerformanceSettings_Old(other.SegmentationPerformanceSettings_Old);
         this.segmentationEnhancementSettings = new CellposeSegmentationEnhancementSettings_Old(other.segmentationEnhancementSettings);
         this.SegmentationThresholdSettings_Old = new CellposeSegmentationThresholdSettings_Old(other.SegmentationThresholdSettings_Old);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
@@ -169,18 +167,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
@@ -214,19 +200,15 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                Cellpose2PluginApplicationSettings.checkPythonSettings(reportContext, report);
-            }
-        }
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose2Environment environment = getEnvironment(Cellpose2Environment.class, runContext, progressInfo);
 
         ImmutableList<Integer> inputRowList = ImmutableList.copyOf(iterationStep.getInputRows("Input"));
         Path workDirectory = getNewScratch();
@@ -389,8 +371,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
 
         // Run script
-        PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), false, progressInfo);
+        PythonUtils.runPython(code.toString(), environment, Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {

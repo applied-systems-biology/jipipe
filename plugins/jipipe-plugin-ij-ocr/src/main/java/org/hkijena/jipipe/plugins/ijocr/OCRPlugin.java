@@ -19,18 +19,12 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ijocr.environments.OptionalTesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.environments.TesseractOCREnvironment;
 import org.hkijena.jipipe.plugins.ijocr.nodes.TesseractOCRAlgorithm;
-import org.hkijena.jipipe.plugins.ijocr.settings.OCRPluginProjectSettings;
-import org.hkijena.jipipe.plugins.ijocr.settings.TesseractOCRApplicationSettings;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractOCREngineMode;
 import org.hkijena.jipipe.plugins.ijocr.utils.TesseractPageSegmentationMethod;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -58,18 +52,6 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             "Filaments");
 
     public OCRPlugin() {
-    }
-
-    public static JIPipeEnvironmentConfigurator<TesseractOCREnvironment> getTesseractOCREnvironment(JIPipeProject project, OptionalTesseractOCREnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentConfigurator.defaultOptions(TesseractOCREnvironment.class)
-                .application(TesseractOCRApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (project != null) {
-            selector.project(project.getSettingsSheet(OCRPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        return selector.select();
     }
 
     @Override
@@ -117,21 +99,13 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-
-        TesseractOCRApplicationSettings tesseractOCRApplicationSettings = new TesseractOCRApplicationSettings();
-        registerEnvironment("tesseract-ocr-environment", TesseractOCREnvironment.class,
+        registerEnvironment("tesseract-ocr-environment",
+                TesseractOCREnvironment.class,
+                OptionalTesseractOCREnvironment.class,
                 TesseractOCREnvironment.List.class,
-                tesseractOCRApplicationSettings,
                 "Tesseract OCR Environment",
                 "Installation of Tesseract OCR",
                 JIPipe.RESOURCES.getIcon16("actions/text_outer_style.png"));
-        registerParameterType("optional-tesseract-ocr-environment",
-                OptionalTesseractOCREnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, "Optional Tesseract OCR Environment",
-                "Installation of Tesseract OCR");
-
-        registerApplicationSettingsSheet(tesseractOCRApplicationSettings);
-        registerProjectSettingsSheet(OCRPluginProjectSettings.class);
 
         registerEnumParameterType("tesseract-ocr-psm", TesseractPageSegmentationMethod.class, "Tesseract OCR Page Segmentation Method", "Methods for page segmentation");
         registerEnumParameterType("tesseract-ocr-oem", TesseractOCREngineMode.class, "Tesseract OCR Engine Mode", "OCR engine modes");

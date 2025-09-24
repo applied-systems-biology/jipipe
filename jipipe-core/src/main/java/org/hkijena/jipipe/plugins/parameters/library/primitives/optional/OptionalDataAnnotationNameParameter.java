@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.optional;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -41,7 +42,7 @@ public class OptionalDataAnnotationNameParameter extends OptionalStringParameter
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (isEnabled()) {
             if (!StringUtils.isNullOrEmpty(getContent())) {
                 reportContext.warning().title("The annotation name is empty!").explanation("Annotation names cannot be empty!").report(report);

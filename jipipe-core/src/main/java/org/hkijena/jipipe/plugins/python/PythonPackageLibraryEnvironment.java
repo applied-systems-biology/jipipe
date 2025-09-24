@@ -92,9 +92,9 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (!isProvidedByEnvironment()) {
-            super.reportValidity(reportContext, reportSettings, report);
+            super.reportValidity(reportContext, reportSettings, report, progressInfo);
             if (!isLoadFromArtifact()) {
                 if (!Files.isDirectory(getAbsoluteLibraryDirectory())) {
                     reportContext.error().title("Missing Python adapter library!").explanation("The Python integration requires an adapter library. It was not found at " + getAbsoluteLibraryDirectory()).solution("Install the Python adapter library by navigating to Project > Application settings > Extensions > Python integration (adapter) or configure the adapter to be provided by the Python environment if applicable.").report(report);

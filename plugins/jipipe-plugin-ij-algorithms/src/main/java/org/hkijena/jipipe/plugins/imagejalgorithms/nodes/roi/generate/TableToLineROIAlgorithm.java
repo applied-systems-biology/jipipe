@@ -93,12 +93,12 @@ public class TableToLineROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2, progressInfo);
     }
 
     @Override

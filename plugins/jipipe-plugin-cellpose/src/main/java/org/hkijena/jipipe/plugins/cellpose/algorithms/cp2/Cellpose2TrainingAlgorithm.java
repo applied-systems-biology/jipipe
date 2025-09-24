@@ -36,11 +36,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2TrainingTweaksSettings;
@@ -82,7 +80,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
-public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose2EnvironmentAccessNode {
+public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm  {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
@@ -94,7 +92,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     private boolean cleanUpAfterwards = true;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
     private boolean trainSizeModel = false;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
 
@@ -122,7 +119,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.enable3D = other.enable3D;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = new OptionalDoubleParameter(other.diameter);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
 
@@ -190,19 +186,6 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose:*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
@@ -248,6 +231,9 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
+        // Get environment
+        Cellpose2Environment environment = getEnvironment(Cellpose2Environment.class, runContext, progressInfo);
+
         // Prepare folders
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
@@ -267,7 +253,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, iterationContext, runContext, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), environment, modelInfo, iterationStep, iterationContext, runContext, modelProgress);
         }
 
 
@@ -276,7 +262,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, Cellpose2Environment environment, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path trainingDir = workDirectory.resolve("training");
         Path testDir = workDirectory.resolve("test");
         try {
@@ -411,7 +397,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         arguments.add(tweaksSettings.getMinTrainMasks() + "");
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);
@@ -459,7 +445,7 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).reversed()).collect(Collectors.toList())) {
+        }).reversed()).toList()) {
             String name = path.getFileName().toString();
             if (!name.startsWith("cellpose"))
                 continue;
@@ -477,8 +463,8 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }).reversed()).collect(Collectors.toList());
-        return list.get(0);
+        }).reversed()).toList();
+        return list.getFirst();
     }
 
     private void saveImagesToPath(Path dir, AtomicInteger imageCounter, JIPipeProgressInfo rowProgress, ImagePlus image, ImagePlus mask) {
@@ -514,11 +500,4 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm i
         this.numEpochs = numEpochs;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
-        }
-    }
 }
