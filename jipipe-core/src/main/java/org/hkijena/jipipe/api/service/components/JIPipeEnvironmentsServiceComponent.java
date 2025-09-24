@@ -18,11 +18,15 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.util.*;
@@ -98,11 +102,30 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         if (infosById.containsKey(id)) {
             throw new RuntimeException("Unable to register environment " + environmentClass + " as '" + id + "': duplicate key!");
         }
+
+        // Register into this environment service
         EnvironmentInfo info = new EnvironmentInfo(id, artifactQuery, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
         infosById.put(id, info);
         infosByClass.put(environmentClass, info);
         infosByOptionalClass.put(optionalEnvironmentClass, info);
         infosByListClass.put(environmentListClass, info);
+
+        // Register as parameter
+        registerEnvironmentParameter("env:" + id, environmentClass, name, description, JIPipeParameterArchetype.Value);
+        registerEnvironmentParameter( "env: " + id + ":optional", optionalEnvironmentClass, name, description, JIPipeParameterArchetype.OptionalValue);
+        registerEnvironmentParameter( "env: " + id + ":list", environmentListClass, name, description, JIPipeParameterArchetype.List);
+        getService().getParameterTypes().registerParameterEditor(environmentClass, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
+    }
+
+    private void registerEnvironmentParameter(String id, Class<?> klass, String name, String description, JIPipeParameterArchetype archetype) {
+        JIPipeDefaultMutableParameterTypeInfo info = new JIPipeDefaultMutableParameterTypeInfo(id,
+                klass,
+                () -> ReflectionUtils.newInstance(klass),
+               o -> ReflectionUtils.newInstance(klass, o),
+                name,
+                description, archetype);
+        JIPipeParameterTypesServiceComponent parameterTypes = getService().getParameterTypes();
+        parameterTypes.register(info);
     }
 
     public EnvironmentInfo getInfoByClass(Class<? extends JIPipeEnvironment> klass) {

@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.service.init;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -236,6 +237,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 e.printStackTrace();
                 getProgressInfo().log(e.toString());
                 issues.getErroneousPlugins().add(info);
+                issues.getErrors().add(e);
                 if (extension != null) {
                     report.getFailedExtensions().add(extension);
                 }
@@ -359,6 +361,20 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         for (String newExtension : getService().getPlugins().getNewPlugins()) {
             getProgressInfo().log("New extension found: " + newExtension);
         }
+
+        // Error log
+        if(!getService().getInitializationReport().getErrors().isEmpty()) {
+            for (Throwable error : getService().getInitializationReport().getErrors()) {
+                getProgressInfo().log("\n-------------------------------------------------\n");
+                getProgressInfo().log("-- ERROR: " + error);
+                getProgressInfo().log("-- MESSAGE: " + error.getMessage());
+                getProgressInfo().log("-- STACKTRACE: " + ExceptionUtils.getStackTrace(error));
+                getProgressInfo().log("\n-------------------------------------------------\n");
+            }
+            getProgressInfo().log("\n-------------------------------------------------\n");
+            getProgressInfo().log("Found " + StringUtils.formatPluralS(getService().getInitializationReport().getErrors().size(), "error") + "!");
+        }
+
 
         // Push progress into log
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry("JIPipe initialization",
