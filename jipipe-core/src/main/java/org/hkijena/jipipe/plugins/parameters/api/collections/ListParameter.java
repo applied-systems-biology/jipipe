@@ -52,6 +52,15 @@ public abstract class ListParameter<T> extends ArrayList<T> implements JIPipeVal
         this.contentClass = contentClass;
     }
 
+    public ListParameter(ListParameter<T> other) {
+        this.contentClass = other.contentClass;
+        this.customInstanceGenerator = other.customInstanceGenerator;
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(contentClass);
+        for (T t : other) {
+            add((T) info.duplicate(t));
+        }
+    }
+
     public Class<T> getContentClass() {
         return contentClass;
     }

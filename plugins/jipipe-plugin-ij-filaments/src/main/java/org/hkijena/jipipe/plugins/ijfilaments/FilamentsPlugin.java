@@ -128,7 +128,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerEnvironment("tsoax",
+        registerArtifactEnvironment("tsoax",
+                "com.github.tix209.tsoax:*",
                 TSOAXEnvironment.class,
                 OptionalTSOAXEnvironment.class,
                 TSOAXEnvironment.List.class,

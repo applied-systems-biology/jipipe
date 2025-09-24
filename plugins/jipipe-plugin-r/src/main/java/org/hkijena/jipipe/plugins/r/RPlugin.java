@@ -107,7 +107,8 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerEnvironment(REnvironment.ENVIRONMENT_ID,
+        registerArtifactEnvironment(REnvironment.ENVIRONMENT_ID,
+                "org.r.*",
                 REnvironment.class,
                 OptionalREnvironment.class,
                 REnvironment.List.class,

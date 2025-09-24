@@ -78,6 +78,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDa
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInNapariDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.ImageJSamplesEnvironment;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.ImageJSamplesListEnvironment;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.OptionalImageJSamplesEnvironment;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPreview;
@@ -586,6 +589,16 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerFileChooserKnownDirectoryType("OME-Zarr", "apps/zarr.png", ".zarr");
         registerFileChooserKnownFileType("OME-Zarr", "data-types/bioformats.png", ".zarr");
         registerFileChooserKnownFileType("MRC/CCP4", "data-types/bioformats.png", ".mrc", ".ccp4", ".map");
+
+        // Register environment for ImageJ samples
+        registerArtifactEnvironment("ij1-samples",
+                "sc.fiji.sample_images:*",
+                ImageJSamplesEnvironment.class,
+                OptionalImageJSamplesEnvironment.class,
+                ImageJSamplesListEnvironment.class,
+                "ImageJ sample images",
+                "Copy of all ImageJ sample images",
+                JIPipe.RESOURCES.getIcon16("actions/viewimage.png"));
 
     }
 

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
@@ -947,6 +948,33 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                      environment class
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
+     * @param artifactQuery the artifact query for this environment (can be null)
+     * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
+     * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
+     * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
+     * @param name                     the name of the environment
+     * @param description              the description of the environment
+     */
+    public <T extends JIPipeArtifactEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerArtifactEnvironment(String id,
+                                                                                                                                              String artifactQuery,
+                                                                                                                                              Class<T> environmentClass,
+                                                                                                                                              Class<V> optionalEnvironmentClass,
+                                                                                                                                              Class<U> environmentListClass,
+                                                                                                                                              String name,
+                                                                                                                                              String description,
+                                                                                                                                              Icon icon) {
+        service.getEnvironments().registerEnvironment(id, artifactQuery, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+    }
+
+    /**
+     * Registers a new environment type.
+     * This will also register the environment class and environment list class a valid parameters.
+     * Requires that the environment class has a default constructor and a deep copy constructor.
+     * Will also register a settings page for the environment
+     *
+     * @param <T>                      environment class
+     * @param <U>                      list of environment class
+     * @param id                       the ID of the environment class. Will be used as parameter type ID
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
@@ -959,7 +987,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                                                               String name,
                                                                                                                               String description,
                                                                                                                               Icon icon) {
-        service.getEnvironments().registerEnvironment(id, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        service.getEnvironments().registerEnvironment(id, null, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
 

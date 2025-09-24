@@ -93,12 +93,12 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 //        settings.emitParameterChangedEvent("presets");
     }
 
-    public <T extends JIPipeEnvironment, V extends OptionalParameter<T>, U extends ListParameter<T>> void registerEnvironment(String id, Class<T> environmentClass, Class<V> optionalEnvironmentClass, Class<U> environmentListClass, String name, String description, Icon icon) {
+    public <T extends JIPipeEnvironment, V extends OptionalParameter<T>, U extends ListParameter<T>> void registerEnvironment(String id, String artifactQuery, Class<T> environmentClass, Class<V> optionalEnvironmentClass, Class<U> environmentListClass, String name, String description, Icon icon) {
         getProgressInfo().log("Registering environment type '" + id + "' (" + environmentClass + ", " + optionalEnvironmentClass + ", " + environmentListClass + ") as '" + name + "'");
-        if(infosById.containsKey(id)) {
+        if (infosById.containsKey(id)) {
             throw new RuntimeException("Unable to register environment " + environmentClass + " as '" + id + "': duplicate key!");
         }
-        EnvironmentInfo info = new EnvironmentInfo(id, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        EnvironmentInfo info = new EnvironmentInfo(id, artifactQuery, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
         infosById.put(id, info);
         infosByClass.put(environmentClass, info);
         infosByOptionalClass.put(optionalEnvironmentClass, info);
@@ -123,6 +123,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     public static class EnvironmentInfo {
         private final String id;
+        private final String artifactQuery;
         private final Class<? extends JIPipeEnvironment> environmentClass;
         private final Class<? extends OptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass;
         private final Class<? extends ListParameter<? extends JIPipeEnvironment>> environmentListClass;
@@ -130,8 +131,9 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         private final String description;
         private final Icon icon;
 
-        public EnvironmentInfo(String id, Class<? extends JIPipeEnvironment> environmentClass, Class<? extends OptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass, Class<? extends ListParameter<? extends JIPipeEnvironment>> environmentListClass, String name, String description, Icon icon) {
+        public EnvironmentInfo(String id, String artifactQuery, Class<? extends JIPipeEnvironment> environmentClass, Class<? extends OptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass, Class<? extends ListParameter<? extends JIPipeEnvironment>> environmentListClass, String name, String description, Icon icon) {
             this.id = id;
+            this.artifactQuery = artifactQuery;
             this.environmentClass = environmentClass;
             this.optionalEnvironmentClass = optionalEnvironmentClass;
             this.environmentListClass = environmentListClass;
@@ -166,6 +168,10 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
         public Icon getIcon() {
             return icon;
+        }
+
+        public String getArtifactQuery() {
+            return artifactQuery;
         }
     }
 

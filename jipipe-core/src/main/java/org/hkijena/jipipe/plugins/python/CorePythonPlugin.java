@@ -80,7 +80,8 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnvironment(PythonEnvironment.ENVIRONMENT_ID,
+        registerArtifactEnvironment(PythonEnvironment.ENVIRONMENT_ID,
+                "org.python.*",
                 PythonEnvironment.class,
                 OptionalPythonEnvironment.class,
                 PythonEnvironment.List.class,
@@ -89,7 +90,8 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipe.RESOURCES.getIcon16("apps/python.png"));
 
         // JIPipe Python adapter
-        registerEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
+        registerArtifactEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
+                "org.hkijena.jipipe-python-adapter:*",
                 JIPipePythonAdapterLibraryEnvironment.class,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironment.List.class,

@@ -168,8 +168,22 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerEnvironment("cellpose2", Cellpose2Environment.class, OptionalCellpose2Environment.class, Cellpose2EnvironmentList.class, "Cellpose 2.x", "A Python environment with Cellpose 2.x",  JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
-        registerEnvironment("cellpose3", Cellpose3Environment.class, OptionalCellpose3Environment.class, Cellpose3EnvironmentList.class, "Cellpose 3.x", "A Python environment with Cellpose 3.x",  JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
+        registerArtifactEnvironment("cellpose2",
+                "com.github.mouseland.cellpose:*",
+                Cellpose2Environment.class,
+                OptionalCellpose2Environment.class,
+                Cellpose2EnvironmentList.class,
+                "Cellpose 2.x",
+                "A Python environment with Cellpose 2.x",
+                JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
+        registerArtifactEnvironment("cellpose3",
+                "com.github.mouseland.cellpose3:*",
+                Cellpose3Environment.class,
+                OptionalCellpose3Environment.class,
+                Cellpose3EnvironmentList.class,
+                "Cellpose 3.x",
+                "A Python environment with Cellpose 3.x",
+                JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
 
         // Modern nodes and data types
         registerDatatype("cellpose-model-v2", CellposeModelData.class, JIPipe.RESOURCES.getIcon16URL("data-types/cellpose-model.png"));

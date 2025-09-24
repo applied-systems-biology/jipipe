@@ -323,7 +323,9 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URL("ilastik-model.png"));
 
-        registerEnvironment("ilastik-environment", IlastikEnvironment.class,
+        registerArtifactEnvironment("ilastik-environment",
+                "org.embl.ilastik:*",
+                IlastikEnvironment.class,
                 OptionalIlastikEnvironment.class,
                 IlastikEnvironment.List.class,
                 "Ilastik environment",

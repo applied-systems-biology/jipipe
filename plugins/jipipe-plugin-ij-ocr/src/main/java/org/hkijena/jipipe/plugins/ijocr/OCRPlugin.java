@@ -99,7 +99,8 @@ public class OCRPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnvironment("tesseract-ocr-environment",
+        registerArtifactEnvironment("tesseract-ocr-environment",
+                "com.github.tesseractocr.tesseract:*",
                 TesseractOCREnvironment.class,
                 OptionalTesseractOCREnvironment.class,
                 TesseractOCREnvironment.List.class,

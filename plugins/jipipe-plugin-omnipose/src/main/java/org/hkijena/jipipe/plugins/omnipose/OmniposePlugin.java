@@ -182,7 +182,8 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerEnvironment("omnipose0",
+        registerArtifactEnvironment("omnipose0",
+                "com.github.kevinjohncutler.omnipose:*",
                 Omnipose0Environment.class,
                 OptionalOmnipose0Environment.class,
                 Omnipose0EnvironmentList.class,
