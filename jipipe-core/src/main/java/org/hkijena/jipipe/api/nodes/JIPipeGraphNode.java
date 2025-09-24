@@ -1404,7 +1404,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         if(!getRegisteredEnvironmentTypes().contains(klass)) {
             throw new IllegalArgumentException("The node " + getDisplayName() + " (" + getInfo().getId() + ") tried to utilize an environment of type " + klass + " without prior registration. Please inform the developer of this node about this issue.");
         }
-        return new JIPipeEnvironmentConfigurator<>(klass, getProject(), configurationCache);
+        return new JIPipeEnvironmentConfigurator<>(klass, this, getProject(), configurationCache);
     }
 
     /**

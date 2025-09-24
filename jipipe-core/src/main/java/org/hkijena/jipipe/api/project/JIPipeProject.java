@@ -1390,7 +1390,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @param <T> the environment type
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
-        return new JIPipeEnvironmentConfigurator<>(klass, this, configurationCache); // TODO
+        return new JIPipeEnvironmentConfigurator<>(klass, null, this, configurationCache);
     }
 
     public interface CompartmentAddedEventListener {

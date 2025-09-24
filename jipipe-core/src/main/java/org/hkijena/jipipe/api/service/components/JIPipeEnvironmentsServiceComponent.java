@@ -13,13 +13,8 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.*;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -27,13 +22,11 @@ import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
-import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A registry for external environments
@@ -138,6 +131,28 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     public Map<Class<? extends ListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> getInfosByListClass() {
         return Collections.unmodifiableMap(infosByListClass);
+    }
+
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param configurationCache the environment cache
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
+    }
+
+    /**
+     * Returns the environment reference for the environment class
+     * @param klass the environment class
+     * @return the environment reference
+     * @param <T> the environment type
+     */
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
+        return new JIPipeEnvironmentConfigurator<>(klass, null, null, configurationCache);
     }
 
     public static class EnvironmentInfo {

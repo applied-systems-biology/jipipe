@@ -15,51 +15,259 @@ package org.hkijena.jipipe.api.environments;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Class that helps with keeping track where environments are sourced from and resolve full environments
+ * Class that helps with keeping track of where environments are sourced from and resolve full environments.
+ * Resolves a base environment and automatically targets a compatible environment within the chain [Node, Project, Application, Fallback].
+ * Individual chain links can be left out. For artifact environments, the fallback is always the configured artifact query.
  */
 public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implements JIPipeValidatable {
     private final Class<T> environmentClass;
+    private final JIPipeGraphNode graphNode;
     private final JIPipeProject project;
     private final JIPipeEnvironmentConfigurationCache configurationCache;
+    private final JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo;
     private T baseEnvironment;
     private SourceType sourceType;
     private Object source;
 
-    public JIPipeEnvironmentConfigurator(Class<T> environmentClass, JIPipeProject project, JIPipeEnvironmentConfigurationCache configurationCache) {
+    /**
+     * Initializes a new configurator
+     *
+     * @param environmentClass   the target environment class
+     * @param graphNode          the graph node. Can be null.
+     * @param project            the project. Can be null.
+     * @param configurationCache the configuration cache where preconfigured environments are stored
+     */
+    public JIPipeEnvironmentConfigurator(Class<T> environmentClass, JIPipeGraphNode graphNode, JIPipeProject project, JIPipeEnvironmentConfigurationCache configurationCache) {
         this.environmentClass = environmentClass;
+        this.environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentClass);
+        this.graphNode = graphNode;
         this.project = project;
         this.configurationCache = configurationCache;
     }
 
+    /**
+     * Gets a fully resolved and configured environment.
+     * Utilizes the cached value if possible.
+     *
+     * @param progressInfo the progress info
+     * @return a cached and fully configured environment
+     */
     public T get(JIPipeProgressInfo progressInfo) {
-        resolveBaseEnvironment();
-        return null; // TODO
+        resolveBaseEnvironment(progressInfo.resolve("Resolve environment " + environmentInfo.getId()));
+        if(baseEnvironment == null) {
+            return null;
+        }
+        JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
+        if(environment == null) {
+            return configure(progressInfo);
+        }
+        return (T) environment;
     }
 
     /**
-     * Ensures that the base (unconfigured) environment is selected
+     * Fully configures the environment and stores the resulting fully configured environment into the cache
+     * Also ensures that artifacts are downloaded.
+     * Please note that this function will do a FULL RECONFIGURE. Use get() if you just want the environment.
+     * @param progressInfo the progress info
+     * @return the fully configured environment
      */
-    public void resolveBaseEnvironment() {
+    public T configure(JIPipeProgressInfo progressInfo) {
+        resolveBaseEnvironment(progressInfo);
+        if(baseEnvironment == null) {
+            progressInfo.log("[ERROR] Configuration not possible without base environment!");
+            throw new IllegalStateException("[ERROR] Configuration not possible without base environment!");
+        }
 
+        // We will create a copy where parameters are fully configured
+        T configuredEnvironment = JIPipe.duplicateParameter(baseEnvironment);
+
+        if(configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
+            if(configuredArtifactEnvironment.isLoadFromArtifact()) {
+                // Artifact environments require two steps: (1) final artifact resolution (2) artifact download
+                JIPipeArtifact artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
+
+                // Write the full ID into the environment, so the artifact system can later do the autoconfiguration
+                configuredArtifactEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter(artifact.getFullId(JIPipeArtifact.ResolutionStatus.Full)));
+
+                if(artifact instanceof JIPipeRemoteArtifact) {
+                    downloadArtifact((JIPipeRemoteArtifact)artifact, progressInfo.resolve("Download " + artifact.getFullId()));
+                }
+            }
+        }
+
+        progressInfo.log("Success! Storing " + configuredEnvironment + " into cache");
+        configurationCache.put(baseEnvironment, configuredEnvironment);
+
+        return configuredEnvironment;
     }
 
+    private void downloadArtifact(JIPipeRemoteArtifact remoteArtifact, JIPipeProgressInfo progressInfo) {
+        JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
+                List.of(remoteArtifact), Collections.emptyList());
+        run.setProgressInfo(progressInfo);
+        run.run();
+    }
+
+    private JIPipeArtifact configureArtifactQuery(JIPipeArtifactEnvironment configuredArtifactEnvironment, JIPipeProgressInfo progressInfo) {
+        String requestedArtifactId = configuredArtifactEnvironment.getArtifactQuery().getQuery();
+        List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
+        artifacts.removeIf(artifact -> !artifact.isCompatible());
+        progressInfo.log("Found " + artifacts.size() + " compatible matching artifacts");
+        JIPipeArtifact targetArtifact = null;
+
+        if (artifacts.isEmpty()) {
+            // Find alternative
+            progressInfo.log("Unable to find compatible matching artifact! Finding alternative!");
+            artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
+            for (JIPipeArtifact artifact : artifacts) {
+                JIPipeArtifact closestCompatibleArtifact = JIPipe.getArtifacts().findClosestCompatibleArtifact(artifact.getFullId());
+                if (closestCompatibleArtifact != null) {
+                    progressInfo.log("SUCCEEDED in finding closest compatible artifact to " + artifact.getFullId() + " as " + closestCompatibleArtifact.getFullId());
+                    targetArtifact = closestCompatibleArtifact;
+                    break;
+                } else {
+                    progressInfo.log("FAILED to find closest compatible artifact to " + artifact.getFullId());
+                }
+            }
+        } else if (artifacts.size() > 1) {
+            progressInfo.log("Warning: found " + artifacts.size() + " matching artifacts:");
+            for (JIPipeArtifact artifact : artifacts) {
+                progressInfo.log("- " + artifact.getFullId());
+            }
+            targetArtifact = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(artifacts);
+            progressInfo.log("Based on current preferences, selecting -> " + targetArtifact.getFullId());
+        } else {
+            targetArtifact = artifacts.getFirst();
+        }
+
+        if (targetArtifact == null) {
+            throw new RuntimeException("Unable to find matching compatible artifact for " + requestedArtifactId + ". Unable to continue.");
+        }
+
+        progressInfo.log("Matched artifact: " + targetArtifact.getFullId());
+        if (targetArtifact instanceof JIPipeRemoteArtifact) {
+            progressInfo.log("[INFO] Artifact is not downloaded");
+        }
+
+        return targetArtifact;
+    }
+
+    /**
+     * Ensures that the base (unconfigured) environment is selected and internally tracked
+     */
+    public void resolveBaseEnvironment(JIPipeProgressInfo progressInfo) {
+        if(baseEnvironment != null) {
+            // Already resolved
+            return;
+        }
+        if (graphNode != null) {
+            progressInfo.log("Trying SOURCE_TYPE_NODE " + graphNode.getDisplayName() + " ...");
+            JIPipeParameterAccess access = graphNode.getEnvironmentOverrides().get(environmentInfo.getId());
+            if (access != null) {
+                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
+                        && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
+                    sourceType = SourceType.Node;
+                    source = graphNode;
+                    baseEnvironment = (T) parameter.getContent();
+                    progressInfo.log("Success!");
+                    progressInfo.log("Base environment of type " + environmentInfo.getId() + " = " + baseEnvironment);
+                    return;
+                }
+            }
+        }
+        if (project != null) {
+            progressInfo.log("Trying SOURCE_TYPE_PROJECT " + project.getProjectFile() + " ...");
+            JIPipeParameterAccess access = project.getSettingsSheet(JIPipeDefaultEnvironmentsProjectSettings.class).get(environmentInfo.getId());
+            if (access != null) {
+                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
+                        && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
+                    sourceType = SourceType.Project;
+                    source = project;
+                    baseEnvironment = (T) parameter.getContent();
+                    progressInfo.log("Success!");
+                    progressInfo.log("Base environment of type " + environmentInfo.getId() + " = " + baseEnvironment);
+                    return;
+                }
+            }
+        }
+        {
+            progressInfo.log("Trying SOURCE_TYPE_APPLICATION ...");
+            JIPipeParameterAccess access = JIPipe.getSettings().getByType(JIPipeDefaultEnvironmentsApplicationSettings.class).get(environmentInfo.getId());
+            if (access != null) {
+                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
+                        && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
+                    sourceType = SourceType.Application;
+                    source = null;
+                    baseEnvironment = (T) parameter.getContent();
+                    progressInfo.log("Success!");
+                    progressInfo.log("Base environment of type " + environmentInfo.getId() + " = " + baseEnvironment);
+                    return;
+                }
+            }
+        }
+        {
+            progressInfo.log("Trying SOURCE_TYPE_FALLBACK ...");
+            if(environmentInfo.isArtifact() && environmentInfo.hasArtifactQuery()) {
+                JIPipeArtifactEnvironment environment = (JIPipeArtifactEnvironment) ReflectionUtils.newInstance(environmentClass);
+                environment.setArtifactQuery(new JIPipeArtifactQueryParameter(environmentInfo.getArtifactQuery()));
+                environment.setLoadFromArtifact(true);
+                sourceType = SourceType.Fallback;
+                source = null;
+                baseEnvironment = (T) environment;
+            }
+            else {
+                progressInfo.log("[!] No fallback available (only artifacts + query)");
+            }
+        }
+        progressInfo.log("Failed!");
+    }
+
+    /**
+     * Gets the source type of the current environment.
+     * Automatically resolves the base environment.
+     *
+     * @return the source type
+     */
     public SourceType getSourceType() {
-        resolveBaseEnvironment();
+        resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
         return sourceType;
     }
 
+    /**
+     * Gets the environment source object (null for application-wide or fallback, the project, the node)
+     * Automatically resolves the base environment.
+     *
+     * @return the source object
+     */
     public Object getSource() {
-        resolveBaseEnvironment();
+        resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
         return source;
     }
 
@@ -72,13 +280,13 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     }
 
     public T getBaseEnvironment() {
-        resolveBaseEnvironment();
+        resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
         return baseEnvironment;
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        resolveBaseEnvironment();
+        resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
         if (!get(progressInfo).generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings, progressInfo).isValid()) {
             JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(get(progressInfo).getClass());
             switch (getSourceType()) {
@@ -86,7 +294,8 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                     new UnspecifiedValidationReportContext().error()
                             .title("Misconfigured environment")
                             .explanation("An application-wide environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
-                            .solution("Please go into the JIPipe application settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                            .solution("Please go to Project > Application settings > General > Environments and find the configuration for '" + info.getName() + "'. " +
+                                    "Ensure that the environment is correctly configured or disable the override (if available).")
                             .report(report);
                 }
                 case SourceType.Project -> {
@@ -94,7 +303,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                     context.error()
                             .title("Misconfigured environment")
                             .explanation("A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
-                            .solution("Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                            .solution("Please go to Project > Project settings > General > Environments and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
                             .report(report);
                 }
                 case SourceType.Node -> {
@@ -113,9 +322,14 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
         return environmentClass;
     }
 
+    public JIPipeEnvironmentsServiceComponent.EnvironmentInfo getEnvironmentInfo() {
+        return environmentInfo;
+    }
+
     public enum SourceType {
         Node,
         Project,
-        Application
+        Application,
+        Fallback
     }
 }
