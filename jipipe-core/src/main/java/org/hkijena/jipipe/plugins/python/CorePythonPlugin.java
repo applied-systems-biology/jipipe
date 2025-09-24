@@ -26,9 +26,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -103,10 +100,6 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironmentType.class,
                 "Python environment type",
                 "A Python environment type");
-
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
     }
 
     @Override

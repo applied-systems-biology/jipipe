@@ -39,7 +39,6 @@ import java.util.stream.Collectors;
  * A registry for external environments
  */
 public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceComponent {
-    private final Multimap<Class<? extends JIPipeEnvironment>, InstallerEntry> installers = HashMultimap.create();
     private final Map<String, EnvironmentInfo> infosById = new HashMap<>();
     private final Map<Class<? extends JIPipeEnvironment>, EnvironmentInfo> infosByClass = new HashMap<>();
     private final Map<Class<? extends OptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByOptionalClass = new HashMap<>();
@@ -47,28 +46,6 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     public JIPipeEnvironmentsServiceComponent(JIPipeService service) {
         super(service);
-    }
-
-    /**
-     * Registers an installer
-     *
-     * @param environmentClass the environment
-     * @param installerClass   the installer
-     * @param icon             icon for the installer
-     */
-    public void registerInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
-        installers.put(environmentClass, new InstallerEntry(installerClass, icon));
-        getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
-    }
-
-    /**
-     * Returns a sorted list of installer items for the environment
-     *
-     * @param environmentClass the environment
-     * @return list of installers
-     */
-    public List<InstallerEntry> getInstallers(Class<? extends JIPipeEnvironment> environmentClass) {
-        return installers.get(environmentClass).stream().sorted(Comparator.comparing(InstallerEntry::getName)).collect(Collectors.toList());
     }
 
     /**
@@ -228,45 +205,6 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
         public boolean hasArtifactQuery() {
             return !StringUtils.isNullOrEmpty(artifactQuery);
-        }
-    }
-
-    /**
-     * An entry describing an installer
-     */
-    public static class InstallerEntry {
-        private final Class<? extends JIPipeExternalEnvironmentInstaller> installerClass;
-        private final String name;
-        private final String description;
-        private final Icon icon;
-
-        public InstallerEntry(Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
-            this.installerClass = installerClass;
-            this.icon = icon;
-            SetJIPipeDocumentation documentation = installerClass.getAnnotation(SetJIPipeDocumentation.class);
-            if (documentation != null) {
-                name = documentation.name();
-                description = DocumentationUtils.getDocumentationDescription(documentation);
-            } else {
-                name = installerClass.getName();
-                description = "";
-            }
-        }
-
-        public Class<? extends JIPipeExternalEnvironmentInstaller> getInstallerClass() {
-            return installerClass;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public Icon getIcon() {
-            return icon;
         }
     }
 }

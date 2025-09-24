@@ -993,18 +993,6 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         service.getEnvironments().registerEnvironment(id, null, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
-
-    /**
-     * Registers an installer for a given environment
-     *
-     * @param environmentClass the environment type
-     * @param installerClass   the installer class
-     * @param icon             icon for the installer
-     */
-    public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
-        service.getEnvironments().registerInstaller(environmentClass, installerClass, icon);
-    }
-
     /**
      * Registers file type metadata for the file chooser.
      * This is only for UX improvements with files and has no functional impact.
