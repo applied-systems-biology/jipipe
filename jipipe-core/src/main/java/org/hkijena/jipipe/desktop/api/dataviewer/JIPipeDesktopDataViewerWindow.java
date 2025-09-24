@@ -35,8 +35,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;

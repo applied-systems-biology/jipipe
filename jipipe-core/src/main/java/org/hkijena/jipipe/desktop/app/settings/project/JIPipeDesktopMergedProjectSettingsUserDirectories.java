@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;

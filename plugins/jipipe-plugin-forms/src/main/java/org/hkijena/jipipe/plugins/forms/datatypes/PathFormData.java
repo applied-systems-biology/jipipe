@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;

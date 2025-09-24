@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;

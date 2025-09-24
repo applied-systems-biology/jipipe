@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.service.components;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.*;
@@ -218,6 +220,14 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
         public JIPipeEnvironmentArchetype getArchetype() {
             return archetype;
+        }
+
+        public boolean isArtifact() {
+            return JIPipeArtifactEnvironment.class.isAssignableFrom(environmentClass);
+        }
+
+        public boolean hasArtifactQuery() {
+            return !StringUtils.isNullOrEmpty(artifactQuery);
         }
     }
 

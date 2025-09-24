@@ -37,8 +37,8 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;

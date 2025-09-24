@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.plots.JIPipePlotDataClassFilter;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotDataSeries;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotMetadata;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;

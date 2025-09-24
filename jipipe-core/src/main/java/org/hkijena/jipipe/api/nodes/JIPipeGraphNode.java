@@ -51,7 +51,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;

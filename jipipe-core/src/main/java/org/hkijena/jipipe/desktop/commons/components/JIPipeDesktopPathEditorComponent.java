@@ -18,8 +18,8 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;

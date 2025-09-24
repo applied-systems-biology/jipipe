@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 
 import java.util.*;
 

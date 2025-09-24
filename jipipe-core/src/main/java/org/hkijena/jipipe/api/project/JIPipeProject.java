@@ -56,9 +56,9 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeDataStorageProjectSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -150,6 +150,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // Init default settings
         for (Map.Entry<String, Class<? extends JIPipeProjectSettingsSheet>> entry : JIPipe.getInstance().getProjectSettings().getRegisteredSheetTypes().entrySet()) {
             JIPipeProjectSettingsSheet sheet = (JIPipeProjectSettingsSheet) ReflectionUtils.newInstance(entry.getValue());
+            sheet.initialize(this);
             settingsSheets.put(entry.getKey(), sheet);
         }
 

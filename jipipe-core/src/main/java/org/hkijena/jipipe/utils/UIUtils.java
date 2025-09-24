@@ -38,7 +38,7 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNoti
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;

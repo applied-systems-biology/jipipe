@@ -33,7 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLa
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;

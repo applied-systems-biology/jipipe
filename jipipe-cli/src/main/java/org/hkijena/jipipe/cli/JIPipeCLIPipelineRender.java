@@ -3,8 +3,6 @@ package org.hkijena.jipipe.cli;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.JIPipeServiceMode;
-import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -15,7 +13,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;

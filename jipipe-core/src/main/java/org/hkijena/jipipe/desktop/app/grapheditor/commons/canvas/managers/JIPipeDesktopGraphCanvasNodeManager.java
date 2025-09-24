@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;

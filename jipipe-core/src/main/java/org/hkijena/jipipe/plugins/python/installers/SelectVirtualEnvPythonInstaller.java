@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpression
 import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 

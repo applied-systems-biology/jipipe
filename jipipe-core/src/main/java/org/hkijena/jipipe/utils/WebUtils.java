@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
-import org.hkijena.jipipe.plugins.settings.JIPipeDownloadsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDownloadsApplicationSettings;
 
 import java.io.FileOutputStream;
 import java.io.IOException;

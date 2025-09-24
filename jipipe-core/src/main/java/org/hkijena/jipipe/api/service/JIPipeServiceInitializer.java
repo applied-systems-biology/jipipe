@@ -13,9 +13,9 @@ import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceCompon
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultEnvironmentsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;

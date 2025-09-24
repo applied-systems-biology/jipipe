@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImag
 import org.hkijena.jipipe.plugins.imageviewer.utils.RoiListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;

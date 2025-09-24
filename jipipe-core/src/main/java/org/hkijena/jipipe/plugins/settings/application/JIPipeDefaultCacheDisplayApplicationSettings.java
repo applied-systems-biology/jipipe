@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.settings;
+package org.hkijena.jipipe.plugins.settings.application;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -21,21 +21,21 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import javax.swing.*;
 
 /**
- * A dynamic settings sheet that lets users select the default importer
+ * A dynamic settings sheet that lets users select the default cache display
  */
-public class JIPipeDefaultResultImporterApplicationSettings extends JIPipeDynamicParameterCollection implements JIPipeApplicationSettingsSheet {
-    public static final String ID = "org.hkijena.jipipe:default-result-importers";
+public class JIPipeDefaultCacheDisplayApplicationSettings extends JIPipeDynamicParameterCollection implements JIPipeApplicationSettingsSheet {
+    public static final String ID = "org.hkijena.jipipe:default-cache-displays";
 
-    public JIPipeDefaultResultImporterApplicationSettings() {
+    public JIPipeDefaultCacheDisplayApplicationSettings() {
         super(false);
     }
 
-    public JIPipeDefaultResultImporterApplicationSettings(JIPipeDynamicParameterCollection other) {
+    public JIPipeDefaultCacheDisplayApplicationSettings(JIPipeDynamicParameterCollection other) {
         super(other);
     }
 
-    public static JIPipeDefaultResultImporterApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, JIPipeDefaultResultImporterApplicationSettings.class);
+    public static JIPipeDefaultCacheDisplayApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, JIPipeDefaultCacheDisplayApplicationSettings.class);
     }
 
     @Override
@@ -45,12 +45,12 @@ public class JIPipeDefaultResultImporterApplicationSettings extends JIPipeDynami
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-import.png");
+        return JIPipe.RESOURCES.getIcon16("actions/zoom.png");
     }
 
     @Override
     public String getName() {
-        return "Default result importers";
+        return "Default cache displays";
     }
 
     @Override
@@ -65,6 +65,6 @@ public class JIPipeDefaultResultImporterApplicationSettings extends JIPipeDynami
 
     @Override
     public String getDescription() {
-        return "Determines how the JIPipe result viewer imports data from the file system";
+        return "Determines how the JIPipe cache browser displays data by default (double click)";
     }
 }

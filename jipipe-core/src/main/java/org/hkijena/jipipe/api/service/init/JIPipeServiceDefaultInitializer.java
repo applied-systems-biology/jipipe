@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTas
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializer;
-import org.hkijena.jipipe.api.service.JIPipeServiceState;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -36,7 +35,7 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsColl
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.CUDAUtils;
 import org.hkijena.jipipe.utils.JIPipeUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -48,7 +47,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.time.LocalDateTime;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     private final JIPipeInitializationReport issues = new JIPipeInitializationReport();

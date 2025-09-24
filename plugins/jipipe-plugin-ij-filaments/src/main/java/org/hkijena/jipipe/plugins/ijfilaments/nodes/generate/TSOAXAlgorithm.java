@@ -13,19 +13,16 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 

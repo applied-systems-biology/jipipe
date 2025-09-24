@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -114,5 +116,9 @@ public abstract class JIPipeEnvironment extends AbstractJIPipeParameterCollectio
      */
     public void runPostprocessing(JIPipeGraphRun run, JIPipeProgressInfo progressInfo) {
 
+    }
+
+    public boolean isValid() {
+        return generateValidityReport(JIPipeValidationReportContext.UNSPECIFIED, JIPipeValidationReportSettings.DEFAULT, JIPipeProgressInfo.SILENT).isValid();
     }
 }

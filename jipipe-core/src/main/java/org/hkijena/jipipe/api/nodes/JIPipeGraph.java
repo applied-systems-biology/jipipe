@@ -48,7 +48,7 @@ import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.GraphValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;

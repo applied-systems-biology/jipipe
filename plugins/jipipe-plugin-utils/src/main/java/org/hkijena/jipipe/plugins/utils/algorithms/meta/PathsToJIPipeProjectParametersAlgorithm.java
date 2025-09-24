@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;

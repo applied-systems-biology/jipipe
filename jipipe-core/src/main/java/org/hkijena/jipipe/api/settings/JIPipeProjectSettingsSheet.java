@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 
 import java.util.List;
 
@@ -22,6 +23,13 @@ import java.util.List;
  * A settings sheet used for storing project-related settings
  */
 public interface JIPipeProjectSettingsSheet extends JIPipeParameterCollection, JIPipeSettingsSheet {
+    /**
+     * Initialize this sheet during project initialization.
+     * At this point, JIPipe's static wrappers are available.
+     * @param project the project
+     */
+    void initialize(JIPipeProject project);
+
     /**
      * Gathers all known external environments.
      * Environments should only be added if they are active/enabled.

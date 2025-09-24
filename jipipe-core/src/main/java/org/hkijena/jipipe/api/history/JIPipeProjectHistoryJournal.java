@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.plugins.settings.JIPipeHistoryJournalApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeHistoryJournalApplicationSettings;
 
 import javax.swing.*;
 import java.time.LocalDateTime;

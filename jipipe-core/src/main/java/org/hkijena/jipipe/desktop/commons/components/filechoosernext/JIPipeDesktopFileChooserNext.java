@@ -10,7 +10,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmark;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;

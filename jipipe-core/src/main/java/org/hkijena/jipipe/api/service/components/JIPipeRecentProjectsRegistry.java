@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 

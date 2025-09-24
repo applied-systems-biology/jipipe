@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.LUTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UIUtils;

@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopColorIcon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.ui.swing.script.EditorPane;

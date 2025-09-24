@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.settings;
+package org.hkijena.jipipe.plugins.settings.application;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;

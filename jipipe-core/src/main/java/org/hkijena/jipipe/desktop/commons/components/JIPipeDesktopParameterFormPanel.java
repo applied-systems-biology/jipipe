@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;

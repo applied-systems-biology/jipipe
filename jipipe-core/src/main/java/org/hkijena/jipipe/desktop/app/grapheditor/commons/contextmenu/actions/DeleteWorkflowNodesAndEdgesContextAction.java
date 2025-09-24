@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeAndEdgesUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;

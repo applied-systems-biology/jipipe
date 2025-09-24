@@ -31,7 +31,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDes
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.properties.JIPipeDesktopCompartmentGraphEditorResultsPanel;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import java.util.ArrayList;

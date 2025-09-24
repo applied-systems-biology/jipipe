@@ -20,9 +20,9 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultResultImporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;

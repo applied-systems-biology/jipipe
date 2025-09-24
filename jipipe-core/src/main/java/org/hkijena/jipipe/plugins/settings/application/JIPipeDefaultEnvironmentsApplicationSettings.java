@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.plugins.settings;
+package org.hkijena.jipipe.plugins.settings.application;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.data.storage;
 
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 

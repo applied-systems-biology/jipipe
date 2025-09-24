@@ -39,7 +39,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComp
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopToggleButtonPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 

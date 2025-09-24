@@ -80,8 +80,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalc
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;

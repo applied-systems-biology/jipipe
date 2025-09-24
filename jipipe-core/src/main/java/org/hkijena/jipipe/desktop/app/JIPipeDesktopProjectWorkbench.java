@@ -72,7 +72,7 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificatio
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.*;
+import org.hkijena.jipipe.plugins.settings.application.*;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;

@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.compat.JIPipeDesktopRunSingleAlgorithmWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;

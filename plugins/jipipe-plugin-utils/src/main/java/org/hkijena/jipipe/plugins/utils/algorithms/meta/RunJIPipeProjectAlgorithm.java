@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;

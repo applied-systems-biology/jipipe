@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;

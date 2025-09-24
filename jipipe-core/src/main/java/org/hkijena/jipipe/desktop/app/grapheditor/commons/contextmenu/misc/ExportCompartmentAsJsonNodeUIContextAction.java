@@ -22,7 +22,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUICont
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;

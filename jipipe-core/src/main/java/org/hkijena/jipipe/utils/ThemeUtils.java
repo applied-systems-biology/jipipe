@@ -11,7 +11,7 @@ import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUIThemeBrightness;
 import org.hkijena.jipipe.desktop.commons.theme.ui.*;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;

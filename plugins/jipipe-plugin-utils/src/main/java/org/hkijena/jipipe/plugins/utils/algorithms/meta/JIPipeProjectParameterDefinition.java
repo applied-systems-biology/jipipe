@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 

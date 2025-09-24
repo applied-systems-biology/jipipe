@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;

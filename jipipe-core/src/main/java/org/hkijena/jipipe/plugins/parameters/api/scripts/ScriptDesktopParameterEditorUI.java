@@ -25,8 +25,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.LargeScriptDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;

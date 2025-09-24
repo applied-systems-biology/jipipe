@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;

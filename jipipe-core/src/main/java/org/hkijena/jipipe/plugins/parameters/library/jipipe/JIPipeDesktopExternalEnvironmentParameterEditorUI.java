@@ -16,18 +16,19 @@ package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.environments.*;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
+import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +37,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
 
@@ -235,7 +235,9 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
                 parameter,
                 null,
                 "Edit environment",
-                JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION);
+                JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR |
+                        JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION |
+                        JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
         if (result) {
             setParameter(parameter, true);
         }

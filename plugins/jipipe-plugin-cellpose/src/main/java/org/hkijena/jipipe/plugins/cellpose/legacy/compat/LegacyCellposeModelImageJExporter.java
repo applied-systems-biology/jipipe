@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.io.IOException;
 import java.nio.file.Files;

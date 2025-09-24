@@ -31,7 +31,7 @@ public class ProjectSettingsValidationReportContext extends ProjectValidationRep
 
     @Override
     public void navigate(JIPipeWorkbench workbench) {
-        ((JIPipeDesktopProjectWorkbench) workbench).openProjectSettings("/Plugins");
+        ((JIPipeDesktopProjectWorkbench) workbench).openProjectSettings("/General/Environments");
     }
 
 }

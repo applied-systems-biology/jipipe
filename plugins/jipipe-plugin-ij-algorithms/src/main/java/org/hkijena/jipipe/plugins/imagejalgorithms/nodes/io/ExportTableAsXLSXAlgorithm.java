@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.*;
 

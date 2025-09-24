@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;

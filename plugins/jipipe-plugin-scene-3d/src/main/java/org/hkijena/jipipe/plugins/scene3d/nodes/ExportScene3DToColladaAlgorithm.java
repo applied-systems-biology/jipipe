@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DToColladaExporter;
-import org.hkijena.jipipe.plugins.settings.JIPipeDataExporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;

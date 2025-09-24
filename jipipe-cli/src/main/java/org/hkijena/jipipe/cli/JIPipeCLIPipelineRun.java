@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;

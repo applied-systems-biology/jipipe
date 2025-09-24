@@ -35,7 +35,7 @@ import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;

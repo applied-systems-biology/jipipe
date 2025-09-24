@@ -36,7 +36,7 @@ import org.hkijena.jipipe.contrib.ro_crate.entities.data.FileEntity;
 import org.hkijena.jipipe.contrib.ro_crate.writer.Writers;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRun;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;

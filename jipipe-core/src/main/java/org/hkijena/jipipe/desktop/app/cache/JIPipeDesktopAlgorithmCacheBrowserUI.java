@@ -43,7 +43,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 

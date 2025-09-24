@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;

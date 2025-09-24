@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
