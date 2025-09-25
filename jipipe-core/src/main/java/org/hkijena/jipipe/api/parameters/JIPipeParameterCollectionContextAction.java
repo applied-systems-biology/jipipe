@@ -28,4 +28,6 @@ public interface JIPipeParameterCollectionContextAction extends Consumer<JIPipeW
     String getDescription();
 
     Icon getIcon();
+
+    boolean isHighlighted();
 }

@@ -25,12 +25,14 @@ public class JIPipeDefaultParameterCollectionContextAction implements JIPipePara
     private final Consumer<JIPipeWorkbench> function;
     private final String name;
     private final String description;
+    private boolean highlighted;
     private final Icon icon;
 
-    public JIPipeDefaultParameterCollectionContextAction(Consumer<JIPipeWorkbench> function, String name, String description, Icon icon) {
+    public JIPipeDefaultParameterCollectionContextAction(Consumer<JIPipeWorkbench> function, String name, String description, boolean highlighted, Icon icon) {
         this.function = function;
         this.name = name;
         this.description = description;
+        this.highlighted = highlighted;
         this.icon = icon;
     }
 
@@ -56,5 +58,10 @@ public class JIPipeDefaultParameterCollectionContextAction implements JIPipePara
     @Override
     public Icon getIcon() {
         return icon;
+    }
+
+    @Override
+    public boolean isHighlighted() {
+        return highlighted;
     }
 }

@@ -400,7 +400,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                     var context = getSource() instanceof JIPipeGraphNode ? reportContext.node((JIPipeGraphNode) getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
                     context.error()
                             .title("Misconfigured environment")
-                            .explanation("A project connected service of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                            .explanation("A connected service of the type '" + info.getName() + "' that is configured using a node-specific override is invalid. The project cannot to be run.")
                             .solution("Please go to the affected node and find the connected service override for '" + info.getName() + "'. Ensure that the service is correctly configured.")
                             .report(report);
                 }

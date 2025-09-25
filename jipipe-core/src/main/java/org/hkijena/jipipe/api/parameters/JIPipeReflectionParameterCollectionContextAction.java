@@ -14,25 +14,25 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 public class JIPipeReflectionParameterCollectionContextAction implements JIPipeParameterCollectionContextAction {
     private final Object target;
     private final Method function;
     private final String name;
     private final String description;
+    private final boolean highlighted;
     private final Icon icon;
 
-    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, String name, String description, Icon icon) {
+    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, String name, String description, boolean highlighted, Icon icon) {
         this.target = target;
         this.function = function;
         this.name = name;
         this.description = description;
+        this.highlighted = highlighted;
         this.icon = icon;
     }
 
@@ -70,5 +70,10 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isHighlighted() {
+        return highlighted;
     }
 }

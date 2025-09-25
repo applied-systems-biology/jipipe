@@ -451,6 +451,9 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                         actionButton.setToolTipText(action.getDescription());
                         actionButton.addActionListener(e -> action.accept(desktopWorkbench));
                         UIUtils.setStandardButtonBorder(actionButton);
+                        if(action.isHighlighted()) {
+                            UIUtils.makeButtonHighlightedSuccess(actionButton);
+                        }
                         groupHeaderPanel.addToEndOfTitlePanel(actionButton);
                     }
                 }

@@ -100,7 +100,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private boolean bookmarked;
     private boolean uiLocked;
 
-    private final JIPipeDynamicParameterCollection environmentOverrides;
+    private final JIPipeGraphNodeEnvironmentOverridesParameter environmentOverrides;
 
 
     /**
@@ -111,7 +111,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         this.info = info;
-        this.environmentOverrides = new JIPipeDynamicParameterCollection();
+        this.environmentOverrides = new JIPipeGraphNodeEnvironmentOverridesParameter();
         registerSubParameter(environmentOverrides);
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
@@ -180,7 +180,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
         this.projectDirectory = other.projectDirectory;
-        this.environmentOverrides = new JIPipeDynamicParameterCollection(other.environmentOverrides);
+        this.environmentOverrides = new JIPipeGraphNodeEnvironmentOverridesParameter(other.environmentOverrides);
         registerSubParameter(environmentOverrides);
         updateEnvironmentOverrides();
         updateGraphNodeSlots();
@@ -1433,7 +1433,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     @SetJIPipeDocumentation(name = "Override connected services", description = "Allows to configure service connectors for this specific node")
     @JIPipeParameter(value = "jipipe:environment-overrides", persistence = JIPipeParameterSerializationMode.Object, icon = "actions/environment.png")
-    public JIPipeDynamicParameterCollection getEnvironmentOverrides() {
+    public JIPipeGraphNodeEnvironmentOverridesParameter getEnvironmentOverrides() {
         return environmentOverrides;
     }
 

@@ -268,7 +268,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             Icon icon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(actionAnnotation.icon(),
                     actionAnnotation.iconResourceManager(),
                     JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, documentationAnnotation.name(), documentationAnnotation.description(), icon));
+            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, documentationAnnotation.name(), documentationAnnotation.description(), actionAnnotation.highlighted(), icon));
         }
         target.actions.addAll(source.getContextActions());
     }

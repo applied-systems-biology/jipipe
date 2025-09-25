@@ -91,7 +91,6 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
