@@ -424,6 +424,8 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             }
         }
 
+        GroupHeaderPanel groupHeaderPanel = null;
+
         if (!noGroupHeaders) {
             SetJIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name())
@@ -437,7 +439,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 // Create panel
                 String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "");
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
+                groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
 
                 if(allowCollapse) {
                     groupHeaderPanel.addToStartOfTitlePanel(collapseButton);
@@ -573,14 +575,23 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             // Restore the collapse
             if (collapseCurrentComponentVisibilities.containsKey(parameterCollection)) {
-                collapseButton.setState(collapseCurrentComponentVisibilities.get(parameterCollection));
+                boolean visible = collapseCurrentComponentVisibilities.get(parameterCollection);
+                collapseButton.setState(visible);
             }
 
             setComponentsVisibility(uiComponents, collapseButton.getState());
+            GroupHeaderPanel finalGroupHeaderPanel = groupHeaderPanel;
             collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
                 setComponentsVisibility(uiComponents, collapseButton.getState());
                 collapseCurrentComponentVisibilities.put(parameterCollection, collapseButton.getState());
+                if(finalGroupHeaderPanel != null) {
+                    finalGroupHeaderPanel.setCollapsed(!collapseButton.getState());
+                }
             });
+
+            if(groupHeaderPanel != null) {
+                groupHeaderPanel.setCollapsed(!collapseButton.getState());
+            }
 
             collapseCurrentComponentVisibilities.put(parameterCollection, collapseButton.getState());
         }
@@ -593,7 +604,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
         helpButton.addActionListener(e -> {
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("# Category '").append(headerTitle).append("'\n\n");
+            stringBuilder.append("# Category '").append(StringUtils.orElse(headerTitle, "General")).append("'\n\n");
             if (documentation != null) {
                 stringBuilder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
             }

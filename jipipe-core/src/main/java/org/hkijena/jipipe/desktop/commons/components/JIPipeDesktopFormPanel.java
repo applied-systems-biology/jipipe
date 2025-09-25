@@ -724,6 +724,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         private final Color backgroundColor;
         private final Color borderColor;
         private JPanel titlePanel;
+        private boolean collapsed;
 
         /**
          * @param text      the text
@@ -770,7 +771,9 @@ public class JIPipeDesktopFormPanel extends JPanel {
             int y = marginTop;
             int w = getWidth() - x - 1;
             int h = getHeight() - y - 1 - 8;
-            g2.fillRoundRect(x, y, w, h, 4, 4);
+            if(!collapsed) {
+                g2.fillRoundRect(x, y, w, h, 4, 4);
+            }
             g2.setColor(borderColor);
             g2.drawRoundRect(x, y, w, h, 4, 4);
         }
@@ -804,6 +807,14 @@ public class JIPipeDesktopFormPanel extends JPanel {
             addToEndOfTitlePanel(helpButton);
         }
 
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
+            repaint(50);
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
+        }
     }
 
     /**
