@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -57,7 +58,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final ClusteringSettings clusteringSettings;
     private int k = 3;
     private int numTrials = 1;
-    private TableColumnSourceExpressionParameter.List inputColumns = new TableColumnSourceExpressionParameter.List();
+    private TableColumnSourceExpressionParameterList inputColumns = new TableColumnSourceExpressionParameterList();
 
 
     public KMeansClusteringAlgorithm(JIPipeNodeInfo info) {
@@ -71,7 +72,7 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.k = other.k;
         this.numTrials = other.numTrials;
-        this.inputColumns = new TableColumnSourceExpressionParameter.List(other.inputColumns);
+        this.inputColumns = new TableColumnSourceExpressionParameterList(other.inputColumns);
 
         this.outputSettings = new OutputSettings(other.outputSettings);
         this.clusteringSettings = new ClusteringSettings(other.clusteringSettings);
@@ -219,12 +220,12 @@ public class KMeansClusteringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Input columns", description = "The list of columns that will be used to create the points. Please note that string columns and NA/infinite values are automatically replaced with zeroes.")
     @JIPipeParameter(value = "input-columns", important = true)
-    public TableColumnSourceExpressionParameter.List getInputColumns() {
+    public TableColumnSourceExpressionParameterList getInputColumns() {
         return inputColumns;
     }
 
     @JIPipeParameter("input-columns")
-    public void setInputColumns(TableColumnSourceExpressionParameter.List inputColumns) {
+    public void setInputColumns(TableColumnSourceExpressionParameterList inputColumns) {
         this.inputColumns = inputColumns;
     }
 

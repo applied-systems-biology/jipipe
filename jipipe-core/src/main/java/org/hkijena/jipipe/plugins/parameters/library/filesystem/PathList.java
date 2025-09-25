@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.filesystem;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,7 +22,7 @@ import java.util.Collection;
 /**
  * Collection of paths. Used as parameter type.
  */
-public class PathList extends ListParameter<Path> {
+public class PathList extends JIPipeListParameter<Path> {
     /**
      * Creates a new instance
      */

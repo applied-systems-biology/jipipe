@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
@@ -200,7 +200,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    public static class DatasetEnumItemInfo implements EnumItemInfo {
+    public static class DatasetEnumItemInfo implements JIPipeEnumParameterItemInfo {
         @Override
         public Icon getIcon(Object value) {
             return null;

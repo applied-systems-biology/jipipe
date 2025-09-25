@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import javax.swing.*;
@@ -106,7 +106,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
     /**
      * An enum of strings that point to {@link JIPipeProjectTemplate}
      */
-    public static class ProjectTemplateEnum extends DynamicEnumParameter<String> {
+    public static class ProjectTemplateEnum extends JIPipeDynamicEnumParameter<String> {
         public ProjectTemplateEnum() {
             initialize();
         }

@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class RoiRelationMeasurementSet extends DynamicSetParameter<RoiRelationMeasurement> {
+public class RoiRelationMeasurementSet extends JIPipeDynamicSetParameter<RoiRelationMeasurement> {
 
     public RoiRelationMeasurementSet() {
         super(new HashSet<>(Arrays.asList(RoiRelationMeasurement.values())));

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ilastik.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalIlastikEnvironment extends OptionalParameter<IlastikEnvironment> {
+public class OptionalIlastikEnvironment extends JIPipeOptionalParameter<IlastikEnvironment> {
     public OptionalIlastikEnvironment() {
         super(IlastikEnvironment.class);
     }

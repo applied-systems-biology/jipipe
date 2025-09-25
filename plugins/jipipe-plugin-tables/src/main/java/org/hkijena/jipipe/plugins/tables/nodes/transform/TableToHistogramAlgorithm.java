@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -64,7 +64,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter outputColumnBinMax = new JIPipeExpressionParameter("\"Bin max\"");
     private JIPipeExpressionParameter outputColumnBinCount = new JIPipeExpressionParameter("\"Count\"");
     private JIPipeExpressionParameter accumulationFunction = new JIPipeExpressionParameter("COUNT(values)");
-    private ParameterCollectionList additionalColumns = ParameterCollectionList.containingCollection(AdditionalColumn.class);
+    private JIPipeParameterCollectionList additionalColumns = JIPipeParameterCollectionList.containingCollection(AdditionalColumn.class);
     private boolean cumulative = false;
     private boolean normalize = false;
 
@@ -82,7 +82,7 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.outputColumnBinMax = new JIPipeExpressionParameter(other.outputColumnBinMax);
         this.outputColumnBinCount = new JIPipeExpressionParameter(other.outputColumnBinCount);
         this.accumulationFunction = new JIPipeExpressionParameter(other.accumulationFunction);
-        this.additionalColumns = new ParameterCollectionList(other.additionalColumns);
+        this.additionalColumns = new JIPipeParameterCollectionList(other.additionalColumns);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
     }
@@ -262,12 +262,12 @@ public class TableToHistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Additional columns", description = "Additional columns to be added into the histogram.")
     @JIPipeParameter("additional-columns")
-    public ParameterCollectionList getAdditionalColumns() {
+    public JIPipeParameterCollectionList getAdditionalColumns() {
         return additionalColumns;
     }
 
     @JIPipeParameter("additional-columns")
-    public void setAdditionalColumns(ParameterCollectionList additionalColumns) {
+    public void setAdditionalColumns(JIPipeParameterCollectionList additionalColumns) {
         this.additionalColumns = additionalColumns;
     }
 

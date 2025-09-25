@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameter;
+import org.hkijena.jipipe.plugins.parameters.library.graph.GraphNodeReferenceParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
     private String name = "";
     private HTMLText description = new HTMLText();
-    private GraphNodeReferenceParameter.List nodes = new GraphNodeReferenceParameter.List();
+    private GraphNodeReferenceParameterList nodes = new GraphNodeReferenceParameterList();
     private OptionalColorParameter color = new OptionalColorParameter();
 
     public JIPipeProjectRunSet() {
@@ -36,7 +37,7 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
     public void setTo(JIPipeProjectRunSet other) {
         this.name = other.name;
         this.description = new HTMLText(other.description);
-        this.nodes = new GraphNodeReferenceParameter.List(other.nodes);
+        this.nodes = new GraphNodeReferenceParameterList(other.nodes);
         this.color = new OptionalColorParameter(other.color);
     }
 
@@ -82,13 +83,13 @@ public class JIPipeProjectRunSet extends AbstractJIPipeParameterCollection {
     @SetJIPipeDocumentation(name = "Nodes", description = "List of nodes that are part of this run set")
     @JIPipeParameter("nodes")
     @JsonGetter("nodes")
-    public GraphNodeReferenceParameter.List getNodes() {
+    public GraphNodeReferenceParameterList getNodes() {
         return nodes;
     }
 
     @JIPipeParameter("nodes")
     @JsonSetter("nodes")
-    public void setNodes(GraphNodeReferenceParameter.List nodes) {
+    public void setNodes(GraphNodeReferenceParameterList nodes) {
         this.nodes = nodes;
     }
 

@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
+import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
 import java.awt.*;
 
@@ -44,7 +45,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VisualLocationROIProperties roiProperties;
 
-    private Margin.List rectangles = new Margin.List();
+    private MarginList rectangles = new MarginList();
 
     private boolean center = false;
 
@@ -58,7 +59,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
     public DrawOvalRoiAlgorithm(DrawOvalRoiAlgorithm other) {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
-        this.rectangles = new Margin.List(other.rectangles);
+        this.rectangles = new MarginList(other.rectangles);
         this.center = other.center;
     }
 
@@ -116,12 +117,12 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Ellipses", description = "The oval ROI to be drawn")
     @JIPipeParameter("definitions")
-    public Margin.List getRectangles() {
+    public MarginList getRectangles() {
         return rectangles;
     }
 
     @JIPipeParameter("definitions")
-    public void setRectangles(Margin.List rectangles) {
+    public void setRectangles(MarginList rectangles) {
         this.rectangles = rectangles;
     }
 

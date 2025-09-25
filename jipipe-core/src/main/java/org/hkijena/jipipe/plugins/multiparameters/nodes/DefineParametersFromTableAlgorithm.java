@@ -30,8 +30,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -50,16 +50,16 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)
 public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList columns;
+    private JIPipeParameterCollectionList columns;
 
     public DefineParametersFromTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        columns = ParameterCollectionList.containingCollection(Column.class);
+        columns = JIPipeParameterCollectionList.containingCollection(Column.class);
     }
 
     public DefineParametersFromTableAlgorithm(DefineParametersFromTableAlgorithm other) {
         super(other);
-        columns = new ParameterCollectionList(other.columns);
+        columns = new JIPipeParameterCollectionList(other.columns);
     }
 
     @Override
@@ -99,12 +99,12 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
 
     @SetJIPipeDocumentation(name = "Table columns", description = "For each parameter, add an entry that describes the generated parameter key/type and the source table column.")
     @JIPipeParameter("table-columns")
-    public ParameterCollectionList getColumns() {
+    public JIPipeParameterCollectionList getColumns() {
         return columns;
     }
 
     @JIPipeParameter("table-columns")
-    public void setColumns(ParameterCollectionList columns) {
+    public void setColumns(JIPipeParameterCollectionList columns) {
         this.columns = columns;
     }
 

@@ -28,7 +28,8 @@ import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.functions.StringPatternExtractionFunction;
+import org.hkijena.jipipe.plugins.parameters.library.functions.StringPatternExtractionFunction;
+import org.hkijena.jipipe.plugins.parameters.library.functions.StringPatternExtractionFunctionList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 
 /**
@@ -41,7 +42,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringPatternExtractionFunction.List functions = new StringPatternExtractionFunction.List();
+    private StringPatternExtractionFunctionList functions = new StringPatternExtractionFunctionList();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
@@ -61,7 +62,7 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
      */
     public ExtractAndReplaceAnnotation(ExtractAndReplaceAnnotation other) {
         super(other);
-        this.functions = new StringPatternExtractionFunction.List(other.functions);
+        this.functions = new StringPatternExtractionFunctionList(other.functions);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
@@ -85,12 +86,12 @@ public class ExtractAndReplaceAnnotation extends JIPipeSimpleIteratingAlgorithm 
             "This matching group will then be picked.")
     @JIPipeParameter("functions")
     @StringParameterSettings(monospace = true)
-    public StringPatternExtractionFunction.List getFunctions() {
+    public StringPatternExtractionFunctionList getFunctions() {
         return functions;
     }
 
     @JIPipeParameter("functions")
-    public void setFunctions(StringPatternExtractionFunction.List functions) {
+    public void setFunctions(StringPatternExtractionFunctionList functions) {
         this.functions = functions;
     }
 

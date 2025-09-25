@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.python.adapter;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 /**
  * An optional {@link JIPipePythonAdapterLibraryEnvironment}
  */
-public class OptionalJIPipePythonAdapterLibraryEnvironment extends OptionalParameter<JIPipePythonAdapterLibraryEnvironment> {
+public class OptionalJIPipePythonAdapterLibraryEnvironment extends JIPipeOptionalParameter<JIPipePythonAdapterLibraryEnvironment> {
     public OptionalJIPipePythonAdapterLibraryEnvironment() {
         super(JIPipePythonAdapterLibraryEnvironment.class);
         setContent(new JIPipePythonAdapterLibraryEnvironment());

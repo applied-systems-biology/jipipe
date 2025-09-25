@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.optional;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 /**
  * Optional {@link Path}
  */
-public class OptionalPathParameter extends OptionalParameter<Path> {
+public class OptionalPathParameter extends JIPipeOptionalParameter<Path> {
 
     /**
      * Creates a new instance

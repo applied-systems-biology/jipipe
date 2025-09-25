@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 
 /**
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
         "(1) Selecting an existing string, and (2) Matching an existing strings by boolean operators<br/>" +
         "<ol><li>Type in the string in double quotes. Example: <pre>\"hello world\"</pre></li>" +
         "<li>The function iterates through all strings. It should return TRUE for one of them. You will have a variable 'value' available within the expression. Example: <pre>value CONTAINS \"hello\"</pre></li></ol>")
-public class StringQueryExpressionAndStringPairParameter extends PairParameter<StringQueryExpression, String> {
+public class StringQueryExpressionAndStringPairParameter extends JIPipePairParameter<StringQueryExpression, String> {
 
     /**
      * Creates a new instance
@@ -51,27 +51,4 @@ public class StringQueryExpressionAndStringPairParameter extends PairParameter<S
         super(other);
     }
 
-    /**
-     * A collection of multiple {@link StringQueryExpressionAndStringPairParameter}
-     */
-    public static class List extends ListParameter<StringQueryExpressionAndStringPairParameter> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(StringQueryExpressionAndStringPairParameter.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(StringQueryExpressionAndStringPairParameter.class);
-            for (StringQueryExpressionAndStringPairParameter filter : other) {
-                add(new StringQueryExpressionAndStringPairParameter(filter));
-            }
-        }
-    }
 }

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -23,7 +23,7 @@ import java.util.Comparator;
 /**
  * A key-value pair parameter of {@link MeasurementColumn} to {@link SortOrder}
  */
-public class MeasurementColumnSortOrder extends PairParameter<MeasurementColumn, SortOrder> {
+public class MeasurementColumnSortOrder extends JIPipePairParameter<MeasurementColumn, SortOrder> {
     /**
      * Creates a new instance
      */
@@ -59,41 +59,4 @@ public class MeasurementColumnSortOrder extends PairParameter<MeasurementColumn,
         };
     }
 
-    /**
-     * A list of {@link MeasurementColumnSortOrder}
-     */
-    public static class List extends ListParameter<MeasurementColumnSortOrder> {
-
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(MeasurementColumnSortOrder.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(MeasurementColumnSortOrder.class);
-            for (MeasurementColumnSortOrder measurementFilter : other) {
-                add(new MeasurementColumnSortOrder(measurementFilter));
-            }
-        }
-
-        /**
-         * Returns the integer value that describes which measurements to extract
-         *
-         * @return the integer value that describes which measurements to extract
-         */
-        public int getNativeMeasurementEnumValue() {
-            int result = 0;
-            for (MeasurementColumnSortOrder measurementFilter : this) {
-                result |= measurementFilter.getKey().getNativeValue();
-            }
-            return result;
-        }
-    }
 }

@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.parameters;
 
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 
-public class HyperstackDimensionPairParameter extends PairParameter<HyperstackDimension, HyperstackDimension> {
+public class HyperstackDimensionPairParameter extends JIPipePairParameter<HyperstackDimension, HyperstackDimension> {
 
     public HyperstackDimensionPairParameter() {
         super(HyperstackDimension.class, HyperstackDimension.class);
@@ -31,20 +31,8 @@ public class HyperstackDimensionPairParameter extends PairParameter<HyperstackDi
         setValue(second);
     }
 
-    public HyperstackDimensionPairParameter(PairParameter<HyperstackDimension, HyperstackDimension> other) {
+    public HyperstackDimensionPairParameter(JIPipePairParameter<HyperstackDimension, HyperstackDimension> other) {
         super(other);
     }
 
-    public static class List extends ListParameter<HyperstackDimensionPairParameter> {
-        public List() {
-            super(HyperstackDimensionPairParameter.class);
-        }
-
-        public List(List other) {
-            super(HyperstackDimensionPairParameter.class);
-            for (HyperstackDimensionPairParameter pair : other) {
-                add(new HyperstackDimensionPairParameter(pair));
-            }
-        }
-    }
 }

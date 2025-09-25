@@ -15,14 +15,14 @@ package org.hkijena.jipipe.plugins.parameters.library.matrix;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.plugins.parameters.api.matrix.Matrix2D;
+import org.hkijena.jipipe.plugins.parameters.api.matrix.JIPipeMatrix2DParameter;
 
 /**
  * Matrix containing {@link Float}
  */
-@JsonSerialize(using = Matrix2D.Serializer.class)
-@JsonDeserialize(using = Matrix2D.Deserializer.class)
-public class Matrix2DFloat extends Matrix2D<Float> {
+@JsonSerialize(using = JIPipeMatrix2DParameter.Serializer.class)
+@JsonDeserialize(using = JIPipeMatrix2DParameter.Deserializer.class)
+public class Matrix2DFloat extends JIPipeMatrix2DParameter<Float> {
 
     /**
      * Creates a new object

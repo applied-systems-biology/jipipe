@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopEnumParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopPickEnumValueDialog extends JDialog {
     private List<Object> availableItems;
-    private EnumItemInfo itemInfo;
+    private JIPipeEnumParameterItemInfo itemInfo;
     private JIPipeDesktopSearchTextField searchField;
     private JList<Object> itemJList;
     private Object selectedItem;
@@ -45,7 +45,7 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
     private JScrollPane scrollPane;
     private boolean canceled = true;
 
-    public JIPipeDesktopPickEnumValueDialog(Window parent, List<?> availableItems, EnumItemInfo itemInfo, Object preSelected) {
+    public JIPipeDesktopPickEnumValueDialog(Window parent, List<?> availableItems, JIPipeEnumParameterItemInfo itemInfo, Object preSelected) {
         super(parent);
         this.availableItems = new ArrayList<>(availableItems);
         this.itemInfo = itemInfo;
@@ -58,7 +58,7 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
         itemJList.setSelectedValue(preSelected, true);
     }
 
-    public static Object showDialog(Component parent, List<?> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
+    public static Object showDialog(Component parent, List<?> availableItems, JIPipeEnumParameterItemInfo itemInfo, Object preSelected, String title) {
         JIPipeDesktopPickEnumValueDialog dialog = new JIPipeDesktopPickEnumValueDialog(SwingUtilities.getWindowAncestor(parent), availableItems, itemInfo, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);
@@ -78,7 +78,7 @@ public class JIPipeDesktopPickEnumValueDialog extends JDialog {
         initializeToolBar();
 
         itemJList = new JList<>();
-        itemJList.setCellRenderer(new EnumDesktopParameterEditorUI.Renderer(itemInfo));
+        itemJList.setCellRenderer(new JIPipeDesktopEnumParameterEditorUI.Renderer(itemInfo));
         itemJList.addListSelectionListener(e -> {
             if (itemJList.getSelectedValue() != null) {
                 setSelectedItem(itemJList.getSelectedValue());

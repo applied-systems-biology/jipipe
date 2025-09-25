@@ -31,9 +31,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -50,7 +50,7 @@ public class REnvironment extends JIPipeArtifactEnvironment {
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
-    private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList environmentVariables = new StringQueryExpressionAndStringPairParameterList();
 
     public REnvironment() {
         if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
@@ -64,7 +64,7 @@ public class REnvironment extends JIPipeArtifactEnvironment {
         this.RExecutablePath = other.RExecutablePath;
         this.RScriptExecutablePath = other.RScriptExecutablePath;
         this.arguments = new JIPipeExpressionParameter(other.arguments);
-        this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.environmentVariables = new StringQueryExpressionAndStringPairParameterList(other.environmentVariables);
     }
 
     @Override
@@ -165,12 +165,12 @@ public class REnvironment extends JIPipeArtifactEnvironment {
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
     @JIPipeExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
-    public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
+    public StringQueryExpressionAndStringPairParameterList getEnvironmentVariables() {
         return environmentVariables;
     }
 
     @JIPipeParameter("environment-variables")
-    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
+    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameterList environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 
@@ -202,19 +202,4 @@ public class REnvironment extends JIPipeArtifactEnvironment {
         }
     }
 
-    /**
-     * A list of {@link REnvironment}
-     */
-    public static class List extends ListParameter<REnvironment> {
-        public List() {
-            super(REnvironment.class);
-        }
-
-        public List(REnvironment.List other) {
-            super(REnvironment.class);
-            for (REnvironment environment : other) {
-                add(new REnvironment(environment));
-            }
-        }
-    }
 }

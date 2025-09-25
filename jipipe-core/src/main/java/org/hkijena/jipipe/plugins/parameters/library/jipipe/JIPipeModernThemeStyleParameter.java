@@ -6,7 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 @JsonSerialize(using = JIPipeModernThemeStyleParameter.Serializer.class)
 @JsonDeserialize(using = JIPipeModernThemeStyleParameter.Deserializer.class)
-public class JIPipeModernThemeStyleParameter extends DynamicEnumParameter<String> {
+public class JIPipeModernThemeStyleParameter extends JIPipeDynamicEnumParameter<String> {
 
     /**
      * Creates a new instance with null value

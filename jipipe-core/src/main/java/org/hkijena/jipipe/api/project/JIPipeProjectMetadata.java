@@ -15,11 +15,8 @@ package org.hkijena.jipipe.api.project;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.JIPipeStandardMetadata;
-import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependencyList;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -30,12 +27,12 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsAppli
  * Metadata for a {@link JIPipeProject}
  */
 public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
-    private JIPipeImageJUpdateSiteDependency.List updateSiteDependencies = new JIPipeImageJUpdateSiteDependency.List();
+    private JIPipeImageJUpdateSiteDependencyList updateSiteDependencies = new JIPipeImageJUpdateSiteDependencyList();
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
     private JIPipeProjectDirectories directories = new JIPipeProjectDirectories();
     private JIPipeDynamicParameterCollection globalParameters = new JIPipeDynamicParameterCollection(true);
-    private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
+    private JIPipeNodeTemplateList nodeTemplates = new JIPipeNodeTemplateList();
     private boolean restoreTabs = true;
     private boolean autoAddAuthors = true;
     private boolean showCompartmentsRunPanelInOverview = true;
@@ -72,13 +69,13 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
             "does not already exist in the user's repository.")
     @JIPipeParameter(value = "update-site-dependencies", uiOrder = 10)
     @JsonGetter("update-site-dependencies")
-    public JIPipeImageJUpdateSiteDependency.List getUpdateSiteDependencies() {
+    public JIPipeImageJUpdateSiteDependencyList getUpdateSiteDependencies() {
         return updateSiteDependencies;
     }
 
     @JIPipeParameter("update-site-dependencies")
     @JsonSetter("update-site-dependencies")
-    public void setUpdateSiteDependencies(JIPipeImageJUpdateSiteDependency.List updateSiteDependencies) {
+    public void setUpdateSiteDependencies(JIPipeImageJUpdateSiteDependencyList updateSiteDependencies) {
         this.updateSiteDependencies = updateSiteDependencies;
     }
 
@@ -123,13 +120,13 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     @SetJIPipeDocumentation(name = "Node templates", description = "A list of node templates that will be available for users who edit the project.")
     @JIPipeParameter("node-templates")
     @JsonGetter("node-templates")
-    public JIPipeNodeTemplate.List getNodeTemplates() {
+    public JIPipeNodeTemplateList getNodeTemplates() {
         return nodeTemplates;
     }
 
     @JIPipeParameter("node-templates")
     @JsonSetter("node-templates")
-    public void setNodeTemplates(JIPipeNodeTemplate.List nodeTemplates) {
+    public void setNodeTemplates(JIPipeNodeTemplateList nodeTemplates) {
         this.nodeTemplates = nodeTemplates;
     }
 

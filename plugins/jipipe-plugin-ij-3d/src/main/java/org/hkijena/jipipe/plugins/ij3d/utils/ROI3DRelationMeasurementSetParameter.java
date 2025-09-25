@@ -13,18 +13,18 @@
 
 package org.hkijena.jipipe.plugins.ij3d.utils;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.Set;
 
-public class ROI3DRelationMeasurementSetParameter extends DynamicSetParameter<ROI3DRelationMeasurement> {
+public class ROI3DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI3DRelationMeasurement> {
     public ROI3DRelationMeasurementSetParameter() {
         initialize();
         setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
     }
 
-    public ROI3DRelationMeasurementSetParameter(DynamicSetParameter<ROI3DRelationMeasurement> other) {
+    public ROI3DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<ROI3DRelationMeasurement> other) {
         super(other);
         initialize();
     }

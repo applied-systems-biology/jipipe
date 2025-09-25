@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.ijtrackmate.io;
 
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
+import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeaturePenaltyParameterList;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -26,7 +27,7 @@ public class SpotFeaturePenaltyParameterListSettingsIO implements SettingsIO {
     @Override
     public Object settingToParameter(Object obj) {
         Map<String, Double> map = (Map<String, Double>) obj;
-        SpotFeaturePenaltyParameter.List result = new SpotFeaturePenaltyParameter.List();
+        SpotFeaturePenaltyParameterList result = new SpotFeaturePenaltyParameterList();
         for (Map.Entry<String, Double> entry : map.entrySet()) {
             result.add(new SpotFeaturePenaltyParameter(new SpotFeature(entry.getKey()), entry.getValue()));
         }
@@ -36,7 +37,7 @@ public class SpotFeaturePenaltyParameterListSettingsIO implements SettingsIO {
     @Override
     public Object parameterToSetting(Object obj) {
         Map<String, Double> result = new HashMap<>();
-        SpotFeaturePenaltyParameter.List list = (SpotFeaturePenaltyParameter.List) obj;
+        SpotFeaturePenaltyParameterList list = (SpotFeaturePenaltyParameterList) obj;
         for (SpotFeaturePenaltyParameter parameter : list) {
             result.put(parameter.getFeature().getValue(), parameter.getPenalty());
         }
@@ -50,6 +51,6 @@ public class SpotFeaturePenaltyParameterListSettingsIO implements SettingsIO {
 
     @Override
     public Class<?> getParameterClass() {
-        return SpotFeaturePenaltyParameter.List.class;
+        return SpotFeaturePenaltyParameterList.class;
     }
 }

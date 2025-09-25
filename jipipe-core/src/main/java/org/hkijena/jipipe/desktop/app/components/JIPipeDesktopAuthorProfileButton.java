@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServic
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -36,7 +36,7 @@ public class JIPipeDesktopAuthorProfileButton extends JButton implements JIPipeD
     }
 
     private void updateStatus() {
-        List<JIPipeAuthorMetadata> activeAuthors = settings.getProjectAuthors().stream().filter(OptionalParameter::isEnabled).map(OptionalParameter::getContent).collect(Collectors.toList());
+        List<JIPipeAuthorMetadata> activeAuthors = settings.getProjectAuthors().stream().filter(JIPipeOptionalParameter::isEnabled).map(JIPipeOptionalParameter::getContent).collect(Collectors.toList());
         if (settings.getProjectAuthors().isEmpty() && activeAuthors.isEmpty()) {
             setText("Unknown author");
             setIcon(JIPipe.RESOURCES.getIcon16("actions/im-kick-user.png"));

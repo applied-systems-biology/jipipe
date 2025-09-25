@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.StringData;
 
 import java.util.ArrayList;
@@ -44,7 +44,7 @@ import java.util.List;
 @AddJIPipeInputSlot(value = StringData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
 
     public AnnotateWithTextDataAlgorithm(JIPipeNodeInfo info) {
@@ -54,7 +54,7 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     public AnnotateWithTextDataAlgorithm(AnnotateWithTextDataAlgorithm other) {
         super(other);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
         this.annotationMergeMode = other.annotationMergeMode;
     }
 
@@ -78,12 +78,12 @@ public class AnnotateWithTextDataAlgorithm extends JIPipeSimpleIteratingAlgorith
     @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

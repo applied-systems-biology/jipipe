@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.dataenvironment;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalJIPipeDataDirectoryEnvironment extends OptionalParameter<JIPipeDataDirectoryEnvironment> {
+public class OptionalJIPipeDataDirectoryEnvironment extends JIPipeOptionalParameter<JIPipeDataDirectoryEnvironment> {
     public OptionalJIPipeDataDirectoryEnvironment() {
         super(JIPipeDataDirectoryEnvironment.class);
         setContent(new JIPipeDataDirectoryEnvironment());

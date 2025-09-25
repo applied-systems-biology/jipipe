@@ -39,6 +39,7 @@ import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROImageToDatasetAl
 import org.hkijena.jipipe.plugins.omero.nodes.upload.UploadOMEROTableAlgorithm;
 import org.hkijena.jipipe.plugins.omero.viewers.OMERODataViewer;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -70,8 +71,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_SCIJAVA, PluginCategoriesEnumParameter.CATEGORY_OME);
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_SCIJAVA, PluginCategoriesEnumParameter.CATEGORY_OME);
     }
 
     @Override

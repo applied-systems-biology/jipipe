@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -34,8 +34,8 @@ import java.util.*;
 public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceComponent {
     private final Map<String, EnvironmentInfo> infosById = new HashMap<>();
     private final Map<Class<? extends JIPipeEnvironment>, EnvironmentInfo> infosByClass = new HashMap<>();
-    private final Map<Class<? extends OptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByOptionalClass = new HashMap<>();
-    private final Map<Class<? extends ListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByListClass = new HashMap<>();
+    private final Map<Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByOptionalClass = new HashMap<>();
+    private final Map<Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByListClass = new HashMap<>();
 
     public JIPipeEnvironmentsServiceComponent(JIPipeService service) {
         super(service);
@@ -70,7 +70,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 //        settings.emitParameterChangedEvent("presets");
     }
 
-    public <T extends JIPipeEnvironment, V extends OptionalParameter<T>, U extends ListParameter<T>> void registerEnvironment(String id, String artifactQuery, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass, Class<V> optionalEnvironmentClass, Class<U> environmentListClass, String name, String description, Icon icon) {
+    public <T extends JIPipeEnvironment, V extends JIPipeOptionalParameter<T>, U extends JIPipeListParameter<T>> void registerEnvironment(String id, String artifactQuery, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass, Class<V> optionalEnvironmentClass, Class<U> environmentListClass, String name, String description, Icon icon) {
         getProgressInfo().log("Registering environment type '" + id + "' (" + environmentClass + ", " + optionalEnvironmentClass + ", " + environmentListClass + ") as '" + name + "'");
         if (infosById.containsKey(id)) {
             throw new RuntimeException("Unable to register environment " + environmentClass + " as '" + id + "': duplicate key!");
@@ -105,11 +105,11 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         return infosByClass.get(klass);
     }
 
-    public EnvironmentInfo getInfoByOptionalClass(Class<? extends OptionalParameter<? extends JIPipeEnvironment>> klass) {
+    public EnvironmentInfo getInfoByOptionalClass(Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>> klass) {
         return infosByOptionalClass.get(klass);
     }
 
-    public EnvironmentInfo getInfoByListClass(Class<? extends ListParameter<? extends JIPipeEnvironment>> klass) {
+    public EnvironmentInfo getInfoByListClass(Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>> klass) {
         return infosByListClass.get(klass);
     }
 
@@ -125,11 +125,11 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         return Collections.unmodifiableMap(infosByClass);
     }
 
-    public Map<Class<? extends OptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> getInfosByOptionalClass() {
+    public Map<Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> getInfosByOptionalClass() {
         return Collections.unmodifiableMap(infosByOptionalClass);
     }
 
-    public Map<Class<? extends ListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> getInfosByListClass() {
+    public Map<Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> getInfosByListClass() {
         return Collections.unmodifiableMap(infosByListClass);
     }
 
@@ -160,13 +160,13 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         private final String artifactQuery;
         private final JIPipeEnvironmentArchetype archetype;
         private final Class<? extends JIPipeEnvironment> environmentClass;
-        private final Class<? extends OptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass;
-        private final Class<? extends ListParameter<? extends JIPipeEnvironment>> environmentListClass;
+        private final Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass;
+        private final Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>> environmentListClass;
         private final String name;
         private final String description;
         private final Icon icon;
 
-        public EnvironmentInfo(String id, String artifactQuery, JIPipeEnvironmentArchetype archetype, Class<? extends JIPipeEnvironment> environmentClass, Class<? extends OptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass, Class<? extends ListParameter<? extends JIPipeEnvironment>> environmentListClass, String name, String description, Icon icon) {
+        public EnvironmentInfo(String id, String artifactQuery, JIPipeEnvironmentArchetype archetype, Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>> optionalEnvironmentClass, Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>> environmentListClass, String name, String description, Icon icon) {
             this.id = id;
             this.artifactQuery = artifactQuery;
             this.archetype = archetype;
@@ -186,11 +186,11 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
             return environmentClass;
         }
 
-        public Class<? extends OptionalParameter<? extends JIPipeEnvironment>> getOptionalEnvironmentClass() {
+        public Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>> getOptionalEnvironmentClass() {
             return optionalEnvironmentClass;
         }
 
-        public Class<? extends ListParameter<? extends JIPipeEnvironment>> getEnvironmentListClass() {
+        public Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>> getEnvironmentListClass() {
             return environmentListClass;
         }
 

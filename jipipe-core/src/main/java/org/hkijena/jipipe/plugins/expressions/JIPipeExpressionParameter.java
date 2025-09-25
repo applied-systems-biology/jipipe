@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
@@ -109,19 +109,6 @@ public class JIPipeExpressionParameter extends DefaultExpressionParameter {
 
     public void setAdditionalUIVariables(java.util.Set<JIPipeExpressionParameterVariableInfo> additionalUIVariables) {
         this.additionalUIVariables = additionalUIVariables;
-    }
-
-    public static class List extends ListParameter<JIPipeExpressionParameter> {
-        public List() {
-            super(JIPipeExpressionParameter.class);
-        }
-
-        public List(Collection<JIPipeExpressionParameter> other) {
-            super(JIPipeExpressionParameter.class);
-            for (JIPipeExpressionParameter parameter : other) {
-                add(new JIPipeExpressionParameter(parameter));
-            }
-        }
     }
 
     public static class Deserializer extends JsonDeserializer<JIPipeExpressionParameter> implements ContextualDeserializer {

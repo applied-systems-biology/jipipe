@@ -49,8 +49,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
@@ -66,7 +66,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
-    private ParameterCollectionList generatedColumns = ParameterCollectionList.containingCollection(GeneratedColumn.class);
+    private JIPipeParameterCollectionList generatedColumns = JIPipeParameterCollectionList.containingCollection(GeneratedColumn.class);
 
     public KeyValueThresholdPartitionGenerator(JIPipeNodeInfo info) {
         super(info);
@@ -76,7 +76,7 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
 
     public KeyValueThresholdPartitionGenerator(KeyValueThresholdPartitionGenerator other) {
         super(other);
-        this.generatedColumns = new ParameterCollectionList(other.generatedColumns);
+        this.generatedColumns = new JIPipeParameterCollectionList(other.generatedColumns);
         this.sourceArea = other.sourceArea;
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
@@ -206,12 +206,12 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
     @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
     @JIPipeParameter("generated-columns")
     @ParameterCollectionListTemplate(GeneratedColumn.class)
-    public ParameterCollectionList getGeneratedColumns() {
+    public JIPipeParameterCollectionList getGeneratedColumns() {
         return generatedColumns;
     }
 
     @JIPipeParameter("generated-columns")
-    public void setGeneratedColumns(ParameterCollectionList generatedColumns) {
+    public void setGeneratedColumns(JIPipeParameterCollectionList generatedColumns) {
         this.generatedColumns = generatedColumns;
     }
 

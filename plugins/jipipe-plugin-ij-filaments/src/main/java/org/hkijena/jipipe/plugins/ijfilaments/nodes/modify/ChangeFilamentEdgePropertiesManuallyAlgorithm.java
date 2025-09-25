@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 
 import java.awt.*;
@@ -45,7 +46,7 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
 
     private final EdgeMaskParameter edgeMask;
     private OptionalColorParameter color = new OptionalColorParameter(new Color(0x3584E4), false);
-    private StringAndStringPairParameter.List metadata = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList metadata = new StringAndStringPairParameterList();
 
     public ChangeFilamentEdgePropertiesManuallyAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,7 +58,7 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
         super(other);
         this.color = other.color;
         this.edgeMask = new EdgeMaskParameter(other.edgeMask);
-        this.metadata = new StringAndStringPairParameter.List(other.metadata);
+        this.metadata = new StringAndStringPairParameterList(other.metadata);
         registerSubParameter(edgeMask);
     }
 
@@ -93,12 +94,12 @@ public class ChangeFilamentEdgePropertiesManuallyAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Metadata", description = "Allows to set/overwrite metadata")
     @StringParameterSettings(monospace = true)
     @JIPipeParameter("metadata")
-    public StringAndStringPairParameter.List getMetadata() {
+    public StringAndStringPairParameterList getMetadata() {
         return metadata;
     }
 
     @JIPipeParameter("metadata")
-    public void setMetadata(StringAndStringPairParameter.List metadata) {
+    public void setMetadata(StringAndStringPairParameterList metadata) {
         this.metadata = metadata;
     }
 

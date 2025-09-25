@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.plots.parameters;
 
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotDataSeriesColumnListCellRenderer;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -44,7 +44,7 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
 
     @Override
     public void reload() {
-        DynamicEnumParameter<TableColumnData> parameter = getParameter(DynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter(JIPipeDynamicEnumParameter.class);
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
             comboBox.setSelectedItem(parameter.getValue());
     }
@@ -52,7 +52,7 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
     private void initialize() {
         setLayout(new BorderLayout());
 
-        DynamicEnumParameter<TableColumnData> parameter = getParameter(DynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter(JIPipeDynamicEnumParameter.class);
         TableColumnData[] values = parameter.getAllowedValues().toArray(new TableColumnData[0]);
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new JIPipeDesktopPlotDataSeriesColumnListCellRenderer());

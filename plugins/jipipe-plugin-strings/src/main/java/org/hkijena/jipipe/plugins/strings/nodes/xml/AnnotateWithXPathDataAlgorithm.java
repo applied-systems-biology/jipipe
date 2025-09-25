@@ -35,9 +35,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 import org.w3c.dom.Document;
@@ -54,9 +55,9 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
 public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
-    private StringAndStringPairParameter.List namespaceMap = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList namespaceMap = new StringAndStringPairParameterList();
 
     public AnnotateWithXPathDataAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -65,8 +66,8 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     public AnnotateWithXPathDataAlgorithm(AnnotateWithXPathDataAlgorithm other) {
         super(other);
-        this.namespaceMap = new StringAndStringPairParameter.List(other.namespaceMap);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.namespaceMap = new StringAndStringPairParameterList(other.namespaceMap);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
         this.annotationMergeMode = other.annotationMergeMode;
     }
 
@@ -96,12 +97,12 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
     @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 
@@ -119,12 +120,12 @@ public class AnnotateWithXPathDataAlgorithm extends JIPipeSimpleIteratingAlgorit
     @SetJIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
     @JIPipeParameter("namespace-map")
     @PairParameterSettings(keyLabel = "Shortcut", valueLabel = "Namespace")
-    public StringAndStringPairParameter.List getNamespaceMap() {
+    public StringAndStringPairParameterList getNamespaceMap() {
         return namespaceMap;
     }
 
     @JIPipeParameter("namespace-map")
-    public void setNamespaceMap(StringAndStringPairParameter.List namespaceMap) {
+    public void setNamespaceMap(StringAndStringPairParameterList namespaceMap) {
         this.namespaceMap = namespaceMap;
     }
 

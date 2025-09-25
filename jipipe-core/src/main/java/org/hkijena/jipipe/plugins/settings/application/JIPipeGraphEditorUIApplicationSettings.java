@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
@@ -374,8 +374,8 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     public static class DockLayoutSettings extends AbstractJIPipeParameterCollection {
         private String pipelineEditorDockLayout = "";
         private String compartmentsEditorDockLayout = "";
-        private StringAndStringPairParameter.List pipelineEditorDockLayoutTemplates = new StringAndStringPairParameter.List();
-        private StringAndStringPairParameter.List compartmentsEditorDockLayoutTemplates = new StringAndStringPairParameter.List();
+        private StringAndStringPairParameterList pipelineEditorDockLayoutTemplates = new StringAndStringPairParameterList();
+        private StringAndStringPairParameterList compartmentsEditorDockLayoutTemplates = new StringAndStringPairParameterList();
         private boolean showToolbarLabels = true;
 
         @SetJIPipeDocumentation(name = "Show toolbar labels", description = "Shows labels for the dock items")
@@ -416,24 +416,24 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         @SetJIPipeDocumentation(name = "UI layout templates (pipeline editor)", description = "Contains the layout templates for the pipeline editor. Please do not edit the values manually.")
         @JIPipeParameter("pipeline-editor-dock-layout-templates")
         @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public StringAndStringPairParameter.List getPipelineEditorDockLayoutTemplates() {
+        public StringAndStringPairParameterList getPipelineEditorDockLayoutTemplates() {
             return pipelineEditorDockLayoutTemplates;
         }
 
         @JIPipeParameter("pipeline-editor-dock-layout-templates")
-        public void setPipelineEditorDockLayoutTemplates(StringAndStringPairParameter.List pipelineEditorDockLayoutTemplates) {
+        public void setPipelineEditorDockLayoutTemplates(StringAndStringPairParameterList pipelineEditorDockLayoutTemplates) {
             this.pipelineEditorDockLayoutTemplates = pipelineEditorDockLayoutTemplates;
         }
 
         @SetJIPipeDocumentation(name = "UI layout templates (compartment editor)", description = "Contains the layout templates for the compartments editor. Please do not edit the values manually.")
         @JIPipeParameter("compartments-editor-dock-layout-templates")
         @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public StringAndStringPairParameter.List getCompartmentsEditorDockLayoutTemplates() {
+        public StringAndStringPairParameterList getCompartmentsEditorDockLayoutTemplates() {
             return compartmentsEditorDockLayoutTemplates;
         }
 
         @JIPipeParameter("compartments-editor-dock-layout-templates")
-        public void setCompartmentsEditorDockLayoutTemplates(StringAndStringPairParameter.List compartmentsEditorDockLayoutTemplates) {
+        public void setCompartmentsEditorDockLayoutTemplates(StringAndStringPairParameterList compartmentsEditorDockLayoutTemplates) {
             this.compartmentsEditorDockLayoutTemplates = compartmentsEditorDockLayoutTemplates;
         }
     }

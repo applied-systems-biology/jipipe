@@ -19,7 +19,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.tables.SummarizingColumnOperation;
 
 import javax.swing.*;
@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * Enum-like parameter that allows the selection of a {@link SummarizingColumnOperation}.
  * Contains JIPipeTableRegistry.ColumnOperationEntry
  */
-public class TableColumnIntegrationParameter extends DynamicEnumParameter<Object> {
+public class TableColumnIntegrationParameter extends JIPipeDynamicEnumParameter<Object> {
 
     /**
      * Creates a new instance

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.settings.application;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadataList;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
@@ -26,7 +27,7 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
 
     public final static String ID = "org.hkijena.jipipe:project-authors";
 
-    private OptionalJIPipeAuthorMetadata.List projectAuthors = new OptionalJIPipeAuthorMetadata.List();
+    private OptionalJIPipeAuthorMetadataList projectAuthors = new OptionalJIPipeAuthorMetadataList();
     private boolean automaticallyAddToProjects = true;
     private boolean warnNoAuthors = true;
 
@@ -58,12 +59,12 @@ public class JIPipeProjectAuthorsApplicationSettings extends JIPipeDefaultApplic
 
     @SetJIPipeDocumentation(name = "Authors", description = "The list of authors that should be added to edited projects. You can enable/disable authors to exclude them from being added to projects.")
     @JIPipeParameter("project-authors")
-    public OptionalJIPipeAuthorMetadata.List getProjectAuthors() {
+    public OptionalJIPipeAuthorMetadataList getProjectAuthors() {
         return projectAuthors;
     }
 
     @JIPipeParameter("project-authors")
-    public void setProjectAuthors(OptionalJIPipeAuthorMetadata.List projectAuthors) {
+    public void setProjectAuthors(OptionalJIPipeAuthorMetadataList projectAuthors) {
         this.projectAuthors = projectAuthors;
     }
 

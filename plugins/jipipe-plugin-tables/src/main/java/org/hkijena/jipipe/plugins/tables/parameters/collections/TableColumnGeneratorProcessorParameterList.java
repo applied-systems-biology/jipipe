@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters.collections;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.TableColumnGeneratorProcessor;
 
-public class TableColumnGeneratorProcessorParameterList extends ListParameter<TableColumnGeneratorProcessor> {
+public class TableColumnGeneratorProcessorParameterList extends JIPipeListParameter<TableColumnGeneratorProcessor> {
 
     /**
      * Creates a  new instance

@@ -57,7 +57,7 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeEnvironmentArchetype.Base,
                 ProcessEnvironment.class,
                 OptionalProcessEnvironment.class,
-                ProcessEnvironment.List.class,
+                ProcessEnvironmentList.class,
                 "Process",
                 "A generic process environment",
                 JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png"));

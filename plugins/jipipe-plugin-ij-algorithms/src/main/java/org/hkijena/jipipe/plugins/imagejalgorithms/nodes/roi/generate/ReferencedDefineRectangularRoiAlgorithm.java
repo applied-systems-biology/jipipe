@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
+import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
 import java.awt.*;
 
@@ -47,7 +48,7 @@ import java.awt.*;
 @LabelAsJIPipeHidden
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private Margin.List rectangles = new Margin.List();
+    private MarginList rectangles = new MarginList();
     private boolean split = false;
 
     /**
@@ -67,7 +68,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
      */
     public ReferencedDefineRectangularRoiAlgorithm(ReferencedDefineRectangularRoiAlgorithm other) {
         super(other);
-        this.rectangles = new Margin.List(other.rectangles);
+        this.rectangles = new MarginList(other.rectangles);
         this.split = other.split;
     }
 
@@ -94,12 +95,12 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
 
     @SetJIPipeDocumentation(name = "Rectangles", description = "List of rectangles")
     @JIPipeParameter("rectangles")
-    public Margin.List getRectangles() {
+    public MarginList getRectangles() {
         return rectangles;
     }
 
     @JIPipeParameter("rectangles")
-    public void setRectangles(Margin.List rectangles) {
+    public void setRectangles(MarginList rectangles) {
         this.rectangles = rectangles;
     }
 

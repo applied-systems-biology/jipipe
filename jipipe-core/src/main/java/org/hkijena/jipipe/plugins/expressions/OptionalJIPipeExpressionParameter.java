@@ -20,13 +20,13 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 
 @JsonDeserialize(using = OptionalJIPipeExpressionParameter.Deserializer.class)
-public class OptionalJIPipeExpressionParameter extends OptionalParameter<JIPipeExpressionParameter> {
+public class OptionalJIPipeExpressionParameter extends JIPipeOptionalParameter<JIPipeExpressionParameter> {
 
     public OptionalJIPipeExpressionParameter() {
         super(JIPipeExpressionParameter.class);
@@ -39,7 +39,7 @@ public class OptionalJIPipeExpressionParameter extends OptionalParameter<JIPipeE
         setContent(new JIPipeExpressionParameter(expression));
     }
 
-    public OptionalJIPipeExpressionParameter(OptionalParameter<JIPipeExpressionParameter> other) {
+    public OptionalJIPipeExpressionParameter(JIPipeOptionalParameter<JIPipeExpressionParameter> other) {
         super(other);
         this.setContent(new JIPipeExpressionParameter(other.getContent()));
     }

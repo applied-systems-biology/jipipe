@@ -13,20 +13,20 @@
 
 package org.hkijena.jipipe.plugins.ij3d.utils;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ROI3DMeasurementSetParameter extends DynamicSetParameter<ROI3DMeasurement> {
+public class ROI3DMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI3DMeasurement> {
     public ROI3DMeasurementSetParameter() {
         super(new HashSet<>(Arrays.asList(ROI3DMeasurement.values())));
         setCollapsed(true);
         initialize();
     }
 
-    public ROI3DMeasurementSetParameter(DynamicSetParameter<ROI3DMeasurement> other) {
+    public ROI3DMeasurementSetParameter(JIPipeDynamicSetParameter<ROI3DMeasurement> other) {
         super(other);
         initialize();
     }

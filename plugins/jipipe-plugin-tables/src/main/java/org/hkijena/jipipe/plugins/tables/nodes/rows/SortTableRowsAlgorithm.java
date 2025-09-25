@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -50,7 +51,7 @@ import java.util.Comparator;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
+    private StringQueryExpressionAndSortOrderPairParameterList sortOrderList = new StringQueryExpressionAndSortOrderPairParameterList();
     private boolean useNaturalSortOrder = true;
     private boolean reverseSortOrder = false;
 
@@ -73,7 +74,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.useNaturalSortOrder = other.useNaturalSortOrder;
         this.reverseSortOrder = other.reverseSortOrder;
-        this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
+        this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameterList(other.sortOrderList);
     }
 
     @Override
@@ -164,12 +165,12 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "sorting priority. Columns can be matched multiple times. ")
     @JIPipeParameter("sort-order")
     @PairParameterSettings(singleRow = false)
-    public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {
+    public StringQueryExpressionAndSortOrderPairParameterList getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-order")
-    public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameter.List sortOrderList) {
+    public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameterList sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 

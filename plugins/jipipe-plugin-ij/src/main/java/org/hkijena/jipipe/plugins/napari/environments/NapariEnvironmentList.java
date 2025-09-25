@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.napari.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class NapariEnvironmentList extends ListParameter<NapariEnvironment> {
+public class NapariEnvironmentList extends JIPipeListParameter<NapariEnvironment> {
     public NapariEnvironmentList() {
         super(NapariEnvironment.class);
     }

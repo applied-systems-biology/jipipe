@@ -16,14 +16,14 @@ package org.hkijena.jipipe.plugins.omero;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalOMEROCredentialsEnvironment extends OptionalParameter<OMEROCredentialsEnvironment> {
+public class OptionalOMEROCredentialsEnvironment extends JIPipeOptionalParameter<OMEROCredentialsEnvironment> {
     public OptionalOMEROCredentialsEnvironment() {
         super(OMEROCredentialsEnvironment.class);
     }
 
-    public OptionalOMEROCredentialsEnvironment(OptionalParameter<OMEROCredentialsEnvironment> other) {
+    public OptionalOMEROCredentialsEnvironment(JIPipeOptionalParameter<OMEROCredentialsEnvironment> other) {
         super(other);
         this.setContent(new OMEROCredentialsEnvironment(other.getContent()));
     }

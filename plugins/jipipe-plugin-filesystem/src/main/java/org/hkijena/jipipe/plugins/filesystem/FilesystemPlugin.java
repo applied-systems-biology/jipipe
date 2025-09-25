@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.filesystem.resultanalysis.CopyPathDataDisplayO
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.plugins.filesystem.resultanalysis.OpenPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -61,8 +62,8 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_AUTOMATION, PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING);
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_AUTOMATION, PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING);
     }
 
     @Override

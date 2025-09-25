@@ -9,10 +9,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
-import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultProjectSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
 
 import javax.swing.*;
@@ -33,7 +32,7 @@ public class JIPipeDefaultEnvironmentsProjectSettings extends JIPipeDynamicParam
                         "Allows to override which environment is used if node overrides are disabled. " +
                         "If disabled, JIPipe will fall back to application-wide settings. " +
                         "Generally we recommend to keep this override enabled to ensure that projects are as reproducible as possible.");
-                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
                 if(info.isArtifact() && info.hasArtifactQuery()) {
                     JIPipeArtifactEnvironment environment = (JIPipeArtifactEnvironment) parameter.getContent();
                     environment.trySetToLatestVersionPinnedArtifact();
@@ -44,7 +43,7 @@ public class JIPipeDefaultEnvironmentsProjectSettings extends JIPipeDynamicParam
                     JIPipeDefaultEnvironmentsApplicationSettings applicationWideSettings = JIPipe.getSettings().getByType(JIPipeDefaultEnvironmentsApplicationSettings.class);
                     JIPipeParameterAccess applicationWideAccess = applicationWideSettings.get(info.getId());
                     if(applicationWideAccess != null) {
-                        OptionalParameter<?> globalParameter = applicationWideAccess.get(OptionalParameter.class);
+                        JIPipeOptionalParameter<?> globalParameter = applicationWideAccess.get(JIPipeOptionalParameter.class);
                         if(globalParameter != null && globalParameter.isEnabled()) {
                             JIPipeEnvironment globalEnvironment  = (JIPipeEnvironment) globalParameter.getContent();
                             parameter.setEnabled(!globalEnvironment.isValid());

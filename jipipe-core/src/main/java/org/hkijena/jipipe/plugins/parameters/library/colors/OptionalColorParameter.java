@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.colors;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 import java.awt.*;
 
 /**
  * Optional {@link Color}
  */
-public class OptionalColorParameter extends OptionalParameter<Color> {
+public class OptionalColorParameter extends JIPipeOptionalParameter<Color> {
 
     /**
      * Creates a new instance

@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
+import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
@@ -46,7 +47,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final VisualLocationROIProperties roiProperties;
 
-    private Margin.List rectangles = new Margin.List();
+    private MarginList rectangles = new MarginList();
 
     private boolean center = false;
 
@@ -64,7 +65,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
     public DrawRectangleRoiAlgorithm(DrawRectangleRoiAlgorithm other) {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
-        this.rectangles = new Margin.List(other.rectangles);
+        this.rectangles = new MarginList(other.rectangles);
         this.center = other.center;
         this.arcWidth = other.arcWidth;
         this.arcHeight = other.arcHeight;
@@ -143,12 +144,12 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Rectangles", description = "The rectangular ROI to be drawn")
     @JIPipeParameter("definitions")
-    public Margin.List getRectangles() {
+    public MarginList getRectangles() {
         return rectangles;
     }
 
     @JIPipeParameter("definitions")
-    public void setRectangles(Margin.List rectangles) {
+    public void setRectangles(MarginList rectangles) {
         this.rectangles = rectangles;
     }
 

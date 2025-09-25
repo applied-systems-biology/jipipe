@@ -52,7 +52,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEdi
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -268,9 +268,9 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             JIPipeParameterTree parameterTree = new JIPipeParameterTree(settingsSheet);
             for (JIPipeParameterAccess access : parameterTree.getParameters().values()) {
                 Object o = access.get(Object.class);
-                if (o instanceof OptionalParameter) {
-                    if (((OptionalParameter<?>) o).isEnabled() && ((OptionalParameter<?>) o).getContent() instanceof JIPipeArtifactEnvironment) {
-                        environments.add((JIPipeArtifactEnvironment) ((OptionalParameter<?>) o).getContent());
+                if (o instanceof JIPipeOptionalParameter) {
+                    if (((JIPipeOptionalParameter<?>) o).isEnabled() && ((JIPipeOptionalParameter<?>) o).getContent() instanceof JIPipeArtifactEnvironment) {
+                        environments.add((JIPipeArtifactEnvironment) ((JIPipeOptionalParameter<?>) o).getContent());
                     }
                 } else if (o instanceof JIPipeArtifactEnvironment) {
                     environments.add((JIPipeArtifactEnvironment) o);

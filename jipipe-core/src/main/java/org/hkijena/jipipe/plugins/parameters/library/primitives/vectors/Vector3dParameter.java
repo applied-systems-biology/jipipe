@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 public class Vector3dParameter implements Vector3Parameter {
     private double x;
@@ -72,16 +72,4 @@ public class Vector3dParameter implements Vector3Parameter {
         return "[" + x + ", " + y + ", " + z + "]";
     }
 
-    public static class List extends ListParameter<Vector3dParameter> {
-        public List() {
-            super(Vector3dParameter.class);
-        }
-
-        public List(Vector3dParameter.List other) {
-            super(Vector3dParameter.class);
-            for (Vector3dParameter parameter : other) {
-                add(new Vector3dParameter(parameter));
-            }
-        }
-    }
 }

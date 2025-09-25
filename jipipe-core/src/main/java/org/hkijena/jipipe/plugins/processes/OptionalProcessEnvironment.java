@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.processes;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 /**
  * An optional {@link ProcessEnvironment}
  */
-public class OptionalProcessEnvironment extends OptionalParameter<ProcessEnvironment> {
+public class OptionalProcessEnvironment extends JIPipeOptionalParameter<ProcessEnvironment> {
     public OptionalProcessEnvironment() {
         super(ProcessEnvironment.class);
         setContent(new ProcessEnvironment());

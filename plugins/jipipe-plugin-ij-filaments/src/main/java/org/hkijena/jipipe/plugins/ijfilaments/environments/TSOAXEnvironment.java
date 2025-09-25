@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -63,19 +63,4 @@ public class TSOAXEnvironment extends JIPipeProcessArtifactEnvironment {
         return FilamentsPlugin.RESOURCES.getIcon16("tsoax.png");
     }
 
-    /**
-     * A list of {@link TSOAXEnvironment}
-     */
-    public static class List extends ListParameter<TSOAXEnvironment> {
-        public List() {
-            super(TSOAXEnvironment.class);
-        }
-
-        public List(List other) {
-            super(TSOAXEnvironment.class);
-            for (TSOAXEnvironment environment : other) {
-                add(new TSOAXEnvironment(environment));
-            }
-        }
-    }
 }

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameterList;
 
 import javax.swing.*;
 
@@ -34,7 +35,7 @@ public class JIPipeGeneralDataApplicationSettings extends JIPipeDefaultApplicati
     private boolean generateResultPreviews = true;
     private boolean autoRemoveOutdatedCachedData = true;
 
-    private IntegerAndIntegerPairParameter.List exportedPreviewSizes = new IntegerAndIntegerPairParameter.List();
+    private IntegerAndIntegerPairParameterList exportedPreviewSizes = new IntegerAndIntegerPairParameterList();
 
     public JIPipeGeneralDataApplicationSettings() {
         exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(64, 64));
@@ -128,12 +129,12 @@ public class JIPipeGeneralDataApplicationSettings extends JIPipeDefaultApplicati
     @SetJIPipeDocumentation(name = "Exported preview sizes", description = "The preview sizes to be exported on exporting data/results")
     @JIPipeParameter("exported-preview-sizes")
     @PairParameterSettings(keyLabel = "Width", valueLabel = "Height")
-    public IntegerAndIntegerPairParameter.List getExportedPreviewSizes() {
+    public IntegerAndIntegerPairParameterList getExportedPreviewSizes() {
         return exportedPreviewSizes;
     }
 
     @JIPipeParameter("exported-preview-sizes")
-    public void setExportedPreviewSizes(IntegerAndIntegerPairParameter.List exportedPreviewSizes) {
+    public void setExportedPreviewSizes(IntegerAndIntegerPairParameterList exportedPreviewSizes) {
         this.exportedPreviewSizes = exportedPreviewSizes;
     }
 

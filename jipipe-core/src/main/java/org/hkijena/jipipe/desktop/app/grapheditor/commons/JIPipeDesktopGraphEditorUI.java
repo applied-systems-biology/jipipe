@@ -41,6 +41,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -330,7 +331,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         }
     }
 
-    protected abstract StringAndStringPairParameter.List getDockStateTemplates();
+    protected abstract StringAndStringPairParameterList getDockStateTemplates();
 
     private void manageDockStateTemplates() {
         List<StringAndStringPairParameter> toDelete = UIUtils.getSelectionByDialog(this,

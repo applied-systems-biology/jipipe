@@ -26,6 +26,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 
 import java.util.HashSet;
@@ -37,7 +38,7 @@ import java.util.Set;
  */
 public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterCollection {
     private boolean enabled = true;
-    private StringQueryExpressionAndStringPairParameter.List overriddenParameters = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList overriddenParameters = new StringQueryExpressionAndStringPairParameterList();
     private boolean attachParameterAnnotations = true;
     private boolean attachOnlyNonDefaultParameterAnnotations = true;
     private boolean parameterAnnotationsUseInternalNames = false;
@@ -49,7 +50,7 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
 
     public JIPipeAdaptiveParameterSettings(JIPipeAdaptiveParameterSettings other) {
         this.enabled = other.enabled;
-        this.overriddenParameters = new StringQueryExpressionAndStringPairParameter.List(other.overriddenParameters);
+        this.overriddenParameters = new StringQueryExpressionAndStringPairParameterList(other.overriddenParameters);
         this.attachParameterAnnotations = other.attachParameterAnnotations;
         this.attachOnlyNonDefaultParameterAnnotations = other.attachOnlyNonDefaultParameterAnnotations;
         this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
@@ -74,12 +75,12 @@ public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterColl
     @StringParameterSettings(monospace = true)
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class)
     @JIPipeParameter(value = "overridden-parameters", important = true, uiOrder = -100)
-    public StringQueryExpressionAndStringPairParameter.List getOverriddenParameters() {
+    public StringQueryExpressionAndStringPairParameterList getOverriddenParameters() {
         return overriddenParameters;
     }
 
     @JIPipeParameter("overridden-parameters")
-    public void setOverriddenParameters(StringQueryExpressionAndStringPairParameter.List overriddenParameters) {
+    public void setOverriddenParameters(StringQueryExpressionAndStringPairParameterList overriddenParameters) {
         this.overriddenParameters = overriddenParameters;
     }
 

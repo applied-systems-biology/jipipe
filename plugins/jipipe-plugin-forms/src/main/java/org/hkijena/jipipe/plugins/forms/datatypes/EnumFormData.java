@@ -31,9 +31,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.forms.utils.SingleAnnotationIOSettings;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -46,7 +47,7 @@ public class EnumFormData extends ParameterFormData {
 
     private String value = "";
     private SingleAnnotationIOSettings annotationIOSettings = new SingleAnnotationIOSettings();
-    private StringAndStringPairParameter.List items = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList items = new StringAndStringPairParameterList();
 
     public EnumFormData() {
     }
@@ -55,7 +56,7 @@ public class EnumFormData extends ParameterFormData {
         super(other);
         this.value = other.value;
         this.annotationIOSettings = new SingleAnnotationIOSettings(other.annotationIOSettings);
-        this.items = new StringAndStringPairParameter.List(other.items);
+        this.items = new StringAndStringPairParameterList(other.items);
     }
 
     public static EnumFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -84,12 +85,12 @@ public class EnumFormData extends ParameterFormData {
             "can define the value written into the annotations and the label visible to the user. Duplicate labels/values are not allowed.")
     @JIPipeParameter("items")
     @PairParameterSettings(singleRow = false, keyLabel = "Annotation value", valueLabel = "Label")
-    public StringAndStringPairParameter.List getItems() {
+    public StringAndStringPairParameterList getItems() {
         return items;
     }
 
     @JIPipeParameter("items")
-    public void setItems(StringAndStringPairParameter.List items) {
+    public void setItems(StringAndStringPairParameterList items) {
         this.items = items;
     }
 
@@ -105,7 +106,7 @@ public class EnumFormData extends ParameterFormData {
                 return itemMap.getOrDefault(value, "<Not found: " + value + ">");
             }
         };
-        instance.setAllowedValues(items.stream().map(PairParameter::getKey).collect(Collectors.toList()));
+        instance.setAllowedValues(items.stream().map(JIPipePairParameter::getKey).collect(Collectors.toList()));
         instance.setValue(this.value);
         JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder().setGetter(() -> instance)
                 .setSetter((obj) -> {

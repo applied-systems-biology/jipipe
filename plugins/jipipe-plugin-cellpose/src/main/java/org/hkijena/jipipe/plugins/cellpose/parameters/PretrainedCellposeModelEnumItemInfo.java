@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.plugins.cellpose.parameters;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 
-public class PretrainedCellposeModelEnumItemInfo implements EnumItemInfo {
+public class PretrainedCellposeModelEnumItemInfo implements JIPipeEnumParameterItemInfo {
     @Override
     public Icon getIcon(Object value) {
         return JIPipe.RESOURCES.getIcon16("apps/cellpose.png");

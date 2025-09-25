@@ -14,11 +14,11 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 
 import javax.swing.*;
 
-public class OptionalBitDepthEnumItemInfo implements EnumItemInfo {
+public class OptionalBitDepthEnumItemInfo implements JIPipeEnumParameterItemInfo {
     @Override
     public Icon getIcon(Object value) {
         if (value instanceof OptionalBitDepth) {

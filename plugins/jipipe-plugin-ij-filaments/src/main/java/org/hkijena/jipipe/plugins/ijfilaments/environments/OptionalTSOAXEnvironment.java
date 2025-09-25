@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalTSOAXEnvironment extends OptionalParameter<TSOAXEnvironment> {
+public class OptionalTSOAXEnvironment extends JIPipeOptionalParameter<TSOAXEnvironment> {
     public OptionalTSOAXEnvironment() {
         super(TSOAXEnvironment.class);
     }

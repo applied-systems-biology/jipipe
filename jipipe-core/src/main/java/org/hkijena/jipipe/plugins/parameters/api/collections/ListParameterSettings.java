@@ -17,7 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Settings for a {@link ListParameter} or derivative
+ * Settings for a {@link JIPipeListParameter} or derivative
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ListParameterSettings {

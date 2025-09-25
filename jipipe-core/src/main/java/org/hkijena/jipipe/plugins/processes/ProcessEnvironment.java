@@ -31,9 +31,9 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -52,7 +52,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     private Path executablePathLinux = Paths.get("");
     private Path executablePathOSX = Paths.get("");
     private JIPipeExpressionParameter workDirectory = new JIPipeExpressionParameter("executable_dir");
-    private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList environmentVariables = new StringQueryExpressionAndStringPairParameterList();
 
     public ProcessEnvironment() {
 
@@ -64,7 +64,7 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         this.executablePathWindows = other.executablePathWindows;
         this.executablePathLinux = other.executablePathLinux;
         this.executablePathOSX = other.executablePathOSX;
-        this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.environmentVariables = new StringQueryExpressionAndStringPairParameterList(other.environmentVariables);
         this.workDirectory = new JIPipeExpressionParameter(other.workDirectory);
     }
 
@@ -181,12 +181,12 @@ public class ProcessEnvironment extends JIPipeEnvironment {
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
     @AddJIPipeExpressionParameterVariable(fromClass = EnvironmentVariablesSource.class)
-    public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
+    public StringQueryExpressionAndStringPairParameterList getEnvironmentVariables() {
         return environmentVariables;
     }
 
     @JIPipeParameter("environment-variables")
-    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
+    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameterList environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 
@@ -215,19 +215,4 @@ public class ProcessEnvironment extends JIPipeEnvironment {
         }
     }
 
-    /**
-     * A list of {@link ProcessEnvironment}
-     */
-    public static class List extends ListParameter<ProcessEnvironment> {
-        public List() {
-            super(ProcessEnvironment.class);
-        }
-
-        public List(ProcessEnvironment.List other) {
-            super(ProcessEnvironment.class);
-            for (ProcessEnvironment environment : other) {
-                add(new ProcessEnvironment(environment));
-            }
-        }
-    }
 }

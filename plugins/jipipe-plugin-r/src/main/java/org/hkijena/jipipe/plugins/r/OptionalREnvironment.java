@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.r;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 /**
  * An optional {@link REnvironment}
  */
-public class OptionalREnvironment extends OptionalParameter<REnvironment> {
+public class OptionalREnvironment extends JIPipeOptionalParameter<REnvironment> {
     public OptionalREnvironment() {
         super(REnvironment.class);
         setContent(new REnvironment());

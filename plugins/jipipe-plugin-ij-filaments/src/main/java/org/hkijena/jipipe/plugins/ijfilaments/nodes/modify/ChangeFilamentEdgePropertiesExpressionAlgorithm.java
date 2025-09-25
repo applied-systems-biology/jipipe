@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.utils.FilamentEdgeMetadataEn
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.EdgeMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdgeVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.util.List;
@@ -51,7 +51,7 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
 
     private final EdgeMaskParameter edgeMask;
     private JIPipeExpressionParameter color = new JIPipeExpressionParameter("default");
-    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(FilamentEdgeMetadataEntry.class);
+    private JIPipeParameterCollectionList metadata = JIPipeParameterCollectionList.containingCollection(FilamentEdgeMetadataEntry.class);
 
     public ChangeFilamentEdgePropertiesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -63,7 +63,7 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
         super(other);
         this.color = new JIPipeExpressionParameter(other.color);
         this.edgeMask = new EdgeMaskParameter(other.edgeMask);
-        this.metadata = new ParameterCollectionList(other.metadata);
+        this.metadata = new JIPipeParameterCollectionList(other.metadata);
         registerSubParameter(edgeMask);
     }
 
@@ -120,12 +120,12 @@ public class ChangeFilamentEdgePropertiesExpressionAlgorithm extends JIPipeSimpl
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @ParameterCollectionListTemplate(FilamentEdgeMetadataEntry.class)
-    public ParameterCollectionList getMetadata() {
+    public JIPipeParameterCollectionList getMetadata() {
         return metadata;
     }
 
     @JIPipeParameter("metadata")
-    public void setMetadata(ParameterCollectionList metadata) {
+    public void setMetadata(JIPipeParameterCollectionList metadata) {
         this.metadata = metadata;
     }
 

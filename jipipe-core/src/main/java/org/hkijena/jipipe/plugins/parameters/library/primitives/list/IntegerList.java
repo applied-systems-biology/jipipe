@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 /**
  * A list of {@link Integer}
  */
-public class IntegerList extends ListParameter<Integer> {
+public class IntegerList extends JIPipeListParameter<Integer> {
     /**
      * Creates a new empty list
      */

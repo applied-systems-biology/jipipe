@@ -48,7 +48,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
@@ -1285,8 +1285,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
             Object reference = referenceAccess != null ? referenceAccess.get(Object.class) : null;
             Object obj = currentAccess.get(Object.class);
             if (referenceAccess == null || !Objects.equals(obj, reference)) {
-                if (obj instanceof ListParameter) {
-                    ListParameter<?> objects = (ListParameter<?>) obj;
+                if (obj instanceof JIPipeListParameter) {
+                    JIPipeListParameter<?> objects = (JIPipeListParameter<?>) obj;
                     for (int i = 0; i < objects.size(); i++) {
                         Object item = objects.get(i);
                         stringBuilder.append("<li>").append("The parameter item #").append(i + 1).append(" of \"").append(currentAccess.getName()).append("\"");

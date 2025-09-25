@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.UUID;
@@ -48,16 +48,4 @@ public class GraphNodeReferenceParameter {
         return !StringUtils.isNullOrEmpty(nodeUUID);
     }
 
-    public static class List extends ListParameter<GraphNodeReferenceParameter> {
-        public List() {
-            super(GraphNodeReferenceParameter.class);
-        }
-
-        public List(List other) {
-            super(GraphNodeReferenceParameter.class);
-            for (GraphNodeReferenceParameter parameter : other) {
-                add(new GraphNodeReferenceParameter(parameter));
-            }
-        }
-    }
 }

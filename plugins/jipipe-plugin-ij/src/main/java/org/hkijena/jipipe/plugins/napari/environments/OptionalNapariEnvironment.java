@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.napari.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalNapariEnvironment extends OptionalParameter<NapariEnvironment> {
+public class OptionalNapariEnvironment extends JIPipeOptionalParameter<NapariEnvironment> {
     public OptionalNapariEnvironment() {
         super(NapariEnvironment.class);
     }

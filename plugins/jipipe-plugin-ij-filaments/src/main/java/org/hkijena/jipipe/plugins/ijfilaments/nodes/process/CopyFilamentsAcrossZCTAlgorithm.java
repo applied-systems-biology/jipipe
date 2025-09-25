@@ -50,8 +50,8 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusPropertiesExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 
 import java.util.*;
 
@@ -455,7 +455,7 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static class NewEdgesSettings extends AbstractJIPipeParameterCollection {
         private JIPipeExpressionParameter color = new JIPipeExpressionParameter("\"green\"");
-        private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(FilamentEdgeMetadataEntry.class);
+        private JIPipeParameterCollectionList metadata = JIPipeParameterCollectionList.containingCollection(FilamentEdgeMetadataEntry.class);
         private OptionalJIPipeExpressionParameter filter = new OptionalJIPipeExpressionParameter();
 
         public NewEdgesSettings() {
@@ -464,7 +464,7 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
         public NewEdgesSettings(NewEdgesSettings other) {
             this.color = new JIPipeExpressionParameter(other.color);
-            this.metadata = new ParameterCollectionList(other.metadata);
+            this.metadata = new JIPipeParameterCollectionList(other.metadata);
             this.filter = new OptionalJIPipeExpressionParameter(other.filter);
         }
 
@@ -503,12 +503,12 @@ public class CopyFilamentsAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
         @ParameterCollectionListTemplate(FilamentEdgeMetadataEntry.class)
-        public ParameterCollectionList getMetadata() {
+        public JIPipeParameterCollectionList getMetadata() {
             return metadata;
         }
 
         @JIPipeParameter("metadata")
-        public void setMetadata(ParameterCollectionList metadata) {
+        public void setMetadata(JIPipeParameterCollectionList metadata) {
             this.metadata = metadata;
         }
     }

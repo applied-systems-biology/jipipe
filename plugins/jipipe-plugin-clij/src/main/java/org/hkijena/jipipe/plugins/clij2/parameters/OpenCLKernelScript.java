@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.clij2.parameters;
 
-import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
+import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
  * A OpenCL kernel script
  */
-public class OpenCLKernelScript extends ScriptParameter {
+public class OpenCLKernelScript extends JIPipeScriptParameter {
 
     /**
      * Creates a new instance

@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.optional;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 /**
  * Optional {@link Boolean}
  */
-public class OptionalBooleanParameter extends OptionalParameter<Boolean> {
+public class OptionalBooleanParameter extends JIPipeOptionalParameter<Boolean> {
 
     /**
      * Creates a new instance

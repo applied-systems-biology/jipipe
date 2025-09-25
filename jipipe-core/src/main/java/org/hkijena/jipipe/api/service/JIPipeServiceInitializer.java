@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeNodeTemplateList;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
@@ -227,7 +228,7 @@ public abstract class JIPipeServiceInitializer extends JIPipeServiceComponent {
                     if (PathUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
                         try {
                             getProgressInfo().log("[Node examples] Importing node template list from " + path);
-                            for (JIPipeNodeTemplate template : JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeNodeTemplate.List.class)) {
+                            for (JIPipeNodeTemplate template : JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeNodeTemplateList.class)) {
                                 getService().getNodes().registerExample(template);
                             }
                         } catch (IOException e) {

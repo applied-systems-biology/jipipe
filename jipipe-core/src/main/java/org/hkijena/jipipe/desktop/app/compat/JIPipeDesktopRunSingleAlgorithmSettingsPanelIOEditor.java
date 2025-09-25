@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -94,7 +94,7 @@ public class JIPipeDesktopRunSingleAlgorithmSettingsPanelIOEditor extends JIPipe
     }
 
     @Override
-    protected StringAndStringPairParameter.List getDockStateTemplates() {
+    protected StringAndStringPairParameterList getDockStateTemplates() {
         return null;
     }
 

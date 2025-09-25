@@ -27,7 +27,6 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -64,11 +63,12 @@ import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDeskt
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameter;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
+import org.hkijena.jipipe.plugins.parameters.tools.EnumParameterGenerator;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterTypeInfo;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -129,8 +129,8 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      *
      * @return the categories
      */
-    public PluginCategoriesEnumParameter.List getCategories() {
-        PluginCategoriesEnumParameter.List result = new PluginCategoriesEnumParameter.List();
+    public PluginCategoriesEnumParameterList getCategories() {
+        PluginCategoriesEnumParameterList result = new PluginCategoriesEnumParameterList();
         if (isCorePlugin()) {
             result.add(new PluginCategoriesEnumParameter("Core"));
         }
@@ -427,7 +427,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description    Description for the parameter type
      */
     public void registerEnumParameterType(String id, Class<? extends Enum<?>> parameterClass, String name, String description) {
-        registerParameterType(new EnumParameterTypeInfo(id, parameterClass, name, description), null);
+        registerParameterType(new JIPipeEnumParameterTypeInfo(id, parameterClass, name, description), null);
         registerParameterGenerator(parameterClass, new EnumParameterGenerator());
     }
 
@@ -451,9 +451,9 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 name,
                 description,
                 archetype);
-        if (EnumParameter.class.isAssignableFrom(parameterClass)) {
+        if (JIPipeEnumParameter.class.isAssignableFrom(parameterClass)) {
             try {
-                EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
+                JIPipeEnumParameter parameter = (JIPipeEnumParameter) parameterClass.newInstance();
                 info.setAllowedValues(parameter.getAllowedValueInfos());
             } catch (Exception e) {
                 JIPipe.getInstance().getProgressInfo().log(e);
@@ -505,16 +505,16 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param description          Description for the parameter type
      * @param uiClass              Parameter editor UI. Can be null if the editor is already provided.
      */
-    public <T> void registerParameterType(String id, Class<T> parameterClass, JIPipeParameterArchetype archetype, Class<? extends ListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
+    public <T> void registerParameterType(String id, Class<T> parameterClass, JIPipeParameterArchetype archetype, Class<? extends JIPipeListParameter<T>> listClass, Supplier<Object> newInstanceGenerator, Function<Object, Object> duplicateFunction, String name, String description, Class<? extends JIPipeDesktopParameterEditorUI> uiClass) {
         JIPipeDefaultMutableParameterTypeInfo info = new JIPipeDefaultMutableParameterTypeInfo(id,
                 parameterClass,
                 newInstanceGenerator != null ? newInstanceGenerator : () -> ReflectionUtils.newInstance(parameterClass),
                 duplicateFunction != null ? duplicateFunction : o -> ReflectionUtils.newInstance(parameterClass, o),
                 name,
                 description, archetype);
-        if (EnumParameter.class.isAssignableFrom(parameterClass)) {
+        if (JIPipeEnumParameter.class.isAssignableFrom(parameterClass)) {
             try {
-                EnumParameter parameter = (EnumParameter) parameterClass.newInstance();
+                JIPipeEnumParameter parameter = (JIPipeEnumParameter) parameterClass.newInstance();
                 info.setAllowedValues(parameter.getAllowedValueInfos());
             } catch (Exception e) {
                 JIPipe.getInstance().getProgressInfo().log(e);
@@ -818,7 +818,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 JIPipe.getInstance().getProgressInfo().log("Loading node example list " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
-                        JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
+                        JIPipeNodeTemplateList templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplateList.class).readValue(stream);
                         for (JIPipeNodeTemplate template : templates) {
                             registerNodeExample(template);
                         }
@@ -875,7 +875,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                 JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
-                        JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
+                        JIPipeNodeTemplateList templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplateList.class).readValue(stream);
                         for (JIPipeNodeTemplate template : templates) {
                             registerNodeTemplate(template);
                         }
@@ -957,14 +957,14 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param name                     the name of the environment
      * @param description              the description of the environment
      */
-    public <T extends JIPipeArtifactEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerArtifactEnvironment(String id,
-                                                                                                                                              String artifactQuery,
-                                                                                                                                              JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
-                                                                                                                                              Class<V> optionalEnvironmentClass,
-                                                                                                                                              Class<U> environmentListClass,
-                                                                                                                                              String name,
-                                                                                                                                              String description,
-                                                                                                                                              Icon icon) {
+    public <T extends JIPipeArtifactEnvironment, U extends JIPipeListParameter<T>, V extends JIPipeOptionalParameter<T>> void registerArtifactEnvironment(String id,
+                                                                                                                                                          String artifactQuery,
+                                                                                                                                                          JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
+                                                                                                                                                          Class<V> optionalEnvironmentClass,
+                                                                                                                                                          Class<U> environmentListClass,
+                                                                                                                                                          String name,
+                                                                                                                                                          String description,
+                                                                                                                                                          Icon icon) {
         service.getEnvironments().registerEnvironment(id, artifactQuery, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
@@ -984,12 +984,12 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param name                     the name of the environment
      * @param description              the description of the environment
      */
-    public <T extends JIPipeEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerEnvironment(String id, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
-                                                                                                                              Class<V> optionalEnvironmentClass,
-                                                                                                                              Class<U> environmentListClass,
-                                                                                                                              String name,
-                                                                                                                              String description,
-                                                                                                                              Icon icon) {
+    public <T extends JIPipeEnvironment, U extends JIPipeListParameter<T>, V extends JIPipeOptionalParameter<T>> void registerEnvironment(String id, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
+                                                                                                                                          Class<V> optionalEnvironmentClass,
+                                                                                                                                          Class<U> environmentListClass,
+                                                                                                                                          String name,
+                                                                                                                                          String description,
+                                                                                                                                          Icon icon) {
         service.getEnvironments().registerEnvironment(id, null, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ijocr.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalTesseractOCREnvironment extends OptionalParameter<TesseractOCREnvironment> {
+public class OptionalTesseractOCREnvironment extends JIPipeOptionalParameter<TesseractOCREnvironment> {
     public OptionalTesseractOCREnvironment() {
         super(TesseractOCREnvironment.class);
     }

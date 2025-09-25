@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
@@ -278,7 +278,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
             progressInfo.log("Trying SOURCE_TYPE_NODE " + graphNode.getDisplayName() + " ...");
             JIPipeParameterAccess access = graphNode.getEnvironmentOverrides().get(environmentInfo.getId());
             if (access != null) {
-                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
                 if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
                         && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
                     sourceType = SourceType.Node;
@@ -294,7 +294,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
             progressInfo.log("Trying SOURCE_TYPE_PROJECT " + project.getProjectFile() + " ...");
             JIPipeParameterAccess access = project.getSettingsSheet(JIPipeDefaultEnvironmentsProjectSettings.class).get(environmentInfo.getId());
             if (access != null) {
-                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
                 if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
                         && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
                     sourceType = SourceType.Project;
@@ -310,7 +310,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
             progressInfo.log("Trying SOURCE_TYPE_APPLICATION ...");
             JIPipeParameterAccess access = JIPipe.getSettings().getByType(JIPipeDefaultEnvironmentsApplicationSettings.class).get(environmentInfo.getId());
             if (access != null) {
-                OptionalParameter<?> parameter = access.get(OptionalParameter.class);
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
                 if (parameter != null && parameter.isEnabled() && parameter.getContent() instanceof JIPipeEnvironment
                         && environmentClass.isAssignableFrom(parameter.getContent().getClass())) {
                     sourceType = SourceType.Application;

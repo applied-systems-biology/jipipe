@@ -19,8 +19,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -34,20 +34,20 @@ import java.util.Objects;
 
 public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection {
 
-    private ParameterCollectionList directories = ParameterCollectionList.containingCollection(DirectoryEntry.class);
+    private JIPipeParameterCollectionList directories = JIPipeParameterCollectionList.containingCollection(DirectoryEntry.class);
 
     @SetJIPipeDocumentation(name = "User directories", description = "A list of directories that can be used in various nodes")
     @JIPipeParameter("user-directories")
     @JsonGetter("user-directories")
     @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
     @ParameterCollectionListTemplate(DirectoryEntry.class)
-    public ParameterCollectionList getDirectories() {
+    public JIPipeParameterCollectionList getDirectories() {
         return directories;
     }
 
     @JIPipeParameter("user-directories")
     @JsonSetter("user-directories")
-    public void setDirectories(ParameterCollectionList directories) {
+    public void setDirectories(JIPipeParameterCollectionList directories) {
         this.directories = directories;
     }
 

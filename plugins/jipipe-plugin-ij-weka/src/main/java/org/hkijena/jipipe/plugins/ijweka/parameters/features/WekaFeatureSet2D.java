@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijweka.parameters.features;
 
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 
@@ -48,7 +48,7 @@ import java.util.Arrays;
         "<li>Neighbors: shifts the image in 8 directions by an certain number of pixel, \uD835\uDF0E. Therefore creates 8\uD835\uDC5B feature images.\n</li>" +
         "</ul>")
 @AddJIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
-public class WekaFeatureSet2D extends DynamicSetParameter<WekaFeature2D> {
+public class WekaFeatureSet2D extends JIPipeDynamicSetParameter<WekaFeature2D> {
     public WekaFeatureSet2D() {
         setAllowedValues(Arrays.asList(WekaFeature2D.values()));
         // Default features

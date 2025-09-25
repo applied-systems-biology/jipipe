@@ -15,8 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopDynamicEnumParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  * UI that adds slots to an algorithm
  */
 public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
-    private final DynamicEnumParameter<T> dynamicEnumParameter;
+    private final JIPipeDynamicEnumParameter<T> dynamicEnumParameter;
     private List<T> availableItems;
     private JIPipeDesktopSearchTextField searchField;
     private JList<Object> itemJList;
@@ -44,7 +44,7 @@ public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
     private JScrollPane scrollPane;
     private boolean canceled = true;
 
-    public JIPipeDesktopPickDynamicEnumValueDialog(Window parent, DynamicEnumParameter<T> dynamicEnumParameter, T preSelected) {
+    public JIPipeDesktopPickDynamicEnumValueDialog(Window parent, JIPipeDynamicEnumParameter<T> dynamicEnumParameter, T preSelected) {
         super(parent);
         this.dynamicEnumParameter = dynamicEnumParameter;
         this.availableItems = dynamicEnumParameter.getAllowedValues();
@@ -57,7 +57,7 @@ public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
         itemJList.setSelectedValue(preSelected, true);
     }
 
-    public static <T> T showDialog(Component parent, DynamicEnumParameter<T> dynamicEnumParameter, Object preSelected, String title) {
+    public static <T> T showDialog(Component parent, JIPipeDynamicEnumParameter<T> dynamicEnumParameter, Object preSelected, String title) {
         JIPipeDesktopPickDynamicEnumValueDialog<T> dialog = new JIPipeDesktopPickDynamicEnumValueDialog(SwingUtilities.getWindowAncestor(parent), dynamicEnumParameter, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);
@@ -77,7 +77,7 @@ public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
         initializeToolBar();
 
         itemJList = new JList<>();
-        itemJList.setCellRenderer(new DynamicEnumDesktopParameterEditorUI.Renderer(dynamicEnumParameter));
+        itemJList.setCellRenderer(new JIPipeDesktopDynamicEnumParameterEditorUI.Renderer(dynamicEnumParameter));
         itemJList.addListSelectionListener(e -> {
             if (itemJList.getSelectedValue() != null) {
                 setSelectedItem((T) itemJList.getSelectedValue());

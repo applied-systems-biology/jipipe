@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.viewers.TracksSpotsDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
@@ -81,8 +82,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
     }
 
     @Override
@@ -245,7 +246,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("trackmate-edge-feature", EdgeFeature.class, JIPipeParameterArchetype.SingleSelect, "TrackMate edge feature", "An edge feature");
         registerParameterType("trackmate-spot-feature-penalty",
                 SpotFeaturePenaltyParameter.class,
-                JIPipeParameterArchetype.SingleSelect, SpotFeaturePenaltyParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, SpotFeaturePenaltyParameterList.class,
                 null,
                 null,
                 "TrackMate spot feature penalty",
@@ -253,7 +254,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("trackmate-spot-feature-filter",
                 SpotFeatureFilterParameter.class,
-                JIPipeParameterArchetype.SingleSelect, SpotFeatureFilterParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, SpotFeatureFilterParameterList.class,
                 null,
                 null,
                 "TrackMate spot feature filter",
@@ -261,7 +262,7 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null);
         registerParameterType("trackmate-track-feature-filter",
                 TrackFeatureFilterParameter.class,
-                JIPipeParameterArchetype.SingleSelect, TrackFeatureFilterParameter.List.class,
+                JIPipeParameterArchetype.SingleSelect, TrackFeatureFilterParameterList.class,
                 null,
                 null,
                 "TrackMate track feature filter",

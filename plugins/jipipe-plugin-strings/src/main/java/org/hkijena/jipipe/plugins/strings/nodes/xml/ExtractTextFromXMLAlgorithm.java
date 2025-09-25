@@ -33,6 +33,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
@@ -49,7 +50,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
 public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter xPath = new JIPipeExpressionParameter("\"/\"");
-    private StringAndStringPairParameter.List namespaceMap = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList namespaceMap = new StringAndStringPairParameterList();
 
     public ExtractTextFromXMLAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -57,7 +58,7 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public ExtractTextFromXMLAlgorithm(ExtractTextFromXMLAlgorithm other) {
         super(other);
-        this.namespaceMap = new StringAndStringPairParameter.List(other.namespaceMap);
+        this.namespaceMap = new StringAndStringPairParameterList(other.namespaceMap);
     }
 
     @Override
@@ -81,12 +82,12 @@ public class ExtractTextFromXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @SetJIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
     @JIPipeParameter("namespace-map")
     @PairParameterSettings(keyLabel = "Shortcut", valueLabel = "Namespace")
-    public StringAndStringPairParameter.List getNamespaceMap() {
+    public StringAndStringPairParameterList getNamespaceMap() {
         return namespaceMap;
     }
 
     @JIPipeParameter("namespace-map")
-    public void setNamespaceMap(StringAndStringPairParameter.List namespaceMap) {
+    public void setNamespaceMap(StringAndStringPairParameterList namespaceMap) {
         this.namespaceMap = namespaceMap;
     }
 

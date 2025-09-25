@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringQueryPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringQueryPairParameterList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 /**
@@ -44,7 +45,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpressionAndStringQueryPairParameter.List renamingEntries = new StringQueryExpressionAndStringQueryPairParameter.List();
+    private StringQueryExpressionAndStringQueryPairParameterList renamingEntries = new StringQueryExpressionAndStringQueryPairParameterList();
     private boolean ignoreMissingColumns = false;
     private boolean ignoreMissingAnnotations = false;
 
@@ -64,7 +65,7 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
      */
     public RenameTableColumnsToAnnotationAlgorithm(RenameTableColumnsToAnnotationAlgorithm other) {
         super(other);
-        this.renamingEntries = new StringQueryExpressionAndStringQueryPairParameter.List(other.renamingEntries);
+        this.renamingEntries = new StringQueryExpressionAndStringQueryPairParameterList(other.renamingEntries);
         this.ignoreMissingColumns = other.ignoreMissingColumns;
         this.ignoreMissingAnnotations = other.ignoreMissingAnnotations;
     }
@@ -107,12 +108,12 @@ public class RenameTableColumnsToAnnotationAlgorithm extends JIPipeSimpleIterati
     @SetJIPipeDocumentation(name = "Renaming entries", description = "You can rename one or multiple columns.")
     @JIPipeParameter("renaming-entries")
     @PairParameterSettings(singleRow = false, keyLabel = "Column name", valueLabel = "Annotation name")
-    public StringQueryExpressionAndStringQueryPairParameter.List getRenamingEntries() {
+    public StringQueryExpressionAndStringQueryPairParameterList getRenamingEntries() {
         return renamingEntries;
     }
 
     @JIPipeParameter("renaming-entries")
-    public void setRenamingEntries(StringQueryExpressionAndStringQueryPairParameter.List renamingEntries) {
+    public void setRenamingEntries(StringQueryExpressionAndStringQueryPairParameterList renamingEntries) {
         this.renamingEntries = renamingEntries;
     }
 

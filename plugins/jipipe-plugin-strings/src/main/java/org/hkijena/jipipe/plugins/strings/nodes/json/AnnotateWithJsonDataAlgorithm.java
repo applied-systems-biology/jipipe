@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -51,7 +51,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = JsonData.class, name = "Output", create = true)
 public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
 
     public AnnotateWithJsonDataAlgorithm(JIPipeNodeInfo info) {
@@ -61,7 +61,7 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     public AnnotateWithJsonDataAlgorithm(AnnotateWithJsonDataAlgorithm other) {
         super(other);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
         this.annotationMergeMode = other.annotationMergeMode;
     }
 
@@ -87,12 +87,12 @@ public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorith
     @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

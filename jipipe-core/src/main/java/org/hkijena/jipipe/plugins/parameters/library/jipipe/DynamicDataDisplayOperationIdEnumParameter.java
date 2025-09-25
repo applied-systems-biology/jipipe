@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
 
 import javax.swing.*;
@@ -35,7 +35,7 @@ import java.util.ArrayList;
  */
 @JsonSerialize(using = DynamicDataDisplayOperationIdEnumParameter.Serializer.class)
 @JsonDeserialize(using = DynamicDataDisplayOperationIdEnumParameter.Deserializer.class)
-public class DynamicDataDisplayOperationIdEnumParameter extends DynamicEnumParameter<String> {
+public class DynamicDataDisplayOperationIdEnumParameter extends JIPipeDynamicEnumParameter<String> {
 
     private String dataTypeId;
 

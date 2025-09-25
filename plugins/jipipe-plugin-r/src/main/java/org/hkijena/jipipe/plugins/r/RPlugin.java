@@ -109,7 +109,7 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "org.r.*",
                 JIPipeEnvironmentArchetype.Managed, REnvironment.class,
                 OptionalREnvironment.class,
-                REnvironment.List.class,
+                REnvironmentList.class,
                 "R",
                 "An R environment",
                 JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));

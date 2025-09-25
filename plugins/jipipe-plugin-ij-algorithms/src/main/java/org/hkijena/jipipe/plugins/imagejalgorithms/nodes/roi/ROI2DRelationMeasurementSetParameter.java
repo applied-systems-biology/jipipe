@@ -13,18 +13,18 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.Set;
 
-public class ROI2DRelationMeasurementSetParameter extends DynamicSetParameter<ROI2DRelationMeasurement> {
+public class ROI2DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI2DRelationMeasurement> {
     public ROI2DRelationMeasurementSetParameter() {
         initialize();
         setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
     }
 
-    public ROI2DRelationMeasurementSetParameter(DynamicSetParameter<ROI2DRelationMeasurement> other) {
+    public ROI2DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<ROI2DRelationMeasurement> other) {
         super(other);
         initialize();
     }

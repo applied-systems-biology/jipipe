@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -66,7 +66,7 @@ public class TesseractOCREnvironment extends JIPipeProcessArtifactEnvironment {
     /**
      * A list of {@link TesseractOCREnvironment}
      */
-    public static class List extends ListParameter<TesseractOCREnvironment> {
+    public static class List extends JIPipeListParameter<TesseractOCREnvironment> {
         public List() {
             super(TesseractOCREnvironment.class);
         }

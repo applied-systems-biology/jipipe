@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.DynamicSetParameterSettings;
 
 import java.util.Set;
 
@@ -24,7 +24,7 @@ import java.util.Set;
  * items. Alternatively, use allowedValues to supply items.
  * allowedValues is preferred. If allowedValues is null, you have to use {@link DynamicSetParameterSettings}.
  */
-public class DynamicStringSetParameter extends DynamicSetParameter<String> {
+public class DynamicStringSetParameter extends JIPipeDynamicSetParameter<String> {
     public DynamicStringSetParameter() {
     }
 

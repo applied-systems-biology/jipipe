@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.python.adapter;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.python.PythonPackageLibraryEnvironment;
 
 import java.nio.file.Paths;
@@ -42,19 +42,4 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
         setLibraryDirectory(artifact.getLocalPath().resolve("jipipe-python-main"));
     }
 
-    /**
-     * A list of {@link JIPipePythonAdapterLibraryEnvironment}
-     */
-    public static class List extends ListParameter<JIPipePythonAdapterLibraryEnvironment> {
-        public List() {
-            super(JIPipePythonAdapterLibraryEnvironment.class);
-        }
-
-        public List(JIPipePythonAdapterLibraryEnvironment.List other) {
-            super(JIPipePythonAdapterLibraryEnvironment.class);
-            for (JIPipePythonAdapterLibraryEnvironment environment : other) {
-                add(new JIPipePythonAdapterLibraryEnvironment(environment));
-            }
-        }
-    }
 }

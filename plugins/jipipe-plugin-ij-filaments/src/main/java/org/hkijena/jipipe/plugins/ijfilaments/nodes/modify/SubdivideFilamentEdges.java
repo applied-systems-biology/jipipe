@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.OptionalQuantity;
@@ -50,7 +51,7 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
     private OptionalIntegerParameter maximumNumIterations = new OptionalIntegerParameter(true, 2);
     private OptionalDoubleParameter overrideValue = new OptionalDoubleParameter();
     private OptionalDoubleParameter overrideRadius = new OptionalDoubleParameter();
-    private StringAndStringPairParameter.List addMetadata = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList addMetadata = new StringAndStringPairParameterList();
 
     public SubdivideFilamentEdges(JIPipeNodeInfo info) {
         super(info);
@@ -62,7 +63,7 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
         this.maximumNumIterations = new OptionalIntegerParameter(other.maximumNumIterations);
         this.overrideValue = new OptionalDoubleParameter(other.overrideValue);
         this.overrideRadius = new OptionalDoubleParameter(other.overrideRadius);
-        this.addMetadata = new StringAndStringPairParameter.List(other.addMetadata);
+        this.addMetadata = new StringAndStringPairParameterList(other.addMetadata);
     }
 
     @Override
@@ -142,12 +143,12 @@ public class SubdivideFilamentEdges extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Add metadata to created vertices", description = "Allows to add metadata to newly created vertices")
     @JIPipeParameter("add-metadata")
-    public StringAndStringPairParameter.List getAddMetadata() {
+    public StringAndStringPairParameterList getAddMetadata() {
         return addMetadata;
     }
 
     @JIPipeParameter("add-metadata")
-    public void setAddMetadata(StringAndStringPairParameter.List addMetadata) {
+    public void setAddMetadata(StringAndStringPairParameterList addMetadata) {
         this.addMetadata = addMetadata;
     }
 

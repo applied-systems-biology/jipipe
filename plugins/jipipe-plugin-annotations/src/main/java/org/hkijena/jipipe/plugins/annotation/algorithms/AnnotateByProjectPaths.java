@@ -32,8 +32,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -48,7 +48,7 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList generatedAnnotations = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList generatedAnnotations = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private JIPipeTextAnnotationMergeMode mergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public AnnotateByProjectPaths(JIPipeNodeInfo info) {
@@ -59,7 +59,7 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
     public AnnotateByProjectPaths(AnnotateByProjectPaths other) {
         super(other);
         this.mergeMode = other.mergeMode;
-        this.generatedAnnotations = new ParameterCollectionList(other.generatedAnnotations);
+        this.generatedAnnotations = new JIPipeParameterCollectionList(other.generatedAnnotations);
     }
 
     @Override
@@ -95,12 +95,12 @@ public class AnnotateByProjectPaths extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of annotations that will be generated.")
     @JIPipeParameter("generated-annotations")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getGeneratedAnnotations() {
+    public JIPipeParameterCollectionList getGeneratedAnnotations() {
         return generatedAnnotations;
     }
 
     @JIPipeParameter("generated-annotations")
-    public void setGeneratedAnnotations(ParameterCollectionList generatedAnnotations) {
+    public void setGeneratedAnnotations(JIPipeParameterCollectionList generatedAnnotations) {
         this.generatedAnnotations = generatedAnnotations;
     }
 

@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.clij2.CLIJPlugin;
 import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.plugins.clij2.parameters.OpenCLKernelScript;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.python.core.PyArray;
@@ -58,7 +58,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     private PythonScript preprocessingScript = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             CLIJPlugin.ALLOWED_PARAMETER_TYPES);
-    private StringAndStringPairParameter.List outputSizes = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList outputSizes = new StringAndStringPairParameterList();
 
     public Clij2ExecuteKernelSimpleIterating(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -75,7 +75,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         this.kernelFunction = other.kernelFunction;
         this.preprocessingScript = new PythonScript(other.preprocessingScript);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
-        this.outputSizes = new StringAndStringPairParameter.List(other.outputSizes);
+        this.outputSizes = new StringAndStringPairParameterList(other.outputSizes);
         registerSubParameter(scriptParameters);
     }
 
