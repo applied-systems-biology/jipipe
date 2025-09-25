@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -70,15 +71,15 @@ public abstract class FunctionParameter<I, P, O> implements JIPipeValidatable {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (input instanceof JIPipeValidatable) {
-            report.report(reportContext.custom("Input"), (JIPipeValidatable) input);
+            report.report(reportContext.custom("Input"), (JIPipeValidatable) input, progressInfo);
         }
         if (parameter instanceof JIPipeValidatable) {
-            report.report(reportContext.custom("Parameter"), (JIPipeValidatable) parameter);
+            report.report(reportContext.custom("Parameter"), (JIPipeValidatable) parameter, progressInfo);
         }
         if (output instanceof JIPipeValidatable) {
-            report.report(reportContext.custom("Output"), (JIPipeValidatable) output);
+            report.report(reportContext.custom("Output"), (JIPipeValidatable) output, progressInfo);
         }
     }
 

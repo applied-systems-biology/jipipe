@@ -132,7 +132,7 @@ public interface JIPipeParameterCollection {
 
     /**
      * List of context actions that are added to this collection.
-     * Does no influence the creation of context actions via {@link JIPipeContextAction}
+     * Does no influence the creation of context actions via {@link RegisterJIPipeParameterCollectionContextAction}
      *
      * @return list of context actions
      */

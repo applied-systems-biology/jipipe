@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -23,10 +24,12 @@ import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Priority;
 
+import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -253,7 +256,7 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
 
     private void addContextActions(JIPipeParameterCollection source, Node target) {
         for (Method method : source.getClass().getMethods()) {
-            JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
+            RegisterJIPipeParameterCollectionContextAction actionAnnotation = method.getAnnotation(RegisterJIPipeParameterCollectionContextAction.class);
             if (actionAnnotation == null)
                 continue;
             if (!actionAnnotation.showInParameters())
@@ -262,8 +265,10 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             if (documentationAnnotation == null) {
                 documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
             }
-            URL iconURL = JIPipeResourceManager.safeResolveIconURL(actionAnnotation.iconURL(), actionAnnotation.iconDarkURL(), actionAnnotation.resourceClass(), null);
-            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, iconURL, documentationAnnotation));
+            Icon icon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(actionAnnotation.icon(),
+                    actionAnnotation.iconResourceManager(),
+                    JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, documentationAnnotation.name(), documentationAnnotation.description(), actionAnnotation.highlighted(), icon));
         }
         target.actions.addAll(source.getContextActions());
     }
@@ -351,9 +356,8 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
                     childNode.setUiOrder(entry.getValue().getUIOrder());
                     childNode.setHidden(entry.getValue().isHidden());
                     childNode.setPersistence(entry.getValue().getPersistence());
-                    childNode.setIconURL(entry.getValue().getIconURL());
-                    childNode.setDarkIconURL(entry.getValue().getIconDarkURL());
-                    childNode.setResourceClass(entry.getValue().getResourceClass());
+                    childNode.setIcon(entry.getValue().getIcon());
+                    childNode.setIconResourceManager(entry.getValue().getIconResourceManager());
                     childNode.setFunctional(entry.getValue().isFunctional());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
@@ -699,19 +703,14 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             return getterAnnotation.collapsed();
         }
 
-        public String getIconURL() {
+        public String getIcon() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
-            return getterAnnotation.iconURL();
+            return getterAnnotation.icon();
         }
 
-        public String getIconDarkURL() {
+        public Class<? extends Supplier<JIPipeResourceManager>> getIconResourceManager() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
-            return getterAnnotation.iconDarkURL();
-        }
-
-        public Class<?> getResourceClass() {
-            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
-            return getterAnnotation.resourceClass();
+            return getterAnnotation.iconResourceManager();
         }
     }
 
@@ -723,7 +722,6 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         private JIPipeParameterCollection collection;
         private String key;
         private boolean hidden;
-
         private boolean functional;
         private String name;
         private HTMLText description = new HTMLText();
@@ -734,9 +732,8 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
         private List<JIPipeParameterCollectionContextAction> actions = new ArrayList<>();
         private JIPipeParameterSerializationMode persistence = JIPipeParameterSerializationMode.Default;
         private boolean collapsed;
-        private String iconURL;
-        private String darkIconURL;
-        private Class<?> resourceClass;
+        private String icon;
+        private Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager;
 
         /**
          * Creates a node
@@ -838,28 +835,12 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
             this.collapsed = collapsed;
         }
 
-        public String getIconURL() {
-            return iconURL;
+        public String getIcon() {
+            return icon;
         }
 
-        public void setIconURL(String iconURL) {
-            this.iconURL = iconURL;
-        }
-
-        public String getDarkIconURL() {
-            return darkIconURL;
-        }
-
-        public void setDarkIconURL(String darkIconURL) {
-            this.darkIconURL = darkIconURL;
-        }
-
-        public Class<?> getResourceClass() {
-            return resourceClass;
-        }
-
-        public void setResourceClass(Class<?> resourceClass) {
-            this.resourceClass = resourceClass;
+        public void setIcon(String icon) {
+            this.icon = icon;
         }
 
         public void addChild(String key, Node child) {
@@ -902,6 +883,14 @@ public class JIPipeParameterTree extends AbstractJIPipeParameterCollection imple
 
         public void setFunctional(boolean functional) {
             this.functional = functional;
+        }
+
+        public Class<? extends Supplier<JIPipeResourceManager>> getIconResourceManager() {
+            return iconResourceManager;
+        }
+
+        public void setIconResourceManager(Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager) {
+            this.iconResourceManager = iconResourceManager;
         }
     }
 }

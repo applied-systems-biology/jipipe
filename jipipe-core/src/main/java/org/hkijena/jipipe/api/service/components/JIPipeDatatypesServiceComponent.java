@@ -38,7 +38,7 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultD
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;

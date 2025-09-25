@@ -10,7 +10,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

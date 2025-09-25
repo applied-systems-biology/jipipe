@@ -18,16 +18,15 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.napari.environments.NapariEnvironment;
+import org.hkijena.jipipe.plugins.napari.environments.NapariEnvironmentList;
+import org.hkijena.jipipe.plugins.napari.environments.OptionalNapariEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
@@ -35,7 +34,6 @@ import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.*;
 
 @Plugin(type = JIPipeJavaPlugin.class)
@@ -48,10 +46,6 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             JIPipe.getJIPipeVersion(),
             "Napari integration");
 
-    public static PythonEnvironment getEnvironment() {
-        return NapariPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment();
-    }
-
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, boolean interactive) {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
@@ -59,62 +53,24 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
-        PythonEnvironment environment = getEnvironment();
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            if (interactive) {
-                JOptionPane.showMessageDialog(workbench.getWindow(),
-                        "Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.",
-                        "Launch Napari",
-                        JOptionPane.ERROR_MESSAGE);
-                return;
-            } else {
-                throw new RuntimeException("Napari is currently not correctly installed. Please check the project/application settings and ensure that Napari is setup correctly.");
-            }
+        JIPipeEnvironmentConfigurator<NapariEnvironment> environmentConfigurator = workbench.getEnvironmentConfigurator(NapariEnvironment.class, new JIPipeEnvironmentConfigurationCache());
+        if(interactive) {
+            workbench.sendStatusBarText("Preparing Napari ...");
+            environmentConfigurator.showDialogAndGetLater(workbench, workbench.getWindow(), "Launch Napari", (environment) -> {
+                workbench.sendStatusBarText("Launching Napari ...");
+                runNapari(environment, arguments, true, progressInfo);
+            });
         }
-        if (environment.isLoadFromArtifact()) {
-            JIPipeArtifact artifact = JIPipe.getArtifacts().searchClosestCompatibleArtifactFromQuery(environment.getArtifactQuery().getQuery());
-            if (artifact instanceof JIPipeLocalArtifact) {
-                environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-            } else if (artifact instanceof JIPipeRemoteArtifact) {
-                if (interactive) {
-                    if (JOptionPane.showConfirmDialog(workbench.getWindow(), "The Napari version " + artifact.getVersion() + " is currently not downloaded. " +
-                            "Download it now?", "Run Napari", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                        JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
-                        JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
-                        artifact = JIPipe.getArtifacts().queryPreferredCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
-                        if (artifact instanceof JIPipeLocalArtifact) {
-                            environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-                        } else {
-                            return;
-                        }
-                    } else {
-                        return;
-                    }
-                } else {
-                    progressInfo.log("Napari is not installed. Downloading now.");
-                    JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
-                    run.setProgressInfo(progressInfo.resolve("Napari download"));
-                    run.run();
-                    if (progressInfo.isCancelled()) {
-                        return;
-                    }
-                    artifact = JIPipe.getArtifacts().queryPreferredCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
-                    if (artifact instanceof JIPipeLocalArtifact) {
-                        environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-                    } else {
-                        throw new RuntimeException("Artifact not found!");
-                    }
-                }
-            }
+        else {
+            NapariEnvironment environment = environmentConfigurator.get(progressInfo);
+            runNapari(environment, arguments, true, progressInfo);
         }
-        workbench.sendStatusBarText("Launching Napari ...");
-        runNapari(environment, arguments, true, progressInfo);
     }
 
     /**
      * Runs Napari
      *
-     * @param environment  the environment. can be null (then the {@link NapariPluginApplicationSettings} environment is taken)
+     * @param environment  the environment. can be null (then the standard environment is taken)
      * @param parameters   the cli parameters
      * @param detached     if the process is launched detached
      * @param progressInfo the progress info
@@ -152,7 +108,14 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new NapariPluginApplicationSettings());
+        registerArtifactEnvironment("napari",
+                "org.napari.napari:*",
+                JIPipeEnvironmentArchetype.Managed, NapariEnvironment.class,
+                OptionalNapariEnvironment.class,
+                NapariEnvironmentList.class,
+                "Napari",
+                "A Python environment with Napari",
+                JIPipe.RESOURCES.getIcon16("apps/napari.png"));
         registerMenuExtension(RunNapariDesktopMenuExtension.class);
     }
 

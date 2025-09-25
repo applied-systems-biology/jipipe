@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.processes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -53,23 +53,14 @@ public class ProcessesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        JIPipeProcessesPluginApplicationSettings extensionSettings = new JIPipeProcessesPluginApplicationSettings();
-
-        registerEnvironment(ProcessEnvironment.class,
-                ProcessEnvironment.List.class,
-                extensionSettings,
-                "process",
-                "Process environment",
-                "A process environment",
-                JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png"));
-        registerParameterType("optional-process-environment",
+        registerEnvironment("process",
+                JIPipeEnvironmentArchetype.Base,
+                ProcessEnvironment.class,
                 OptionalProcessEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional process environment",
-                "An optional process environment",
-                null);
-        registerApplicationSettingsSheet(extensionSettings);
+                ProcessEnvironment.List.class,
+                "Process",
+                "A generic process environment",
+                JIPipe.RESOURCES.getIcon16("apps/utilities-terminal.png"));
     }
 
     @Override

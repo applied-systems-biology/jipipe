@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.settings.project;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -27,7 +28,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDeskt
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import java.util.ArrayList;
@@ -66,7 +67,7 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
-        createValidationReport(report);
+        createValidationReport(report, new JIPipeProgressInfo());
         if (!report.isEmpty()) {
             dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
             dockPanel.activatePanel(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);
@@ -99,9 +100,9 @@ public class JIPipeDesktopProjectOverviewRunManager implements JIPipeRunnable.Fi
         return false;
     }
 
-    private void createValidationReport(JIPipeValidationReport report) {
+    private void createValidationReport(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (JIPipeAlgorithm node : nodes) {
-            node.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            node.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo.resolve(node.getDisplayName()));
         }
     }
 

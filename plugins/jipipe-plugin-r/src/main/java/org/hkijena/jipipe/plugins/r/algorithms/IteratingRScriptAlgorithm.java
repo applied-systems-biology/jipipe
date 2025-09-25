@@ -22,8 +22,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -39,8 +38,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.plugins.r.OptionalREnvironment;
-import org.hkijena.jipipe.plugins.r.REnvironmentAccessNode;
+import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -81,13 +79,13 @@ import java.util.Map;
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
-public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implements REnvironmentAccessNode {
+@RegisterJIPipeEnvironmentUsage(REnvironment.class)
+public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(true, RUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
-    private OptionalREnvironment overrideEnvironment = new OptionalREnvironment();
 
     public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
@@ -100,14 +98,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.overrideEnvironment = new OptionalREnvironment(other.overrideEnvironment);
         registerSubParameter(variables);
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredREnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -123,28 +114,16 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredREnvironmentValidity(reportContext, report);
-        }
-    }
-
-    @SetJIPipeDocumentation(name = "Override R environment", description = "If enabled, a different R environment is used for this Node.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.r.*"})
-    public OptionalREnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalREnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
+
+        // Get environment
+        REnvironment environment = getEnvironment(REnvironment.class, runContext, progressInfo);
 
         // Add user variables
         RUtils.parametersToR(code, variables);
@@ -194,7 +173,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
 
         // Export as script and run it
         RUtils.runR(code.toString(),
-                getConfiguredREnvironment().getEnvironment(),
+                environment,
                 progressInfo);
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {

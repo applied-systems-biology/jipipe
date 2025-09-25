@@ -402,10 +402,10 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
 
-        report.report(reportContext.parameter(this, "Wrapped graph", "wrapped-graph"), wrappedGraph);
+        report.report(reportContext.parameter(this, "Wrapped graph", "wrapped-graph"), wrappedGraph, progressInfo);
     }
 
     @Override

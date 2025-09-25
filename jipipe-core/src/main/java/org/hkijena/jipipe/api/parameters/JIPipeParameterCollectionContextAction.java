@@ -15,23 +15,19 @@ package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
+import javax.swing.*;
 import java.net.URL;
 import java.util.function.Consumer;
 
 public interface JIPipeParameterCollectionContextAction extends Consumer<JIPipeWorkbench> {
 
-    /**
-     * Documentation of this action
-     *
-     * @return the documentation
-     */
-    SetJIPipeDocumentation getDocumentation();
+    String getName();
 
-    /**
-     * URL to the icon
-     *
-     * @return the icon URL
-     */
-    URL getIconURL();
+    String getDescription();
+
+    Icon getIcon();
+
+    boolean isHighlighted();
 }

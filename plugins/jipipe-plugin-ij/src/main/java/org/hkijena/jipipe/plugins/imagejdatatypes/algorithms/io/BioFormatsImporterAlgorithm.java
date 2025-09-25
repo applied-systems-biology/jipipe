@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
@@ -408,7 +408,7 @@ public class BioFormatsImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @SetJIPipeDocumentation(name = "Configure Bio-Formats", description = "Opens the Bio-Formats configuration window that allows to set format-specific settings. Please note that these settings are global and not managed by JIPipe.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/bioformats.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "apps/bioformats.png")
     public void setToExample(JIPipeWorkbench parent) {
         ConfigWindow cw = new ConfigWindow();
         WindowTools.placeWindow(cw);

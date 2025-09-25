@@ -7,12 +7,15 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultCacheDisplayApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeDefaultResultImporterApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultCacheDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultResultImporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
@@ -121,6 +124,18 @@ public abstract class JIPipeServiceInitializer extends JIPipeServiceComponent {
         } else {
             getProgressInfo().log(PathUtils.getJIPipeUserDir() + " already exists. No profile upgrades are needed.");
             return false;
+        }
+    }
+
+    protected void createDefaultEnvironmentSettings() {
+        JIPipeDefaultEnvironmentsApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultEnvironmentsApplicationSettings.ID, JIPipeDefaultEnvironmentsApplicationSettings.class);
+        for (Map.Entry<String, JIPipeEnvironmentsServiceComponent.EnvironmentInfo> entry : getService().getEnvironments().getInfosById().entrySet()) {
+            JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = entry.getValue();
+            if(info.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+                settings.addParameter(entry.getKey(), info.getOptionalEnvironmentClass(), info.getName(), info.getDescription() + ". " +
+                        "Allows to override which environment is used if both node and project overrides are disabled. " +
+                        "If disabled, JIPipe will automatically select the newest available and compatible environment on project creation.");
+            }
         }
     }
 

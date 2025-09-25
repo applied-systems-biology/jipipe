@@ -50,7 +50,7 @@ import org.hkijena.jipipe.plugins.imageviewer.settings.LegacyImageViewer2DUIAppl
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewer2DSliceStatistics;
 import org.hkijena.jipipe.plugins.imageviewer.utils.viewer2d.ImageViewerPanelCanvas2D;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;

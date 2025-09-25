@@ -25,8 +25,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.LargeScriptDesktopParameterEditorUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
@@ -65,7 +65,7 @@ public class ScriptDesktopParameterEditorUI extends JIPipeDesktopParameterEditor
     private void initialize() {
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
-        collapseInfoLabel = new JLabel("The code is hidden. Click the 'Collapse' button to show it",
+        collapseInfoLabel = new JLabel("The code is hidden",
                 JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));

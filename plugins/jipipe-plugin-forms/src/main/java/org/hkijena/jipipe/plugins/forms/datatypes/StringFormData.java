@@ -99,7 +99,7 @@ public class StringFormData extends ParameterFormData {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (!validationExpression.test(value)) {
             reportContext.error().title("Invalid value!").explanation(String.format("The provided value '%s' does not comply to the test '%s'", value, validationExpression.getExpression())).solution("Please correct your input").report(report);
         }

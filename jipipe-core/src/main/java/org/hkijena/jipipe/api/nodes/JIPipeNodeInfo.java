@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -157,6 +158,13 @@ public interface JIPipeNodeInfo {
      * @return List of output slots
      */
     List<AddJIPipeOutputSlot> getOutputSlots();
+
+    /**
+     * Returns the utilized environments of this node
+     * This may be extended by the node itself during initialization
+     * @return the set of utilized environments
+     */
+    Set<Class<? extends JIPipeEnvironment>> getEnvironments();
 
     /**
      * If the current node info contains a slot with given name

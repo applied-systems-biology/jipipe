@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.running;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -34,7 +35,7 @@ import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -69,7 +70,10 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         setLayout(new BorderLayout(8, 8));
 
         JIPipeValidationReport report = new JIPipeValidationReport();
-        getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+        getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(),
+                JIPipeValidationReportSettings.DEFAULT,
+                report,
+                new JIPipeProgressInfo());
         if (report.isValid()) {
             initializeSetupGUI();
         } else {
@@ -96,7 +100,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         runButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
         runButton.addActionListener(e -> {
             report.clear();
-            getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            getDesktopProjectWorkbench().getProject().reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
             getDesktopProjectWorkbench().sendStatusBarText("Re-validated JIPipe project");
             if (report.isValid())
                 initializeSetupGUI();

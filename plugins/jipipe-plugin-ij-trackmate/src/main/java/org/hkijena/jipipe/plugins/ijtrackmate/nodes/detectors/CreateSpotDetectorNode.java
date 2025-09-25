@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
+import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePluginResourceManagerSupplier;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 
 import java.util.HashMap;
@@ -62,7 +63,7 @@ public class CreateSpotDetectorNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Spot detector settings")
-    @JIPipeParameter(value = "spot-detector-parameters", resourceClass = TrackMatePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/ijtrackmate/icons/light/icons-16/trackmate.png")
+    @JIPipeParameter(value = "spot-detector-parameters", iconResourceManager = TrackMatePluginResourceManagerSupplier.class, icon = "trackmate.png")
     public JIPipeDynamicParameterCollection getParameters() {
         return parameters;
     }

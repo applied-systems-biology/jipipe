@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -78,14 +79,15 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDa
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInNapariDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.ImageJSamplesEnvironment;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.ImageJSamplesListEnvironment;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.OptionalImageJSamplesEnvironment;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMETIFFCompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesApplicationSettings;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesProjectSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
@@ -408,8 +410,6 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register settings
         registerApplicationSettingsSheet(new LegacyImageViewer2DUIApplicationSettings());
-        registerApplicationSettingsSheet(new ImageSamplesApplicationSettings());
-        registerProjectSettingsSheet(ImageSamplesProjectSettings.class);
 
         // Register data types
         registerDatatype("imagej-ome",
@@ -586,6 +586,16 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerFileChooserKnownDirectoryType("OME-Zarr", "apps/zarr.png", ".zarr");
         registerFileChooserKnownFileType("OME-Zarr", "data-types/bioformats.png", ".zarr");
         registerFileChooserKnownFileType("MRC/CCP4", "data-types/bioformats.png", ".mrc", ".ccp4", ".map");
+
+        // Register environment for ImageJ samples
+        registerArtifactEnvironment("ij1-samples",
+                "sc.fiji.sample_images:*",
+                JIPipeEnvironmentArchetype.Managed, ImageJSamplesEnvironment.class,
+                OptionalImageJSamplesEnvironment.class,
+                ImageJSamplesListEnvironment.class,
+                "ImageJ sample images",
+                "Copy of all ImageJ sample images",
+                JIPipe.RESOURCES.getIcon16("actions/viewimage.png"));
 
     }
 

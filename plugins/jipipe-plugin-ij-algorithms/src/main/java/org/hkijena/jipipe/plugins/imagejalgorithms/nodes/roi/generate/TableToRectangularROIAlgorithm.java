@@ -104,18 +104,18 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X1'", "column-x1"), columnX1, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y1'", "column-y1"), columnY1, progressInfo);
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Width'", "column-width"), columnWidth);
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Height'", "column-height"), columnHeight);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Width'", "column-width"), columnWidth, progressInfo);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Height'", "column-height"), columnHeight, progressInfo);
         }
         if (anchor == Anchor.TwoPoints) {
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2);
-            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'X2'", "column-x2"), columnX2, progressInfo);
+            report.report(new ParameterValidationReportContext(reportContext, this, "Column 'Y2'", "column-y2"), columnY2, progressInfo);
         }
     }
 

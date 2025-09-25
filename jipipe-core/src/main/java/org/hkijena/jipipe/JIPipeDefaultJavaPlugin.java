@@ -24,9 +24,10 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentSettings;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -67,7 +68,7 @@ import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterTypeInfo;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeDesktopExternalEnvironmentParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -204,7 +205,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
 
     }
 
@@ -212,7 +213,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     public String getDependencyVersion() {
         return VersionUtils.getVersionString(getClass());
     }
-    
+
 
     /**
      * Registers a custom menu entry.
@@ -945,35 +946,51 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * Requires that the environment class has a default constructor and a deep copy constructor.
      * Will also register a settings page for the environment
      *
-     * @param environmentClass the environment class. Must be JSON-serializable. Will be registered as parameter type
-     * @param listClass        the list. Will be registered as parameter type with ID [id]-list
-     * @param settings         Settings page that stores the user's presets
-     * @param id               the ID of the environment class. Will be used as parameter type ID
-     * @param name             the name of the environment
-     * @param description      the description of the environment
-     * @param <T>              environment class
-     * @param <U>              list of environment class
+     * @param <T>                      environment class
+     * @param <U>                      list of environment class
+     * @param id                       the ID of the environment class. Will be used as parameter type ID
+     * @param artifactQuery            the artifact query for this environment (can be null)
+     * @param archetype the environment's archetype
+     * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
+     * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
+     * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
+     * @param name                     the name of the environment
+     * @param description              the description of the environment
      */
-    public <T extends JIPipeEnvironment, U extends ListParameter<T>> void registerEnvironment(Class<T> environmentClass,
-                                                                                              Class<U> listClass,
-                                                                                              JIPipeExternalEnvironmentSettings settings,
-                                                                                              String id,
-                                                                                              String name,
-                                                                                              String description,
-                                                                                              Icon icon) {
-        registerParameterType(id, environmentClass, JIPipeParameterArchetype.Reference, listClass, null, null, name, description, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
-        service.getEnvironments().registerEnvironment(environmentClass, settings);
+    public <T extends JIPipeArtifactEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerArtifactEnvironment(String id,
+                                                                                                                                              String artifactQuery,
+                                                                                                                                              JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
+                                                                                                                                              Class<V> optionalEnvironmentClass,
+                                                                                                                                              Class<U> environmentListClass,
+                                                                                                                                              String name,
+                                                                                                                                              String description,
+                                                                                                                                              Icon icon) {
+        service.getEnvironments().registerEnvironment(id, artifactQuery, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
     /**
-     * Registers an installer for a given environment
+     * Registers a new environment type.
+     * This will also register the environment class and environment list class a valid parameters.
+     * Requires that the environment class has a default constructor and a deep copy constructor.
+     * Will also register a settings page for the environment
      *
-     * @param environmentClass the environment type
-     * @param installerClass   the installer class
-     * @param icon             icon for the installer
+     * @param <T>                      environment class
+     * @param <U>                      list of environment class
+     * @param id                       the ID of the environment class. Will be used as parameter type ID
+     * @param archetype the environment's archetype
+     * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
+     * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
+     * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
+     * @param name                     the name of the environment
+     * @param description              the description of the environment
      */
-    public void registerEnvironmentInstaller(Class<? extends JIPipeEnvironment> environmentClass, Class<? extends JIPipeExternalEnvironmentInstaller> installerClass, Icon icon) {
-        service.getEnvironments().registerInstaller(environmentClass, installerClass, icon);
+    public <T extends JIPipeEnvironment, U extends ListParameter<T>, V extends OptionalParameter<T>> void registerEnvironment(String id, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
+                                                                                                                              Class<V> optionalEnvironmentClass,
+                                                                                                                              Class<U> environmentListClass,
+                                                                                                                              String name,
+                                                                                                                              String description,
+                                                                                                                              Icon icon) {
+        service.getEnvironments().registerEnvironment(id, null, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
     }
 
     /**

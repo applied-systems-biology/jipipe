@@ -21,10 +21,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -60,20 +58,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public RPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-    }
-
-    public static JIPipeEnvironmentReference<REnvironment> getEnvironment(JIPipeProject project, OptionalREnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(REnvironment.class)
-                .application(RPluginApplicationSettings.getInstance().getReadOnlyEnvironment());
-
-        if (project != null) {
-            selector.project(project.getSettingsSheet(RPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-
-        return selector.select();
     }
 
     @Override
@@ -120,23 +104,15 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        RPluginApplicationSettings extensionSettings = new RPluginApplicationSettings();
 
-        registerEnvironment(REnvironment.class,
-                REnvironment.List.class,
-                extensionSettings,
-                REnvironment.ENVIRONMENT_ID,
-                "R environment",
-                "A R environment",
-                JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));
-        registerParameterType("optional-r-environment",
+        registerArtifactEnvironment(REnvironment.ENVIRONMENT_ID,
+                "org.r.*",
+                JIPipeEnvironmentArchetype.Managed, REnvironment.class,
                 OptionalREnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional R environment",
-                "An optional R environment",
-                null);
-
+                REnvironment.List.class,
+                "R",
+                "An R environment",
+                JIPipe.RESOURCES.getIcon16("apps/rlogo_icon.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
@@ -148,9 +124,6 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "R script",
                 "An R script",
                 null);
-        registerApplicationSettingsSheet(extensionSettings);
-        registerProjectSettingsSheet(RPluginProjectSettings.class);
-
 
         registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
         registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));

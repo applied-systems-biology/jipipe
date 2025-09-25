@@ -32,22 +32,26 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -75,7 +79,6 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         JIPipeParameterCollection.ParameterUIChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener, JIPipeSlotConfiguration.SlotConfigurationChangedEventListener {
 
     private final NodeSlotsChangedEventEmitter nodeSlotsChangedEventEmitter = new NodeSlotsChangedEventEmitter();
-
     private final BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new BaseDirectoryChangedEventEmitter();
 
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
@@ -95,8 +98,10 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private Path projectDirectory;
     private Path scratchBaseDirectory;
     private boolean bookmarked;
-
     private boolean uiLocked;
+
+    private final JIPipeGraphNodeEnvironmentOverridesParameter environmentOverrides;
+
 
     /**
      * Initializes this algorithm with a custom provided slot configuration
@@ -106,45 +111,50 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         this.info = info;
+        this.environmentOverrides = new JIPipeGraphNodeEnvironmentOverridesParameter();
+        registerSubParameter(environmentOverrides);
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
-
-            boolean created = false;
-            for (AddJIPipeInputSlot slot : getClass().getAnnotationsByType(AddJIPipeInputSlot.class)) {
-                if (slot.create()) {
-                    created = true;
-                    builder.addInputSlot(slot);
-                }
-            }
-            for (AddJIPipeOutputSlot slot : getClass().getAnnotationsByType(AddJIPipeOutputSlot.class)) {
-                if (slot.create()) {
-                    created = true;
-                    builder.addOutputSlot(slot);
-                }
-            }
-
-            if (!created) {
-                for (AddJIPipeInputSlot slot : info.getInputSlots()) {
-                    if (slot.create()) {
-                        created = true;
-                        builder.addInputSlot(slot);
-                    }
-                }
-                for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
-                    if (slot.create()) {
-                        created = true;
-                        builder.addOutputSlot(slot);
-                    }
-                }
-            }
-
+            initializeSlotsFromAnnotations(info, builder);
             builder.seal();
             slotConfiguration = builder.build();
         }
 
         this.slotConfiguration = slotConfiguration;
         slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
+        updateEnvironmentOverrides();
         updateGraphNodeSlots();
+    }
+
+    private void initializeSlotsFromAnnotations(JIPipeNodeInfo info, JIPipeDefaultMutableSlotConfiguration.Builder builder) {
+        boolean created = false;
+        for (AddJIPipeInputSlot slot : getClass().getAnnotationsByType(AddJIPipeInputSlot.class)) {
+            if (slot.create()) {
+                created = true;
+                builder.addInputSlot(slot);
+            }
+        }
+        for (AddJIPipeOutputSlot slot : getClass().getAnnotationsByType(AddJIPipeOutputSlot.class)) {
+            if (slot.create()) {
+                created = true;
+                builder.addOutputSlot(slot);
+            }
+        }
+
+        if (!created) {
+            for (AddJIPipeInputSlot slot : info.getInputSlots()) {
+                if (slot.create()) {
+                    created = true;
+                    builder.addInputSlot(slot);
+                }
+            }
+            for (AddJIPipeOutputSlot slot : info.getOutputSlots()) {
+                if (slot.create()) {
+                    created = true;
+                    builder.addOutputSlot(slot);
+                }
+            }
+        }
     }
 
     /**
@@ -170,8 +180,28 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
         this.projectDirectory = other.projectDirectory;
+        this.environmentOverrides = new JIPipeGraphNodeEnvironmentOverridesParameter(other.environmentOverrides);
+        registerSubParameter(environmentOverrides);
+        updateEnvironmentOverrides();
         updateGraphNodeSlots();
         slotConfiguration.getSlotConfigurationChangedEventEmitter().subscribe(this);
+    }
+
+    /**
+     * Update the list of environment override parameters
+     */
+    private void updateEnvironmentOverrides() {
+        for (Class<? extends JIPipeEnvironment> environmentType : getRegisteredEnvironmentTypes()) {
+            // Register parameter
+            JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentType);
+            if(!environmentOverrides.containsKey(environmentInfo.getId())) {
+                environmentOverrides.addParameter(environmentInfo.getId(),
+                        environmentInfo.getOptionalEnvironmentClass(),
+                        environmentInfo.getName(),
+                        "Allows to override the " + environmentInfo.getName() + " environment. " +
+                                environmentInfo.getDescription());
+            }
+        }
     }
 
     public NodeSlotsChangedEventEmitter getNodeSlotsChangedEventEmitter() {
@@ -1114,10 +1144,16 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     /**
      * Gathers all known external environments
      *
-     * @param target the list where the external environments will be gathered
+     * @param target             the list where the external environments will be gathered
+     * @param configurationCache the cache for the environment configurations
      */
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-
+    public void getEnvironmentDependencies(List<JIPipeEnvironmentConfigurator<?>> target, JIPipeEnvironmentConfigurationCache configurationCache) {
+        for (Class<? extends JIPipeEnvironment> environmentType : getRegisteredEnvironmentTypes()) {
+            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> reference = getEnvironmentConfigurator(environmentType, configurationCache);
+            if(reference != null) {
+                target.add(reference);
+            }
+        }
     }
 
     /**
@@ -1323,6 +1359,82 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @param canvasUI the canvas where the node was added.
      */
     public void uiAfterAddToCanvas(JIPipeDesktopGraphCanvasUI canvasUI) {
+    }
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        reportEnvironmentValidity(reportContext, reportSettings, report, progressInfo);
+    }
+
+    /**
+     * Checks if all registered environments are available
+     *
+     * @param reportContext  the report context
+     * @param reportSettings report settings
+     * @param report         the report
+     * @param progressInfo the progress info
+     */
+    public void reportEnvironmentValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
+        for (Class<? extends JIPipeEnvironment> environmentType : getRegisteredEnvironmentTypes()) {
+            JIPipeEnvironmentConfigurator<? extends JIPipeEnvironment> environmentConfigurator = getEnvironmentConfigurator(environmentType, configurationCache);
+            if(!environmentConfigurator.generateValidityReport(reportContext, reportSettings, progressInfo).isValid()) {
+                JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentType);
+                reportContext.error().title(environmentInfo.getName() + " environment not configured").explanation("The environment '" + environmentInfo.getId() + "' is not properly configured for the current node.")
+                        .solution("Check if the node's environment overrides the " + environmentInfo.getName() + " environment and is correctly configured. Otherwise, check the project and application settings for the respective environment configuration.").report(report);
+            }
+        }
+    }
+
+    /**
+     * Returns the set of utilized environment types within this node
+     * @return the unmodifiable set
+     */
+    public Set<Class<? extends JIPipeEnvironment>> getRegisteredEnvironmentTypes() {
+        return Collections.unmodifiableSet(getInfo().getEnvironments());
+    }
+
+    /**
+     * Returns the environment reference for the environment class
+     * @param klass the environment class
+     * @return the environment reference
+     * @param <T> the environment type
+     */
+    public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
+        if(!getRegisteredEnvironmentTypes().contains(klass)) {
+            throw new IllegalArgumentException("The node " + getDisplayName() + " (" + getInfo().getId() + ") tried to utilize an environment of type " + klass + " without prior registration. Please inform the developer of this node about this issue.");
+        }
+        return new JIPipeEnvironmentConfigurator<>(klass, this, getProject(), configurationCache);
+    }
+
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param configurationCache the environment cache
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
+    }
+
+    /**
+     * Gets a fully configured environment
+     * @param klass the environment class
+     * @param runContext the run context (contains an environment cache)
+     * @param progressInfo the progress info
+     * @return the environment
+     * @param <T> the environment class
+     */
+    public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        return getEnvironmentConfigurator(klass, runContext.getEnvironmentConfigurationCache()).get(progressInfo);
+    }
+
+    @SetJIPipeDocumentation(name = "Override connected services", description = "Allows to configure service connectors for this specific node")
+    @JIPipeParameter(value = "jipipe:environment-overrides", persistence = JIPipeParameterSerializationMode.Object, icon = "actions/environment.png")
+    public JIPipeGraphNodeEnvironmentOverridesParameter getEnvironmentOverrides() {
+        return environmentOverrides;
     }
 
     public interface NodeSlotsChangedEventListener {

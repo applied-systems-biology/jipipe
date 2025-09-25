@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectAuthorsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
 
 /**
  * Metadata for a {@link JIPipeProject}

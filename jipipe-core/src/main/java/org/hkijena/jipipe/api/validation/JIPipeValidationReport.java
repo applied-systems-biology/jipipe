@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.validation;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 import java.util.ArrayList;
 
 /**
@@ -42,11 +44,12 @@ public class JIPipeValidationReport extends ArrayList<JIPipeValidationReportEntr
     /**
      * Reports a {@link JIPipeValidatable} into this report
      *
-     * @param context     the context
-     * @param validatable the validatable
+     * @param context      the context
+     * @param validatable  the validatable
+     * @param progressInfo the progress info
      */
-    public void report(JIPipeValidationReportContext context, JIPipeValidatable validatable) {
-        validatable.reportValidity(context, JIPipeValidationReportSettings.DEFAULT, this);
+    public void report(JIPipeValidationReportContext context, JIPipeValidatable validatable, JIPipeProgressInfo progressInfo) {
+        validatable.reportValidity(context, JIPipeValidationReportSettings.DEFAULT, this, progressInfo);
     }
 
     /**

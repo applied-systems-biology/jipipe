@@ -18,26 +18,19 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonPluginAdapterApplicationSettings;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.python.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.plugins.python.installers.SelectVirtualEnvPythonInstaller;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -55,27 +48,6 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public CorePythonPlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-    }
-
-    public static JIPipeEnvironmentReference<PythonEnvironment> getEnvironment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
-                .application(PythonPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        return selector.select();
-    }
-
-    public static JIPipeEnvironmentReference<JIPipePythonAdapterLibraryEnvironment> getAdapterEnvironment(JIPipeProject project) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(JIPipePythonAdapterLibraryEnvironment.class)
-                .application(JIPipePythonPluginAdapterApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (project != null) {
-            selector.project(project.getSettingsSheet(PythonPluginProjectSettings.class).getProjectPythonAdapterLibraryEnvironment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -105,56 +77,34 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        PythonPluginApplicationSettings settings = new PythonPluginApplicationSettings();
-        JIPipePythonPluginAdapterApplicationSettings adapterExtensionSettings = new JIPipePythonPluginAdapterApplicationSettings();
-
-        registerEnvironment(PythonEnvironment.class,
+        registerArtifactEnvironment(PythonEnvironment.ENVIRONMENT_ID,
+                "org.python.*",
+                JIPipeEnvironmentArchetype.Managed, PythonEnvironment.class,
+                OptionalPythonEnvironment.class,
                 PythonEnvironment.List.class,
-                settings,
-                PythonEnvironment.ENVIRONMENT_ID,
-                "Python environment",
+                "Python",
                 "A Python environment",
                 JIPipe.RESOURCES.getIcon16("apps/python.png"));
-        registerParameterType("optional-python-environment",
-                OptionalPythonEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional Python environment",
-                "An optional Python environment",
-                null);
 
         // JIPipe Python adapter
-        registerEnvironment(JIPipePythonAdapterLibraryEnvironment.class,
+        registerArtifactEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
+                "org.hkijena.jipipe-python-adapter:*",
+                JIPipeEnvironmentArchetype.Managed, JIPipePythonAdapterLibraryEnvironment.class,
+                OptionalJIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironment.List.class,
-                settings,
-                JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 "JIPipe Python adapter library",
                 "Additional library for Python",
                 JIPipe.RESOURCES.getIcon16("actions/plugins.png"));
-        registerParameterType("optional-" + JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
-                OptionalJIPipePythonAdapterLibraryEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, null,
-                null,
-                "Optional JIPipe Python adapter library",
-                "An optional JIPipe Python adapter library",
-                null);
 
         registerEnumParameterType("python-environment-type",
                 PythonEnvironmentType.class,
                 "Python environment type",
                 "A Python environment type");
-        registerApplicationSettingsSheet(settings);
-        registerApplicationSettingsSheet(adapterExtensionSettings);
-        registerProjectSettingsSheet(PythonPluginProjectSettings.class);
-
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, JIPipe.RESOURCES.getIcon16("actions/project-open.png"));
     }
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/python.png"));
+        return Collections.singletonList(JIPipe.RESOURCES.getIcon32("apps/python.png"));
     }
 
     @Override

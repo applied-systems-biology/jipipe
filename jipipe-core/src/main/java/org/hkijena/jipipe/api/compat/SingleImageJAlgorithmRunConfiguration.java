@@ -153,7 +153,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable,
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (algorithm == null) {
             new APIErrorValidationReportContext().error()
                     .title("No algorithm was provided!")

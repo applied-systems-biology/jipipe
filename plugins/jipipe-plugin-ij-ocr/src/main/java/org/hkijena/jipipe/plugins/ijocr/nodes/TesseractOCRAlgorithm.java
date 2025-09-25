@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -60,6 +61,7 @@ import java.util.Objects;
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The results obtained using the TSV exporter")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "OCR")
+@RegisterJIPipeEnvironmentUsage(TesseractOCREnvironment.class)
 public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TesseractPageSegmentationMethod pageSegmentationMethod = TesseractPageSegmentationMethod.PSM11;
@@ -67,7 +69,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private DynamicStringSetParameter languages = new DynamicStringSetParameter();
     private OptionalJIPipeExpressionParameter overrideDPI = new OptionalJIPipeExpressionParameter(false, "300");
     private OptionalJIPipeExpressionParameter overrideCharAllowList = new OptionalJIPipeExpressionParameter(false, "\"0123456789-\"");
-    private OptionalTesseractOCREnvironment overrideTesseractOCREnvironment = new OptionalTesseractOCREnvironment();
 
     public TesseractOCRAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -82,11 +83,12 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.languages = new DynamicStringSetParameter(other.languages);
         this.overrideDPI = new OptionalJIPipeExpressionParameter(other.overrideDPI);
         this.overrideCharAllowList = new OptionalJIPipeExpressionParameter(other.overrideCharAllowList);
-        this.overrideTesseractOCREnvironment = new OptionalTesseractOCREnvironment(other.overrideTesseractOCREnvironment);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        TesseractOCREnvironment environment = getEnvironment(TesseractOCREnvironment.class, runContext, progressInfo);
 
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
 
@@ -95,7 +97,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         int dpi = overrideDPI.isEnabled() ? overrideDPI.getContent().evaluateToInteger(variablesMap) : 0;
         String allowedChars = overrideCharAllowList.isEnabled() ? overrideCharAllowList.getContent().evaluateToString(variablesMap) : null;
-        TesseractOCREnvironment tesseractOCREnvironment = getConfiguredTesseractOCREnvironment().getEnvironment();
         String languagesString = String.join("+", languages.getValues());
         if (StringUtils.isNullOrEmpty(languagesString)) {
             progressInfo.log("INFO: no language selected. Defaulting to eng");
@@ -135,7 +136,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 args.add("tessedit_char_whitelist=" + allowedChars);
             }
 
-            tesseractOCREnvironment.runExecutable(args, Collections.emptyMap(), false, sliceProcess);
+            environment.runExecutable(args, Collections.emptyMap(), false, sliceProcess);
 
             // Find the TSV file
             Path tsvFile = PathUtils.findFileByExtensionIn(tmpPath, ".tsv");
@@ -159,32 +160,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
-    }
-
-    public JIPipeEnvironmentReference<TesseractOCREnvironment> getConfiguredTesseractOCREnvironment() {
-        JIPipeGraphNode node = this;
-        JIPipeProject project = node.getRuntimeProject();
-        if (project == null) {
-            project = node.getParentGraph().getProject();
-        }
-        return OCRPlugin.getTesseractOCREnvironment(project, getOverrideTesseractOCREnvironment(), this);
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredTesseractOCREnvironment());
-    }
-
-    @SetJIPipeDocumentation(name = "Override Tesseract OCR environment", description = "Allows to override the Tesseract OCR environment")
-    @JIPipeParameter("override-environment")
-    public OptionalTesseractOCREnvironment getOverrideTesseractOCREnvironment() {
-        return overrideTesseractOCREnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideTesseractOCREnvironment(OptionalTesseractOCREnvironment overrideTesseractOCREnvironment) {
-        this.overrideTesseractOCREnvironment = overrideTesseractOCREnvironment;
     }
 
     @SetJIPipeDocumentation(name = "Page segmentation method", description = "By default Tesseract expects a page of text when it segments an image. " +

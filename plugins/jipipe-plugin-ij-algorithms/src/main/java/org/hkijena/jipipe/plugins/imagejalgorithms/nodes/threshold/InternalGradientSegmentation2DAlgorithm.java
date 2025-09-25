@@ -292,9 +292,9 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding);
-        report.report(new ParameterValidationReportContext(this, "CLAHE", "clahe-enhancing"), contrastEnhancer);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(this, "Auto thresholding", "auto-thresholding"), autoThresholding, progressInfo);
+        report.report(new ParameterValidationReportContext(this, "CLAHE", "clahe-enhancing"), contrastEnhancer, progressInfo);
     }
 }

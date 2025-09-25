@@ -19,12 +19,9 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -70,18 +67,6 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(OMEROPlugin.class, "org/hkijena/jipipe/plugins/omero");
 
     public OMEROPlugin() {
-    }
-
-    public static JIPipeEnvironmentReference<OMEROCredentialsEnvironment> getEnvironment(JIPipeProject project, OptionalOMEROCredentialsEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(OMEROCredentialsEnvironment.class)
-                .application(OMEROPluginApplicationSettings.getInstance().getDefaultCredentials());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(OMEROPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -214,20 +199,12 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        OMEROPluginApplicationSettings omeroSettings = new OMEROPluginApplicationSettings();
-        registerApplicationSettingsSheet(omeroSettings);
-        registerEnvironment(OMEROCredentialsEnvironment.class,
+        registerEnvironment("omero-credentials", JIPipeEnvironmentArchetype.Managed, OMEROCredentialsEnvironment.class,
+                OptionalOMEROCredentialsEnvironment.class,
                 OMEROCredentialsEnvironment.List.class,
-                omeroSettings,
-                "omero-credentials",
-                "OMERO Credentials",
+                "OMERO credentials",
                 "Credentials for an OMERO server",
                 RESOURCES.getIcon16("omero.png"));
-        registerParameterType("optional-omero-credentials",
-                OptionalOMEROCredentialsEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, "Optimal OMERO credentials",
-                "Optional OMERO credentials");
-        registerProjectSettingsSheet(OMEROPluginProjectSettings.class);
 
         // Data types
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, RESOURCES.getIcon16URL("omero-group.png"));

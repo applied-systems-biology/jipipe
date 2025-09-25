@@ -298,17 +298,13 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. " +
             "This node merges all data of all inputs into one batch. Here you can determine how annotations and data annotations are copied to the output.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true, icon = "actions/package.png")
     public JIPipeSingleIterationAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
     @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true, icon = "actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
         return adaptiveParameterSettings;
     }

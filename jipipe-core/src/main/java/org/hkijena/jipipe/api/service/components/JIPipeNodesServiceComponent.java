@@ -17,6 +17,7 @@ import com.google.common.collect.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -258,9 +259,9 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (JIPipeNodeRegistrationTask task : registrationTasks) {
-            report.report(reportContext, task);
+            report.report(reportContext, task, progressInfo);
         }
     }
 

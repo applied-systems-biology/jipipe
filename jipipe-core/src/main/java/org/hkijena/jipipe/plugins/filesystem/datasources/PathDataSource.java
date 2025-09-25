@@ -128,7 +128,7 @@ public class PathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (needsToExist && (path == null || !Files.exists(getAbsolutePath()))) {
             report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
                     reportContext,

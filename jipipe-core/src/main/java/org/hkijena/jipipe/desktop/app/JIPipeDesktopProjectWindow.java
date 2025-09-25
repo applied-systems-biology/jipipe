@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.desktop.app;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import net.imagej.updater.UpdateSite;
 import net.java.balloontip.BalloonTip;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
@@ -43,9 +42,9 @@ import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventEmitter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeProjectDefaultsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;

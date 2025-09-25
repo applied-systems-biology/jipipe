@@ -129,7 +129,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * @param <T>   the settings class
      * @return the settings instance.
      */
-    public <T extends JIPipeSettingsSheet> T getByType(Class<T> klass) {
+    public <T extends JIPipeApplicationSettingsSheet> T getByType(Class<T> klass) {
         JIPipeApplicationSettingsSheet sheet = registeredSheetsByType.getOrDefault(klass, null);
         if (sheet != null) {
             return (T) sheet;

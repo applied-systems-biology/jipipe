@@ -133,9 +133,9 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(reportContext.parameter(this, "Plot parameters", "plot-parameters"), plotTypeParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(reportContext.parameter(this, "Plot parameters", "plot-parameters"), plotTypeParameters, progressInfo);
     }
 
     private void updateColumnAssignment() {

@@ -18,8 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
@@ -34,14 +33,13 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -50,14 +48,14 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Python script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm implements PythonEnvironmentAccessNode {
+@RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
+public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
 
     /**
@@ -81,7 +79,6 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.suppressLogs = other.suppressLogs;
         registerSubParameter(scriptParameters);
     }
@@ -98,18 +95,6 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.python.*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
             "Can be used to limit memory consumption of JIPipe if larger data sets are used.")
     @JIPipeParameter("suppress-logs")
@@ -123,27 +108,21 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
     }
 
     @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredPythonEnvironment());
-        target.add(getConfiguredPythonAdapterEnvironment());
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-        if (!isPassThrough()) {
-            reportConfiguredPythonEnvironmentValidity(reportContext, report);
-        }
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
+        // Get the environments
+        JIPipePythonAdapterLibraryEnvironment adapterLibraryEnvironment = getEnvironment(JIPipePythonAdapterLibraryEnvironment.class, runContext, progressInfo);
+        PythonEnvironment pythonEnvironment = getEnvironment(PythonEnvironment.class, runContext, progressInfo);
+
         // Install the adapter that provides the JIPipe API
-        PythonUtils.installAdapterCodeIfNeeded((JIPipePythonAdapterLibraryEnvironment) getConfiguredPythonAdapterEnvironment().getEnvironment(), code);
+        PythonUtils.installAdapterCodeIfNeeded(adapterLibraryEnvironment, code);
 
         // Add user variables
         PythonUtils.parametersToPython(code, scriptParameters);
@@ -167,7 +146,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
 
         // Run code
         PythonUtils.runPython(code.toString(),
-                getConfiguredPythonEnvironment().getEnvironment(),
+               pythonEnvironment,
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

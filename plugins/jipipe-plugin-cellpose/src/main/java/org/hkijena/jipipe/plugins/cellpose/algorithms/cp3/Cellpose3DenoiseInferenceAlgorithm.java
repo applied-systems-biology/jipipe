@@ -22,8 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -38,6 +37,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeImageInfo;
@@ -47,7 +48,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
@@ -71,7 +71,8 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x image restoration model'.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlgorithm implements Cellpose3EnvironmentAccessNode {
+@RegisterJIPipeEnvironmentUsage(Cellpose3Environment.class)
+public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private final Cellpose2GPUSettings gpuSettings;
     private final Cellpose2ChannelSettings channelSettings;
@@ -80,7 +81,6 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
     private boolean enable3DDenoising = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private boolean suppressLogs = false;
     private boolean enableMultiChannel = true;
 
@@ -103,19 +103,12 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
 
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalTextAnnotationNameParameter(other.diameterAnnotation);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DDenoising = other.enable3DDenoising;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.enableMultiChannel = other.enableMultiChannel;
 
         registerSubParameter(gpuSettings);
         registerSubParameter(channelSettings);
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredCellposeEnvironment());
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
@@ -142,29 +135,17 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         this.enable3DDenoising = enable3DDenoising;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose 3.x is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose 3", allowArtifact = true, artifactFilters = {"com.github.mouseland.cellpose3:*"})
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredCellposeEnvironmentValidity(reportContext, report);
-        }
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose3Environment environment = getEnvironment(Cellpose3Environment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -183,7 +164,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         for (int i = 0; i < modelInfos.size(); i++) {
             CellposeModelInfo modelInfo = modelInfos.get(i);
             JIPipeProgressInfo modelProgress = progressInfo.resolve("Model", i, modelInfos.size());
-            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, iterationStep, modelProgress);
+            processModel(PathUtils.createTempSubDirectory(workDirectory, "run"), modelInfo, environment, iterationStep, modelProgress);
         }
 
         // Cleanup
@@ -192,7 +173,8 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         }
     }
 
-    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, CellposeModelInfo modelInfo, Cellpose3Environment environment, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+
         // We need a 2D and a 3D branch due to incompatibilities on the side of Cellpose
         final Path io2DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-2d");
         final Path io3DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-3d");
@@ -209,10 +191,10 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
 
         // Run Cellpose
         if (!runWith2D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
+            runCellpose(environment, progressInfo.resolve("Cellpose"), io2DPath, false, modelInfo.getModelNameOrPath());
         }
         if (!runWith3D.isEmpty()) {
-            runCellpose(progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
+            runCellpose(environment, progressInfo.resolve("Cellpose"), io3DPath, true, modelInfo.getModelNameOrPath());
         }
 
         // Deploy and run extraction script
@@ -225,7 +207,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -237,7 +219,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
-                    getConfiguredCellposeEnvironment().getEnvironment(),
+                    environment,
                     Collections.emptyList(),
                     Collections.emptyMap(),
                     suppressLogs,
@@ -272,7 +254,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         }
     }
 
-    private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
+    private void runCellpose(Cellpose3Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
         arguments.add("cellpose");
@@ -333,7 +315,7 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
         arguments.add(ioPath.toString());
 
         // Run the module
-        CellposeUtils.runCellpose(getConfiguredCellposeEnvironment().getEnvironment(),
+        CellposeUtils.runCellpose(environment,
                 arguments,
                 suppressLogs,
                 progressInfo);
@@ -388,14 +370,14 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are denoised")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }

@@ -76,9 +76,9 @@ public class DefineParametersAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(new ParameterValidationReportContext(reportContext, this, "Parameters", "parameters"), parameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(new ParameterValidationReportContext(reportContext, this, "Parameters", "parameters"), parameters, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")

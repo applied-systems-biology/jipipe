@@ -14,23 +14,26 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
+import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 
 public class JIPipeReflectionParameterCollectionContextAction implements JIPipeParameterCollectionContextAction {
     private final Object target;
     private final Method function;
-    private final URL iconURL;
-    private final SetJIPipeDocumentation documentation;
+    private final String name;
+    private final String description;
+    private final boolean highlighted;
+    private final Icon icon;
 
-    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, URL iconURL, SetJIPipeDocumentation documentation) {
+    public JIPipeReflectionParameterCollectionContextAction(Object target, Method function, String name, String description, boolean highlighted, Icon icon) {
         this.target = target;
         this.function = function;
-        this.iconURL = iconURL;
-        this.documentation = documentation;
+        this.name = name;
+        this.description = description;
+        this.highlighted = highlighted;
+        this.icon = icon;
     }
 
     public Object getTarget() {
@@ -42,13 +45,18 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
     }
 
     @Override
-    public SetJIPipeDocumentation getDocumentation() {
-        return documentation;
+    public String getName() {
+        return name;
     }
 
     @Override
-    public URL getIconURL() {
-        return iconURL;
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return icon;
     }
 
     @Override
@@ -62,5 +70,10 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public boolean isHighlighted() {
+        return highlighted;
     }
 }

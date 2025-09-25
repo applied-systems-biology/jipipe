@@ -16,33 +16,52 @@ package org.hkijena.jipipe.api.parameters;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
+import javax.swing.*;
 import java.net.URL;
 import java.util.function.Consumer;
 
 public class JIPipeDefaultParameterCollectionContextAction implements JIPipeParameterCollectionContextAction {
 
-    private final SetJIPipeDocumentation documentation;
-    private final URL iconURL;
     private final Consumer<JIPipeWorkbench> function;
+    private final String name;
+    private final String description;
+    private boolean highlighted;
+    private final Icon icon;
 
-    public JIPipeDefaultParameterCollectionContextAction(SetJIPipeDocumentation documentation, URL iconURL, Consumer<JIPipeWorkbench> function) {
-        this.documentation = documentation;
-        this.iconURL = iconURL;
+    public JIPipeDefaultParameterCollectionContextAction(Consumer<JIPipeWorkbench> function, String name, String description, boolean highlighted, Icon icon) {
         this.function = function;
-    }
-
-    @Override
-    public SetJIPipeDocumentation getDocumentation() {
-        return documentation;
-    }
-
-    @Override
-    public URL getIconURL() {
-        return iconURL;
+        this.name = name;
+        this.description = description;
+        this.highlighted = highlighted;
+        this.icon = icon;
     }
 
     @Override
     public void accept(JIPipeWorkbench workbench) {
         function.accept(workbench);
+    }
+
+    public Consumer<JIPipeWorkbench> getFunction() {
+        return function;
+    }
+
+    @Override
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public Icon getIcon() {
+        return icon;
+    }
+
+    @Override
+    public boolean isHighlighted() {
+        return highlighted;
     }
 }

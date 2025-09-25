@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -135,7 +135,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (channelReordering.size() > 1) {
             TIntSet generatedTargets = new TIntHashSet();
             IntegerAndIntegerPairParameter max = channelReordering.stream().max(Comparator.comparing(IntegerAndIntegerPairParameter::getKey)).get();
@@ -195,7 +195,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Simple reorder", description = "Allows you to input the reordering like in ImageJ.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/imagej.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "apps/imagej.png")
     public void setToExample(JIPipeWorkbench parent) {
         String reordering = JOptionPane.showInputDialog(((JIPipeDesktopWorkbench) parent).getWindow(),
                 "Please put in the list of numbers how the channels should be re-ordered. " +

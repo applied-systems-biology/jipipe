@@ -18,6 +18,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
@@ -271,12 +272,12 @@ public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPi
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        report.report(reportContext.parameter(this, "Exported parameters", "exported-parameters"), exportedParameters, progressInfo);
 
         // Only check if the graph creates a valid group output
-        report.report(reportContext, getGroupOutput());
+        report.report(reportContext, getGroupOutput(), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +

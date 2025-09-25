@@ -17,7 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -26,25 +26,21 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.dataenvironment.JIPipeDataDirectoryEnvironment;
-import org.hkijena.jipipe.plugins.dataenvironment.OptionalJIPipeDataDirectoryEnvironment;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesApplicationSettings;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageSamplesProjectSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.environments.ImageJSamplesEnvironment;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
 import java.io.FileNotFoundException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 @SetJIPipeDocumentation(name = "Import ImageJ sample image", description = "Imports a sample image from the standard set of sample images provided by ImageJ")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
+@RegisterJIPipeEnvironmentUsage(ImageJSamplesEnvironment.class)
 public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Sample sample = Sample.Blobs;
-    private OptionalJIPipeDataDirectoryEnvironment dataDirectoryEnvironment = new OptionalJIPipeDataDirectoryEnvironment();
 
     public ImportImageJSampleAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -69,7 +65,7 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        JIPipeDataDirectoryEnvironment environment = getDataDirectoryEnvironment().getEnvironment();
+        ImageJSamplesEnvironment environment = getEnvironment(ImageJSamplesEnvironment.class, runContext, progressInfo);
         Path fileName = environment.getDirectory().resolve(sample.getFileName());
         if (!Files.isRegularFile(fileName)) {
             throw new RuntimeException(new FileNotFoundException(fileName.toString()));
@@ -77,23 +73,6 @@ public class ImportImageJSampleAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         ImagePlus imagePlus = ImportImagePlusAlgorithm.readImageFrom(fileName, false, runContext, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(imagePlus), progressInfo);
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getDataDirectoryEnvironment());
-    }
-
-    public JIPipeEnvironmentReference<JIPipeDataDirectoryEnvironment> getDataDirectoryEnvironment() {
-        ImageSamplesApplicationSettings applicationSettings = ImageSamplesApplicationSettings.getInstance();
-        ImageSamplesProjectSettings settingsSheet = getProject().getSettingsSheet(ImageSamplesProjectSettings.class);
-
-        return JIPipeEnvironmentReference.defaultOptions(JIPipeDataDirectoryEnvironment.class)
-                .application(applicationSettings.getReadOnlyDefaultEnvironment())
-                .project(settingsSheet.getProjectDefaultEnvironment(), getProject())
-                .node(dataDirectoryEnvironment, this)
-                .select();
     }
 
     public enum Sample {

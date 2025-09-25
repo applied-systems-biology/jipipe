@@ -77,9 +77,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
     @SetJIPipeDocumentation(name = "Table row matching", description = "The following settings determine how rows are matched up between " +
             "the annotation table and the incoming data table.")
-    @JIPipeParameter(value = "table-merge-settings",
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/connector-orthogonal.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/connector-orthogonal.png")
+    @JIPipeParameter(value = "table-merge-settings", icon = "actions/connector-orthogonal.png")
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings getTableMergeSettings() {
         return tableMergeSettings;
     }

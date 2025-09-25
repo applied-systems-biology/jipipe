@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.actions;
 
-import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -27,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRunSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import java.util.ArrayList;
@@ -42,19 +44,21 @@ public class JIPipeDesktopPipelineGraphEditorRunManager extends JIPipeDesktopGra
     }
 
     @Override
-    protected void createValidationReport(JIPipeValidationReport report) {
-        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, getNodeUI().getNode());
+    protected void createValidationReport(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        getProject().reportValidity(new UnspecifiedValidationReportContext(), report, getNodeUI().getNode(), progressInfo);
 
         // Check environments
-        Set<JIPipeArtifactEnvironment> checkedEnvironments = new HashSet<>();
-        List<JIPipeEnvironmentReference<?>> allEnvironmentReferences = new ArrayList<>();
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
+        Set<JIPipeEnvironment> checkedEnvironments = new HashSet<>();
+        List<JIPipeEnvironmentConfigurator<?>> allEnvironmentReferences = new ArrayList<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            node.getEnvironmentDependencies(allEnvironmentReferences);
+            node.getEnvironmentDependencies(allEnvironmentReferences, configurationCache);
         }
-        for (JIPipeEnvironmentReference<?> environmentReference : allEnvironmentReferences) {
-            if (!checkedEnvironments.contains(environmentReference.getEnvironment())) {
-                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
-                checkedEnvironments.add((JIPipeArtifactEnvironment) environmentReference.getEnvironment());
+        for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
+            JIPipeEnvironment environment = environmentReference.getBaseEnvironment();
+            if (!checkedEnvironments.contains(environment)) {
+                environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo);
+                checkedEnvironments.add(environment);
             }
         }
     }

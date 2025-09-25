@@ -81,8 +81,8 @@ public class JIPipeDataDirectoryEnvironment extends JIPipeArtifactEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
         if (!isLoadFromArtifact()) {
             if (isDirectoryValid()) {
                 reportContext.error().title("Directory does not exist").explanation("You need to provide an directory").solution("Provide an directory").report(report);

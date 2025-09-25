@@ -20,6 +20,9 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.settings.application.*;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -79,6 +82,7 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeExtensionApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeNodeTemplateApplicationSettings());
         registerApplicationSettingsSheet(new JIPipeProjectAuthorsApplicationSettings());
+        registerApplicationSettingsSheet(new JIPipeDefaultEnvironmentsApplicationSettings());
 
         // UI
         registerApplicationSettingsSheet(new JIPipeGeneralUIApplicationSettings());
@@ -95,7 +99,7 @@ public class StandardSettingsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Project
         registerProjectSettingsSheet(JIPipeDataStorageProjectSettings.class);
-
+        registerProjectSettingsSheet(JIPipeDefaultEnvironmentsProjectSettings.class);
 
     }
 

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.plugins.settings.JIPipeBackupApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

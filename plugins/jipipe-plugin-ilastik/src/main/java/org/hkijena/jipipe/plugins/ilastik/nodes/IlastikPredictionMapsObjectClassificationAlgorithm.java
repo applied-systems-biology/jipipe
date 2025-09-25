@@ -25,8 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -37,16 +36,13 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
-import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentAccessNode;
-import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
+
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.utils.IlastikUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
@@ -78,7 +74,8 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "The image will be processed in independent blocks. To configure the block size and halo, use the Ilastik GUI.")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Pixel Probabilities", description = "Pixel prediction images of the pixel classification part of that workflow")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Features", description = "Table of the computed object features that were used during classification, indexed by object id")
-public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm implements IlastikEnvironmentAccessNode {
+@RegisterJIPipeEnvironmentUsage(IlastikEnvironment.class)
+public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final List<String> PROJECT_TYPES = Collections.singletonList("ObjectClassification");
 
@@ -114,8 +111,6 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
     private final OutputParameters outputParameters;
     private boolean cleanUpAfterwards = true;
     private DataAnnotationQueryExpression predictionMapsDataAnnotation = new DataAnnotationQueryExpression("\"Prediction\"");
-    private OptionalIlastikEnvironment overrideEnvironment = new OptionalIlastikEnvironment();
-
     private IlastikProjectValidationMode projectValidationMode = IlastikProjectValidationMode.CrashOnError;
 
     public IlastikPredictionMapsObjectClassificationAlgorithm(JIPipeNodeInfo info) {
@@ -129,7 +124,6 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         super(other);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.projectValidationMode = other.projectValidationMode;
-        this.overrideEnvironment = new OptionalIlastikEnvironment(other.overrideEnvironment);
         this.outputParameters = new OutputParameters(other.outputParameters);
         this.predictionMapsDataAnnotation = new DataAnnotationQueryExpression(other.predictionMapsDataAnnotation);
         registerSubParameter(outputParameters);
@@ -138,6 +132,10 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        IlastikEnvironment environment = getEnvironment(IlastikEnvironment.class, runContext, progressInfo);
+
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
 
@@ -251,7 +249,7 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
                     args.add("--segmentation_image=" + segmentedImagePath);
 
                     // Run ilastik
-                    IlastikPlugin.runIlastik(getConfiguredIlastikEnvironment().getEnvironment(),
+                    IlastikPlugin.runIlastik(environment,
                             args,
                             false, imageProgress.resolve("Run Ilastik")
                     );
@@ -304,20 +302,6 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
         }
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            report.report(reportContext, getConfiguredIlastikEnvironment().getEnvironment());
-        }
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredIlastikEnvironment());
-    }
-
     @SetJIPipeDocumentation(name = "Segmentation image data annotation", description = "The name of the data annotation that contains the segmentation image.")
     @JIPipeParameter(value = "segmentation-image-data-annotation", important = true)
     public DataAnnotationQueryExpression getPredictionMapsDataAnnotation() {
@@ -357,19 +341,6 @@ public class IlastikPredictionMapsObjectClassificationAlgorithm extends JIPipeSi
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
-    }
-
-    @SetJIPipeDocumentation(name = "Override Ilastik environment", description = "If enabled, a different Ilastik environment is used for this node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Ilastik is used.")
-    @JIPipeParameter("override-environment")
-    @ExternalEnvironmentParameterSettings(allowArtifact = true, artifactFilters = {"org.embl.ilastik:*"})
-    public OptionalIlastikEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalIlastikEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
     }
 
     @Override

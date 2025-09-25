@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.omero.OMEROCredentialAccessNode;
+
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
@@ -59,10 +59,10 @@ import java.util.*;
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Images", create = true, description = "The image(s) to upload")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Target dataset", create = true, description = "The data set where the image(s) will be stored")
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true, description = "Reference to the uploaded image(s)")
-public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm implements OMEROCredentialAccessNode {
+@RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
+public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
 
     public UploadOMEROImageToDatasetAlgorithm(JIPipeNodeInfo info) {
@@ -75,7 +75,6 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
 
     public UploadOMEROImageToDatasetAlgorithm(UploadOMEROImageToDatasetAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.fileNameGenerator = new DataExportExpressionParameter(other.fileNameGenerator);
         this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter(other.keyValuePairExporter);
         registerSubParameter(keyValuePairExporter);
@@ -114,7 +113,7 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
         tagExporter.createTags(tags, iterationStep.getMergedTextAnnotations().values());
 
         // Upload to OMERO
-        OMEROCredentialsEnvironment environment = getConfiguredOMEROCredentialsEnvironment().getEnvironment();
+        OMEROCredentialsEnvironment environment = getEnvironment(OMEROCredentialsEnvironment.class, runContext, progressInfo);
         LoginCredentials credentials = environment.toLoginCredentials();
 
         try (OMEROGateway gateway = new OMEROGateway(credentials, progressInfo)) {
@@ -136,17 +135,6 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "File name", description = "Expression that generates the file name for the OME TIFF to be uploaded. Please note that the directory will be ignored and 'unnamed' will be assumed if " +
@@ -178,17 +166,4 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
         return true;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            reportConfiguredOMEROEnvironmentValidity(reportContext, report);
-        }
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredOMEROCredentialsEnvironment());
-    }
 }

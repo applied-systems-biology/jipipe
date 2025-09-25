@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
@@ -56,7 +56,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers.Sen
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.LockNodeLocationSizeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.locking.UnlockNodeLocationSizeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.misc.CollapseIOInterfaceNodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.misc.JsonAlgorithmToGroupNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.InvertSelectionNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.select.SelectAllNodeUIContextAction;
@@ -81,8 +80,8 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalc
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -92,7 +91,6 @@ import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -131,7 +129,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         if (JIPipeGeneralUIApplicationSettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
                 for (Method method : info.getInstanceClass().getMethods()) {
-                    JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
+                    RegisterJIPipeParameterCollectionContextAction actionAnnotation = method.getAnnotation(RegisterJIPipeParameterCollectionContextAction.class);
                     if (actionAnnotation == null)
                         continue;
                     if (!actionAnnotation.showInContextMenu())
@@ -140,8 +138,9 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                     if (documentationAnnotation == null) {
                         documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
                     }
-                    URL iconURL = JIPipeResourceManager.safeResolveIcon16URL(actionAnnotation.iconURL(), actionAnnotation.iconDarkURL(), actionAnnotation.resourceClass(), "actions/configure.png");
-                    Icon icon = new ImageIcon(iconURL);
+                    ImageIcon icon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(actionAnnotation.icon(),
+                            actionAnnotation.iconResourceManager(),
+                            JIPipe.RESOURCES.getIcon16("actions/configure.png"));
 
                     NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info,
                             documentationAnnotation.name(),
@@ -182,7 +181,6 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new ClearCacheNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new IsolateNodesUIContextAction(),
-                new JsonAlgorithmToGroupNodeUIContextAction(),
                 new GroupNodeUIContextAction(),
                 new CollapseIOInterfaceNodeUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,

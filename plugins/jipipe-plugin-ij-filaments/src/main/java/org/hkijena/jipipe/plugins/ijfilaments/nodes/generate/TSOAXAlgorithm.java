@@ -14,22 +14,15 @@
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.plugins.ijfilaments.FilamentsPlugin;
-import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
-import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.settings.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -40,7 +33,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 
@@ -51,7 +43,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final TSOAXInitializationParameters initializationParameters;
     private boolean cleanUpAfterwards = true;
     private boolean splitByTrack = true;
-    private OptionalTSOAXEnvironment overrideEnvironment = new OptionalTSOAXEnvironment();
     private OptionalTextAnnotationNameParameter trackAnnotationName = new OptionalTextAnnotationNameParameter("Track", true);
 
 
@@ -69,7 +60,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.evolutionParameters = new TSOAXEvolutionParameters(other.evolutionParameters);
         this.initializationParameters = new TSOAXInitializationParameters(other.initializationParameters);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.overrideEnvironment = new OptionalTSOAXEnvironment(other.overrideEnvironment);
         this.trackAnnotationName = new OptionalTextAnnotationNameParameter(trackAnnotationName);
         this.splitByTrack = other.splitByTrack;
         registerSubParameters(convergenceParameters, evolutionParameters, initializationParameters);
@@ -138,17 +128,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.trackAnnotationName = trackAnnotationName;
     }
 
-    @SetJIPipeDocumentation(name = "Override environment", description = "If enabled, override the TSOAX environment for this node")
-    @JIPipeParameter("override-environment")
-    public OptionalTSOAXEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalTSOAXEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
             "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
     @JIPipeParameter("cleanup-afterwards")
@@ -177,39 +156,6 @@ public abstract class TSOAXAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter(value = "initialization", uiOrder = -50)
     public TSOAXInitializationParameters getInitializationParameters() {
         return initializationParameters;
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        target.add(getConfiguredTSOAXEnvironment());
-    }
-
-    /**
-     * Gets the correct OMERO environment.
-     * Adheres to the chain of overrides.
-     *
-     * @return the environment
-     */
-    public JIPipeEnvironmentReference<TSOAXEnvironment> getConfiguredTSOAXEnvironment() {
-        JIPipeGraphNode node = this;
-        JIPipeProject project = node.getRuntimeProject();
-        if (project == null) {
-            project = node.getParentGraph().getProject();
-        }
-        return FilamentsPlugin.getTSOAXEnvironment(project, getOverrideEnvironment(), node);
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!getConfiguredTSOAXEnvironment().getEnvironment().generateValidityReport(reportContext, reportSettings).isValid()) {
-            report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
-                    reportContext,
-                    "TSOAX not configured",
-                    "The TSOAX integration is not configured correctly.",
-                    "Go to the Project > Project settings/overview > Settings > Plugins > Filaments and setup an appropriate default TSOAX environment."));
-        }
     }
 
     @AddJIPipeDesktopNodeQuickAction(name = "Save TSOAX parameters *.txt", description = "Saves parameters into the TSOAX parameters file format",

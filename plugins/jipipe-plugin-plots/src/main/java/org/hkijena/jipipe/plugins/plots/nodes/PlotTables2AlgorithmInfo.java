@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.plots.nodes;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
@@ -87,6 +88,11 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     @Override
     public List<AddJIPipeOutputSlot> getOutputSlots() {
         return Collections.singletonList(new DefaultAddJIPipeOutputSlot(JFreeChartPlotData.class, "Output", "The generated plots", null, false, JIPipeDataSlotRole.Data));
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeEnvironment>> getEnvironments() {
+        return Set.of();
     }
 
     @Override

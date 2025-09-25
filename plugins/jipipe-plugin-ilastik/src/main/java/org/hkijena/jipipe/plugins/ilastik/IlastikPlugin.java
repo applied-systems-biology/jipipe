@@ -19,21 +19,13 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryInstallArtifactRun;
-import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
@@ -45,7 +37,6 @@ import org.hkijena.jipipe.plugins.ilastik.nodes.ImportIlastikHDF5ImageAlgorithm;
 import org.hkijena.jipipe.plugins.ilastik.nodes.ImportIlastikModel;
 import org.hkijena.jipipe.plugins.ilastik.parameters.IlastikProjectValidationMode;
 import org.hkijena.jipipe.plugins.ilastik.settings.IlastikPluginApplicationSettings;
-import org.hkijena.jipipe.plugins.ilastik.settings.IlastikPluginProjectSettings;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
@@ -100,51 +91,15 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environment.runExecutable(parameters, environmentVariables, detached, progressInfo);
     }
 
-    public static JIPipeEnvironmentReference<IlastikEnvironment> getEnvironment(JIPipeProject project, OptionalIlastikEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(IlastikEnvironment.class)
-                .application(IlastikPluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(IlastikPluginProjectSettings.class).getProjectDefaultEnvironment(), project);
-        }
-        return selector.select();
-    }
-
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
-        IlastikEnvironment environment = IlastikPlugin.getEnvironment(workbench.getProject(), null, null).getEnvironment();
-        if (!environment.generateValidityReport(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT).isValid()) {
-            JOptionPane.showMessageDialog(workbench.getWindow(),
-                    "Ilastik is currently not correctly installed. Please check the project/application settings and ensure that Ilastik is setup correctly.",
-                    "Launch Ilastik",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        if (environment.isLoadFromArtifact()) {
-            JIPipeArtifact artifact = JIPipe.getArtifacts().searchClosestCompatibleArtifactFromQuery(environment.getArtifactQuery().getQuery());
-            if (artifact instanceof JIPipeLocalArtifact) {
-                environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-            } else if (artifact instanceof JIPipeRemoteArtifact) {
-                if (JOptionPane.showConfirmDialog(workbench.getWindow(), "The Ilastik version " + artifact.getVersion() + " is currently not downloaded. " +
-                        "Download it now?", "Run Ilastik", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun((JIPipeRemoteArtifact) artifact);
-                    JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
-                    artifact = JIPipe.getArtifacts().queryPreferredCachedArtifact(artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion));
-                    if (artifact instanceof JIPipeLocalArtifact) {
-                        environment.applyConfigurationFromArtifact((JIPipeLocalArtifact) artifact, new JIPipeProgressInfo());
-                    } else {
-                        return;
-                    }
-                } else {
-                    return;
-                }
-            }
-        }
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
-        workbench.sendStatusBarText("Launching Ilastik ...");
-        IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
+        JIPipeEnvironmentConfigurator<IlastikEnvironment> environmentConfigurator = workbench.getEnvironmentConfigurator(IlastikEnvironment.class, new JIPipeEnvironmentConfigurationCache());
+        workbench.sendStatusBarText("Preparing Ilastik ...");
+        environmentConfigurator.showDialogAndGetLater(workbench, workbench.getWindow(), "Launch Ilastik", (environment) -> {
+            workbench.sendStatusBarText("Launching Ilastik ...");
+            IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
+        });
     }
 
     @Override
@@ -335,26 +290,18 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        IlastikPluginApplicationSettings settings = new IlastikPluginApplicationSettings();
-        registerApplicationSettingsSheet(settings);
-        registerProjectSettingsSheet(IlastikPluginProjectSettings.class);
+        registerApplicationSettingsSheet( new IlastikPluginApplicationSettings());
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URL("ilastik-model.png"));
 
-        registerEnvironment(IlastikEnvironment.class,
+        registerArtifactEnvironment("ilastik-environment",
+                "org.embl.ilastik:*",
+                JIPipeEnvironmentArchetype.Managed, IlastikEnvironment.class,
+                OptionalIlastikEnvironment.class,
                 IlastikEnvironment.List.class,
-                settings,
-                "ilastik-environment",
                 "Ilastik environment",
                 "An Ilastik environment",
                 RESOURCES.getIcon16("ilastik.png"));
-        registerParameterType("optional-ilastik-environment",
-                OptionalIlastikEnvironment.class,
-                JIPipeParameterArchetype.Value, null,
-                null,
-                "Optional Ilastik environment",
-                "An optional Ilastik environment",
-                null);
         registerEnumParameterType("ilastik-project-validation-mode",
                 IlastikProjectValidationMode.class,
                 "Ilastik project validation mode",

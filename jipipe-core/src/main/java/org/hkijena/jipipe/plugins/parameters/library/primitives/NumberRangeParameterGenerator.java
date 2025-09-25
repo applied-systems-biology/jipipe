@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.DefaultJIPipeParameterGenerator;
@@ -40,7 +41,7 @@ public class NumberRangeParameterGenerator extends DefaultJIPipeParameterGenerat
     private double stepSize = 1;
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (minNumber <= maxNumber) {
             if (stepSize <= 0) {
                 reportContext.error().title("Invalid step size!").explanation("The step size cannot be zero or negative.").solution("Please ensure that the step size is greater than zero.").details(JsonUtils.toPrettyJsonString(this)).report(report);

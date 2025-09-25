@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.settings;
 
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 
 import javax.swing.*;
 
@@ -37,5 +38,10 @@ public abstract class JIPipeDefaultProjectSettingsSheet extends AbstractJIPipePa
     @Override
     public String getCategory() {
         return getDefaultCategory().getCategory();
+    }
+
+    @Override
+    public void initialize(JIPipeProject project) {
+
     }
 }

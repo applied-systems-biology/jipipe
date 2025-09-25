@@ -25,8 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -40,7 +39,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.plugins.cellpose.Cellpose2PluginApplicationSettings;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -91,6 +91,7 @@ import java.util.stream.Collectors;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
+@RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
 public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private CellposeSegmentationModelSettings_Old segmentationModelSettings = new CellposeSegmentationModelSettings_Old();
@@ -102,7 +103,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     private boolean enable3DSegmentation = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
     private boolean cleanUpAfterwards = true;
-    private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
     public Cellpose1InferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -124,7 +124,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.SegmentationPerformanceSettings_Old = new CellposeSegmentationPerformanceSettings_Old(other.SegmentationPerformanceSettings_Old);
         this.segmentationEnhancementSettings = new CellposeSegmentationEnhancementSettings_Old(other.segmentationEnhancementSettings);
         this.SegmentationThresholdSettings_Old = new CellposeSegmentationThresholdSettings_Old(other.SegmentationThresholdSettings_Old);
-        this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
@@ -171,18 +170,6 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         this.enable3DSegmentation = enable3DSegmentation;
     }
 
-    @SetJIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
-    @JIPipeParameter("override-environment")
-    public OptionalPythonEnvironment getOverrideEnvironment() {
-        return overrideEnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideEnvironment(OptionalPythonEnvironment overrideEnvironment) {
-        this.overrideEnvironment = overrideEnvironment;
-    }
-
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
         super.onParameterChanged(event);
@@ -216,29 +203,15 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        super.reportValidity(reportContext, reportSettings, report);
-        if (!isPassThrough()) {
-            if (overrideEnvironment.isEnabled()) {
-                report.report(reportContext, overrideEnvironment.getContent());
-            } else {
-                Cellpose2PluginApplicationSettings.checkPythonSettings(reportContext, report);
-            }
-        }
-    }
-
-    @Override
-    public void getEnvironmentDependencies(List<JIPipeEnvironmentReference<?>> target) {
-        super.getEnvironmentDependencies(target);
-        if (overrideEnvironment.isEnabled()) {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(overrideEnvironment.getContent(), JIPipeEnvironmentReference.SourceType.Node, this));
-        } else {
-            target.add(new JIPipeEnvironmentReference<JIPipeEnvironment>(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), JIPipeEnvironmentReference.SourceType.Application, null));
-        }
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        Cellpose2Environment environment = getEnvironment(Cellpose2Environment.class, runContext, progressInfo);
 
         ImmutableList<Integer> inputRowList = ImmutableList.copyOf(iterationStep.getInputRows("Input"));
         Path workDirectory = getNewScratch();
@@ -401,8 +374,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
 
         // Run script
-        PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment(), Collections.emptyList(), false, progressInfo);
+        PythonUtils.runPython(code.toString(), environment, Collections.emptyList(), false, progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {
@@ -574,31 +546,31 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Model", description = "The following settings are related to the model.")
-    @JIPipeParameter(value = "model-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "model-parameters", icon = "apps/cellpose.png")
     public CellposeSegmentationModelSettings_Old getModelParameters() {
         return segmentationModelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
-    @JIPipeParameter(value = "performance-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "performance-parameters", collapsed = true, icon = "apps/cellpose.png")
     public CellposeSegmentationPerformanceSettings_Old getPerformanceParameters() {
         return SegmentationPerformanceSettings_Old;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
-    @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "enhancement-parameters", icon = "apps/cellpose.png")
     public CellposeSegmentationEnhancementSettings_Old getEnhancementParameters() {
         return segmentationEnhancementSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "threshold-parameters", icon = "apps/cellpose.png")
     public CellposeSegmentationThresholdSettings_Old getThresholdParameters() {
         return SegmentationThresholdSettings_Old;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, icon = "apps/cellpose.png")
     public CellposeSegmentationOutputSettings_Old getOutputParameters() {
         return outputParameters;
     }

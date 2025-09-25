@@ -480,18 +480,14 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true, icon = "actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
         return adaptiveParameterSettings;
     }
 
     @SetJIPipeDocumentation(name = "Input management", description = "This algorithm can have multiple inputs. This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
+    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true, icon = "actions/package.png")
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;
     }

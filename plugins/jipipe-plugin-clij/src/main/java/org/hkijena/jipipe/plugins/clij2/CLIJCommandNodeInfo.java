@@ -24,6 +24,7 @@ import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -300,6 +301,11 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public List<AddJIPipeOutputSlot> getOutputSlots() {
         return outputSlots;
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeEnvironment>> getEnvironments() {
+        return Set.of();
     }
 
     @Override

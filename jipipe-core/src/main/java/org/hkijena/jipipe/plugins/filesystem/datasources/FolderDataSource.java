@@ -182,7 +182,7 @@ public class FolderDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (needsToExist && (folderPath == null || !Files.isDirectory(getAbsoluteFolderPath()))) {
             reportContext.warning().title("Input folder does not exist!").explanation("The folder '" + getAbsoluteFolderPath() + "' does not exist.").solution("Please provide a valid input folder.").report(report);
         }

@@ -79,6 +79,7 @@ public class JIPipeServiceNoImageJInitializer extends JIPipeServiceInitializer {
         // Create settings for default importers
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
+        createDefaultEnvironmentSettings();
 
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();

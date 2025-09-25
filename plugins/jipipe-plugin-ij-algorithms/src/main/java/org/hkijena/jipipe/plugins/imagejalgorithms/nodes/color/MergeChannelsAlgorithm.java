@@ -251,7 +251,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         Set<ChannelColor> existing = new HashSet<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
             ChannelColor color = entry.getValue().get(ChannelColor.class);

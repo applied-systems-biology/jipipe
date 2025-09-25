@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -26,6 +27,8 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -35,10 +38,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * {@link JIPipeNodeInfo} for an algorithm that is defined in Java code
@@ -62,6 +62,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setMenuPath(getMenuPathOf(nodeClass));
         setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
         setAliases(getAliasesOf(nodeClass));
+        setEnvironments(getEnvironmentsOf(nodeClass));
         if (nodeClass.getAnnotation(LabelAsJIPipeHidden.class) != null) {
             setHidden(true);
         }
@@ -74,6 +75,14 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
             getAdditionalCitations().add(citation.value());
         }
         initializeSlots();
+    }
+
+    public static Set<Class<? extends JIPipeEnvironment>> getEnvironmentsOf(Class<? extends JIPipeGraphNode> nodeClass) {
+        Set<Class<? extends JIPipeEnvironment>> result = new HashSet<>();
+        for (RegisterJIPipeEnvironmentUsage annotation : ReflectionUtils.getAllAnnotations(nodeClass, RegisterJIPipeEnvironmentUsage.class)) {
+            result.add(annotation.value());
+        }
+        return result;
     }
 
     /**

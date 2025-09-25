@@ -19,10 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
@@ -48,9 +45,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.process.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.split.SplitFilamentsIntoCyclesAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
-import org.hkijena.jipipe.plugins.ijfilaments.settings.FilamentsPluginProjectSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.settings.ImageViewerUIFilamentDisplayApplicationSettings;
-import org.hkijena.jipipe.plugins.ijfilaments.settings.TSOAXApplicationSettings;
 import org.hkijena.jipipe.plugins.ijfilaments.viewers.Filaments3DGraphDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
@@ -82,18 +77,6 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(FilamentsPlugin.class, "org/hkijena/jipipe/plugins/ijfilaments");
 
     public FilamentsPlugin() {
-    }
-
-    public static JIPipeEnvironmentReference<TSOAXEnvironment> getTSOAXEnvironment(JIPipeProject project, OptionalTSOAXEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(TSOAXEnvironment.class)
-                .application(TSOAXApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(FilamentsPluginProjectSettings.class).getProjectDefaultTSOAXEnvironment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -145,23 +128,17 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        TSOAXApplicationSettings tsoaxApplicationSettings = new TSOAXApplicationSettings();
-        registerEnvironment(TSOAXEnvironment.class,
+        registerArtifactEnvironment("tsoax",
+                "com.github.tix209.tsoax:*",
+                JIPipeEnvironmentArchetype.Managed, TSOAXEnvironment.class,
+                OptionalTSOAXEnvironment.class,
                 TSOAXEnvironment.List.class,
-                tsoaxApplicationSettings,
-                "tsoax-environment",
-                "TSOAX Environment",
+                "TSOAX",
                 "Installation of TSOAX",
                 RESOURCES.getIcon16("tsoax.png"));
-        registerParameterType("optional-tsoax-environment",
-                OptionalTSOAXEnvironment.class,
-                JIPipeParameterArchetype.OptionalValue, "Optional TSOAX Environment",
-                "Installation of TSOAX");
 
         registerNodeTypeCategory(new FilamentsNodeTypeCategory());
         registerApplicationSettingsSheet(new ImageViewerUIFilamentDisplayApplicationSettings());
-        registerApplicationSettingsSheet(tsoaxApplicationSettings);
-        registerProjectSettingsSheet(FilamentsPluginProjectSettings.class);
 
         registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URL("data-type-filaments.png"));
         registerDatatypeConversion(new FilamentsToRoiDataTypeConverter());

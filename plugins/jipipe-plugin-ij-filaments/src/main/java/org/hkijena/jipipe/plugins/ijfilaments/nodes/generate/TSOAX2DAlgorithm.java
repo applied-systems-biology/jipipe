@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -61,6 +62,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", description = "The image to be analyzed", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Filaments", description = "The snakes extracted as filaments", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Snakes", description = "The snakes extracted as table", create = true)
+@RegisterJIPipeEnvironmentUsage(TSOAXEnvironment.class)
 public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
 
     private OptionalTextAnnotationNameParameter zAnnotationName = new OptionalTextAnnotationNameParameter("Z", true);
@@ -76,6 +78,10 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+
+        // Get environment
+        TSOAXEnvironment environment = getEnvironment(TSOAXEnvironment.class, runContext, progressInfo);
+
         ImagePlus img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         if (img.getType() == ImagePlus.GRAY32) {
             progressInfo.log("Received 32-bit image, which is not supported. Converting to 16-bit.");
@@ -124,7 +130,6 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
             args.add(parameterFile.toString());
 
             // Run TSOAX
-            TSOAXEnvironment environment = getConfiguredTSOAXEnvironment().getEnvironment();
             Map<String, String> environmentVariables = new HashMap<>();
             environmentVariables.put("LANG", "en_US.UTF-8");
             environmentVariables.put("LC_ALL", "en_US.UTF-8");

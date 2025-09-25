@@ -20,10 +20,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 import org.scijava.Disposable;
@@ -727,6 +724,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
         private final Color backgroundColor;
         private final Color borderColor;
         private JPanel titlePanel;
+        private boolean collapsed;
 
         /**
          * @param text      the text
@@ -773,7 +771,9 @@ public class JIPipeDesktopFormPanel extends JPanel {
             int y = marginTop;
             int w = getWidth() - x - 1;
             int h = getHeight() - y - 1 - 8;
-            g2.fillRoundRect(x, y, w, h, 4, 4);
+            if(!collapsed) {
+                g2.fillRoundRect(x, y, w, h, 4, 4);
+            }
             g2.setColor(borderColor);
             g2.drawRoundRect(x, y, w, h, 4, 4);
         }
@@ -783,8 +783,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
          *
          * @param component the component
          */
-        public void addToTitlePanel(Component component) {
+        public void addToEndOfTitlePanel(Component component) {
             titlePanel.add(component);
+        }
+
+
+        public void addToStartOfTitlePanel(Component component) {
+            titlePanel.add(component, 0);
         }
 
         public void addDescriptionRow(String text) {
@@ -799,7 +804,16 @@ public class JIPipeDesktopFormPanel extends JPanel {
             JButton helpButton = new JButton("Info", JIPipe.RESOURCES.getIcon16("actions/help.png"));
             UIUtils.addBalloonToComponent(helpButton, text);
             helpButton.setOpaque(false);
-            addToTitlePanel(helpButton);
+            addToEndOfTitlePanel(helpButton);
+        }
+
+        public void setCollapsed(boolean collapsed) {
+            this.collapsed = collapsed;
+            repaint(50);
+        }
+
+        public boolean isCollapsed() {
+            return collapsed;
         }
     }
 

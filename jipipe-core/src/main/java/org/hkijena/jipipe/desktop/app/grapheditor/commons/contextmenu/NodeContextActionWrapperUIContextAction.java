@@ -82,5 +82,4 @@ public class NodeContextActionWrapperUIContextAction implements NodeUIContextAct
     public Method getMethod() {
         return method;
     }
-
 }

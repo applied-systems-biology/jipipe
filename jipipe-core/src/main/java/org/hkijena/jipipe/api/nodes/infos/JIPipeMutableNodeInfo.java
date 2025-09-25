@@ -15,11 +15,14 @@ package org.hkijena.jipipe.api.nodes.infos;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Instantiates {@link JIPipeGraphNode} instances
@@ -33,6 +36,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private JIPipeNodeTypeCategory category;
     private List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private Set<Class<? extends JIPipeEnvironment>> environments = new HashSet<>();
     private String menuPath;
 
     private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
@@ -208,5 +212,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setDeprecated(boolean deprecated) {
         this.deprecated = deprecated;
+    }
+
+    @Override
+    public Set<Class<? extends JIPipeEnvironment>> getEnvironments() {
+        return environments;
+    }
+
+    public void setEnvironments(Set<Class<? extends JIPipeEnvironment>> environments) {
+        this.environments = environments;
     }
 }

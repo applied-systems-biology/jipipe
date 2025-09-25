@@ -178,7 +178,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
                         inserterCommitted = false;
                     }
                 });
-                groupHeader.addToTitlePanel(addParameterButton);
+                groupHeader.addToEndOfTitlePanel(addParameterButton);
             }
             for (int i = 0; i < function.getMinimumArgumentCount(); i++) {
                 ParameterInfo info = function.getParameterInfo(i);

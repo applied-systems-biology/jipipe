@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.JIPipeDefaultResourceManagerSupplier;
 import org.scijava.Priority;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 
 /**
  * Annotates a getter or setter function as parameter.
@@ -81,25 +83,16 @@ public @interface JIPipeParameter {
     boolean hidden() default false;
 
     /**
-     * The icon resource URL (optional). Only used if this a is sub-parameter
-     *
-     * @return icon resource URL or empty
+     * The 16x16 icon name within JIPipe's the icon resource manager's database
+     * @return the icon
      */
-    String iconURL() default "";
+    String icon() default "";
 
     /**
-     * The icon resource URL (optional). Only used if this a is sub-parameter
-     *
-     * @return icon resource URL or empty
+     * Points towards the resource manager that contains the icon
+     * @return supplier class with standard constructor that returns a {@link JIPipeResourceManager}
      */
-    String iconDarkURL() default "";
-
-    /**
-     * The class that loads the resource for iconURL
-     *
-     * @return the resource class
-     */
-    Class<?> resourceClass() default ResourceUtils.class;
+    Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager() default JIPipeDefaultResourceManagerSupplier.class;
 
     /**
      * Marks the parameter as important, which will add an icon to the parameter UI

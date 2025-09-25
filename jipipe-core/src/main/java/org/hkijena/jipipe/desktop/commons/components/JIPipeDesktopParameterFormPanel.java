@@ -24,7 +24,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopDynamicParameterEditorDialog;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -382,7 +382,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
                         Comparator.comparing(parameterTree::getSourceCollapsed).thenComparing(parameterTree::getSourceUIOrder).thenComparing(
                                 Comparator.nullsFirst(Comparator.comparing(parameterTree::getSourceDocumentationName))))
-                .collect(Collectors.toList())) {
+                .toList()) {
             if (collection == this.displayedParameters)
                 continue;
             if (hiddenCollections.contains(collection))
@@ -409,11 +409,12 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             return;
         }
 
-        CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("Show content",
+        CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("",
                 JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
-                "Hide content",
+                "",
                 JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
                 node != null && !node.isCollapsed());
+        UIUtils.makeButtonFlat25x25(collapseButton);
         collapseButton.setOpaque(false);
 
         // Override collapse state based on setting
@@ -423,6 +424,8 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             }
         }
 
+        GroupHeaderPanel groupHeaderPanel = null;
+
         if (!noGroupHeaders) {
             SetJIPipeDocumentation documentation = tree.getSourceDocumentation(parameterCollection);
             boolean documentationIsEmpty = documentation == null || (StringUtils.isNullOrEmpty(documentation.name())
@@ -430,50 +433,28 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             boolean groupHeaderIsEmpty = documentationIsEmpty && !isModifiable && (node == null || node.getActions().isEmpty());
 
             if (!noEmptyGroupHeaders || !groupHeaderIsEmpty) {
-                Component[] leftComponents;
-                if (allowCollapse) {
-                    leftComponents = new Component[]{collapseButton};
-                } else {
-                    leftComponents = new Component[0];
-                }
-                Icon groupIcon = JIPipeResourceManager.safeURLToIcon16(JIPipeResourceManager.safeResolveIcon16URL(node.getIconURL(), node.getDarkIconURL(), node.getResourceClass(), "actions/configure.png"));
+                Icon groupIcon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(node.getIcon(),
+                        node.getIconResourceManager(),
+                        JIPipe.RESOURCES.getIcon16("actions/configure.png"));
 
                 // Create panel
-                String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General");
-                GroupHeaderPanel groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
+                String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "");
+                groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
 
-                {
-                    JButton helpButton = new JButton("Info", JIPipe.RESOURCES.getIcon16("actions/help.png"));
-
-                    helpButton.addActionListener(e -> {
-                        StringBuilder stringBuilder = new StringBuilder();
-                        stringBuilder.append("# Category '").append(headerTitle).append("'\n\n");
-                        if (documentation != null) {
-                            stringBuilder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
-                        }
-                        for (JIPipeParameterAccess parameterAccess : parameterAccesses) {
-                            stringBuilder.append("### ").append(parameterAccess.getName()).append("\n\n");
-                            stringBuilder.append(parameterAccess.getDescription()).append("\n\n");
-                        }
-
-
-                        showDocumentation(new MarkdownText(stringBuilder.toString()));
-                    });
-                    helpButton.setOpaque(false);
-                    groupHeaderPanel.addToTitlePanel(helpButton);
-                }
-                for (Component leftComponent : leftComponents) {
-                    groupHeaderPanel.addToTitlePanel(leftComponent);
+                if(allowCollapse) {
+                    groupHeaderPanel.addToStartOfTitlePanel(collapseButton);
                 }
 
                 if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                        Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
-                        JButton actionButton = new JButton(action.getDocumentation().name(), icon);
-                        actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
+                        JButton actionButton = new JButton(action.getName(), action.getIcon());
+                        actionButton.setToolTipText(action.getDescription());
                         actionButton.addActionListener(e -> action.accept(desktopWorkbench));
                         UIUtils.setStandardButtonBorder(actionButton);
-                        groupHeaderPanel.addToTitlePanel(actionButton);
+                        if(action.isHighlighted()) {
+                            UIUtils.makeButtonHighlightedSuccess(actionButton);
+                        }
+                        groupHeaderPanel.addToEndOfTitlePanel(actionButton);
                     }
                 }
 
@@ -487,8 +468,11 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                     });
                     addButton.setToolTipText("Allows to add/remove parameters in this group");
                     UIUtils.setStandardButtonBorder(addButton);
-                    groupHeaderPanel.addToTitlePanel(addButton);
+                    groupHeaderPanel.addToEndOfTitlePanel(addButton);
                 }
+
+                // Help button comes last
+                createGroupHeaderHelpButton(parameterAccesses, headerTitle, documentation, groupHeaderPanel);
             }
         }
 
@@ -594,17 +578,49 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             // Restore the collapse
             if (collapseCurrentComponentVisibilities.containsKey(parameterCollection)) {
-                collapseButton.setState(collapseCurrentComponentVisibilities.get(parameterCollection));
+                boolean visible = collapseCurrentComponentVisibilities.get(parameterCollection);
+                collapseButton.setState(visible);
             }
 
             setComponentsVisibility(uiComponents, collapseButton.getState());
+            GroupHeaderPanel finalGroupHeaderPanel = groupHeaderPanel;
             collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
                 setComponentsVisibility(uiComponents, collapseButton.getState());
                 collapseCurrentComponentVisibilities.put(parameterCollection, collapseButton.getState());
+                if(finalGroupHeaderPanel != null) {
+                    finalGroupHeaderPanel.setCollapsed(!collapseButton.getState());
+                }
             });
+
+            if(groupHeaderPanel != null) {
+                groupHeaderPanel.setCollapsed(!collapseButton.getState());
+            }
 
             collapseCurrentComponentVisibilities.put(parameterCollection, collapseButton.getState());
         }
+    }
+
+    private void createGroupHeaderHelpButton(List<JIPipeParameterAccess> parameterAccesses, String headerTitle, SetJIPipeDocumentation documentation, GroupHeaderPanel groupHeaderPanel) {
+        JButton helpButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/help.png"));
+        helpButton.setToolTipText("Show documentation");
+        UIUtils.makeButtonFlat25x25(helpButton);
+
+        helpButton.addActionListener(e -> {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("# Category '").append(StringUtils.orElse(headerTitle, "General")).append("'\n\n");
+            if (documentation != null) {
+                stringBuilder.append(DocumentationUtils.getDocumentationDescription(documentation)).append("\n\n");
+            }
+            for (JIPipeParameterAccess parameterAccess : parameterAccesses) {
+                stringBuilder.append("### ").append(parameterAccess.getName()).append("\n\n");
+                stringBuilder.append(parameterAccess.getDescription()).append("\n\n");
+            }
+
+
+            showDocumentation(new MarkdownText(stringBuilder.toString()));
+        });
+        helpButton.setOpaque(false);
+        groupHeaderPanel.addToEndOfTitlePanel(helpButton);
     }
 
     @Override

@@ -24,8 +24,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
-import org.hkijena.jipipe.plugins.settings.JIPipeExtensionApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.JIPipeNotificationUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -105,7 +105,7 @@ public class JIPipeGUICommand implements Command {
         if (!extensionSettings.isSilent()) {
             SwingUtilities.invokeLater(() -> {
                 JIPipeValidationReport report = new JIPipeValidationReport();
-                initializationReport.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+                initializationReport.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, JIPipe.getInstance().getProgressInfo());
                 if (!report.isValid()) {
                     UIUtils.showValidityReportDialog(new JIPipeDesktopDummyWorkbench(), null, report, "JIPipe plugins registry", "Issues were detected during the initialization of certain extensions. " +
                             "Please review the following items. Close the window to ignore the messages and load JIPipe. " +

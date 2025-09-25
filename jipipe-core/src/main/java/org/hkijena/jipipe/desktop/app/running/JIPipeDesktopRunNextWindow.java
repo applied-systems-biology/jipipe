@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.running;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
@@ -38,7 +39,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComp
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopToggleButtonPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;
-import org.hkijena.jipipe.plugins.settings.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -319,7 +320,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
     public void run(boolean saveToCache, boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
-        createValidationReport(report);
+        createValidationReport(report, new JIPipeProgressInfo());
         if (!report.isEmpty()) {
             UIUtils.showValidityReportDialog(workbench, this, report, "Unable to run workflow", "JIPipe detected issues with the workflow and cannot run it", true);
             return;
@@ -353,9 +354,9 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         return run;
     }
 
-    private void createValidationReport(JIPipeValidationReport report) {
+    private void createValidationReport(JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         for (JIPipeAlgorithm node : nodes) {
-            node.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report);
+            node.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo.resolve(node.getDisplayName()));
         }
     }
 

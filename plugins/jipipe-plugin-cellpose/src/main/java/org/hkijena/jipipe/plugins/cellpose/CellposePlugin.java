@@ -21,12 +21,10 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentReference;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
-import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.ImportCellposeModelFromFileAlgorithm;
@@ -37,6 +35,12 @@ import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpo
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2EnvironmentList;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp2.OptionalCellpose2Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3EnvironmentList;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp3.OptionalCellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2InferenceModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.PretrainedLegacyCellpose2TrainingModel;
 import org.hkijena.jipipe.plugins.cellpose.legacy.algorithms.*;
@@ -55,8 +59,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.PythonPlugin;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
@@ -81,30 +83,6 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public CellposePlugin() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-    }
-
-    public static JIPipeEnvironmentReference<PythonEnvironment> getCP2Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
-                .application(Cellpose2PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose2Environment(), project);
-        }
-        return selector.select();
-    }
-
-    public static JIPipeEnvironmentReference<PythonEnvironment> getCP3Environment(JIPipeProject project, OptionalPythonEnvironment nodeEnvironment, JIPipeGraphNode node) {
-        var selector = JIPipeEnvironmentReference.defaultOptions(PythonEnvironment.class)
-                .application(Cellpose3PluginApplicationSettings.getInstance().getReadOnlyDefaultEnvironment());
-        if (nodeEnvironment != null) {
-            selector.node(nodeEnvironment, node);
-        }
-        if (project != null) {
-            selector.project(project.getSettingsSheet(CellposePluginProjectSettings.class).getCellpose3Environment(), project);
-        }
-        return selector.select();
     }
 
     @Override
@@ -185,9 +163,23 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet(new Cellpose2PluginApplicationSettings());
-        registerApplicationSettingsSheet(new Cellpose3PluginApplicationSettings());
-        registerProjectSettingsSheet(CellposePluginProjectSettings.class);
+
+        registerArtifactEnvironment("cellpose2",
+                "com.github.mouseland.cellpose:*",
+                JIPipeEnvironmentArchetype.Managed, Cellpose2Environment.class,
+                OptionalCellpose2Environment.class,
+                Cellpose2EnvironmentList.class,
+                "Cellpose 2.x",
+                "A Python environment with Cellpose 2.x",
+                JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
+        registerArtifactEnvironment("cellpose3",
+                "com.github.mouseland.cellpose3:*",
+                JIPipeEnvironmentArchetype.Managed, Cellpose3Environment.class,
+                OptionalCellpose3Environment.class,
+                Cellpose3EnvironmentList.class,
+                "Cellpose 3.x",
+                "A Python environment with Cellpose 3.x",
+                JIPipe.RESOURCES.getIcon16("apps/cellpose.png"));
 
         // Modern nodes and data types
         registerDatatype("cellpose-model-v2", CellposeModelData.class, JIPipe.RESOURCES.getIcon16URL("data-types/cellpose-model.png"));

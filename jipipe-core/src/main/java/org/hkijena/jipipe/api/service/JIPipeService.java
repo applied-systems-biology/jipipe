@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.service;
 
-import net.imagej.updater.FilesCollection;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeInitializationReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -227,8 +226,8 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
-        report.report(reportContext, nodes);
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        report.report(reportContext, nodes, progressInfo);
         for (JIPipeDependency extension : initializationReport.getFailedExtensions()) {
             if (extension != null) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
@@ -240,7 +239,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
             }
         }
         for (JIPipeDependency extension : initializationReport.getRegisteredExtensions()) {
-            report.report(reportContext, extension);
+            report.report(reportContext, extension, progressInfo);
         }
     }
 

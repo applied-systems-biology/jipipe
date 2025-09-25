@@ -156,7 +156,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (getDataInputSlots().size() > 1) {
             reportContext.error().title("Error in source code detected!")
                     .explanation("The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.")

@@ -25,6 +25,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Simplifies the access to resources for extensions
@@ -248,6 +250,28 @@ public class JIPipeResourceManager {
 
     public static URL getMissingIcon128URL() {
         return ResourceUtils.getPluginResource("icons/light/icons-128/missing.png");
+    }
+
+    public static ImageIcon safeIcon16FromResourceManagerSupplier(String iconName, Class<? extends Supplier<JIPipeResourceManager>> resourceManagerSupplier, ImageIcon defaultIcon) {
+        ImageIcon resultIcon = null;
+        if(!StringUtils.isNullOrEmpty(iconName)) {
+            try {
+                JIPipeResourceManager resourceManager;
+                if (resourceManagerSupplier != null) {
+                    resourceManager = ((Supplier<JIPipeResourceManager>) ReflectionUtils.newInstance(resourceManagerSupplier)).get();
+                } else {
+                    resourceManager = JIPipe.RESOURCES;
+                }
+                URL url = resourceManager.getIcon16URL(iconName);
+                if(url != null && !Objects.equals(url, JIPipeResourceManager.getMissingIcon16URL())) {
+                    resultIcon = JIPipeResourceManager.safeURLToIcon16(url);
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
+
+        return resultIcon != null ? resultIcon : defaultIcon;
     }
 
     /**

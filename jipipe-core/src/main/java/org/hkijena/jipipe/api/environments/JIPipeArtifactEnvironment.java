@@ -15,17 +15,23 @@ package org.hkijena.jipipe.api.environments;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.utils.StringUtils;
+
+import java.util.List;
 
 /**
  * An environment that can be filled with an artifact
@@ -82,7 +88,7 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         if (isLoadFromArtifact() && StringUtils.isNullOrEmpty(getArtifactQuery().getQuery())) {
             reportContext.error()
                     .title("Invalid artifact query")
@@ -114,5 +120,36 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     public void setLastConfiguredArtifact(JIPipeLocalArtifact lastConfiguredArtifact) {
         this.lastConfiguredArtifact = lastConfiguredArtifact;
+    }
+
+    /**
+     * Automatically configures this artifact environment to the latest compatible versin-pinned artifact
+     * @return if the process was successful
+     */
+    public boolean trySetToLatestVersionPinnedArtifact() {
+        if(JIPipe.isInstantiated()) {
+            String query = getArtifactQuery().getQuery();
+            if(StringUtils.isNullOrEmpty(query)) {
+                // Use the standard query from the environment registry
+                JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = JIPipe.getInstance().getEnvironments().getInfoByClass(getClass());
+                if(info != null) {
+                    query = info.getArtifactQuery();
+                }
+            }
+            if(StringUtils.isNullOrEmpty(query)) {
+                return false;
+            }
+
+            List<JIPipeArtifact> candidates = JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(query);
+            if(!candidates.isEmpty()) {
+                JIPipeArtifact best = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(candidates);
+                if(best != null) {
+                    setArtifactQuery(new JIPipeArtifactQueryParameter(best.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
+                    setLoadFromArtifact(true);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }

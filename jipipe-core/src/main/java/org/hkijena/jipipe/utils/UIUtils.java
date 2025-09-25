@@ -38,7 +38,7 @@ import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNoti
 import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.plugins.settings.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
@@ -89,6 +89,7 @@ public class UIUtils {
     public static final JMenuItem MENU_ITEM_SEPARATOR = null;
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
+
 
     public static void addPanningToScrollPane(JScrollPane scrollPane) {
         JViewport viewport = scrollPane.getViewport();

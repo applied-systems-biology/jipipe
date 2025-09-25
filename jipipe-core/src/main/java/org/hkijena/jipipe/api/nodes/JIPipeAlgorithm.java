@@ -100,7 +100,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report) {
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
 
     }
 
@@ -204,8 +204,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @SetJIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "jipipe:algorithm:custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
+    @JIPipeParameter(value = "jipipe:algorithm:custom-expression-variables", icon="actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeCustomExpressionVariablesParameter getDefaultCustomExpressionVariables() {
         return customExpressionVariables;
     }

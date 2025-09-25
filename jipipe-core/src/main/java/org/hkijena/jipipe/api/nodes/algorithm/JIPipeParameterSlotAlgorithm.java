@@ -105,9 +105,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
 
     @SetJIPipeDocumentation(name = "Multi-parameter settings", description = "This algorithm supports running with multiple parameter sets. Just enable 'Multiple parameters' and " +
             "connect parameter data to the newly created slot. The algorithm is then automatically repeated for all parameter sets.")
-    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", hidden = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/wrench.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/wrench.png")
+    @JIPipeParameter(value = "jipipe:parameter-slot-algorithm", hidden = true, icon = "actions/wrench.png")
     public JIPipeParameterSlotAlgorithmSettings getParameterSlotAlgorithmSettings() {
         return parameterSlotAlgorithmSettings;
     }
