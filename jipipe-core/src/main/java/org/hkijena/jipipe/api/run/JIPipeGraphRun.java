@@ -221,7 +221,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             // Apply additional configuration steps
             for (int i = 0; i < allEnvironments.size(); i++) {
                 JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
-                JIPipeEnvironment environment = reference.get(progressInfo.resolve("Environment", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
+                JIPipeEnvironment environment = reference.get(progressInfo.resolve("Configure environments", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
                 environment.runPreconfigure(this, progressInfo);
             }
         }
