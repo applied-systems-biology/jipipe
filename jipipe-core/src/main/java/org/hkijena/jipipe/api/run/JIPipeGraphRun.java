@@ -219,8 +219,9 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             allEnvironments.removeIf(Objects::isNull);
 
             // Apply additional configuration steps
-            for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
-                JIPipeEnvironment environment = reference.get(progressInfo);
+            for (int i = 0; i < allEnvironments.size(); i++) {
+                JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
+                JIPipeEnvironment environment = reference.get(progressInfo.resolve("Environment", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));
                 environment.runPreconfigure(this, progressInfo);
             }
         }

@@ -196,7 +196,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                 configuredArtifactEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter(artifact.getFullId(JIPipeArtifact.ResolutionStatus.Full)));
 
                 if(artifact instanceof JIPipeRemoteArtifact) {
-                    downloadArtifact((JIPipeRemoteArtifact)artifact, progressInfo.resolve("Download " + artifact.getFullId()));
+                    downloadArtifact((JIPipeRemoteArtifact)artifact, progressInfo);
                     artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
                 }
                 if(!(artifact instanceof JIPipeLocalArtifact)) {
