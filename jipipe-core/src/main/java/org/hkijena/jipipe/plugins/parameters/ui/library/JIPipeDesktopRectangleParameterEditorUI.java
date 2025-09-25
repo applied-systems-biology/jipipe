@@ -22,14 +22,14 @@ import java.util.function.Consumer;
 /**
  * Editor for a any numeric parameter
  */
-public class JIPipeDesktopRectangleParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopRectangleParameterEditorUI extends JIPipeDesktopParameterEditorUI<Rectangle> {
     private JSpinner xSpinner;
     private JSpinner ySpinner;
     private JSpinner widthSpinner;
     private JSpinner heightSpinner;
 
     public JIPipeDesktopRectangleParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Rectangle.class, parameters);
         initialize();
         reload();
     }
@@ -41,7 +41,7 @@ public class JIPipeDesktopRectangleParameterEditorUI extends JIPipeDesktopParame
 
     @Override
     public void reload() {
-        Rectangle rectangle = getParameter(Rectangle.class);
+        Rectangle rectangle = getParameter();
         xSpinner.getModel().setValue(rectangle.getX());
         ySpinner.getModel().setValue(rectangle.getY());
         widthSpinner.getModel().setValue(rectangle.getWidth());
@@ -50,7 +50,7 @@ public class JIPipeDesktopRectangleParameterEditorUI extends JIPipeDesktopParame
 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-        Rectangle rectangle = getParameter(Rectangle.class);
+        Rectangle rectangle = getParameter();
         xSpinner = addSpinner("X", rectangle.x, Integer.MIN_VALUE, i -> {
             rectangle.x = i;
             setParameter(rectangle, false);

@@ -26,12 +26,12 @@ import java.nio.file.Path;
 /**
  * Editor for a {@link Path} parameter
  */
-public class JIPipeDesktopFilePathParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopFilePathParameterEditorUI extends JIPipeDesktopParameterEditorUI<Path> {
 
     private JIPipeDesktopPathEditorComponent pathEditor;
 
     public JIPipeDesktopFilePathParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Path.class, parameters);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
     }

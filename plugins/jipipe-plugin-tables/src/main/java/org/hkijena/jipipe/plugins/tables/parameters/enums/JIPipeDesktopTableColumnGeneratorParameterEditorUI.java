@@ -29,15 +29,15 @@ import java.util.List;
 /**
  * A parameter editor UI that works for all enumerations
  */
-public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopTableColumnGeneratorParameterEditorUI extends JIPipeDesktopParameterEditorUI<TableColumnGeneratorParameter> {
 
     private boolean isProcessing = false;
     private JComboBox<JIPipeDataInfo> comboBox;
     private JToggleButton numericColumnToggle;
     private JToggleButton textColumnToggle;
 
-    public TableColumnGeneratorDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+    public JIPipeDesktopTableColumnGeneratorParameterEditorUI(InitializationParameters parameters) {
+        super(TableColumnGeneratorParameter.class, parameters);
         initialize();
         reload();
     }
@@ -50,7 +50,7 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
     @Override
     public void reload() {
         isProcessing = true;
-        TableColumnGeneratorParameter parameter = getParameter(TableColumnGeneratorParameter.class);
+        TableColumnGeneratorParameter parameter = getParameter();
         comboBox.setSelectedItem(parameter.getGeneratorType().getInfo());
         if (parameter.getGeneratedType() == ColumnContentType.NumericColumn) {
             numericColumnToggle.setSelected(true);
@@ -76,7 +76,7 @@ public class TableColumnGeneratorDesktopParameterEditorUI extends JIPipeDesktopP
         if (isProcessing)
             return;
         isProcessing = true;
-        TableColumnGeneratorParameter parameter = getParameter(TableColumnGeneratorParameter.class);
+        TableColumnGeneratorParameter parameter = getParameter();
         if (comboBox.getSelectedItem() != null)
             parameter.getGeneratorType().setInfo((JIPipeDataInfo) comboBox.getSelectedItem());
         else

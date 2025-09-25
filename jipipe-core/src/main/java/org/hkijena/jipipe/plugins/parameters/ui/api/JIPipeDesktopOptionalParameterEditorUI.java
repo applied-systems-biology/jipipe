@@ -26,10 +26,10 @@ import java.awt.*;
 /**
  * Generic parameter for {@link JIPipeOptionalParameter}
  */
-public class JIPipeDesktopOptionalParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopOptionalParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeOptionalParameter> {
 
     public JIPipeDesktopOptionalParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeOptionalParameter.class, parameters);
         initialize();
         reload();
     }
@@ -45,7 +45,7 @@ public class JIPipeDesktopOptionalParameterEditorUI extends JIPipeDesktopParamet
 
     @Override
     public void reload() {
-        JIPipeOptionalParameter<?> parameter = getParameter(JIPipeOptionalParameter.class);
+        JIPipeOptionalParameter<?> parameter = getParameter();
         removeAll();
 
         // Create toggle button

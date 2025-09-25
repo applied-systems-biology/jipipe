@@ -27,14 +27,14 @@ import java.util.Objects;
 /**
  * Parameter editor for {@link HTMLText}
  */
-public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopHTMLTextParameterEditorUI extends JIPipeDesktopParameterEditorUI<HTMLText> {
 
     private final JIPipeDesktopHTMLEditor editor;
     private boolean isReloading = false;
 
 
     public JIPipeDesktopHTMLTextParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(HTMLText.class, parameters);
         editor = new JIPipeDesktopHTMLEditor(parameters.getWorkbench(), JIPipeDesktopHTMLEditor.Mode.Compact, JIPipeDesktopHTMLEditor.WITH_DIALOG_EDITOR_BUTTON);
         initialize();
         reload();

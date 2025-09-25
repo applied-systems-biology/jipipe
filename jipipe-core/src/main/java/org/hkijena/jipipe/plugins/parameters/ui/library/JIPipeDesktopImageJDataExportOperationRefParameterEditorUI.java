@@ -32,13 +32,13 @@ import java.util.ArrayList;
 /**
  * Parameter for {@link JIPipeNodeInfoRef}
  */
-public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<ImageJDataExportOperationRef> {
 
     private JIPipeDesktopImageJDataExporterPicker picker;
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopImageJDataExportOperationRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(ImageJDataExportOperationRef.class, parameters);
         initialize();
         reload();
     }
@@ -72,7 +72,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
     }
 
     private void configure() {
-        ImageJDataExportOperationRef infoRef = getParameter(ImageJDataExportOperationRef.class);
+        ImageJDataExportOperationRef infoRef = getParameter();
         JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 infoRef,
                 new MarkdownText(""),
@@ -83,7 +83,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
 
     @Override
     public void reload() {
-        ImageJDataExportOperationRef infoRef = getParameter(ImageJDataExportOperationRef.class);
+        ImageJDataExportOperationRef infoRef = getParameter();
         ImageJDataExporter exporter = JIPipe.getImageJAdapters().getExporterById(infoRef.getId());
         if (exporter != null) {
             currentlyDisplayed.setText(exporter.getName());
@@ -105,7 +105,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
             includeConvertible = annotation.includeConvertible();
         }
         picker.setAvailableItems(new ArrayList<>(JIPipe.getImageJAdapters().getAvailableExporters(baseClass, includeConvertible)));
-        ImageJDataExportOperationRef infoRef = getParameter(ImageJDataExportOperationRef.class);
+        ImageJDataExportOperationRef infoRef = getParameter();
         ImageJDataExporter Exporter = JIPipe.getImageJAdapters().getExporterById(infoRef.getId());
         picker.setSelectedItem(Exporter);
         ImageJDataExporter result = picker.showDialog();

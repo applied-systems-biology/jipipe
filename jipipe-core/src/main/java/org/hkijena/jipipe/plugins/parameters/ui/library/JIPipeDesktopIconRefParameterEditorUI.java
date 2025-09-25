@@ -29,13 +29,13 @@ import java.util.Set;
 /**
  * Editor for {@link IconRef}
  */
-public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<IconRef> {
 
     private static Set<String> availableAlgorithmIcons;
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopIconRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(IconRef.class, parameters);
         initialize();
         reload();
     }
@@ -71,7 +71,7 @@ public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParamete
 
     private void pickIcon() {
         String picked = JIPipeDesktopIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), getAvailableIcons());
-        IconRef ref = getParameter(IconRef.class);
+        IconRef ref = getParameter();
         ref.setIconName(picked);
         setParameter(ref, true);
     }
@@ -83,7 +83,7 @@ public class JIPipeDesktopIconRefParameterEditorUI extends JIPipeDesktopParamete
 
     @Override
     public void reload() {
-        IconRef ref = getParameter(IconRef.class);
+        IconRef ref = getParameter();
         if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
             currentlyDisplayed.setText(ref.getIconName());
             currentlyDisplayed.setIcon(JIPipe.RESOURCES.getIcon16(ref.getIconName()));

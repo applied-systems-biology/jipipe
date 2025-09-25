@@ -26,7 +26,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
-public class JIPipeDesktopVectorParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopVectorParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
 
     private final JXTextField xEditor = new JXTextField();
     private final JXTextField yEditor = new JXTextField();
@@ -34,7 +34,7 @@ public class JIPipeDesktopVectorParameterEditorUI extends JIPipeDesktopParameter
     private boolean isUpdatingTextBoxes = false;
 
     public JIPipeDesktopVectorParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Object.class, parameters);
         initialize();
         reload();
     }
@@ -155,7 +155,7 @@ public class JIPipeDesktopVectorParameterEditorUI extends JIPipeDesktopParameter
     private void updateTextFields() {
         try {
             isUpdatingTextBoxes = true;
-            Object obj = getParameter(Object.class);
+            Object obj = getParameter();
             if (obj instanceof Vector2dParameter) {
                 xEditor.setText(String.valueOf(((Vector2dParameter) obj).getX()));
                 yEditor.setText(String.valueOf(((Vector2dParameter) obj).getY()));

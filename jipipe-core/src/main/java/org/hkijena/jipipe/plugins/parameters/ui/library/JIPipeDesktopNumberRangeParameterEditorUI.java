@@ -30,7 +30,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
-public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopParameterEditorUI implements ThumbListener {
+public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopParameterEditorUI<NumberRangeParameter> implements ThumbListener {
 
     private final JTextField minEditor = new JTextField();
     private final JTextField maxEditor = new JTextField();
@@ -40,7 +40,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
     private boolean isUpdatingTextBoxes = false;
 
     public JIPipeDesktopNumberRangeParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(NumberRangeParameter.class, parameters);
         initialize();
         reload();
     }
@@ -71,7 +71,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
                     String s = StringUtils.nullToEmpty(minEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
                     if (NumberUtils.isCreatable(s)) {
-                        NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
+                        NumberRangeParameter parameter = getParameter();
                         double value = NumberUtils.createDouble(s);
                         if (value != parameter.getMinNumber().doubleValue()) {
                             parameter.setMinNumber(value);
@@ -89,7 +89,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
                     String s = StringUtils.nullToEmpty(maxEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
                     if (NumberUtils.isCreatable(s)) {
-                        NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
+                        NumberRangeParameter parameter = getParameter();
                         double value = NumberUtils.createDouble(s);
                         if (value != parameter.getMaxNumber().doubleValue()) {
                             parameter.setMaxNumber(value);
@@ -107,7 +107,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
     private void updateThumbs() {
         try {
             isUpdatingThumbs = true;
-            NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
+            NumberRangeParameter parameter = getParameter();
             slider.getModel().getThumbAt(0).setPosition(parameter.getMinNumber().floatValue());
             slider.getModel().getThumbAt(1).setPosition(parameter.getMaxNumber().floatValue());
         } finally {
@@ -147,7 +147,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
     @Override
     public void thumbMoved(int thumb, float pos) {
         if (!isUpdatingThumbs) {
-            NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
+            NumberRangeParameter parameter = getParameter();
             if (thumb == 0) {
                 parameter.setMinNumber(pos);
             } else if (thumb == 1) {
@@ -161,7 +161,7 @@ public class JIPipeDesktopNumberRangeParameterEditorUI extends JIPipeDesktopPara
     private void updateTextFields() {
         try {
             isUpdatingTextBoxes = true;
-            NumberRangeParameter parameter = getParameter(NumberRangeParameter.class);
+            NumberRangeParameter parameter = getParameter();
             minEditor.setText(parameter.getMinNumber() + "");
             maxEditor.setText(parameter.getMaxNumber() + "");
         } finally {

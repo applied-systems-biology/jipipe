@@ -28,14 +28,14 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.util.Objects;
 
-public class JIPipeDesktopQuantityParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopQuantityParameterEditorUI extends JIPipeDesktopParameterEditorUI<Quantity> {
 
-    private JXTextField valueEditor = new JXTextField();
+    private final JXTextField valueEditor = new JXTextField();
     private JComboBox<String> unitEditor;
     private boolean isUpdatingTextBoxes = false;
 
     public JIPipeDesktopQuantityParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Quantity.class, parameters);
         initialize();
         reload();
     }
@@ -87,7 +87,7 @@ public class JIPipeDesktopQuantityParameterEditorUI extends JIPipeDesktopParamet
                     String s = StringUtils.nullToEmpty(valueEditor.getText());
                     s = s.replace(',', '.').replace(" ", ""); // Allow usage of comma as separator
                     if (NumberUtils.isCreatable(s)) {
-                        Quantity parameter = getParameter(Quantity.class);
+                        Quantity parameter = getParameter();
                         double value = NumberUtils.createDouble(s);
                         if (value != parameter.getValue()) {
                             parameter.setValue(value);
@@ -104,7 +104,7 @@ public class JIPipeDesktopQuantityParameterEditorUI extends JIPipeDesktopParamet
             public void changed(DocumentEvent documentEvent) {
                 if (!isUpdatingTextBoxes) {
                     String s = StringUtils.nullToEmpty(unitEditorField.getText()).trim();
-                    Quantity parameter = getParameter(Quantity.class);
+                    Quantity parameter = getParameter();
                     if (!Objects.equals(parameter.getUnit(), s)) {
                         parameter.setUnit(s);
                         setParameter(parameter, false);
@@ -137,7 +137,7 @@ public class JIPipeDesktopQuantityParameterEditorUI extends JIPipeDesktopParamet
                 }
             }
             unitEditor.setModel(new DefaultComboBoxModel<>(predefinedUnits));
-            Quantity parameter = getParameter(Quantity.class);
+            Quantity parameter = getParameter();
             valueEditor.setText(parameter.getValue() + "");
             unitEditor.setSelectedItem(StringUtils.nullToEmpty(parameter.getUnit()));
         } finally {

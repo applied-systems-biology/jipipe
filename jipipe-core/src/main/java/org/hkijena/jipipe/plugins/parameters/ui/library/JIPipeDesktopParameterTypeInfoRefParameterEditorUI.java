@@ -26,11 +26,11 @@ import java.awt.*;
 /**
  * Parameter for {@link JIPipeParameterTypeInfoRef}
  */
-public class JIPipeDesktopParameterTypeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopParameterTypeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeParameterTypeInfoRef> {
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopParameterTypeInfoRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeParameterTypeInfoRef.class, parameters);
         initialize();
         reload();
     }
@@ -52,7 +52,7 @@ public class JIPipeDesktopParameterTypeInfoRefParameterEditorUI extends JIPipeDe
 
     @Override
     public void reload() {
-        JIPipeParameterTypeInfoRef infoRef = getParameter(JIPipeParameterTypeInfoRef.class);
+        JIPipeParameterTypeInfoRef infoRef = getParameter();
         JIPipeParameterTypeInfo info = infoRef.getInfo();
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
@@ -66,7 +66,7 @@ public class JIPipeDesktopParameterTypeInfoRefParameterEditorUI extends JIPipeDe
 
 
     private void pickNodeInfo() {
-        JIPipeParameterTypeInfoRef infoRef = getParameter(JIPipeParameterTypeInfoRef.class);
+        JIPipeParameterTypeInfoRef infoRef = getParameter();
         JIPipeDesktopParameterTypeInfoPicker picker;
         if (infoRef.getUiAllowedParameterTypes() == null || infoRef.getUiAllowedParameterTypes().isEmpty()) {
             picker = new JIPipeDesktopParameterTypeInfoPicker(getDesktopWorkbench().getWindow());

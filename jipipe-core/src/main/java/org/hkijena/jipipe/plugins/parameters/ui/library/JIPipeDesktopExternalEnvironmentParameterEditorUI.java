@@ -39,14 +39,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeEnvironment> implements JIPipeRunnable.FinishedEventListener {
 
     private final JLabel nameLabel = new JLabel();
     private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
     public JIPipeDesktopExternalEnvironmentParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeEnvironment.class, parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
@@ -204,7 +204,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
     private void saveAsPreset() {
         JIPipeValidationReport report = new JIPipeValidationReport();
-        JIPipeEnvironment parameter = getParameter(JIPipeEnvironment.class);
+        JIPipeEnvironment parameter = getParameter();
         parameter.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, new JIPipeProgressInfo());
 
         if (!report.isValid()) {
@@ -231,7 +231,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     private void editEnvironment() {
         Class<?> fieldClass = getParameterAccess().getFieldClass();
         JIPipeParameterTypeInfo typeInfo = JIPipe.getInstance().getParameterTypes().getInfoByFieldClass(fieldClass);
-        JIPipeEnvironment parameter = (JIPipeEnvironment) typeInfo.duplicate(getParameter(JIPipeEnvironment.class));
+        JIPipeEnvironment parameter = (JIPipeEnvironment) typeInfo.duplicate(getParameter());
         boolean result = JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 parameter,
                 null,
@@ -253,7 +253,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     public void reload() {
 //        ExternalEnvironmentParameterSettings settings = getParameterAccess().getAnnotationOfType(ExternalEnvironmentParameterSettings.class);
 
-        JIPipeEnvironment parameter = getParameter(JIPipeEnvironment.class);
+        JIPipeEnvironment parameter = getParameter();
         JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = JIPipe.getInstance().getEnvironments().getInfoByClass(parameter.getClass());
         nameLabel.setIcon(info != null ? info.getIcon() : parameter.getIcon());
         nameLabel.setText(parameter.getName());

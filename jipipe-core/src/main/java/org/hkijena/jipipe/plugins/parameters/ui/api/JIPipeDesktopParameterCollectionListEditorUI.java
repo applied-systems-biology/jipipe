@@ -37,7 +37,7 @@ import java.util.List;
 /**
  * Generic parameter for {@link JIPipeListParameter}
  */
-public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeParameterCollectionList> {
     private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to add a new item.");
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
     private final Set<EntryComponents> selectedEntryComponents = new HashSet<>();
@@ -46,7 +46,7 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
     private int lastClickedIndex = -1;
 
     public JIPipeDesktopParameterCollectionListEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeParameterCollectionList.class, parameters);
         initialize();
         reload();
         addComponentListener(new ComponentAdapter() {
@@ -167,7 +167,7 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
     }
 
     private void removeSelectedEntries() {
-        JIPipeListParameter<?> parameter = getParameter(JIPipeListParameter.class);
+        JIPipeListParameter<?> parameter = getParameter();
         for (int i = entryComponentsList.size() - 1; i >= 0; i--) {
             if (selectedEntryComponents.contains(entryComponentsList.get(i))) {
                 parameter.remove(i);
@@ -177,13 +177,13 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
     }
 
     private void clearList() {
-        JIPipeListParameter<?> parameter = getParameter(JIPipeListParameter.class);
+        JIPipeListParameter<?> parameter = getParameter();
         parameter.clear();
         setParameter(parameter, true);
     }
 
     private void addNewEntry() {
-        JIPipeListParameter<?> parameter = getParameter(JIPipeListParameter.class);
+        JIPipeListParameter<?> parameter = getParameter();
         parameter.addNewInstance();
         setParameter(parameter, true);
     }
@@ -204,7 +204,7 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
         entryComponentsList.clear();
         selectedEntryComponents.clear();
         lastClickedIndex = -1;
-        JIPipeParameterCollectionList parameter = getParameter(JIPipeParameterCollectionList.class);
+        JIPipeParameterCollectionList parameter = getParameter();
 
         // Workaround for ParameterCollectionList template issues
         // Recreates the template on creating the UI to enforce the class-based
@@ -345,7 +345,7 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
     }
 
     private void moveEntryDown(Object entry) {
-        JIPipeListParameter<Object> parameter = getParameter(JIPipeListParameter.class);
+        JIPipeListParameter parameter = getParameter();
         int i = parameter.indexOf(entry);
         if (i >= 0) {
             int j = (i + 1) % parameter.size();
@@ -357,7 +357,7 @@ public class JIPipeDesktopParameterCollectionListEditorUI extends JIPipeDesktopP
     }
 
     private void moveEntryUp(Object entry) {
-        JIPipeListParameter<Object> parameter = getParameter(JIPipeListParameter.class);
+        JIPipeListParameter parameter = getParameter();
         int i = parameter.indexOf(entry);
         if (i >= 0) {
             if (i == 0) {

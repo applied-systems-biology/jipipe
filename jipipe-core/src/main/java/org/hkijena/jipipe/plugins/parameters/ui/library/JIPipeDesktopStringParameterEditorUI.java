@@ -31,12 +31,12 @@ import java.util.Objects;
 /**
  * Parameter editor for {@link String}
  */
-public class JIPipeDesktopStringParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopStringParameterEditorUI extends JIPipeDesktopParameterEditorUI<String> {
 
     private JTextComponent textComponent;
 
     public JIPipeDesktopStringParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(String.class, parameters);
         initialize();
         reload();
     }

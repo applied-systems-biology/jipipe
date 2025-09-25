@@ -30,14 +30,14 @@ import java.util.function.Supplier;
 /**
  * A parameter editor UI that works for all enumerations
  */
-public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDynamicSetParameter> {
 
-    private Map<Object, JCheckBox> checkBoxMap = new HashMap<>();
+    private final Map<Object, JCheckBox> checkBoxMap = new HashMap<>();
     private JToggleButton collapseToggle;
     private JLabel collapseInfoLabel;
 
     public JIPipeDesktopDynamicSetParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeDynamicSetParameter.class, parameters);
         initialize();
         reload();
     }
@@ -65,7 +65,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
 
     @Override
     public void reload() {
-        JIPipeDynamicSetParameter<Object> parameter = getParameter(JIPipeDynamicSetParameter.class);
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
         Set<Object> currentlySelected = getCurrentlySelected();
         if (!currentlySelected.equals(parameter.getValues())) {
             for (Map.Entry<Object, JCheckBox> entry : checkBoxMap.entrySet()) {
@@ -86,7 +86,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 
-        JIPipeDynamicSetParameter<Object> parameter = getParameter(JIPipeDynamicSetParameter.class);
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
         Object[] values;
         if (parameter.getAllowedValues() != null && !parameter.getAllowedValues().isEmpty()) {
             values = parameter.getAllowedValues().toArray();
@@ -155,7 +155,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
     }
 
     private void saveCollapsedState() {
-        JIPipeDynamicSetParameter<Object> parameter = getParameter(JIPipeDynamicSetParameter.class);
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
         if (parameter.isCollapsed() != collapseToggle.isSelected()) {
             parameter.setCollapsed(collapseToggle.isSelected());
             setParameter(parameter, true);
@@ -166,7 +166,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
         for (JCheckBox checkBox : checkBoxMap.values()) {
             checkBox.setSelected(false);
         }
-        JIPipeDynamicSetParameter<Object> parameter = getParameter(JIPipeDynamicSetParameter.class);
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
         parameter.getValues().clear();
         setParameter(parameter, false);
     }
@@ -175,7 +175,7 @@ public class JIPipeDesktopDynamicSetParameterEditorUI extends JIPipeDesktopParam
         for (JCheckBox checkBox : checkBoxMap.values()) {
             checkBox.setSelected(true);
         }
-        JIPipeDynamicSetParameter<Object> parameter = getParameter(JIPipeDynamicSetParameter.class);
+        JIPipeDynamicSetParameter<Object> parameter = getParameter();
         parameter.getValues().addAll(checkBoxMap.keySet());
         setParameter(parameter, false);
     }

@@ -25,12 +25,12 @@ import java.util.Objects;
 /**
  * Parameter editor for {@link String}
  */
-public class JIPipeDesktopPasswordParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopPasswordParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipePasswordParameter> {
 
     private final JIPipeDesktopFancyPasswordField passwordField = new JIPipeDesktopFancyPasswordField(new JLabel(JIPipe.RESOURCES.getIcon16("actions/pgp-keys.png")));
 
     public JIPipeDesktopPasswordParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipePasswordParameter.class, parameters);
         initialize();
         reload();
     }

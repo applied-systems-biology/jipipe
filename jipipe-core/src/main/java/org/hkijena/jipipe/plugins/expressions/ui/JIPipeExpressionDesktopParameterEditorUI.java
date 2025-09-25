@@ -40,7 +40,7 @@ import java.util.List;
 
 import static org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE;
 
-public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeExpressionParameter> {
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
 
@@ -50,7 +50,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     private RSyntaxTextArea expressionEditor;
 
     public JIPipeExpressionDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeExpressionParameter.class, parameters);
 
         // Init the token maker
         JIPipeExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(JIPipeExpressionParameterSettings.class);
@@ -100,7 +100,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
         expressionEditor.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                JIPipeExpressionParameter parameter = getParameter(JIPipeExpressionParameter.class);
+                JIPipeExpressionParameter parameter = getParameter();
                 if (!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
                     parameter.setExpression(expressionEditor.getText());
                     setParameter(parameter, false);
@@ -147,7 +147,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
 
     @Override
     public void reload() {
-        JIPipeExpressionParameter parameter = getParameter(JIPipeExpressionParameter.class);
+        JIPipeExpressionParameter parameter = getParameter();
         if (!Objects.equals(parameter.getExpression(), expressionEditor.getText())) {
             expressionEditor.setText(parameter.getExpression());
         }
@@ -207,7 +207,7 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
             }
         }
         // Read from parameter
-        variables.addAll(getParameter(JIPipeExpressionParameter.class).getAdditionalUIVariables());
+        variables.addAll(getParameter().getAdditionalUIVariables());
 
         // Special handling of global parameters (associated to nodes)
         JIPipeGraphNode graphNode = searchForNodeInParents();

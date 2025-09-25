@@ -28,12 +28,12 @@ import weka.gui.PropertyPanel;
 import javax.swing.*;
 import java.awt.*;
 
-public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopWekaClassifierParameterEditorUI extends JIPipeDesktopParameterEditorUI<WekaClassifierParameter> {
     private JButton currentlyDisplayed;
     private boolean isReloading = false;
 
-    public WekaClassifierDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+    public JIPipeDesktopWekaClassifierParameterEditorUI(InitializationParameters parameters) {
+        super(WekaClassifierParameter.class, parameters);
         initialize();
         reload();
     }
@@ -67,7 +67,7 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
     private void pick() {
 
         // Use the Weka native dialogs
-        WekaClassifierParameter parameter = getParameter(WekaClassifierParameter.class);
+        WekaClassifierParameter parameter = getParameter();
         GenericObjectEditor editor = new GenericObjectEditor();
         editor.setClassType(Classifier.class);
         editor.setValue(parameter.getClassifier());
@@ -91,7 +91,7 @@ public class WekaClassifierDesktopParameterEditorUI extends JIPipeDesktopParamet
         if (isReloading)
             return;
         isReloading = true;
-        WekaClassifierParameter parameter = getParameter(WekaClassifierParameter.class);
+        WekaClassifierParameter parameter = getParameter();
         if (parameter.getClassifier() instanceof OptionHandler)
             currentlyDisplayed.setText(parameter.getClassifier().getClass().getSimpleName() + " " + Utils.joinOptions(((OptionHandler) parameter.getClassifier()).getOptions()));
         else if (parameter.getClassifier() instanceof CustomDisplayStringProvider)

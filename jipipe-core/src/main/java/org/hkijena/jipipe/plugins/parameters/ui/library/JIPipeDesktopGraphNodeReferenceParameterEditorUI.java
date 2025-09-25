@@ -14,12 +14,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.UUID;
 
-public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesktopParameterEditorUI<GraphNodeReferenceParameter> {
 
     private final JButton selectButton = new JButton();
 
     public JIPipeDesktopGraphNodeReferenceParameterEditorUI(InitializationParameters initializationParameters) {
-        super(initializationParameters);
+        super(GraphNodeReferenceParameter.class, initializationParameters);
         initialize();
         reload();
     }
@@ -56,7 +56,7 @@ public class JIPipeDesktopGraphNodeReferenceParameterEditorUI extends JIPipeDesk
 
     @Override
     public void reload() {
-        GraphNodeReferenceParameter parameter = getParameter(GraphNodeReferenceParameter.class);
+        GraphNodeReferenceParameter parameter = getParameter();
         if (parameter != null && !StringUtils.isNullOrEmpty(parameter.getNodeUUID())) {
             JIPipeProject project = getWorkbench().getProject();
             if (project != null) {

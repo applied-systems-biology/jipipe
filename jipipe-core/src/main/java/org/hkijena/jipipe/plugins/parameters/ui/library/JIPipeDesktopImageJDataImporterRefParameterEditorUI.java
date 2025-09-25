@@ -30,13 +30,13 @@ import java.util.ArrayList;
 /**
  * Parameter for {@link JIPipeNodeInfoRef}
  */
-public class JIPipeDesktopImageJDataImporterRefParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopImageJDataImporterRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<ImageJDataImporterRef> {
 
     private JIPipeDesktopImageJDataImporterPicker picker;
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopImageJDataImporterRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(ImageJDataImporterRef.class, parameters);
         initialize();
         reload();
     }
@@ -61,7 +61,7 @@ public class JIPipeDesktopImageJDataImporterRefParameterEditorUI extends JIPipeD
 
     @Override
     public void reload() {
-        ImageJDataImporterRef infoRef = getParameter(ImageJDataImporterRef.class);
+        ImageJDataImporterRef infoRef = getParameter();
         ImageJDataImporter importer = JIPipe.getImageJAdapters().getImporterById(infoRef.getId());
         if (importer != null) {
             currentlyDisplayed.setText(importer.getName());
@@ -83,7 +83,7 @@ public class JIPipeDesktopImageJDataImporterRefParameterEditorUI extends JIPipeD
             includeConvertible = annotation.includeConvertible();
         }
         picker.setAvailableItems(new ArrayList<>(JIPipe.getImageJAdapters().getAvailableImporters(baseClass, includeConvertible)));
-        ImageJDataImporterRef infoRef = getParameter(ImageJDataImporterRef.class);
+        ImageJDataImporterRef infoRef = getParameter();
         ImageJDataImporter importer = JIPipe.getImageJAdapters().getImporterById(infoRef.getId());
         picker.setSelectedItem(importer);
         ImageJDataImporter result = picker.showDialog();

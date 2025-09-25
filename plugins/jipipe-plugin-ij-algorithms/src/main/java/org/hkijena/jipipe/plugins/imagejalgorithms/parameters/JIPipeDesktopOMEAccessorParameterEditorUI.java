@@ -28,12 +28,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopOMEAccessorParameterEditorUI extends JIPipeDesktopParameterEditorUI<OMEAccessorParameter> {
     private JIPipeDesktopParameterFormPanel parameterPanel;
     private JButton currentTemplateButton;
 
-    public OMEAccessorDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+    public JIPipeDesktopOMEAccessorParameterEditorUI(InitializationParameters parameters) {
+        super(OMEAccessorParameter.class, parameters);
         initialize();
         reload();
     }
@@ -75,7 +75,7 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
     }
 
     private void showTemplateHelp() {
-        OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
+        OMEAccessorParameter parameter = getParameter();
         OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
         if (template != null) {
             JIPipeDesktopMarkdownReader.showDialog(new MarkdownText(template.getDescription()), true, template.getName(), this, false);
@@ -83,7 +83,7 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
     }
 
     private void pickTemplate() {
-        OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
+        OMEAccessorParameter parameter = getParameter();
         String selected = JIPipeDesktopPickDynamicEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(), new OMEAccessorTypeEnumParameter(), parameter.getAccessorId(), "Select value");
         if (selected != null) {
             parameter.setAccessorId(selected);
@@ -99,7 +99,7 @@ public class OMEAccessorDesktopParameterEditorUI extends JIPipeDesktopParameterE
 
     @Override
     public void reload() {
-        OMEAccessorParameter parameter = getParameter(OMEAccessorParameter.class);
+        OMEAccessorParameter parameter = getParameter();
         OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(parameter.getAccessorId(), null);
         if (template != null) {
             currentTemplateButton.setText(template.getName());

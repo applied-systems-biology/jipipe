@@ -29,10 +29,10 @@ import java.awt.*;
 /**
  * Editor for {@link JIPipePairParameter}
  */
-public class JIPipeDesktopPairParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopPairParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipePairParameter> {
 
     public JIPipeDesktopPairParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipePairParameter.class, parameters);
         reload();
     }
 
@@ -45,7 +45,7 @@ public class JIPipeDesktopPairParameterEditorUI extends JIPipeDesktopParameterEd
     public void reload() {
         removeAll();
 
-        JIPipePairParameter<?, ?> renaming = getParameter(JIPipePairParameter.class);
+        JIPipePairParameter<?, ?> renaming = getParameter();
         JIPipePairParameterKeyAccess<?, ?> keyAccess = new JIPipePairParameterKeyAccess<>(getParameterAccess(), renaming);
         JIPipePairParameterValueAccess<?, ?> valueAccess = new JIPipePairParameterValueAccess<>(getParameterAccess(), renaming);
 

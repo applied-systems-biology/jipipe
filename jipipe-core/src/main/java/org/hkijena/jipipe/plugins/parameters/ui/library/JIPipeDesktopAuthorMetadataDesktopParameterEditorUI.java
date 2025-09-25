@@ -26,14 +26,14 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeDesktopAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopAuthorMetadataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeAuthorMetadata> {
 
     private final JLabel nameLabel = new JLabel();
     private final JLabel affiliationLabel = new JLabel();
     private final JLabel orcidLabel = new JLabel();
 
     public JIPipeDesktopAuthorMetadataDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeAuthorMetadata.class, parameters);
         initialize();
         reload();
     }
@@ -80,12 +80,12 @@ public class JIPipeDesktopAuthorMetadataDesktopParameterEditorUI extends JIPipeD
     }
 
     private void copyAuthor() {
-        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+        JIPipeAuthorMetadata parameter = getParameter();
         UIUtils.copyToClipboard(JsonUtils.toPrettyJsonString(parameter));
     }
 
     private void editAuthor() {
-        JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+        JIPipeAuthorMetadata parameter = getParameter();
         JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 parameter,
                 new MarkdownText("# Edit author\n\nUse this editor to update additional author properties."),
@@ -101,7 +101,7 @@ public class JIPipeDesktopAuthorMetadataDesktopParameterEditorUI extends JIPipeD
 
     @Override
     public void reload() {
-        JIPipeAuthorMetadata author = getParameter(JIPipeAuthorMetadata.class);
+        JIPipeAuthorMetadata author = getParameter();
         if (!StringUtils.isNullOrEmpty(author.getFirstName()) || !StringUtils.isNullOrEmpty(author.getLastName())) {
             nameLabel.setText(author.getFirstName() + " " + author.getLastName());
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());

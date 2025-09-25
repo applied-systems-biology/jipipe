@@ -26,12 +26,12 @@ import java.util.Arrays;
 /**
  * Editor for {@link JIPipeMatrix2DParameter}
  */
-public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeMatrix2DParameter> {
 
     private JTable table;
 
     public JIPipeDesktopMatrix2DParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeMatrix2DParameter.class, parameters);
         initialize();
         reload();
     }
@@ -49,7 +49,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
         JButton addRowButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-insert-row-below.png"));
         addRowButton.setToolTipText("Add row");
         addRowButton.addActionListener(e -> {
-            getParameter(JIPipeMatrix2DParameter.class).addRow();
+            getParameter().addRow();
             reload();
         });
         toolBar.add(addRowButton);
@@ -57,7 +57,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
         JButton addColumnButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit-table-insert-column-right.png"));
         addColumnButton.setToolTipText("Add column");
         addColumnButton.addActionListener(e -> {
-            getParameter(JIPipeMatrix2DParameter.class).addColumn();
+            getParameter().addColumn();
             reload();
         });
         toolBar.add(addColumnButton);
@@ -85,7 +85,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
     private void removeColumn() {
         int[] selectedColumns = table.getSelectedColumns();
         Arrays.sort(selectedColumns);
-        JIPipeMatrix2DParameter<?> parameter = getParameter(JIPipeMatrix2DParameter.class);
+        JIPipeMatrix2DParameter<?> parameter = getParameter();
         for (int i = selectedColumns.length - 1; i >= 0; --i) {
             parameter.removeColumn(i);
         }
@@ -95,7 +95,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
     private void removeRow() {
         int[] selectedRows = table.getSelectedRows();
         Arrays.sort(selectedRows);
-        JIPipeMatrix2DParameter<?> parameter = getParameter(JIPipeMatrix2DParameter.class);
+        JIPipeMatrix2DParameter<?> parameter = getParameter();
         for (int i = selectedRows.length - 1; i >= 0; --i) {
             parameter.removeRow(i);
         }
@@ -109,7 +109,7 @@ public class JIPipeDesktopMatrix2DParameterEditorUI extends JIPipeDesktopParamet
 
     @Override
     public void reload() {
-        JIPipeMatrix2DParameter<?> parameter = getParameter(JIPipeMatrix2DParameter.class);
+        JIPipeMatrix2DParameter<?> parameter = getParameter();
         table.setModel(new DefaultTableModel());
         table.setModel(parameter);
         table.revalidate();

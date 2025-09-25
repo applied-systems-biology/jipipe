@@ -22,7 +22,7 @@ import java.awt.*;
 /**
  * Parameter editor for boolean data
  */
-public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParameterEditorUI<Boolean> {
 
     private JCheckBox checkBox;
     private JComboBox<Boolean> comboBox;
@@ -31,7 +31,7 @@ public class JIPipeDesktopBooleanParameterEditorUI extends JIPipeDesktopParamete
     private boolean isReloading = false;
 
     public JIPipeDesktopBooleanParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Boolean.class, parameters);
         initialize();
     }
 

@@ -27,12 +27,12 @@ import java.util.Objects;
  * Works for {@link TableColumnData}.
  * Does not listen to {@link DynamicEnumParameterSettings}
  */
-public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDynamicEnumParameter> {
 
     private JComboBox<TableColumnData> comboBox;
 
     public UIPlotDataSeriesColumnEnumDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeDynamicEnumParameter.class, parameters);
         initialize();
         reload();
     }
@@ -44,7 +44,7 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
 
     @Override
     public void reload() {
-        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter(JIPipeDynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter();
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem()))
             comboBox.setSelectedItem(parameter.getValue());
     }
@@ -52,7 +52,7 @@ public class UIPlotDataSeriesColumnEnumDesktopParameterEditorUI extends JIPipeDe
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter(JIPipeDynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<TableColumnData> parameter = getParameter();
         TableColumnData[] values = parameter.getAllowedValues().toArray(new TableColumnData[0]);
         comboBox = new JComboBox<>(new DefaultComboBoxModel<>(values));
         comboBox.setRenderer(new JIPipeDesktopPlotDataSeriesColumnListCellRenderer());

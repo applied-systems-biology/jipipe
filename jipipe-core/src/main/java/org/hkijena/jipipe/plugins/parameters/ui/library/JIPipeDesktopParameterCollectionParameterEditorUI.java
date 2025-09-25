@@ -20,13 +20,13 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 
-public class JIPipeDesktopParameterCollectionParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopParameterCollectionParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeParameterCollection> {
 
     private JIPipeDesktopParameterFormPanel parameterPanel;
     private boolean isReloading;
 
     public JIPipeDesktopParameterCollectionParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeParameterCollection.class, parameters);
         initialize();
         reload();
     }
@@ -48,7 +48,7 @@ public class JIPipeDesktopParameterCollectionParameterEditorUI extends JIPipeDes
         if (isReloading)
             return;
         try {
-            JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
+            JIPipeParameterCollection parameter = getParameter();
 //            parameter.getEventBus().register(new Object() {
 //                @Override
 //                public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {

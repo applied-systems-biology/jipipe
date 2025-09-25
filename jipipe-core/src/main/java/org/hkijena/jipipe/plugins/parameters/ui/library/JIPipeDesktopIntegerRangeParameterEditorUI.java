@@ -33,14 +33,14 @@ import java.lang.annotation.Annotation;
 /**
  * Editor for {@link IntegerRange}
  */
-public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopParameterEditorUI<IntegerRange> {
 
     private JToggleButton expressionModeToggle;
     private JTextField rangeStringEditor;
     private boolean isUpdating = false;
 
     public JIPipeDesktopIntegerRangeParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(IntegerRange.class, parameters);
         initialize();
         reload();
     }
@@ -51,7 +51,7 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
         expressionModeToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"));
         expressionModeToggle.setToolTipText("If enabled, use a math expression instead of a range string.");
         expressionModeToggle.addActionListener(e -> {
-            IntegerRange rangeString = getParameter(IntegerRange.class);
+            IntegerRange rangeString = getParameter();
             rangeString.setUseExpression(expressionModeToggle.isSelected());
             setParameter(rangeString, true);
         });
@@ -64,7 +64,7 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
             @Override
             public void changed(DocumentEvent documentEvent) {
                 if (!isUpdating) {
-                    IntegerRange rangeString = getParameter(IntegerRange.class);
+                    IntegerRange rangeString = getParameter();
                     if (!rangeString.isUseExpression()) {
                         rangeString.setValue(rangeStringEditor.getText());
                         checkParameter();
@@ -85,7 +85,7 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
         try {
             isUpdating = true;
             removeAll();
-            IntegerRange rangeString = getParameter(IntegerRange.class);
+            IntegerRange rangeString = getParameter();
 
             add(expressionModeToggle, BorderLayout.WEST);
             expressionModeToggle.setSelected(rangeString.isUseExpression());
@@ -115,7 +115,7 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
     }
 
     private void checkParameter() {
-        IntegerRange rangeString = getParameter(IntegerRange.class);
+        IntegerRange rangeString = getParameter();
         try {
             if (!rangeString.isUseExpression()) {
                 rangeString.getIntegers(0, 0, new JIPipeExpressionVariablesMap());

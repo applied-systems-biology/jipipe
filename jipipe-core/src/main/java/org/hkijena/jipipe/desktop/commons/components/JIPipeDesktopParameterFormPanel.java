@@ -648,7 +648,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             JMenuItem copyItem = new JMenuItem("Copy", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
             copyItem.addActionListener(e -> {
-                Object parameter = editorUI.getParameter(Object.class);
+                Object parameter = editorUI.getParameter();
                 UIUtils.copyToClipboard(JsonUtils.toJsonString(parameter));
                 desktopWorkbench.sendStatusBarText("Copied parameter '" + editorUI.getParameterAccess().getName() + "' to the clipboard.");
             });

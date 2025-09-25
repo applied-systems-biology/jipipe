@@ -30,14 +30,14 @@ import java.util.stream.Collectors;
 /**
  * Parameter for {@link JIPipeNodeInfoRef}
  */
-public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeDesktopNodeInfoPicker.NodeInfoSelectedEventListener {
+public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeNodeInfoRef> implements JIPipeDesktopNodeInfoPicker.NodeInfoSelectedEventListener {
 
     private JIPipeDesktopNodeInfoPicker picker;
     private JButton currentlyDisplayed;
     private JDialog pickerDialog;
 
     public JIPipeDesktopNodeInfoRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeNodeInfoRef.class, parameters);
         initialize();
         reload();
     }
@@ -69,7 +69,7 @@ public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopPara
 
     @Override
     public void reload() {
-        JIPipeNodeInfoRef infoRef = getParameter(JIPipeNodeInfoRef.class);
+        JIPipeNodeInfoRef infoRef = getParameter();
         JIPipeNodeInfo info = infoRef.getInfo();
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
@@ -105,7 +105,7 @@ public class JIPipeDesktopNodeInfoRefParameterEditorUI extends JIPipeDesktopPara
     public void onNodeInfoPickerNodeInfoSelectedEvent(JIPipeDesktopNodeInfoPicker.NodeInfoSelectedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
-            JIPipeNodeInfoRef infoRef = getParameter(JIPipeNodeInfoRef.class);
+            JIPipeNodeInfoRef infoRef = getParameter();
             infoRef.setInfo(event.getInfo());
             setParameter(infoRef, true);
         }

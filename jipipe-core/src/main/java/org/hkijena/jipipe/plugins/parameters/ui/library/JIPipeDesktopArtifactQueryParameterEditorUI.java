@@ -29,13 +29,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeArtifactQueryParameter> {
 
     private final JButton button = new JButton();
     private final List<JIPipeArtifact> availableArtifacts = new ArrayList<>();
 
     public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeArtifactQueryParameter.class, parameters);
         initialize();
         reloadArtifacts();
         reload();
@@ -90,7 +90,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
 
     @Override
     public void reload() {
-        JIPipeArtifactQueryParameter queryParameter = getParameter(JIPipeArtifactQueryParameter.class);
+        JIPipeArtifactQueryParameter queryParameter = getParameter();
         button.setText(StringUtils.orElse(queryParameter.getQuery(), "<None>"));
     }
 

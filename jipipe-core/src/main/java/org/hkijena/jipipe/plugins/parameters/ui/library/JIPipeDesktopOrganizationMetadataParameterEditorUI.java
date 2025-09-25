@@ -26,14 +26,14 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeOrganizationMetadata> {
 
     private final JLabel nameLabel = new JLabel();
     private final JLabel websiteLabel = new JLabel();
     private final JLabel rorLabel = new JLabel();
 
     public JIPipeDesktopOrganizationMetadataParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeOrganizationMetadata.class, parameters);
         initialize();
         reload();
     }
@@ -80,12 +80,12 @@ public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDe
     }
 
     private void copyOrganization() {
-        JIPipeOrganizationMetadata parameter = getParameter(JIPipeOrganizationMetadata.class);
+        JIPipeOrganizationMetadata parameter = getParameter();
         UIUtils.copyToClipboard(JsonUtils.toPrettyJsonString(parameter));
     }
 
     private void editOrganization() {
-        JIPipeOrganizationMetadata parameter = getParameter(JIPipeOrganizationMetadata.class);
+        JIPipeOrganizationMetadata parameter = getParameter();
         JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(),
                 parameter,
                 new MarkdownText("# Edit organization\n\nUse this editor to update organization metadata."),
@@ -101,7 +101,7 @@ public class JIPipeDesktopOrganizationMetadataParameterEditorUI extends JIPipeDe
 
     @Override
     public void reload() {
-        JIPipeOrganizationMetadata organization = getParameter(JIPipeOrganizationMetadata.class);
+        JIPipeOrganizationMetadata organization = getParameter();
         if (!StringUtils.isNullOrEmpty(organization.getName())) {
             nameLabel.setText(organization.getName());
             nameLabel.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());

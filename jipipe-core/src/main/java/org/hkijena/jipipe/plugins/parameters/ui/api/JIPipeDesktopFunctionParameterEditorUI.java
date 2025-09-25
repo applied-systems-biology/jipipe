@@ -28,12 +28,12 @@ import java.awt.*;
 /**
  * Editor for {@link JIPipeFunctionParameter}
  */
-public class JIPipeDesktopFunctionParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopFunctionParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeFunctionParameter> {
 
     private final JIPipeDesktopFormPanel formPanel;
 
     public JIPipeDesktopFunctionParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeFunctionParameter.class, parameters);
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
 //        JToolBar toolBar = new JToolBar();
@@ -53,7 +53,7 @@ public class JIPipeDesktopFunctionParameterEditorUI extends JIPipeDesktopParamet
     public void reload() {
         formPanel.clear();
 
-        JIPipeFunctionParameter<?, ?, ?> functionParameter = getParameter(JIPipeFunctionParameter.class);
+        JIPipeFunctionParameter<?, ?, ?> functionParameter = getParameter();
         JIPipeFunctionParameterInputAccess<Object, Object, Object> inputAccess = new JIPipeFunctionParameterInputAccess<>(getParameterAccess());
         JIPipeFunctionParameterParameterAccess<Object, Object, Object> parameterAccess = new JIPipeFunctionParameterParameterAccess<>(getParameterAccess());
         JIPipeFunctionParameterOutputAccess<Object, Object, Object> outputAccess = new JIPipeFunctionParameterOutputAccess<>(getParameterAccess());

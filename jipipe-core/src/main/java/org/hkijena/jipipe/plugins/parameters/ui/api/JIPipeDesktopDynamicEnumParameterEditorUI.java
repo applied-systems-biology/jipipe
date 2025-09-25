@@ -32,13 +32,13 @@ import java.util.function.Supplier;
 /**
  * A parameter editor UI that works for all enumerations
  */
-public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDynamicEnumParameter> {
 
     private JComboBox<Object> comboBox;
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopDynamicEnumParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeDynamicEnumParameter.class, parameters);
         initialize();
         reload();
     }
@@ -50,7 +50,7 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
 
     @Override
     public void reload() {
-        JIPipeDynamicEnumParameter<Object> parameter = getParameter(JIPipeDynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<Object> parameter = getParameter();
         if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
             comboBox.setSelectedItem(parameter.getValue());
         }
@@ -61,7 +61,7 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
 
         EnumParameterSettings enumSettings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
 
-        JIPipeDynamicEnumParameter<Object> parameter = getParameter(JIPipeDynamicEnumParameter.class);
+        JIPipeDynamicEnumParameter<Object> parameter = getParameter();
         Object[] values;
         if (parameter.getAllowedValues() != null) {
             values = parameter.getAllowedValues().toArray();

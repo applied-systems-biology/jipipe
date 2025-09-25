@@ -35,7 +35,7 @@ import java.util.Objects;
 /**
  * A UI for a parameter type
  */
-public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbenchPanel implements Contextual, Disposable, JIPipeParameterCollection.ParameterChangedEventListener {
+public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWorkbenchPanel implements Contextual, Disposable, JIPipeParameterCollection.ParameterChangedEventListener {
     public static final int CONTROL_STYLE_PANEL = 1;
     public static final int CONTROL_STYLE_LIST = 2;
     public static final int CONTROL_STYLE_CHECKBOX = 4;
@@ -43,13 +43,15 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
     private final JIPipeParameterTree parameterTree;
     private final Object contextParent;
     private JIPipeParameterAccess parameterAccess;
+    private final Class<T> editorParameterClass;
     private Context context;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
 
 
-    public JIPipeDesktopParameterEditorUI(InitializationParameters initializationParameters) {
+    public JIPipeDesktopParameterEditorUI(Class<T> editorParameterClass, InitializationParameters initializationParameters) {
         super(initializationParameters.workbench);
+        this.editorParameterClass = editorParameterClass;
         this.context = initializationParameters.workbench.getContext();
         this.parameterTree = initializationParameters.parameterTree;
         this.contextParent = initializationParameters.parent;
@@ -70,11 +72,9 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
      * Gets or creates a parameter instance.
      * Safe to be called within reload()
      *
-     * @param klass parameter class
-     * @param <T>   parameter class
      * @return parameter instance. never null.
      */
-    public <T> T getParameter(Class<T> klass) {
+    public T getParameter() {
         T value = (T) getParameterAccess().get(getParameterAccess().getFieldClass());
         if (value == null) {
             ++preventReload;
@@ -253,6 +253,16 @@ public abstract class JIPipeDesktopParameterEditorUI extends JIPipeDesktopWorkbe
      */
     public Object getContextParent() {
         return contextParent;
+    }
+
+    /**
+     * The class this editor was constructed with.
+     * May differ from the real parameter type (accessible through getAccess().getFieldClass())
+     * Used by getParameter() for type inference purposes only
+     * @return the editor's parameter class
+     */
+    public Class<T> getEditorParameterClass() {
+        return editorParameterClass;
     }
 
     public static class InitializationParameters {

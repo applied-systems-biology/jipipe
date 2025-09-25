@@ -34,12 +34,12 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class JIPipeDesktopImageParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopImageParameterEditorUI extends JIPipeDesktopParameterEditorUI<ImageParameter> {
 
     private final JLabel imagePreview = new JLabel();
 
     public JIPipeDesktopImageParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(ImageParameter.class, parameters);
         initialize();
         reload();
     }
@@ -117,7 +117,7 @@ public class JIPipeDesktopImageParameterEditorUI extends JIPipeDesktopParameterE
 
     @Override
     public void reload() {
-        ImageParameter parameter = getParameter(ImageParameter.class);
+        ImageParameter parameter = getParameter();
         if (parameter.getImage() == null) {
             imagePreview.setText("NA");
             imagePreview.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));

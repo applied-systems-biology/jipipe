@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Parameter editor for {@link JIPipeScriptParameter}
  */
-public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeScriptParameter> {
 
     private static final List<ExternalEditor> OPENED_EXTERNAL_EDITORS = new ArrayList<>();
     private CustomEditorPane textArea;
@@ -58,14 +58,14 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
     private JButton closeExternalEditorsButton;
 
     public JIPipeDesktopScriptParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeScriptParameter.class, parameters);
         initialize();
         reload();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         collapseInfoLabel = new JLabel("The code is hidden",
                 JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"),
                 JLabel.LEFT);
@@ -157,13 +157,13 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
     private void toggleExternalCode() {
         closeExistingExternalEditors();
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         code.getExternalScriptFile().setEnabled(!code.getExternalScriptFile().isEnabled());
         setParameter(code, true);
     }
 
     private void toggleCollapse() {
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         code.setCollapsed(!code.isCollapsed());
         setParameter(code, true);
     }
@@ -185,7 +185,7 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
     @Override
     public void reload() {
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         if (!code.isCollapsed() || !isCollapsed) {
             remove(textArea);
             remove(collapseInfoLabel);

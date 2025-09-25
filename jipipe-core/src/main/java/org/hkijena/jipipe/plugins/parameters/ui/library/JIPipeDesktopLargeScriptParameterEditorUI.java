@@ -29,18 +29,18 @@ import java.util.Objects;
 /**
  * An editor for {@link JIPipeScriptParameter}
  */
-public class JIPipeDesktopLargeScriptParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopLargeScriptParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeScriptParameter> {
 
     private CustomEditorPane textArea;
 
     public JIPipeDesktopLargeScriptParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeScriptParameter.class, parameters);
         initialize();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         textArea = new CustomEditorPane();
         ThemeUtils.applyThemeToCodeEditor(textArea);
         textArea.setHighlightCurrentLine(false);
@@ -92,7 +92,7 @@ public class JIPipeDesktopLargeScriptParameterEditorUI extends JIPipeDesktopPara
 
     @Override
     public void reload() {
-        JIPipeScriptParameter code = getParameter(JIPipeScriptParameter.class);
+        JIPipeScriptParameter code = getParameter();
         if (!Objects.equals(textArea.getText(), code.getCode()))
             textArea.setText(code.getCode());
     }

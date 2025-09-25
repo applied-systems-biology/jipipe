@@ -29,12 +29,12 @@ import java.awt.*;
 /**
  * UI for {@link ParameterTable}
  */
-public class JIPipeDesktopParameterTableEditorUI extends JIPipeDesktopParameterEditorUI implements ParameterTable.ModelChangedEventListener {
+public class JIPipeDesktopParameterTableEditorUI extends JIPipeDesktopParameterEditorUI<ParameterTable> implements ParameterTable.ModelChangedEventListener {
 
     private JXTable table;
 
     public JIPipeDesktopParameterTableEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(ParameterTable.class, parameters);
         initialize();
         reload();
     }
@@ -72,7 +72,7 @@ public class JIPipeDesktopParameterTableEditorUI extends JIPipeDesktopParameterE
         ParameterTableEditorWindow window = ParameterTableEditorWindow.getInstance(getDesktopWorkbench(),
                 getDesktopWorkbench().getWindow(),
                 getParameterAccess(),
-                getParameter(ParameterTable.class),
+                getParameter(),
                 getCanvasUI());
         if (getParameterAccess().getSource() instanceof JIPipeGraphNode) {
             window.setTitle(((JIPipeGraphNode) getParameterAccess().getSource()).getName() + ": " + getParameterAccess().getName());
@@ -90,7 +90,7 @@ public class JIPipeDesktopParameterTableEditorUI extends JIPipeDesktopParameterE
             ((ParameterTable) table.getModel()).getModelChangedEventEmitter().unsubscribe(this);
         }
 
-        ParameterTable parameterTable = getParameter(ParameterTable.class);
+        ParameterTable parameterTable = getParameter();
         if (parameterTable == null) {
             table.setModel(new DefaultTableModel());
         } else {

@@ -25,12 +25,12 @@ import java.io.File;
 /**
  * Editor for a {@link File} parameter
  */
-public class JIPipeDesktopFileParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopFileParameterEditorUI extends JIPipeDesktopParameterEditorUI<File> {
 
     private JIPipeDesktopPathEditorComponent pathEditor;
 
     public JIPipeDesktopFileParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(File.class, parameters);
         initialize();
 //        getWorkbenchUI().getProject().getEventBus().register(this);
     }
@@ -42,7 +42,7 @@ public class JIPipeDesktopFileParameterEditorUI extends JIPipeDesktopParameterEd
 
     @Override
     public void reload() {
-        pathEditor.setPath(getParameter(File.class).toPath());
+        pathEditor.setPath(getParameter().toPath());
     }
 
     private void initialize() {
@@ -54,7 +54,7 @@ public class JIPipeDesktopFileParameterEditorUI extends JIPipeDesktopParameterEd
             pathEditor.setPathMode(settings.pathMode());
         }
 
-        pathEditor.setPath(getParameter(File.class).toPath());
+        pathEditor.setPath(getParameter().toPath());
         add(pathEditor, BorderLayout.CENTER);
         pathEditor.addActionListener(e -> {
             setParameter(pathEditor.getPath().toFile(), false);

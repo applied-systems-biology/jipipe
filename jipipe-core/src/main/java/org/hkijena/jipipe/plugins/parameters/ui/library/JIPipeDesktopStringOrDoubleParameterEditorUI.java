@@ -25,14 +25,14 @@ import javax.swing.*;
 /**
  * A parameter editor UI for {@link StringOrDouble}
  */
-public class JIPipeDesktopStringOrDoubleParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopStringOrDoubleParameterEditorUI extends JIPipeDesktopParameterEditorUI<StringOrDouble> {
 
     private boolean isProcessing = false;
     private JToggleButton doubleToggle;
     private JToggleButton stringToggle;
 
     public JIPipeDesktopStringOrDoubleParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(StringOrDouble.class, parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -47,7 +47,7 @@ public class JIPipeDesktopStringOrDoubleParameterEditorUI extends JIPipeDesktopP
         isProcessing = true;
         removeAll();
 
-        StringOrDouble parameter = getParameter(StringOrDouble.class);
+        StringOrDouble parameter = getParameter();
         parameter.getParameterChangedEventEmitter().subscribeWeak(this);
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(parameter);
 
@@ -82,7 +82,7 @@ public class JIPipeDesktopStringOrDoubleParameterEditorUI extends JIPipeDesktopP
         if (isProcessing)
             return;
         isProcessing = true;
-        StringOrDouble parameter = getParameter(StringOrDouble.class);
+        StringOrDouble parameter = getParameter();
         if (parameter == null) {
             parameter = new StringOrDouble();
         }

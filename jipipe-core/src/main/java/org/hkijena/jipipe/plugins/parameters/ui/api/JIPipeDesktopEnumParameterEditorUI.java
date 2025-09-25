@@ -32,14 +32,14 @@ import java.util.Objects;
 /**
  * A parameter editor UI that works for all enumerations
  */
-public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
 
     private JComboBox<Object> comboBox;
     private JButton currentlyDisplayed;
     private JIPipeEnumParameterItemInfo enumItemInfo = new JIPipeDefaultEnumItemInfo();
 
     public JIPipeDesktopEnumParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Object.class, parameters);
         initialize();
         reload();
     }

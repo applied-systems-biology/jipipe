@@ -24,10 +24,10 @@ import java.awt.*;
 /**
  * Editor for {@link org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData}
  */
-public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopResultsTableDataParameterEditorUI extends JIPipeDesktopParameterEditorUI<ResultsTableData> {
 
-    public ResultsTableDataDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+    public JIPipeDesktopResultsTableDataParameterEditorUI(InitializationParameters parameters) {
+        super(ResultsTableData.class, parameters);
         initialize();
     }
 
@@ -39,7 +39,7 @@ public class ResultsTableDataDesktopParameterEditorUI extends JIPipeDesktopParam
     }
 
     private void editParameters() {
-        ResultsTableData table = getParameter(ResultsTableData.class);
+        ResultsTableData table = getParameter();
         JIPipeDesktopTableEditor.openWindow(getDesktopWorkbench(), table, "Edit table");
     }
 

@@ -24,12 +24,12 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeNodeTemplate> {
 
     private JButton infoButton;
 
     public JIPipeNodeTemplateDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeNodeTemplate.class, parameters);
         initialize();
         reload();
     }
@@ -46,7 +46,7 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
     }
 
     private void editParameters() {
-        JIPipeNodeTemplate parameter = new JIPipeNodeTemplate(getParameter(JIPipeNodeTemplate.class));
+        JIPipeNodeTemplate parameter = new JIPipeNodeTemplate(getParameter());
         if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), parameter, new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 JIPipeDesktopParameterFormPanel.WITH_SCROLLING | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             setParameter(parameter, true);
@@ -60,7 +60,7 @@ public class JIPipeNodeTemplateDesktopParameterEditorUI extends JIPipeDesktopPar
 
     @Override
     public void reload() {
-        JIPipeNodeTemplate parameter = getParameter(JIPipeNodeTemplate.class);
+        JIPipeNodeTemplate parameter = getParameter();
         JIPipeGraph graph = parameter.getGraph();
         if (graph != null) {
             if (graph.getGraphNodes().size() == 1) {

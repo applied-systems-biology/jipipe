@@ -25,14 +25,14 @@ import java.awt.*;
 /**
  * Parameter editor for {@link String}
  */
-public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterEditorUI<Color> {
 
     private final SolidColorIcon icon = new SolidColorIcon();
     private boolean isReloading = false;
     private JButton currentlyDisplayed;
 
     public JIPipeDesktopColorParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Color.class, parameters);
         initialize();
         reload();
     }
@@ -52,7 +52,7 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
     }
 
     private void pickColor() {
-        Color value = getParameter(Color.class);
+        Color value = getParameter();
         value = JColorChooser.showDialog(this, "Select color", value);
         if (value != null) {
             setParameter(value, true);
@@ -69,7 +69,7 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
         if (isReloading)
             return;
         isReloading = true;
-        Color value = getParameter(Color.class);
+        Color value = getParameter();
         if (value == null) {
             value = Color.WHITE;
         }

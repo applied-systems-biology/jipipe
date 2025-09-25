@@ -30,13 +30,13 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Editor for a any numeric parameter
+ * Editor for any numeric parameter (this is why T is Object)
  */
-public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopNumberParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
     private JTextField numberField;
 
     public JIPipeDesktopNumberParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Object.class, parameters);
         initialize();
         reload();
     }

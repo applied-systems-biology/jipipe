@@ -30,12 +30,12 @@ import java.util.stream.Collectors;
 /**
  * UI around {@link JIPipeParameterCollectionVisibilities}
  */
-public class JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeParameterCollectionVisibilities> {
 
     private JIPipeDesktopFormPanel formPanel;
 
     public JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeParameterCollectionVisibilities.class, parameters);
         initialize();
         reload();
     }
@@ -56,7 +56,7 @@ public class JIPipeDesktopParameterCollectionVisibilitiesParameterEditorUI exten
     @Override
     public void reload() {
         formPanel.clear();
-        JIPipeParameterCollectionVisibilities visibilities = getParameter(JIPipeParameterCollectionVisibilities.class);
+        JIPipeParameterCollectionVisibilities visibilities = getParameter();
         Map<String, JIPipeParameterAccess> parameters = visibilities.getAvailableParameters();
         Map<Object, List<String>> groupedByHolder = parameters.keySet().stream().collect(Collectors.groupingBy(key -> parameters.get(key).getSource()));
 

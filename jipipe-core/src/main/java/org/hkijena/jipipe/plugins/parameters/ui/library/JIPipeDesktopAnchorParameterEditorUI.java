@@ -28,13 +28,13 @@ import java.util.Map;
 /**
  * Editor for {@link Margin}
  */
-public class JIPipeDesktopAnchorParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopAnchorParameterEditorUI extends JIPipeDesktopParameterEditorUI<Anchor> {
 
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private boolean skipNextReload = false;
 
     public JIPipeDesktopAnchorParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(Anchor.class, parameters);
         initialize();
         reload();
     }
@@ -133,7 +133,7 @@ public class JIPipeDesktopAnchorParameterEditorUI extends JIPipeDesktopParameter
             skipNextReload = false;
             return;
         }
-        Anchor anchor = getParameter(Anchor.class);
+        Anchor anchor = getParameter();
         anchorSelectionMap.get(anchor).setSelected(true);
 
         AnchorParameterSettings settings = getParameterAccess().getAnnotationOfType(AnchorParameterSettings.class);

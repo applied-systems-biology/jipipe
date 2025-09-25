@@ -28,10 +28,10 @@ import java.awt.*;
 /**
  * Editor for {@link StringPatternExtraction}
  */
-public class JIPipeDesktopStringPatternExtractionParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopStringPatternExtractionParameterEditorUI extends JIPipeDesktopParameterEditorUI<StringPatternExtraction> {
 
     public JIPipeDesktopStringPatternExtractionParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(StringPatternExtraction.class, parameters);
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
         reload();
     }
@@ -44,7 +44,7 @@ public class JIPipeDesktopStringPatternExtractionParameterEditorUI extends JIPip
     @Override
     public void reload() {
         removeAll();
-        StringPatternExtraction filter = getParameter(StringPatternExtraction.class);
+        StringPatternExtraction filter = getParameter();
 
         switch (filter.getMode()) {
             case Regex:

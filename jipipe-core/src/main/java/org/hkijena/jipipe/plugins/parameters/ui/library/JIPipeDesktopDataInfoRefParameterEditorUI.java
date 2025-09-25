@@ -35,7 +35,7 @@ import java.util.Set;
 /**
  * Parameter for {@link JIPipeDataInfoRef}
  */
-public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeDesktopDataTypePicker.SelectedDataTypesChangedEventListener {
+public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeDataInfoRef> implements JIPipeDesktopDataTypePicker.SelectedDataTypesChangedEventListener {
 
     private JIPipeDesktopDataTypePicker picker;
     private JButton currentlyDisplayed;
@@ -43,7 +43,7 @@ public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopPara
     private boolean isReloading = false;
 
     public JIPipeDesktopDataInfoRefParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(JIPipeDataInfoRef.class, parameters);
         initialize();
         reload();
     }
@@ -80,7 +80,7 @@ public class JIPipeDesktopDataInfoRefParameterEditorUI extends JIPipeDesktopPara
         isReloading = true;
         JIPipeDataInfo info;
         try {
-            JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
+            JIPipeDataInfoRef infoRef = getParameter();
             info = infoRef.getInfo();
         } catch (NullPointerException ignored) {
             info = null;

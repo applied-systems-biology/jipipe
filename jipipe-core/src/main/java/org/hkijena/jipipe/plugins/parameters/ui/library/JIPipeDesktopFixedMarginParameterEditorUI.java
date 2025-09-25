@@ -31,14 +31,14 @@ import java.util.Set;
 /**
  * Editor for {@link FixedMargin}
  */
-public class JIPipeDesktopFixedMarginParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class JIPipeDesktopFixedMarginParameterEditorUI extends JIPipeDesktopParameterEditorUI<FixedMargin> {
 
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
     private boolean skipNextReload = false;
     private JIPipeDesktopParameterFormPanel parameterPanel;
 
     public JIPipeDesktopFixedMarginParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(FixedMargin.class, parameters);
         initialize();
         reload();
     }
@@ -129,7 +129,7 @@ public class JIPipeDesktopFixedMarginParameterEditorUI extends JIPipeDesktopPara
         for (Map.Entry<Anchor, JToggleButton> entry : anchorSelectionMap.entrySet()) {
             entry.getValue().addActionListener(e -> {
                 if (entry.getValue().isSelected()) {
-                    FixedMargin roi = getParameter(FixedMargin.class);
+                    FixedMargin roi = getParameter();
                     roi.setAnchor(entry.getKey());
                     setParameter(roi, true);
                 }
@@ -148,7 +148,7 @@ public class JIPipeDesktopFixedMarginParameterEditorUI extends JIPipeDesktopPara
             skipNextReload = false;
             return;
         }
-        FixedMargin roi = getParameter(FixedMargin.class);
+        FixedMargin roi = getParameter();
         anchorSelectionMap.get(roi.getAnchor()).setSelected(true);
 
         // Update the parameter panel
