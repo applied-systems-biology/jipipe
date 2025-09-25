@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;

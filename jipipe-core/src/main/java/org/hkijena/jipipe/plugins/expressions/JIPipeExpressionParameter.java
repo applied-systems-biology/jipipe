@@ -21,12 +21,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashSet;
 
 /**

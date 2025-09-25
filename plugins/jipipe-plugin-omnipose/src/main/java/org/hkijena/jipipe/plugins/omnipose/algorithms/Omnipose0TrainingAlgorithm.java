@@ -53,8 +53,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-
-import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;

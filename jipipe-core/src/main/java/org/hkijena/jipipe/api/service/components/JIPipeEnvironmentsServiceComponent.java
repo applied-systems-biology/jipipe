@@ -26,7 +26,10 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A registry for external environments
@@ -85,8 +88,8 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
         // Register as parameter
         registerEnvironmentParameter("env:" + id, environmentClass, name, description, JIPipeParameterArchetype.Value);
-        registerEnvironmentParameter( "env: " + id + ":optional", optionalEnvironmentClass, name, description, JIPipeParameterArchetype.OptionalValue);
-        registerEnvironmentParameter( "env: " + id + ":list", environmentListClass, name, description, JIPipeParameterArchetype.List);
+        registerEnvironmentParameter("env: " + id + ":optional", optionalEnvironmentClass, name, description, JIPipeParameterArchetype.OptionalValue);
+        registerEnvironmentParameter("env: " + id + ":list", environmentListClass, name, description, JIPipeParameterArchetype.List);
         getService().getParameterTypes().registerParameterEditor(environmentClass, JIPipeDesktopExternalEnvironmentParameterEditorUI.class);
     }
 
@@ -94,7 +97,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         JIPipeDefaultMutableParameterTypeInfo info = new JIPipeDefaultMutableParameterTypeInfo(id,
                 klass,
                 () -> ReflectionUtils.newInstance(klass),
-               o -> ReflectionUtils.newInstance(klass, o),
+                o -> ReflectionUtils.newInstance(klass, o),
                 name,
                 description, archetype);
         JIPipeParameterTypesServiceComponent parameterTypes = getService().getParameterTypes();
@@ -135,11 +138,12 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     /**
      * Gets a fully configured environment
-     * @param klass the environment class
+     *
+     * @param klass              the environment class
      * @param configurationCache the environment cache
-     * @param progressInfo the progress info
+     * @param progressInfo       the progress info
+     * @param <T>                the environment class
      * @return the environment
-     * @param <T> the environment class
      */
     public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
         return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
@@ -147,9 +151,10 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     /**
      * Returns the environment reference for the environment class
+     *
      * @param klass the environment class
+     * @param <T>   the environment type
      * @return the environment reference
-     * @param <T> the environment type
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
         return new JIPipeEnvironmentConfigurator<>(klass, null, null, configurationCache);

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.*;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeMutableDependency;
@@ -56,9 +55,9 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -1000,7 +999,7 @@ public class JIPipeProject implements JIPipeValidatable {
         Set<JIPipeEnvironment> alreadyAdded = new HashSet<>();
         for (JIPipeEnvironmentConfigurator<?> configurator : externalEnvironments) {
             JIPipeEnvironment environment = configurator.getBaseEnvironment();
-            if(!alreadyAdded.contains(environment)) {
+            if (!alreadyAdded.contains(environment)) {
                 generator.writeObject(environment);
                 alreadyAdded.add(environment);
             }
@@ -1372,11 +1371,12 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Gets a fully configured environment
-     * @param klass the environment class
+     *
+     * @param klass              the environment class
      * @param configurationCache the environment cache
-     * @param progressInfo the progress info
+     * @param progressInfo       the progress info
+     * @param <T>                the environment class
      * @return the environment
-     * @param <T> the environment class
      */
     public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
         return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
@@ -1384,9 +1384,10 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Returns the environment reference for the environment class
+     *
      * @param klass the environment class
+     * @param <T>   the environment type
      * @return the environment reference
-     * @param <T> the environment type
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
         return new JIPipeEnvironmentConfigurator<>(klass, null, this, configurationCache);

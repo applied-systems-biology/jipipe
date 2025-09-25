@@ -33,7 +33,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
@@ -51,14 +53,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-
-import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0PretrainedModel;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.plugins.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;

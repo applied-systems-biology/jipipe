@@ -41,8 +41,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
 import javax.swing.*;

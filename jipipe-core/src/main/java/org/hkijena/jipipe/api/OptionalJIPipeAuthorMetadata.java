@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 public class OptionalJIPipeAuthorMetadata extends JIPipeOptionalParameter<JIPipeAuthorMetadata> {

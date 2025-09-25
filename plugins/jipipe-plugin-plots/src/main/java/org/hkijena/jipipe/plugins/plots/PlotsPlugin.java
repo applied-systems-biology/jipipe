@@ -14,16 +14,19 @@
 package org.hkijena.jipipe.plugins.plots;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.*;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DataTableImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;

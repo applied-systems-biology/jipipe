@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollection {
     private SpotFeature feature;

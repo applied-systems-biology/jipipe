@@ -2,12 +2,12 @@ package org.hkijena.jipipe.cli;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;

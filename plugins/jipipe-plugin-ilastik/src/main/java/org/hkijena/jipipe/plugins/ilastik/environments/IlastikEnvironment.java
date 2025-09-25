@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;

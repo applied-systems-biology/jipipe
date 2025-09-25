@@ -301,7 +301,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                                             JIPipeArtifact candidate1 = new JIPipeArtifact(candidate);
                                             candidate1.setClassifier("*");
                                             String candidate1Query = candidate1.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
-                                            if(!alreadyAdded.contains(candidate1Query)) {
+                                            if (!alreadyAdded.contains(candidate1Query)) {
                                                 revisionUpgrades.add(candidate1);
                                                 alreadyAdded.add(candidate1Query);
                                             }

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.service.events;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.service.JIPipeService;
 
@@ -13,7 +12,7 @@ public class JIPipeDatatypeRegisteredEvent extends AbstractJIPipeEvent {
 
     /**
      * @param service the event source
-     * @param id       the data type id
+     * @param id      the data type id
      */
     public JIPipeDatatypeRegisteredEvent(JIPipeService service, String id) {
         super(service);

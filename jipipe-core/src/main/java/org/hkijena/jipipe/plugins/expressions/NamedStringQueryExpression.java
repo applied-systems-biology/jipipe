@@ -14,11 +14,7 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @AddJIPipeDocumentationDescription(description = "Returns the named strings only if the expression returns TRUE for key value pair. Within the expression, there are two variables available: 'key' and 'value'. Example: <pre>(key CONTAINS \"sample\") AND (value CONTAINS \"aspergillus\")</pre>")
 public class NamedStringQueryExpression extends JIPipePairParameter<String, StringQueryExpression> {

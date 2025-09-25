@@ -32,13 +32,12 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 

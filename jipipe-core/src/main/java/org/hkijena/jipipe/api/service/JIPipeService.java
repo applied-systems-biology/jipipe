@@ -31,7 +31,9 @@ import org.scijava.plugin.PluginService;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Contains all JIPipe resources
@@ -39,13 +41,8 @@ import java.util.*;
 @Plugin(type = Service.class)
 public class JIPipeService extends AbstractService implements JIPipeValidatable {
 
-    private JIPipeServiceState state = JIPipeServiceState.Uninitialized;
     private final JIPipeInitializationReport initializationReport = new JIPipeInitializationReport();
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-
-    private JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
-    private JIPipeServiceInitializer initializer = new JIPipeServiceDefaultInitializer(this);
-
     private final JIPipeNodesServiceComponent nodes;
     private final JIPipeDatatypesServiceComponent dataTypes;
     private final JIPipeImageJAdaptersServiceComponent imageJDataAdapters;
@@ -63,16 +60,17 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeNodeTemplatesServiceComponent nodeTemplates;
     private final JIPipeRecentProjectsRegistry recentProjects;
     private final JIPipeMetadataTypesServiceComponent metadataTypes;
-
-    @Parameter
-    private LogService logService;
-    @Parameter
-    private PluginService pluginService;
-
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
     private final JIPipeNodeInfoRegisteredEventEmitter nodeInfoRegisteredEventEmitter = new JIPipeNodeInfoRegisteredEventEmitter();
+    private JIPipeServiceState state = JIPipeServiceState.Uninitialized;
+    private JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
+    private JIPipeServiceInitializer initializer = new JIPipeServiceDefaultInitializer(this);
+    @Parameter
+    private LogService logService;
+    @Parameter
+    private PluginService pluginService;
     private boolean autosaveSettings;
 
     public JIPipeService() {
@@ -269,8 +267,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
                 initializer.runInitialization();
                 state = JIPipeServiceState.Initialized;
                 initializer.runPostprocessing();
-            }
-            catch (Throwable e) {
+            } catch (Throwable e) {
                 state = JIPipeServiceState.Error;
                 e.printStackTrace();
             }

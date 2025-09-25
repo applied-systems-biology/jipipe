@@ -33,12 +33,7 @@ import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROPlateReferenceData;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROKeyValuePairToAnnotationImporter;
 import org.hkijena.jipipe.plugins.omero.parameters.OMEROTagToAnnotationImporter;

@@ -18,8 +18,6 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.api.service.JIPipeService;
-import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -28,25 +26,26 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.service.components.*;
-import org.hkijena.jipipe.api.validation.*;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.api.service.components.JIPipeCustomMenuItemsServiceComponent;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
-import javax.swing.Timer;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.regex.Pattern;
+import java.util.Set;
 
 /**
  * Wrapper/helper class around a static {@link JIPipeService}
@@ -171,8 +170,8 @@ public final class JIPipe {
      * Will create a new JIPipe instance, so be careful.
      * We recommend using the ensureInstance() method.
      *
-     * @param context the context
-     * @param settings    the initialization settings
+     * @param context  the context
+     * @param settings the initialization settings
      */
     public static JIPipeService createInstance(Context context, JIPipeServiceInitializationSettings settings) {
         PluginService pluginService = context.getService(PluginService.class);
@@ -431,7 +430,7 @@ public final class JIPipe {
      * @param exitCode the exit code
      */
     public static void exitLater(int exitCode) {
-        if(instance != null && instance.isAutosaveSettings()) {
+        if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
         Timer timer = new Timer(500, e -> {
@@ -445,6 +444,7 @@ public final class JIPipe {
     /**
      * Gets the global JIPipe core resource manager
      * Convenience wrapper
+     *
      * @return the resource manager
      */
     public static JIPipeResourceManager getResources() {
@@ -456,7 +456,7 @@ public final class JIPipe {
      * Auto-saves application settings if they are enabled
      */
     public static void autoSaveSettings() {
-        if(instance != null && instance.isAutosaveSettings()) {
+        if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
     }

@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
-import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 
 import javax.swing.*;
 import java.io.IOException;

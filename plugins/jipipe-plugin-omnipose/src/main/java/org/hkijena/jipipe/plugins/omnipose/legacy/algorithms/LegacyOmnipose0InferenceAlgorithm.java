@@ -52,8 +52,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-
-import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
 import org.hkijena.jipipe.plugins.omnipose.environments.Omnipose0Environment;
 import org.hkijena.jipipe.plugins.omnipose.legacy.parameters.LegacyOmnipose0Model;
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresholdSettings;

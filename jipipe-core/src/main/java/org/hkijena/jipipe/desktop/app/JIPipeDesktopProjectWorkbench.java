@@ -24,8 +24,6 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
-import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
-import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -34,6 +32,8 @@ import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
+import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -1145,11 +1145,12 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     /**
      * Gets a fully configured environment
-     * @param klass the environment class
+     *
+     * @param klass              the environment class
      * @param configurationCache the environment cache
-     * @param progressInfo the progress info
+     * @param progressInfo       the progress info
+     * @param <T>                the environment class
      * @return the environment
-     * @param <T> the environment class
      */
     @Override
     public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
@@ -1158,9 +1159,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     /**
      * Returns the environment reference for the environment class
+     *
      * @param klass the environment class
+     * @param <T>   the environment type
      * @return the environment reference
-     * @param <T> the environment type
      */
     @Override
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {

@@ -32,9 +32,9 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.strings.XMLData;

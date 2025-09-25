@@ -308,7 +308,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
                 for (JIPipeEnvironment externalEnvironment : externalEnvironments.stream().map((JIPipeEnvironmentConfigurator<?> jiPipeEnvironmentConfigurator) ->
-                        (JIPipeEnvironment)jiPipeEnvironmentConfigurator.get(JIPipeProgressInfo.SILENT)).collect(Collectors.toSet())) {
+                        (JIPipeEnvironment) jiPipeEnvironmentConfigurator.get(JIPipeProgressInfo.SILENT)).collect(Collectors.toSet())) {
                     stringBuilder.append("<tr>");
                     stringBuilder.append("<td>").append(escaper.escape(externalEnvironment.getClass().getSimpleName())).append("</td>");
                     stringBuilder.append("<td><strong>").append(escaper.escape(externalEnvironment.getName())).append("</strong></td>");

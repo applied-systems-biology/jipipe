@@ -86,11 +86,11 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
      */
     public T get(JIPipeProgressInfo progressInfo) {
         resolveBaseEnvironment(progressInfo.resolve("Resolve environment " + environmentInfo.getId()));
-        if(baseEnvironment == null) {
+        if (baseEnvironment == null) {
             return null;
         }
         JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
-        if(environment == null) {
+        if (environment == null) {
             return configure(progressInfo);
         }
         return (T) environment;
@@ -106,9 +106,9 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
      */
     public void showDialogAndGetLater(JIPipeDesktopWorkbench workbench, Component parent, String title, Consumer<T> action) {
         resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
-        if(baseEnvironment == null) {
+        if (baseEnvironment == null) {
             String errorMessage = "<html><p>Unable to find a suitable environment for '" + environmentInfo.getName() + "'.</p>";
-            if(environmentInfo.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+            if (environmentInfo.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
                 errorMessage += "<ul>";
                 if (graphNode != null) {
                     errorMessage += "<li>Check if you have a wrongly configured environment override in the node '" + graphNode.getDisplayName() + "'</li>";
@@ -124,15 +124,15 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
             return;
         }
         JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
-        if(environment == null) {
+        if (environment == null) {
 
             // Ask the user if they are prepared for downloading the artifact package
             T configuredEnvironment = JIPipe.duplicateParameter(baseEnvironment);
-            if(configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
+            if (configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
                 if (configuredArtifactEnvironment.isLoadFromArtifact()) {
                     JIPipeArtifact artifact = configureArtifactQuery(configuredArtifactEnvironment, JIPipeProgressInfo.SILENT);
-                    if(artifact instanceof JIPipeRemoteArtifact) {
-                        if(JOptionPane.showConfirmDialog(parent, "<html>JIPipe will need to download the artifact package <pre>" + artifact.getFullId() + "</pre> " +
+                    if (artifact instanceof JIPipeRemoteArtifact) {
+                        if (JOptionPane.showConfirmDialog(parent, "<html>JIPipe will need to download the artifact package <pre>" + artifact.getFullId() + "</pre> " +
                                 "Depending on the package and your internet connection this will take a few minutes.<br/>Do you want to continue?</html>", title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
                             return;
                         }
@@ -164,8 +164,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
             };
 
             JIPipeDesktopRunExecuteUI.runInDialog(workbench, parent, run);
-        }
-        else {
+        } else {
             action.accept((T) environment);
         }
     }
@@ -174,12 +173,13 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
      * Fully configures the environment and stores the resulting fully configured environment into the cache
      * Also ensures that artifacts are downloaded.
      * Please note that this function will do a FULL RECONFIGURE. Use get() if you just want the environment.
+     *
      * @param progressInfo the progress info
      * @return the fully configured environment
      */
     public T configure(JIPipeProgressInfo progressInfo) {
         resolveBaseEnvironment(progressInfo);
-        if(baseEnvironment == null) {
+        if (baseEnvironment == null) {
             progressInfo.log("[ERROR] Configuration not possible without base environment!");
             throw new IllegalStateException("[ERROR] Configuration not possible without base environment!");
         }
@@ -187,20 +187,20 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
         // We will create a copy where parameters are fully configured
         T configuredEnvironment = JIPipe.duplicateParameter(baseEnvironment);
 
-        if(configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
-            if(configuredArtifactEnvironment.isLoadFromArtifact()) {
+        if (configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
+            if (configuredArtifactEnvironment.isLoadFromArtifact()) {
                 // Artifact environments require two steps: (1) final artifact resolution (2) artifact download
                 JIPipeArtifact artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
 
                 // Write the full ID into the environment, so the artifact system can later do the autoconfiguration
                 configuredArtifactEnvironment.setArtifactQuery(new JIPipeArtifactQueryParameter(artifact.getFullId(JIPipeArtifact.ResolutionStatus.Full)));
 
-                if(artifact instanceof JIPipeRemoteArtifact) {
-                    downloadArtifact((JIPipeRemoteArtifact)artifact, progressInfo);
+                if (artifact instanceof JIPipeRemoteArtifact) {
+                    downloadArtifact((JIPipeRemoteArtifact) artifact, progressInfo);
                     artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
                 }
-                if(!(artifact instanceof JIPipeLocalArtifact)) {
-                    throw new IllegalStateException("Artifact download was unsuccessful: " +  artifact.getFullId() + " not local artifact after download!");
+                if (!(artifact instanceof JIPipeLocalArtifact)) {
+                    throw new IllegalStateException("Artifact download was unsuccessful: " + artifact.getFullId() + " not local artifact after download!");
                 }
 
                 // Apply the final configuration
@@ -270,7 +270,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
      * Ensures that the base (unconfigured) environment is selected and internally tracked
      */
     public void resolveBaseEnvironment(JIPipeProgressInfo progressInfo) {
-        if(baseEnvironment != null) {
+        if (baseEnvironment != null) {
             // Already resolved
             return;
         }
@@ -324,15 +324,14 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
         }
         {
             progressInfo.log("Trying SOURCE_TYPE_FALLBACK ...");
-            if(environmentInfo.isArtifact() && environmentInfo.hasArtifactQuery()) {
+            if (environmentInfo.isArtifact() && environmentInfo.hasArtifactQuery()) {
                 JIPipeArtifactEnvironment environment = (JIPipeArtifactEnvironment) ReflectionUtils.newInstance(environmentClass);
                 environment.setArtifactQuery(new JIPipeArtifactQueryParameter(environmentInfo.getArtifactQuery()));
                 environment.setLoadFromArtifact(true);
                 sourceType = SourceType.Fallback;
                 source = null;
                 baseEnvironment = (T) environment;
-            }
-            else {
+            } else {
                 progressInfo.log("[!] No fallback available (only artifacts + query)");
             }
         }

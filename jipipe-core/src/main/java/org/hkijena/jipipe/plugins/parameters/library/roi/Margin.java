@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 import java.awt.*;
 import java.util.HashSet;

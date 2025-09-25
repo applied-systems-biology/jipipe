@@ -52,7 +52,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
         Set<String> alreadyAdded = new HashSet<>();
         for (JIPipeArtifact artifact : cachedArtifacts) {
             String versionPinId = artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
-            if(!alreadyAdded.contains(versionPinId)) {
+            if (!alreadyAdded.contains(versionPinId)) {
                 JIPipeArtifact artifact1 = new JIPipeArtifact(artifact);
                 artifact1.setClassifier("*");
                 availableArtifacts.add(artifact1);

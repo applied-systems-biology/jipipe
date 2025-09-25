@@ -40,7 +40,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;

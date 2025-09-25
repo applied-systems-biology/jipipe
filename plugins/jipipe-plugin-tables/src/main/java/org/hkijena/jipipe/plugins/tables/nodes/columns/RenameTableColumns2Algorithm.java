@@ -31,9 +31,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 

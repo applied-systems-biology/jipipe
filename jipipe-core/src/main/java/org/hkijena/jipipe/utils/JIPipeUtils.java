@@ -13,6 +13,7 @@ public class JIPipeUtils {
 
     /**
      * Selects only {@link JIPipeAlgorithm} from a collection of {@link JIPipeGraphNode}
+     *
      * @param collection the input
      * @return only algorithms
      */

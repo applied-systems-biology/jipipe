@@ -132,7 +132,7 @@ public abstract class JIPipeServiceInitializer extends JIPipeServiceComponent {
         JIPipeDefaultEnvironmentsApplicationSettings settings = getService().getApplicationSettings().getById(JIPipeDefaultEnvironmentsApplicationSettings.ID, JIPipeDefaultEnvironmentsApplicationSettings.class);
         for (Map.Entry<String, JIPipeEnvironmentsServiceComponent.EnvironmentInfo> entry : getService().getEnvironments().getInfosById().entrySet()) {
             JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = entry.getValue();
-            if(info.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+            if (info.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
                 settings.addParameter(entry.getKey(), info.getOptionalEnvironmentClass(), info.getName(), info.getDescription() + ". " +
                         "Allows to override which environment is used if both node and project overrides are disabled. " +
                         "If disabled, JIPipe will automatically select the newest available and compatible environment on project creation.");

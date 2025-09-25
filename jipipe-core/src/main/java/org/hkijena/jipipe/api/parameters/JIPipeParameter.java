@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.parameters;
 
-import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.JIPipeDefaultResourceManagerSupplier;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Priority;
 
 import java.lang.annotation.ElementType;
@@ -84,12 +84,14 @@ public @interface JIPipeParameter {
 
     /**
      * The 16x16 icon name within JIPipe's the icon resource manager's database
+     *
      * @return the icon
      */
     String icon() default "";
 
     /**
      * Points towards the resource manager that contains the icon
+     *
      * @return supplier class with standard constructor that returns a {@link JIPipeResourceManager}
      */
     Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager() default JIPipeDefaultResourceManagerSupplier.class;

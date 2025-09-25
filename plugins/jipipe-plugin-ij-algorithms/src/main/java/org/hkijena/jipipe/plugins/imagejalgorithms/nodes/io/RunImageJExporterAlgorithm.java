@@ -34,13 +34,12 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExporterRef;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 

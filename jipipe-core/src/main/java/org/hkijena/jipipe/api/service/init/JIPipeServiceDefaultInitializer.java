@@ -16,11 +16,11 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
-import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializer;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
+import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -58,7 +58,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     @Override
     public void runInitialization() {
         JIPipeInitializationReport report = getService().getInitializationReport();
-        JIPipeExtensionApplicationSettings extensionSettings =  JIPipeExtensionApplicationSettings.getInstanceFromRaw();
+        JIPipeExtensionApplicationSettings extensionSettings = JIPipeExtensionApplicationSettings.getInstanceFromRaw();
 
         getProgressInfo().setProgress(0, 5);
         if (isVerbose()) {
@@ -365,7 +365,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
         // Error log
-        if(!getService().getInitializationReport().getErrors().isEmpty()) {
+        if (!getService().getInitializationReport().getErrors().isEmpty()) {
             for (Throwable error : getService().getInitializationReport().getErrors()) {
                 getProgressInfo().log("\n-------------------------------------------------\n");
                 getProgressInfo().log("-- ERROR: " + error);
@@ -446,7 +446,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 // Test environments
                 for (Class<? extends JIPipeEnvironment> environmentClass : algorithm.getInfo().getEnvironments()) {
                     JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = getService().getEnvironments().getInfoByClass(environmentClass);
-                    if(environmentInfo.getArchetype() != JIPipeEnvironmentArchetype.Managed) {
+                    if (environmentInfo.getArchetype() != JIPipeEnvironmentArchetype.Managed) {
                         getProgressInfo().log("[!] ERROR: Node is associated to unmanaged environment " + environmentInfo.getId());
                         throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                                 new UnspecifiedValidationReportContext(),

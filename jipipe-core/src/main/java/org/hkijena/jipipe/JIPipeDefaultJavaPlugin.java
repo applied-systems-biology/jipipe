@@ -43,9 +43,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComponent;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
-import org.hkijena.jipipe.api.service.components.JIPipeParameterTypesServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -65,13 +65,13 @@ import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameter;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
-import org.hkijena.jipipe.plugins.parameters.tools.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterTypeInfo;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.tools.EnumParameterGenerator;
 import org.hkijena.jipipe.plugins.tables.ColumnOperation;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -950,7 +950,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
      * @param artifactQuery            the artifact query for this environment (can be null)
-     * @param archetype the environment's archetype
+     * @param archetype                the environment's archetype
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
@@ -977,7 +977,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                      environment class
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
-     * @param archetype the environment's archetype
+     * @param archetype                the environment's archetype
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list

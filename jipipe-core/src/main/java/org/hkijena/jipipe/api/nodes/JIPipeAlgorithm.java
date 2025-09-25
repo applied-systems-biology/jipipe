@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameter;
 import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -204,7 +203,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     }
 
     @SetJIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(custom, \"[key]\")</code>.")
-    @JIPipeParameter(value = "jipipe:algorithm:custom-expression-variables", icon="actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
+    @JIPipeParameter(value = "jipipe:algorithm:custom-expression-variables", icon = "actions/insert-math-expression.png", persistence = JIPipeParameterSerializationMode.Object)
     public JIPipeCustomExpressionVariablesParameter getDefaultCustomExpressionVariables() {
         return customExpressionVariables;
     }

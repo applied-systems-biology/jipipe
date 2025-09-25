@@ -254,7 +254,7 @@ public class JIPipeResourceManager {
 
     public static ImageIcon safeIcon16FromResourceManagerSupplier(String iconName, Class<? extends Supplier<JIPipeResourceManager>> resourceManagerSupplier, ImageIcon defaultIcon) {
         ImageIcon resultIcon = null;
-        if(!StringUtils.isNullOrEmpty(iconName)) {
+        if (!StringUtils.isNullOrEmpty(iconName)) {
             try {
                 JIPipeResourceManager resourceManager;
                 if (resourceManagerSupplier != null) {
@@ -263,7 +263,7 @@ public class JIPipeResourceManager {
                     resourceManager = JIPipe.RESOURCES;
                 }
                 URL url = resourceManager.getIcon16URL(iconName);
-                if(url != null && !Objects.equals(url, JIPipeResourceManager.getMissingIcon16URL())) {
+                if (url != null && !Objects.equals(url, JIPipeResourceManager.getMissingIcon16URL())) {
                     resultIcon = JIPipeResourceManager.safeURLToIcon16(url);
                 }
             } catch (Throwable e) {

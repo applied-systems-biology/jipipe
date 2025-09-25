@@ -37,7 +37,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.environments.cp2.Cellpose2Environment;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
@@ -51,7 +50,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.nio.file.Path;

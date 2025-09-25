@@ -58,7 +58,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -79,7 +78,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
 @RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
-public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm  {
+public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 

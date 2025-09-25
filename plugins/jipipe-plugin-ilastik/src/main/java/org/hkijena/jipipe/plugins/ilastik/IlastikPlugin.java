@@ -291,7 +291,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet( new IlastikPluginApplicationSettings());
+        registerApplicationSettingsSheet(new IlastikPluginApplicationSettings());
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URL("ilastik-model.png"));
 

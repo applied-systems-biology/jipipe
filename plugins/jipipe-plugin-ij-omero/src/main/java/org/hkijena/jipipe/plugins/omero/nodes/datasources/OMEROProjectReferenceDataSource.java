@@ -27,12 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;

@@ -127,6 +127,19 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     }
 
     /**
+     * Fills values from a full ID
+     *
+     * @param fullId the ID
+     */
+    public void setFullId(String fullId) {
+        JIPipeArtifact artifact = new JIPipeArtifact(fullId);
+        this.setArtifactId(artifact.getArtifactId());
+        this.setVersion(artifact.getVersion());
+        this.setClassifier(artifact.getClassifier());
+        this.setGroupId(artifact.getGroupId());
+    }
+
+    /**
      * Returns a string GroupId.ArtifactId:Version-*
      *
      * @return the version-specific identifier string for this artifact
@@ -142,6 +155,7 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
 
     /**
      * Returns true if this artifact is fully resolved
+     *
      * @return if the artifact is fully resolved
      */
     public boolean isFullyResolved() {
@@ -151,30 +165,17 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     /**
      * Returns the resolution status (in order)
      * Cannot handle intermediate globs
+     *
      * @return the resolution status
      */
     public ResolutionStatus getResolutionStatus() {
-        if(!"*".equals(getClassifier())) {
+        if (!"*".equals(getClassifier())) {
             return ResolutionStatus.Full;
-        }
-        else if(!"*".equals(getVersion())) {
+        } else if (!"*".equals(getVersion())) {
             return ResolutionStatus.GroupNameVersion;
-        }
-        else {
+        } else {
             return ResolutionStatus.GroupName;
         }
-    }
-
-    /**
-     * Fills values from a full ID
-     * @param fullId the ID
-     */
-    public void setFullId(String fullId) {
-        JIPipeArtifact artifact = new JIPipeArtifact(fullId);
-        this.setArtifactId(artifact.getArtifactId());
-        this.setVersion(artifact.getVersion());
-        this.setClassifier(artifact.getClassifier());
-        this.setGroupId(artifact.getGroupId());
     }
 
     /**

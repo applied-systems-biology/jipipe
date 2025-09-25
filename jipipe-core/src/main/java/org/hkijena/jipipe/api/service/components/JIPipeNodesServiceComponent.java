@@ -20,14 +20,14 @@ import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
 import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEvent;
-import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.validation.*;
 
 import javax.swing.*;

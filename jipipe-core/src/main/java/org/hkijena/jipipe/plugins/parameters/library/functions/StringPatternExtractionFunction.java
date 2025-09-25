@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.functions;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.functions.JIPipeFunctionParameter;
 import org.hkijena.jipipe.plugins.parameters.library.patterns.StringPatternExtraction;
 

@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.Collections;
 import java.util.Map;

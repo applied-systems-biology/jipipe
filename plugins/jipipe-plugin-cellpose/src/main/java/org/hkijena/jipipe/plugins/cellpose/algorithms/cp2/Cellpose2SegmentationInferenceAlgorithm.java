@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
@@ -52,9 +53,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 
 import java.nio.file.Path;
 import java.util.ArrayList;

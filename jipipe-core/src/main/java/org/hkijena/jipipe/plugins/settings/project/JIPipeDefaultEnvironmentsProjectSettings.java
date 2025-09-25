@@ -27,32 +27,29 @@ public class JIPipeDefaultEnvironmentsProjectSettings extends JIPipeDynamicParam
         // At this point JIPipe is already available, and we can assume that the artifact repository is configured
         for (Map.Entry<String, JIPipeEnvironmentsServiceComponent.EnvironmentInfo> entry : JIPipe.getInstance().getEnvironments().getInfosById().entrySet()) {
             JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = entry.getValue();
-            if(info.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+            if (info.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
                 JIPipeMutableParameterAccess access = addParameter(entry.getKey(), info.getOptionalEnvironmentClass(), info.getName(), info.getDescription() + ". " +
                         "Allows to override which environment is used if node overrides are disabled. " +
                         "If disabled, JIPipe will fall back to application-wide settings. " +
                         "Generally we recommend to keep this override enabled to ensure that projects are as reproducible as possible.");
                 JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
-                if(info.isArtifact() && info.hasArtifactQuery()) {
+                if (info.isArtifact() && info.hasArtifactQuery()) {
                     JIPipeArtifactEnvironment environment = (JIPipeArtifactEnvironment) parameter.getContent();
                     environment.trySetToLatestVersionPinnedArtifact();
                     parameter.setEnabled(true); // For new projects we always default to usage of the project-local environment (can be fixed later if broken)
-                }
-                else {
+                } else {
                     // If the application-wide equivalent is valid, disable this one (e.g. OMERO)
                     JIPipeDefaultEnvironmentsApplicationSettings applicationWideSettings = JIPipe.getSettings().getByType(JIPipeDefaultEnvironmentsApplicationSettings.class);
                     JIPipeParameterAccess applicationWideAccess = applicationWideSettings.get(info.getId());
-                    if(applicationWideAccess != null) {
+                    if (applicationWideAccess != null) {
                         JIPipeOptionalParameter<?> globalParameter = applicationWideAccess.get(JIPipeOptionalParameter.class);
-                        if(globalParameter != null && globalParameter.isEnabled()) {
-                            JIPipeEnvironment globalEnvironment  = (JIPipeEnvironment) globalParameter.getContent();
+                        if (globalParameter != null && globalParameter.isEnabled()) {
+                            JIPipeEnvironment globalEnvironment = (JIPipeEnvironment) globalParameter.getContent();
                             parameter.setEnabled(!globalEnvironment.isValid());
-                        }
-                        else {
+                        } else {
                             parameter.setEnabled(true);
                         }
-                    }
-                    else {
+                    } else {
                         parameter.setEnabled(true);
                     }
                 }

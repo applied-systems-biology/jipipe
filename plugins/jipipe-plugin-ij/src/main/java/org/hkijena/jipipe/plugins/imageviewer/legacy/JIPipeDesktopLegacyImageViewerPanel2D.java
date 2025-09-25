@@ -232,11 +232,11 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         add(viewerPanel, BorderLayout.CENTER);
 
         createZoomMenu(zoomStatusButton.getButton());
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public boolean isComposite() {
         return composite;
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     public void setComposite(boolean composite) {
         this.composite = composite;
@@ -392,17 +392,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         viewBand.addSmallButton("Zoom out", "Decreases the zoom", JIPipe.RESOURCES.getIcon16("actions/magnifying-glass-minus.png"), this::decreaseZoom);
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     private void createZoomMenu(JButton button) {
         JPopupMenu zoomMenu = UIUtils.addPopupMenuToButton(button);
         for (double zoom = 0.5; zoom <= 2; zoom += 0.25) {
@@ -431,6 +420,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         });
         zoomMenu.add(changeZoomToItem);
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     private void buildExportRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");

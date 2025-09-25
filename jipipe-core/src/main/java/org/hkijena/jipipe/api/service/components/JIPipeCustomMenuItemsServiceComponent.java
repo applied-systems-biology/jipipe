@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;

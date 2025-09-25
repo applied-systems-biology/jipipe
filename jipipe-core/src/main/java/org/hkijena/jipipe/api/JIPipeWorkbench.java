@@ -114,11 +114,12 @@ public interface JIPipeWorkbench {
 
     /**
      * Gets a fully configured environment
-     * @param klass the environment class
+     *
+     * @param klass              the environment class
      * @param configurationCache the environment cache
-     * @param progressInfo the progress info
+     * @param progressInfo       the progress info
+     * @param <T>                the environment class
      * @return the environment
-     * @param <T> the environment class
      */
     default <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
         return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
@@ -126,9 +127,10 @@ public interface JIPipeWorkbench {
 
     /**
      * Returns the environment reference for the environment class
+     *
      * @param klass the environment class
+     * @param <T>   the environment type
      * @return the environment reference
-     * @param <T> the environment type
      */
     default <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
         return null; // TODO

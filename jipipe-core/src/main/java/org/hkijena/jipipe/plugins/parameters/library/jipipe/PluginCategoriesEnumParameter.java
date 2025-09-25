@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.jipipe;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 
 import java.util.Arrays;

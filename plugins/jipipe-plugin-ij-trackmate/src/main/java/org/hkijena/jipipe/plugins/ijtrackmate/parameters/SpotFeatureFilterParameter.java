@@ -19,7 +19,6 @@ import fiji.plugin.trackmate.features.FeatureFilter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 public class SpotFeatureFilterParameter extends AbstractJIPipeParameterCollection {

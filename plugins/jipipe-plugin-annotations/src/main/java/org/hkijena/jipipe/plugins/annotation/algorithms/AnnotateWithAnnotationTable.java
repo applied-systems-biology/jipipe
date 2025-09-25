@@ -36,7 +36,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 

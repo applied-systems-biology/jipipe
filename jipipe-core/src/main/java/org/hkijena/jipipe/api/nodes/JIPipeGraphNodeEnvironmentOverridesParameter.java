@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 import java.io.IOException;
 
@@ -40,7 +39,7 @@ public class JIPipeGraphNodeEnvironmentOverridesParameter extends JIPipeDynamicP
     @SetJIPipeDocumentation(name = "Project", description = "Opens the connected services settings for the current project")
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/open-in-new-window.png", highlighted = true)
     public void openProjectEnvironmentConfig(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeDesktopProjectWorkbench) {
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
             ((JIPipeDesktopProjectWorkbench) workbench).openProjectSettings("/General/Connected services");
         }
     }
@@ -48,7 +47,7 @@ public class JIPipeGraphNodeEnvironmentOverridesParameter extends JIPipeDynamicP
     @SetJIPipeDocumentation(name = "Global", description = "Opens the connected services settings for the whole application")
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/open-in-new-window.png")
     public void openApplicationEnvironmentConfig(JIPipeWorkbench workbench) {
-        if(workbench instanceof JIPipeDesktopProjectWorkbench) {
+        if (workbench instanceof JIPipeDesktopProjectWorkbench) {
             ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/General/Connected services");
         }
     }

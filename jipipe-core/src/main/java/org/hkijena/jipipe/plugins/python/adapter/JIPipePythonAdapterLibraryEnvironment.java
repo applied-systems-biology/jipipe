@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.python.adapter;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.python.PythonPackageLibraryEnvironment;
 
 import java.nio.file.Paths;

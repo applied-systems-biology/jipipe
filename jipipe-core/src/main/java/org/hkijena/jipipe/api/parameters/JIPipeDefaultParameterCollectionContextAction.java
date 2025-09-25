@@ -14,10 +14,8 @@
 package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 
 import javax.swing.*;
-import java.net.URL;
 import java.util.function.Consumer;
 
 public class JIPipeDefaultParameterCollectionContextAction implements JIPipeParameterCollectionContextAction {
@@ -25,8 +23,8 @@ public class JIPipeDefaultParameterCollectionContextAction implements JIPipePara
     private final Consumer<JIPipeWorkbench> function;
     private final String name;
     private final String description;
-    private boolean highlighted;
     private final Icon icon;
+    private boolean highlighted;
 
     public JIPipeDefaultParameterCollectionContextAction(Consumer<JIPipeWorkbench> function, String name, String description, boolean highlighted, Icon icon) {
         this.function = function;

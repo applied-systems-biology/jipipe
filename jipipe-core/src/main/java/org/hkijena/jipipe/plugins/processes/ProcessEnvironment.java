@@ -31,7 +31,6 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;

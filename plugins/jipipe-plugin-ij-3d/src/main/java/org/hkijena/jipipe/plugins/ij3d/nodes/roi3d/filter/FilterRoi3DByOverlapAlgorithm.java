@@ -45,7 +45,6 @@ import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementExpressionP
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 @SetJIPipeDocumentation(name = "Filter 3D ROI by overlap", description = "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +

@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 /**
  * Related to {@link Margin}, but with fixed-size objects

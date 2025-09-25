@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 public class Vector3dParameter implements Vector3Parameter {
     private double x;

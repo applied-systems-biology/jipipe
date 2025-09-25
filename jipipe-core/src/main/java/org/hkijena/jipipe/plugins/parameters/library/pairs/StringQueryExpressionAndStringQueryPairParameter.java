@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 

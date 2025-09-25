@@ -32,23 +32,21 @@ import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
-import org.hkijena.jipipe.plugins.omero.OptionalOMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
 import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROKeyValuePairExporter;
 import org.hkijena.jipipe.plugins.omero.parameters.AnnotationsToOMEROTagExporter;
 import org.hkijena.jipipe.plugins.omero.util.OMEROGateway;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Create OMERO dataset", description = "Creates a new OMERO data set an associates it to an existing project")
 @ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "OMERO")
