@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.plugins.expressions;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 
 import java.util.Collection;
 
-public class NamedTextAnnotationGeneratorExpression extends PairParameter<AnnotationGeneratorExpression, String> {
+public class NamedTextAnnotationGeneratorExpression extends JIPipePairParameter<AnnotationGeneratorExpression, String> {
     public NamedTextAnnotationGeneratorExpression() {
         super(AnnotationGeneratorExpression.class, String.class);
         setKey(new AnnotationGeneratorExpression());
@@ -32,7 +32,7 @@ public class NamedTextAnnotationGeneratorExpression extends PairParameter<Annota
         setValue(name);
     }
 
-    public NamedTextAnnotationGeneratorExpression(PairParameter<AnnotationGeneratorExpression, String> other) {
+    public NamedTextAnnotationGeneratorExpression(JIPipePairParameter<AnnotationGeneratorExpression, String> other) {
         super(other);
     }
 
@@ -47,7 +47,7 @@ public class NamedTextAnnotationGeneratorExpression extends PairParameter<Annota
         return new JIPipeTextAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
     }
 
-    public static class List extends ListParameter<NamedTextAnnotationGeneratorExpression> {
+    public static class List extends JIPipeListParameter<NamedTextAnnotationGeneratorExpression> {
 
         public List() {
             super(NamedTextAnnotationGeneratorExpression.class);

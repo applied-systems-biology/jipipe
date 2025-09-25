@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
-import org.hkijena.jipipe.plugins.parameters.api.graph.SlotMapParameterCollection;
+import org.hkijena.jipipe.plugins.parameters.api.graph.JIPipeSlotMapParameterCollection;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.HashSet;
@@ -27,7 +27,7 @@ import java.util.function.Function;
 /**
  * Parameter that holds a value for each data slot
  */
-public class InputSlotMapParameterCollection extends SlotMapParameterCollection {
+public class InputSlotMapParameterCollection extends JIPipeSlotMapParameterCollection {
     /**
      * Creates a new instance
      *

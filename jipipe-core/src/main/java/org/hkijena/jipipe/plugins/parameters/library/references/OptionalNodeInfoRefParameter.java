@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.references;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalNodeInfoRefParameter extends OptionalParameter<JIPipeNodeInfoRef> {
+public class OptionalNodeInfoRefParameter extends JIPipeOptionalParameter<JIPipeNodeInfoRef> {
     public OptionalNodeInfoRefParameter() {
         super(JIPipeNodeInfoRef.class);
     }

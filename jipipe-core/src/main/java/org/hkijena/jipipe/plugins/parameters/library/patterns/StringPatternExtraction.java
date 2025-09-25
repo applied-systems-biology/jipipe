@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.function.Function;
@@ -175,27 +174,4 @@ public class StringPatternExtraction implements Function<String, String>, JIPipe
         Regex
     }
 
-    /**
-     * A collection of multiple {@link StringPatternExtraction}
-     */
-    public static class List extends ListParameter<StringPatternExtraction> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(StringPatternExtraction.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(StringPatternExtraction.class);
-            for (StringPatternExtraction pathPredicate : other) {
-                add(new StringPatternExtraction(pathPredicate));
-            }
-        }
-    }
 }

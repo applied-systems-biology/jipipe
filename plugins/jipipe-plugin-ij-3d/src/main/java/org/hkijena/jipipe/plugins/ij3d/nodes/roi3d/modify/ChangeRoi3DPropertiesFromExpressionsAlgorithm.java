@@ -40,8 +40,8 @@ import org.hkijena.jipipe.plugins.ij3d.utils.AllROI3DMeasurementExpressionParame
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -65,7 +65,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     private OptionalJIPipeExpressionParameter channelLocation = new OptionalJIPipeExpressionParameter(false, "Channel");
     private OptionalJIPipeExpressionParameter frameLocation = new OptionalJIPipeExpressionParameter(false, "Frame");
     private OptionalJIPipeExpressionParameter fillColor = new OptionalJIPipeExpressionParameter(false, "FillColor");
-    private ParameterCollectionList metadataEntries = ParameterCollectionList.containingCollection(MetadataEntry.class);
+    private JIPipeParameterCollectionList metadataEntries = JIPipeParameterCollectionList.containingCollection(MetadataEntry.class);
     private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
 
@@ -85,7 +85,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         this.fillColor = other.fillColor;
         this.measurements = other.measurements;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.metadataEntries = new ParameterCollectionList(other.metadataEntries);
+        this.metadataEntries = new JIPipeParameterCollectionList(other.metadataEntries);
     }
 
     @Override
@@ -324,12 +324,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Metadata", description = "Allows to set/override additional metadata items")
     @JIPipeParameter("metadata-entries")
     @ParameterCollectionListTemplate(MetadataEntry.class)
-    public ParameterCollectionList getMetadataEntries() {
+    public JIPipeParameterCollectionList getMetadataEntries() {
         return metadataEntries;
     }
 
     @JIPipeParameter("metadata-entries")
-    public void setMetadataEntries(ParameterCollectionList metadataEntries) {
+    public void setMetadataEntries(JIPipeParameterCollectionList metadataEntries) {
         this.metadataEntries = metadataEntries;
     }
 

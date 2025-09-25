@@ -17,7 +17,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;

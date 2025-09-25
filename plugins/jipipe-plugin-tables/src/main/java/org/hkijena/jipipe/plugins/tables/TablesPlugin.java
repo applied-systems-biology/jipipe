@@ -56,10 +56,10 @@ import org.hkijena.jipipe.plugins.tables.nodes.statistics.KMeansClusteringAlgori
 import org.hkijena.jipipe.plugins.tables.nodes.transform.*;
 import org.hkijena.jipipe.plugins.tables.operations.converting.*;
 import org.hkijena.jipipe.plugins.tables.operations.integrating.*;
-import org.hkijena.jipipe.plugins.tables.parameters.ResultsTableDataDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.tables.parameters.JIPipeDesktopResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.plugins.tables.parameters.collections.*;
+import org.hkijena.jipipe.plugins.tables.parameters.enums.JIPipeDesktopTableColumnGeneratorParameterEditorUI;
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnConversionParameter;
-import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorDesktopParameterEditorUI;
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnIntegrationParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.*;
@@ -236,7 +236,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 p -> new TableColumnGeneratorParameter((TableColumnGeneratorParameter) p),
                 "Column generator",
                 "Defines a column generator",
-                TableColumnGeneratorDesktopParameterEditorUI.class);
+                JIPipeDesktopTableColumnGeneratorParameterEditorUI.class);
         registerParameterType("results-table",
                 ResultsTableData.class,
                 JIPipeParameterArchetype.Value, ResultsTableDataList.class,
@@ -244,7 +244,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 null,
                 "Results table",
                 "A table",
-                ResultsTableDataDesktopParameterEditorUI.class);
+                JIPipeDesktopResultsTableDataParameterEditorUI.class);
 
         // Operators
         registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, JIPipeParameterArchetype.Value, "Column integration operation", "Operation that integrates columns");

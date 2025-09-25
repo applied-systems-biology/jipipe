@@ -24,13 +24,12 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
-import org.hkijena.jipipe.plugins.parameters.library.references.IconRefDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopIconRefParameterEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -90,7 +89,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
             if (url != null) {
                 String urlString = url.toString();
                 String iconName = null;
-                for (String icon : IconRefDesktopParameterEditorUI.getAvailableIcons()) {
+                for (String icon : JIPipeDesktopIconRefParameterEditorUI.getAvailableIcons()) {
                     if (urlString.endsWith(icon)) {
                         iconName = icon;
                         break;
@@ -302,17 +301,4 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         return ("Templates\n" + String.join("\n", getMenuPath())).trim();
     }
 
-    public static class List extends ListParameter<JIPipeNodeTemplate> {
-
-        public List() {
-            super(JIPipeNodeTemplate.class);
-        }
-
-        public List(JIPipeNodeTemplate.List other) {
-            super(JIPipeNodeTemplate.class);
-            for (JIPipeNodeTemplate template : other) {
-                add(new JIPipeNodeTemplate(template));
-            }
-        }
-    }
 }

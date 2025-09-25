@@ -89,8 +89,7 @@ public class JIPipeGUICommand implements Command {
                 JIPipeDesktopSplashScreen.getInstance().setService(service);
                 service.ensureInitialized(); // Trigger manual initialization
                 initializationReport = service.getInitializationReport();
-            }
-            else {
+            } else {
                 initializationReport = JIPipe.getInstance().getInitializationReport();
             }
         } catch (Exception e) {

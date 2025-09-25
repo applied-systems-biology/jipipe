@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
 /**
  * Can either filter a string or a double
@@ -104,28 +103,4 @@ public class StringOrDouble extends AbstractJIPipeParameterCollection {
         String
     }
 
-    /**
-     * A collection of multiple {@link StringOrDouble}
-     * The filters are connected via "OR"
-     */
-    public static class List extends ListParameter<StringOrDouble> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(StringOrDouble.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(StringOrDouble.class);
-            for (StringOrDouble filter : other) {
-                add(new StringOrDouble(filter));
-            }
-        }
-    }
 }

@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters.collections;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 /**
  * A list of {@link ResultsTableData}
  */
-public class ResultsTableDataList extends ListParameter<ResultsTableData> {
+public class ResultsTableDataList extends JIPipeListParameter<ResultsTableData> {
 
     /**
      * Creates a new instance

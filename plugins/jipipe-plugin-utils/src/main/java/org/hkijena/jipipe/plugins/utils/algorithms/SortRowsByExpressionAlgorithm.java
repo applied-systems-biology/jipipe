@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 
@@ -47,7 +47,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(SortEntry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(SortEntry.class);
 
     public SortRowsByExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -56,7 +56,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
 
     public SortRowsByExpressionAlgorithm(SortRowsByExpressionAlgorithm other) {
         super(other);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
     }
 
     @Override
@@ -124,12 +124,12 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
     @SetJIPipeDocumentation(name = "Sort entries", description = "Each entry contains an expression that should return a value that is compared across the data.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(SortEntry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

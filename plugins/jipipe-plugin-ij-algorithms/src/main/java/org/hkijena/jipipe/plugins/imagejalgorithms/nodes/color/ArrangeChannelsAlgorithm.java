@@ -29,8 +29,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -39,9 +39,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.IntegerAndIntegerPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 import java.util.Comparator;
@@ -57,7 +57,7 @@ import java.util.List;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Arrange Channels...")
 public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntegerAndIntegerPairParameter.List channelReordering = new IntegerAndIntegerPairParameter.List();
+    private IntegerAndIntegerPairParameterList channelReordering = new IntegerAndIntegerPairParameterList();
     private boolean keepSameChannelCount = true;
 
     /**
@@ -76,7 +76,7 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public ArrangeChannelsAlgorithm(ArrangeChannelsAlgorithm other) {
         super(other);
-        this.channelReordering = new IntegerAndIntegerPairParameter.List(other.channelReordering);
+        this.channelReordering = new IntegerAndIntegerPairParameterList(other.channelReordering);
         this.keepSameChannelCount = other.keepSameChannelCount;
     }
 
@@ -174,12 +174,12 @@ public class ArrangeChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "The first index is 0. Channels left out of this assignment stay at the same index after transformation.")
     @JIPipeParameter("channel-reordering")
     @PairParameterSettings(singleRow = false, keyLabel = "Source channel", valueLabel = "Target channel")
-    public IntegerAndIntegerPairParameter.List getChannelReordering() {
+    public IntegerAndIntegerPairParameterList getChannelReordering() {
         return channelReordering;
     }
 
     @JIPipeParameter("channel-reordering")
-    public void setChannelReordering(IntegerAndIntegerPairParameter.List channelReordering) {
+    public void setChannelReordering(IntegerAndIntegerPairParameterList channelReordering) {
         this.channelReordering = channelReordering;
     }
 

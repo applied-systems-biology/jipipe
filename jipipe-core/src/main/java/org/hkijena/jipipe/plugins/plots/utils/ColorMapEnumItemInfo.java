@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.plugins.plots.utils;
 
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 
 import javax.swing.*;
 
-public class ColorMapEnumItemInfo implements EnumItemInfo {
+public class ColorMapEnumItemInfo implements JIPipeEnumParameterItemInfo {
 
     @Override
     public Icon getIcon(Object value) {

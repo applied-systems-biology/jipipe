@@ -421,10 +421,11 @@ public class ReflectionUtils {
 
     /**
      * Gets all annotations from the target class, including from all interfaces and superclass hierarchy
-     * @param clazz the target class
+     *
+     * @param clazz          the target class
      * @param annotationType the annotation class
+     * @param <A>            the annotation type
      * @return the annotations
-     * @param <A> the annotation type
      */
     public static <A extends Annotation> List<A> getAllAnnotations(
             Class<?> clazz,

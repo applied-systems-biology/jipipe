@@ -13,11 +13,13 @@
 
 package org.hkijena.jipipe.plugins.parameters.api.enums;
 
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopEnumParameterEditorUI;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Settings for {@link EnumDesktopParameterEditorUI}
+ * Settings for {@link JIPipeDesktopEnumParameterEditorUI}
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface EnumParameterSettings {
@@ -26,10 +28,10 @@ public @interface EnumParameterSettings {
      *
      * @return information on how the enum item is rendered
      */
-    Class<? extends EnumItemInfo> itemInfo() default DefaultEnumItemInfo.class;
+    Class<? extends JIPipeEnumParameterItemInfo> itemInfo() default JIPipeDefaultEnumItemInfo.class;
 
     /**
-     * If enabled, the {@link EnumDesktopParameterEditorUI} will display a button with the enum value that opens a window for searching
+     * If enabled, the {@link JIPipeDesktopEnumParameterEditorUI} will display a button with the enum value that opens a window for searching
      *
      * @return if the enum items should be searchable
      * @deprecated new parameter editor UI implementations always have a search button

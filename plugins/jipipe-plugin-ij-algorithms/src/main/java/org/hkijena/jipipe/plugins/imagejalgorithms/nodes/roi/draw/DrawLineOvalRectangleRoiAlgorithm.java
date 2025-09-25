@@ -38,8 +38,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ShapeUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 
 import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
@@ -53,19 +53,19 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
 
     private final VisualLocationROIProperties roiProperties;
 
-    private ParameterCollectionList entries;
+    private JIPipeParameterCollectionList entries;
 
     public DrawLineOvalRectangleRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.roiProperties = new VisualLocationROIProperties();
-        this.entries = ParameterCollectionList.containingCollection(Entry.class);
+        this.entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
         entries.addNewInstance();
     }
 
     public DrawLineOvalRectangleRoiAlgorithm(DrawLineOvalRectangleRoiAlgorithm other) {
         super(other);
         this.roiProperties = new VisualLocationROIProperties(other.roiProperties);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
     }
 
     @Override
@@ -157,12 +157,12 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
     @SetJIPipeDocumentation(name = "ROI", description = "List of ROI to be created")
     @JIPipeParameter("lines")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("lines")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

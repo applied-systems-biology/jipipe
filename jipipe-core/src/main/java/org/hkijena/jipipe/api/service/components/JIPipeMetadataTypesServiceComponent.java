@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.service.components;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;

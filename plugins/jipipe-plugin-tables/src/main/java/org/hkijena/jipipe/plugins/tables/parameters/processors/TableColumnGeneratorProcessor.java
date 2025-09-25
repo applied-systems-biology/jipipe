@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters.processors;
 
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.enums.TableColumnGeneratorParameter;
 
 /**
  * Processor-like parameter that maps a column generator to a string
  */
-public class TableColumnGeneratorProcessor extends PairParameter<TableColumnGeneratorParameter, String> {
+public class TableColumnGeneratorProcessor extends JIPipePairParameter<TableColumnGeneratorParameter, String> {
     /**
      * Creates a new instance
      */

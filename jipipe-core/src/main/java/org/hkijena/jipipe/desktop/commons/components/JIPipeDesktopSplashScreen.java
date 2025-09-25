@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
@@ -169,7 +168,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
     public void setService(JIPipeService service) {
         this.service = service;
-        if(service != null) {
+        if (service != null) {
             service.getExtensionDiscoveredEventEmitter().subscribeWeak(this);
         }
     }

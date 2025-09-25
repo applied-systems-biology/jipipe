@@ -23,10 +23,10 @@ import java.awt.*;
 /**
  * Editor for {@link NodeGroupContents}
  */
-public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<NodeGroupContents> {
 
     public NodeGroupContentsDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(NodeGroupContents.class, parameters);
         initialize();
     }
 
@@ -38,7 +38,7 @@ public class NodeGroupContentsDesktopParameterEditorUI extends JIPipeDesktopPara
     }
 
     private void editGraph() {
-        NodeGroupContents contents = getParameter(NodeGroupContents.class);
+        NodeGroupContents contents = getParameter();
         SwingUtilities.invokeLater(() -> JIPipeDesktopNodeGroupUI.openGroupNodeGraph(getDesktopWorkbench(), contents.getParent(), true));
     }
 

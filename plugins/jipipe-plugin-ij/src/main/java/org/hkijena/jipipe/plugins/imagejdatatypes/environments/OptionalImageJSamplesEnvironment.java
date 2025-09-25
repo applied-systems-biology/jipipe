@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalImageJSamplesEnvironment extends OptionalParameter<ImageJSamplesEnvironment> {
+public class OptionalImageJSamplesEnvironment extends JIPipeOptionalParameter<ImageJSamplesEnvironment> {
     public OptionalImageJSamplesEnvironment() {
         super(ImageJSamplesEnvironment.class);
     }

@@ -14,13 +14,12 @@
 package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class ExpressionAndExpressionPairParameter extends PairParameter<JIPipeExpressionParameter, JIPipeExpressionParameter> {
+public class ExpressionAndExpressionPairParameter extends JIPipePairParameter<JIPipeExpressionParameter, JIPipeExpressionParameter> {
 
     /**
      * Creates a new instance
@@ -42,27 +41,4 @@ public class ExpressionAndExpressionPairParameter extends PairParameter<JIPipeEx
             this.setValue(new JIPipeExpressionParameter(other.getValue()));
     }
 
-    /**
-     * A collection of multiple {@link ExpressionAndExpressionPairParameter}
-     */
-    public static class List extends ListParameter<ExpressionAndExpressionPairParameter> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(ExpressionAndExpressionPairParameter.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(ExpressionAndExpressionPairParameter.class);
-            for (ExpressionAndExpressionPairParameter filter : other) {
-                add(new ExpressionAndExpressionPairParameter(filter));
-            }
-        }
-    }
 }

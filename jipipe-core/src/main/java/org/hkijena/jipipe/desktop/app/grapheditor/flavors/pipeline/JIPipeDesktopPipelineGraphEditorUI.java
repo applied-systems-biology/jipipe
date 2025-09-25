@@ -79,7 +79,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -495,7 +495,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     }
 
     @Override
-    protected StringAndStringPairParameter.List getDockStateTemplates() {
+    protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
             return settings.getPipelineEditorDockLayoutTemplates();

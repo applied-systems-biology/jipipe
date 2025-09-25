@@ -26,6 +26,7 @@ public interface JIPipeProjectSettingsSheet extends JIPipeParameterCollection, J
     /**
      * Initialize this sheet during project initialization.
      * At this point, JIPipe's static wrappers are available.
+     *
      * @param project the project
      */
     void initialize(JIPipeProject project);

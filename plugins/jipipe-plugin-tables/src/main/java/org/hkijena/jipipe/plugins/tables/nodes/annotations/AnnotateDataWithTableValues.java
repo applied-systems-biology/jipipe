@@ -33,8 +33,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
 
-    private ParameterCollectionList generatedAnnotations = ParameterCollectionList.containingCollection(AnnotationSettings.class);
+    private JIPipeParameterCollectionList generatedAnnotations = JIPipeParameterCollectionList.containingCollection(AnnotationSettings.class);
 
     public AnnotateDataWithTableValues(JIPipeNodeInfo info) {
         super(info);
@@ -58,7 +58,7 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
     public AnnotateDataWithTableValues(AnnotateDataWithTableValues other) {
         super(other);
         this.annotationMergeMode = other.annotationMergeMode;
-        this.generatedAnnotations = new ParameterCollectionList(other.generatedAnnotations);
+        this.generatedAnnotations = new JIPipeParameterCollectionList(other.generatedAnnotations);
     }
 
     @Override
@@ -97,12 +97,12 @@ public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
             "Both the name and value expressions have access to annotations and variables that correspond to the table columns of the input table.")
     @JIPipeParameter(value = "generated-annotations", important = true)
     @ParameterCollectionListTemplate(AnnotationSettings.class)
-    public ParameterCollectionList getGeneratedAnnotations() {
+    public JIPipeParameterCollectionList getGeneratedAnnotations() {
         return generatedAnnotations;
     }
 
     @JIPipeParameter("generated-annotations")
-    public void setGeneratedAnnotations(ParameterCollectionList generatedAnnotations) {
+    public void setGeneratedAnnotations(JIPipeParameterCollectionList generatedAnnotations) {
         this.generatedAnnotations = generatedAnnotations;
     }
 

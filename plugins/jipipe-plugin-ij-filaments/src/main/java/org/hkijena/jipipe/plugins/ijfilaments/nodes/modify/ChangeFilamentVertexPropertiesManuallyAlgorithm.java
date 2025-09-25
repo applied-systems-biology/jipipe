@@ -31,6 +31,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -57,7 +58,7 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
     private OptionalQuantity physicalSizeX = new OptionalQuantity(new Quantity(1, "px"), false);
     private OptionalQuantity physicalSizeY = new OptionalQuantity(new Quantity(1, "px"), false);
     private OptionalQuantity physicalSizeZ = new OptionalQuantity(new Quantity(1, "px"), false);
-    private StringAndStringPairParameter.List metadata = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList metadata = new StringAndStringPairParameterList();
 
     public ChangeFilamentVertexPropertiesManuallyAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -79,7 +80,7 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
         this.physicalSizeX = new OptionalQuantity(other.physicalSizeX);
         this.physicalSizeY = new OptionalQuantity(other.physicalSizeY);
         this.physicalSizeZ = new OptionalQuantity(other.physicalSizeZ);
-        this.metadata = new StringAndStringPairParameter.List(other.metadata);
+        this.metadata = new StringAndStringPairParameterList(other.metadata);
         registerSubParameter(vertexMask);
     }
 
@@ -280,12 +281,12 @@ public class ChangeFilamentVertexPropertiesManuallyAlgorithm extends JIPipeSimpl
     @SetJIPipeDocumentation(name = "Metadata", description = "Allows to set/overwrite metadata")
     @StringParameterSettings(monospace = true)
     @JIPipeParameter("metadata")
-    public StringAndStringPairParameter.List getMetadata() {
+    public StringAndStringPairParameterList getMetadata() {
         return metadata;
     }
 
     @JIPipeParameter("metadata")
-    public void setMetadata(StringAndStringPairParameter.List metadata) {
+    public void setMetadata(StringAndStringPairParameterList metadata) {
         this.metadata = metadata;
     }
 

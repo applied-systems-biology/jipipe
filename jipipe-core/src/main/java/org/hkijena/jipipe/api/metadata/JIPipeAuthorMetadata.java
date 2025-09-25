@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -380,7 +380,7 @@ public class JIPipeAuthorMetadata extends AbstractJIPipeParameterCollection {
         }
     }
 
-    public static class List extends ListParameter<JIPipeAuthorMetadata> {
+    public static class List extends JIPipeListParameter<JIPipeAuthorMetadata> {
 
         /**
          * Creates a new instance

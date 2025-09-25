@@ -34,6 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpressionAndStringPairParameter.List renamingItems = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList renamingItems = new StringQueryExpressionAndStringPairParameterList();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
@@ -69,7 +70,7 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
      */
     public RenameAnnotation(RenameAnnotation other) {
         super(other);
-        this.renamingItems = new StringQueryExpressionAndStringPairParameter.List(other.renamingItems);
+        this.renamingItems = new StringQueryExpressionAndStringPairParameterList(other.renamingItems);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
@@ -95,12 +96,12 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("renaming-items")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @PairParameterSettings(keyLabel = "From", valueLabel = "To")
-    public StringQueryExpressionAndStringPairParameter.List getRenamingItems() {
+    public StringQueryExpressionAndStringPairParameterList getRenamingItems() {
         return renamingItems;
     }
 
     @JIPipeParameter("renaming-items")
-    public void setRenamingItems(StringQueryExpressionAndStringPairParameter.List renamingItems) {
+    public void setRenamingItems(StringQueryExpressionAndStringPairParameterList renamingItems) {
         this.renamingItems = renamingItems;
     }
 

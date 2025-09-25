@@ -14,14 +14,13 @@
 package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 
 /**
  * A pair of {@link StringQueryExpression} and {@link SortOrder}
  */
-public class StringQueryExpressionAndSortOrderPairParameter extends PairParameter<StringQueryExpression, SortOrder> {
+public class StringQueryExpressionAndSortOrderPairParameter extends JIPipePairParameter<StringQueryExpression, SortOrder> {
 
     /**
      * Creates a new instance
@@ -41,27 +40,4 @@ public class StringQueryExpressionAndSortOrderPairParameter extends PairParamete
         super(other);
     }
 
-    /**
-     * A collection of multiple {@link StringQueryExpressionAndSortOrderPairParameter}
-     */
-    public static class List extends ListParameter<StringQueryExpressionAndSortOrderPairParameter> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(StringQueryExpressionAndSortOrderPairParameter.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(StringQueryExpressionAndSortOrderPairParameter.class);
-            for (StringQueryExpressionAndSortOrderPairParameter filter : other) {
-                add(new StringQueryExpressionAndSortOrderPairParameter(filter));
-            }
-        }
-    }
 }

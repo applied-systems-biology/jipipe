@@ -17,7 +17,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 /**
- * Allows to control the behavior of {@link PairParameter}
+ * Allows to control the behavior of {@link JIPipePairParameter}
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface PairParameterSettings {

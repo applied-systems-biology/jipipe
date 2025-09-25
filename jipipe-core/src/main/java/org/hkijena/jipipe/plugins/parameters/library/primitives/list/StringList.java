@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * A list of {@link String}
  */
-public class StringList extends ListParameter<String> {
+public class StringList extends JIPipeListParameter<String> {
     /**
      * Creates a new empty list
      */

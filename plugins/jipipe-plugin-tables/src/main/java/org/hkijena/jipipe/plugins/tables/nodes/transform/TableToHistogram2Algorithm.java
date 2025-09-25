@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -51,7 +51,7 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
     private TableColumnSourceExpressionParameter weightColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "1");
     private JIPipeExpressionParameter valueFilter = new JIPipeExpressionParameter("NOT IS_NAN(value)");
     private JIPipeExpressionParameter numBins = new JIPipeExpressionParameter("inf");
-    private ParameterCollectionList outputColumns = ParameterCollectionList.containingCollection(OutputColumn.class);
+    private JIPipeParameterCollectionList outputColumns = JIPipeParameterCollectionList.containingCollection(OutputColumn.class);
 
     public TableToHistogram2Algorithm(JIPipeNodeInfo info) {
         super(info);
@@ -70,7 +70,7 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
         this.weightColumn = new TableColumnSourceExpressionParameter(other.weightColumn);
         this.valueFilter = new JIPipeExpressionParameter(other.valueFilter);
         this.numBins = new JIPipeExpressionParameter(other.numBins);
-        this.outputColumns = new ParameterCollectionList(other.outputColumns);
+        this.outputColumns = new JIPipeParameterCollectionList(other.outputColumns);
     }
 
     @Override
@@ -220,12 +220,12 @@ public class TableToHistogram2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Output columns", description = "Output columns to be calculated.")
     @JIPipeParameter("output-columns")
-    public ParameterCollectionList getOutputColumns() {
+    public JIPipeParameterCollectionList getOutputColumns() {
         return outputColumns;
     }
 
     @JIPipeParameter("output-columns")
-    public void setOutputColumns(ParameterCollectionList outputColumns) {
+    public void setOutputColumns(JIPipeParameterCollectionList outputColumns) {
         this.outputColumns = outputColumns;
     }
 

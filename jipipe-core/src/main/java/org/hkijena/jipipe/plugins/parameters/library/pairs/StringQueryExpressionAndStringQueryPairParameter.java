@@ -14,15 +14,14 @@
 package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 
 /**
  * A parameter that renames a matching string into another string
  */
 @PairParameterSettings(singleRow = false)
-public class StringQueryExpressionAndStringQueryPairParameter extends PairParameter<StringQueryExpression, StringQueryExpression> {
+public class StringQueryExpressionAndStringQueryPairParameter extends JIPipePairParameter<StringQueryExpression, StringQueryExpression> {
 
     /**
      * Creates a new instance
@@ -40,27 +39,4 @@ public class StringQueryExpressionAndStringQueryPairParameter extends PairParame
         super(other);
     }
 
-    /**
-     * A collection of multiple {@link StringQueryExpressionAndStringQueryPairParameter}
-     */
-    public static class List extends ListParameter<StringQueryExpressionAndStringQueryPairParameter> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(StringQueryExpressionAndStringQueryPairParameter.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(StringQueryExpressionAndStringQueryPairParameter.class);
-            for (StringQueryExpressionAndStringQueryPairParameter filter : other) {
-                add(new StringQueryExpressionAndStringQueryPairParameter(filter));
-            }
-        }
-    }
 }

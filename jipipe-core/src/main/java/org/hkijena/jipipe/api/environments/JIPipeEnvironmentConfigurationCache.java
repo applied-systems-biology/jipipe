@@ -16,7 +16,10 @@ package org.hkijena.jipipe.api.environments;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.locks.StampedLock;
 
 /**
@@ -31,8 +34,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.size();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -42,8 +44,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.isEmpty();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -53,8 +54,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.containsKey(key);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -64,8 +64,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.containsValue(value);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -75,22 +74,20 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.get(key);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
 
     @Override
     public @Nullable JIPipeEnvironment put(JIPipeEnvironment key, JIPipeEnvironment value) {
-        if(!key.getClass().isAssignableFrom(value.getClass())) {
+        if (!key.getClass().isAssignableFrom(value.getClass())) {
             throw new IllegalArgumentException(String.format("%s cannot be a resolved environment of %s", value.getClass(), key.getClass()));
         }
         long stamp = lock.writeLock();
         try {
             return cache.put(key, value);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -100,8 +97,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.writeLock();
         try {
             return cache.remove(key);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -109,15 +105,14 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
     @Override
     public void putAll(@NotNull Map<? extends JIPipeEnvironment, ? extends JIPipeEnvironment> m) {
         for (Entry<? extends JIPipeEnvironment, ? extends JIPipeEnvironment> entry : m.entrySet()) {
-            if(!entry.getKey().getClass().isAssignableFrom(entry.getValue().getClass())) {
+            if (!entry.getKey().getClass().isAssignableFrom(entry.getValue().getClass())) {
                 throw new IllegalArgumentException(String.format("%s cannot be a resolved environment of %s", entry.getValue().getClass(), entry.getKey().getClass()));
             }
         }
         long stamp = lock.writeLock();
         try {
             cache.putAll(m);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -127,8 +122,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.writeLock();
         try {
             cache.clear();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -138,8 +132,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.keySet();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -149,8 +142,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.values();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -160,8 +152,7 @@ public class JIPipeEnvironmentConfigurationCache implements Map<JIPipeEnvironmen
         long stamp = lock.readLock();
         try {
             return cache.entrySet();
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }

@@ -14,17 +14,17 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
 import ij.plugin.filter.Analyzer;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 /**
- * A {@link DynamicSetParameter} that contains image statistics measurements.
+ * A {@link JIPipeDynamicSetParameter} that contains image statistics measurements.
  * Contains {@link Measurement} items
  */
-public class ImageStatisticsSetParameter extends DynamicSetParameter<Measurement> {
+public class ImageStatisticsSetParameter extends JIPipeDynamicSetParameter<Measurement> {
 
     public static final String ALL_DESCRIPTIONS = "<p><strong>Area</strong><br/><br/>Measures ROI areas. Area of selection in square pixels. Area is in calibrated units if available. They are stored as 'Area'.</p>" +
             "<br/><p><strong>Area fraction</strong><br/><br/>The percentage of non-zero pixels. Values are stored in '%Area'</p>" +

@@ -27,7 +27,7 @@ public interface JIPipeValidatable {
      * @param reportContext  the report context
      * @param reportSettings the report settings
      * @param report         the report to be added to
-     * @param progressInfo the progress info
+     * @param progressInfo   the progress info
      */
     void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo);
 
@@ -36,7 +36,7 @@ public interface JIPipeValidatable {
      *
      * @param reportContext  the report context
      * @param reportSettings the report settings
-     * @param progressInfo the progress info
+     * @param progressInfo   the progress info
      * @return the report
      */
     default JIPipeValidationReport generateValidityReport(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeProgressInfo progressInfo) {

@@ -14,16 +14,16 @@
 package org.hkijena.jipipe.plugins.parameters.library.colors;
 
 import org.apache.commons.text.WordUtils;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 
 import javax.swing.*;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@link EnumItemInfo} implementation for {@link ColorMap}
+ * {@link JIPipeEnumParameterItemInfo} implementation for {@link ColorMap}
  */
-public class ColorMapEnumItemInfo implements EnumItemInfo {
+public class ColorMapEnumItemInfo implements JIPipeEnumParameterItemInfo {
 
     private Map<ColorMap, ColorMapIcon> icons = new HashMap<>();
 

@@ -67,20 +67,20 @@ public class JIPipeArtifactQueryParameter {
         public JIPipeArtifactQueryParameter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JacksonException {
             JsonNode node = p.readValueAsTree();
             JIPipeArtifactQueryParameter result = new JIPipeArtifactQueryParameter();
-            if(node.has("query")) {
+            if (node.has("query")) {
                 // Upgrade to more generic query
                 String value = node.findValue("query").asText();
-                if(value != null) {
-                    if(value.contains(":")) {
+                if (value != null) {
+                    if (value.contains(":")) {
                         String versionClassifier = value.split(":")[1];
-                        if(versionClassifier.contains("-")) {
+                        if (versionClassifier.contains("-")) {
                             value = value.split(":")[0] + ":" + versionClassifier.split("-")[0] + "-*";
                         }
                     }
                     result.setQuery(value);
                 }
             }
-            if(node.has("query-v2")) {
+            if (node.has("query-v2")) {
                 String value = node.findValue("query-v2").asText();
                 result.setQuery(value);
             }

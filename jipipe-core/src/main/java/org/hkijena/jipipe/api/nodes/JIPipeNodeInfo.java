@@ -162,6 +162,7 @@ public interface JIPipeNodeInfo {
     /**
      * Returns the utilized environments of this node
      * This may be extended by the node itself during initialization
+     *
      * @return the set of utilized environments
      */
     Set<Class<? extends JIPipeEnvironment>> getEnvironments();

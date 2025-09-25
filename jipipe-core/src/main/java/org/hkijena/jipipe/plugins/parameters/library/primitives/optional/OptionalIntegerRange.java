@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.optional;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
-public class OptionalIntegerRange extends OptionalParameter<IntegerRange> {
+public class OptionalIntegerRange extends JIPipeOptionalParameter<IntegerRange> {
     public OptionalIntegerRange() {
         super(IntegerRange.class);
         setContent(new IntegerRange());

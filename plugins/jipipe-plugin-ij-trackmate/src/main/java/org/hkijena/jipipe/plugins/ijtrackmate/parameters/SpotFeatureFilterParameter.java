@@ -19,7 +19,6 @@ import fiji.plugin.trackmate.features.FeatureFilter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 public class SpotFeatureFilterParameter extends AbstractJIPipeParameterCollection {
@@ -87,23 +86,4 @@ public class SpotFeatureFilterParameter extends AbstractJIPipeParameterCollectio
         return new FeatureFilter(feature.getValue(), value, above);
     }
 
-    public static class List extends ListParameter<SpotFeatureFilterParameter> {
-        public List() {
-            super(SpotFeatureFilterParameter.class);
-        }
-
-        public List(List other) {
-            super(SpotFeatureFilterParameter.class);
-            for (SpotFeatureFilterParameter parameter : other) {
-                add(new SpotFeatureFilterParameter(parameter));
-            }
-        }
-
-        @Override
-        public SpotFeatureFilterParameter addNewInstance() {
-            SpotFeatureFilterParameter parameter = new SpotFeatureFilterParameter(new SpotFeature("QUALITY"), 1.0, true);
-            add(parameter);
-            return parameter;
-        }
-    }
 }

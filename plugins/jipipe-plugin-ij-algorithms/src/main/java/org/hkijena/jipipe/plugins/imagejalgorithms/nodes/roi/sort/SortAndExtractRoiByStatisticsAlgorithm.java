@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumnSortOrderList;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
@@ -58,7 +58,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
-    private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
+    private MeasurementColumnSortOrderList sortOrderList = new MeasurementColumnSortOrderList();
     private NumericFunctionExpression selection = new NumericFunctionExpression();
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
@@ -82,7 +82,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
      */
     public SortAndExtractRoiByStatisticsAlgorithm(SortAndExtractRoiByStatisticsAlgorithm other) {
         super(other);
-        this.sortOrderList = new MeasurementColumnSortOrder.List(other.sortOrderList);
+        this.sortOrderList = new MeasurementColumnSortOrderList(other.sortOrderList);
         this.selection = new NumericFunctionExpression(other.selection);
         this.autoClamp = other.autoClamp;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
@@ -163,12 +163,12 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
     @SetJIPipeDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +
             "where the order within this list. If you for example order by 'Area' and then 'Perimeter', the ROI will be ordered by area and if the area is the same by perimeter.")
     @JIPipeParameter("sort-orders")
-    public MeasurementColumnSortOrder.List getSortOrderList() {
+    public MeasurementColumnSortOrderList getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-orders")
-    public void setSortOrderList(MeasurementColumnSortOrder.List sortOrderList) {
+    public void setSortOrderList(MeasurementColumnSortOrderList sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.api.artifacts;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class JIPipeArtifactRepositoryReferenceList extends ListParameter<JIPipeArtifactRepositoryReference> {
+public class JIPipeArtifactRepositoryReferenceList extends JIPipeListParameter<JIPipeArtifactRepositoryReference> {
 
     public JIPipeArtifactRepositoryReferenceList() {
         super(JIPipeArtifactRepositoryReference.class);

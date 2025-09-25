@@ -13,11 +13,11 @@
 
 package org.hkijena.jipipe.plugins.omnipose.parameters;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 
 @EnumParameterSettings(itemInfo = PretrainedOmnipose0ModelEnumItemInfo.class)
-public class PretrainedOmnipose0ModelList extends ListParameter<PretrainedOmnipose0Model> {
+public class PretrainedOmnipose0ModelList extends JIPipeListParameter<PretrainedOmnipose0Model> {
     public PretrainedOmnipose0ModelList() {
         super(PretrainedOmnipose0Model.class);
     }

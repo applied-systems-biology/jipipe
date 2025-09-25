@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.OMEAccessorParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -42,7 +42,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 @AddJIPipeInputSlot(value = OMEXMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
 
     public OMEMetadataToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -51,7 +51,7 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public OMEMetadataToTableAlgorithm(OMEMetadataToTableAlgorithm other) {
         super(other);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
     }
 
     @Override
@@ -73,12 +73,12 @@ public class OMEMetadataToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @SetJIPipeDocumentation(name = "Generated annotations", description = "The list of generated annotations.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

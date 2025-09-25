@@ -24,10 +24,10 @@ import java.awt.*;
 /**
  * Editor for {@link GraphNodeParameterReferenceGroupCollection}
  */
-public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI {
+public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<GraphNodeParameterReferenceGroupCollection> {
 
     public GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(GraphNodeParameterReferenceGroupCollection.class, parameters);
         initialize();
     }
 
@@ -39,7 +39,7 @@ public class GraphNodeParameterReferenceGroupCollectionDesktopParameterEditorUI 
     }
 
     private void editParameters() {
-        GraphNodeParameterReferenceGroupCollection original = getParameter(GraphNodeParameterReferenceGroupCollection.class);
+        GraphNodeParameterReferenceGroupCollection original = getParameter();
         GraphNodeParameterReferenceGroupCollection copy = new GraphNodeParameterReferenceGroupCollection(original);
         copy.setGraph(original.getGraph());
         JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI(getDesktopWorkbench(), copy, null, false);

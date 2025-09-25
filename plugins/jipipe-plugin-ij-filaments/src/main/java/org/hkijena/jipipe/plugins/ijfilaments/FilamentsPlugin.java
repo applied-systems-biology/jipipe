@@ -29,6 +29,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoi3dDataType
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.FilamentsToRoiDataTypeConverter;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.OptionalTSOAXEnvironment;
 import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironment;
+import org.hkijena.jipipe.plugins.ijfilaments.environments.TSOAXEnvironmentList;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.convert.*;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.FilterFilamentEdgesByProperties;
 import org.hkijena.jipipe.plugins.ijfilaments.nodes.filter.FilterFilamentVerticesByProperties;
@@ -50,6 +51,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.viewers.Filaments3DGraphDataViewer
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.scene3d.Scene3DPlugin;
@@ -101,8 +103,8 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION);
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION);
     }
 
     @Override
@@ -132,7 +134,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "com.github.tix209.tsoax:*",
                 JIPipeEnvironmentArchetype.Managed, TSOAXEnvironment.class,
                 OptionalTSOAXEnvironment.class,
-                TSOAXEnvironment.List.class,
+                TSOAXEnvironmentList.class,
                 "TSOAX",
                 "Installation of TSOAX",
                 RESOURCES.getIcon16("tsoax.png"));

@@ -32,9 +32,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -56,7 +55,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
     private PythonEnvironmentType type = PythonEnvironmentType.System;
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
-    private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList environmentVariables = new StringQueryExpressionAndStringPairParameterList();
 
     public PythonEnvironment() {
 
@@ -73,7 +72,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
         this.type = other.type;
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
-        this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.environmentVariables = new StringQueryExpressionAndStringPairParameterList(other.environmentVariables);
     }
 
     @SetJIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
@@ -132,12 +131,12 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
     @JIPipeExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
-    public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
+    public StringQueryExpressionAndStringPairParameterList getEnvironmentVariables() {
         return environmentVariables;
     }
 
     @JIPipeParameter("environment-variables")
-    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
+    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameterList environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 
@@ -213,19 +212,4 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
         }
     }
 
-    /**
-     * A list of {@link PythonEnvironment}
-     */
-    public static class List extends ListParameter<PythonEnvironment> {
-        public List() {
-            super(PythonEnvironment.class);
-        }
-
-        public List(List other) {
-            super(PythonEnvironment.class);
-            for (PythonEnvironment environment : other) {
-                add(new PythonEnvironment(environment));
-            }
-        }
-    }
 }

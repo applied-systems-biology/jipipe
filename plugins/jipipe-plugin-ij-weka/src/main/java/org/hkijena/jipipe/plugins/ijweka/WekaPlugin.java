@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.plugins.ijweka.nodes.*;
-import org.hkijena.jipipe.plugins.ijweka.parameters.WekaClassifierDesktopParameterEditorUI;
+import org.hkijena.jipipe.plugins.ijweka.parameters.JIPipeDesktopWekaClassifierParameterEditorUI;
 import org.hkijena.jipipe.plugins.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.plugins.ijweka.parameters.features.WekaFeature2D;
 import org.hkijena.jipipe.plugins.ijweka.parameters.features.WekaFeature3D;
@@ -37,6 +37,7 @@ import org.hkijena.jipipe.plugins.ijweka.parameters.features.WekaFeatureSet3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -73,8 +74,8 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
     }
 
     @Override
@@ -184,7 +185,7 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, JIPipeParameterArchetype.MultiSelect, "Weka Feature set 2D", "A collection of Weka 2D features");
         registerEnumParameterType("weka-feature-3d", WekaFeature3D.class, "Weka Feature 3D", "A 2D Weka feature");
         registerParameterType("weka-feature-set-3d", WekaFeatureSet3D.class, JIPipeParameterArchetype.MultiSelect, "Weka Feature set 3D", "A collection of Weka 3D features");
-        registerParameterType("weka-classifier", WekaClassifierParameter.class, JIPipeParameterArchetype.Value, "Weka classifier", "Settings for a Weka classifier", WekaClassifierDesktopParameterEditorUI.class);
+        registerParameterType("weka-classifier", WekaClassifierParameter.class, JIPipeParameterArchetype.Value, "Weka classifier", "Settings for a Weka classifier", JIPipeDesktopWekaClassifierParameterEditorUI.class);
 
         // Register data types
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);

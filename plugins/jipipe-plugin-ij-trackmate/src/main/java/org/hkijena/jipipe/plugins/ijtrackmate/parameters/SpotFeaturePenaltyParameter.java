@@ -18,7 +18,6 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
 public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollection {
     private SpotFeature feature;
@@ -63,23 +62,4 @@ public class SpotFeaturePenaltyParameter extends AbstractJIPipeParameterCollecti
         this.penalty = penalty;
     }
 
-    public static class List extends ListParameter<SpotFeaturePenaltyParameter> {
-        public List() {
-            super(SpotFeaturePenaltyParameter.class);
-        }
-
-        public List(List other) {
-            super(SpotFeaturePenaltyParameter.class);
-            for (SpotFeaturePenaltyParameter parameter : other) {
-                add(new SpotFeaturePenaltyParameter(parameter));
-            }
-        }
-
-        @Override
-        public SpotFeaturePenaltyParameter addNewInstance() {
-            SpotFeaturePenaltyParameter quality = new SpotFeaturePenaltyParameter(new SpotFeature("QUALITY"), 1.0);
-            add(quality);
-            return quality;
-        }
-    }
 }

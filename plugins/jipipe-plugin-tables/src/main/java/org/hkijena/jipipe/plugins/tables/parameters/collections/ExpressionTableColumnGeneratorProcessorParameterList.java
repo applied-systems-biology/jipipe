@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters.collections;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 
-public class ExpressionTableColumnGeneratorProcessorParameterList extends ListParameter<ExpressionTableColumnGeneratorProcessor> {
+public class ExpressionTableColumnGeneratorProcessorParameterList extends JIPipeListParameter<ExpressionTableColumnGeneratorProcessor> {
 
     /**
      * Creates a  new instance

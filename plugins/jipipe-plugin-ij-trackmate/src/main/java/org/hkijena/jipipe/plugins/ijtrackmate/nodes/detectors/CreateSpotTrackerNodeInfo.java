@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.plugins.ijtrackmate.io.DefaultSettingsIO;
 import org.hkijena.jipipe.plugins.ijtrackmate.io.SettingsIO;
 import org.hkijena.jipipe.plugins.ijtrackmate.io.SpotFeaturePenaltyParameterListSettingsIO;
-import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
+import org.hkijena.jipipe.plugins.ijtrackmate.parameters.SpotFeaturePenaltyParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.util.*;
@@ -67,7 +67,7 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
                 settingsIO = new DefaultSettingsIO(fieldClass);
             } else if (entry.getValue() instanceof Map) {
                 // Assume it's a penalty
-                fieldClass = SpotFeaturePenaltyParameter.List.class;
+                fieldClass = SpotFeaturePenaltyParameterList.class;
                 settingsIO = new SpotFeaturePenaltyParameterListSettingsIO();
                 parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
             } else {

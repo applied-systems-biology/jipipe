@@ -13,13 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.pairs;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 
 /**
  * A parameter that renames an integer into another integer
  */
-public class IntegerAndIntegerPairParameter extends PairParameter<Integer, Integer> {
+public class IntegerAndIntegerPairParameter extends JIPipePairParameter<Integer, Integer> {
 
     /**
      * Creates a new instance
@@ -43,27 +42,4 @@ public class IntegerAndIntegerPairParameter extends PairParameter<Integer, Integ
         super(other);
     }
 
-    /**
-     * A collection of multiple {@link IntegerAndIntegerPairParameter}
-     */
-    public static class List extends ListParameter<IntegerAndIntegerPairParameter> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(IntegerAndIntegerPairParameter.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(IntegerAndIntegerPairParameter.class);
-            for (IntegerAndIntegerPairParameter filter : other) {
-                add(new IntegerAndIntegerPairParameter(filter));
-            }
-        }
-    }
 }

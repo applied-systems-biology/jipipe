@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -48,7 +49,7 @@ import java.util.Objects;
 @LabelAsJIPipeHidden
 public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private StringQueryExpressionAndStringPairParameter.List renamingEntries = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList renamingEntries = new StringQueryExpressionAndStringPairParameterList();
 
     /**
      * Creates a new instance
@@ -66,7 +67,7 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
      */
     public RenameTableColumnsAlgorithm(RenameTableColumnsAlgorithm other) {
         super(other);
-        this.renamingEntries = new StringQueryExpressionAndStringPairParameter.List(other.renamingEntries);
+        this.renamingEntries = new StringQueryExpressionAndStringPairParameterList(other.renamingEntries);
     }
 
     @Override
@@ -94,12 +95,12 @@ public class RenameTableColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @StringParameterSettings(monospace = true)
     @PairParameterSettings(singleRow = false, keyLabel = "From", valueLabel = "To")
     @JIPipeParameter("renaming-entries")
-    public StringQueryExpressionAndStringPairParameter.List getRenamingEntries() {
+    public StringQueryExpressionAndStringPairParameterList getRenamingEntries() {
         return renamingEntries;
     }
 
     @JIPipeParameter("renaming-entries")
-    public void setRenamingEntries(StringQueryExpressionAndStringPairParameter.List renamingEntries) {
+    public void setRenamingEntries(StringQueryExpressionAndStringPairParameterList renamingEntries) {
         this.renamingEntries = renamingEntries;
     }
 }

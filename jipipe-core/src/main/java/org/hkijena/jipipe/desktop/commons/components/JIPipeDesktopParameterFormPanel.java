@@ -441,7 +441,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "");
                 groupHeaderPanel = addGroupHeader(headerTitle, groupIcon);
 
-                if(allowCollapse) {
+                if (allowCollapse) {
                     groupHeaderPanel.addToStartOfTitlePanel(collapseButton);
                 }
 
@@ -451,7 +451,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                         actionButton.setToolTipText(action.getDescription());
                         actionButton.addActionListener(e -> action.accept(desktopWorkbench));
                         UIUtils.setStandardButtonBorder(actionButton);
-                        if(action.isHighlighted()) {
+                        if (action.isHighlighted()) {
                             UIUtils.makeButtonHighlightedSuccess(actionButton);
                         }
                         groupHeaderPanel.addToEndOfTitlePanel(actionButton);
@@ -587,12 +587,12 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
             collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
                 setComponentsVisibility(uiComponents, collapseButton.getState());
                 collapseCurrentComponentVisibilities.put(parameterCollection, collapseButton.getState());
-                if(finalGroupHeaderPanel != null) {
+                if (finalGroupHeaderPanel != null) {
                     finalGroupHeaderPanel.setCollapsed(!collapseButton.getState());
                 }
             });
 
-            if(groupHeaderPanel != null) {
+            if (groupHeaderPanel != null) {
                 groupHeaderPanel.setCollapsed(!collapseButton.getState());
             }
 
@@ -648,7 +648,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
             JMenuItem copyItem = new JMenuItem("Copy", JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"));
             copyItem.addActionListener(e -> {
-                Object parameter = editorUI.getParameter(Object.class);
+                Object parameter = editorUI.getParameter();
                 UIUtils.copyToClipboard(JsonUtils.toJsonString(parameter));
                 desktopWorkbench.sendStatusBarText("Copied parameter '" + editorUI.getParameterAccess().getName() + "' to the clipboard.");
             });

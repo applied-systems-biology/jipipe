@@ -36,8 +36,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeParameterTypeInfoRef;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -51,17 +51,17 @@ import java.util.*;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList columns;
+    private JIPipeParameterCollectionList columns;
 
     public GenerateParametersFromExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        columns = ParameterCollectionList.containingCollection(Column.class);
+        columns = JIPipeParameterCollectionList.containingCollection(Column.class);
         columns.addNewInstance();
     }
 
     public GenerateParametersFromExpressionAlgorithm(GenerateParametersFromExpressionAlgorithm other) {
         super(other);
-        columns = new ParameterCollectionList(other.columns);
+        columns = new JIPipeParameterCollectionList(other.columns);
     }
 
     @Override
@@ -166,12 +166,12 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
             "</ul>\nIf the columns have different sizes, the last values of the smaller columns will be repeated to fill the whole table. Duplicate keys are overwritten based on the order.")
     @JIPipeParameter(value = "columns", important = true)
     @ParameterCollectionListTemplate(Column.class)
-    public ParameterCollectionList getColumns() {
+    public JIPipeParameterCollectionList getColumns() {
         return columns;
     }
 
     @JIPipeParameter("columns")
-    public void setColumns(ParameterCollectionList columns) {
+    public void setColumns(JIPipeParameterCollectionList columns) {
         this.columns = columns;
     }
 

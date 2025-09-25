@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.vectors;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalVector2iParameter extends OptionalParameter<Vector2iParameter> {
+public class OptionalVector2iParameter extends JIPipeOptionalParameter<Vector2iParameter> {
     public OptionalVector2iParameter() {
         super(Vector2iParameter.class);
     }

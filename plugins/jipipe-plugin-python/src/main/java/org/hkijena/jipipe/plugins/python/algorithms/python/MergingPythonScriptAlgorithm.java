@@ -146,7 +146,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         // Run code
         PythonUtils.runPython(code.toString(),
-               pythonEnvironment,
+                pythonEnvironment,
                 Collections.emptyList(), suppressLogs, progressInfo);
 
         // Extract outputs

@@ -43,8 +43,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.turboreg.TurboRegUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -79,7 +79,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
 
     private final AdvancedTurboRegParameters advancedTurboRegParameters;
     private TurboRegTransformationType transformationType = TurboRegTransformationType.RigidBody;
-    private ParameterCollectionList rules = ParameterCollectionList.containingCollection(TurboRegRegistrationAlgorithmRule.class);
+    private JIPipeParameterCollectionList rules = JIPipeParameterCollectionList.containingCollection(TurboRegRegistrationAlgorithmRule.class);
     private boolean restoreOriginalAnnotations = true;
 
 
@@ -95,7 +95,7 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
     public TurboRegRegistration2DReferencedAlgorithm(TurboRegRegistration2DReferencedAlgorithm other) {
         super(other);
         this.transformationType = other.transformationType;
-        this.rules = new ParameterCollectionList(other.rules);
+        this.rules = new JIPipeParameterCollectionList(other.rules);
         this.advancedTurboRegParameters = new AdvancedTurboRegParameters(other.advancedTurboRegParameters);
         this.restoreOriginalAnnotations = other.restoreOriginalAnnotations;
         registerSubParameter(advancedTurboRegParameters);
@@ -127,12 +127,12 @@ public class TurboRegRegistration2DReferencedAlgorithm extends JIPipeIteratingAl
             "If no rules matches, the slice 'Ignore' rule is automatically applied.")
     @JIPipeParameter("rules")
     @ParameterCollectionListTemplate(TurboRegRegistrationAlgorithmRule.class)
-    public ParameterCollectionList getRules() {
+    public JIPipeParameterCollectionList getRules() {
         return rules;
     }
 
     @JIPipeParameter("rules")
-    public void setRules(ParameterCollectionList rules) {
+    public void setRules(JIPipeParameterCollectionList rules) {
         this.rules = rules;
     }
 

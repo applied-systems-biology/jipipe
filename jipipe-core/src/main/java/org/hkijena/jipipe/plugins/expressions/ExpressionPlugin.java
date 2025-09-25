@@ -76,7 +76,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerParameterType("expression",
                 JIPipeExpressionParameter.class,
                 JIPipeParameterArchetype.Value,
-                JIPipeExpressionParameter.List.class,
+                JIPipeExpressionParameterList.class,
                 null,
                 null,
                 "Expression",
@@ -89,7 +89,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "A mathematical or conditional logic expression");
         registerParameterType("table-column-source",
                 TableColumnSourceExpressionParameter.class,
-                JIPipeParameterArchetype.Value, TableColumnSourceExpressionParameter.List.class,
+                JIPipeParameterArchetype.Value, TableColumnSourceExpressionParameterList.class,
                 null,
                 null,
                 "Column source",
@@ -136,7 +136,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeExpressionDesktopParameterEditorUI.class);
         registerParameterType("named-string-query-expression",
                 NamedStringQueryExpression.class,
-                JIPipeParameterArchetype.Value, NamedStringQueryExpression.List.class,
+                JIPipeParameterArchetype.Value, NamedStringQueryExpressionList.class,
                 null,
                 null,
                 "Named string query expression",

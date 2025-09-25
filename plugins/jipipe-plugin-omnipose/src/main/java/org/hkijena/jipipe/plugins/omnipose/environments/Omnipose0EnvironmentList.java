@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.omnipose.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class Omnipose0EnvironmentList extends ListParameter<Omnipose0Environment> {
+public class Omnipose0EnvironmentList extends JIPipeListParameter<Omnipose0Environment> {
     public Omnipose0EnvironmentList() {
         super(Omnipose0Environment.class);
     }

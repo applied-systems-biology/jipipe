@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeProcessArtifactEnvironment;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ilastik.IlastikPlugin;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
@@ -66,19 +65,4 @@ public class IlastikEnvironment extends JIPipeProcessArtifactEnvironment {
         return IlastikPlugin.RESOURCES.getIcon16("ilastik.png");
     }
 
-    /**
-     * A list of {@link IlastikEnvironment}
-     */
-    public static class List extends ListParameter<IlastikEnvironment> {
-        public List() {
-            super(IlastikEnvironment.class);
-        }
-
-        public List(List other) {
-            super(IlastikEnvironment.class);
-            for (IlastikEnvironment environment : other) {
-                add(new IlastikEnvironment(environment));
-            }
-        }
-    }
 }

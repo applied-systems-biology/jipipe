@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.omnipose.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalOmnipose0Environment extends OptionalParameter<Omnipose0Environment> {
+public class OptionalOmnipose0Environment extends JIPipeOptionalParameter<Omnipose0Environment> {
     public OptionalOmnipose0Environment() {
         super(Omnipose0Environment.class);
     }

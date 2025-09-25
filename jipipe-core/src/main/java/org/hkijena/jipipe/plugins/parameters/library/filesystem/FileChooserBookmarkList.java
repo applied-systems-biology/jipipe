@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.filesystem;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class FileChooserBookmarkList extends ListParameter<FileChooserBookmark> {
+public class FileChooserBookmarkList extends JIPipeListParameter<FileChooserBookmark> {
     /**
      *
      */

@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 /**
  * A list of {@link Double}
  */
-public class DoubleList extends ListParameter<Double> {
+public class DoubleList extends JIPipeListParameter<Double> {
     /**
      * Creates a new empty list
      */

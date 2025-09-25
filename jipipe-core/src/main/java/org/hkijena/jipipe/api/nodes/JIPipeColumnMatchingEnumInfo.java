@@ -14,12 +14,12 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 
-public class JIPipeColumnMatchingEnumInfo implements EnumItemInfo {
+public class JIPipeColumnMatchingEnumInfo implements JIPipeEnumParameterItemInfo {
     @Override
     public Icon getIcon(Object value) {
         JIPipeIterationStepTextAnnotationColumMatching columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;

@@ -1,0 +1,130 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.parameters.ui.library;
+
+import ij.IJ;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopIconPickerDialog;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.nio.file.Path;
+
+public class JIPipeDesktopImageParameterEditorUI extends JIPipeDesktopParameterEditorUI<ImageParameter> {
+
+    private final JLabel imagePreview = new JLabel();
+
+    public JIPipeDesktopImageParameterEditorUI(InitializationParameters parameters) {
+        super(ImageParameter.class, parameters);
+        initialize();
+        reload();
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        add(imagePreview, BorderLayout.WEST);
+
+        JButton importButton = new JButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"));
+        JPopupMenu importMenu = UIUtils.addPopupMenuToButton(importButton);
+        add(importButton, BorderLayout.CENTER);
+
+        JMenuItem openImageItem = new JMenuItem("Open from file ...", JIPipe.RESOURCES.getIcon16("actions/document-open-folder.png"));
+        openImageItem.addActionListener(e -> importImageFile());
+        importMenu.add(openImageItem);
+
+        JMenuItem importIconItem = new JMenuItem("Load icon", JIPipe.RESOURCES.getIcon16("actions/view_icon.png"));
+        importIconItem.addActionListener(e -> importIcon());
+        importMenu.add(importIconItem);
+    }
+
+    private void importIcon() {
+        String picked = JIPipeDesktopIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), JIPipeDesktopIconRefParameterEditorUI.getAvailableIcons());
+        if (picked != null) {
+            ImageIcon icon = JIPipe.RESOURCES.getIcon16(picked);
+            BufferedImage bufferedImage = BufferedImageUtils.toBufferedImage(icon.getImage(), BufferedImage.TYPE_INT_ARGB);
+            importImage(bufferedImage);
+        }
+    }
+
+    private void importImageFile() {
+        Path path = JIPipeDesktop.openFile(getDesktopWorkbench().getWindow(),
+                getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                "Open image",
+                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
+        if (path != null) {
+            try {
+                BufferedImage image = ImageIO.read(path.toFile());
+                importImage(image);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+    }
+
+    private void importImage(BufferedImage image) {
+        ImageParameterSettings annotation = getParameterAccess().getAnnotationOfType(ImageParameterSettings.class);
+        int maxWidth = -1;
+        int maxHeight = -1;
+        if (annotation != null) {
+            maxWidth = annotation.maxWidth();
+            maxHeight = annotation.maxHeight();
+        }
+        double scale = 1.0;
+        if (maxWidth > 0) {
+            scale = 1.0 * maxWidth / image.getWidth();
+        }
+        if (maxHeight > 0) {
+            scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
+        }
+        if (scale != 1.0) {
+            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_DEFAULT);
+            image = BufferedImageUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
+        }
+
+        ImageParameter parameter = new ImageParameter();
+        parameter.setImage(image);
+        setParameter(parameter, true);
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        ImageParameter parameter = getParameter();
+        if (parameter.getImage() == null) {
+            imagePreview.setText("NA");
+            imagePreview.setIcon(JIPipe.RESOURCES.getIcon16("emblems/vcs-conflicting.png"));
+        } else {
+            imagePreview.setText("");
+            BufferedImage thumbnail = BufferedImageUtils.scaleImageToFit(parameter.getImage(), 64, 64);
+            imagePreview.setIcon(new ImageIcon(thumbnail));
+        }
+    }
+}

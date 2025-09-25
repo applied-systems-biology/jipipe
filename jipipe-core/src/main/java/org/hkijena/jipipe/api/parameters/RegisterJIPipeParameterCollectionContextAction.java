@@ -16,8 +16,8 @@ package org.hkijena.jipipe.api.parameters;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.JIPipeDefaultResourceManagerSupplier;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -39,12 +39,14 @@ public @interface RegisterJIPipeParameterCollectionContextAction {
 
     /**
      * The 16x16 icon name within JIPipe's the icon resource manager's database
+     *
      * @return the icon
      */
     String icon() default "";
 
     /**
      * Points towards the resource manager that contains the icon
+     *
      * @return supplier class with standard constructor that returns a {@link JIPipeResourceManager}
      */
     Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager() default JIPipeDefaultResourceManagerSupplier.class;
@@ -66,6 +68,7 @@ public @interface RegisterJIPipeParameterCollectionContextAction {
 
     /**
      * If true, highlight with a green border
+     *
      * @return if a green border should be shown
      */
     boolean highlighted() default false;

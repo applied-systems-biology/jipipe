@@ -34,13 +34,12 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImporterRef;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 
@@ -90,7 +89,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Set import parameters", description = "Sets the import parameters via its default UI")
-    @RegisterJIPipeParameterCollectionContextAction(icon ="actions/configure.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "actions/configure.png")
     public void setImporterParametersFromUI(JIPipeWorkbench parent) {
         if (importerType.getInstance() == null) {
             JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),

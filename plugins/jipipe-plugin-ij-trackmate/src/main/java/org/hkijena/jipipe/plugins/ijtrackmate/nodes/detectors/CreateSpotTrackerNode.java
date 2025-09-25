@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePlugin;
 import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePluginResourceManagerSupplier;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotTrackerData;
 

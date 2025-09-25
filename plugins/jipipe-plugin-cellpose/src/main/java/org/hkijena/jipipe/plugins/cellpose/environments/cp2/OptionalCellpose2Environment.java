@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.cellpose.environments.cp2;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalCellpose2Environment extends OptionalParameter<Cellpose2Environment> {
+public class OptionalCellpose2Environment extends JIPipeOptionalParameter<Cellpose2Environment> {
     public OptionalCellpose2Environment() {
         super(Cellpose2Environment.class);
     }

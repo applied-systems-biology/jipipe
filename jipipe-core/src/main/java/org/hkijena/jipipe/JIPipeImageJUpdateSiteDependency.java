@@ -19,7 +19,6 @@ import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 
 /**
@@ -119,19 +118,4 @@ public class JIPipeImageJUpdateSiteDependency extends AbstractJIPipeParameterCol
         this.maintainer = maintainer;
     }
 
-    /**
-     * the List class
-     */
-    public static class List extends ListParameter<JIPipeImageJUpdateSiteDependency> {
-        public List() {
-            super(JIPipeImageJUpdateSiteDependency.class);
-        }
-
-        public List(List other) {
-            super(JIPipeImageJUpdateSiteDependency.class);
-            for (JIPipeImageJUpdateSiteDependency dependency : other) {
-                add(new JIPipeImageJUpdateSiteDependency(dependency));
-            }
-        }
-    }
 }

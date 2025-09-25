@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.scripts;
 
-import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
+import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.scijava.script.ScriptLanguage;
 
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class PythonScript extends ScriptParameter {
+public class PythonScript extends JIPipeScriptParameter {
     public PythonScript() {
         super();
     }

@@ -41,8 +41,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -63,7 +63,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-    private ParameterCollectionList metadataGenerators = ParameterCollectionList.containingCollection(MetadataProperty.class);
+    private JIPipeParameterCollectionList metadataGenerators = JIPipeParameterCollectionList.containingCollection(MetadataProperty.class);
     private boolean measureInPhysicalUnits = true;
     private boolean clearBeforeWrite = false;
 
@@ -83,7 +83,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
      */
     public SetRoiMetadataByStatisticsAlgorithm(SetRoiMetadataByStatisticsAlgorithm other) {
         super(other);
-        this.metadataGenerators = new ParameterCollectionList(other.metadataGenerators);
+        this.metadataGenerators = new JIPipeParameterCollectionList(other.metadataGenerators);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.clearBeforeWrite = other.clearBeforeWrite;
@@ -165,12 +165,12 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     @SetJIPipeDocumentation(name = "Generated metadata", description = "Each entry contains an expression that is applied for each ROI. The generated value is written into the metadata key. <strong>Please note that ImageJ ROI metadata are subject to some limitations. For example, keys cannot have space characters, equal signs, and colons.</strong>")
     @JIPipeParameter(value = "metadata-generators", important = true)
     @ParameterCollectionListTemplate(MetadataProperty.class)
-    public ParameterCollectionList getMetadataGenerators() {
+    public JIPipeParameterCollectionList getMetadataGenerators() {
         return metadataGenerators;
     }
 
     @JIPipeParameter("metadata-generators")
-    public void setMetadataGenerators(ParameterCollectionList metadataGenerators) {
+    public void setMetadataGenerators(JIPipeParameterCollectionList metadataGenerators) {
         this.metadataGenerators = metadataGenerators;
     }
 

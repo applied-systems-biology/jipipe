@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
 
     public ExtractJsonDataAsTableAlgorithm(JIPipeNodeInfo info) {
@@ -68,7 +68,7 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
 
     public ExtractJsonDataAsTableAlgorithm(ExtractJsonDataAsTableAlgorithm other) {
         super(other);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
         this.columnNormalization = other.columnNormalization;
     }
 
@@ -108,12 +108,12 @@ public class ExtractJsonDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgori
     @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 

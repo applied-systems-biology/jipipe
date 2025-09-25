@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -50,7 +50,7 @@ import java.util.Map;
 public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnvironment {
     private JIPipeExpressionParameter arguments = new JIPipeExpressionParameter("cli_parameters");
     private Path executablePath = Paths.get("");
-    private StringQueryExpressionAndStringPairParameter.List environmentVariables = new StringQueryExpressionAndStringPairParameter.List();
+    private StringQueryExpressionAndStringPairParameterList environmentVariables = new StringQueryExpressionAndStringPairParameterList();
 
     public JIPipeProcessArtifactEnvironment() {
 
@@ -60,7 +60,7 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
         super(other);
         this.arguments = new JIPipeExpressionParameter(other.arguments);
         this.executablePath = other.executablePath;
-        this.environmentVariables = new StringQueryExpressionAndStringPairParameter.List(other.environmentVariables);
+        this.environmentVariables = new StringQueryExpressionAndStringPairParameterList(other.environmentVariables);
     }
 
     @SetJIPipeDocumentation(name = "Arguments", description = "Arguments passed to the executable.")
@@ -99,12 +99,12 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
     @JIPipeParameter("environment-variables")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Key")
     @JIPipeExpressionParameterSettings(variableSource = EnvironmentVariablesSource.class)
-    public StringQueryExpressionAndStringPairParameter.List getEnvironmentVariables() {
+    public StringQueryExpressionAndStringPairParameterList getEnvironmentVariables() {
         return environmentVariables;
     }
 
     @JIPipeParameter("environment-variables")
-    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameter.List environmentVariables) {
+    public void setEnvironmentVariables(StringQueryExpressionAndStringPairParameterList environmentVariables) {
         this.environmentVariables = environmentVariables;
     }
 

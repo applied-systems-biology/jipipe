@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.tables.datatypes.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -47,7 +47,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList processorParameters = ParameterCollectionList.containingCollection(ProcessingItem.class);
+    private JIPipeParameterCollectionList processorParameters = JIPipeParameterCollectionList.containingCollection(ProcessingItem.class);
 
     /**
      * Creates a new instance
@@ -66,7 +66,7 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
      */
     public ApplyExpressionToTableByColumnAlgorithm(ApplyExpressionToTableByColumnAlgorithm other) {
         super(other);
-        this.processorParameters = new ParameterCollectionList(other.processorParameters);
+        this.processorParameters = new JIPipeParameterCollectionList(other.processorParameters);
     }
 
     @Override
@@ -135,12 +135,12 @@ public class ApplyExpressionToTableByColumnAlgorithm extends JIPipeSimpleIterati
 
     @SetJIPipeDocumentation(name = "Column generators", description = "Each item in the list of generators should output a single value or a list of values, which will be the items in the generated column")
     @JIPipeParameter("processor-parameters")
-    public ParameterCollectionList getProcessorParameters() {
+    public JIPipeParameterCollectionList getProcessorParameters() {
         return processorParameters;
     }
 
     @JIPipeParameter("processor-parameters")
-    public void setProcessorParameters(ParameterCollectionList processorParameters) {
+    public void setProcessorParameters(JIPipeParameterCollectionList processorParameters) {
         this.processorParameters = processorParameters;
     }
 

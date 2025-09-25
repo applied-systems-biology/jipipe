@@ -124,26 +124,27 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
 
     /**
      * Automatically configures this artifact environment to the latest compatible versin-pinned artifact
+     *
      * @return if the process was successful
      */
     public boolean trySetToLatestVersionPinnedArtifact() {
-        if(JIPipe.isInstantiated()) {
+        if (JIPipe.isInstantiated()) {
             String query = getArtifactQuery().getQuery();
-            if(StringUtils.isNullOrEmpty(query)) {
+            if (StringUtils.isNullOrEmpty(query)) {
                 // Use the standard query from the environment registry
                 JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = JIPipe.getInstance().getEnvironments().getInfoByClass(getClass());
-                if(info != null) {
+                if (info != null) {
                     query = info.getArtifactQuery();
                 }
             }
-            if(StringUtils.isNullOrEmpty(query)) {
+            if (StringUtils.isNullOrEmpty(query)) {
                 return false;
             }
 
             List<JIPipeArtifact> candidates = JIPipe.getArtifacts().queryCachedVersionPinnedArtifacts(query);
-            if(!candidates.isEmpty()) {
+            if (!candidates.isEmpty()) {
                 JIPipeArtifact best = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(candidates);
-                if(best != null) {
+                if (best != null) {
                     setArtifactQuery(new JIPipeArtifactQueryParameter(best.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion)));
                     setLoadFromArtifact(true);
                     return true;

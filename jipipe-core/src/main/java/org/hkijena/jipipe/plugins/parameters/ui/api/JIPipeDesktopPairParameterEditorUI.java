@@ -1,0 +1,99 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.parameters.ui.api;
+
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameterKeyAccess;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameterValueAccess;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+
+/**
+ * Editor for {@link JIPipePairParameter}
+ */
+public class JIPipeDesktopPairParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipePairParameter> {
+
+    public JIPipeDesktopPairParameterEditorUI(InitializationParameters parameters) {
+        super(JIPipePairParameter.class, parameters);
+        reload();
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        removeAll();
+
+        JIPipePairParameter<?, ?> renaming = getParameter();
+        JIPipePairParameterKeyAccess<?, ?> keyAccess = new JIPipePairParameterKeyAccess<>(getParameterAccess(), renaming);
+        JIPipePairParameterValueAccess<?, ?> valueAccess = new JIPipePairParameterValueAccess<>(getParameterAccess(), renaming);
+
+        String keyLabel = "Key";
+        String valueLabel = "Value";
+        boolean singleRow = false;
+        boolean singleRowChevron = false;
+
+        if (getParameterAccess().getFieldClass().getAnnotation(PairParameterSettings.class) != null) {
+            PairParameterSettings settings = getParameterAccess().getFieldClass().getAnnotation(PairParameterSettings.class);
+            keyLabel = settings.keyLabel();
+            valueLabel = settings.valueLabel();
+            singleRow = settings.singleRow();
+            singleRowChevron = settings.singleRowWithChevron();
+        }
+        if (getParameterAccess().getAnnotationOfType(PairParameterSettings.class) != null) {
+            PairParameterSettings settings = getParameterAccess().getAnnotationOfType(PairParameterSettings.class);
+            keyLabel = settings.keyLabel();
+            valueLabel = settings.valueLabel();
+            singleRow = settings.singleRow();
+            singleRowChevron = settings.singleRowWithChevron();
+        }
+
+        JIPipeDesktopParameterEditorUI keyEditor = JIPipe.getParameterTypes().createEditorInstance(keyAccess, getDesktopWorkbench(), getParameterTree(), null);
+        JIPipeDesktopParameterEditorUI valueEditor = JIPipe.getParameterTypes().createEditorInstance(valueAccess, getDesktopWorkbench(), getParameterTree(), null);
+
+        if (singleRow) {
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            add(new JLabel(keyLabel));
+            if (!StringUtils.isNullOrEmpty(keyLabel))
+                add(Box.createHorizontalStrut(4));
+            add(keyEditor);
+            if (singleRowChevron)
+                add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/caret-right.png")));
+            add(new JLabel(valueLabel));
+            if (!StringUtils.isNullOrEmpty(valueLabel))
+                add(Box.createHorizontalStrut(4));
+            add(valueEditor);
+        } else {
+            setLayout(new BorderLayout());
+            JIPipeDesktopFormPanel panel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.NONE);
+            panel.setBorder(UIUtils.createControlBorder());
+            panel.addToForm(keyEditor, new JLabel(keyLabel), null);
+            panel.addToForm(valueEditor, new JLabel(valueLabel), null);
+            add(panel, BorderLayout.CENTER);
+        }
+
+        revalidate();
+        repaint();
+    }
+}

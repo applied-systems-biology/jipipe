@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
@@ -77,7 +78,7 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
     private SortOrder limitConnectionsLengthSortOrder = SortOrder.Ascending;
     private boolean ignoreLimitConnectionsForSource = false;
     private boolean isIgnoreLimitConnectionsForTarget = false;
-    private StringAndStringPairParameter.List newEdgeMetadata = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList newEdgeMetadata = new StringAndStringPairParameterList();
 
     public ConnectVerticesFastAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -100,17 +101,17 @@ public class ConnectVerticesFastAlgorithm extends JIPipeIteratingAlgorithm {
         this.targetVertexFilter = new OptionalJIPipeExpressionParameter(other.targetVertexFilter);
         this.ignoreLimitConnectionsForSource = other.ignoreLimitConnectionsForSource;
         this.isIgnoreLimitConnectionsForTarget = other.isIgnoreLimitConnectionsForTarget;
-        this.newEdgeMetadata = new StringAndStringPairParameter.List(other.newEdgeMetadata);
+        this.newEdgeMetadata = new StringAndStringPairParameterList(other.newEdgeMetadata);
     }
 
     @SetJIPipeDocumentation(name = "Set new edges metadata", description = "Allows to set the metadata of newly created edges")
     @JIPipeParameter("new-edge-metadata")
-    public StringAndStringPairParameter.List getNewEdgeMetadata() {
+    public StringAndStringPairParameterList getNewEdgeMetadata() {
         return newEdgeMetadata;
     }
 
     @JIPipeParameter("new-edge-metadata")
-    public void setNewEdgeMetadata(StringAndStringPairParameter.List newEdgeMetadata) {
+    public void setNewEdgeMetadata(StringAndStringPairParameterList newEdgeMetadata) {
         this.newEdgeMetadata = newEdgeMetadata;
     }
 

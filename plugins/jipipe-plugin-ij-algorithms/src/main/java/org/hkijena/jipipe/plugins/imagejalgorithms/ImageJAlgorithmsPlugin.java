@@ -162,11 +162,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendLayer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.blending.ImageBlendMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.*;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
@@ -216,8 +214,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS,
+    public PluginCategoriesEnumParameterList getCategories() {
+        return new PluginCategoriesEnumParameterList(PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS,
                 PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING, PluginCategoriesEnumParameter.CATEGORY_MONTAGE, PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_FIJI,
                 PluginCategoriesEnumParameter.CATEGORY_IMAGE_SCIENCE, PluginCategoriesEnumParameter.CATEGORY_NOISE, PluginCategoriesEnumParameter.CATEGORY_TRANSFORM, PluginCategoriesEnumParameter.CATEGORY_BINARY, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION, PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION,
                 PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
@@ -449,7 +447,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerParameterType("ome-accessor-type", OMEAccessorTypeEnumParameter.class, JIPipeParameterArchetype.Value, "OME metadata key", "Metadata from OME");
-        registerParameterType("ome-accessor", OMEAccessorParameter.class, JIPipeParameterArchetype.Value, "OME metadata query", "Queries metadata from OME", OMEAccessorDesktopParameterEditorUI.class);
+        registerParameterType("ome-accessor", OMEAccessorParameter.class, JIPipeParameterArchetype.Value, "OME metadata query", "Queries metadata from OME", JIPipeDesktopOMEAccessorParameterEditorUI.class);
 
         registerIOAlgorithms();
         registerBlurAlgorithms();
@@ -713,9 +711,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Describes how a data is sorted by a measurement column",
                 null);
         registerParameterType("ij1:measurement-column-sort-order-list",
-                MeasurementColumnSortOrder.List.class,
-                JIPipeParameterArchetype.List, MeasurementColumnSortOrder.List::new,
-                o -> new MeasurementColumnSortOrder.List((MeasurementColumnSortOrder.List) o),
+                MeasurementColumnSortOrderList.class,
+                JIPipeParameterArchetype.List, MeasurementColumnSortOrderList::new,
+                o -> new MeasurementColumnSortOrderList((MeasurementColumnSortOrderList) o),
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);
@@ -742,7 +740,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Dimension assigned to a plane within a Hyperstack");
         registerParameterType("ij1-hyperstack-dimension:pair",
                 HyperstackDimensionPairParameter.class,
-                JIPipeParameterArchetype.Value, HyperstackDimensionPairParameter.List.class,
+                JIPipeParameterArchetype.Value, HyperstackDimensionPairParameterList.class,
                 null,
                 null,
                 "Hyperstack dimension",

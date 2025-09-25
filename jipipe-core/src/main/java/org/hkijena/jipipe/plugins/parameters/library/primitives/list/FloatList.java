@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.primitives.list;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 /**
  * A list of {@link Float}
  */
-public class FloatList extends ListParameter<Float> {
+public class FloatList extends JIPipeListParameter<Float> {
     /**
      * Creates a new empty list
      */

@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.environments;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class ImageJSamplesListEnvironment extends ListParameter<ImageJSamplesEnvironment> {
+public class ImageJSamplesListEnvironment extends JIPipeListParameter<ImageJSamplesEnvironment> {
     public ImageJSamplesListEnvironment() {
         super(ImageJSamplesEnvironment.class);
     }

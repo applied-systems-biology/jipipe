@@ -20,7 +20,10 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 import org.scijava.Disposable;
@@ -771,7 +774,7 @@ public class JIPipeDesktopFormPanel extends JPanel {
             int y = marginTop;
             int w = getWidth() - x - 1;
             int h = getHeight() - y - 1 - 8;
-            if(!collapsed) {
+            if (!collapsed) {
                 g2.fillRoundRect(x, y, w, h, 4, 4);
             }
             g2.setColor(borderColor);
@@ -807,13 +810,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
             addToEndOfTitlePanel(helpButton);
         }
 
+        public boolean isCollapsed() {
+            return collapsed;
+        }
+
         public void setCollapsed(boolean collapsed) {
             this.collapsed = collapsed;
             repaint(50);
-        }
-
-        public boolean isCollapsed() {
-            return collapsed;
         }
     }
 

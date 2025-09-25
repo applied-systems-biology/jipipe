@@ -1,0 +1,122 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.parameters.ui.api;
+
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDefaultEnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Objects;
+
+/**
+ * A parameter editor UI that works for all enumerations
+ */
+public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEditorUI<Object> {
+
+    private JComboBox<Object> comboBox;
+    private JButton currentlyDisplayed;
+    private JIPipeEnumParameterItemInfo enumItemInfo = new JIPipeDefaultEnumItemInfo();
+
+    public JIPipeDesktopEnumParameterEditorUI(InitializationParameters parameters) {
+        super(Object.class, parameters);
+        initialize();
+        reload();
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        Object target = getParameterAccess().get(Object.class);
+        if (!Objects.equals(target, comboBox.getSelectedItem())) {
+            comboBox.setSelectedItem(target);
+        }
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+
+        // Combo box style
+        Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
+        EnumParameterSettings settings = getParameterAccess().getAnnotationOfType(EnumParameterSettings.class);
+        if (settings != null) {
+            enumItemInfo = (JIPipeEnumParameterItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
+        }
+
+        Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
+        comboBox = new JComboBox<>(values);
+        comboBox.setSelectedItem(getParameterAccess().get(Object.class));
+        comboBox.addActionListener(e -> {
+            setParameter(comboBox.getSelectedItem(), false);
+        });
+        comboBox.setRenderer(new Renderer(enumItemInfo));
+        add(comboBox, BorderLayout.CENTER);
+
+        JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/search.png"));
+        UIUtils.setStandardButtonBorder(selectButton);
+        selectButton.setToolTipText("Select value");
+        selectButton.addActionListener(e -> pickEnum());
+        add(selectButton, BorderLayout.EAST);
+    }
+
+    private void pickEnum() {
+        Object[] values = getParameterAccess().getFieldClass().getEnumConstants();
+        Object target = getParameterAccess().get(Object.class);
+        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(this, Arrays.asList(values), enumItemInfo, target, "Select value");
+        if (selected != null) {
+            setParameter(selected, true);
+        }
+    }
+
+    /**
+     * Renders items in enum parameters
+     */
+    public static class Renderer extends JLabel implements ListCellRenderer<Object> {
+
+        private final JIPipeEnumParameterItemInfo info;
+
+        public Renderer(JIPipeEnumParameterItemInfo info) {
+            this.info = info;
+            setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+            setOpaque(true);
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+            setIcon(info.getIcon(value));
+            setText(info.getLabel(value));
+            setToolTipText(info.getTooltip(value));
+            if (isSelected || cellHasFocus) {
+                setBackground(UIManager.getColor("List.selectionBackground"));
+            } else {
+                setBackground(UIManager.getColor("List.background"));
+            }
+            return this;
+        }
+    }
+}

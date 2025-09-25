@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironmentList;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -81,7 +82,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "org.python.*",
                 JIPipeEnvironmentArchetype.Managed, PythonEnvironment.class,
                 OptionalPythonEnvironment.class,
-                PythonEnvironment.List.class,
+                PythonEnvironmentList.class,
                 "Python",
                 "A Python environment",
                 JIPipe.RESOURCES.getIcon16("apps/python.png"));
@@ -91,7 +92,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "org.hkijena.jipipe-python-adapter:*",
                 JIPipeEnvironmentArchetype.Managed, JIPipePythonAdapterLibraryEnvironment.class,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
-                JIPipePythonAdapterLibraryEnvironment.List.class,
+                JIPipePythonAdapterLibraryEnvironmentList.class,
                 "JIPipe Python adapter library",
                 "Additional library for Python",
                 JIPipe.RESOURCES.getIcon16("actions/plugins.png"));

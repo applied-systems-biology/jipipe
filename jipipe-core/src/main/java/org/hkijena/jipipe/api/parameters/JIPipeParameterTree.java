@@ -27,7 +27,6 @@ import org.scijava.Priority;
 import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
 import java.util.*;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;

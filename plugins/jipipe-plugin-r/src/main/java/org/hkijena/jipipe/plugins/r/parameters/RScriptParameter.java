@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.plugins.r.parameters;
 
-import org.hkijena.jipipe.plugins.parameters.api.scripts.ScriptParameter;
+import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.scijava.script.ScriptLanguage;
 
-public class RScriptParameter extends ScriptParameter {
+public class RScriptParameter extends JIPipeScriptParameter {
 
     public RScriptParameter() {
     }
 
-    public RScriptParameter(ScriptParameter other) {
+    public RScriptParameter(JIPipeScriptParameter other) {
         super(other);
     }
 

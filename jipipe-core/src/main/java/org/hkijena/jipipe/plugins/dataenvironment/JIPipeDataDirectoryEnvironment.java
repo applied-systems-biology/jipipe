@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -101,7 +101,7 @@ public class JIPipeDataDirectoryEnvironment extends JIPipeArtifactEnvironment {
                 '}';
     }
 
-    public static class List extends ListParameter<JIPipeDataDirectoryEnvironment> {
+    public static class List extends JIPipeListParameter<JIPipeDataDirectoryEnvironment> {
         public List() {
             super(JIPipeDataDirectoryEnvironment.class);
         }

@@ -32,10 +32,11 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.StringArrayTableColumnData;
@@ -56,9 +57,9 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(Entry.class);
+    private JIPipeParameterCollectionList entries = JIPipeParameterCollectionList.containingCollection(Entry.class);
     private TableColumnNormalization columnNormalization = TableColumnNormalization.ZeroOrEmpty;
-    private StringAndStringPairParameter.List namespaceMap = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList namespaceMap = new StringAndStringPairParameterList();
 
     public ExtractXPathDataAsTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -67,8 +68,8 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
 
     public ExtractXPathDataAsTableAlgorithm(ExtractXPathDataAsTableAlgorithm other) {
         super(other);
-        this.namespaceMap = new StringAndStringPairParameter.List(other.namespaceMap);
-        this.entries = new ParameterCollectionList(other.entries);
+        this.namespaceMap = new StringAndStringPairParameterList(other.namespaceMap);
+        this.entries = new JIPipeParameterCollectionList(other.entries);
         this.columnNormalization = other.columnNormalization;
     }
 
@@ -103,12 +104,12 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
     @SetJIPipeDocumentation(name = "Generated columns", description = "The list of generated columns. Please visit https://www.w3schools.com/xml/xpath_intro.asp to learn more about XPath.")
     @JIPipeParameter("entries")
     @ParameterCollectionListTemplate(Entry.class)
-    public ParameterCollectionList getEntries() {
+    public JIPipeParameterCollectionList getEntries() {
         return entries;
     }
 
     @JIPipeParameter("entries")
-    public void setEntries(ParameterCollectionList entries) {
+    public void setEntries(JIPipeParameterCollectionList entries) {
         this.entries = entries;
     }
 
@@ -126,12 +127,12 @@ public class ExtractXPathDataAsTableAlgorithm extends JIPipeSimpleIteratingAlgor
     @SetJIPipeDocumentation(name = "Namespace map", description = "Allows to map namespaces to shortcuts for more convenient access")
     @JIPipeParameter("namespace-map")
     @PairParameterSettings(keyLabel = "Shortcut", valueLabel = "Namespace")
-    public StringAndStringPairParameter.List getNamespaceMap() {
+    public StringAndStringPairParameterList getNamespaceMap() {
         return namespaceMap;
     }
 
     @JIPipeParameter("namespace-map")
-    public void setNamespaceMap(StringAndStringPairParameter.List namespaceMap) {
+    public void setNamespaceMap(StringAndStringPairParameterList namespaceMap) {
         this.namespaceMap = namespaceMap;
     }
 

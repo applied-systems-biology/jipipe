@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -45,7 +46,7 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
     private StringList dependencyCitations = new StringList();
 
 
-    private PluginCategoriesEnumParameter.List categories = new PluginCategoriesEnumParameter.List();
+    private PluginCategoriesEnumParameterList categories = new PluginCategoriesEnumParameterList();
 
     /**
      * Creates new empty instance
@@ -68,7 +69,7 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
         this.license = other.license;
         this.citation = other.citation;
         this.dependencyCitations = new StringList(other.dependencyCitations);
-        this.categories = new PluginCategoriesEnumParameter.List(other.categories);
+        this.categories = new PluginCategoriesEnumParameterList(other.categories);
     }
 
     public void addCategory(String category) {
@@ -86,13 +87,13 @@ public class JIPipeStandardMetadata extends AbstractJIPipeParameterCollection im
     @SetJIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
     @JIPipeParameter("categories")
     @JsonGetter("categories")
-    public PluginCategoriesEnumParameter.List getCategories() {
+    public PluginCategoriesEnumParameterList getCategories() {
         return categories;
     }
 
     @JIPipeParameter("categories")
     @JsonSetter("categories")
-    public void setCategories(PluginCategoriesEnumParameter.List categories) {
+    public void setCategories(PluginCategoriesEnumParameterList categories) {
         this.categories = categories;
     }
 

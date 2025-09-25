@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.cellpose.environments.cp2;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
-public class Cellpose2EnvironmentList extends ListParameter<Cellpose2Environment> {
+public class Cellpose2EnvironmentList extends JIPipeListParameter<Cellpose2Environment> {
     public Cellpose2EnvironmentList() {
         super(Cellpose2Environment.class);
     }

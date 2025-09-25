@@ -23,8 +23,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameter;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -49,7 +48,7 @@ import java.util.Set;
         "<li>Generating columns: The value expression is called for each row. Return a string or number. You have access to the other column values inside the row (as variables). Example: <code>Mean + 0.5 * X</code>. " +
         "If you do not provide a valid expression, the expression itself is put in as column value (string)</li>" +
         "</ul>")
-public class TableColumnSourceExpressionParameter extends PairParameter<TableColumnSourceExpressionParameter.TableSourceType, JIPipeExpressionParameter> implements JIPipeValidatable {
+public class TableColumnSourceExpressionParameter extends JIPipePairParameter<TableColumnSourceExpressionParameter.TableSourceType, JIPipeExpressionParameter> implements JIPipeValidatable {
 
     public TableColumnSourceExpressionParameter() {
         super(TableColumnSourceExpressionParameter.TableSourceType.class, JIPipeExpressionParameter.class);
@@ -197,16 +196,4 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         }
     }
 
-    public static class List extends ListParameter<TableColumnSourceExpressionParameter> {
-        public List() {
-            super(TableColumnSourceExpressionParameter.class);
-        }
-
-        public List(List other) {
-            super(TableColumnSourceExpressionParameter.class);
-            for (TableColumnSourceExpressionParameter parameter : other) {
-                add(new TableColumnSourceExpressionParameter(parameter));
-            }
-        }
-    }
 }

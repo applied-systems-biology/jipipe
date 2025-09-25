@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.nodes.utils.FilamentsVertexMetadat
 import org.hkijena.jipipe.plugins.ijfilaments.parameters.VertexMaskParameter;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertexVariablesInfo;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.utils.ColorUtils;
 
@@ -61,7 +61,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
     private JIPipeExpressionParameter physicalSizeX = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeY = new JIPipeExpressionParameter("default");
     private JIPipeExpressionParameter physicalSizeZ = new JIPipeExpressionParameter("default");
-    private ParameterCollectionList metadata = ParameterCollectionList.containingCollection(FilamentsVertexMetadataEntry.class);
+    private JIPipeParameterCollectionList metadata = JIPipeParameterCollectionList.containingCollection(FilamentsVertexMetadataEntry.class);
 
     public ChangeFilamentVertexPropertiesExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -82,7 +82,7 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
         this.physicalSizeY = new JIPipeExpressionParameter(other.physicalSizeY);
         this.physicalSizeZ = new JIPipeExpressionParameter(other.physicalSizeZ);
         this.vertexMask = new VertexMaskParameter(other.vertexMask);
-        this.metadata = new ParameterCollectionList(other.metadata);
+        this.metadata = new JIPipeParameterCollectionList(other.metadata);
         this.color = new JIPipeExpressionParameter(other.color);
         registerSubParameter(vertexMask);
     }
@@ -160,12 +160,12 @@ public class ChangeFilamentVertexPropertiesExpressionAlgorithm extends JIPipeSim
     @JIPipeParameter("metadata")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = FilamentVertexVariablesInfo.class)
-    public ParameterCollectionList getMetadata() {
+    public JIPipeParameterCollectionList getMetadata() {
         return metadata;
     }
 
     @JIPipeParameter("metadata")
-    public void setMetadata(ParameterCollectionList metadata) {
+    public void setMetadata(JIPipeParameterCollectionList metadata) {
         this.metadata = metadata;
     }
 

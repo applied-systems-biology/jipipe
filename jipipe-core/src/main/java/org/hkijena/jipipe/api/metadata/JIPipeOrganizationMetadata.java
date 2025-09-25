@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -140,7 +140,7 @@ public class JIPipeOrganizationMetadata extends AbstractJIPipeParameterCollectio
         }
     }
 
-    public static class List extends ListParameter<JIPipeOrganizationMetadata> {
+    public static class List extends JIPipeListParameter<JIPipeOrganizationMetadata> {
         public List() {
             super(JIPipeOrganizationMetadata.class);
         }

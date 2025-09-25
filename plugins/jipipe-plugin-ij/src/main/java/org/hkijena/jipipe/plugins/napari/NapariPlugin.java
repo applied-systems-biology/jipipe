@@ -54,14 +54,13 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
         JIPipeEnvironmentConfigurator<NapariEnvironment> environmentConfigurator = workbench.getEnvironmentConfigurator(NapariEnvironment.class, new JIPipeEnvironmentConfigurationCache());
-        if(interactive) {
+        if (interactive) {
             workbench.sendStatusBarText("Preparing Napari ...");
             environmentConfigurator.showDialogAndGetLater(workbench, workbench.getWindow(), "Launch Napari", (environment) -> {
                 workbench.sendStatusBarText("Launching Napari ...");
                 runNapari(environment, arguments, true, progressInfo);
             });
-        }
-        else {
+        } else {
             NapariEnvironment environment = environmentConfigurator.get(progressInfo);
             runNapari(environment, arguments, true, progressInfo);
         }

@@ -31,9 +31,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -48,7 +48,7 @@ import java.util.Objects;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList renamingEntries = ParameterCollectionList.containingCollection(RenamingEntry.class);
+    private JIPipeParameterCollectionList renamingEntries = JIPipeParameterCollectionList.containingCollection(RenamingEntry.class);
 
     /**
      * Creates a new instance
@@ -66,7 +66,7 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
      */
     public RenameTableColumns2Algorithm(RenameTableColumns2Algorithm other) {
         super(other);
-        this.renamingEntries = new ParameterCollectionList(other.renamingEntries);
+        this.renamingEntries = new JIPipeParameterCollectionList(other.renamingEntries);
     }
 
     @Override
@@ -98,12 +98,12 @@ public class RenameTableColumns2Algorithm extends JIPipeSimpleIteratingAlgorithm
     @PairParameterSettings(singleRow = false, keyLabel = "From", valueLabel = "To")
     @JIPipeParameter("renaming-entries")
     @ParameterCollectionListTemplate(RenamingEntry.class)
-    public ParameterCollectionList getRenamingEntries() {
+    public JIPipeParameterCollectionList getRenamingEntries() {
         return renamingEntries;
     }
 
     @JIPipeParameter("renaming-entries")
-    public void setRenamingEntries(ParameterCollectionList renamingEntries) {
+    public void setRenamingEntries(JIPipeParameterCollectionList renamingEntries) {
         this.renamingEntries = renamingEntries;
     }
 

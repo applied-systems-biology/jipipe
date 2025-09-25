@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels;
 
 import inra.ijpb.color.ColorMaps;
 import org.apache.commons.text.WordUtils;
-import org.hkijena.jipipe.plugins.parameters.api.enums.EnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMap;
 
 import javax.swing.*;
@@ -23,9 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * {@link EnumItemInfo} implementation for {@link ColorMap}
+ * {@link JIPipeEnumParameterItemInfo} implementation for {@link ColorMap}
  */
-public class LabelColorMapEnumItemInfo implements EnumItemInfo {
+public class LabelColorMapEnumItemInfo implements JIPipeEnumParameterItemInfo {
 
     private Map<ColorMaps.CommonLabelMaps, LabelColorMapIcon> icons = new HashMap<>();
 

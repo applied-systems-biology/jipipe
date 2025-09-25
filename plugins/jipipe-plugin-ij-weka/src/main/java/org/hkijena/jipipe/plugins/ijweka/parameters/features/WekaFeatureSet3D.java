@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijweka.parameters.features;
 
 import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.AddJIPipeDocumentationDescription;
-import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicSetParameter;
+import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
 
@@ -33,7 +33,7 @@ import java.util.Arrays;
         "<li>Minimum, Maximum, Mean, Variance, Median: the voxels within a radius of \uD835\uDF0E voxels from the target pixel are subjected to the pertinent operation (mean/min etc.) and the target voxel is set to that value.</li>" +
         "</ul>")
 @AddJIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
-public class WekaFeatureSet3D extends DynamicSetParameter<WekaFeature3D> {
+public class WekaFeatureSet3D extends JIPipeDynamicSetParameter<WekaFeature3D> {
     public WekaFeatureSet3D() {
         setAllowedValues(Arrays.asList(WekaFeature3D.values()));
         // Default features

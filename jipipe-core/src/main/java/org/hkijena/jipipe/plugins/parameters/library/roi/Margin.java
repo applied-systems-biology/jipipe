@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -321,27 +320,4 @@ public class Margin extends AbstractJIPipeParameterCollection {
         return new Rectangle(ox + availableArea.x, oy + availableArea.y, ow, oh);
     }
 
-    /**
-     * List parameter of {@link Margin}
-     */
-    public static class List extends ListParameter<Margin> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(Margin.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(Margin.class);
-            for (Margin rectangle : other) {
-                add(new Margin(rectangle));
-            }
-        }
-    }
 }

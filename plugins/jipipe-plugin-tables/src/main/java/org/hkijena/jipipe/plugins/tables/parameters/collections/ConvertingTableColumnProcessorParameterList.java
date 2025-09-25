@@ -13,10 +13,10 @@
 
 package org.hkijena.jipipe.plugins.tables.parameters.collections;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.tables.parameters.processors.ConvertingTableColumnProcessorParameter;
 
-public class ConvertingTableColumnProcessorParameterList extends ListParameter<ConvertingTableColumnProcessorParameter> {
+public class ConvertingTableColumnProcessorParameterList extends JIPipeListParameter<ConvertingTableColumnProcessorParameter> {
 
     /**
      * Creates a  new instance

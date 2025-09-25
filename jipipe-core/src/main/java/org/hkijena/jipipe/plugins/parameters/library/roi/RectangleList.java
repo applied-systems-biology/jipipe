@@ -13,14 +13,14 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.roi;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 import java.awt.*;
 
 /**
  * List parameter of {@link Rectangle}
  */
-public class RectangleList extends ListParameter<Rectangle> {
+public class RectangleList extends JIPipeListParameter<Rectangle> {
     /**
      * Creates a new instance
      */

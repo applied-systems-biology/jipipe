@@ -39,8 +39,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.plugins.parameters.library.collections.ParameterCollectionListTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -58,7 +58,7 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ParameterCollectionList labelAssignment = ParameterCollectionList.containingCollection(ROINameToLabelEntry.class);
+    private JIPipeParameterCollectionList labelAssignment = JIPipeParameterCollectionList.containingCollection(ROINameToLabelEntry.class);
     private boolean drawOutline = false;
     private boolean fillOutline = true;
 
@@ -70,7 +70,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.drawOutline = other.drawOutline;
         this.fillOutline = other.fillOutline;
-        this.labelAssignment = new ParameterCollectionList(other.labelAssignment);
+        this.labelAssignment = new JIPipeParameterCollectionList(other.labelAssignment);
     }
 
     @Override
@@ -198,12 +198,12 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Label assignment", description = "Add items into the list to assign ROI names to labels.")
     @JIPipeParameter("label-assignment")
     @ParameterCollectionListTemplate(ROINameToLabelEntry.class)
-    public ParameterCollectionList getLabelAssignment() {
+    public JIPipeParameterCollectionList getLabelAssignment() {
         return labelAssignment;
     }
 
     @JIPipeParameter("label-assignment")
-    public void setLabelAssignment(ParameterCollectionList labelAssignment) {
+    public void setLabelAssignment(JIPipeParameterCollectionList labelAssignment) {
         this.labelAssignment = labelAssignment;
     }
 

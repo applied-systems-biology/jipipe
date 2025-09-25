@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
 
 import java.awt.*;
 import java.util.HashSet;
@@ -289,27 +288,4 @@ public class FixedMargin extends AbstractJIPipeParameterCollection {
         return result;
     }
 
-    /**
-     * List parameter of {@link FixedMargin}
-     */
-    public static class List extends ListParameter<FixedMargin> {
-        /**
-         * Creates a new instance
-         */
-        public List() {
-            super(FixedMargin.class);
-        }
-
-        /**
-         * Creates a copy
-         *
-         * @param other the original
-         */
-        public List(List other) {
-            super(FixedMargin.class);
-            for (FixedMargin rectangle : other) {
-                add(new FixedMargin(rectangle));
-            }
-        }
-    }
 }

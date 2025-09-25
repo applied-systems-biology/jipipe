@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2dParameterList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +47,8 @@ public class TurboRegTransformationInfo {
         private ImageSliceIndex sourceImageIndex;
         private ImageSliceIndex targetImageIndex;
         private TurboRegTransformationType transformationType;
-        private Vector2dParameter.List sourcePoints = new Vector2dParameter.List();
-        private Vector2dParameter.List targetPoints = new Vector2dParameter.List();
+        private Vector2dParameterList sourcePoints = new Vector2dParameterList();
+        private Vector2dParameterList targetPoints = new Vector2dParameterList();
 
         public Entry() {
             while (sourcePoints.size() < TurboRegPointHandler.NUM_POINTS) {
@@ -74,8 +75,8 @@ public class TurboRegTransformationInfo {
             this.sourceImageIndex = new ImageSliceIndex(other.sourceImageIndex);
             this.targetImageIndex = new ImageSliceIndex(other.targetImageIndex);
             this.transformationType = other.transformationType;
-            this.sourcePoints = new Vector2dParameter.List(other.sourcePoints);
-            this.targetPoints = new Vector2dParameter.List(other.targetPoints);
+            this.sourcePoints = new Vector2dParameterList(other.sourcePoints);
+            this.targetPoints = new Vector2dParameterList(other.targetPoints);
         }
 
         @JsonGetter("transformation-type")
@@ -109,22 +110,22 @@ public class TurboRegTransformationInfo {
         }
 
         @JsonGetter("source-points")
-        public Vector2dParameter.List getSourcePoints() {
+        public Vector2dParameterList getSourcePoints() {
             return sourcePoints;
         }
 
         @JsonSetter("source-points")
-        public void setSourcePoints(Vector2dParameter.List sourcePoints) {
+        public void setSourcePoints(Vector2dParameterList sourcePoints) {
             this.sourcePoints = sourcePoints;
         }
 
         @JsonGetter("target-points")
-        public Vector2dParameter.List getTargetPoints() {
+        public Vector2dParameterList getTargetPoints() {
             return targetPoints;
         }
 
         @JsonSetter("target-points")
-        public void setTargetPoints(Vector2dParameter.List targetPoints) {
+        public void setTargetPoints(Vector2dParameterList targetPoints) {
             this.targetPoints = targetPoints;
         }
 

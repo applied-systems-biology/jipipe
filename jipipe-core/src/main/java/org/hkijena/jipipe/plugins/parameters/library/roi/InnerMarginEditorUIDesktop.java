@@ -27,12 +27,12 @@ import java.util.Set;
 /**
  * Editor for {@link FixedMargin}
  */
-public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
+public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI<InnerMargin> {
     private boolean skipNextReload = false;
     private JIPipeDesktopParameterFormPanel parameterPanel;
 
     public InnerMarginEditorUIDesktop(InitializationParameters parameters) {
-        super(parameters);
+        super(InnerMargin.class, parameters);
         initialize();
         reload();
     }
@@ -66,7 +66,7 @@ public class InnerMarginEditorUIDesktop extends JIPipeDesktopParameterEditorUI {
             skipNextReload = false;
             return;
         }
-        InnerMargin roi = getParameter(InnerMargin.class);
+        InnerMargin roi = getParameter();
 
         // Update the parameter panel
         JIPipeParameterTree traversedParameterCollection = new JIPipeParameterTree(roi);

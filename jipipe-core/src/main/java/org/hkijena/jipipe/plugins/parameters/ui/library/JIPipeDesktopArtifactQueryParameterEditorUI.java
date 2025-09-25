@@ -1,0 +1,123 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.parameters.ui.library;
+
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameterSettings;
+import org.hkijena.jipipe.utils.StringUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeArtifactQueryParameter> {
+
+    private final JButton button = new JButton();
+    private final List<JIPipeArtifact> availableArtifacts = new ArrayList<>();
+
+    public JIPipeDesktopArtifactQueryParameterEditorUI(InitializationParameters parameters) {
+        super(JIPipeArtifactQueryParameter.class, parameters);
+        initialize();
+        reloadArtifacts();
+        reload();
+    }
+
+    private void reloadArtifacts() {
+        String[] filters = {"*"};
+        JIPipeArtifactQueryParameterSettings annotation = getParameterAccess().getAnnotationOfType(JIPipeArtifactQueryParameterSettings.class);
+        if (annotation != null) {
+            filters = annotation.getFilters();
+        }
+        availableArtifacts.clear();
+        List<JIPipeArtifact> cachedArtifacts = JIPipe.getArtifacts().queryCachedArtifacts(filters);
+        Set<String> alreadyAdded = new HashSet<>();
+        for (JIPipeArtifact artifact : cachedArtifacts) {
+            String versionPinId = artifact.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+            if (!alreadyAdded.contains(versionPinId)) {
+                JIPipeArtifact artifact1 = new JIPipeArtifact(artifact);
+                artifact1.setClassifier("*");
+                availableArtifacts.add(artifact1);
+                alreadyAdded.add(versionPinId);
+            }
+        }
+        availableArtifacts.addAll(cachedArtifacts);
+    }
+
+    private void initialize() {
+        setLayout(new BorderLayout());
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
+        button.addActionListener(e -> {
+            selectArtifact();
+        });
+        add(button, BorderLayout.CENTER);
+    }
+
+    private void selectArtifact() {
+        Object selected = JIPipeDesktopPickEnumValueDialog.showDialog(getDesktopWorkbench().getWindow(),
+                availableArtifacts,
+                new ArtifactEnumItemInfo(),
+                null,
+                "Select artifact");
+        if (selected instanceof JIPipeArtifact) {
+            setParameter(new JIPipeArtifactQueryParameter(((JIPipeArtifact) selected).getFullId()), true);
+        }
+    }
+
+    @Override
+    public boolean isUILabelEnabled() {
+        return true;
+    }
+
+    @Override
+    public void reload() {
+        JIPipeArtifactQueryParameter queryParameter = getParameter();
+        button.setText(StringUtils.orElse(queryParameter.getQuery(), "<None>"));
+    }
+
+    public static class ArtifactEnumItemInfo implements JIPipeEnumParameterItemInfo {
+
+        @Override
+        public Icon getIcon(Object value) {
+            return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
+        }
+
+        @Override
+        public String getLabel(Object value) {
+            if (value instanceof JIPipeArtifact) {
+                return ((JIPipeArtifact) value).getFullId();
+            }
+            return "<None>";
+        }
+
+        @Override
+        public String getTooltip(Object value) {
+            if (value instanceof JIPipeArtifact) {
+                return "<html>Name: " + ((JIPipeArtifact) value).getArtifactId() + "<br/>"
+                        + "Publisher: " + ((JIPipeArtifact) value).getGroupId() + "<br/>"
+                        + "Version: " + ((JIPipeArtifact) value).getVersion() + "<br/>"
+                        + "Classifier: " + ((JIPipeArtifact) value).getClassifier() + "</html>";
+            }
+            return "";
+        }
+    }
+}

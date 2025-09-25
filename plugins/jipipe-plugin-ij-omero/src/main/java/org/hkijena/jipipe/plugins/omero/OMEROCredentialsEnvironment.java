@@ -17,13 +17,13 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import omero.gateway.LoginCredentials;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.api.service.JIPipeServiceMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -33,8 +33,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.library.auth.PasswordParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
+import org.hkijena.jipipe.plugins.parameters.library.auth.JIPipePasswordParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -46,7 +46,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
     private String host = "";
     private int port = 4064;
     private String userName = "";
-    private PasswordParameter password = new PasswordParameter();
+    private JIPipePasswordParameter password = new JIPipePasswordParameter();
     private String email = "anonymous@anonymous";
     private String webclientUrl = "";
 
@@ -59,7 +59,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         this.host = other.host;
         this.userName = other.userName;
         this.port = other.port;
-        this.password = new PasswordParameter(other.password);
+        this.password = new JIPipePasswordParameter(other.password);
         this.email = other.email;
         this.webclientUrl = other.webclientUrl;
     }
@@ -121,13 +121,13 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
             "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
     @JIPipeParameter(value = "password", uiOrder = -97)
     @JsonGetter("password")
-    public PasswordParameter getPassword() {
+    public JIPipePasswordParameter getPassword() {
         return password;
     }
 
     @JIPipeParameter("password")
     @JsonSetter("password")
-    public void setPassword(PasswordParameter password) {
+    public void setPassword(JIPipePasswordParameter password) {
         this.password = password;
     }
 
@@ -267,7 +267,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         }
     }
 
-    public static class List extends ListParameter<OMEROCredentialsEnvironment> {
+    public static class List extends JIPipeListParameter<OMEROCredentialsEnvironment> {
 
         public List() {
             super(OMEROCredentialsEnvironment.class);
@@ -285,7 +285,7 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
         private String host = "";
         private int port = 4064;
         private String userName = "";
-        private PasswordParameter password = new PasswordParameter();
+        private JIPipePasswordParameter password = new JIPipePasswordParameter();
         private String email = "anonymous@anonymous";
 
         public SecretCredentials() {
@@ -345,13 +345,13 @@ public class OMEROCredentialsEnvironment extends JIPipeEnvironment {
                 "If you use JIPipe in a GUI environment, it will ask for the credentials when running a pipeline if you do not provide the password. In a CLI environment, the pipeline will fail.")
         @JIPipeParameter(value = "password", uiOrder = -97)
         @JsonGetter("password")
-        public PasswordParameter getPassword() {
+        public JIPipePasswordParameter getPassword() {
             return password;
         }
 
         @JIPipeParameter("password")
         @JsonSetter("password")
-        public void setPassword(PasswordParameter password) {
+        public void setPassword(JIPipePasswordParameter password) {
             this.password = password;
         }
 

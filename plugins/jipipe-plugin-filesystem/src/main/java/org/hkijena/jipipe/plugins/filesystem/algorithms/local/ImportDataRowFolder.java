@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
@@ -50,7 +51,7 @@ import java.util.List;
 public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef dataType = new JIPipeDataInfoRef();
-    private StringAndStringPairParameter.List annotations = new StringAndStringPairParameter.List();
+    private StringAndStringPairParameterList annotations = new StringAndStringPairParameterList();
 
     public ImportDataRowFolder(JIPipeNodeInfo info) {
         super(info);
@@ -59,7 +60,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     public ImportDataRowFolder(ImportDataRowFolder other) {
         super(other);
         setDataType(new JIPipeDataInfoRef(other.dataType));
-        this.annotations = new StringAndStringPairParameter.List(other.annotations);
+        this.annotations = new StringAndStringPairParameterList(other.annotations);
     }
 
     @Override
@@ -77,12 +78,12 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Annotations", description = "Use this list to set annotations")
     @JIPipeParameter("annotations")
     @StringParameterSettings(monospace = true)
-    public StringAndStringPairParameter.List getAnnotations() {
+    public StringAndStringPairParameterList getAnnotations() {
         return annotations;
     }
 
     @JIPipeParameter("annotations")
-    public void setAnnotations(StringAndStringPairParameter.List annotations) {
+    public void setAnnotations(StringAndStringPairParameterList annotations) {
         this.annotations = annotations;
     }
 

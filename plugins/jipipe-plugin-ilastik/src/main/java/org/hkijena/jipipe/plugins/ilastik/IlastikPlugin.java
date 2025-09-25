@@ -30,6 +30,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironment;
+import org.hkijena.jipipe.plugins.ilastik.environments.IlastikEnvironmentList;
 import org.hkijena.jipipe.plugins.ilastik.environments.OptionalIlastikEnvironment;
 import org.hkijena.jipipe.plugins.ilastik.nodes.ExportIlastikHDF5ImageAlgorithm;
 import org.hkijena.jipipe.plugins.ilastik.nodes.IlastikPixelClassificationAlgorithm;
@@ -290,7 +291,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerApplicationSettingsSheet( new IlastikPluginApplicationSettings());
+        registerApplicationSettingsSheet(new IlastikPluginApplicationSettings());
         registerMenuExtension(RunIlastikDesktopMenuExtension.class);
         registerDatatype("ilastik-model", IlastikModelData.class, RESOURCES.getIcon16URL("ilastik-model.png"));
 
@@ -298,7 +299,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "org.embl.ilastik:*",
                 JIPipeEnvironmentArchetype.Managed, IlastikEnvironment.class,
                 OptionalIlastikEnvironment.class,
-                IlastikEnvironment.List.class,
+                IlastikEnvironmentList.class,
                 "Ilastik environment",
                 "An Ilastik environment",
                 RESOURCES.getIcon16("ilastik.png"));

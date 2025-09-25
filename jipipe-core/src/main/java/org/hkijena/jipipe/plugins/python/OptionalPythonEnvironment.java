@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.python;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
 /**
  * An optional {@link PythonEnvironment}
  */
-public class OptionalPythonEnvironment extends OptionalParameter<PythonEnvironment> {
+public class OptionalPythonEnvironment extends JIPipeOptionalParameter<PythonEnvironment> {
     public OptionalPythonEnvironment() {
         super(PythonEnvironment.class);
         setContent(new PythonEnvironment());

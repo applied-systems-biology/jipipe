@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 
 import java.util.*;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
-    private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
+    private StringQueryExpressionAndSortOrderPairParameterList sortOrderList = new StringQueryExpressionAndSortOrderPairParameterList();
     private SortOrder defaultSortOrder = SortOrder.Ascending;
 
     public SortRowsByAnnotationsAlgorithm(JIPipeNodeInfo info) {
@@ -48,7 +49,7 @@ public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm
 
     public SortRowsByAnnotationsAlgorithm(SortRowsByAnnotationsAlgorithm other) {
         super(other);
-        this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
+        this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameterList(other.sortOrderList);
         this.defaultSortOrder = other.defaultSortOrder;
     }
 
@@ -121,12 +122,12 @@ public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm
     @SetJIPipeDocumentation(name = "Sort order", description = "Defines the order and sort order for the annotation columns. " +
             "Undefined annotation names are ordered alphabetically and sorted according to the default sort order. ")
     @JIPipeParameter("sort-order")
-    public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {
+    public StringQueryExpressionAndSortOrderPairParameterList getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-order")
-    public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameter.List sortOrderList) {
+    public void setSortOrderList(StringQueryExpressionAndSortOrderPairParameterList sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 

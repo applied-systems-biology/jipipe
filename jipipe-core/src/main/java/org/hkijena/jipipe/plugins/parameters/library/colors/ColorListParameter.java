@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.colors;
 
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 import java.awt.*;
 import java.util.Collection;
 
-public class ColorListParameter extends ListParameter<Color> {
+public class ColorListParameter extends JIPipeListParameter<Color> {
     public ColorListParameter() {
         super(Color.class);
     }

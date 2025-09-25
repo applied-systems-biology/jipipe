@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.IntRangeAndIntegerPairParameter;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.IntRangeAndIntegerPairParameterList;
 
 @SetJIPipeDocumentation(name = "Replace label values", description = "Replaces label values by the specified value.")
 @ConfigureJIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -42,7 +43,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.IntRangeAndIntegerPai
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Replace/Remove Label(s)")
 public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private IntRangeAndIntegerPairParameter.List replacements = new IntRangeAndIntegerPairParameter.List();
+    private IntRangeAndIntegerPairParameterList replacements = new IntRangeAndIntegerPairParameterList();
 
     public ReplaceLabelsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -50,18 +51,18 @@ public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ReplaceLabelsAlgorithm(ReplaceLabelsAlgorithm other) {
         super(other);
-        this.replacements = new IntRangeAndIntegerPairParameter.List(other.replacements);
+        this.replacements = new IntRangeAndIntegerPairParameterList(other.replacements);
     }
 
     @SetJIPipeDocumentation(name = "Replacements", description = "A list of replacement values. You can match multiple labels per rule.")
     @PairParameterSettings(keyLabel = "Current label", valueLabel = "New label")
     @JIPipeParameter(value = "replacements", important = true)
-    public IntRangeAndIntegerPairParameter.List getReplacements() {
+    public IntRangeAndIntegerPairParameterList getReplacements() {
         return replacements;
     }
 
     @JIPipeParameter("replacements")
-    public void setReplacements(IntRangeAndIntegerPairParameter.List replacements) {
+    public void setReplacements(IntRangeAndIntegerPairParameterList replacements) {
         this.replacements = replacements;
     }
 

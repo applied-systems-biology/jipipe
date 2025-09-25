@@ -1,0 +1,211 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.parameters.api.functions;
+
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.validation.JIPipeValidatable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
+import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+
+import java.io.IOException;
+import java.util.Objects;
+
+/**
+ * A parameter that allows to model a function with an input, an output, and parameters.
+ * This can be used if {@link JIPipePairParameter} is not sufficient
+ * We suggest to use {@link JIPipeParameterCollectionList} if applicable, due to its greater flexibility.
+ */
+@JsonSerialize(using = JIPipeFunctionParameter.Serializer.class)
+@JsonDeserialize(using = JIPipeFunctionParameter.Deserializer.class)
+public abstract class JIPipeFunctionParameter<I, P, O> implements JIPipeValidatable {
+    private final Class<I> inputClass;
+    private final Class<P> parameterClass;
+    private final Class<O> outputClass;
+    private I input;
+    private P parameter;
+    private O output;
+
+
+    /**
+     * Creates a new instance
+     *
+     * @param inputClass     the input class
+     * @param parameterClass the parameter class
+     * @param outputClass    the output class
+     */
+    public JIPipeFunctionParameter(Class<I> inputClass, Class<P> parameterClass, Class<O> outputClass) {
+        this.inputClass = inputClass;
+        this.parameterClass = parameterClass;
+        this.outputClass = outputClass;
+    }
+
+    public JIPipeFunctionParameter(JIPipeFunctionParameter<I, P, O> other) {
+        this.inputClass = other.inputClass;
+        this.parameterClass = other.parameterClass;
+        this.outputClass = other.outputClass;
+        this.input = other.input;
+        this.parameter = other.parameter;
+        this.output = other.output;
+    }
+
+
+    @Override
+    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        if (input instanceof JIPipeValidatable) {
+            report.report(reportContext.custom("Input"), (JIPipeValidatable) input, progressInfo);
+        }
+        if (parameter instanceof JIPipeValidatable) {
+            report.report(reportContext.custom("Parameter"), (JIPipeValidatable) parameter, progressInfo);
+        }
+        if (output instanceof JIPipeValidatable) {
+            report.report(reportContext.custom("Output"), (JIPipeValidatable) output, progressInfo);
+        }
+    }
+
+    public I getInput() {
+        return input;
+    }
+
+    public void setInput(I input) {
+        this.input = input;
+    }
+
+    public P getParameter() {
+        return parameter;
+    }
+
+    public void setParameter(P parameter) {
+        this.parameter = parameter;
+    }
+
+    public O getOutput() {
+        return output;
+    }
+
+    public void setOutput(O output) {
+        this.output = output;
+    }
+
+    public Class<I> getInputClass() {
+        return inputClass;
+    }
+
+    public Class<P> getParameterClass() {
+        return parameterClass;
+    }
+
+    public Class<O> getOutputClass() {
+        return outputClass;
+    }
+
+    /**
+     * @return The name used for the input in the UI
+     */
+    public String renderInputName() {
+        return "Input";
+    }
+
+    /**
+     * @return The name used for the parameters in the UI
+     */
+    public String renderParameterName() {
+        return "Settings";
+    }
+
+    /**
+     * @return The name used for the output in the UI
+     */
+    public String renderOutputName() {
+        return "Output";
+    }
+
+    @Override
+    public String toString() {
+        return getInput() + " -> " + getParameter() + " -> " + getOutput();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeFunctionParameter<?, ?, ?> that = (JIPipeFunctionParameter<?, ?, ?>) o;
+        return Objects.equals(input, that.input) && Objects.equals(parameter, that.parameter) && Objects.equals(output, that.output);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(input, parameter, output);
+    }
+
+    /**
+     * Serializes the parameter
+     */
+    public static class Serializer extends JsonSerializer<JIPipeFunctionParameter<?, ?, ?>> {
+        @Override
+        public void serialize(JIPipeFunctionParameter<?, ?, ?> objects, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeObjectField("input", objects.input);
+            jsonGenerator.writeObjectField("parameter", objects.parameter);
+            jsonGenerator.writeObjectField("output", objects.output);
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    /**
+     * Deserializes the parameter
+     */
+    public static class Deserializer<I, P, O> extends JsonDeserializer<JIPipeFunctionParameter<?, ?, ?>> implements ContextualDeserializer {
+
+        private JavaType deserializedType;
+
+        @Override
+        public JIPipeFunctionParameter<I, P, O> deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode root = jsonParser.readValueAsTree();
+            JIPipeFunctionParameter<I, P, O> keyValuePairParameter;
+            try {
+                keyValuePairParameter = (JIPipeFunctionParameter<I, P, O>) deserializedType.getRawClass().newInstance();
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+
+            keyValuePairParameter.input = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getInputClass()).readValue(root.get("input"));
+            keyValuePairParameter.parameter = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getParameterClass()).readValue(root.get("parameter"));
+            keyValuePairParameter.output = JsonUtils.getObjectMapper().readerFor(keyValuePairParameter.getOutputClass()).readValue(root.get("output"));
+
+            return keyValuePairParameter;
+        }
+
+        @Override
+        public JsonDeserializer<?> createContextual(DeserializationContext ctxt, BeanProperty property) throws JsonMappingException {
+            //beanProperty is null when the type to deserialize is the top-level type or a generic type, not a type of a bean property
+            JavaType type = ctxt.getContextualType() != null
+                    ? ctxt.getContextualType()
+                    : property.getMember().getType();
+            Deserializer<I, P, O> deserializer = new Deserializer<>();
+            deserializer.deserializedType = type;
+            return deserializer;
+        }
+    }
+}

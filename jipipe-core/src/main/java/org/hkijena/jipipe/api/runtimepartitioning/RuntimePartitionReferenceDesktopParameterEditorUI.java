@@ -28,14 +28,15 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI implements JIPipeRunnable.FinishedEventListener {
+public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDesktopParameterEditorUI<RuntimePartitionReferenceParameter>
+        implements JIPipeRunnable.FinishedEventListener {
 
     private final JButton nameLabel = new JButton();
     private final JTextField pathLabel = UIUtils.createReadonlyBorderlessTextField("");
     private final JPopupMenu configureMenu = new JPopupMenu();
 
     public RuntimePartitionReferenceDesktopParameterEditorUI(InitializationParameters parameters) {
-        super(parameters);
+        super(RuntimePartitionReferenceParameter.class, parameters);
         initialize();
         reload();
         JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
@@ -74,7 +75,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             configureMenu.add(UIUtils.createMenuItem("Edit current", "Edits the current partition", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editCurrentPartition));
             configureMenu.addSeparator();
-            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            RuntimePartitionReferenceParameter parameter = getParameter();
             int index = parameter.getIndex();
             JIPipeRuntimePartition currentPartition = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions().get(index);
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions();
@@ -95,7 +96,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
 
     private void switchPartition(JIPipeRuntimePartition runtimePartition) {
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
-            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            RuntimePartitionReferenceParameter parameter = getParameter();
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions();
             int newIndex = runtimePartitions.indexOf(runtimePartition);
             if (newIndex != -1) {
@@ -108,7 +109,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
     private void editCurrentPartition() {
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             JIPipeRuntimePartitionConfiguration runtimePartitions = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions();
-            RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+            RuntimePartitionReferenceParameter parameter = getParameter();
             JIPipeRuntimePartition runtimePartition = runtimePartitions.get(parameter.getIndex());
             JIPipeDesktopRuntimePartitionListEditor.editRuntimePartition(getDesktopWorkbench(), runtimePartition);
             reload();
@@ -122,7 +123,7 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
 
     @Override
     public void reload() {
-        RuntimePartitionReferenceParameter parameter = getParameter(RuntimePartitionReferenceParameter.class);
+        RuntimePartitionReferenceParameter parameter = getParameter();
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             int index = parameter.getIndex();
             JIPipeRuntimePartition partition = ((JIPipeDesktopProjectWorkbench) getDesktopWorkbench()).getProject().getRuntimePartitions().get(index);

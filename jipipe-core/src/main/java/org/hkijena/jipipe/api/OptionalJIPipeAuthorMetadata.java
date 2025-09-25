@@ -14,10 +14,9 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalJIPipeAuthorMetadata extends OptionalParameter<JIPipeAuthorMetadata> {
+public class OptionalJIPipeAuthorMetadata extends JIPipeOptionalParameter<JIPipeAuthorMetadata> {
     public OptionalJIPipeAuthorMetadata() {
         super(JIPipeAuthorMetadata.class);
         setEnabled(true);
@@ -30,16 +29,4 @@ public class OptionalJIPipeAuthorMetadata extends OptionalParameter<JIPipeAuthor
         setEnabled(false);
     }
 
-    public static class List extends ListParameter<OptionalJIPipeAuthorMetadata> {
-        public List() {
-            super(OptionalJIPipeAuthorMetadata.class);
-        }
-
-        public List(List other) {
-            super(OptionalJIPipeAuthorMetadata.class);
-            for (OptionalJIPipeAuthorMetadata metadata : other) {
-                add(new OptionalJIPipeAuthorMetadata(metadata));
-            }
-        }
-    }
 }

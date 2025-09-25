@@ -13,9 +13,9 @@
 
 package org.hkijena.jipipe.plugins.parameters.library.quantities;
 
-import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 
-public class OptionalQuantity extends OptionalParameter<Quantity> {
+public class OptionalQuantity extends JIPipeOptionalParameter<Quantity> {
     public OptionalQuantity() {
         super(Quantity.class);
         setContent(new Quantity());
