@@ -60,7 +60,6 @@ import java.util.concurrent.ExecutionException;
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
 
     public UploadOMEROTableAlgorithm(JIPipeNodeInfo info) {
@@ -69,7 +68,6 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     public UploadOMEROTableAlgorithm(UploadOMEROTableAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.fileNameGenerator = new DataExportExpressionParameter(other.fileNameGenerator);
     }
 
@@ -120,16 +118,5 @@ public class UploadOMEROTableAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("file-name-generator")
     public void setFileNameGenerator(DataExportExpressionParameter fileNameGenerator) {
         this.fileNameGenerator = fileNameGenerator;
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 }

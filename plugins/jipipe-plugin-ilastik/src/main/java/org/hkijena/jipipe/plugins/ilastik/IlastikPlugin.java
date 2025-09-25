@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -93,9 +94,12 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
-        IlastikEnvironment environment = workbench.getEnvironment(IlastikEnvironment.class, new JIPipeEnvironmentConfigurationCache(), progressInfo);
-        workbench.sendStatusBarText("Launching Ilastik ...");
-        IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
+        JIPipeEnvironmentConfigurator<IlastikEnvironment> environmentConfigurator = workbench.getEnvironmentConfigurator(IlastikEnvironment.class, new JIPipeEnvironmentConfigurationCache());
+        workbench.sendStatusBarText("Preparing Ilastik ...");
+        environmentConfigurator.showDialogAndGetLater(workbench, workbench.getWindow(), "Launch Ilastik", (environment) -> {
+            workbench.sendStatusBarText("Launching Ilastik ...");
+            IlastikPlugin.runIlastik(environment, arguments, true, progressInfo);
+        });
     }
 
     @Override

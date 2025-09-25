@@ -59,7 +59,6 @@ public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIteration
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Screen title", true);
     private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Screen description", true);
     private OptionalTextAnnotationNameParameter protocolIdAnnotation = new OptionalTextAnnotationNameParameter("Protocol ID", true);
@@ -83,7 +82,6 @@ public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIteration
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
         this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
@@ -140,17 +138,6 @@ public class AnnotateOMEROScreenReferenceAlgorithm extends JIPipeSingleIteration
                 iterationStep.addOutputData(getFirstOutputSlot(), new OMEROScreenReferenceData(screenData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with protocol description", description = "If enabled, annotate with the protocol description")

@@ -58,7 +58,6 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Dataset name", true);
     private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Dataset description", true);
     private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Dataset_ID", true);
@@ -78,7 +77,6 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
         this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
@@ -115,18 +113,6 @@ public class AnnotateOMERODatasetReferenceAlgorithm extends JIPipeSimpleIteratin
             iterationStep.addOutputData(getFirstOutputSlot(), new OMERODatasetReferenceData(datasetData, environment), annotations, annotationMergeMode, progressInfo);
         }
     }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
-    }
-
 
     @SetJIPipeDocumentation(name = "Annotate with dataset name", description = "Optional annotation type where the dataset name is written.")
     @JIPipeParameter("name-annotation")

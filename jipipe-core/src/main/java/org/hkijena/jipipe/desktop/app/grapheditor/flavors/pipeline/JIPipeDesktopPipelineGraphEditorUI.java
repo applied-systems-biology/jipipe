@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.grouping.JIPipeNodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
@@ -130,7 +130,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
         if (JIPipeGeneralUIApplicationSettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {
                 for (Method method : info.getInstanceClass().getMethods()) {
-                    JIPipeContextAction actionAnnotation = method.getAnnotation(JIPipeContextAction.class);
+                    RegisterJIPipeParameterCollectionContextAction actionAnnotation = method.getAnnotation(RegisterJIPipeParameterCollectionContextAction.class);
                     if (actionAnnotation == null)
                         continue;
                     if (!actionAnnotation.showInContextMenu())
@@ -139,8 +139,9 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                     if (documentationAnnotation == null) {
                         documentationAnnotation = new JIPipeDocumentation(method.getName(), "");
                     }
-                    URL iconURL = JIPipeResourceManager.safeResolveIcon16URL(actionAnnotation.iconURL(), actionAnnotation.iconDarkURL(), actionAnnotation.resourceClass(), "actions/configure.png");
-                    Icon icon = new ImageIcon(iconURL);
+                    ImageIcon icon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(actionAnnotation.icon(),
+                            actionAnnotation.iconResourceManager(),
+                            JIPipe.RESOURCES.getIcon16("actions/configure.png"));
 
                     NodeContextActionWrapperUIContextAction action = new NodeContextActionWrapperUIContextAction(info,
                             documentationAnnotation.name(),

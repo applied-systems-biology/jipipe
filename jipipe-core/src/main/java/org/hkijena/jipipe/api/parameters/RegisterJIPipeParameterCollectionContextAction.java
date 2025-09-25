@@ -16,12 +16,14 @@ package org.hkijena.jipipe.api.parameters;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.JIPipeDefaultResourceManagerSupplier;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.function.Supplier;
 
 /**
  * An additional action (usually UI action) that is attached to the {@link JIPipeDesktopParameterFormPanel}.
@@ -33,27 +35,19 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JIPipeContextAction {
-    /**
-     * The icon resource URL (optional)
-     *
-     * @return icon resource URL or empty
-     */
-    String iconURL() default "";
+public @interface RegisterJIPipeParameterCollectionContextAction {
 
     /**
-     * The icon resource URL (optional)
-     *
-     * @return icon resource URL or empty
+     * The 16x16 icon name within JIPipe's the icon resource manager's database
+     * @return the icon
      */
-    String iconDarkURL() default "";
+    String icon() default "";
 
     /**
-     * The class that loads the resource
-     *
-     * @return the resource class
+     * Points towards the resource manager that contains the icon
+     * @return supplier class with standard constructor that returns a {@link JIPipeResourceManager}
      */
-    Class<?> resourceClass() default ResourceUtils.class;
+    Class<? extends Supplier<JIPipeResourceManager>> iconResourceManager() default JIPipeDefaultResourceManagerSupplier.class;
 
     /**
      * Determines if the context action is shown as button in the parameters

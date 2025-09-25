@@ -370,14 +370,14 @@ public class Cellpose3DenoiseInferenceAlgorithm extends JIPipeSingleIterationAlg
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are denoised")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }

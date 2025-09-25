@@ -14,14 +14,17 @@
 package org.hkijena.jipipe.api.environments;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryApplyInstallUninstallRun;
+import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -29,14 +32,19 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Class that helps with keeping track of where environments are sourced from and resolve full environments.
@@ -89,6 +97,80 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     }
 
     /**
+     * UI-based action that guides users through the configuration if necessary.
+     *
+     * @param workbench
+     * @param parent    the parent component
+     * @param title     the dialog title
+     * @param action    the action
+     */
+    public void showDialogAndGetLater(JIPipeDesktopWorkbench workbench, Component parent, String title, Consumer<T> action) {
+        resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
+        if(baseEnvironment == null) {
+            String errorMessage = "<html><p>Unable to find a suitable environment for '" + environmentInfo.getName() + "'.</p>";
+            if(environmentInfo.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+                errorMessage += "<ul>";
+                if (graphNode != null) {
+                    errorMessage += "<li>Check if you have a wrongly configured environment override in the node '" + graphNode.getDisplayName() + "'</li>";
+                }
+                if (project != null) {
+                    errorMessage += "<li>Please check Project &gt; Project settings &gt; General &gt; Connected services</li>";
+                }
+                errorMessage += "<li>P>Please check Project &gt; Application settings &gt; General &gt; Connected services</li>";
+                errorMessage += "</ul>";
+            }
+            errorMessage += "</html>";
+            JOptionPane.showMessageDialog(parent, errorMessage, title, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        JIPipeEnvironment environment = configurationCache.get(baseEnvironment);
+        if(environment == null) {
+
+            // Ask the user if they are prepared for downloading the artifact package
+            T configuredEnvironment = JIPipe.duplicateParameter(baseEnvironment);
+            if(configuredEnvironment instanceof JIPipeArtifactEnvironment configuredArtifactEnvironment) {
+                if (configuredArtifactEnvironment.isLoadFromArtifact()) {
+                    JIPipeArtifact artifact = configureArtifactQuery(configuredArtifactEnvironment, JIPipeProgressInfo.SILENT);
+                    if(artifact instanceof JIPipeRemoteArtifact) {
+                        if(JOptionPane.showConfirmDialog(parent, "<html>JIPipe will need to download the artifact package <pre>" + artifact.getFullId() + "</pre> " +
+                                "Depending on the package and your internet connection this will take a few minutes.<br/>Do you want to continue?</html>", title, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Do the run configuration within a dialog
+            JIPipeRunnable run = new DefaultJIPipeRunnable() {
+                @Override
+                public String getTaskLabel() {
+                    return "Configure environment";
+                }
+
+                @Override
+                public void run() {
+                    configure(getProgressInfo());
+                }
+
+                @Override
+                public void onFinished(FinishedEvent event) {
+                    action.accept(get(getProgressInfo()));
+                }
+
+                @Override
+                public void onInterrupted(InterruptedEvent event) {
+                    JOptionPane.showMessageDialog(parent, title, "The configuration failed or was interrupted.", JOptionPane.ERROR_MESSAGE);
+                }
+            };
+
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, parent, run);
+        }
+        else {
+            action.accept((T) environment);
+        }
+    }
+
+    /**
      * Fully configures the environment and stores the resulting fully configured environment into the cache
      * Also ensures that artifacts are downloaded.
      * Please note that this function will do a FULL RECONFIGURE. Use get() if you just want the environment.
@@ -115,7 +197,15 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
 
                 if(artifact instanceof JIPipeRemoteArtifact) {
                     downloadArtifact((JIPipeRemoteArtifact)artifact, progressInfo.resolve("Download " + artifact.getFullId()));
+                    artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
                 }
+                if(!(artifact instanceof JIPipeLocalArtifact)) {
+                    throw new IllegalStateException("Artifact download was unsuccessful: " +  artifact.getFullId() + " not local artifact after download!");
+                }
+
+                // Apply the final configuration
+                configuredArtifactEnvironment.applyConfigurationFromArtifactAndSetLastArtifact((JIPipeLocalArtifact) artifact,
+                        progressInfo.resolve("Configure environment from artifact"));
             }
         }
 
@@ -287,31 +377,31 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         resolveBaseEnvironment(JIPipeProgressInfo.SILENT);
-        if (!get(progressInfo).generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings, progressInfo).isValid()) {
-            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(get(progressInfo).getClass());
+        if (!getBaseEnvironment().generateValidityReport(new UnspecifiedValidationReportContext(), reportSettings, progressInfo).isValid()) {
+            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(getBaseEnvironment().getClass());
             switch (getSourceType()) {
                 case SourceType.Application -> {
                     new UnspecifiedValidationReportContext().error()
-                            .title("Misconfigured environment")
-                            .explanation("An application-wide environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
-                            .solution("Please go to Project > Application settings > General > Environments and find the configuration for '" + info.getName() + "'. " +
-                                    "Ensure that the environment is correctly configured or disable the override (if available).")
+                            .title("Misconfigured connected service")
+                            .explanation("An application-wide connected service of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                            .solution("Please go to Project > Application settings > General > Connected services and find the configuration for '" + info.getName() + "'. " +
+                                    "Ensure that the service is correctly configured or disable the override (if available).")
                             .report(report);
                 }
                 case SourceType.Project -> {
                     var context = getSource() instanceof JIPipeProject ? reportContext.projectSettings((JIPipeProject) getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
                     context.error()
                             .title("Misconfigured environment")
-                            .explanation("A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
-                            .solution("Please go to Project > Project settings > General > Environments and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                            .explanation("A project connected service of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                            .solution("Please go to Project > Project settings > General > Connected services and find the configuration for '" + info.getName() + "'. Ensure that the service is correctly configured.")
                             .report(report);
                 }
                 case SourceType.Node -> {
                     var context = getSource() instanceof JIPipeGraphNode ? reportContext.node((JIPipeGraphNode) getSource()) : JIPipeValidationReportContext.UNSPECIFIED;
                     context.error()
                             .title("Misconfigured environment")
-                            .explanation("A project environment of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
-                            .solution("Please go to Project > Project settings and find the configuration for '" + info.getName() + "'. Ensure that the environment is correctly configured.")
+                            .explanation("A project connected service of the type '" + info.getName() + "' is invalid. The project cannot to be run.")
+                            .solution("Please go to the affected node and find the connected service override for '" + info.getName() + "'. Ensure that the service is correctly configured.")
                             .report(report);
                 }
             }

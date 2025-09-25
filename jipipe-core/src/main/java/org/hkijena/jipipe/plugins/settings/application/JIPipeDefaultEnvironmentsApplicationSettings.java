@@ -29,12 +29,12 @@ public class JIPipeDefaultEnvironmentsApplicationSettings extends JIPipeDynamicP
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/run-build-install.png");
+        return JIPipe.RESOURCES.getIcon16("actions/environment.png");
     }
 
     @Override
     public String getName() {
-        return "Environments";
+        return "Connected services";
     }
 
     @Override
@@ -49,6 +49,6 @@ public class JIPipeDefaultEnvironmentsApplicationSettings extends JIPipeDynamicP
 
     @Override
     public String getDescription() {
-        return "Allows to configure application-wide environments";
+        return "Allows to configure application-wide connected services";
     }
 }

@@ -219,8 +219,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "ROI 1 filter", description = "Use following settings to determine how inputs into <b>ROI 1</b> are filtered " +
             "(by overlapping them with items in <b>ROI 2</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 1</b> output.")
-    @JIPipeParameter(value = "roi1", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/roi.png")
+    @JIPipeParameter(value = "roi1", icon = "actions/roi.png")
     public ROIFilterSettings getRoi1Settings() {
         return roi1Settings;
     }
@@ -228,8 +227,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "ROI 2 filter", description = "Use following settings to determine how inputs into <b>ROI 2</b> are filtered " +
             "(by overlapping them with items in <b>ROI 1</b>). " +
             "Filtered ROI will be put into the corresponding <b>ROI 2</b> output.")
-    @JIPipeParameter(value = "roi2", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/roi.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/roi.png")
+    @JIPipeParameter(value = "roi2", icon = "actions/roi.png")
     public ROIFilterSettings getRoi2Settings() {
         return roi2Settings;
     }

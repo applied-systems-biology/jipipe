@@ -210,19 +210,19 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm  
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-settings", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
-    @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "tweaks-settings", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2TrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }

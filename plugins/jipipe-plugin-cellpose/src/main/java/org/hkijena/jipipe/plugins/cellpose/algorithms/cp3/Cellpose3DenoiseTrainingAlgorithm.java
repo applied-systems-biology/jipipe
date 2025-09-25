@@ -195,19 +195,19 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-settings", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
-    @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "tweaks-settings", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose3DenoiseTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Noise", description = "Settings related to the noise")
-    @JIPipeParameter(value = "noise-settings", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "noise-settings", icon = "apps/cellpose.png")
     public Cellpose3DenoiseTrainingNoiseSettings getNoiseSettings() {
         return noiseSettings;
     }

@@ -1431,7 +1431,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return getEnvironmentConfigurator(klass, runContext.getEnvironmentConfigurationCache()).get(progressInfo);
     }
 
-    @JIPipeParameter("jipipe:environment-overrides")
+    @SetJIPipeDocumentation(name = "Override connected services", description = "Allows to configure service connectors for this specific node")
+    @JIPipeParameter(value = "jipipe:environment-overrides", persistence = JIPipeParameterSerializationMode.Object, icon = "actions/environment.png")
     public JIPipeDynamicParameterCollection getEnvironmentOverrides() {
         return environmentOverrides;
     }

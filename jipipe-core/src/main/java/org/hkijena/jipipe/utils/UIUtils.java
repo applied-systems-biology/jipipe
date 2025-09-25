@@ -90,6 +90,7 @@ public class UIUtils {
     public static final Color COLOR_ERROR = new Color(0xa51d2d);
     public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
 
+
     public static void addPanningToScrollPane(JScrollPane scrollPane) {
         JViewport viewport = scrollPane.getViewport();
 

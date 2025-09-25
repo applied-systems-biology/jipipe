@@ -63,7 +63,6 @@ import java.util.*;
 public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private DataExportExpressionParameter fileNameGenerator = new DataExportExpressionParameter("auto_file_name");
 
     public UploadOMEROImageToDatasetAlgorithm(JIPipeNodeInfo info) {
@@ -76,7 +75,6 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
 
     public UploadOMEROImageToDatasetAlgorithm(UploadOMEROImageToDatasetAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.fileNameGenerator = new DataExportExpressionParameter(other.fileNameGenerator);
         this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter(other.keyValuePairExporter);
         registerSubParameter(keyValuePairExporter);
@@ -137,17 +135,6 @@ public class UploadOMEROImageToDatasetAlgorithm extends JIPipeIteratingAlgorithm
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "File name", description = "Expression that generates the file name for the OME TIFF to be uploaded. Please note that the directory will be ignored and 'unnamed' will be assumed if " +

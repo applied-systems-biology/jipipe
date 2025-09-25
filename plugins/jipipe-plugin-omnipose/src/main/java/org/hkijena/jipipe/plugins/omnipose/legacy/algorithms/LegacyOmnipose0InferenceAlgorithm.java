@@ -613,31 +613,31 @@ public class LegacyOmnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgo
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/light/icons-16/omnipose.png")
+    @JIPipeParameter(value = "channel-parameters", icon = "apps/omnipose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
-    @JIPipeParameter(value = "enhancement-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/light/icons-16/omnipose.png", collapsed = true)
+    @JIPipeParameter(value = "enhancement-parameters", icon = "apps/omnipose.png", collapsed = true)
     public OmniposeSegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter(value = "threshold-parameters", resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/light/icons-16/omnipose.png", collapsed = true)
+    @JIPipeParameter(value = "threshold-parameters", icon = "apps/omnipose.png", collapsed = true)
     public OmniposeSegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/light/icons-16/omnipose.png")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, icon = "apps/omnipose.png")
     public Cellpose2SegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true, resourceClass = OmniposePlugin.class, iconURL = "/org/hkijena/jipipe/plugins/omnipose/icons/light/icons-16/omnipose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, icon = "apps/omnipose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }

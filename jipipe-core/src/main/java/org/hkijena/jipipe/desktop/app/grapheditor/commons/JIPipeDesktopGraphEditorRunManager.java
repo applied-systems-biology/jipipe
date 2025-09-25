@@ -57,7 +57,7 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
         // Validation step
         JIPipeValidationReport report = new JIPipeValidationReport();
-        createValidationReport(report, run.getProgressInfo().resolve("Pre-Validation"));
+        createValidationReport(report, JIPipeProgressInfo.SILENT);
         if (!report.isEmpty()) {
             dockPanel.getPanelComponent(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, JIPipeDesktopGraphEditorErrorPanel.class).setItems(report);
             dockPanel.activatePanel(JIPipeDesktopGraphEditorUI.DOCK_ERRORS, false);

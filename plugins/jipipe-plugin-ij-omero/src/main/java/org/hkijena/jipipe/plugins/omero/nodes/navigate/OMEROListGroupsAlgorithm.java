@@ -52,7 +52,6 @@ import java.util.ArrayList;
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
     public OMEROListGroupsAlgorithm(JIPipeNodeInfo info) {
@@ -61,7 +60,6 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public OMEROListGroupsAlgorithm(OMEROListGroupsAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
@@ -105,17 +103,6 @@ public class OMEROListGroupsAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("filter")
     public void setFilters(JIPipeExpressionParameter filters) {
         this.filters = filters;
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
 }

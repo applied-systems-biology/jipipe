@@ -106,7 +106,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void reloadMenu() {
         popupMenu.removeAll();
 
-        popupMenu.add(UIUtils.createMenuItem("Manage project environments ...", "Manages the environment settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openProjectSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage project connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openProjectSettings));
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Install/uninstall ...", "Manage installed artifacts", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::manageArtifacts));
         popupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
@@ -116,7 +116,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void openProjectSettings() {
-        workbench.openProjectSettings("/General/Environments");
+        workbench.openProjectSettings("/General/Connected services");
     }
 
     private void addLocalRepository() {

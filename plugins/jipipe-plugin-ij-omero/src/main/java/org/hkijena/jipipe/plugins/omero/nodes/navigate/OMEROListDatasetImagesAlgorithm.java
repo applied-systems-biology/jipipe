@@ -59,7 +59,6 @@ import java.util.ArrayList;
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListDatasetImagesAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter("");
 
     public OMEROListDatasetImagesAlgorithm(JIPipeNodeInfo info) {
@@ -68,7 +67,6 @@ public class OMEROListDatasetImagesAlgorithm extends JIPipeSingleIterationAlgori
 
     public OMEROListDatasetImagesAlgorithm(OMEROListDatasetImagesAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.filters = new JIPipeExpressionParameter(other.filters);
     }
 
@@ -110,17 +108,6 @@ public class OMEROListDatasetImagesAlgorithm extends JIPipeSingleIterationAlgori
         } catch (DSOutOfServiceException | DSAccessException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "Keep image if", description = "Allows to filter the returned images")

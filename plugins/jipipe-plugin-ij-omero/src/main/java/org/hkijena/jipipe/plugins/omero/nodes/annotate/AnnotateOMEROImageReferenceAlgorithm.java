@@ -58,7 +58,6 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Image title", true);
     private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Image description", true);
     private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Image_ID", true);
@@ -78,7 +77,6 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
         this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
@@ -120,18 +118,6 @@ public class AnnotateOMEROImageReferenceAlgorithm extends JIPipeSingleIterationA
             }
         }
     }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
-    }
-
 
     @SetJIPipeDocumentation(name = "Annotate with image name", description = "Optional annotation type where the image title is written.")
     @JIPipeParameter("name-annotation")

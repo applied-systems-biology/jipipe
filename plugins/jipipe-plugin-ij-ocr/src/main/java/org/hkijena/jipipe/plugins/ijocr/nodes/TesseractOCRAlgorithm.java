@@ -69,7 +69,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private DynamicStringSetParameter languages = new DynamicStringSetParameter();
     private OptionalJIPipeExpressionParameter overrideDPI = new OptionalJIPipeExpressionParameter(false, "300");
     private OptionalJIPipeExpressionParameter overrideCharAllowList = new OptionalJIPipeExpressionParameter(false, "\"0123456789-\"");
-    private OptionalTesseractOCREnvironment overrideTesseractOCREnvironment = new OptionalTesseractOCREnvironment();
 
     public TesseractOCRAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -84,7 +83,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.languages = new DynamicStringSetParameter(other.languages);
         this.overrideDPI = new OptionalJIPipeExpressionParameter(other.overrideDPI);
         this.overrideCharAllowList = new OptionalJIPipeExpressionParameter(other.overrideCharAllowList);
-        this.overrideTesseractOCREnvironment = new OptionalTesseractOCREnvironment(other.overrideTesseractOCREnvironment);
     }
 
     @Override
@@ -162,17 +160,6 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }, progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), output, progressInfo);
-    }
-
-    @SetJIPipeDocumentation(name = "Override Tesseract OCR environment", description = "Allows to override the Tesseract OCR environment")
-    @JIPipeParameter("override-environment")
-    public OptionalTesseractOCREnvironment getOverrideTesseractOCREnvironment() {
-        return overrideTesseractOCREnvironment;
-    }
-
-    @JIPipeParameter("override-environment")
-    public void setOverrideTesseractOCREnvironment(OptionalTesseractOCREnvironment overrideTesseractOCREnvironment) {
-        this.overrideTesseractOCREnvironment = overrideTesseractOCREnvironment;
     }
 
     @SetJIPipeDocumentation(name = "Page segmentation method", description = "By default Tesseract expects a page of text when it segments an image. " +

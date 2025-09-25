@@ -121,7 +121,7 @@ public interface JIPipeWorkbench {
      * @param <T> the environment class
      */
     default <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeProgressInfo progressInfo) {
-        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo); // TODO
+        return getEnvironmentConfigurator(klass, configurationCache).get(progressInfo);
     }
 
     /**

@@ -63,7 +63,6 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalStringParameter fileNameAnnotation = new OptionalStringParameter("Filename", true);
 
 
@@ -77,7 +76,6 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public DownloadOMEROTableAlgorithm(DownloadOMEROTableAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.fileNameAnnotation = new OptionalStringParameter(other.fileNameAnnotation);
         this.keyValuePairToAnnotationImporter = new OMEROKeyValuePairToAnnotationImporter(other.keyValuePairToAnnotationImporter);
         registerSubParameter(keyValuePairToAnnotationImporter);
@@ -113,17 +111,6 @@ public class DownloadOMEROTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with file name", description = "Attach the file name of the table file to the output")

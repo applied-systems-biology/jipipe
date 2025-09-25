@@ -420,16 +420,14 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             "This means that JIPipe has to match incoming data into batches via metadata annotations. " +
             "The following settings allow you to control which columns are used as reference to organize data.")
     @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
+            icon = "actions/package.png")
     public JIPipeMergingAlgorithmIterationStepGenerationSettings getDataBatchGenerationSettings() {
         return iterationStepGenerationSettings;
     }
 
     @SetJIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each iteration step based on annotations.")
     @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
-            iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
+            icon = "actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {
         return adaptiveParameterSettings;
     }

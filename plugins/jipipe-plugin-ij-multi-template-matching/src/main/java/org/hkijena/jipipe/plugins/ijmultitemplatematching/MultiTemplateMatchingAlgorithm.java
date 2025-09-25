@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
@@ -448,7 +448,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
     }
 
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/draw-use-tilt.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/draw-use-tilt.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "actions/draw-use-tilt.png")
     @SetJIPipeDocumentation(name = "Generate angles", description = "Generates additional rotation angles by providing the distance between them.")
     public void generateRotations(JIPipeWorkbench workbench) {
         JSpinner startAngle = new JSpinner(new SpinnerNumberModel(0, Integer.MIN_VALUE, Integer.MAX_VALUE, 1));

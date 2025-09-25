@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -52,9 +53,18 @@ public class NapariPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     public static void launchNapari(JIPipeDesktopWorkbench workbench, List<String> arguments, JIPipeProgressInfo progressInfo, boolean interactive) {
-        NapariEnvironment environment = workbench.getEnvironment(NapariEnvironment.class, new JIPipeEnvironmentConfigurationCache(), progressInfo);
-        workbench.sendStatusBarText("Launching Napari ...");
-        runNapari(environment, arguments, true, progressInfo);
+        JIPipeEnvironmentConfigurator<NapariEnvironment> environmentConfigurator = workbench.getEnvironmentConfigurator(NapariEnvironment.class, new JIPipeEnvironmentConfigurationCache());
+        if(interactive) {
+            workbench.sendStatusBarText("Preparing Napari ...");
+            environmentConfigurator.showDialogAndGetLater(workbench, workbench.getWindow(), "Launch Napari", (environment) -> {
+                workbench.sendStatusBarText("Launching Napari ...");
+                runNapari(environment, arguments, true, progressInfo);
+            });
+        }
+        else {
+            NapariEnvironment environment = environmentConfigurator.get(progressInfo);
+            runNapari(environment, arguments, true, progressInfo);
+        }
     }
 
     /**

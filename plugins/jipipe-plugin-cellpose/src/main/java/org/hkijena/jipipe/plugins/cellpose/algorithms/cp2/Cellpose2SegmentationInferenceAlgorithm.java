@@ -482,31 +482,31 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
     public Cellpose2ChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
-    @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
+    @JIPipeParameter(value = "enhancement-parameters", icon = "apps/cellpose.png", collapsed = true)
     public Cellpose2SegmentationTweaksSettings getEnhancementParameters() {
         return segmentationTweaksSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
+    @JIPipeParameter(value = "threshold-parameters", icon = "apps/cellpose.png", collapsed = true)
     public Cellpose2SegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2SegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
     }

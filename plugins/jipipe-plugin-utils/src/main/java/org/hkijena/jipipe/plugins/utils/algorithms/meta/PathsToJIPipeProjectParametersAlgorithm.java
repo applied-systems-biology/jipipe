@@ -103,7 +103,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         return parameterKeyAssignments;
     }
 
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/jipipe.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "apps/jipipe.png")
     @SetJIPipeDocumentation(name = "Load parameters from project", description = "Loads parameters from a project file")
     public void importParametersFromProject(JIPipeWorkbench workbench) {
         Window window = ((JIPipeDesktopWorkbench) workbench).getWindow();

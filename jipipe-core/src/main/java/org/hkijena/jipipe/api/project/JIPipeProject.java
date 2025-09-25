@@ -678,7 +678,7 @@ public class JIPipeProject implements JIPipeValidatable {
             node.getEnvironmentDependencies(allEnvironmentReferences, configurationCache);
         }
         for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
-            JIPipeEnvironment environment = environmentReference.get(progressInfo);
+            JIPipeEnvironment environment = environmentReference.getBaseEnvironment();
             if (!checkedEnvironments.contains(environment)) {
                 environmentReference.reportValidity(reportContext, reportSettings, report, progressInfo);
                 checkedEnvironments.add(environment);

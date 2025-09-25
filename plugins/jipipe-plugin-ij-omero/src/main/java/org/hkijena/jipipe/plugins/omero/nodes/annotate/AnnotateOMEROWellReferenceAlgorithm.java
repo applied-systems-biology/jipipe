@@ -61,7 +61,6 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter rowAnnotation = new OptionalTextAnnotationNameParameter("Well row", true);
     private OptionalTextAnnotationNameParameter columnAnnotation = new OptionalTextAnnotationNameParameter("Well column", true);
     private OptionalTextAnnotationNameParameter colorAnnotation = new OptionalTextAnnotationNameParameter("Well color", true);
@@ -83,7 +82,6 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.rowAnnotation = new OptionalTextAnnotationNameParameter(other.rowAnnotation);
         this.columnAnnotation = new OptionalTextAnnotationNameParameter(other.columnAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
@@ -132,17 +130,6 @@ public class AnnotateOMEROWellReferenceAlgorithm extends JIPipeSingleIterationAl
                 iterationStep.addOutputData(getFirstOutputSlot(), new OMEROWellReferenceData(wellData, environment), annotations, annotationMergeMode, rowProgress);
             }
         }
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "Annotate with well color", description = "If enabled, annotate with the well color")

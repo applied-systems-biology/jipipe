@@ -58,7 +58,6 @@ import java.util.*;
 public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private final AnnotationsToOMEROKeyValuePairExporter keyValuePairExporter;
     private final AnnotationsToOMEROTagExporter tagExporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private JIPipeExpressionParameter nameGenerator = new JIPipeExpressionParameter("\"Untitled\"");
 
     public OMEROCreateDatasetAlgorithm(JIPipeNodeInfo info) {
@@ -71,7 +70,6 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public OMEROCreateDatasetAlgorithm(OMEROCreateDatasetAlgorithm other) {
         super(other);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameGenerator = new JIPipeExpressionParameter(other.nameGenerator);
         this.keyValuePairExporter = new AnnotationsToOMEROKeyValuePairExporter(other.keyValuePairExporter);
         registerSubParameter(keyValuePairExporter);
@@ -127,17 +125,6 @@ public class OMEROCreateDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     @JIPipeParameter("name-generator")
     public void setNameGenerator(JIPipeExpressionParameter nameGenerator) {
         this.nameGenerator = nameGenerator;
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 
     @SetJIPipeDocumentation(name = "Export annotations as key-value pairs", description = "The following settings allow you to export annotations as key-value pairs")

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
+import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -93,8 +93,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Set export parameters", description = "Sets the export parameters via its default UI")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/configure.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
+    @RegisterJIPipeParameterCollectionContextAction(icon = "actions/configure.png")
     public void setExporterParametersFromUI(JIPipeWorkbench parent) {
         if (exporterType.getInstance() == null) {
             JOptionPane.showMessageDialog(((JIPipeDesktopWorkbench) parent).getWindow(),

@@ -11,21 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.parameters;
+package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.JIPipe;
 
-import javax.swing.*;
-import java.net.URL;
-import java.util.function.Consumer;
+import java.util.function.Supplier;
 
-public interface JIPipeParameterCollectionContextAction extends Consumer<JIPipeWorkbench> {
-
-    String getName();
-
-    String getDescription();
-
-    Icon getIcon();
+public class JIPipeDefaultResourceManagerSupplier implements Supplier<JIPipeResourceManager> {
+    @Override
+    public JIPipeResourceManager get() {
+        return JIPipe.RESOURCES;
+    }
 }

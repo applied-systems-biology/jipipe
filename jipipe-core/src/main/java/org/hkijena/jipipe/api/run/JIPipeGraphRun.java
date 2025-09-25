@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
 import org.hkijena.jipipe.api.grouping.JIPipeGraphWrapperAlgorithm;
@@ -217,114 +218,11 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             }
             allEnvironments.removeIf(Objects::isNull);
 
-            // Gather all requested artifact Ids
-            Set<String> allRequestedArtifactIds = new HashSet<>();
-            Map<String, String> requestedToTargetArtifactIds = new HashMap<>();
-            Map<JIPipeArtifactEnvironment, String> environmentTargetArtifactIds = new HashMap<>();
-
-            for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
-                if (reference.get(progressInfo) instanceof JIPipeArtifactEnvironment artifactEnvironment) {
-                    if (artifactEnvironment.isLoadFromArtifact()) {
-                        String query = artifactEnvironment.getArtifactQuery().getQuery();
-                        allRequestedArtifactIds.add(query);
-                        requestedToTargetArtifactIds.put(query, query);
-                        environmentTargetArtifactIds.put(artifactEnvironment, query);
-                    }
-                }
-            }
-
-            // Resolve the artifact IDs into the final ones
-            // Then download if necessary
-            if (!allRequestedArtifactIds.isEmpty()) {
-                Set<String> remoteArtifactsToDownload = new HashSet<>();
-
-                for (String requestedArtifactId : allRequestedArtifactIds) {
-                    JIPipeProgressInfo artifactProgress = progressInfo.resolve("Artifacts").resolveAndLog(requestedArtifactId);
-                    List<JIPipeArtifact> artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
-                    artifacts.removeIf(artifact -> !artifact.isCompatible());
-                    artifactProgress.log("Found " + artifacts.size() + " compatible matching artifacts");
-                    JIPipeArtifact targetArtifact = null;
-
-                    if (artifacts.isEmpty()) {
-                        // Find alternative
-                        artifactProgress.log("Unable to find compatible matching artifact! Finding alternative!");
-                        artifacts = JIPipe.getArtifacts().queryCachedArtifacts(requestedArtifactId);
-                        for (JIPipeArtifact artifact : artifacts) {
-                            JIPipeArtifact closestCompatibleArtifact = JIPipe.getArtifacts().findClosestCompatibleArtifact(artifact.getFullId());
-                            if (closestCompatibleArtifact != null) {
-                                artifactProgress.log("SUCCEEDED in finding closest compatible artifact to " + artifact.getFullId() + " as " + closestCompatibleArtifact.getFullId());
-                                targetArtifact = closestCompatibleArtifact;
-                                break;
-                            } else {
-                                artifactProgress.log("FAILED to find closest compatible artifact to " + artifact.getFullId());
-                            }
-                        }
-                    } else if (artifacts.size() > 1) {
-                        artifactProgress.log("Warning: found " + artifacts.size() + " matching artifacts:");
-                        for (JIPipeArtifact artifact : artifacts) {
-                            artifactProgress.log("- " + artifact.getFullId());
-                        }
-                        targetArtifact = JIPipeArtifactsServiceComponent.selectPreferredArtifactByClassifier(artifacts);
-                        artifactProgress.log("Based on current preferences, selecting -> " + targetArtifact.getFullId());
-                    } else {
-                        targetArtifact = artifacts.getFirst();
-                    }
-
-                    if (targetArtifact == null) {
-                        throw new RuntimeException("Unable to find matching compatible artifact for " + requestedArtifactId + ". Unable to continue.");
-                    }
-
-                    artifactProgress.log("Matched artifact: " + targetArtifact.getFullId());
-                    if (targetArtifact instanceof JIPipeRemoteArtifact) {
-                        artifactProgress.log("Artifact is not downloaded. Added to download queue.");
-                        remoteArtifactsToDownload.add(targetArtifact.getFullId());
-                    }
-
-                    // Update the target map
-                    requestedToTargetArtifactIds.put(requestedArtifactId, targetArtifact.getFullId());
-                }
-
-                // Download all missing artifacts
-                if (!remoteArtifactsToDownload.isEmpty()) {
-
-                    if (!JIPipeArtifactApplicationSettings.getInstance().isAutoDownload()) {
-                        throw new JIPipeValidationRuntimeException(new UnspecifiedValidationReportContext(),
-                                new UnsupportedOperationException("Artifact auto-download is disabled!"),
-                                "Unable to auto-download artifacts",
-                                "To run the pipeline, JIPipe requires to download external dependencies. " +
-                                        "This feature is turned off in the settings.",
-                                "Enable auto-downloading in Project > Application settings > General > Artifacts");
-                    }
-
-                    JIPipeProgressInfo artifactsProgress = progressInfo.resolve("Artifacts");
-                    artifactsProgress.log("Artifacts to download: " + String.join(", ", remoteArtifactsToDownload));
-                    List<JIPipeRemoteArtifact> toInstall = remoteArtifactsToDownload.stream().map(id -> (JIPipeRemoteArtifact) JIPipe.getArtifacts().queryCachedArtifacts(id).get(0)).collect(Collectors.toList());
-                    JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
-                            toInstall, Collections.emptyList());
-                    run.setProgressInfo(artifactsProgress.resolve("Download"));
-                    run.run();
-                }
-
-            }
-
-            // Configure the environments
-            progressInfo.log("Applying artifact configuration to environments ...");
-            for (Map.Entry<JIPipeArtifactEnvironment, String> entry : environmentTargetArtifactIds.entrySet()) {
-                String queryArtifactId = entry.getValue();
-                String targetArtifactId = requestedToTargetArtifactIds.get(queryArtifactId);
-                JIPipeArtifact artifact = JIPipe.getArtifacts().getCachedArtifacts().get(targetArtifactId);
-                if (!(artifact instanceof JIPipeLocalArtifact)) {
-                    throw new RuntimeException("Unable to find local artifact " + targetArtifactId + ", which was queried from " + queryArtifactId);
-                }
-                progressInfo.log("-> " + entry.getKey());
-                entry.getKey().applyConfigurationFromArtifactAndSetLastArtifact((JIPipeLocalArtifact) artifact, progressInfo);
-            }
-
             // Apply additional configuration steps
             for (JIPipeEnvironmentConfigurator<?> reference : allEnvironments) {
-                reference.get(progressInfo).runPreconfigure(this, progressInfo);
+                JIPipeEnvironment environment = reference.get(progressInfo);
+                environment.runPreconfigure(this, progressInfo);
             }
-
         }
 
         boolean runFailed = false;

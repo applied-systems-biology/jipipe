@@ -428,8 +428,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Labels 1 filter", description = "Use following settings to determine how inputs into <b>Labels 1</b> are filtered " +
             "(by overlapping them with items in <b>Labels 2</b>). " +
             "Filtered Labels will be put into the corresponding <b>Labels 1</b> output.")
-    @JIPipeParameter(value = "labels1", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/object-tweak-jitter-color.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/object-tweak-jitter-color.png")
+    @JIPipeParameter(value = "labels1", icon="actions/object-tweak-jitter-color.png")
     public LabelFilterSettings getLabels1Settings() {
         return labels1Settings;
     }
@@ -437,8 +436,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Labels 2 filter", description = "Use following settings to determine how inputs into <b>Labels 2</b> are filtered " +
             "(by overlapping them with items in <b>Labels 1</b>). " +
             "Filtered Labels will be put into the corresponding <b>Labels 2</b> output.")
-    @JIPipeParameter(value = "labels2", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/object-tweak-jitter-color.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/object-tweak-jitter-color.png")
+    @JIPipeParameter(value = "labels2", icon="actions/object-tweak-jitter-color.png")
     public LabelFilterSettings getLabels2Settings() {
         return labels2Settings;
     }

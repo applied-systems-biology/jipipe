@@ -44,7 +44,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList imageIds = new LongList();
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
 
     public OMEROImageReferenceDataSource(JIPipeNodeInfo info) {
         super(info);
@@ -54,7 +53,6 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     public OMEROImageReferenceDataSource(OMEROImageReferenceDataSource other) {
         super(other);
         this.imageIds = new LongList(other.imageIds);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
     }
 
     @Override
@@ -80,16 +78,5 @@ public class OMEROImageReferenceDataSource extends JIPipeSimpleIteratingAlgorith
     @JIPipeParameter("image-ids")
     public void setImageIds(LongList imageIds) {
         this.imageIds = imageIds;
-    }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
     }
 }

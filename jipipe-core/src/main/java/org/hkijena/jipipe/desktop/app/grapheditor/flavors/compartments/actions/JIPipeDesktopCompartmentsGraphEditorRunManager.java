@@ -60,7 +60,7 @@ public class JIPipeDesktopCompartmentsGraphEditorRunManager extends JIPipeDeskto
             node.getEnvironmentDependencies(allEnvironmentReferences, configurationCache);
         }
         for (JIPipeEnvironmentConfigurator<?> environmentReference : allEnvironmentReferences) {
-            JIPipeEnvironment environment = environmentReference.get(progressInfo);
+            JIPipeEnvironment environment = environmentReference.getBaseEnvironment();
             if (!checkedEnvironments.contains(environment)) {
                 environmentReference.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, report, progressInfo);
                 checkedEnvironments.add(environment);

@@ -304,7 +304,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             }
             externalEnvironments.removeIf(Objects::isNull);
             if (!externalEnvironments.isEmpty()) {
-                stringBuilder.append("<h3>External environments</h3>");
+                stringBuilder.append("<h3>Connected services</h3>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Type</th><th>Name</th><th>Version</th><th>Source/URL</th></tr>");
                 for (JIPipeEnvironment externalEnvironment : externalEnvironments.stream().map((JIPipeEnvironmentConfigurator<?> jiPipeEnvironmentConfigurator) ->

@@ -382,7 +382,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
         for (JIPipeParameterCollection collection : groupedBySource.keySet().stream().sorted(
                         Comparator.comparing(parameterTree::getSourceCollapsed).thenComparing(parameterTree::getSourceUIOrder).thenComparing(
                                 Comparator.nullsFirst(Comparator.comparing(parameterTree::getSourceDocumentationName))))
-                .collect(Collectors.toList())) {
+                .toList()) {
             if (collection == this.displayedParameters)
                 continue;
             if (hiddenCollections.contains(collection))
@@ -436,7 +436,9 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 } else {
                     leftComponents = new Component[0];
                 }
-                Icon groupIcon = JIPipeResourceManager.safeURLToIcon16(JIPipeResourceManager.safeResolveIcon16URL(node.getIconURL(), node.getDarkIconURL(), node.getResourceClass(), "actions/configure.png"));
+                Icon groupIcon = JIPipeResourceManager.safeIcon16FromResourceManagerSupplier(node.getIcon(),
+                        node.getIconResourceManager(),
+                        JIPipe.RESOURCES.getIcon16("actions/configure.png"));
 
                 // Create panel
                 String headerTitle = StringUtils.orElse(tree.getSourceDocumentationName(parameterCollection), "General");
@@ -468,9 +470,8 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
 
                 if (node != null) {
                     for (JIPipeParameterCollectionContextAction action : node.getActions()) {
-                        Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
-                        JButton actionButton = new JButton(action.getDocumentation().name(), icon);
-                        actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));
+                        JButton actionButton = new JButton(action.getName(), action.getIcon());
+                        actionButton.setToolTipText(action.getDescription());
                         actionButton.addActionListener(e -> action.accept(desktopWorkbench));
                         UIUtils.setStandardButtonBorder(actionButton);
                         groupHeaderPanel.addToTitlePanel(actionButton);

@@ -58,7 +58,6 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
 
     private final OMEROKeyValuePairToAnnotationImporter keyValuePairToAnnotationImporter;
     private final OMEROTagToAnnotationImporter tagToAnnotationImporter;
-    private OptionalOMEROCredentialsEnvironment overrideCredentials = new OptionalOMEROCredentialsEnvironment();
     private OptionalTextAnnotationNameParameter idAnnotation = new OptionalTextAnnotationNameParameter("#OMERO:Project_ID", true);
     private OptionalTextAnnotationNameParameter nameAnnotation = new OptionalTextAnnotationNameParameter("Project name", true);
     private OptionalTextAnnotationNameParameter descriptionAnnotation = new OptionalTextAnnotationNameParameter("Project description", true);
@@ -78,7 +77,6 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
         registerSubParameter(keyValuePairToAnnotationImporter);
         this.tagToAnnotationImporter = new OMEROTagToAnnotationImporter(other.tagToAnnotationImporter);
         registerSubParameter(tagToAnnotationImporter);
-        this.overrideCredentials = new OptionalOMEROCredentialsEnvironment(other.overrideCredentials);
         this.nameAnnotation = new OptionalTextAnnotationNameParameter(other.nameAnnotation);
         this.descriptionAnnotation = new OptionalTextAnnotationNameParameter(other.descriptionAnnotation);
         this.idAnnotation = new OptionalTextAnnotationNameParameter(other.idAnnotation);
@@ -120,18 +118,6 @@ public class AnnotateOMEROProjectReferenceAlgorithm extends JIPipeSingleIteratio
             }
         }
     }
-
-    @SetJIPipeDocumentation(name = "Override OMERO credentials", description = "Allows to override the OMERO credentials provided in the JIPipe application settings")
-    @JIPipeParameter("override-credentials")
-    public OptionalOMEROCredentialsEnvironment getOverrideCredentials() {
-        return overrideCredentials;
-    }
-
-    @JIPipeParameter("override-credentials")
-    public void setOverrideCredentials(OptionalOMEROCredentialsEnvironment overrideCredentials) {
-        this.overrideCredentials = overrideCredentials;
-    }
-
 
     @SetJIPipeDocumentation(name = "Annotate with project name", description = "Optional annotation type where the project name is written.")
     @JIPipeParameter("name-annotation")
