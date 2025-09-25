@@ -42,8 +42,8 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
 
     private final JIPipeParameterTree parameterTree;
     private final Object contextParent;
-    private JIPipeParameterAccess parameterAccess;
     private final Class<T> editorParameterClass;
+    private JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
@@ -259,6 +259,7 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
      * The class this editor was constructed with.
      * May differ from the real parameter type (accessible through getAccess().getFieldClass())
      * Used by getParameter() for type inference purposes only
+     *
      * @return the editor's parameter class
      */
     public Class<T> getEditorParameterClass() {

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.plots.parameters;
 
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.ploteditor.JIPipeDesktopPlotDataSeriesColumnListCellRenderer;
-import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
 import javax.swing.*;
