@@ -1079,21 +1079,20 @@ public class JIPipeProject implements JIPipeValidatable {
                             settingsSheets.get(entry.getKey()).deserializeFromJsonNode(entry.getValue());
                         } else {
                             unloadedSettingsSheets.put(entry.getKey(), entry.getValue());
-                            new UnspecifiedValidationReportContext().warning()
-                                    .title("Unable to load settings")
-                                    .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. " +
-                                            "The data will be backed up, so ")
-                                    .solution("Please check if all required plugins are up-to-date and activated.")
-                                    .report(report);
+//                            new UnspecifiedValidationReportContext().warning()
+//                                    .title("Unable to load settings")
+//                                    .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' are not known to JIPipe. ")
+//                                    .solution("Please check if all required plugins are up-to-date and activated.")
+//                                    .report(report);
                         }
                     } catch (Throwable e) {
                         e.printStackTrace();
-                        new UnspecifiedValidationReportContext().error()
-                                .title("Unable to load settings")
-                                .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.")
-                                .solution("Please check if you are using an up-to-date JIPipe version.")
-                                .details(ExceptionUtils.getStackTrace(e))
-                                .report(report);
+//                        new UnspecifiedValidationReportContext().error()
+//                                .title("Unable to load settings")
+//                                .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.")
+//                                .solution("Please check if you are using an up-to-date JIPipe version.")
+//                                .details(ExceptionUtils.getStackTrace(e))
+//                                .report(report);
                     }
                 }
             }

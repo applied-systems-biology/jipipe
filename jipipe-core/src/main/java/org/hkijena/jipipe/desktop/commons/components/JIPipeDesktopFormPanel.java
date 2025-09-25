@@ -20,10 +20,7 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 import org.scijava.Disposable;
@@ -783,8 +780,13 @@ public class JIPipeDesktopFormPanel extends JPanel {
          *
          * @param component the component
          */
-        public void addToTitlePanel(Component component) {
+        public void addToEndOfTitlePanel(Component component) {
             titlePanel.add(component);
+        }
+
+
+        public void addToStartOfTitlePanel(Component component) {
+            titlePanel.add(component, 0);
         }
 
         public void addDescriptionRow(String text) {
@@ -799,8 +801,9 @@ public class JIPipeDesktopFormPanel extends JPanel {
             JButton helpButton = new JButton("Info", JIPipe.RESOURCES.getIcon16("actions/help.png"));
             UIUtils.addBalloonToComponent(helpButton, text);
             helpButton.setOpaque(false);
-            addToTitlePanel(helpButton);
+            addToEndOfTitlePanel(helpButton);
         }
+
     }
 
     /**

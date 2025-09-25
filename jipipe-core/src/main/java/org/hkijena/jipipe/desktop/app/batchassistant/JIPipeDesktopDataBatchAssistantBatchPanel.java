@@ -38,7 +38,7 @@ public class JIPipeDesktopDataBatchAssistantBatchPanel extends JIPipeDesktopProj
         setLayout(new BorderLayout());
 
         JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Preview iteration steps", JIPipe.RESOURCES.getIcon16("actions/format-list-ordered.png"), 4);
-        groupHeaderPanel.addToTitlePanel(UIUtils.createBalloonHelpButton("The node will be executed for each of the following steps (1 step per row). Please review if the data is assigned as expected."));
+        groupHeaderPanel.addToEndOfTitlePanel(UIUtils.createBalloonHelpButton("The node will be executed for each of the following steps (1 step per row). Please review if the data is assigned as expected."));
 
         add(groupHeaderPanel, BorderLayout.NORTH);
 

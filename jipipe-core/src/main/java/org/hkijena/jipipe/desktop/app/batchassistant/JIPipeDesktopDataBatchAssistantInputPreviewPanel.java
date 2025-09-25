@@ -52,9 +52,9 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanel extends JIPipeDesk
             SHOW_ALL_INPUT_DATA = showAllInputsCheck.isSelected();
             updateStatus();
         });
-        groupHeaderPanel.addToTitlePanel(showAllInputsCheck);
+        groupHeaderPanel.addToEndOfTitlePanel(showAllInputsCheck);
 
-        groupHeaderPanel.addToTitlePanel(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps.\n" +
+        groupHeaderPanel.addToEndOfTitlePanel(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps.\n" +
                 "A green column indicates that the text annotation is used for determining which rows are put together into an iteration step.\n" +
                 "If a row has a unique iteration step, the associated column and its values are highlighted with a color."));
 
