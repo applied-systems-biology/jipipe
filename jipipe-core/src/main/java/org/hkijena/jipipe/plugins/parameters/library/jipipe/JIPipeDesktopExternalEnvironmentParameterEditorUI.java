@@ -94,26 +94,26 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         JMenuItem editMenuItem = UIUtils.createMenuItem("Edit", "Edits the current environment", JIPipe.RESOURCES.getIcon16("actions/edit.png"), this::editEnvironment);
         menuItems.add(editMenuItem);
 
-        if (settings == null || settings.allowManagePreset()) {
-            JMenu presetMenu = new JMenu("Load preset");
-            List<JIPipeEnvironment> presets = JIPipe.getInstance().getEnvironments().getPresets(fieldClass);
-
-            for (JIPipeEnvironment preset : presets) {
-                JMenuItem presetItem = new JMenuItem(preset.getName(), preset.getIcon());
-                presetItem.addActionListener(e -> loadPreset(preset));
-                presetMenu.add(presetItem);
-            }
-
-            menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
-
-            if (!presets.isEmpty()) {
-                menuItems.add(presetMenu);
-            }
-
-            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-            savePresetItem.addActionListener(e -> saveAsPreset());
-            menuItems.add(savePresetItem);
-        }
+//        if (settings == null || settings.allowManagePreset()) {
+//            JMenu presetMenu = new JMenu("Load preset");
+//            List<JIPipeEnvironment> presets = JIPipe.getInstance().getEnvironments().getPresets(fieldClass);
+//
+//            for (JIPipeEnvironment preset : presets) {
+//                JMenuItem presetItem = new JMenuItem(preset.getName(), preset.getIcon());
+//                presetItem.addActionListener(e -> loadPreset(preset));
+//                presetMenu.add(presetItem);
+//            }
+//
+//            menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
+//
+//            if (!presets.isEmpty()) {
+//                menuItems.add(presetMenu);
+//            }
+//
+//            JMenuItem savePresetItem = new JMenuItem("Save as preset ...", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
+//            savePresetItem.addActionListener(e -> saveAsPreset());
+//            menuItems.add(savePresetItem);
+//        }
         menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
 
         if ((settings == null || settings.allowArtifact()) && JIPipeArtifactEnvironment.class.isAssignableFrom(getParameterAccess().getFieldClass())) {
