@@ -1,13 +1,27 @@
 package org.hkijena.jipipe.plugins.python.setup;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
+import org.hkijena.jipipe.plugins.python.PythonEnvironmentType;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
@@ -16,29 +30,318 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
         // At this point we know it's a PythonEnvironment
         PythonEnvironment pythonEnvironment = (PythonEnvironment) environment;
 
-        // TODO
-        // Info: opening files or directories: use static methods in JIPipeDesktop.java
-        // TODO: try to auto-detect conda if possible, then offer selection of conda environment (JOptionDialog). Otherwise user has to select the correct script.
+        // Try to auto-detect conda executables
+        List<Path> detectedCondaPaths = detectCondaExecutables();
+        
+        if (detectedCondaPaths.isEmpty()) {
+            // No conda found, let user select manually
+            Path selectedCondaPath = JIPipeDesktop.openFile(parent, workbench,
+                    JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                    "Select Conda executable",
+                    null,
+                    new FileNameExtensionFilter("Conda executable", "exe", "bat", "sh", "bash"));
+            
+            if (selectedCondaPath == null) {
+                return false; // User cancelled
+            }
+            
+            // Set conda executable path
+            pythonEnvironment.setExecutablePath(selectedCondaPath);
+            pythonEnvironment.setType(PythonEnvironmentType.Conda);
+            
+            // Set default arguments for conda
+            pythonEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"base\", \"python\", \"-u\", script_file)"));
+            
+            JOptionPane.showMessageDialog(parent,
+                    "Conda executable set to: " + selectedCondaPath + "\n" +
+                    "Environment set to: base\n" +
+                    "You can change the environment name in the configuration.",
+                    "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+            
+            return true;
+        } else {
+            // Found conda executables, offer selection to user
+            String[] options = new String[detectedCondaPaths.size() + 1];
+            for (int i = 0; i < detectedCondaPaths.size(); i++) {
+                options[i] = detectedCondaPaths.get(i).toString();
+            }
+            options[detectedCondaPaths.size()] = "Select manually...";
+            
+            String selection = (String) JOptionPane.showInputDialog(parent,
+                    "The following conda executables were found on your system:\n\n" +
+                    "Please select which one to use, or choose 'Select manually...' to pick a different location.",
+                    "Select Conda executable",
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+            
+            if (selection == null) {
+                return false; // User cancelled
+            }
+            
+            Path selectedCondaPath;
+            if (selection.equals("Select manually...")) {
+                // Manual selection
+                selectedCondaPath = JIPipeDesktop.openFile(parent, workbench,
+                        JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                        "Select Conda executable",
+                        null,
+                        new FileNameExtensionFilter("Conda executable", "exe", "bat", "sh", "bash"));
+                
+                if (selectedCondaPath == null) {
+                    return false; // User cancelled
+                }
+            } else {
+                // Use detected path
+                selectedCondaPath = Paths.get(selection);
+            }
+            
+            // Set conda executable path
+            pythonEnvironment.setExecutablePath(selectedCondaPath);
+            pythonEnvironment.setType(PythonEnvironmentType.Conda);
+            
+            // List available conda environments
+            List<String> environments = listCondaEnvironments(selectedCondaPath);
+            
+            if (environments.isEmpty()) {
+                // No environments found, use base
+                pythonEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"base\", \"python\", \"-u\", script_file)"));
+                JOptionPane.showMessageDialog(parent,
+                        "No conda environments found. Using 'base' environment.\n" +
+                        "Conda executable: " + selectedCondaPath,
+                        "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                // Let user select environment
+                String envSelection = (String) JOptionPane.showInputDialog(parent,
+                        "The following conda environments are available:\n\n" +
+                        "Please select which environment to use:",
+                        "Select Conda environment",
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        environments.toArray(new String[0]),
+                        environments.get(0));
+                
+                if (envSelection == null) {
+                    return false; // User cancelled
+                }
+                
+                // Set arguments for selected environment
+                pythonEnvironment.setArguments(new JIPipeExpressionParameter(
+                        String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)", 
+                                envSelection)));
+                
+                JOptionPane.showMessageDialog(parent,
+                        "Conda environment configured successfully!\n" +
+                        "Conda executable: " + selectedCondaPath + "\n" +
+                        "Environment: " + envSelection,
+                        "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+            }
+            
+            return true;
+        }
+    }
 
-        // INFO: HERE IS THE LEGACY CODE FROM SOME OLDER VERSION:
-//        public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
-//            PythonEnvironment generatedEnvironment = new PythonEnvironment();
-//            generatedEnvironment.setType(PythonEnvironmentType.Conda);
-//            generatedEnvironment.setExecutablePath(configuration.condaExecutable);
-//            if (configuration.overrideEnvironment.isEnabled()) {
-//                generatedEnvironment.setArguments(new JIPipeExpressionParameter(
-//                        String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
-//                                JIPipeExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
-//            } else {
-//                generatedEnvironment.setArguments(new JIPipeExpressionParameter(
-//                        String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
-//                                JIPipeExpressionEvaluator.escapeString(configuration.environmentName))));
-//            }
-//            generatedEnvironment.setName(configuration.getName());
-//            return generatedEnvironment;
-//        }
+    /**
+     * Detects conda executables on the system based on the operating system
+     * @return List of detected conda executable paths
+     */
+    private List<Path> detectCondaExecutables() {
+        List<Path> result = new ArrayList<>();
+        
+        if (SystemUtils.IS_OS_WINDOWS) {
+            // Windows: Check common installation paths
+            String[] programFilesPaths = {
+                System.getenv("ProgramFiles"),
+                System.getenv("ProgramFiles(x86)")
+            };
+            
+            for (String programFiles : programFilesPaths) {
+                if (programFiles != null) {
+                    // Check Anaconda installation
+                    Path anacondaPath = Paths.get(programFiles, "Anaconda3", "Scripts", "conda.exe");
+                    if (Files.isRegularFile(anacondaPath)) {
+                        result.add(anacondaPath);
+                    }
+                    
+                    // Check Miniconda installation
+                    Path minicondaPath = Paths.get(programFiles, "Miniconda3", "Scripts", "conda.exe");
+                    if (Files.isRegularFile(minicondaPath)) {
+                        result.add(minicondaPath);
+                    }
+                }
+            }
+            
+            // Also check PATH environment variable
+            String pathEnv = System.getenv("PATH");
+            if (pathEnv != null) {
+                for (String path : pathEnv.split(";")) {
+                    Path condaPath = Paths.get(path, "conda.exe");
+                    if (Files.isRegularFile(condaPath)) {
+                        result.add(condaPath);
+                    }
+                }
+            }
+        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+            // Linux/macOS: Check common installation paths and PATH
+            String[] commonPaths = {
+                "~/anaconda3/bin/conda",
+                "~/miniconda3/bin/conda",
+                "/opt/anaconda3/bin/conda",
+                "/opt/miniconda3/bin/conda",
+                "/usr/local/anaconda3/bin/conda",
+                "/usr/local/miniconda3/bin/conda",
+                "~/anaconda2/bin/conda",
+                "~/miniconda2/bin/conda",
+                "/opt/anaconda2/bin/conda",
+                "/opt/miniconda2/bin/conda",
+                "/usr/local/anaconda2/bin/conda",
+                "/usr/local/miniconda2/bin/conda"
+            };
+            
+            for (String path : commonPaths) {
+                try {
+                    Path expandedPath = Paths.get(path).toAbsolutePath().normalize();
+                    if (Files.isRegularFile(expandedPath) && Files.isExecutable(expandedPath)) {
+                        result.add(expandedPath);
+                    }
+                } catch (Exception e) {
+                    // Ignore invalid paths
+                }
+            }
+            
+            // Also check PATH environment variable
+            String pathEnv = System.getenv("PATH");
+            if (pathEnv != null) {
+                for (String path : pathEnv.split(":")) {
+                    Path condaPath = Paths.get(path, "conda");
+                    if (Files.isRegularFile(condaPath) && Files.isExecutable(condaPath)) {
+                        result.add(condaPath);
+                    }
+                }
+            }
+        }
+        
+        // Remove duplicates
+        List<Path> uniqueResult = new ArrayList<>();
+        for (Path path : result) {
+            if (!uniqueResult.contains(path)) {
+                uniqueResult.add(path);
+            }
+        }
+        
+        return uniqueResult;
+    }
 
-        return false;
+    /**
+     * Lists available conda environments
+     * @param condaPath Path to conda executable
+     * @return List of environment names
+     */
+    private List<String> listCondaEnvironments(Path condaPath) {
+        List<String> environments = new ArrayList<>();
+        
+        try {
+            // Build command to list environments
+            ProcessBuilder processBuilder;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                processBuilder = new ProcessBuilder(condaPath.toString(), "env", "list");
+            } else {
+                processBuilder = new ProcessBuilder("bash", "-c", condaPath.toString() + " env list");
+            }
+            
+            // Start process
+            Process process = processBuilder.start();
+            
+            // Read output
+            try (BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Skip header and empty lines
+                    if (line.startsWith("#") || line.trim().isEmpty()) {
+                        continue;
+                    }
+                    
+                    // Parse environment name (format: environment_name path_to_env)
+                    String[] parts = line.split("\\s+");
+                    if (parts.length >= 1) {
+                        String envName = parts[0];
+                        // Skip "*" which indicates the current environment
+                        if (!envName.equals("*")) {
+                            environments.add(envName);
+                        }
+                    }
+                }
+            }
+            
+            // Wait for process to complete
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                // If command fails, try alternative approach
+                return getCondaEnvironmentsAlternative(condaPath);
+            }
+            
+        } catch (IOException | InterruptedException e) {
+            // If command fails, try alternative approach
+            return getCondaEnvironmentsAlternative(condaPath);
+        }
+        
+        return environments;
+    }
+
+    /**
+     * Alternative method to get conda environments if the main method fails
+     * @param condaPath Path to conda executable
+     * @return List of environment names
+     */
+    private List<String> getCondaEnvironmentsAlternative(Path condaPath) {
+        List<String> environments = new ArrayList<>();
+        
+        // Add base environment as fallback
+        environments.add("base");
+        
+        // Try to get environments from conda info
+        try {
+            ProcessBuilder processBuilder;
+            if (SystemUtils.IS_OS_WINDOWS) {
+                processBuilder = new ProcessBuilder(condaPath.toString(), "info", "--envs");
+            } else {
+                processBuilder = new ProcessBuilder("bash", "-c", condaPath.toString() + " info --envs");
+            }
+            
+            Process process = processBuilder.start();
+            
+            try (BufferedReader reader = new BufferedReader(new java.io.InputStreamReader(process.getInputStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Skip header and empty lines
+                    if (line.startsWith("#") || line.trim().isEmpty()) {
+                        continue;
+                    }
+                    
+                    // Parse environment name (format: * environment_name path_to_env)
+                    String[] parts = line.split("\\s+");
+                    if (parts.length >= 2) {
+                        String envName = parts[1];
+                        if (!envName.equals("*") && !envName.equals("base")) {
+                            environments.add(envName);
+                        }
+                    }
+                }
+            }
+            
+            int exitCode = process.waitFor();
+            if (exitCode != 0) {
+                // If still fails, return just base environment
+                return List.of("base");
+            }
+            
+        } catch (IOException | InterruptedException e) {
+            // If everything fails, return just base environment
+            return List.of("base");
+        }
+        
+        return environments;
     }
 
     @Override
