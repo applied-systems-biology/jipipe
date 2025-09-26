@@ -37,7 +37,7 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
             // No conda found, let user select manually
             Path selectedCondaPath = JIPipeDesktop.openFile(parent, workbench,
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
-                    "Select Conda executable",
+                    getName(),
                     null,
                     new FileNameExtensionFilter("Conda executable", "exe", "bat", "sh", "bash"));
             
@@ -56,7 +56,7 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
                     "Conda executable set to: " + selectedCondaPath + "\n" +
                     "Environment set to: base\n" +
                     "You can change the environment name in the configuration.",
-                    "Conda Configuration", JOptionPane.INFORMATION_MESSAGE);
+                    getName(), JOptionPane.INFORMATION_MESSAGE);
             
             return true;
         } else {
@@ -143,7 +143,9 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
     }
 
     /**
-     * Detects conda executables on the system based on the operating system
+     * Detects conda executables on the system based on the operating system.
+     * On Windows, checks both system-wide installations (Program Files) and user home directory installations.
+     * On Linux and macOS, checks common installation paths and PATH environment variable.
      * @return List of detected conda executable paths
      */
     private List<Path> detectCondaExecutables() {
@@ -168,6 +170,38 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
                     Path minicondaPath = Paths.get(programFiles, "Miniconda3", "Scripts", "conda.exe");
                     if (Files.isRegularFile(minicondaPath)) {
                         result.add(minicondaPath);
+                    }
+                }
+            }
+            
+            // Check user home directory paths for non-Admin installations
+            String userProfile = System.getenv("USERPROFILE");
+            if (userProfile != null) {
+                // Check user home directory installations
+                String[] userHomePaths = {
+                    userProfile,  // %USERPROFILE%
+                    userProfile + "\\anaconda3",  // %USERPROFILE%\anaconda3
+                    userProfile + "\\miniconda3",  // %USERPROFILE%\miniconda3
+                    userProfile + "\\miniforge3",  // %USERPROFILE%\miniforge3
+                    userProfile + "\\anaconda2",  // %USERPROFILE%\anaconda2
+                    userProfile + "\\miniconda2",  // %USERPROFILE%\miniconda2
+                    userProfile + "\\miniforge2"   // %USERPROFILE%\miniforge2
+                };
+                
+                for (String userPath : userHomePaths) {
+                    // Check if it's a direct path to conda.exe
+                    Path condaPath = Paths.get(userPath, "Scripts", "conda.exe");
+                    if (Files.isRegularFile(condaPath)) {
+                        result.add(condaPath);
+                    }
+                    
+                    // Check if it's a path to the installation directory
+                    Path installPath = Paths.get(userPath);
+                    if (Files.isDirectory(installPath) && Files.isDirectory(installPath.resolve("Scripts"))) {
+                        Path scriptsCondaPath = installPath.resolve("Scripts").resolve("conda.exe");
+                        if (Files.isRegularFile(scriptsCondaPath)) {
+                            result.add(scriptsCondaPath);
+                        }
                     }
                 }
             }

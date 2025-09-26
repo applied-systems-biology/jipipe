@@ -14,14 +14,9 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicat
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
@@ -30,26 +25,22 @@ public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironme
         // At this point we know it's a PythonEnvironment
         PythonEnvironment pythonEnvironment = (PythonEnvironment) environment;
 
-        // Try to auto-detect virtual environments
-        List<Path> detectedVirtualEnvPaths = detectVirtualEnvironments();
-        
-        if (detectedVirtualEnvPaths.isEmpty()) {
             // No virtual environments found, let user select manually
             Path selectedVirtualEnvPath = JIPipeDesktop.openDirectory(parent, workbench,
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
-                    "Select Python virtual environment directory",
+                    getName(),
                     null);
-            
+
             if (selectedVirtualEnvPath == null) {
                 return false; // User cancelled
             }
-            
+
             // Validate the selected virtual environment
             if (!isValidVirtualEnvironment(selectedVirtualEnvPath)) {
                 JOptionPane.showMessageDialog(parent,
                         "The selected directory does not appear to be a valid Python virtual environment.\n" +
                         "Please select a directory containing a 'pyvenv.cfg' file or the appropriate Python executable.",
-                        "Invalid Virtual Environment", JOptionPane.ERROR_MESSAGE);
+                        getName(), JOptionPane.ERROR_MESSAGE);
                 return false;
             }
             
@@ -59,209 +50,10 @@ public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironme
             JOptionPane.showMessageDialog(parent,
                     "Python virtual environment configured successfully!\n" +
                     "Virtual environment directory: " + selectedVirtualEnvPath + "\n" +
-                    "Environment type: Virtual Environment\n" +
                     "You can modify the arguments in the configuration if needed.",
-                    "Python Configuration", JOptionPane.INFORMATION_MESSAGE);
+                    getName(), JOptionPane.INFORMATION_MESSAGE);
             
             return true;
-        } else {
-            // Found virtual environments, offer selection to user
-            String[] options = new String[detectedVirtualEnvPaths.size() + 1];
-            for (int i = 0; i < detectedVirtualEnvPaths.size(); i++) {
-                options[i] = detectedVirtualEnvPaths.get(i).toString();
-            }
-            options[detectedVirtualEnvPaths.size()] = "Select manually...";
-            
-            String selection = (String) JOptionPane.showInputDialog(parent,
-                    "The following Python virtual environments were found on your system:\n\n" +
-                    "Please select which one to use, or choose 'Select manually...' to pick a different location.",
-                    "Select Python virtual environment",
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    options,
-                    options[0]);
-            
-            if (selection == null) {
-                return false; // User cancelled
-            }
-            
-            Path selectedVirtualEnvPath;
-            if (selection.equals("Select manually...")) {
-                // Manual selection
-                selectedVirtualEnvPath = JIPipeDesktop.openDirectory(parent, workbench,
-                        JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
-                        "Select Python virtual environment directory",
-                        null);
-                
-                if (selectedVirtualEnvPath == null) {
-                    return false; // User cancelled
-                }
-                
-                // Validate the selected virtual environment
-                if (!isValidVirtualEnvironment(selectedVirtualEnvPath)) {
-                    JOptionPane.showMessageDialog(parent,
-                            "The selected directory does not appear to be a valid Python virtual environment.\n" +
-                            "Please select a directory containing a 'pyvenv.cfg' file or the appropriate Python executable.",
-                            "Invalid Virtual Environment", JOptionPane.ERROR_MESSAGE);
-                    return false;
-                }
-            } else {
-                // Use detected path
-                selectedVirtualEnvPath = Paths.get(selection);
-            }
-            
-            // Configure the Python environment
-            configureVirtualEnvironment(pythonEnvironment, selectedVirtualEnvPath);
-            
-            JOptionPane.showMessageDialog(parent,
-                    "Python virtual environment configured successfully!\n" +
-                    "Virtual environment directory: " + selectedVirtualEnvPath + "\n" +
-                    "Environment type: Virtual Environment\n" +
-                    "You can modify the arguments in the configuration if needed.",
-                    "Python Configuration", JOptionPane.INFORMATION_MESSAGE);
-            
-            return true;
-        }
-    }
-
-    /**
-     * Detects Python virtual environments on the system based on the operating system
-     * @return List of detected virtual environment paths
-     */
-    private List<Path> detectVirtualEnvironments() {
-        List<Path> result = new ArrayList<>();
-        
-        if (SystemUtils.IS_OS_WINDOWS) {
-            // Windows: Check common virtual environment locations
-            String[] commonPaths = {
-                System.getenv("USERPROFILE") + "\\Environments",
-                System.getenv("USERPROFILE") + "\\Anaconda3\\envs",
-                System.getenv("USERPROFILE") + "\\Miniconda3\\envs",
-                System.getenv("LOCALAPPDATA") + "\\Continuum\\anaconda3\\envs",
-                System.getenv("LOCALAPPDATA") + "\\Continuum\\miniconda3\\envs"
-            };
-            
-            for (String path : commonPaths) {
-                try {
-                    Path envPath = Paths.get(path).toAbsolutePath().normalize();
-                    if (Files.isDirectory(envPath)) {
-                        // List all subdirectories as potential virtual environments
-                        try (var dirs = Files.list(envPath)) {
-                            dirs.filter(Files::isDirectory)
-                                .filter(this::isValidVirtualEnvironment)
-                                .forEach(result::add);
-                        }
-                    }
-                } catch (Exception e) {
-                    // Ignore invalid paths
-                }
-            }
-            
-            // Also check common project directories
-            String[] projectPaths = {
-                System.getenv("USERPROFILE") + "\\Documents\\PythonProjects",
-                System.getenv("USERPROFILE") + "\\Projects",
-                System.getenv("USERPROFILE") + "\\dev"
-            };
-            
-            for (String path : projectPaths) {
-                try {
-                    Path projectPath = Paths.get(path).toAbsolutePath().normalize();
-                    if (Files.isDirectory(projectPath)) {
-                        // Recursively search for virtual environments
-                        searchForVirtualEnvironments(projectPath, result);
-                    }
-                } catch (Exception e) {
-                    // Ignore invalid paths
-                }
-            }
-        } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
-            // Linux/macOS: Check common virtual environment locations
-            String[] commonPaths = {
-                "~/Environments",
-                "~/anaconda3/envs",
-                "~/miniconda3/envs",
-                "~/opt/anaconda3/envs",
-                "~/opt/miniconda3/envs",
-                "/opt/anaconda3/envs",
-                "/opt/miniconda3/envs",
-                "/usr/local/anaconda3/envs",
-                "/usr/local/miniconda3/envs",
-                "~/venvs",
-                "~/python-envs",
-                "~/Documents/PythonProjects",
-                "~/Projects",
-                "~/dev"
-            };
-            
-            for (String path : commonPaths) {
-                try {
-                    Path envPath = Paths.get(path).toAbsolutePath().normalize();
-                    if (Files.isDirectory(envPath)) {
-                        // List all subdirectories as potential virtual environments
-                        try (var dirs = Files.list(envPath)) {
-                            dirs.filter(Files::isDirectory)
-                                .filter(this::isValidVirtualEnvironment)
-                                .forEach(result::add);
-                        }
-                    }
-                } catch (Exception e) {
-                    // Ignore invalid paths
-                }
-            }
-            
-            // Also search in common project directories
-            String[] projectPaths = {
-                "~/Documents/PythonProjects",
-                "~/Projects",
-                "~/dev"
-            };
-            
-            for (String path : projectPaths) {
-                try {
-                    Path projectPath = Paths.get(path).toAbsolutePath().normalize();
-                    if (Files.isDirectory(projectPath)) {
-                        // Recursively search for virtual environments
-                        searchForVirtualEnvironments(projectPath, result);
-                    }
-                } catch (Exception e) {
-                    // Ignore invalid paths
-                }
-            }
-        }
-        
-        // Remove duplicates
-        List<Path> uniqueResult = new ArrayList<>();
-        for (Path path : result) {
-            if (!uniqueResult.contains(path)) {
-                uniqueResult.add(path);
-            }
-        }
-        
-        return uniqueResult;
-    }
-
-    /**
-     * Recursively searches for virtual environments in the given directory
-     * @param directory The directory to search in
-     * @param result List to add found virtual environments to
-     */
-    private void searchForVirtualEnvironments(Path directory, List<Path> result) {
-        try {
-            // Check if this directory is a virtual environment
-            if (isValidVirtualEnvironment(directory)) {
-                result.add(directory);
-                return;
-            }
-            
-            // Search subdirectories
-            try (var dirs = Files.list(directory)) {
-                dirs.filter(Files::isDirectory)
-                   .forEach(subDir -> searchForVirtualEnvironments(subDir, result));
-            }
-        } catch (Exception e) {
-            // Ignore invalid paths
-        }
     }
 
     /**
