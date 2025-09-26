@@ -111,6 +111,7 @@ public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironme
             pythonExecutable = virtualEnvPath.resolve("bin").resolve("python");
         }
         pythonEnvironment.setExecutablePath(pythonExecutable);
+        pythonEnvironment.setLoadFromArtifact(false);
         
         // Set default arguments for virtual environment
         pythonEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));

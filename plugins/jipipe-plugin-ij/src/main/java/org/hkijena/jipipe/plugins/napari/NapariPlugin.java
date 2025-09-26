@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.napari.environments.OptionalNapariEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonUtils;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

@@ -98,6 +98,8 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                     rEnvironment.setRScriptExecutablePath(selectedPath);
                 }
             }
+
+            rEnvironment.setLoadFromArtifact(false);
             
             JOptionPane.showMessageDialog(parent,
                     "R environment configured successfully!\n" +
