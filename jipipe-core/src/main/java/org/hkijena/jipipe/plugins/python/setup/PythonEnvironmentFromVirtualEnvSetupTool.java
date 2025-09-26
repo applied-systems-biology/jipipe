@@ -14,6 +14,35 @@ public class PythonEnvironmentFromVirtualEnvSetupTool implements JIPipeEnvironme
     public boolean configure(JIPipeDesktopWorkbench workbench, Component parent, JIPipeEnvironment environment) {
         // TODO
         // Info: opening files or directories: use static methods in JIPipeDesktop.java
+
+        // INFO: HERE IS SOME LEGACY CODE FROM SOME OLDER VERSION
+//        Path selectedPath = configuration.virtualEnvDirectory;
+//        generatedEnvironment = new PythonEnvironment();
+//        generatedEnvironment.setType(PythonEnvironmentType.VirtualEnvironment);
+//        if (SystemUtils.IS_OS_WINDOWS) {
+//            generatedEnvironment.setExecutablePath(selectedPath.resolve("Scripts").resolve("python.exe"));
+//            generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
+//                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.resolve("Scripts").toString()) + ";\"" + " + Path",
+//                    "Path"
+//            ));
+//            generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
+//                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
+//                    "VIRTUAL_ENV"
+//            ));
+//        } else {
+//            generatedEnvironment.setExecutablePath(selectedPath.resolve("bin").resolve("python"));
+//            generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
+//                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.resolve("bin").toString()) + ":\"" + " + PATH",
+//                    "PATH"
+//            ));
+//            generatedEnvironment.getEnvironmentVariables().add(new StringQueryExpressionAndStringPairParameter(
+//                    "\"" + JIPipeExpressionEvaluator.escapeString(selectedPath.toString()) + "\"",
+//                    "VIRTUAL_ENV"
+//            ));
+//        }
+//
+//        generatedEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
+
         return false;
     }
 

@@ -15,6 +15,17 @@ public class PythonEnvironmentFromSystemSetupTool implements JIPipeEnvironmentSe
     public boolean configure(JIPipeDesktopWorkbench workbench, Component parent, JIPipeEnvironment environment) {
         // TODO
         // Info: opening files or directories: use static methods in JIPipeDesktop.java
+
+        // INFO: HERE IS THE LEGACY CODE FROM SOME OLDER VERSION:
+//        public static PythonEnvironment generateEnvironment(Configuration configuration) {
+//            PythonEnvironment generatedEnvironment = new PythonEnvironment();
+//            generatedEnvironment.setType(PythonEnvironmentType.System);
+//            generatedEnvironment.setArguments(new JIPipeExpressionParameter("ARRAY(\"-u\", script_file)"));
+//            generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
+//            generatedEnvironment.setName(configuration.getName());
+//            return generatedEnvironment;
+//        }
+
         return false;
     }
 

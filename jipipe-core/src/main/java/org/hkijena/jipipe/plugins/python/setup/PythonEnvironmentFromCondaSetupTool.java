@@ -15,6 +15,25 @@ public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSet
         // TODO
         // Info: opening files or directories: use static methods in JIPipeDesktop.java
         // TODO: try to auto-detect conda if possible, then offer selection of conda environment (JOptionDialog). Otherwise user has to select the correct script.
+
+        // INFO: HERE IS THE LEGACY CODE FROM SOME OLDER VERSION:
+//        public static PythonEnvironment createCondaEnvironment(Configuration configuration) {
+//            PythonEnvironment generatedEnvironment = new PythonEnvironment();
+//            generatedEnvironment.setType(PythonEnvironmentType.Conda);
+//            generatedEnvironment.setExecutablePath(configuration.condaExecutable);
+//            if (configuration.overrideEnvironment.isEnabled()) {
+//                generatedEnvironment.setArguments(new JIPipeExpressionParameter(
+//                        String.format("ARRAY(\"run\", \"--no-capture-output\", \"-p\", \"%s\", \"python\", \"-u\", script_file)",
+//                                JIPipeExpressionEvaluator.escapeString(configuration.overrideEnvironment.getContent().toString()))));
+//            } else {
+//                generatedEnvironment.setArguments(new JIPipeExpressionParameter(
+//                        String.format("ARRAY(\"run\", \"--no-capture-output\", \"-n\", \"%s\", \"python\", \"-u\", script_file)",
+//                                JIPipeExpressionEvaluator.escapeString(configuration.environmentName))));
+//            }
+//            generatedEnvironment.setName(configuration.getName());
+//            return generatedEnvironment;
+//        }
+
         return false;
     }
 
