@@ -95,7 +95,7 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // JIPipe Python adapter
         registerArtifactEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
-                "org.hkijena.jipipe-python-adapter:*",
+                "org.hkijena.jipipe_python_adapter:*",
                 JIPipeEnvironmentArchetype.Managed, JIPipePythonAdapterLibraryEnvironment.class,
                 OptionalJIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironmentList.class,
