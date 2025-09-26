@@ -965,8 +965,17 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                                                                                           Class<U> environmentListClass,
                                                                                                                                                           String name,
                                                                                                                                                           String description,
-                                                                                                                                                          Icon icon) {
+                                                                                                                                                          Icon icon,
+                                                                                                                                                          JIPipeEnvironmentSetupTool... setupTools) {
         service.getEnvironments().registerEnvironment(id, artifactQuery, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        for (JIPipeEnvironmentSetupTool setupTool : setupTools) {
+            if(setupTool.accepts(environmentClass)) {
+                service.getEnvironments().registerSetupTool(setupTool);
+            }
+            else {
+                throw new IllegalArgumentException("Tried to register environment setup tool for environment ID=" + id + ", but tool " + setupTool + " does not accept environment class");
+            }
+        }
     }
 
     /**
