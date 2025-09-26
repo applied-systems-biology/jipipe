@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -101,7 +102,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
         }
         if (result.toString().isEmpty() || result.equals(Paths.get("").toAbsolutePath())) {
             // Go to user.home
-            result = Paths.get(StringUtils.orElse(System.getProperty("user.home"), ""));
+            result = PathUtils.getHomeDirectory();
         }
         if (Files.exists(result) && !Files.isDirectory(result)) {
             try {

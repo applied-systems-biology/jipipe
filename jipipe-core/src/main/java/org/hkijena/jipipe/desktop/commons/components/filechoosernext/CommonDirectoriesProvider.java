@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernext;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.*;
@@ -23,7 +24,7 @@ public class CommonDirectoriesProvider {
     public List<CommonDirectory> getStaticDirectories() {
         List<CommonDirectory> staticDirs = new ArrayList<>();
 
-        Path home = Paths.get(System.getProperty("user.home"));
+        Path home = PathUtils.getHomeDirectory();
         staticDirs.add(new CommonDirectory(home, CommonDirectory.DirectoryType.HOME));
 
         if (SystemUtils.IS_OS_WINDOWS) {
