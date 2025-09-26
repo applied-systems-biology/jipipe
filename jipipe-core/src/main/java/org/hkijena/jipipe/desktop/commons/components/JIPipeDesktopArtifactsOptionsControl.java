@@ -155,10 +155,10 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         setToolTipText("Artifacts (" + JIPipe.getArtifacts().getCachedRemoteArtifacts().size() + " available, " + JIPipe.getArtifacts().getCachedLocalArtifacts().size() + " installed)");
         if (JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
             setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
-            setText("Artifacts unavailable");
+            setText("No connection");
         } else {
-            setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
-            setText("Artifacts");
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/environment.png"));
+            setText("Connected services");
         }
     }
 
