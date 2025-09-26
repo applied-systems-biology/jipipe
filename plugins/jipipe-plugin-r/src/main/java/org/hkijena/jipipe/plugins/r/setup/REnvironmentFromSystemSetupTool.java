@@ -13,6 +13,9 @@ import java.awt.*;
 public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
     public boolean configure(JIPipeDesktopWorkbench workbench, Component parent, JIPipeEnvironment environment) {
+        // At this point we know it's an REnvironment
+        REnvironment rEnvironment = (REnvironment) environment;
+
         // TODO
         // Ideally try to find the existing R automatically and just offer the user if they accept that
         // Info: opening files or directories: use static methods in JIPipeDesktop.java

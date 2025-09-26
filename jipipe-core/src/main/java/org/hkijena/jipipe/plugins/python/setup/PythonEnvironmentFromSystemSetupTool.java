@@ -13,6 +13,10 @@ import java.awt.*;
 public class PythonEnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
     public boolean configure(JIPipeDesktopWorkbench workbench, Component parent, JIPipeEnvironment environment) {
+
+        // At this point we know it's a PythonEnvironment
+        PythonEnvironment pythonEnvironment = (PythonEnvironment) environment;
+
         // TODO
         // Info: opening files or directories: use static methods in JIPipeDesktop.java
 

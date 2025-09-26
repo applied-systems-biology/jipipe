@@ -12,6 +12,10 @@ import java.awt.*;
 public class PythonEnvironmentFromCondaSetupTool implements JIPipeEnvironmentSetupTool {
     @Override
     public boolean configure(JIPipeDesktopWorkbench workbench, Component parent, JIPipeEnvironment environment) {
+
+        // At this point we know it's a PythonEnvironment
+        PythonEnvironment pythonEnvironment = (PythonEnvironment) environment;
+
         // TODO
         // Info: opening files or directories: use static methods in JIPipeDesktop.java
         // TODO: try to auto-detect conda if possible, then offer selection of conda environment (JOptionDialog). Otherwise user has to select the correct script.
