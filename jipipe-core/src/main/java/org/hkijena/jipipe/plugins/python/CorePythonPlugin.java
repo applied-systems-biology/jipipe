@@ -27,6 +27,9 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironmentList;
 import org.hkijena.jipipe.plugins.python.adapter.OptionalJIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.plugins.python.setup.PythonEnvironmentFromCondaSetupTool;
+import org.hkijena.jipipe.plugins.python.setup.PythonEnvironmentFromSystemSetupTool;
+import org.hkijena.jipipe.plugins.python.setup.PythonEnvironmentFromVirtualEnvSetupTool;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -85,7 +88,10 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 PythonEnvironmentList.class,
                 "Python",
                 "A Python environment",
-                JIPipe.RESOURCES.getIcon16("apps/python.png"));
+                JIPipe.RESOURCES.getIcon16("apps/python.png"),
+                new PythonEnvironmentFromCondaSetupTool(),
+                new PythonEnvironmentFromSystemSetupTool(),
+                new PythonEnvironmentFromVirtualEnvSetupTool());
 
         // JIPipe Python adapter
         registerArtifactEnvironment(JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,

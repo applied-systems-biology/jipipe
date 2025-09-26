@@ -52,7 +52,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePl
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.PythonUtils;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;

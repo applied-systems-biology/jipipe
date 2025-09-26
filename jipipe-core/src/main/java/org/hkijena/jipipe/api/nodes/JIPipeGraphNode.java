@@ -612,6 +612,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         // Deserialize algorithm-specific parameters
         ParameterUtils.deserializeParametersFromJson(this, node, context, issues);
 
+        // Re-apply if they somehow got lost
+        updateEnvironmentOverrides();
+
         // Run postprocess command
         onDeserialized(node, issues, notifications);
     }

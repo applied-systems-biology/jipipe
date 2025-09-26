@@ -448,10 +448,8 @@ public class ReflectionUtils {
         }
 
         // Add annotation(s) on this class
-        A ann = clazz.getAnnotation(annotationType);
-        if (ann != null) {
-            result.add(ann);
-        }
+        A[] ann = clazz.getAnnotationsByType(annotationType);
+        result.addAll(List.of(ann));
 
         // Recurse into superclass
         collectAnnotations(clazz.getSuperclass(), annotationType, visited, result);

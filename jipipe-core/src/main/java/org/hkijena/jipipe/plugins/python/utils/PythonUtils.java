@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.python;
+package org.hkijena.jipipe.plugins.python.utils;
 
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
@@ -36,6 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;

@@ -393,12 +393,12 @@ public class PathUtils {
                         .resolve("JIPipe")
                         .resolve("shared");
             } else {
-                return Paths.get(System.getProperty("user.home")).resolve(".local")
+                return getHomeDirectory().resolve(".local")
                         .resolve("share").resolve("JIPipe")
                         .resolve("shared");
             }
         } else if (SystemUtils.IS_OS_MAC_OSX) {
-            return Paths.get(System.getProperty("user.home")).resolve("Library").resolve("Application Support")
+            return getHomeDirectory().resolve("Library").resolve("Application Support")
                     .resolve("JIPipe").resolve("shared");
         } else {
             return getLegacyJIPipeUserDir().resolve("shared");
@@ -426,12 +426,12 @@ public class PathUtils {
                         .resolve("JIPipe")
                         .resolve("profiles");
             } else {
-                return Paths.get(System.getProperty("user.home")).resolve(".local")
+                return getHomeDirectory().resolve(".local")
                         .resolve("share").resolve("JIPipe")
                         .resolve("profiles");
             }
         } else if (SystemUtils.IS_OS_MAC_OSX) {
-            return Paths.get(System.getProperty("user.home")).resolve("Library").resolve("Application Support")
+            return getHomeDirectory().resolve("Library").resolve("Application Support")
                     .resolve("JIPipe").resolve("profiles");
         } else {
             return getLegacyJIPipeUserDir().resolve("profiles");
@@ -499,6 +499,16 @@ public class PathUtils {
             }
         }
         return imageJDir;
+    }
+
+    /**
+     * Returns the user home directory using System.getProperty("user.home")
+     * This is a cross-platform way to get the user's home directory
+     *
+     * @return the user home directory
+     */
+    public static Path getHomeDirectory() {
+        return Paths.get(System.getProperty("user.home"));
     }
 
     public static Path absoluteToJIPipeUserDirRelative(Path path) {

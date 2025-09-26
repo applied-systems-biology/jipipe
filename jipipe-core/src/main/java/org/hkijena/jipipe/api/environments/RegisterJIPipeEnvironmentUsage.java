@@ -13,16 +13,14 @@
 
 package org.hkijena.jipipe.api.environments;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotates a {@link org.hkijena.jipipe.api.nodes.JIPipeGraphNode} as
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
+@Repeatable(RegisterJIPipeEnvironmentUsages.class)
 public @interface RegisterJIPipeEnvironmentUsage {
     Class<? extends JIPipeEnvironment> value();
 }

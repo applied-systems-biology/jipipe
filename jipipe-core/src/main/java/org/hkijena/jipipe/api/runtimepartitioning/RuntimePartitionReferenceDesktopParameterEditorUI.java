@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.runtimepartitioning;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.environments.JIPipeExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
@@ -140,10 +139,6 @@ public class RuntimePartitionReferenceDesktopParameterEditorUI extends JIPipeDes
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable()) {
             JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().unsubscribe(this);
-            return;
-        }
-        if (event.getWorker().getRun() instanceof JIPipeExternalEnvironmentInstaller) {
-            reload();
         }
     }
 }

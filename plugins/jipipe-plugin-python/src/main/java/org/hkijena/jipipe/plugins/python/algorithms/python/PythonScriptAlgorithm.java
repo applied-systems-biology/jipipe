@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.PythonUtils;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
@@ -49,6 +49,7 @@ import java.util.Map;
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
+@RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
 public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private PythonScript code = new PythonScript();

@@ -58,7 +58,7 @@ import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationThresh
 import org.hkijena.jipipe.plugins.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
-import org.hkijena.jipipe.plugins.python.PythonUtils;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 

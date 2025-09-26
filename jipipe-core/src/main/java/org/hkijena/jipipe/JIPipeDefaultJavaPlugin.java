@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.data.JIPipeLegacyDataOperation;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -964,8 +965,17 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
                                                                                                                                                           Class<U> environmentListClass,
                                                                                                                                                           String name,
                                                                                                                                                           String description,
-                                                                                                                                                          Icon icon) {
+                                                                                                                                                          Icon icon,
+                                                                                                                                                          JIPipeEnvironmentSetupTool... setupTools) {
         service.getEnvironments().registerEnvironment(id, artifactQuery, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        for (JIPipeEnvironmentSetupTool setupTool : setupTools) {
+            if(setupTool.accepts(environmentClass)) {
+                service.getEnvironments().registerSetupTool(setupTool);
+            }
+            else {
+                throw new IllegalArgumentException("Tried to register environment setup tool for environment ID=" + id + ", but tool " + setupTool + " does not accept environment class");
+            }
+        }
     }
 
     /**
@@ -983,14 +993,32 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param environmentListClass     the list. Will be registered as parameter type with ID [id]-list
      * @param name                     the name of the environment
      * @param description              the description of the environment
+     * @param setupTools tools that are compatible with that environment
      */
     public <T extends JIPipeEnvironment, U extends JIPipeListParameter<T>, V extends JIPipeOptionalParameter<T>> void registerEnvironment(String id, JIPipeEnvironmentArchetype archetype, Class<T> environmentClass,
                                                                                                                                           Class<V> optionalEnvironmentClass,
                                                                                                                                           Class<U> environmentListClass,
                                                                                                                                           String name,
                                                                                                                                           String description,
-                                                                                                                                          Icon icon) {
+                                                                                                                                          Icon icon,
+                                                                                                                                          JIPipeEnvironmentSetupTool... setupTools) {
         service.getEnvironments().registerEnvironment(id, null, archetype, environmentClass, optionalEnvironmentClass, environmentListClass, name, description, icon);
+        for (JIPipeEnvironmentSetupTool setupTool : setupTools) {
+            if(setupTool.accepts(environmentClass)) {
+                service.getEnvironments().registerSetupTool(setupTool);
+            }
+            else {
+                throw new IllegalArgumentException("Tried to register environment setup tool for environment ID=" + id + ", but tool " + setupTool + " does not accept environment class");
+            }
+        }
+    }
+
+    /**
+     * Registers an environment setup tool
+     * @param setupTool the tool
+     */
+    public void registerEnvironmentSetupTool(JIPipeEnvironmentSetupTool setupTool) {
+        service.getEnvironments().registerSetupTool(setupTool);
     }
 
     /**

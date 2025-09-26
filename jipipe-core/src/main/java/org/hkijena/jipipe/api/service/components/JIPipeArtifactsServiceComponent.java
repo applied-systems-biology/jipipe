@@ -483,12 +483,12 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
                             .resolve("JIPipe")
                             .resolve("artifacts");
                 } else {
-                    return Paths.get(System.getProperty("user.home")).resolve(".local")
+                    return PathUtils.getHomeDirectory().resolve(".local")
                             .resolve("share").resolve("JIPipe")
                             .resolve("artifacts");
                 }
             } else if (SystemUtils.IS_OS_MAC_OSX) {
-                return Paths.get(System.getProperty("user.home")).resolve("Library").resolve("Application Support")
+                return PathUtils.getHomeDirectory().resolve("Library").resolve("Application Support")
                         .resolve("JIPipe").resolve("artifacts");
             } else {
                 throw new UnsupportedOperationException("Unknown operating system!");

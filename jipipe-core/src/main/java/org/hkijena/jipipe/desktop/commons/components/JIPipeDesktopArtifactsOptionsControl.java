@@ -52,7 +52,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
 
     private void initialize() {
         UIUtils.makeButtonFlat(this);
-        setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/environment.png"));
         UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadMenu);
     }
 
@@ -106,16 +106,21 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void reloadMenu() {
         popupMenu.removeAll();
 
-        popupMenu.add(UIUtils.createMenuItem("Manage project connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openProjectSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage project-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentProjectSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage application-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentApplicationSettings));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Install/uninstall ...", "Manage installed artifacts", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::manageArtifacts));
-        popupMenu.add(UIUtils.createMenuItem("Refresh", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
+        popupMenu.add(UIUtils.createMenuItem("Install/uninstall remote artifacts ...", "Manage installed artifacts", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::manageArtifacts));
+        popupMenu.add(UIUtils.createMenuItem("Refresh remote artifacts", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
         popupMenu.addSeparator();
-        popupMenu.add(UIUtils.createMenuItem("Add local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
-        popupMenu.add(UIUtils.createMenuItem("More settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+        popupMenu.add(UIUtils.createMenuItem("Add remote artifacts local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
+        popupMenu.add(UIUtils.createMenuItem("Manage remote artifacts settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
     }
 
-    private void openProjectSettings() {
+    private void openEnvironmentApplicationSettings() {
+        workbench.openApplicationSettings("/General/Connected services");
+    }
+
+    private void openEnvironmentProjectSettings() {
         workbench.openProjectSettings("/General/Connected services");
     }
 
@@ -150,10 +155,10 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         setToolTipText("Artifacts (" + JIPipe.getArtifacts().getCachedRemoteArtifacts().size() + " available, " + JIPipe.getArtifacts().getCachedLocalArtifacts().size() + " installed)");
         if (JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
             setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
-            setText("Artifacts unavailable");
+            setText("No connection");
         } else {
-            setIcon(JIPipe.RESOURCES.getIcon16("actions/run-install.png"));
-            setText("Artifacts");
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/environment.png"));
+            setText("Connected services");
         }
     }
 
