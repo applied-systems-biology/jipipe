@@ -26,10 +26,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A registry for external environments
@@ -39,6 +36,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
     private final Map<Class<? extends JIPipeEnvironment>, EnvironmentInfo> infosByClass = new HashMap<>();
     private final Map<Class<? extends JIPipeOptionalParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByOptionalClass = new HashMap<>();
     private final Map<Class<? extends JIPipeListParameter<? extends JIPipeEnvironment>>, EnvironmentInfo> infosByListClass = new HashMap<>();
+    private final List<JIPipeEnvironmentSetupTool> setupTools = new ArrayList<>();
 
     public JIPipeEnvironmentsServiceComponent(JIPipeService service) {
         super(service);
@@ -136,6 +134,14 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
         return Collections.unmodifiableMap(infosByListClass);
     }
 
+    public List<JIPipeEnvironmentSetupTool> getSetupTools() {
+        return Collections.unmodifiableList(setupTools);
+    }
+
+    public void registerSetupTool(JIPipeEnvironmentSetupTool tool) {
+        setupTools.add(Objects.requireNonNull(tool));
+    }
+
     /**
      * Gets a fully configured environment
      *
@@ -158,6 +164,20 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
         return new JIPipeEnvironmentConfigurator<>(klass, null, null, configurationCache);
+    }
+
+    /**
+     * Returns a sorted list of all compatible setup tools
+     * @param environmentClass the environment class
+     * @return the list of compatible tools, sorted
+     */
+    public List<JIPipeEnvironmentSetupTool> getCompatibleSetupTools(Class<?> environmentClass) {
+        if(JIPipeEnvironment.class.isAssignableFrom(environmentClass)) {
+            return setupTools.stream().filter(tool -> tool.accepts((Class<? extends JIPipeEnvironment>) environmentClass))
+                    .sorted(Comparator.comparing(JIPipeEnvironmentSetupTool::getName))
+                    .toList();
+        }
+        return Collections.emptyList();
     }
 
     public static class EnvironmentInfo {
