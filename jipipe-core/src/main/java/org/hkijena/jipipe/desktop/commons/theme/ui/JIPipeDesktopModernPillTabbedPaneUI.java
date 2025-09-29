@@ -33,6 +33,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
     // Background color for unselected tabs that don't have an explicitly
     // set color.
     private Color unselectedBackground;
+    private int cornerRadius = 15;
     private boolean tabsOpaque = true;
 
     // Whether or not we're using ocean. This is cached as it is used
@@ -55,6 +56,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
     protected void installDefaults() {
         super.installDefaults();
 
+        cornerRadius = ThemeUtils.getCurrentStyle().getCornerRadius();
         tabAreaBackground = UIManager.getColor("TabbedPane.tabAreaBackground");
         selectColor = UIManager.getColor("TabbedPane.selected");
         selectHighlight = UIManager.getColor("TabbedPane.selectHighlight");
@@ -684,10 +686,10 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
                     break;
                 case TOP:
                 default:
-                    g.fillRoundRect(x, y + 5, w, h - 10, 10, 10);
+                    g.fillRoundRect(x, y + 5, w, h - 10, cornerRadius, cornerRadius);
                     if (isSelected) {
                         g2d.setColor(selectHighlight);
-                        g.drawRoundRect(x, y + 5, w, h - 10, 10, 10);
+                        g.drawRoundRect(x, y + 5, w, h - 10, cornerRadius, cornerRadius);
                     }
 
             }
