@@ -38,10 +38,10 @@ public class JIPipeDesktopModernMetalTheme extends DefaultMetalTheme {
 
         // Borders
         buttonBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(style.getBorderColor(), 1, style.getCornerRadius()),
+                BorderFactory.createCompoundBorder(new RoundedLineBorder(style.getBorderColor(), 1, 5),
                         BorderFactory.createEmptyBorder(3, 3, 3, 3)));
         textFieldBorder = BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                new RoundedLineBorder(style.getBorderColor(), 1, style.getCornerRadius()));
+                new RoundedLineBorder(style.getBorderColor(), 1, 5));
         focusBorder = new BorderUIResource.LineBorderUIResource(getPrimary1());
 
         // TODO: Icon init
