@@ -511,7 +511,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         popupMenu.add(UIUtils.createMenuItem("Bottom right", "Move the panel to the bottom right anchor", JIPipe.RESOURCES.getIcon16("actions/dock-bottom-right.png"), () -> {
             movePanelToLocation(panel, PanelLocation.BottomRight, true);
         }));
-        popupMenu.add(UIUtils.createMenuItem("Bottom", "Move the panel to the bottom anchor", JIPipe.RESOURCES.getIcon16("actions/go-bottom.png"), () -> {
+        popupMenu.add(UIUtils.createMenuItem("Bottom", "Move the panel to the bottom anchor", JIPipe.RESOURCES.getIcon16("actions/dock-bottom-bottom.png"), () -> {
             movePanelToLocation(panel, PanelLocation.BottomBottom, true);
         }));
 
