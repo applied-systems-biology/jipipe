@@ -12,7 +12,10 @@ import java.awt.*;
  */
 public class JIPipeDesktopIslandPanel extends JPanel {
 
+    private final int cornerRadius;
+
     public JIPipeDesktopIslandPanel(JComponent content) {
+        this.cornerRadius = ThemeUtils.getCurrentStyle().getCornerRadius();
         setLayout(new BorderLayout());
         setOpaque(true);
         setBorder(UIUtils.createEmptyBorder(5));
@@ -27,7 +30,7 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         Object oldValue = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-        int arc = 20;
+        int arc = cornerRadius;
         g2.setColor(ThemeUtils.getCurrentStyle().getPanelBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
 

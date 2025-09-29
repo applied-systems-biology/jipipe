@@ -174,6 +174,9 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("node-border-brightness")
     private float nodeBorderBrightness = 0.5f;
 
+    @JsonProperty("corner-radius")
+    private int cornerRadius = 15;
+
     public JIPipeDesktopModernThemeStyle() {
     }
 
@@ -555,5 +558,13 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setNodeBorderBrightness(float nodeBorderBrightness) {
         this.nodeBorderBrightness = nodeBorderBrightness;
+    }
+
+    public int getCornerRadius() {
+        return Math.max(0, Math.min(32, cornerRadius));
+    }
+
+    public void setCornerRadius(int cornerRadius) {
+        this.cornerRadius = cornerRadius;
     }
 }
