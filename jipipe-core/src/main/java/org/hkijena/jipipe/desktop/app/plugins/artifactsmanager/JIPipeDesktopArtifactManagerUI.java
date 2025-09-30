@@ -16,6 +16,9 @@ package org.hkijena.jipipe.desktop.app.plugins.artifactsmanager;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeLocalRemoteArtifactSource;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeOrasRemoteArtifactSource;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
@@ -170,8 +173,16 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getClassifier()), new JLabel("Label"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
-            if (artifact instanceof JIPipeRemoteArtifact) {
-                propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(((JIPipeRemoteArtifact) artifact).getUrl()), new JLabel("URL"));
+            if (artifact instanceof JIPipeRemoteArtifact remoteArtifact) {
+                if(remoteArtifact.getSource() instanceof JIPipeHttpRemoteArtifactSource httpRemoteArtifactSource) {
+                    propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(httpRemoteArtifactSource.getUrl()), new JLabel("URL"));
+                }
+                else if(remoteArtifact.getSource() instanceof JIPipeLocalRemoteArtifactSource localRemoteArtifactSource) {
+                    propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(localRemoteArtifactSource.getFilePath().toString()), new JLabel("File"));
+                }
+                else if(remoteArtifact.getSource() instanceof JIPipeOrasRemoteArtifactSource oraRemoteArtifactSource) {
+                    propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(oraRemoteArtifactSource.getOciReference()), new JLabel("OCI Ref"));
+                }
             }
             if (artifact.isRequireGPU()) {
                 propertyPanel.addToForm(new JLabel("Requires GPU", JIPipe.RESOURCES.getIcon16("devices/device_pci.png"), JLabel.LEFT), new JLabel("Additional info"));
