@@ -19,7 +19,10 @@ import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 
 import java.util.Map;
 
-public interface JIPipeRemoteArtifactSourceIndexer {
+/**
+ * A class that allows to query a compatible repository reference
+ */
+public interface JIPipeRemoteArtifactDatabase {
     /**
      * Instructs the indexer to rebuild its internal cache.
      * Should be automatically called if there is currently none

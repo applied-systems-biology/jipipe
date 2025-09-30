@@ -29,7 +29,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.StampedLock;
 
-public class JIPipeArtifactIndexV1RemoteArtifactSourceIndexer implements JIPipeRemoteArtifactSourceIndexer {
+public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemoteArtifactDatabase {
 
     private JIPipeArtifactIndexV1 index;
     private final StampedLock lock = new StampedLock();
@@ -111,7 +111,7 @@ public class JIPipeArtifactIndexV1RemoteArtifactSourceIndexer implements JIPipeR
     }
 
     public static void main(String[] args) {
-        JIPipeArtifactIndexV1RemoteArtifactSourceIndexer indexer = new JIPipeArtifactIndexV1RemoteArtifactSourceIndexer();
+        JIPipeArtifactIndexV1RemoteArtifactDatabase indexer = new JIPipeArtifactIndexV1RemoteArtifactDatabase();
         JIPipeArtifactRepositoryReference repositoryReference = new JIPipeArtifactRepositoryReference("https://applied-systems-biology.github.io/JIPipe-Artifacts/index.json", "", JIPipeArtifactRepositoryType.JSONv1);
         indexer.rebuild(repositoryReference, JIPipeProgressInfo.STDOUT);
         Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();

@@ -18,10 +18,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
-import org.hkijena.jipipe.api.artifacts.index.JIPipeArtifactIndexV1RemoteArtifactSourceIndexer;
-import org.hkijena.jipipe.api.artifacts.index.JIPipeLocalRemoteArtifactSourceIndexer;
-import org.hkijena.jipipe.api.artifacts.index.JIPipeNexusRemoteArtifactSourceIndexer;
-import org.hkijena.jipipe.api.artifacts.index.JIPipeRemoteArtifactSourceIndexer;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeArtifactIndexV1RemoteArtifactDatabase;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeLocalRemoteArtifactDatabase;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeNexusRemoteArtifactDatabase;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeRemoteArtifactDatabase;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -50,7 +50,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
     private final StampedLock lock = new StampedLock();
     private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
 
-    private final Map<JIPipeArtifactRepositoryReference, JIPipeRemoteArtifactSourceIndexer> indexerMap = new HashMap<>();
+    private final Map<JIPipeArtifactRepositoryReference, JIPipeRemoteArtifactDatabase> indexerMap = new HashMap<>();
 
     public JIPipeArtifactsServiceComponent(JIPipeService service) {
         super(service);
@@ -304,16 +304,16 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
     public List<JIPipeRemoteArtifact> queryRemoteRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
         for (JIPipeArtifactRepositoryReference repository : JIPipeArtifactApplicationSettings.getInstance().getRepositories()) {
-            progressInfo.log("Checking remote repository @ " + repository.getUrl());
+            progressInfo.log("Checking remote repository @ " + repository.getUrl() + " of type " + repository.getType().name());
             try {
-                JIPipeRemoteArtifactSourceIndexer indexer = indexerMap.getOrDefault(repository, null);
+                JIPipeRemoteArtifactDatabase indexer = indexerMap.getOrDefault(repository, null);
                 if(indexer == null) {
-                    Class<? extends JIPipeRemoteArtifactSourceIndexer> indexerClass = switch (repository.getType()) {
-                        case LocalDirectory -> JIPipeLocalRemoteArtifactSourceIndexer.class;
-                        case SonatypeNexus -> JIPipeNexusRemoteArtifactSourceIndexer.class;
-                        case JSONv1 -> JIPipeArtifactIndexV1RemoteArtifactSourceIndexer.class;
+                    Class<? extends JIPipeRemoteArtifactDatabase> indexerClass = switch (repository.getType()) {
+                        case LocalDirectory -> JIPipeLocalRemoteArtifactDatabase.class;
+                        case SonatypeNexus -> JIPipeNexusRemoteArtifactDatabase.class;
+                        case JSONv1 -> JIPipeArtifactIndexV1RemoteArtifactDatabase.class;
                     };
-                    indexer = (JIPipeRemoteArtifactSourceIndexer) ReflectionUtils.newInstance(indexerClass);
+                    indexer = (JIPipeRemoteArtifactDatabase) ReflectionUtils.newInstance(indexerClass);
                 }
                 indexer.query(groupId, artifactId, version, progressInfo.resolve("[" + repository.getType().name() + "] " + repository.getUrl() + "/" + repository.getRepository()), repository, downloadMap);
             } catch (Throwable e) {

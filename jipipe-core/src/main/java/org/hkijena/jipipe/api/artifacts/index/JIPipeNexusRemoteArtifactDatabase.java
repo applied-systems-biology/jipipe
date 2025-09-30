@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.BufferedReader;
@@ -30,7 +31,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Stack;
 
-public class JIPipeNexusRemoteArtifactSourceIndexer implements JIPipeRemoteArtifactSourceIndexer {
+public class JIPipeNexusRemoteArtifactDatabase implements JIPipeRemoteArtifactDatabase {
     @Override
     public void rebuild(JIPipeArtifactRepositoryReference repositoryReference, JIPipeProgressInfo progressInfo) {
 
@@ -87,7 +88,7 @@ public class JIPipeNexusRemoteArtifactSourceIndexer implements JIPipeRemoteArtif
                 if (rootNode.has("items")) {
                     for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
                         JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
-                        download.setUrl(item.get("downloadUrl").asText());
+                        download.setSource(new JIPipeHttpRemoteArtifactSource(item.get("downloadUrl").asText()));
                         download.setSize(item.get("fileSize").asLong());
                         download.setArtifactId(item.get("maven2").get("artifactId").asText());
                         download.setGroupId(item.get("maven2").get("groupId").asText());

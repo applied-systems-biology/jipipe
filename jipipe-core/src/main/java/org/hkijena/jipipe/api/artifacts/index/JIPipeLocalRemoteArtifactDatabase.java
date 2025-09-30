@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.artifacts.index;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeLocalRemoteArtifactSource;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -31,7 +32,7 @@ import java.util.stream.Stream;
 /**
  * Indexes a local source of {@link JIPipeRemoteArtifact}
  */
-public class JIPipeLocalRemoteArtifactSourceIndexer implements JIPipeRemoteArtifactSourceIndexer {
+public class JIPipeLocalRemoteArtifactDatabase implements JIPipeRemoteArtifactDatabase {
 
     private final List<Entry> entries = new ArrayList<>();
     private final StampedLock stampedLock = new StampedLock();
@@ -87,7 +88,7 @@ public class JIPipeLocalRemoteArtifactSourceIndexer implements JIPipeRemoteArtif
                 remoteArtifact.setGroupId(entry.pathGroupId);
                 remoteArtifact.setVersion(entry.pathVersion);
                 remoteArtifact.setClassifier(entry.pathClassifier);
-                remoteArtifact.setUrl(entry.path.toUri().toString());
+                remoteArtifact.setSource(new JIPipeLocalRemoteArtifactSource(entry.path));
                 downloadMap.put(remoteArtifact.getFullId(), remoteArtifact);
 
                 progressInfo.log("Found " + remoteArtifact.getFullId());
