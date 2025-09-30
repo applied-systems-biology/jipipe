@@ -11,21 +11,30 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.artifacts;
+package org.hkijena.jipipe.api.artifacts.index.v1;
 
-public enum JIPipeArtifactRepositoryType {
-    SonatypeNexus("Sonatype Nexus (legacy)"),
-    LocalDirectory("Local directory"),
-    JSONv1("JIPipe remote repository v1");
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    private final String label;
+public class JIPipeArtifactIndexV1PackageMaintainer {
+    @JsonProperty("name")
+    private String name;
 
-    JIPipeArtifactRepositoryType(String label) {
-        this.label = label;
+    @JsonProperty("email")
+    private String email;
+
+    public String getName() {
+        return name;
     }
 
-    @Override
-    public String toString() {
-        return label;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

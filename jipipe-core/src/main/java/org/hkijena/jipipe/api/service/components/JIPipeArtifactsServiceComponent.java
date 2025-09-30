@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeArtifactIndexV1RemoteArtifactSourceIndexer;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeLocalRemoteArtifactSourceIndexer;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeNexusRemoteArtifactSourceIndexer;
+import org.hkijena.jipipe.api.artifacts.index.JIPipeRemoteArtifactSourceIndexer;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
@@ -29,23 +31,17 @@ import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.locks.StampedLock;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponent {
     private final Map<String, JIPipeArtifact> cachedArtifacts = new HashMap<>();
@@ -53,6 +49,8 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
     private final Map<String, JIPipeLocalArtifact> cachedLocalArtifacts = new HashMap<>();
     private final StampedLock lock = new StampedLock();
     private final UpdatedEventEmitter updatedEventEmitter = new UpdatedEventEmitter();
+
+    private final Map<JIPipeArtifactRepositoryReference, JIPipeRemoteArtifactSourceIndexer> indexerMap = new HashMap<>();
 
     public JIPipeArtifactsServiceComponent(JIPipeService service) {
         super(service);
@@ -111,123 +109,6 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
         }
 
         return bestCandidate;
-    }
-
-    private static void queryLocalDirectoryRepository(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo, JIPipeArtifactRepositoryReference repository, Map<String, JIPipeRemoteArtifact> downloadMap) {
-        Path root = Paths.get(repository.getUrl());
-        try (Stream<Path> stream = Files.walk(root)) {
-            stream.forEach(path -> {
-                try {
-                    if (Files.isRegularFile(path) && (path.getFileName().toString().endsWith(".zip") || path.getFileName().toString().endsWith(".tar.gz"))) {
-                        Path relativePath = root.relativize(path);
-                        String pathVersion = PathUtils.getName(path, -2);
-                        String pathArtifactId = PathUtils.getName(relativePath, -3);
-                        Path groupIdPath = relativePath.subpath(0, relativePath.getNameCount() - 3);
-                        String pathGroupId = String.join(".", PathUtils.disassemble(groupIdPath));
-                        String pathClassifier = path.getFileName().toString().split("-")[2].split("\\.")[0];
-
-                        if (groupId != null && !groupId.equals(pathGroupId)) {
-                            return;
-                        }
-                        if (artifactId != null && !artifactId.equals(pathArtifactId)) {
-                            return;
-                        }
-                        if (version != null && !version.equals(pathVersion)) {
-                            return;
-                        }
-
-                        JIPipeRemoteArtifact remoteArtifact = new JIPipeRemoteArtifact();
-                        remoteArtifact.setArtifactId(pathArtifactId);
-                        remoteArtifact.setGroupId(pathGroupId);
-                        remoteArtifact.setVersion(pathVersion);
-                        remoteArtifact.setClassifier(pathClassifier);
-                        remoteArtifact.setUrl(path.toUri().toString());
-                        downloadMap.put(remoteArtifact.getFullId(), remoteArtifact);
-
-                        progressInfo.log("Found " + remoteArtifact.getFullId());
-                    }
-                } catch (Throwable throwable) {
-                    progressInfo.log(throwable);
-                }
-            });
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private static void querySonatypeNexusRepository(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo, JIPipeArtifactRepositoryReference repository, Map<String, JIPipeRemoteArtifact> downloadMap) {
-        Stack<String> tokens = new Stack<>();
-        tokens.add(null);
-        while (!tokens.isEmpty()) {
-            try {
-                String token = tokens.pop();
-                String urlString = repository.getUrl() + "/service/rest/v1/search/assets?repository=" + repository.getRepository();
-                if (groupId != null) {
-                    urlString += "&group=" + groupId;
-                }
-                if (artifactId != null) {
-                    urlString += "&name=" + artifactId;
-                }
-                if (version != null) {
-                    urlString += "&version=" + version;
-                }
-                if (token != null) {
-                    urlString += "&continuationToken" + token;
-                }
-                progressInfo.log("Contacting " + urlString);
-                URL url = new URL(urlString);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setConnectTimeout(1000);
-                conn.setReadTimeout(5000);
-                conn.setRequestMethod("GET");
-                conn.setRequestProperty("Accept", "application/json");
-
-                if (conn.getResponseCode() != 200) {
-                    progressInfo.log("Failed : HTTP error code : " + conn.getResponseCode());
-                    continue;
-                }
-
-                // Read JSON string data
-                StringBuilder textBuilder = new StringBuilder();
-                try (Reader reader = new BufferedReader(new InputStreamReader
-                        (conn.getInputStream(), StandardCharsets.UTF_8))) {
-                    int c = 0;
-                    while ((c = reader.read()) != -1) {
-                        textBuilder.append((char) c);
-                    }
-                }
-                conn.disconnect();
-
-                // Read as JSON
-                JsonNode rootNode = JsonUtils.readFromString(textBuilder.toString(), JsonNode.class);
-
-                // Read items
-                if (rootNode.has("items")) {
-                    for (JsonNode item : ImmutableList.copyOf(rootNode.get("items").elements())) {
-                        JIPipeRemoteArtifact download = new JIPipeRemoteArtifact();
-                        download.setUrl(item.get("downloadUrl").asText());
-                        download.setSize(item.get("fileSize").asLong());
-                        download.setArtifactId(item.get("maven2").get("artifactId").asText());
-                        download.setGroupId(item.get("maven2").get("groupId").asText());
-                        download.setClassifier(item.get("maven2").get("classifier").asText());
-                        download.setVersion(item.get("maven2").get("version").asText());
-
-                        if (!downloadMap.containsKey(download.getFullId())) {
-                            downloadMap.put(download.getFullId(), download);
-                            progressInfo.log("Found " + download.getFullId());
-                        }
-                    }
-                }
-
-                // Continuation token
-                if (rootNode.has("continuationToken") && !rootNode.get("continuationToken").isNull()) {
-                    tokens.push(rootNode.get("continuationToken").asText());
-                }
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
     }
 
     public Map<String, JIPipeArtifact> getCachedArtifacts() {
@@ -425,13 +306,16 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
         for (JIPipeArtifactRepositoryReference repository : JIPipeArtifactApplicationSettings.getInstance().getRepositories()) {
             progressInfo.log("Checking remote repository @ " + repository.getUrl());
             try {
-                if (repository.getType() == JIPipeArtifactRepositoryType.SonatypeNexus) {
-                    querySonatypeNexusRepository(groupId, artifactId, version, progressInfo.resolve("[SonatypeNexus] " + repository.getUrl() + "/" + repository.getRepository()), repository, downloadMap);
-                } else if (repository.getType() == JIPipeArtifactRepositoryType.LocalDirectory) {
-                    queryLocalDirectoryRepository(groupId, artifactId, version, progressInfo.resolve("[LocalDirectory] " + repository.getUrl()), repository, downloadMap);
-                } else {
-                    progressInfo.log("[ERROR] Unsupported repository type: " + repository.getType());
+                JIPipeRemoteArtifactSourceIndexer indexer = indexerMap.getOrDefault(repository, null);
+                if(indexer == null) {
+                    Class<? extends JIPipeRemoteArtifactSourceIndexer> indexerClass = switch (repository.getType()) {
+                        case LocalDirectory -> JIPipeLocalRemoteArtifactSourceIndexer.class;
+                        case SonatypeNexus -> JIPipeNexusRemoteArtifactSourceIndexer.class;
+                        case JSONv1 -> JIPipeArtifactIndexV1RemoteArtifactSourceIndexer.class;
+                    };
+                    indexer = (JIPipeRemoteArtifactSourceIndexer) ReflectionUtils.newInstance(indexerClass);
                 }
+                indexer.query(groupId, artifactId, version, progressInfo.resolve("[" + repository.getType().name() + "] " + repository.getUrl() + "/" + repository.getRepository()), repository, downloadMap);
             } catch (Throwable e) {
                 progressInfo.log(e);
             }

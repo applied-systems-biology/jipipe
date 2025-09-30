@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
+import java.util.Objects;
+
 public class JIPipeArtifactRepositoryReference extends AbstractJIPipeParameterCollection {
     private String url;
     private String repository;
@@ -76,5 +78,17 @@ public class JIPipeArtifactRepositoryReference extends AbstractJIPipeParameterCo
     @JsonSetter("type")
     public void setType(JIPipeArtifactRepositoryType type) {
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeArtifactRepositoryReference that = (JIPipeArtifactRepositoryReference) o;
+        return Objects.equals(url, that.url) && Objects.equals(repository, that.repository) && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(url, repository, type);
     }
 }
