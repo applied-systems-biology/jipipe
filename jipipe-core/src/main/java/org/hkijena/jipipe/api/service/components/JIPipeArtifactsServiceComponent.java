@@ -27,9 +27,10 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -64,9 +65,9 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
      */
     public static JIPipeArtifact selectPreferredArtifactByClassifier(List<JIPipeArtifact> candidates) {
         JIPipeArtifact bestCandidate = null;
-        JIPipeArtifactAccelerationPreference accelerationPreference = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreference();
-        Vector2iParameter accelerationPreferenceVersions = JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions();
-        boolean wantsGPU = accelerationPreference != JIPipeArtifactAccelerationPreference.CPU;
+        JIPipeHardwareAccelerationMode accelerationPreference = JIPipeHardwareAccelerationApplicationSettings.getInstance().getAccelerationPreference();
+        Vector2iParameter accelerationPreferenceVersions = JIPipeHardwareAccelerationApplicationSettings.getInstance().getAccelerationPreferenceVersions();
+        boolean wantsGPU = accelerationPreference != JIPipeHardwareAccelerationMode.CPU;
 
         Map<String, List<JIPipeArtifact>> byVersion = candidates.stream().collect(Collectors.groupingBy(JIPipeArtifact::getVersion));
         List<String> sortedVersions = byVersion.keySet().stream().sorted(VersionUtils.VERSION_COMPARATOR.reversed()).collect(Collectors.toList());

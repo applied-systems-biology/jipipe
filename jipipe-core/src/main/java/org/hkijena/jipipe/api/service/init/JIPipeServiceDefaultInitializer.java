@@ -32,10 +32,11 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.CUDAUtils;
 import org.hkijena.jipipe.utils.JIPipeUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -314,26 +315,27 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getService().getArtifacts().updateCachedArtifacts(getProgressInfo().resolve("Updating artifacts"));
 
         // Check acceleration
-        if (JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
+        JIPipeHardwareAccelerationApplicationSettings hardwareAccelerationApplicationSettings = JIPipeHardwareAccelerationApplicationSettings.getInstance();
+        if (hardwareAccelerationApplicationSettings.isAutoConfigureAccelerationOnNextStartup()) {
             getProgressInfo().log("Determining acceleration profile ...");
             try {
 
                 if (CUDAUtils.hasCudaSupport()) {
                     getProgressInfo().log("Determining acceleration profile ... CUDA support detected");
-                    JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
+                    hardwareAccelerationApplicationSettings.setAccelerationPreference(JIPipeHardwareAccelerationMode.CUDA);
 
                     try {
-                        JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreferenceVersions(new Vector2iParameter(
+                        hardwareAccelerationApplicationSettings.setAccelerationPreferenceVersions(new Vector2iParameter(
                                 CUDAUtils.getMinimumCudaVersion(),
                                 0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
                         ));
-                        getProgressInfo().log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
+                        getProgressInfo().log("Determined CUDA version limits as " + hardwareAccelerationApplicationSettings.getAccelerationPreferenceVersions());
                     } catch (Exception e) {
                         getProgressInfo().log(e);
                     }
                 }
 
-                JIPipeArtifactApplicationSettings.getInstance().setAutoConfigureAccelerationOnNextStartup(false);
+                hardwareAccelerationApplicationSettings.setAutoConfigureAccelerationOnNextStartup(false);
                 getService().getApplicationSettings().save();
             } catch (Exception e) {
                 getProgressInfo().log(e);

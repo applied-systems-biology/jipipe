@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReferenceList;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
@@ -81,10 +82,6 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Artifact repository",
                 "An artifact repository",
                 null);
-        registerEnumParameterType("artifact-acceleration-preference",
-                JIPipeArtifactAccelerationPreference.class,
-                "Artifact acceleration preference",
-                "Select artifacts that match the specified acceleration profile");
         registerApplicationSettingsSheet(new JIPipeArtifactApplicationSettings());
     }
 

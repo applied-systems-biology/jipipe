@@ -117,7 +117,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void openEnvironmentApplicationSettings() {
-        workbench.openApplicationSettings("/General/Connected services");
+        workbench.openApplicationSettings("/Connected services/Defaults");
     }
 
     private void openEnvironmentProjectSettings() {

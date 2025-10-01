@@ -16,8 +16,9 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
 
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
-    private final JIPipeArtifactApplicationSettings settings = JIPipeArtifactApplicationSettings.getInstance();
+    private final JIPipeHardwareAccelerationApplicationSettings settings = JIPipeHardwareAccelerationApplicationSettings.getInstance();
 
     public JIPipeDesktopAccelerationOptionsControl(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
@@ -44,7 +45,7 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
 
     private void reloadMenu() {
         popupMenu.removeAll();
-        for (JIPipeArtifactAccelerationPreference value : JIPipeArtifactAccelerationPreference.values()) {
+        for (JIPipeHardwareAccelerationMode value : JIPipeHardwareAccelerationMode.values()) {
             JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(value.toString(), settings.getAccelerationPreference() == value);
             menuItem.addActionListener(e -> {
                 settings.setAccelerationPreference(value);
@@ -58,11 +59,11 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
     }
 
     private void openApplicationSettings() {
-        workbench.openApplicationSettings("/General/Artifacts");
+        workbench.openApplicationSettings("/General/Hardware acceleration");
     }
 
     private void updateText() {
-        if (settings.getAccelerationPreference() != JIPipeArtifactAccelerationPreference.CPU && (settings.getAccelerationPreferenceVersions().getX() > 0 || settings.getAccelerationPreferenceVersions().getY() > 0)) {
+        if (settings.getAccelerationPreference() != JIPipeHardwareAccelerationMode.CPU && (settings.getAccelerationPreferenceVersions().getX() > 0 || settings.getAccelerationPreferenceVersions().getY() > 0)) {
             setText(String.format("%s (%s - %s)", settings.getAccelerationPreference().toString(),
                     settings.getAccelerationPreferenceVersions().getX() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getX()) : "*",
                     settings.getAccelerationPreferenceVersions().getY() > 0 ? Integer.toString(settings.getAccelerationPreferenceVersions().getY()) : "*"));

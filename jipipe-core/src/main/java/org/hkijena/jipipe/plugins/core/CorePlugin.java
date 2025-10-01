@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.compat.*;
@@ -157,6 +158,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeGraphRunPartitionInheritedBoolean.class,
                 "Graph run partition boolean (inheritable)",
                 "A boolean where the value can be inherited from the partition");
+         registerEnumParameterType("hardware-acceleration",
+                JIPipeHardwareAccelerationMode.class,
+                "Hardware acceleration modes",
+                "A library or method used for allowing processes to be accelerated");
 
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 
