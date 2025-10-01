@@ -89,7 +89,7 @@ public class IlastikPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
-        environment.runExecutable(parameters, environmentVariables, detached, progressInfo);
+        environment.runExecutable(parameters, environmentVariables, detached, Collections.emptyList(), progressInfo);
     }
 
     public static void launchIlastik(JIPipeDesktopWorkbench workbench, List<String> arguments) {

@@ -135,7 +135,7 @@ public class TSOAX2DAlgorithm extends TSOAXAlgorithm {
             environmentVariables.put("LC_ALL", "en_US.UTF-8");
             environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
-            environment.runExecutable(args, environmentVariables, false, byZProgress);
+            environment.runExecutable(args, environmentVariables, false, Collections.emptyList(), byZProgress);
 
             // Extract results
             Path resultsFile = outputDir.resolve("img.txt");
