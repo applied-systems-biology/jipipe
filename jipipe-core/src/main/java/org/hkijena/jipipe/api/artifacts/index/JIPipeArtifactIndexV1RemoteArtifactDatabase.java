@@ -109,12 +109,4 @@ public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemote
             lock.unlock(stamp);
         }
     }
-
-    public static void main(String[] args) {
-        JIPipeArtifactIndexV1RemoteArtifactDatabase indexer = new JIPipeArtifactIndexV1RemoteArtifactDatabase();
-        JIPipeArtifactRepositoryReference repositoryReference = new JIPipeArtifactRepositoryReference("https://applied-systems-biology.github.io/JIPipe-Artifacts/index.json", "", JIPipeArtifactRepositoryType.JSONv1);
-        indexer.rebuild(repositoryReference, JIPipeProgressInfo.STDOUT);
-        Map<String, JIPipeRemoteArtifact> downloadMap = new HashMap<>();
-        indexer.query(null, null, null, JIPipeProgressInfo.STDOUT, repositoryReference, downloadMap);
-    }
 }

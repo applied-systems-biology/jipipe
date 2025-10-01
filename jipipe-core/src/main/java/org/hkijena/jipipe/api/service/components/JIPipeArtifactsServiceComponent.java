@@ -313,7 +313,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
                     };
                     indexer = (JIPipeRemoteArtifactDatabase) ReflectionUtils.newInstance(indexerClass);
                 }
-                indexer.query(groupId, artifactId, version, progressInfo.resolve("[" + repository.getType().name() + "] " + repository.getUrl() + "/" + repository.getRepository()), repository, downloadMap);
+                indexer.query(groupId, artifactId, version, progressInfo.resolve("[" + repository.getType().name() + "] " + repository.getName()), repository, downloadMap);
             } catch (Throwable e) {
                 progressInfo.log(e);
             }

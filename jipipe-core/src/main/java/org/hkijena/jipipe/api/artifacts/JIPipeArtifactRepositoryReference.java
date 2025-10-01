@@ -23,6 +23,7 @@ import java.util.Objects;
 
 public class JIPipeArtifactRepositoryReference extends AbstractJIPipeParameterCollection {
     private String url;
+    private String name;
     private String repository;
     private JIPipeArtifactRepositoryType type = JIPipeArtifactRepositoryType.SonatypeNexus;
 
@@ -33,12 +34,26 @@ public class JIPipeArtifactRepositoryReference extends AbstractJIPipeParameterCo
         this.url = other.url;
         this.repository = other.repository;
         this.type = other.type;
+        this.name = other.name;
     }
 
-    public JIPipeArtifactRepositoryReference(String url, String repository, JIPipeArtifactRepositoryType type) {
+    public JIPipeArtifactRepositoryReference(String name, String url, String repository, JIPipeArtifactRepositoryType type) {
         this.url = url;
         this.repository = repository;
         this.type = type;
+    }
+
+    @SetJIPipeDocumentation(name = "Name", description = "The name of the repository")
+    @JIPipeParameter("name")
+    @JsonGetter("name")
+    public String getName() {
+        return name;
+    }
+
+    @JsonSetter("name")
+    @JIPipeParameter("name")
+    public void setName(String name) {
+        this.name = name;
     }
 
     @SetJIPipeDocumentation(name = "URL", description = "The URL of the remote repository. For Sonatype Nexus, this is the base URL.")

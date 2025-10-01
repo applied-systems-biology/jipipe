@@ -18,15 +18,12 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReferenceList;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
-import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.artifacts.oras.OptionalOrasEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
@@ -42,7 +39,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     private boolean showConnectionIssueBallon = true;
 
     public JIPipeArtifactApplicationSettings() {
-        repositories.add(new JIPipeArtifactRepositoryReference("https://jipipe.hki-jena.de/nexus/", "jipipe-artifacts", JIPipeArtifactRepositoryType.SonatypeNexus));
+        repositories.add(new JIPipeArtifactRepositoryReference("JIPipe Main Artifacts", "https://applied-systems-biology.github.io/jipipe-artifacts/index.json", "", JIPipeArtifactRepositoryType.JSONv1));
     }
 
     public static JIPipeArtifactApplicationSettings getInstance() {
@@ -61,12 +58,12 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     }
 
     @SetJIPipeDocumentation(name = "Repositories", description = "List of repositories to query")
-    @JIPipeParameter("repositories")
+    @JIPipeParameter("repositories-v2")
     public JIPipeArtifactRepositoryReferenceList getRepositories() {
         return repositories;
     }
 
-    @JIPipeParameter("repositories")
+    @JIPipeParameter("repositories-v2")
     public void setRepositories(JIPipeArtifactRepositoryReferenceList repositories) {
         this.repositories = repositories;
     }

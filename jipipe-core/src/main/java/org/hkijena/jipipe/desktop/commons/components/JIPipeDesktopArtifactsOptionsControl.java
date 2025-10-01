@@ -127,7 +127,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void addLocalRepository() {
         closeBalloon();
         Path selectedPath = JIPipeDesktop.openDirectory(workbench.getWindow(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Add local repository", new HTMLText("Please select the root directory of the local repository. It should contain directories like 'org', 'com', and 'sc'."));
-        settings.getRepositories().add(new JIPipeArtifactRepositoryReference(selectedPath.toString(), "", JIPipeArtifactRepositoryType.LocalDirectory));
+        settings.getRepositories().add(new JIPipeArtifactRepositoryReference("Local", selectedPath.toString(), "", JIPipeArtifactRepositoryType.LocalDirectory));
         JIPipe.getSettings().saveLater();
 
         JOptionPane.showMessageDialog(workbench.getWindow(),
@@ -148,7 +148,7 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     }
 
     private void openApplicationSettings() {
-        workbench.openApplicationSettings("/General/Artifacts");
+        workbench.openApplicationSettings("/Connected services/Artifacts");
     }
 
     private void updateText() {
