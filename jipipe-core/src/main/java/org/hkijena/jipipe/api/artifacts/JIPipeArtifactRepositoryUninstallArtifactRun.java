@@ -29,7 +29,7 @@ public class JIPipeArtifactRepositoryUninstallArtifactRun extends JIPipeArtifact
     }
 
     @Override
-    protected void doOperation(JIPipeProgressInfo progressInfo) {
+    protected void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
         Path localPath = artifact.getLocalPath();
         progressInfo.log("Uninstalling: " + localPath);
         if (Files.isDirectory(localPath)) {

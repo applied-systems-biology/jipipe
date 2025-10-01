@@ -29,16 +29,17 @@ public class JIPipeArtifactRepositoryApplyInstallUninstallRun extends JIPipeArti
     }
 
     @Override
-    protected void doOperation(JIPipeProgressInfo progressInfo) {
+    protected void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
         for (int i = 0; i < toUninstall.size(); i++) {
             if (progressInfo.isCancelled())
                 return;
             JIPipeLocalArtifact artifact = toUninstall.get(i);
             JIPipeProgressInfo uninstallingProgress = progressInfo.resolveAndLog("Uninstalling " + artifact.getFullId(), i, toUninstall.size());
             JIPipeArtifactRepositoryUninstallArtifactRun run = new JIPipeArtifactRepositoryUninstallArtifactRun(artifact);
+            run.setExternalContext(context);
             run.setProgressInfo(uninstallingProgress);
             try {
-                run.doOperation(uninstallingProgress);
+                run.doOperation(context, uninstallingProgress);
             } catch (Throwable e) {
                 progressInfo.getNotifications().push(new JIPipeNotification("artifact-uninstall-error-" + artifact.getFullId(),
                         "Error while uninstalling " + artifact.getFullId(),
@@ -53,8 +54,9 @@ public class JIPipeArtifactRepositoryApplyInstallUninstallRun extends JIPipeArti
             JIPipeProgressInfo installingProgress = progressInfo.resolveAndLog("Installing " + artifact.getFullId(), i, toInstall.size());
             JIPipeArtifactRepositoryInstallArtifactRun run = new JIPipeArtifactRepositoryInstallArtifactRun(artifact);
             run.setProgressInfo(installingProgress);
+            run.setExternalContext(context);
             try {
-                run.doOperation(installingProgress);
+                run.doOperation(context, installingProgress);
             } catch (Throwable e) {
                 progressInfo.getNotifications().push(new JIPipeNotification("artifact-install-error-" + artifact.getFullId(),
                         "Error while installing " + artifact.getFullId(),

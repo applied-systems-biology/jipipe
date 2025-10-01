@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.artifacts.index.v1.*;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeOrasRemoteArtifactSource;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.net.URI;
@@ -87,12 +89,12 @@ public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemote
                         remoteArtifact.setClassifier(classifier);
 
                         if (source instanceof JIPipeArtifactIndexV1HttpPackageSource httpPackageSource) {
-
-//                            remoteArtifact.setUrl(entry.path.toUri().toString()); TODO
-
+                            String url =httpPackageSource.getUrls().get(tag);
+                            remoteArtifact.setSource(new JIPipeHttpRemoteArtifactSource(url));
                         }
                         else if (source instanceof JIPipeArtifactIndexV1OrasPackageSource orasPackageSource) {
-
+                            String ociRef = orasPackageSource.getOciRef() + ":" + tag;
+                            remoteArtifact.setSource(new JIPipeOrasRemoteArtifactSource(ociRef));
                         } else {
                             progressInfo.log("Unsupported source type: " + source.getClass());
                             continue;

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactOperationContext;
 
 import java.nio.file.Path;
 
@@ -38,9 +39,11 @@ public abstract class JIPipeRemoteArtifactSource {
 
     /**
      * Downloads the source as archive and returns the path to the archive file
-     * @param tmpPath a temporary directory where downloaded files can be placed
+     *
+     * @param context
+     * @param tmpPath      a temporary directory where downloaded files can be placed
      * @param progressInfo the progress info
      * @return the downloaded archive
      */
-    public abstract Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo);
+    public abstract Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo);
 }

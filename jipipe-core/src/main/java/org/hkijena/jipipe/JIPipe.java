@@ -509,4 +509,8 @@ public final class JIPipe {
     public static Path getTemporaryFile(String prefix, String suffix) {
         return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), prefix, suffix);
     }
+
+    public static JIPipeEnvironmentsServiceComponent getEnvironments() {
+        return getInstance().getEnvironments();
+    }
 }

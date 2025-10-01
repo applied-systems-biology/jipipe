@@ -17,18 +17,24 @@ import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.artifacts.index.JIPipeArtifactIndexV1RemoteArtifactDatabase;
 import org.hkijena.jipipe.api.artifacts.index.JIPipeLocalRemoteArtifactDatabase;
 import org.hkijena.jipipe.api.artifacts.index.JIPipeNexusRemoteArtifactDatabase;
 import org.hkijena.jipipe.api.artifacts.index.JIPipeRemoteArtifactDatabase;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.sources.JIPipeEnvironmentConfiguratorCustomSource;
+import org.hkijena.jipipe.api.environments.sources.JIPipeEnvironmentConfiguratorFallbackSource;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
-import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.*;
@@ -305,7 +311,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
             progressInfo.log("Checking remote repository @ " + repository.getUrl() + " of type " + repository.getType().name());
             try {
                 JIPipeRemoteArtifactDatabase indexer = indexerMap.getOrDefault(repository, null);
-                if(indexer == null) {
+                if (indexer == null) {
                     Class<? extends JIPipeRemoteArtifactDatabase> indexerClass = switch (repository.getType()) {
                         case LocalDirectory -> JIPipeLocalRemoteArtifactDatabase.class;
                         case SonatypeNexus -> JIPipeNexusRemoteArtifactDatabase.class;
@@ -404,6 +410,22 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
             }
         }
         return result;
+    }
+
+    /**
+     * Gets the configured ORAS environment. Downloads ORAS if necessary (will upgrade the context if needed)
+     *
+     * @param context      the context
+     * @param progressInfo progress info
+     * @return the ORAS environment
+     */
+    public OrasEnvironment getOrasEnvironment(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
+        JIPipeArtifactApplicationSettings artifactApplicationSettings = getService().getApplicationSettings().getByType(JIPipeArtifactApplicationSettings.class);
+        JIPipeEnvironmentConfigurator<OrasEnvironment> configurator = new JIPipeEnvironmentConfigurator<>(OrasEnvironment.class, new JIPipeEnvironmentConfigurationCache(),
+                new JIPipeEnvironmentConfiguratorCustomSource(artifactApplicationSettings.getOrasCliEnvironment(), context),
+                new JIPipeEnvironmentConfiguratorFallbackSource<>());
+        configurator.setArtifactOperationContext(context); // Important, otherwise we deadlock
+        return configurator.get(progressInfo);
     }
 
     public FileLocker createFileLocker() {

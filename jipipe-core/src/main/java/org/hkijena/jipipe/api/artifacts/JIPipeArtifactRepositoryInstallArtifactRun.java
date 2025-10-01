@@ -17,15 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
 public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRepositoryOperationRun {
 
@@ -36,7 +32,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
     }
 
     @Override
-    protected void doOperation(JIPipeProgressInfo progressInfo) {
+    protected void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
         Path targetPath = artifact.getDefaultInstallationPath(JIPipe.getArtifacts().getLocalUserRepositoryPath());
         progressInfo.log("Artifact to install: " + artifact.getFullId());
         progressInfo.log("Target path: " + targetPath);
@@ -54,7 +50,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
 
         Path tmpPath = JIPipe.getTemporaryDirectory("artifact-download");
         try {
-            Path archivePath = artifact.getSource().downloadArchive(tmpPath, progressInfo);
+            Path archivePath = artifact.getSource().downloadArchive(context, tmpPath, progressInfo);
             try {
                 progressInfo.log("Extracting file " + archivePath);
 

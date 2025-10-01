@@ -15,9 +15,15 @@ package org.hkijena.jipipe.api.artifacts.sources;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactOperationContext;
+import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironment;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
 
 public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
 
@@ -27,7 +33,9 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     public JIPipeOrasRemoteArtifactSource() {
     }
 
-    public JIPipeOrasRemoteArtifactSource(String ociReference) {}
+    public JIPipeOrasRemoteArtifactSource(String ociReference) {
+        this.ociReference = ociReference;
+    }
 
     public JIPipeOrasRemoteArtifactSource(JIPipeOrasRemoteArtifactSource other) {
         this.ociReference = other.ociReference;
@@ -45,8 +53,10 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     }
 
     @Override
-    public Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo) {
-        return null;
+    public Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo) {
+        OrasEnvironment orasEnvironment = JIPipe.getArtifacts().getOrasEnvironment(context, progressInfo.resolveAndLog("Configure ORAS"));
+        orasEnvironment.runExecutable(List.of("pull", "--output", tmpPath.toString(), ociReference), Collections.emptyMap(), false, progressInfo);
+        return PathUtils.findFileByExtensionRecursivelyIn(tmpPath, ".zip", ".tar.gz", ".tar.bz2", ".tar.xz");
     }
 
     public String getOciReference() {

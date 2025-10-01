@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.artifacts.sources;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactOperationContext;
 import org.hkijena.jipipe.utils.WebUtils;
 
 import java.net.MalformedURLException;
@@ -51,7 +52,7 @@ public class JIPipeHttpRemoteArtifactSource extends JIPipeRemoteArtifactSource {
     }
 
     @Override
-    public Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo) {
+    public Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo) {
         String fileName = url.substring(url.lastIndexOf('/') + 1);
         Path outputFile = tmpPath.resolve(fileName);
         try {

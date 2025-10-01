@@ -250,7 +250,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     private void downloadArtifact(JIPipeRemoteArtifact remoteArtifact, JIPipeProgressInfo progressInfo) {
         JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
                 List.of(remoteArtifact), Collections.emptyList());
-        run.setExternalContext(artifactOperationContext);
+        run.setExternalContext(artifactOperationContext); // Needed to prevent deadlock for nested runs
         run.setProgressInfo(progressInfo);
         run.run();
     }

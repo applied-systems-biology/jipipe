@@ -18,26 +18,35 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.utils.FileLocker;
 
+import java.io.IOException;
+
 public abstract class JIPipeArtifactRepositoryOperationRun extends DefaultJIPipeRunnable {
+
+    private JIPipeArtifactOperationContext externalContext;
 
     @Override
     public void run() {
         getProgressInfo().log("Requesting repository lock: " + getLockType());
 
-        FileLocker locker = JIPipe.getArtifacts().createFileLocker();
-        try {
-            if (getLockType() == RepositoryLockType.Write) {
-                if(!locker.acquireWriteLock()) {
-                    throw new RuntimeException("Failed to acquire repository write lock");
+        if (externalContext == null) {
+            try (JIPipeArtifactOperationContext context = new JIPipeArtifactOperationContext(getProgressInfo())) {
+                if (getLockType() == RepositoryLockType.Read) {
+                    context.waitUntilRead();
+                } else if (getLockType() == RepositoryLockType.Write) {
+                    context.waitUntilWrite();
                 }
-            } else {
-                if(!locker.acquireReadLock()) {
-                    throw new RuntimeException("Failed to acquire repository read lock");
-                }
+                doOperation(context, getProgressInfo());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-            doOperation(getProgressInfo());
-        } finally {
-            locker.releaseLock();
+        } else {
+            // Just forward the context
+            if (getLockType() == RepositoryLockType.Read) {
+                externalContext.waitUntilRead();
+            } else if (getLockType() == RepositoryLockType.Write) {
+                externalContext.waitUntilWrite();
+            }
+            doOperation(externalContext, getProgressInfo());
         }
 
         if (getLockType() == RepositoryLockType.Write) {
@@ -46,9 +55,17 @@ public abstract class JIPipeArtifactRepositoryOperationRun extends DefaultJIPipe
         }
     }
 
-    protected abstract void doOperation(JIPipeProgressInfo progressInfo);
+    protected abstract void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo);
 
     public abstract RepositoryLockType getLockType();
+
+    public JIPipeArtifactOperationContext getExternalContext() {
+        return externalContext;
+    }
+
+    public void setExternalContext(JIPipeArtifactOperationContext externalContext) {
+        this.externalContext = externalContext;
+    }
 
     public enum RepositoryLockType {
         Read,
