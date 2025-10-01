@@ -109,7 +109,8 @@ public class ProcessUtils {
 
         Map<String, String> environmentVariables = new HashMap<>();
         JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
-        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+        Map<String, String> systemEnv = System.getenv();
+        for (Map.Entry<String, String> entry : systemEnv.entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
         }
@@ -118,8 +119,12 @@ public class ProcessUtils {
             environmentVariables.put(environmentVariable.getValue(), value);
         }
         environmentVariables.putAll(overrideEnvironmentVariables);
+
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
-            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            String existing = systemEnv.get(entry.getKey());
+            if(existing == null || !existing.equals(entry.getValue())) {
+                progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            }
         }
 
         if (variables == null) {
