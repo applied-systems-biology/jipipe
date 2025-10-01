@@ -60,8 +60,8 @@ public class FileLocker {
             }
 
             progressInfo.log("Attempting to acquire READ lock " + lockFilePath);
-            fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.CREATE, StandardOpenOption.READ);
-            fileLock = fileChannel.tryLock();
+            fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.READ);
+            fileLock = fileChannel.tryLock(0L, Long.MAX_VALUE, true);
             if (fileLock != null) {
                 releaseLock();
                 return true;
@@ -95,18 +95,18 @@ public class FileLocker {
 
     public boolean acquireReadLock() {
         try {
-
-            // Create the file if it does not exist
-            if (!Files.isRegularFile(lockFilePath)) {
-                acquireWriteLock();
-                releaseLock();
-                return true;
-            }
-
             while (true) {
                 progressInfo.log("Attempting to acquire READ lock " + lockFilePath);
-                fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.CREATE, StandardOpenOption.READ);
-                fileLock = fileChannel.tryLock();
+
+                // Create the file if it does not exist
+                if (!Files.isRegularFile(lockFilePath)) {
+                    acquireWriteLock();
+                    releaseLock();
+                    return true;
+                }
+                
+                fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.READ);
+                fileLock = fileChannel.tryLock(0L, Long.MAX_VALUE, true);
                 if (fileLock != null) {
                     return true;
                 }
