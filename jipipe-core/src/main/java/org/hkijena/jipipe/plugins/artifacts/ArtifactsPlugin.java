@@ -22,9 +22,13 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReferenceList;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
+import org.hkijena.jipipe.plugins.artifacts.oras.OptionalOrasEnvironment;
+import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironment;
+import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironmentList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -82,6 +86,15 @@ public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Artifact repository",
                 "An artifact repository",
                 null);
+        registerArtifactEnvironment("oras-cli",
+                "land.oras.oras:*",
+                JIPipeEnvironmentArchetype.Base,
+                OrasEnvironment.class,
+                OptionalOrasEnvironment.class,
+                OrasEnvironmentList.class,
+                "ORAS CLI",
+                "The ORAS command line application",
+                JIPipe.RESOURCES.getIcon16("apps/oras.png"));
         registerApplicationSettingsSheet(new JIPipeArtifactApplicationSettings());
     }
 

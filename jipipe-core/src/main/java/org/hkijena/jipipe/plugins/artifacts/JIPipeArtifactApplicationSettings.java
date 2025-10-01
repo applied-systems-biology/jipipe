@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
+import org.hkijena.jipipe.plugins.artifacts.oras.OptionalOrasEnvironment;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
@@ -36,6 +37,7 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
 
     private JIPipeArtifactRepositoryReferenceList repositories = new JIPipeArtifactRepositoryReferenceList();
     private OptionalPathParameter overrideInstallationPath = new OptionalPathParameter();
+    private OptionalOrasEnvironment orasCliEnvironment = new OptionalOrasEnvironment();
 
     private boolean showConnectionIssueBallon = true;
 
@@ -105,5 +107,16 @@ public class JIPipeArtifactApplicationSettings extends JIPipeDefaultApplications
     @Override
     public String getDescription() {
         return "Settings for the artifact downloader";
+    }
+
+    @SetJIPipeDocumentation(name = "Override ORAS CLI", description = "Allows to override the default ORAS CLI that JIPipe uses to install ORAS artifacts.")
+    @JIPipeParameter("oras-cli-environment")
+    public OptionalOrasEnvironment getOrasCliEnvironment() {
+        return orasCliEnvironment;
+    }
+
+    @JIPipeParameter("oras-cli-environment")
+    public void setOrasCliEnvironment(OptionalOrasEnvironment orasCliEnvironment) {
+        this.orasCliEnvironment = orasCliEnvironment;
     }
 }
