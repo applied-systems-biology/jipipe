@@ -51,7 +51,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -976,7 +975,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Path getNewScratch() {
         if (getScratchBaseDirectory() == null) {
-            return JIPipeRuntimeApplicationSettings.getTemporaryDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
+            return JIPipe.getTemporaryDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         }
         return PathUtils.createTempSubDirectory(getScratchBaseDirectory(), getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
     }
@@ -1408,7 +1407,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         if (!getRegisteredEnvironmentTypes().contains(klass)) {
             throw new IllegalArgumentException("The node " + getDisplayName() + " (" + getInfo().getId() + ") tried to utilize an environment of type " + klass + " without prior registration. Please inform the developer of this node about this issue.");
         }
-        return new JIPipeEnvironmentConfigurator<>(klass, this, getProject(), configurationCache);
+        return new JIPipeEnvironmentConfigurator<>(klass, configurationCache, this, getProject());
     }
 
     /**

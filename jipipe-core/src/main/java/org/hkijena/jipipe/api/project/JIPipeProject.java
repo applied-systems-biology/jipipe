@@ -308,7 +308,7 @@ public class JIPipeProject implements JIPipeValidatable {
         JIPipeDataStorageProjectSettings settings = getSettingsSheet(JIPipeDataStorageProjectSettings.class);
         Path output;
         if (settings.isForceGlobalTempDirectory() || !JIPipeRuntimeApplicationSettings.getInstance().isPerProjectTempDirectory()) {
-            output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
+            output = JIPipe.getTemporaryBaseDirectory();
         } else if (settings.getOverrideTempDirectory().isEnabled() && settings.getOverrideTempDirectory().getContent() != null && settings.getOverrideTempDirectory().getContent().isAbsolute()) {
             output = settings.getOverrideTempDirectory().getContent();
         } else if (workDirectory != null) {
@@ -324,7 +324,7 @@ public class JIPipeProject implements JIPipeValidatable {
                 }
             }
         } else {
-            output = JIPipeRuntimeApplicationSettings.getTemporaryBaseDirectory();
+            output = JIPipe.getTemporaryBaseDirectory();
         }
         PathUtils.createDirectories(output);
         temporaryBaseDirectory = output;
@@ -1390,7 +1390,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @return the environment reference
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
-        return new JIPipeEnvironmentConfigurator<>(klass, null, this, configurationCache);
+        return new JIPipeEnvironmentConfigurator<>(klass, configurationCache, null, this);
     }
 
     public interface CompartmentAddedEventListener {

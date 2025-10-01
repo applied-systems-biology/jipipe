@@ -22,12 +22,8 @@ import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSet
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 /**
  * Settings related to how algorithms are executed
@@ -50,52 +46,6 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
 
     public static JIPipeRuntimeApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeRuntimeApplicationSettings.class);
-    }
-
-    public static Path getTemporaryBaseDirectory() {
-        if (JIPipe.getInstance() == null || !JIPipe.getInstance().getApplicationSettings().getRegisteredSheets().containsKey(ID)) {
-            return PathUtils.createGlobalTempDirectory("JIPipe");
-        }
-        OptionalPathParameter tempDirectory = getInstance().getTempDirectory();
-        if (tempDirectory.isEnabled()) {
-            try {
-                if (tempDirectory.getContent().isAbsolute()) {
-                    Files.createDirectories(tempDirectory.getContent());
-                    return tempDirectory.getContent();
-                } else {
-                    Path absPath = Files.createDirectories(PathUtils.getJIPipeUserDir().resolve(tempDirectory.getContent()));
-                    Files.createDirectories(absPath);
-                    return absPath;
-                }
-            } catch (IOException e) {
-                System.err.println("Fallback temporary directory due to following error:");
-                e.printStackTrace();
-                return PathUtils.createGlobalTempDirectory("JIPipe");
-            }
-        } else {
-            return PathUtils.createGlobalTempDirectory("JIPipe");
-        }
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param baseName optional base name
-     * @return a temporary directory
-     */
-    public static Path getTemporaryDirectory(String baseName) {
-        return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory(), baseName);
-    }
-
-    /**
-     * Generates a temporary directory
-     *
-     * @param prefix prefix
-     * @param suffix suffix
-     * @return a temporary directory
-     */
-    public static Path getTemporaryFile(String prefix, String suffix) {
-        return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), prefix, suffix);
     }
 
     @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enable, store temporary files are stored next to the current project file if possible")

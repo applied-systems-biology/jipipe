@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.util.List;
 
@@ -51,7 +51,7 @@ public class TemporaryFileDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        getFirstOutputSlot().addData(new FileData(JIPipeRuntimeApplicationSettings.getTemporaryFile(prefix, suffix)), JIPipeDataContext.create(this), progressInfo);
+        getFirstOutputSlot().addData(new FileData(JIPipe.getTemporaryFile(prefix, suffix)), JIPipeDataContext.create(this), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Prefix", description = "Optional string that is prepended to file name.")

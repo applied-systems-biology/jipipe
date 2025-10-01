@@ -163,7 +163,7 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
      * @return the environment reference
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
-        return new JIPipeEnvironmentConfigurator<>(klass, null, null, configurationCache);
+        return new JIPipeEnvironmentConfigurator<>(klass, configurationCache, null, null);
     }
 
     /**

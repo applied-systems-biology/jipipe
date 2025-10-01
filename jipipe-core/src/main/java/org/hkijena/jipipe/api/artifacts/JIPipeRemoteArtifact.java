@@ -14,38 +14,39 @@
 package org.hkijena.jipipe.api.artifacts;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.artifacts.sources.JIPipeRemoteArtifactSource;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 public class JIPipeRemoteArtifact extends JIPipeArtifact {
-    private String url;
+    @JsonProperty("size")
     private long size;
+    @JsonProperty("source")
+    private JIPipeRemoteArtifactSource source;
 
     public JIPipeRemoteArtifact() {
     }
 
     public JIPipeRemoteArtifact(JIPipeRemoteArtifact other) {
         super(other);
-        this.url = other.url;
         this.size = other.size;
+        this.source = other.source.duplicate();
     }
 
-    @JsonGetter("url")
-    public String getUrl() {
-        return url;
-    }
-
-    @JsonSetter("url")
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    @JsonGetter("size")
     public long getSize() {
         return size;
     }
 
-    @JsonSetter("size")
     public void setSize(long size) {
         this.size = size;
+    }
+
+    public JIPipeRemoteArtifactSource getSource() {
+        return source;
+    }
+
+    public void setSource(JIPipeRemoteArtifactSource source) {
+        this.source = source;
     }
 }

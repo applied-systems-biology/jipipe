@@ -16,4 +16,10 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.environments;
 import org.hkijena.jipipe.plugins.dataenvironment.JIPipeDataDirectoryEnvironment;
 
 public class ImageJSamplesEnvironment extends JIPipeDataDirectoryEnvironment {
+    public ImageJSamplesEnvironment() {
+    }
+
+    public ImageJSamplesEnvironment(ImageJSamplesEnvironment other) {
+        super(other);
+    }
 }

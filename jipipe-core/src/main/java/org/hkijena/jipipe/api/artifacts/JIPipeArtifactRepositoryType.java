@@ -14,6 +14,18 @@
 package org.hkijena.jipipe.api.artifacts;
 
 public enum JIPipeArtifactRepositoryType {
-    SonatypeNexus,
-    LocalDirectory
+    SonatypeNexus("Sonatype Nexus (legacy)"),
+    LocalDirectory("Local directory"),
+    JSONv1("JIPipe remote repository v1");
+
+    private final String label;
+
+    JIPipeArtifactRepositoryType(String label) {
+        this.label = label;
+    }
+
+    @Override
+    public String toString() {
+        return label;
+    }
 }

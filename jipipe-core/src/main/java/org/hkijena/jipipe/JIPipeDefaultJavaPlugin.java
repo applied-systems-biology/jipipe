@@ -950,7 +950,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param <T>                      environment class
      * @param <U>                      list of environment class
      * @param id                       the ID of the environment class. Will be used as parameter type ID
-     * @param artifactQuery            the artifact query for this environment (can be null)
+     * @param artifactQuery            the artifact query for this environment. can be null. typically is [group].[name]:*, for example "com.github.mouseland.cellpose:*"
      * @param archetype                the environment's archetype
      * @param environmentClass         the environment class. Must be JSON-serializable. Will be registered as parameter type
      * @param optionalEnvironmentClass optional environment class. Must be JSON-serializable. Will be registered as parameter type optional-[id].

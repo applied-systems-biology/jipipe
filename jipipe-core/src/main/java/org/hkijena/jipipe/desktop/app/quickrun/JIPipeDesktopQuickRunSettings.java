@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.quickrun;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -45,7 +46,7 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
         if (project != null) {
             outputPath = project.newTemporaryDirectory();
         } else {
-            outputPath = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("run");
+            outputPath = JIPipe.getTemporaryDirectory("run");
         }
     }
 

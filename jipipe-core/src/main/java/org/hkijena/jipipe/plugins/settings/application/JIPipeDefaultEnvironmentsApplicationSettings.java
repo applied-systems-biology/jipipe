@@ -29,22 +29,22 @@ public class JIPipeDefaultEnvironmentsApplicationSettings extends JIPipeDynamicP
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/environment.png");
+        return JIPipe.RESOURCES.getIcon16("actions/kt-restore-defaults.png");
     }
 
     @Override
     public String getName() {
-        return "Connected services";
+        return "Defaults";
     }
 
     @Override
     public String getCategory() {
-        return JIPipeDefaultApplicationSettingsSheetCategory.General.getCategory();
+        return JIPipeDefaultApplicationSettingsSheetCategory.Environments.getCategory();
     }
 
     @Override
     public Icon getCategoryIcon() {
-        return JIPipeDefaultApplicationSettingsSheetCategory.General.getIcon();
+        return JIPipeDefaultApplicationSettingsSheetCategory.Environments.getIcon();
     }
 
     @Override

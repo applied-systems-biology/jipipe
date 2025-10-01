@@ -43,8 +43,9 @@ public class OptionalPathParameter extends JIPipeOptionalParameter<Path> {
      * @param other the original
      */
     public OptionalPathParameter(OptionalPathParameter other) {
-        super(other);
-        this.setContent(other.getContent());
+        super(Path.class);
+        setEnabled(other.isEnabled());
+        setContent(other.getContent());
     }
 
     @Override

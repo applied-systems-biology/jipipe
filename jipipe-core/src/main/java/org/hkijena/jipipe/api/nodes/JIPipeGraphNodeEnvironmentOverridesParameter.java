@@ -48,7 +48,7 @@ public class JIPipeGraphNodeEnvironmentOverridesParameter extends JIPipeDynamicP
     @RegisterJIPipeParameterCollectionContextAction(icon = "actions/open-in-new-window.png")
     public void openApplicationEnvironmentConfig(JIPipeWorkbench workbench) {
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/General/Connected services");
+            ((JIPipeDesktopProjectWorkbench) workbench).openApplicationSettings("/Connected services/Defaults");
         }
     }
 

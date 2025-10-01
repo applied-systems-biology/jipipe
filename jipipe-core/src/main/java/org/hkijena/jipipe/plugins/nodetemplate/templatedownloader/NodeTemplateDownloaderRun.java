@@ -23,7 +23,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeNodeTemplateApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -82,7 +81,7 @@ public class NodeTemplateDownloaderRun extends DefaultJIPipeRunnable {
         for (NodeTemplateDownloaderPackage targetPackage : targetPackages) {
             progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
-            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("template", ".json");
+            Path outputFile = JIPipe.getTemporaryFile("template", ".json");
             try {
                 WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download repository", progressInfo.resolve("Download template"));
             } catch (MalformedURLException e) {
@@ -152,7 +151,7 @@ public class NodeTemplateDownloaderRun extends DefaultJIPipeRunnable {
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", ".json");
+            Path outputFile = JIPipe.getTemporaryFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

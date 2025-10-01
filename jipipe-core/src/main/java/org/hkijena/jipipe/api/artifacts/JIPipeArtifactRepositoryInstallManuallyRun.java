@@ -34,7 +34,7 @@ public class JIPipeArtifactRepositoryInstallManuallyRun extends JIPipeArtifactRe
     }
 
     @Override
-    protected void doOperation(JIPipeProgressInfo progressInfo) {
+    protected void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
         Path targetPath = artifactInfo.getDefaultInstallationPath(JIPipe.getArtifacts().getLocalUserRepositoryPath());
         progressInfo.log("Artifact to install: " + artifactInfo.getFullId());
         progressInfo.log("Target path: " + targetPath);

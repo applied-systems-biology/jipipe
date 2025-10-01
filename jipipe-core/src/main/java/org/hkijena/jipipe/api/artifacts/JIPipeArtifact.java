@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidatable;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
@@ -309,10 +309,10 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
         return -1;
     }
 
-    public boolean isGPUCompatible(JIPipeArtifactAccelerationPreference accelerationPreference, Vector2iParameter accelerationPreferenceVersions) {
+    public boolean isGPUCompatible(JIPipeHardwareAccelerationMode accelerationPreference, Vector2iParameter accelerationPreferenceVersions) {
         int min = accelerationPreferenceVersions.getX();
         int max = accelerationPreferenceVersions.getY();
-        if (accelerationPreference == JIPipeArtifactAccelerationPreference.CPU) {
+        if (accelerationPreference == JIPipeHardwareAccelerationMode.CPU) {
             return true;
         } else {
             int gpuVersion = getGPUVersion(accelerationPreference.getPrefix());

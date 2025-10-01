@@ -24,7 +24,7 @@ public class JIPipeArtifactRepositoryUpdateCachedArtifactsRun extends JIPipeArti
     }
 
     @Override
-    public void doOperation(JIPipeProgressInfo progressInfo) {
+    public void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
         JIPipe.getArtifacts().updateCachedArtifacts(progressInfo);
     }
 

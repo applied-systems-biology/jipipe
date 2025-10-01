@@ -32,10 +32,11 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactAccelerationPreference;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.CUDAUtils;
 import org.hkijena.jipipe.utils.JIPipeUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -49,10 +50,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
-    private final JIPipeInitializationReport issues = new JIPipeInitializationReport();
+    private final JIPipeInitializationReport issues;
 
     public JIPipeServiceDefaultInitializer(JIPipeService service) {
         super(service);
+        issues = service.getInitializationReport();
     }
 
     @Override
@@ -314,26 +316,27 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getService().getArtifacts().updateCachedArtifacts(getProgressInfo().resolve("Updating artifacts"));
 
         // Check acceleration
-        if (JIPipeArtifactApplicationSettings.getInstance().isAutoConfigureAccelerationOnNextStartup()) {
+        JIPipeHardwareAccelerationApplicationSettings hardwareAccelerationApplicationSettings = JIPipeHardwareAccelerationApplicationSettings.getInstance();
+        if (hardwareAccelerationApplicationSettings.isAutoConfigureAccelerationOnNextStartup()) {
             getProgressInfo().log("Determining acceleration profile ...");
             try {
 
                 if (CUDAUtils.hasCudaSupport()) {
                     getProgressInfo().log("Determining acceleration profile ... CUDA support detected");
-                    JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreference(JIPipeArtifactAccelerationPreference.CUDA);
+                    hardwareAccelerationApplicationSettings.setAccelerationPreference(JIPipeHardwareAccelerationMode.CUDA);
 
                     try {
-                        JIPipeArtifactApplicationSettings.getInstance().setAccelerationPreferenceVersions(new Vector2iParameter(
+                        hardwareAccelerationApplicationSettings.setAccelerationPreferenceVersions(new Vector2iParameter(
                                 CUDAUtils.getMinimumCudaVersion(),
                                 0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
                         ));
-                        getProgressInfo().log("Determined CUDA version limits as " + JIPipeArtifactApplicationSettings.getInstance().getAccelerationPreferenceVersions());
+                        getProgressInfo().log("Determined CUDA version limits as " + hardwareAccelerationApplicationSettings.getAccelerationPreferenceVersions());
                     } catch (Exception e) {
                         getProgressInfo().log(e);
                     }
                 }
 
-                JIPipeArtifactApplicationSettings.getInstance().setAutoConfigureAccelerationOnNextStartup(false);
+                hardwareAccelerationApplicationSettings.setAutoConfigureAccelerationOnNextStartup(false);
                 getService().getApplicationSettings().save();
             } catch (Exception e) {
                 getProgressInfo().log(e);
@@ -395,6 +398,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             } catch (Throwable t) {
                 getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be initialized.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
+                issues.getErrors().add(t);
                 t.printStackTrace();
             }
             try {
@@ -403,6 +407,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             } catch (Throwable t) {
                 getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be duplicated.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
+                issues.getErrors().add(t);
                 t.printStackTrace();
             }
         }
@@ -432,6 +437,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 getService().getLogService().warn("Data type '" + dataType + "' cannot be instantiated.");
                 getService().getLogService().warn("Ensure that a method static JIPipeData importData(Path, JIPipeProgressInfo) is present!");
                 issues.getErroneousDataTypes().add(dataType);
+                issues.getErrors().add(e);
                 e.printStackTrace();
             }
         }
@@ -477,6 +483,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 try {
                     algorithm.duplicate();
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -488,6 +495,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 try {
                     JsonUtils.toJsonString(algorithm);
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -501,6 +509,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                         throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
                     }
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -510,6 +519,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
                 getService().getLogService().debug("OK: Algorithm '" + info.getId() + "'");
             } catch (NoClassDefFoundError | Exception e) {
+                issues.getErrors().add(e);
                 e.printStackTrace();
                 // Unregister node
                 getService().getLogService().warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");

@@ -19,7 +19,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
@@ -138,9 +137,9 @@ public class JIPipeDesktopPathEditorComponent extends JIPipeDesktopWorkbenchPane
 
     private void generateRandom() {
         if (pathMode == PathType.DirectoriesOnly) {
-            setPath(JIPipeRuntimeApplicationSettings.getTemporaryDirectory("tmp"));
+            setPath(JIPipe.getTemporaryDirectory("tmp"));
         } else {
-            setPath(JIPipeRuntimeApplicationSettings.getTemporaryFile("tmp", null));
+            setPath(JIPipe.getTemporaryFile("tmp", null));
         }
     }
 

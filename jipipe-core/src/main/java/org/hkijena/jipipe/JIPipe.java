@@ -32,6 +32,8 @@ import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
@@ -44,6 +46,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Set;
 
@@ -459,5 +462,55 @@ public final class JIPipe {
         if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
+    }
+
+    public static Path getTemporaryBaseDirectory() {
+        if (getInstance() == null || !getInstance().getApplicationSettings().getRegisteredSheets().containsKey(JIPipeRuntimeApplicationSettings.ID)) {
+            return PathUtils.createGlobalTempDirectory("JIPipe");
+        }
+        OptionalPathParameter tempDirectory = JIPipeRuntimeApplicationSettings.getInstance().getTempDirectory();
+        if (tempDirectory.isEnabled()) {
+            try {
+                if (tempDirectory.getContent().isAbsolute()) {
+                    Files.createDirectories(tempDirectory.getContent());
+                    return tempDirectory.getContent();
+                } else {
+                    Path absPath = Files.createDirectories(PathUtils.getJIPipeUserDir().resolve(tempDirectory.getContent()));
+                    Files.createDirectories(absPath);
+                    return absPath;
+                }
+            } catch (IOException e) {
+                System.err.println("Fallback temporary directory due to following error:");
+                e.printStackTrace();
+                return PathUtils.createGlobalTempDirectory("JIPipe");
+            }
+        } else {
+            return PathUtils.createGlobalTempDirectory("JIPipe");
+        }
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param baseName optional base name
+     * @return a temporary directory
+     */
+    public static Path getTemporaryDirectory(String baseName) {
+        return PathUtils.createTempSubDirectory(getTemporaryBaseDirectory(), baseName);
+    }
+
+    /**
+     * Generates a temporary directory
+     *
+     * @param prefix prefix
+     * @param suffix suffix
+     * @return a temporary directory
+     */
+    public static Path getTemporaryFile(String prefix, String suffix) {
+        return PathUtils.createSubTempFilePath(getTemporaryBaseDirectory(), prefix, suffix);
+    }
+
+    public static JIPipeEnvironmentsServiceComponent getEnvironments() {
+        return getInstance().getEnvironments();
     }
 }

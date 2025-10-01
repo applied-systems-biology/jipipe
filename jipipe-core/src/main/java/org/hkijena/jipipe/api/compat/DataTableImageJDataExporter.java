@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.api.compat;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -40,9 +40,9 @@ public class DataTableImageJDataExporter implements ImageJDataExporter {
 
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties, JIPipeProgressInfo progressInfo) {
-        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? JIPipeRuntimeApplicationSettings.getTemporaryDirectory("data-table-export") : Paths.get(properties.getName());
+        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? JIPipe.getTemporaryDirectory("data-table-export") : Paths.get(properties.getName());
         if (!path.isAbsolute()) {
-            path = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("data-table-export").resolve(path);
+            path = JIPipe.getTemporaryDirectory("data-table-export").resolve(path);
         }
         try {
             Files.createDirectories(path);

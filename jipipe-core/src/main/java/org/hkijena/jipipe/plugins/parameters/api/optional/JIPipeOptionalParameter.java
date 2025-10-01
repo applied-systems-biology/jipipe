@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -55,7 +56,7 @@ public abstract class JIPipeOptionalParameter<T> implements JIPipeCustomTextDesc
     public JIPipeOptionalParameter(JIPipeOptionalParameter<T> other) {
         this.contentClass = other.contentClass;
         this.enabled = other.enabled;
-        this.content = other.content;
+        this.content = JIPipe.duplicateParameter(other.content);
     }
 
     /**
