@@ -55,6 +55,7 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     @Override
     public Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo) {
         OrasEnvironment orasEnvironment = JIPipe.getArtifacts().getOrasEnvironment(context, progressInfo.resolveAndLog("Configure ORAS"));
+        progressInfo.log("Downloading using ORAS from " + ociReference + " ...");
         orasEnvironment.runExecutable(List.of("pull", "--output", tmpPath.toString(), ociReference), Collections.emptyMap(), false, progressInfo);
         return PathUtils.findFileByExtensionRecursivelyIn(tmpPath, ".zip", ".tar.gz", ".tar.bz2", ".tar.xz");
     }
