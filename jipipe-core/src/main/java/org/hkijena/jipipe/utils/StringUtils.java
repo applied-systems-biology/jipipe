@@ -679,10 +679,10 @@ public class StringUtils {
 
         if (sizeAsDouble < 10 && unitIndex > 0) {
             // For smaller sizes like 1.5 KB, show one decimal place
-            return String.format("%.1f %s", sizeAsDouble, units[unitIndex]);
+            return String.format(Locale.US, "%.1f %s", sizeAsDouble, units[unitIndex]);
         } else {
             // Otherwise, show whole number
-            return String.format("%d %s", Math.round(sizeAsDouble), units[unitIndex]);
+            return String.format(Locale.US, "%d %s", Math.round(sizeAsDouble), units[unitIndex]);
         }
     }
 
