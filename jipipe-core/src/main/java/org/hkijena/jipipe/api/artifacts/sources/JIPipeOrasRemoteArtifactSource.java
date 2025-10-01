@@ -101,6 +101,16 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
         private final long totalSize;
         private long lastSize = 0;
         private int lastPercentage = 0;
+        
+        // Time tracking fields
+        private long startTime = System.currentTimeMillis();
+        private long currentSpeed = 0;
+        
+        // Animation fields
+        private static final String[] ANIMATION_PATTERNS = {
+            ">----", "->---", "-->--", "--->-", "---->"
+        };
+        private int animationIndex = 0;
 
         public DownloadProgressSidecarTask(Path tmpPath, long totalSize) {
             super(1000);
@@ -112,12 +122,45 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
         protected void tick(ExtendedExecutor executor) {
             try {
                 long currentSize = FileUtils.sizeOfDirectory(tmpPath.toFile());
+                long currentTime = System.currentTimeMillis();
+                
                 if(currentSize > lastSize) {
                     lastSize = currentSize;
+                    
+                    // Calculate speed (bytes per second)
+                    long timeDiff = currentTime - startTime;
+                    if (timeDiff > 0) {
+                        currentSpeed = (currentSize * 1000) / timeDiff;
+                    }
+                    
                     int percentage = Math.max(0, Math.min(100, (int)(currentSize * 100.0 / totalSize)));
                     if(percentage != lastPercentage) {
-                        executor.getProgressInfo().log("O R A S ->> [" + percentage + "%] Downloaded " + StringUtils.formatSize(Math.min(currentSize, totalSize))
-                                + " / " +  StringUtils.formatSize(totalSize));
+                        // Calculate elapsed time
+                        long elapsedMillis = currentTime - startTime;
+                        String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
+                        
+                        // Calculate estimated remaining time
+                        String estimatedDuration = "N/A";
+                        if (currentSpeed > 0 && currentSize < totalSize) {
+                            long remainingBytes = totalSize - currentSize;
+                            long estimatedMillis = (remainingBytes * 1000) / currentSpeed;
+                            estimatedDuration = StringUtils.formatDuration(estimatedMillis);
+                        }
+                        
+                        // Get animated arrow pattern
+                        String animatedArrow = ANIMATION_PATTERNS[animationIndex];
+                        animationIndex = (animationIndex + 1) % ANIMATION_PATTERNS.length;
+                        
+                        // Format progress message
+                        String progressMessage = String.format("O R A S [%s] [%d%%] Elapsed: %s | Estimated: %s | Downloaded: %s / %s",
+                                animatedArrow,
+                                percentage,
+                                elapsedDuration,
+                                estimatedDuration,
+                                StringUtils.formatSize(Math.min(currentSize, totalSize)),
+                                StringUtils.formatSize(totalSize));
+                        
+                        executor.getProgressInfo().log(progressMessage);
                         lastPercentage = percentage;
                     }
                 }

@@ -16,7 +16,7 @@ public class ProcessTree extends Process {
 
     public ProcessTree(Process process, JIPipeProgressInfo progressInfo) {
         this.process = process;
-        this.pid = ProcessUtils.getProcessID(process);
+        this.pid = process.pid();
         this.progressInfo = progressInfo;
     }
 

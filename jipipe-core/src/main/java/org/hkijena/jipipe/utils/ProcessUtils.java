@@ -57,41 +57,6 @@ public class ProcessUtils {
     }
 
     /**
-     * Gets the process ID of a process
-     *
-     * @param p the process
-     * @return the pid or -1 if it is not found
-     */
-    public static long getProcessID(Process p) {
-        // Based on https://stackoverflow.com/a/43426878
-        long result = -1;
-        try {
-            //for windows
-            if (p.getClass().getName().equals("java.lang.Win32Process") ||
-                    p.getClass().getName().equals("java.lang.ProcessImpl")) {
-                Field f = p.getClass().getDeclaredField("handle");
-                f.setAccessible(true);
-                long handl = f.getLong(p);
-                Kernel32 kernel = Kernel32.INSTANCE;
-                WinNT.HANDLE hand = new WinNT.HANDLE();
-                hand.setPointer(Pointer.createConstant(handl));
-                result = kernel.GetProcessId(hand);
-                f.setAccessible(false);
-            }
-            //for unix based operating systems
-            else if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
-                Field f = p.getClass().getDeclaredField("pid");
-                f.setAccessible(true);
-                result = f.getLong(p);
-                f.setAccessible(false);
-            }
-        } catch (Exception ex) {
-            result = -1;
-        }
-        return result;
-    }
-
-    /**
      * Runs a process
      *
      * @param environment                  the process environment
