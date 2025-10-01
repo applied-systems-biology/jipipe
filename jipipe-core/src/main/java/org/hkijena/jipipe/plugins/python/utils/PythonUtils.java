@@ -38,7 +38,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -242,7 +241,7 @@ public class PythonUtils {
 
     public static void runPython(String code, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log(code);
-        Path codeFilePath = JIPipeRuntimeApplicationSettings.getTemporaryFile("py", ".py");
+        Path codeFilePath = JIPipe.getTemporaryFile("py", ".py");
         try {
             Files.write(codeFilePath, code.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

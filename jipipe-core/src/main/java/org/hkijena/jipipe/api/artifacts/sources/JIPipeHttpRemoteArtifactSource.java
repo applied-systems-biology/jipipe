@@ -15,6 +15,13 @@ package org.hkijena.jipipe.api.artifacts.sources;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.WebUtils;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.nio.file.Path;
 
 public class JIPipeHttpRemoteArtifactSource extends JIPipeRemoteArtifactSource {
 
@@ -41,6 +48,18 @@ public class JIPipeHttpRemoteArtifactSource extends JIPipeRemoteArtifactSource {
     @Override
     public JIPipeRemoteArtifactSource duplicate() {
         return new JIPipeHttpRemoteArtifactSource(this);
+    }
+
+    @Override
+    public Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo) {
+        String fileName = url.substring(url.lastIndexOf('/') + 1);
+        Path outputFile = tmpPath.resolve(fileName);
+        try {
+            WebUtils.download(URL.of(URI.create(url), null), outputFile, "Download", progressInfo);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+        return outputFile;
     }
 
     public String getUrl() {

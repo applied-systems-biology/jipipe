@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.artifacts;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -53,19 +52,17 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
             throw new RuntimeException(e);
         }
 
-        String suffix = artifact.getUrl().endsWith(".zip") ? ".zip" : ".tar.gz";
-
-        URI uri = URI.create(artifact.getUrl());
-        if ("file".equalsIgnoreCase(uri.getScheme())) {
+        Path tmpPath = JIPipe.getTemporaryDirectory("artifact-download");
+        try {
+            Path archivePath = artifact.getSource().downloadArchive(tmpPath, progressInfo);
             try {
-                Path filePath = Paths.get(uri);
-                progressInfo.log("Extracting local file " + filePath);
+                progressInfo.log("Extracting file " + archivePath);
 
                 // Extract
-                if (suffix.equals(".zip")) {
-                    ArchiveUtils.decompressZipFile(filePath, targetPath, progressInfo.resolve("Extracting"));
+                if (PathUtils.EXTENSION_FILTER_ZIP.accept(archivePath.toFile())) {
+                    ArchiveUtils.decompressZipFile(archivePath, targetPath, progressInfo.resolve("Extracting"));
                 } else {
-                    ArchiveUtils.decompressTarGZ(filePath, targetPath, progressInfo.resolve("Extracting"));
+                    ArchiveUtils.decompressTarGZ(archivePath, targetPath, progressInfo.resolve("Extracting"));
                 }
 
                 // Create metadata file
@@ -73,38 +70,12 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
                     return;
                 JsonUtils.saveToFile(artifact, targetPath.resolve("artifact.json"));
             } catch (IOException e) {
+                PathUtils.deleteDirectoryRecursively(targetPath, progressInfo.resolve("Delete broken artifact directory"));
                 throw new RuntimeException(e);
             }
-        } else {
-            Path tmpFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("artifact", suffix);
-            try {
-                //Download
-                WebUtils.download(new URL(artifact.getUrl()), tmpFile, "Download", progressInfo);
-                if (progressInfo.isCancelled())
-                    return;
-
-                // Extract
-                if (suffix.equals(".zip")) {
-                    ArchiveUtils.decompressZipFile(tmpFile, targetPath, progressInfo.resolve("Extracting"));
-                } else {
-                    ArchiveUtils.decompressTarGZ(tmpFile, targetPath, progressInfo.resolve("Extracting"));
-                }
-
-                // Create metadata file
-                if (progressInfo.isCancelled())
-                    return;
-                JsonUtils.saveToFile(artifact, targetPath.resolve("artifact.json"));
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } finally {
-                if (Files.exists(tmpFile)) {
-                    try {
-                        Files.delete(tmpFile);
-                    } catch (IOException e) {
-                        progressInfo.log("Warning: could not delete " + tmpFile);
-                    }
-                }
-            }
+        }
+        finally {
+            PathUtils.deleteDirectoryRecursively(tmpPath, progressInfo.resolve("Delete temporary directory"));
         }
     }
 

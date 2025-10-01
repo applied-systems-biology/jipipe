@@ -50,10 +50,11 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
-    private final JIPipeInitializationReport issues = new JIPipeInitializationReport();
+    private final JIPipeInitializationReport issues;
 
     public JIPipeServiceDefaultInitializer(JIPipeService service) {
         super(service);
+        issues = service.getInitializationReport();
     }
 
     @Override
@@ -397,6 +398,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             } catch (Throwable t) {
                 getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be initialized.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
+                issues.getErrors().add(t);
                 t.printStackTrace();
             }
             try {
@@ -405,6 +407,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
             } catch (Throwable t) {
                 getService().getLogService().warn("Parameter type '" + entry.getKey() + "' cannot be duplicated.");
                 issues.getErroneousParameterTypes().add(entry.getValue());
+                issues.getErrors().add(t);
                 t.printStackTrace();
             }
         }
@@ -434,6 +437,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 getService().getLogService().warn("Data type '" + dataType + "' cannot be instantiated.");
                 getService().getLogService().warn("Ensure that a method static JIPipeData importData(Path, JIPipeProgressInfo) is present!");
                 issues.getErroneousDataTypes().add(dataType);
+                issues.getErrors().add(e);
                 e.printStackTrace();
             }
         }
@@ -479,6 +483,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 try {
                     algorithm.duplicate();
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -490,6 +495,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 try {
                     JsonUtils.toJsonString(algorithm);
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -503,6 +509,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                         throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
                     }
                 } catch (Exception e1) {
+                    issues.getErrors().add(e1);
                     e1.printStackTrace();
                     throw new JIPipeValidationRuntimeException(e1,
                             "A plugin is invalid!",
@@ -512,6 +519,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
                 getService().getLogService().debug("OK: Algorithm '" + info.getId() + "'");
             } catch (NoClassDefFoundError | Exception e) {
+                issues.getErrors().add(e);
                 e.printStackTrace();
                 // Unregister node
                 getService().getLogService().warn("Unregistering node with id '" + info.getId() + "' as it cannot be instantiated, duplicated, serialized, or cached.");

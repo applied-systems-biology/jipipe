@@ -121,7 +121,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
         try {
             JIPipeProject project = getDesktopProjectWorkbench().getProject();
             JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
-            settings.setOutputPath(project != null ? project.newTemporaryDirectory() : JIPipeRuntimeApplicationSettings.getTemporaryDirectory("run"));
+            settings.setOutputPath(project != null ? project.newTemporaryDirectory() : JIPipe.getTemporaryDirectory("run"));
             settings.setLoadFromCache(false);
             run = new JIPipeGraphRun(project, settings);
         } catch (Exception e) {

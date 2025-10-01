@@ -16,6 +16,9 @@ package org.hkijena.jipipe.api.artifacts.sources;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
+import java.nio.file.Path;
 
 /**
  * Encapsulates a remote artifact source together with helper methods
@@ -32,4 +35,12 @@ public abstract class JIPipeRemoteArtifactSource {
     public abstract JIPipeRemoteArtifactSourceType getType();
 
     public abstract JIPipeRemoteArtifactSource duplicate();
+
+    /**
+     * Downloads the source as archive and returns the path to the archive file
+     * @param tmpPath a temporary directory where downloaded files can be placed
+     * @param progressInfo the progress info
+     * @return the downloaded archive
+     */
+    public abstract Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo);
 }

@@ -31,10 +31,7 @@ import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -409,7 +406,11 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
         return result;
     }
 
-    public static interface UpdatedEventListener {
+    public FileLocker createFileLocker() {
+        return new FileLocker(getProgressInfo(), getLocalUserRepositoryPath().resolve("lockfile"));
+    }
+
+    public interface UpdatedEventListener {
         void onArtifactsRegistryUpdated(UpdatedEvent event);
     }
 

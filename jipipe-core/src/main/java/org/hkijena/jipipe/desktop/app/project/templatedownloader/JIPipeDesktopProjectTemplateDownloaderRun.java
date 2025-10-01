@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.WebUtils;
@@ -136,7 +135,7 @@ public class JIPipeDesktopProjectTemplateDownloaderRun extends DefaultJIPipeRunn
         for (int i = 0; i < repositories.size(); i++) {
             String repositoryURL = repositories.get(i);
             JIPipeProgressInfo repositoryProgress = progressInfo.resolve("Repository " + i);
-            Path outputFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("repository", ".json");
+            Path outputFile = JIPipe.getTemporaryFile("repository", ".json");
             try {
                 WebUtils.download(new URL(repositoryURL), outputFile, "Download repository", repositoryProgress);
             } catch (MalformedURLException e) {

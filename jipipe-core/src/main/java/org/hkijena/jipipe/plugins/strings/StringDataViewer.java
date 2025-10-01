@@ -19,7 +19,6 @@ import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
@@ -69,7 +68,7 @@ public class StringDataViewer extends JIPipeDesktopDataViewer {
     }
 
     private void openInExternalEditor() {
-        Path outputPath = JIPipeRuntimeApplicationSettings.getTemporaryFile("text", extension);
+        Path outputPath = JIPipe.getTemporaryFile("text", extension);
         try {
             Files.write(outputPath, editorPane.getText().getBytes(StandardCharsets.UTF_8));
             UIUtils.desktopOpenFile(outputPath.toFile());

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.cellpose.legacy.compat;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
@@ -21,7 +22,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,7 +36,7 @@ public class LegacyCellposeSizeModelImageJExporter implements ImageJDataExporter
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
         if (!path.isAbsolute()) {
-            path = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("cellpose-export").resolve(path);
+            path = JIPipe.getTemporaryDirectory("cellpose-export").resolve(path);
         }
         if (Files.exists(path)) {
             if (Files.isRegularFile(path)) {

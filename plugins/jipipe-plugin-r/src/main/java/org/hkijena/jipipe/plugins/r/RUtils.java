@@ -17,6 +17,7 @@ import org.apache.commons.exec.CommandLine;
 import org.apache.commons.exec.ExecuteWatchdog;
 import org.apache.commons.exec.LogOutputStream;
 import org.apache.commons.exec.PumpStreamHandler;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -32,7 +33,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.DoubleList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -248,7 +248,7 @@ public class RUtils {
     }
 
     public static void runR(String script, REnvironment environment, JIPipeProgressInfo progressInfo) {
-        Path codeFilePath = JIPipeRuntimeApplicationSettings.getTemporaryFile("R", ".R");
+        Path codeFilePath = JIPipe.getTemporaryFile("R", ".R");
         try {
             Files.write(codeFilePath, script.getBytes(StandardCharsets.UTF_8));
         } catch (IOException e) {

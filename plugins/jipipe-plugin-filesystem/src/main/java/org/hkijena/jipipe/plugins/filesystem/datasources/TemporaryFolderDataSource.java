@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,7 +28,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 
     @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
-        getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : JIPipeRuntimeApplicationSettings.getTemporaryDirectory(getBaseName())), JIPipeDataContext.create(this), progressInfo);
+        getFirstOutputSlot().addData(new FileData(isUseScratchDirectory() ? getNewScratch() : JIPipe.getTemporaryDirectory(getBaseName())), JIPipeDataContext.create(this), progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Base name", description = "Optional string that will be put into the directory name.")

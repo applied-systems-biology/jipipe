@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.data.storage;
 
 import org.apache.commons.io.FilenameUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.UnclosableOutputStream;
 
@@ -97,7 +97,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
             return parent.getOrCreateTemporaryStorageRoot();
         }
         if (temporaryStorage == null) {
-            temporaryStorage = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("zip");
+            temporaryStorage = JIPipe.getTemporaryDirectory("zip");
         }
         return temporaryStorage;
     }

@@ -41,7 +41,7 @@ import java.nio.file.Paths;
 public class JIPipeDownloadsApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:downloads";
 
-    private boolean preferCustomDownloader = true;
+    private boolean preferCustomDownloader = false;
 
     private DownloadEnvironment externalDownloaderProcess = new DownloadEnvironment();
 
@@ -107,12 +107,12 @@ public class JIPipeDownloadsApplicationSettings extends JIPipeDefaultApplication
     }
 
     @SetJIPipeDocumentation(name = "Custom downloader", description = "A process for downloading files. If not set, JIPipe will fall back to its native Java-based downloading tool.")
-    @JIPipeParameter("external-downloader-process")
+    @JIPipeParameter("external-downloader-process-v2")
     public DownloadEnvironment getExternalDownloaderProcess() {
         return externalDownloaderProcess;
     }
 
-    @JIPipeParameter("external-downloader-process")
+    @JIPipeParameter("external-downloader-process-v2")
     public void setExternalDownloaderProcess(DownloadEnvironment externalDownloaderProcess) {
         this.externalDownloaderProcess = externalDownloaderProcess;
     }

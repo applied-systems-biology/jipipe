@@ -24,12 +24,16 @@ public abstract class JIPipeArtifactRepositoryOperationRun extends DefaultJIPipe
     public void run() {
         getProgressInfo().log("Requesting repository lock: " + getLockType());
 
-        FileLocker locker = new FileLocker(getProgressInfo(), JIPipe.getArtifacts().getLocalUserRepositoryPath().resolve("lockfile"));
+        FileLocker locker = JIPipe.getArtifacts().createFileLocker();
         try {
             if (getLockType() == RepositoryLockType.Write) {
-                locker.acquireWriteLock();
+                if(!locker.acquireWriteLock()) {
+                    throw new RuntimeException("Failed to acquire repository write lock");
+                }
             } else {
-                locker.acquireReadLock();
+                if(!locker.acquireReadLock()) {
+                    throw new RuntimeException("Failed to acquire repository read lock");
+                }
             }
             doOperation(getProgressInfo());
         } finally {

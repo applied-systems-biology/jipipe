@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.artifacts.sources;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -44,6 +45,11 @@ public class JIPipeLocalRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     @Override
     public JIPipeRemoteArtifactSource duplicate() {
         return new JIPipeLocalRemoteArtifactSource(this);
+    }
+
+    @Override
+    public Path downloadArchive(Path tmpPath, JIPipeProgressInfo progressInfo) {
+        return filePath;
     }
 
     public Path getFilePath() {

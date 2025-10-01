@@ -27,7 +27,6 @@ import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopLargeScriptParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
@@ -386,7 +385,7 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
         private void initialize() {
             JIPipeScriptParameter parameter = getParameter(JIPipeScriptParameter.class);
-            targetDirectory = JIPipeRuntimeApplicationSettings.getTemporaryDirectory("script-editor");
+            targetDirectory = JIPipe.getTemporaryDirectory("script-editor");
             targetFile = targetDirectory.resolve("script" + parameter.getExtension());
             try {
                 Files.write(targetFile, StringUtils.nullToEmpty(parameter.getCode()).getBytes(StandardCharsets.UTF_8));

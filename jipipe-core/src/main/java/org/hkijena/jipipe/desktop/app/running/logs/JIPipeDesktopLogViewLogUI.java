@@ -23,7 +23,6 @@ import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationInboxUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -104,7 +103,7 @@ public class JIPipeDesktopLogViewLogUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void openLogInExternalTool() {
-        Path tempFile = JIPipeRuntimeApplicationSettings.getTemporaryFile("log", ".txt");
+        Path tempFile = JIPipe.getTemporaryFile("log", ".txt");
         try {
             Files.write(tempFile, logEntry.getLog().getBytes(StandardCharsets.UTF_8));
             UIUtils.desktopOpenFile(tempFile.toFile());
