@@ -20,12 +20,11 @@ import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
+import org.hkijena.jipipe.utils.process.ExtendedExecutor;
+import org.hkijena.jipipe.utils.process.ProcessSidecarTask;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -35,10 +34,7 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProcessUtils {
@@ -61,50 +57,16 @@ public class ProcessUtils {
     }
 
     /**
-     * Gets the process ID of a process
-     *
-     * @param p the process
-     * @return the pid or -1 if it is not found
-     */
-    public static long getProcessID(Process p) {
-        // Based on https://stackoverflow.com/a/43426878
-        long result = -1;
-        try {
-            //for windows
-            if (p.getClass().getName().equals("java.lang.Win32Process") ||
-                    p.getClass().getName().equals("java.lang.ProcessImpl")) {
-                Field f = p.getClass().getDeclaredField("handle");
-                f.setAccessible(true);
-                long handl = f.getLong(p);
-                Kernel32 kernel = Kernel32.INSTANCE;
-                WinNT.HANDLE hand = new WinNT.HANDLE();
-                hand.setPointer(Pointer.createConstant(handl));
-                result = kernel.GetProcessId(hand);
-                f.setAccessible(false);
-            }
-            //for unix based operating systems
-            else if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
-                Field f = p.getClass().getDeclaredField("pid");
-                f.setAccessible(true);
-                result = f.getLong(p);
-                f.setAccessible(false);
-            }
-        } catch (Exception ex) {
-            result = -1;
-        }
-        return result;
-    }
-
-    /**
      * Runs a process
      *
      * @param environment                  the process environment
      * @param variables                    additional variables for the arguments (can be null)
      * @param overrideEnvironmentVariables additional environment variables
      * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
+     * @param sidecars  additional tasks that are handled during process execution
      * @param progressInfo                 the progress info
      */
-    public static void runProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
+    public static void runProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, List<ProcessSidecarTask> sidecars, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -137,15 +99,28 @@ public class ProcessUtils {
             commandLine.addArgument(StringUtils.nullToEmpty(item), handleQuoting);
         }
 
-        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
+        ExtendedExecutor executor = new ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
         executor.setWorkingDirectory(Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile());
         progressInfo.log("Work directory is " + executor.getWorkingDirectory());
 
         try {
+            for (ProcessSidecarTask sidecar : sidecars) {
+                try {
+                    sidecar.start(executor);
+                } catch (Exception e) {
+                    progressInfo.log("Failed to start sidecar: " + e.getMessage());
+                    progressInfo.log(e);
+                }
+            }
             executor.execute(commandLine, environmentVariables);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+        finally {
+            for (ProcessSidecarTask sidecar : sidecars) {
+                sidecar.stop();
+            }
         }
     }
 
@@ -156,9 +131,10 @@ public class ProcessUtils {
      * @param variables                    additional variables for the arguments (can be null)
      * @param overrideEnvironmentVariables additional environment variables
      * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
+     * @param sidecars
      * @param progressInfo                 the progress info
      */
-    public static void launchProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, JIPipeProgressInfo progressInfo) {
+    public static void launchProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, List<ProcessSidecarTask> sidecars, JIPipeProgressInfo progressInfo) {
         CommandLine commandLine = new CommandLine(environment.getAbsoluteExecutablePath().toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
@@ -188,12 +164,20 @@ public class ProcessUtils {
 
         File workDirectory = Paths.get(environment.getWorkDirectory().evaluateToString(variables)).toFile();
 
-        ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
+        ExtendedExecutor executor = new ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         setupLogger(commandLine, executor, progressInfo);
         executor.setWorkingDirectory(workDirectory);
         progressInfo.log("Work directory is " + executor.getWorkingDirectory());
 
         try {
+            for (ProcessSidecarTask sidecar : sidecars) {
+                try {
+                    sidecar.start(executor);
+                } catch (Exception e) {
+                    progressInfo.log("Failed to start sidecar: " + e.getMessage());
+                    progressInfo.log(e);
+                }
+            }
             executor.launch(commandLine, environmentVariables, workDirectory);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -312,216 +296,4 @@ public class ProcessUtils {
         }
     }
 
-    /**
-     * Wrapper around an existing process that models a process tree
-     */
-    public static class ProcessTree extends Process {
-        private final Process process;
-        private final long pid;
-        private final JIPipeProgressInfo progressInfo;
-
-        public ProcessTree(Process process, JIPipeProgressInfo progressInfo) {
-            this.process = process;
-            this.pid = getProcessID(process);
-            this.progressInfo = progressInfo;
-        }
-
-        public Process getProcess() {
-            return process;
-        }
-
-        public long getPid() {
-            return pid;
-        }
-
-
-        @Override
-        public OutputStream getOutputStream() {
-            return process.getOutputStream();
-        }
-
-        @Override
-        public InputStream getInputStream() {
-            return process.getInputStream();
-        }
-
-        @Override
-        public InputStream getErrorStream() {
-            return process.getErrorStream();
-        }
-
-        @Override
-        public int waitFor() throws InterruptedException {
-            return process.waitFor();
-        }
-
-        @Override
-        public int exitValue() {
-            return process.exitValue();
-        }
-
-        @Override
-        public void destroy() {
-            killProcessTree(pid, progressInfo);
-        }
-
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-    }
-
-    public static class ExtendedExecutor extends DefaultExecutor {
-
-        private final JIPipeProgressInfo progressInfo;
-        private ProcessTree process;
-
-        public ExtendedExecutor(long timeout, JIPipeProgressInfo progressInfo) {
-            super();
-            this.progressInfo = progressInfo;
-            setWatchdog(new RunCancellationExecuteWatchdog(timeout, progressInfo, this));
-        }
-
-        @Override
-        public Process launch(CommandLine command, Map<String, String> env, File dir) throws IOException {
-            process = new ProcessTree(super.launch(command, env, dir), progressInfo);
-            return process;
-        }
-
-        public long getPid() {
-            return process.getPid();
-        }
-
-        public JIPipeProgressInfo getProgressInfo() {
-            return progressInfo;
-        }
-
-        public ProcessTree getProcess() {
-            return process;
-        }
-    }
-
-    /**
-     * Based on {@link ExecuteWatchdog}. Adapted to listed to {@link JIPipeProgressInfo} cancellation.
-     */
-    public static class RunCancellationExecuteWatchdog extends ExecuteWatchdog implements RunCancellationWatchdog.CancelledEventListener {
-
-        private final JIPipeProgressInfo progressInfo;
-        private final RunCancellationWatchdog cancellationWatchdog;
-        private final ExtendedExecutor extendedExecutor;
-
-        /**
-         * Creates a new watchdog with a given timeout.
-         *
-         * @param timeout          the timeout for the process in milliseconds. It must be
-         *                         greater than 0 or 'INFINITE_TIMEOUT'
-         * @param extendedExecutor the executor
-         */
-        public RunCancellationExecuteWatchdog(long timeout, JIPipeProgressInfo progressInfo, ExtendedExecutor extendedExecutor) {
-            super(timeout);
-            this.progressInfo = progressInfo;
-            this.cancellationWatchdog = new RunCancellationWatchdog(progressInfo);
-            this.extendedExecutor = extendedExecutor;
-            this.cancellationWatchdog.getCancelledEventEmitter().subscribe(this);
-        }
-
-        @Override
-        public synchronized void timeoutOccured(Watchdog w) {
-            // Kill the process using the PID
-            long pid = extendedExecutor.getPid();
-            killProcessTree(pid, progressInfo);
-            super.timeoutOccured(w);
-        }
-
-        @Override
-        public synchronized void start(Process processToMonitor) {
-            super.start(processToMonitor);
-            cancellationWatchdog.start();
-        }
-
-        @Override
-        public synchronized void stop() {
-            cancellationWatchdog.stop();
-            super.stop();
-        }
-
-        @Override
-        public void onCancelled(RunCancellationWatchdog.CancelledEvent event) {
-            this.timeoutOccured(null);
-        }
-    }
-
-    /**
-     * A watchdog that monitors a sub-process of a {@link JIPipeRunnable}
-     * and watches for the {@link JIPipeRunnable} to be cancelled.
-     * Based on {@link Watchdog}
-     */
-    public static class RunCancellationWatchdog implements Runnable {
-        private final CancelledEventEmitter cancelledEventEmitter = new CancelledEventEmitter();
-        private final JIPipeProgressInfo progressInfo;
-        private boolean stopped = false;
-
-        public RunCancellationWatchdog(JIPipeProgressInfo progressInfo) {
-            this.progressInfo = progressInfo;
-        }
-
-        public synchronized void start() {
-            stopped = false;
-            final Thread t = new Thread(this, "WATCHDOG");
-            t.setDaemon(true);
-            t.start();
-        }
-
-        public synchronized void stop() {
-            stopped = true;
-            notifyAll();
-        }
-
-        public void run() {
-            boolean isWaiting;
-            synchronized (this) {
-                isWaiting = true;
-                while (!stopped && isWaiting) {
-                    try {
-                        wait(500);
-                    } catch (final InterruptedException e) {
-                    }
-                    isWaiting = !progressInfo.isCancelled();
-                }
-            }
-
-            // notify the listeners outside of the synchronized block (see EXEC-60)
-            if (!isWaiting) {
-                cancelledEventEmitter.emit(new CancelledEvent(this));
-            }
-        }
-
-        public CancelledEventEmitter getCancelledEventEmitter() {
-            return cancelledEventEmitter;
-        }
-
-        public interface CancelledEventListener {
-            void onCancelled(CancelledEvent event);
-        }
-
-        public static class CancelledEvent extends AbstractJIPipeEvent {
-            private final RunCancellationWatchdog watchdog;
-
-            public CancelledEvent(RunCancellationWatchdog watchdog) {
-                super(watchdog);
-                this.watchdog = watchdog;
-            }
-
-            public RunCancellationWatchdog getWatchdog() {
-                return watchdog;
-            }
-        }
-
-        public static class CancelledEventEmitter extends JIPipeEventEmitter<CancelledEvent, CancelledEventListener> {
-
-            @Override
-            protected void call(CancelledEventListener cancelledEventListener, CancelledEvent event) {
-                cancelledEventListener.onCancelled(event);
-            }
-        }
-    }
 }

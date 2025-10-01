@@ -36,11 +36,13 @@ import org.hkijena.jipipe.utils.EnvironmentVariablesSource;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.process.ProcessSidecarTask;
 
 import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -170,6 +172,20 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
      * @param progressInfo                   the progress info
      */
     public void runExecutable(List<String> args, Map<String, String> additionalEnvironmentVariables, boolean detached, JIPipeProgressInfo progressInfo) {
+        runExecutable(args, additionalEnvironmentVariables, detached, Collections.emptyList(), progressInfo);
+    }
+
+
+    /**
+     * Runs the environment as process
+     *
+     * @param args                           the arguments/cli parameters
+     * @param additionalEnvironmentVariables additional environment variables
+     * @param detached                       run process detached
+     * @param sidecars                       sidecars to be executed. please note that sidecars are never stopped for detached processes
+     * @param progressInfo                   the progress info
+     */
+    public void runExecutable(List<String> args, Map<String, String> additionalEnvironmentVariables, boolean detached, List<ProcessSidecarTask> sidecars, JIPipeProgressInfo progressInfo) {
 
         // CLI
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
@@ -189,9 +205,19 @@ public abstract class JIPipeProcessArtifactEnvironment extends JIPipeArtifactEnv
         }
 
         if (detached) {
-            ProcessUtils.launchProcess(processEnvironment, variables, additionalEnvironmentVariables, false, progressInfo);
+            ProcessUtils.launchProcess(processEnvironment,
+                    variables,
+                    additionalEnvironmentVariables,
+                    false,
+                    sidecars,
+                    progressInfo);
         } else {
-            ProcessUtils.runProcess(processEnvironment, variables, additionalEnvironmentVariables, false, progressInfo);
+            ProcessUtils.runProcess(processEnvironment,
+                    variables,
+                    additionalEnvironmentVariables,
+                    false,
+                    sidecars,
+                    progressInfo);
         }
     }
 }

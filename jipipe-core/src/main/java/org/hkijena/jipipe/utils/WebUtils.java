@@ -66,7 +66,7 @@ public class WebUtils {
                         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
                         variables.set("url", url.toString());
-                        ProcessUtils.runProcess(process, variables, Collections.emptyMap(), true, progressInfo);
+                        ProcessUtils.runProcess(process, variables, Collections.emptyMap(), true, Collections.emptyList(), progressInfo);
                     }
 
                     if (Files.isRegularFile(outputFile)) {

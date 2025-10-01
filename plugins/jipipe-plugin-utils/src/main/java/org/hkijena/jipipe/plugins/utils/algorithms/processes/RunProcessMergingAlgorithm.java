@@ -84,7 +84,7 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
             environment.setArguments(overrideArguments.getContent());
         }
 
-        ProcessUtils.runProcess(environment, variables, Collections.emptyMap(), true, progressInfo);
+        ProcessUtils.runProcess(environment, variables, Collections.emptyMap(), true, Collections.emptyList(), progressInfo);
 
         // Extract outputs
         if (outputOutputFolder) {

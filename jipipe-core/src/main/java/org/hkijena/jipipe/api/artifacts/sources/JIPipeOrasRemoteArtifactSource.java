@@ -15,11 +15,18 @@ package org.hkijena.jipipe.api.artifacts.sources;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactOperationContext;
 import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironment;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.oci.OciManifest;
+import org.hkijena.jipipe.utils.oci.OciManifestLayer;
+import org.hkijena.jipipe.utils.process.ExtendedExecutor;
+import org.hkijena.jipipe.utils.process.PeriodicProcessSidecarTask;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -55,8 +62,29 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     @Override
     public Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo) {
         OrasEnvironment orasEnvironment = JIPipe.getArtifacts().getOrasEnvironment(context, progressInfo.resolveAndLog("Configure ORAS"));
+
+        // Query the OCI manifest to get the total size
+        progressInfo.log("Querying ORAS manifest " + ociReference + " ...");
+        Path manifestFile = tmpPath.resolve("manifest.json");
+        orasEnvironment.runExecutable(List.of("manifest", "fetch", "--output", manifestFile.toString(), ociReference),
+                Collections.emptyMap(),
+                false,
+                Collections.emptyList(),
+                progressInfo);
+        OciManifest manifest = JsonUtils.readFromFile(manifestFile, OciManifest.class);
+        long totalSize = 0;
+        for (OciManifestLayer layer : manifest.getLayers()) {
+            totalSize += layer.getSize();
+        }
+        progressInfo.log("Total size is " + StringUtils.formatSize(totalSize));
+
+        // Start download with a sidecar that monitors the size of the output directory
         progressInfo.log("Downloading using ORAS from " + ociReference + " ...");
-        orasEnvironment.runExecutable(List.of("pull", "--output", tmpPath.toString(), ociReference), Collections.emptyMap(), false, progressInfo);
+        orasEnvironment.runExecutable(List.of("pull", "--output", tmpPath.toString(), ociReference),
+                Collections.emptyMap(),
+                false,
+                List.of(new DownloadProgressSidecarTask(tmpPath, totalSize)),
+                progressInfo);
         return PathUtils.findFileByExtensionRecursivelyIn(tmpPath, ".zip", ".tar.gz", ".tar.bz2", ".tar.xz");
     }
 
@@ -66,5 +94,79 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
 
     public void setOciReference(String ociReference) {
         this.ociReference = ociReference;
+    }
+
+    public static class DownloadProgressSidecarTask extends PeriodicProcessSidecarTask {
+        private final Path tmpPath;
+        private final long totalSize;
+        private long lastSize = 0;
+        private int lastPercentage = 0;
+        
+        // Time tracking fields
+        private long startTime = System.currentTimeMillis();
+        private long currentSpeed = 0;
+        
+        // Animation fields
+        private static final String[] ANIMATION_PATTERNS = {
+            ">----", "->---", "-->--", "--->-", "---->"
+        };
+        private int animationIndex = 0;
+
+        public DownloadProgressSidecarTask(Path tmpPath, long totalSize) {
+            super(1000);
+            this.tmpPath = tmpPath;
+            this.totalSize = totalSize;
+        }
+
+        @Override
+        protected void tick(ExtendedExecutor executor) {
+            try {
+                long currentSize = FileUtils.sizeOfDirectory(tmpPath.toFile());
+                long currentTime = System.currentTimeMillis();
+                
+                if(currentSize > lastSize) {
+                    lastSize = currentSize;
+                    
+                    // Calculate speed (bytes per second)
+                    long timeDiff = currentTime - startTime;
+                    if (timeDiff > 0) {
+                        currentSpeed = (currentSize * 1000) / timeDiff;
+                    }
+                    
+                    int percentage = Math.max(0, Math.min(100, (int)(currentSize * 100.0 / totalSize)));
+                    if(percentage != lastPercentage) {
+                        // Calculate elapsed time
+                        long elapsedMillis = currentTime - startTime;
+                        String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
+                        
+                        // Calculate estimated remaining time
+                        String estimatedDuration = "N/A";
+                        if (currentSpeed > 0 && currentSize < totalSize) {
+                            long remainingBytes = totalSize - currentSize;
+                            long estimatedMillis = (remainingBytes * 1000) / currentSpeed;
+                            estimatedDuration = StringUtils.formatDuration(estimatedMillis);
+                        }
+                        
+                        // Get animated arrow pattern
+                        String animatedArrow = ANIMATION_PATTERNS[animationIndex];
+                        animationIndex = (animationIndex + 1) % ANIMATION_PATTERNS.length;
+                        
+                        // Format progress message
+                        String progressMessage = String.format("O R A S [%s] [%d%%] Elapsed: %s | Estimated: %s | Downloaded: %s / %s",
+                                animatedArrow,
+                                percentage,
+                                elapsedDuration,
+                                estimatedDuration,
+                                StringUtils.formatSize(Math.min(currentSize, totalSize)),
+                                StringUtils.formatSize(totalSize));
+                        
+                        executor.getProgressInfo().log(progressMessage);
+                        lastPercentage = percentage;
+                    }
+                }
+            }
+            catch (Throwable ignored) {
+            }
+        }
     }
 }

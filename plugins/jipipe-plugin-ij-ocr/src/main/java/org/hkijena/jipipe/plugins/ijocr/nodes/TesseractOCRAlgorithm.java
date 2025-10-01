@@ -135,7 +135,7 @@ public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 args.add("tessedit_char_whitelist=" + allowedChars);
             }
 
-            environment.runExecutable(args, Collections.emptyMap(), false, sliceProcess);
+            environment.runExecutable(args, Collections.emptyMap(), false, Collections.emptyList(), sliceProcess);
 
             // Find the TSV file
             Path tsvFile = PathUtils.findFileByExtensionIn(tmpPath, ".tsv");

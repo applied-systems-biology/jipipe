@@ -113,7 +113,7 @@ public class TSOAX3DAlgorithm extends TSOAXAlgorithm {
         environmentVariables.put("LC_ALL", "en_US.UTF-8");
         environmentVariables.put("LC_CTYPE", "en_US.UTF-8");
 
-        environment.runExecutable(args, environmentVariables, false, progressInfo);
+        environment.runExecutable(args, environmentVariables, false, Collections.emptyList(), progressInfo);
 
         // Extract results
         Path resultsFile = outputDir.resolve("img.txt");
