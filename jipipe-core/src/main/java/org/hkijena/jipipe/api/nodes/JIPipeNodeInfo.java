@@ -212,6 +212,14 @@ public interface JIPipeNodeInfo {
     boolean isHidden();
 
     /**
+     * Returns true if the node is marked as unstable
+     * @return if the node is considered unstable
+     */
+    default boolean isUnstable() {
+        return false;
+    }
+
+    /**
      * Returns true if this node is deprecated
      *
      * @return if the node is deprecated

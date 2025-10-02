@@ -43,6 +43,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private boolean hidden = false;
     private boolean runnable = true;
     private boolean deprecated = false;
+    private boolean unstable = false;
     private List<String> additionalCitations = new ArrayList<>();
 
     private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
@@ -221,5 +222,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setEnvironments(Set<Class<? extends JIPipeEnvironment>> environments) {
         this.environments = environments;
+    }
+
+    @Override
+    public boolean isUnstable() {
+        return unstable;
+    }
+
+    public void setUnstable(boolean unstable) {
+        this.unstable = unstable;
     }
 }
