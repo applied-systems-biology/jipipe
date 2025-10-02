@@ -29,6 +29,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
+import org.hkijena.jipipe.desktop.app.codeeditor.JIPipeDesktopCodeEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
@@ -80,6 +81,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalc
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
+import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopScriptParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -279,6 +281,14 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipeDesktopDockPanel.PanelLocation.BottomRight,
                 false,
                 0, new JIPipeDesktopGraphEditorErrorPanel(getDesktopWorkbench(), this));
+
+        getDockPanel().addDockPanel(JIPipeDesktopScriptParameterEditorUI.DOCK_CODE,
+                "Code",
+                JIPipe.RESOURCES.getIcon24("actions/format-text-code.png"),
+                JIPipeDesktopDockPanel.PanelLocation.BottomBottom,
+                false,
+                0,
+                new JIPipeDesktopCodeEditorUI(getDesktopWorkbench()));
 //
 //        bottomPanel.addTab("Templates", JIPipe.RESOURCES.getIcon32("actions/star.png"),
 //                new NodeTemplateBox(getDesktopWorkbench(), true, getCanvasUI(), null), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
