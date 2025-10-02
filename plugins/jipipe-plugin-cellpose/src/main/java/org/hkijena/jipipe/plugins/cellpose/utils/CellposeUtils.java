@@ -192,6 +192,7 @@ public class CellposeUtils {
                     ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                         saveInputImage(row, new ImagePlus("slice", ip), io2DPath, index, info);
                     }, rowProgress);
+                    runWith2D.add(info);
                 }
             }
 

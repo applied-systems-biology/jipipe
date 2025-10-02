@@ -327,10 +327,11 @@ public class PythonUtils {
     public static void runPython(Path scriptFile, PythonEnvironment environment, List<Path> libraryPaths, boolean suppressLogs, boolean detached, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = PathUtils.relativeJIPipeUserDirToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
+        Map<String, String> systemEnv = System.getenv();
 
         Map<String, String> environmentVariables = new HashMap<>();
         JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
-        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+        for (Map.Entry<String, String> entry : systemEnv.entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
         }
@@ -340,7 +341,10 @@ public class PythonUtils {
         }
         installLibraryPaths(environmentVariables, libraryPaths);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
-            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            String existing = systemEnv.get(entry.getKey());
+            if(existing == null || !existing.equals(entry.getValue())) {
+                progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            }
         }
 
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();
