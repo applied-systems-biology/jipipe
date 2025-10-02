@@ -23,7 +23,7 @@ import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
 import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJExporter;
 import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJImporter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.display.AddROI3DToManagerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIROI3DDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.ij3d.nodes.ImportROI3DAlgorithm;
@@ -132,16 +132,16 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerApplicationSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
 
-        registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "3D Measurement", "A 3D object measurement");
-        registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "3D measurement column", "A 3D object measurement column");
-        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "3D Measurements", "A selection of 3D object measurements");
-        registerEnumParameterType("ij3d-relation-measurement", ROI3DRelationMeasurement.class, "3D relation measurement", "Relation between two 3D objects");
-        registerEnumParameterType("ij3d-relation-measurement-column", ROI3DRelationMeasurementColumn.class, "3D relation measurement column", "Relation between two 3D objects");
-        registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "3D relation measurements", "A selection of measurements between two 3D objects");
-        registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "3D ROI outline", "Outline algorithm for 3D ROI");
+        registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "IJ3D Measurement", "A 3D object measurement");
+        registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "IJ3D measurement column", "A 3D object measurement column");
+        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D Measurements", "A selection of 3D object measurements");
+        registerEnumParameterType("ij3d-relation-measurement", ROI3DRelationMeasurement.class, "IJ3D relation measurement", "Relation between two 3D objects");
+        registerEnumParameterType("ij3d-relation-measurement-column", ROI3DRelationMeasurementColumn.class, "IJ3D relation measurement column", "Relation between two 3D objects");
+        registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D relation measurements", "A selection of measurements between two 3D objects");
+        registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "IJ3D ROI outline", "Outline algorithm for 3D ROI");
 
-        registerDatatype("roi-3d-list", ROI3DListData.class, RESOURCES.getIcon16URL("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());
-        registerDefaultDataTypeViewer(ROI3DListData.class, ROI3DListDataViewer.class);
+        registerDatatype("roi-3d-list", IJ3DROIListData.class, RESOURCES.getIcon16URL("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());
+        registerDefaultDataTypeViewer(IJ3DROIListData.class, ROI3DListDataViewer.class);
         registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
         registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
         registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);

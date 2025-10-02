@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Set 3D ROI metadata from table", description = "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
+@SetJIPipeDocumentation(name = "Set IJ3D ROI metadata from table", description = "Sets the 3D ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)
@@ -60,7 +60,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData rois = new ROI3DListData(iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo));
+        IJ3DROIListData rois = new IJ3DROIListData(iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
         TableColumnData indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata, new JIPipeExpressionVariablesMap(iterationStep));
 
@@ -71,7 +71,7 @@ public class SetROI3DMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm
                     continue;
                 throw new IndexOutOfBoundsException("There is no ROI with index " + roiIndex);
             }
-            ROI3D roi = rois.get(i);
+            IJ3DROI roi = rois.get(i);
             Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : roi.getMetadata();
             for (String columnName : metadata.getColumnNames()) {
                 if (roiIndexColumn.getKey() == TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn && columnName.equals(indexColumn.getLabel()))

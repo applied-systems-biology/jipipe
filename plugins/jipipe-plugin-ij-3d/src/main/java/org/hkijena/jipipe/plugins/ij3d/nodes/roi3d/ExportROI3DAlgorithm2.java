@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -29,7 +26,7 @@ import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -39,10 +36,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Export 3D ROI", description = "Exports a 3D ROI list into one or multiple ROI files")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Exports a 3D ROI list into one or multiple ROI files")
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
+@MarkNodeAsUnstable
 public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();
@@ -58,7 +56,7 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData inputData = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -75,7 +73,7 @@ public class ExportROI3DAlgorithm2 extends JIPipeIteratingAlgorithm {
 
 
         PathUtils.ensureParentDirectoriesExist(outputPath);
-        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
 
         rois.save(outputPath);
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);

@@ -27,10 +27,7 @@ import mcib3d.image3d.regionGrowing.Watershed3D;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -45,7 +42,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Watershed 3D splitting", description = "The main application of watershed in ImageJ is the 2D splitting of merged objects.\n" +
+@SetJIPipeDocumentation(name = "IJ3D Watershed 3D splitting", description = "The main application of watershed in ImageJ is the 2D splitting of merged objects.\n" +
         "\n" +
         "This splitting is based on the computation of the Distance Map inside the mask of the merged objects. " +
         "The seeds are then the local maxima of the distance map, the farthest points from the boundaries, hence corresponding to the centres of the objects. " +

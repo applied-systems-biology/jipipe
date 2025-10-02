@@ -22,14 +22,15 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
-@SetJIPipeDocumentation(name = "Extract 3D overlay", description = "Extract overlay 3D ROIs")
+@SetJIPipeDocumentation(name = "IJ3D Extract 3D overlay", description = "Extract overlay 3D ROIs")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay")
+@MarkNodeAsUnstable
 public class ExtractOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ExtractOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -42,8 +43,8 @@ public class ExtractOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        ROI3DListData rois = new ROI3DListData();
-        for (ROI3DListData data : image.extractOverlaysOfType(ROI3DListData.class)) {
+        IJ3DROIListData rois = new IJ3DROIListData();
+        for (IJ3DROIListData data : image.extractOverlaysOfType(IJ3DROIListData.class)) {
             rois.addAll(data);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);

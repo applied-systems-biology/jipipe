@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -83,7 +83,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         this.overrideFillColor = overrideFillColor;
     }
 
-    public ImagePlus draw(ROI3DListData roi3DListData, ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
+    public ImagePlus draw(IJ3DROIListData roi3DListData, ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
 
         if (referenceImage == null) {
             referenceImage = roi3DListData.createBlankCanvas("RGB", 24);
@@ -95,7 +95,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         ImagePlus labels = roi3DListData.toLabels(referenceImage, progressInfo.resolve("Render to labels"));
         byte[][] lut = new byte[roi3DListData.size()][];
         for (int i = 0; i < roi3DListData.size(); i++) {
-            ROI3D roi3D = roi3DListData.get(i);
+            IJ3DROI roi3D = roi3DListData.get(i);
             lut[i] = new byte[]{
                     (byte) roi3D.getFillColor().getRed(),
                     (byte) roi3D.getFillColor().getGreen(),

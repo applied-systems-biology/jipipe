@@ -16,25 +16,23 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@SetJIPipeDocumentation(name = "Outline 3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
+@SetJIPipeDocumentation(name = "Outline IJ3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@MarkNodeAsUnstable
 public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ROI3DOutline outline = ROI3DOutline.BoundingBox;
@@ -62,7 +60,7 @@ public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData data = (ROI3DListData) iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo).duplicate(progressInfo);
+        IJ3DROIListData data = (IJ3DROIListData) iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline, ignoreErrors, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }

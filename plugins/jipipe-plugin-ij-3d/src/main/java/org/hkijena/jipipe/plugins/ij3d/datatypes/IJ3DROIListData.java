@@ -60,27 +60,27 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-@SetJIPipeDocumentation(name = "ImageJ 3D ROI list", description = "Collection of 3D ROI")
+@SetJIPipeDocumentation(name = "IJ3D ROI list", description = "Collection of 3D ROI from ImageJ 3D Suite")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.zip format. " +
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 @LabelAsJIPipeHeavyData
 @LabelAsJIPipeCommonData
-public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
-    public ROI3DListData() {
+public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
+    public IJ3DROIListData() {
 
     }
 
-    public ROI3DListData(ROI3DListData other) {
-        for (ROI3D roi3D : other) {
-            add(new ROI3D(roi3D));
+    public IJ3DROIListData(IJ3DROIListData other) {
+        for (IJ3DROI roi3D : other) {
+            add(new IJ3DROI(roi3D));
         }
     }
 
-    public static ROI3DListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static IJ3DROIListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path zipFile = storage.findFileByExtension(".roi3d").get();
         try (InputStream stream = storage.open(zipFile)) {
-            ROI3DListData target = new ROI3DListData();
+            IJ3DROIListData target = new IJ3DROIListData();
             target.loadObjectsFromStream(stream, progressInfo);
             return target;
         } catch (IOException e) {
@@ -88,9 +88,9 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         }
     }
 
-    public static ROI3DListData importData(Path zipFile, JIPipeProgressInfo progressInfo) {
+    public static IJ3DROIListData importData(Path zipFile, JIPipeProgressInfo progressInfo) {
         try (InputStream stream = Files.newInputStream(zipFile)) {
-            ROI3DListData target = new ROI3DListData();
+            IJ3DROIListData target = new IJ3DROIListData();
             target.loadObjectsFromStream(stream, progressInfo);
             return target;
         } catch (IOException e) {
@@ -113,11 +113,11 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        ROI3DListData result = new ROI3DListData();
+        IJ3DROIListData result = new IJ3DROIListData();
         for (int i = 0; i < this.size(); i++) {
             progressInfo.resolveAndLog("Copy 3D Object", i, size());
-            ROI3D roi3D = this.get(i);
-            result.add(new ROI3D(roi3D));
+            IJ3DROI roi3D = this.get(i);
+            result.add(new IJ3DROI(roi3D));
         }
         return result;
     }
@@ -134,7 +134,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
      * @param perFrame   group per frame
      * @return groups (grouped by zero-index positions)
      */
-    public Map<ImageSliceIndex, List<ROI3D>> groupByPosition(boolean perChannel, boolean perFrame) {
+    public Map<ImageSliceIndex, List<IJ3DROI>> groupByPosition(boolean perChannel, boolean perFrame) {
         return this.stream().collect(Collectors.groupingBy(roi -> {
             ImageSliceIndex index = new ImageSliceIndex();
             if (perFrame)
@@ -154,7 +154,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
     public void loadObjectsFromStream(InputStream inputStream, JIPipeProgressInfo progressInfo) {
         //ImagePlus plus = this.getImage();
         Map<String, Object3D> objectByNameMap = new HashMap<>();
-        Map<String, ROI3D> roiByNameMap = new HashMap<>();
+        Map<String, IJ3DROI> roiByNameMap = new HashMap<>();
         try (ZipInputStream zipinputstream = new ZipInputStream(inputStream)) {
             ZipEntry zipentry = zipinputstream.getNextEntry();
             while (zipentry != null) {
@@ -175,7 +175,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
                 } else if (entryName.equals("jipipe-metadata.json")) {
                     JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new UnclosableInputStream(zipinputstream));
                     for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
-                        ROI3D roi3D = JsonUtils.getObjectMapper().readerFor(ROI3D.class).readValue(entry.getValue());
+                        IJ3DROI roi3D = JsonUtils.getObjectMapper().readerFor(IJ3DROI.class).readValue(entry.getValue());
                         roiByNameMap.put(entry.getKey(), roi3D);
                     }
                 }
@@ -188,7 +188,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             throw new RuntimeException(e);
         }
 
-        for (Map.Entry<String, ROI3D> entry : roiByNameMap.entrySet()) {
+        for (Map.Entry<String, IJ3DROI> entry : roiByNameMap.entrySet()) {
             Object3D object3D = objectByNameMap.get(entry.getKey());
             if (object3D != null) {
                 entry.getValue().setObject3D(object3D);
@@ -198,9 +198,9 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             add(entry.getValue());
         }
         for (Map.Entry<String, Object3D> entry : objectByNameMap.entrySet()) {
-            ROI3D roi3D = roiByNameMap.get(entry.getKey());
+            IJ3DROI roi3D = roiByNameMap.get(entry.getKey());
             if (roi3D == null) {
-                roi3D = new ROI3D(entry.getValue());
+                roi3D = new IJ3DROI(entry.getValue());
                 add(roi3D);
             }
         }
@@ -212,8 +212,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             //  ZIP
             ZipOutputStream zip = new ZipOutputStream(stream);
             Set<String> names = new HashSet<>();
-            Map<ROI3D, String> nameMap = new IdentityHashMap<>();
-            for (ROI3D roi3D : this) {
+            Map<IJ3DROI, String> nameMap = new IdentityHashMap<>();
+            for (IJ3DROI roi3D : this) {
 
                 if (progressInfo.isCancelled()) {
                     return;
@@ -242,8 +242,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
 
             // Save JIPipe metadata
             zip.putNextEntry(new ZipEntry("jipipe-metadata.json"));
-            Map<String, ROI3D> metadataMap = new HashMap<>();
-            for (ROI3D roi3D : this) {
+            Map<String, IJ3DROI> metadataMap = new HashMap<>();
+            for (IJ3DROI roi3D : this) {
                 String name = nameMap.get(roi3D);
                 metadataMap.put(name, roi3D);
             }
@@ -281,7 +281,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         double maxY = Double.NEGATIVE_INFINITY;
         double minZ = Double.POSITIVE_INFINITY;
         double maxZ = Double.NEGATIVE_INFINITY;
-        for (ROI3D roi3D : this) {
+        for (IJ3DROI roi3D : this) {
             Object3D object3D = roi3D.getObject3D();
             minX = Math.min(minX, object3D.getXmin());
             maxX = Math.max(maxX, object3D.getXmax());
@@ -298,7 +298,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
 
     public Objects3DPopulation toPopulation() {
         Objects3DPopulation population = new Objects3DPopulation();
-        for (ROI3D roi3D : this) {
+        for (IJ3DROI roi3D : this) {
             population.addObject(roi3D.getObject3D());
         }
         return population;
@@ -306,7 +306,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
 
     public Objects3DPopulation toPopulation(int channel, int frame) {
         Objects3DPopulation population = new Objects3DPopulation();
-        for (ROI3D roi3D : this) {
+        for (IJ3DROI roi3D : this) {
             if (roi3D.sameChannel(channel) && roi3D.sameFrame(frame)) {
                 population.addObject(roi3D.getObject3D());
             }
@@ -314,9 +314,9 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         return population;
     }
 
-    public ROI3DListData filteredForFrameAndChannel(int channel, int frame) {
-        ROI3DListData listData = new ROI3DListData();
-        for (ROI3D roi3D : this) {
+    public IJ3DROIListData filteredForFrameAndChannel(int channel, int frame) {
+        IJ3DROIListData listData = new IJ3DROIListData();
+        for (IJ3DROI roi3D : this) {
             if (roi3D.sameChannel(channel) && roi3D.sameFrame(frame)) {
                 listData.add(roi3D);
             }
@@ -332,10 +332,10 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
      * @param frame      the frame (one-based)
      * @return added ROI3D
      */
-    public List<ROI3D> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
-        List<ROI3D> added = new ArrayList<>();
+    public List<IJ3DROI> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
+        List<IJ3DROI> added = new ArrayList<>();
         for (int i = 0; i < population.getNbObjects(); i++) {
-            ROI3D roi3D = new ROI3D(population.getObject(i));
+            IJ3DROI roi3D = new IJ3DROI(population.getObject(i));
             roi3D.setChannel(channel);
             roi3D.setFrame(frame);
             add(roi3D);
@@ -347,10 +347,10 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
     public void logicalAnd() {
         if (!isEmpty()) {
             Object3DVoxels voxels = new ExtendedObject3DVoxels();
-            voxels.addVoxelsIntersection(new ArrayList<>(stream().map(ROI3D::getObject3D).collect(Collectors.toList())));
+            voxels.addVoxelsIntersection(new ArrayList<>(stream().map(IJ3DROI::getObject3D).collect(Collectors.toList())));
             clear();
             if (!voxels.isEmpty()) {
-                add(new ROI3D(voxels));
+                add(new IJ3DROI(voxels));
             }
         }
     }
@@ -358,28 +358,28 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
     public void logicalOr() {
         if (!isEmpty()) {
             Object3DVoxels voxels = new ExtendedObject3DVoxels();
-            voxels.addVoxelsUnion(new ArrayList<>(stream().map(ROI3D::getObject3D).collect(Collectors.toList())));
+            voxels.addVoxelsUnion(new ArrayList<>(stream().map(IJ3DROI::getObject3D).collect(Collectors.toList())));
             clear();
-            add(new ROI3D(voxels));
+            add(new IJ3DROI(voxels));
         }
     }
 
     public void logicalXor() {
-        ROI3DListData or = new ROI3DListData();
-        ROI3DListData and = new ROI3DListData();
+        IJ3DROIListData or = new IJ3DROIListData();
+        IJ3DROIListData and = new IJ3DROIListData();
         or.addAll(this);
         and.addAll(this);
         or.logicalOr();
         and.logicalAnd();
         clear();
         if (!or.isEmpty() && !and.isEmpty()) {
-            for (ROI3D r1 : or) {
+            for (IJ3DROI r1 : or) {
                 Object3DVoxels voxels = r1.getObject3D().getObject3DVoxels();
-                for (ROI3D r2 : and) {
+                for (IJ3DROI r2 : and) {
                     voxels.substractObject(r2.getObject3D());
                 }
                 if (!voxels.isEmpty()) {
-                    add(new ROI3D(voxels));
+                    add(new IJ3DROI(voxels));
                 }
             }
         }
@@ -401,7 +401,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         height = (int) Math.max(height, bounds[0].y + bounds[1].y);
         nSlices = (int) Math.max(nSlices, bounds[0].z + bounds[1].z);
 
-        for (ROI3D roi3D : this) {
+        for (IJ3DROI roi3D : this) {
             nChannels = Math.max(nChannels, roi3D.getChannel());
             nFrames = Math.max(nFrames, roi3D.getFrame());
         }
@@ -437,9 +437,9 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         } else {
             outputImage = createBlankCanvas("Mask", BitDepth.Grayscale8u);
         }
-        Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
+        Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
-            ROI3DListData toRender = new ROI3DListData();
+            IJ3DROIListData toRender = new IJ3DROIListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
             toRender.toPopulation().draw(ih, 255);
@@ -470,16 +470,16 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             outputImage = createBlankCanvas("Labels", bitDepth);
         }
 
-        Map<ROI3D, Integer> labelAssignments = new HashMap<>();
+        Map<IJ3DROI, Integer> labelAssignments = new HashMap<>();
         for (int i = 0; i < size(); i++) {
             labelAssignments.put(get(i), i + 1);
         }
-        Map<ImageSliceIndex, List<ROI3D>> groups = groupByPosition(true, true);
+        Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
-            ROI3DListData toRender = new ROI3DListData();
+            IJ3DROIListData toRender = new IJ3DROIListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
-            for (ROI3D roi3D : toRender) {
+            for (IJ3DROI roi3D : toRender) {
                 roi3D.getObject3D().draw(ih, labelAssignments.get(roi3D));
             }
         }, progressInfo);
@@ -496,7 +496,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
             if (progressInfo.isCancelled())
                 return null;
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, size());
-            ROI3D roi3D = this.get(i);
+            IJ3DROI roi3D = this.get(i);
 
             if (oneSliceIndex.getC() != 0 && roi3D.getChannel() != 0 && roi3D.getChannel() != oneSliceIndex.getC()) {
                 continue;
@@ -554,7 +554,7 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
                 return;
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("Generating outline", i, size());
             try {
-                ROI3D roi3D = get(i);
+                IJ3DROI roi3D = get(i);
                 switch (outline) {
                     case BoundingBox: {
                         int[] boundingBox = roi3D.getObject3D().getBoundingBox();
@@ -605,8 +605,8 @@ public class ROI3DListData extends ArrayList<ROI3D> implements JIPipeData, JIPip
         }
     }
 
-    public ROI3DListData shallowCopy() {
-        ROI3DListData result = new ROI3DListData();
+    public IJ3DROIListData shallowCopy() {
+        IJ3DROIListData result = new IJ3DROIListData();
         result.addAll(this);
         return result;
     }

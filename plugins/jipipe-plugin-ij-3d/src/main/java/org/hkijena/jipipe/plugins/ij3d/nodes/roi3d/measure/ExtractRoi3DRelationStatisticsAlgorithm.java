@@ -17,27 +17,25 @@ import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
-@SetJIPipeDocumentation(name = "Extract pairwise 3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
+@SetJIPipeDocumentation(name = "Extract pairwise IJ3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 1", create = true)
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
+@MarkNodeAsUnstable
 public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROI3DRelationMeasurementSetParameter measurements = new ROI3DRelationMeasurementSetParameter();
@@ -66,8 +64,8 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi1List = iterationStep.getInputData("ROI 1", ROI3DListData.class, progressInfo);
-        ROI3DListData roi2List = iterationStep.getInputData("ROI 2", ROI3DListData.class, progressInfo);
+        IJ3DROIListData roi1List = iterationStep.getInputData("ROI 1", IJ3DROIListData.class, progressInfo);
+        IJ3DROIListData roi2List = iterationStep.getInputData("ROI 2", IJ3DROIListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 

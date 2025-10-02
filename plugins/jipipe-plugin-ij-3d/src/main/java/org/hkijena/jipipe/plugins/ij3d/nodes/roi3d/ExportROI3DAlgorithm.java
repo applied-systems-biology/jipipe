@@ -19,17 +19,14 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -43,12 +40,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Export 3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @Deprecated
 @LabelAsJIPipeHidden
+@MarkNodeAsUnstable
 public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
@@ -100,7 +98,7 @@ public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
-        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
 
         rois.save(outputPath);
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);

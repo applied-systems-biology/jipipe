@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 
-@SetJIPipeDocumentation(name = "3D spot segmentation (local mean)", description = "The node works with two images, one containing the seeds of the objects, " +
+@SetJIPipeDocumentation(name = "IJ3D spot segmentation (local mean)", description = "The node works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D Filters or 3D Maxima Finder), the other image containing signal data. " +
         "The program computes a local threshold around each seeds and cluster voxels with values higher than the local threshold computed. " +
         "Three circles are drawn. The user defines the radius (in pixels) of each\n" +

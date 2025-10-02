@@ -18,18 +18,15 @@ import gnu.trove.list.array.TDoubleArrayList;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementColumn;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
@@ -37,14 +34,12 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
-@SetJIPipeDocumentation(name = "Color 3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
+@SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@MarkNodeAsUnstable
 public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private ROI3DMeasurementColumn fillMeasurement = ROI3DMeasurementColumn.Index;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
@@ -65,9 +60,9 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData outputData = new ROI3DListData();
+        IJ3DROIListData outputData = new IJ3DROIListData();
 
-        ROI3DListData inputRois = iterationStep.getInputData("ROI", ROI3DListData.class, progressInfo);
+        IJ3DROIListData inputRois = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Obtain statistics
@@ -97,7 +92,7 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         for (int row = 0; row < inputRois.size(); row++) {
             double fillValue = fillValues.get(row);
             double relativeFill = (fillValue - fillMin) / (fillMax - fillMin);
-            ROI3D roi = new ROI3D(inputRois.get(row));
+            IJ3DROI roi = new IJ3DROI(inputRois.get(row));
             if (mapFillColor.isEnabled()) {
                 roi.setFillColor(mapFillColor.getContent().apply(relativeFill));
             }

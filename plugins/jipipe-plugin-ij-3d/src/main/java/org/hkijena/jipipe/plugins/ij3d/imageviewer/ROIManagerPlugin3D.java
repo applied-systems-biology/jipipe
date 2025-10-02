@@ -33,8 +33,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeTo
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -60,13 +60,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
-    private final JList<ROI3D> roiListControl = new JList<>();
+    private final JList<IJ3DROI> roiListControl = new JList<>();
     private final JIPipeDesktopLargeToggleButtonRibbonAction displayROIViewMenuItem = new JIPipeDesktopLargeToggleButtonRibbonAction("Display ROI", "Determines whether ROI are displayed", JIPipe.RESOURCES.getIcon32("data-types/roi.png"));
     private final List<ROIManagerPlugin3DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private final Map<ImageSliceIndex, ROI2DListData> renderedRois = new HashMap<>();
-    private ROI3DListData rois = new ROI3DListData();
+    private IJ3DROIListData rois = new IJ3DROIListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
@@ -93,8 +93,8 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
         // Load ROI3D content
         if (getCurrentImage() != null) {
-            ROI3DListData data = new ROI3DListData();
-            for (ROI3DListData listData : getCurrentImage().extractOverlaysOfType(ROI3DListData.class)) {
+            IJ3DROIListData data = new IJ3DROIListData();
+            for (IJ3DROIListData listData : getCurrentImage().extractOverlaysOfType(IJ3DROIListData.class)) {
                 data.addAll(listData);
             }
             if (!data.isEmpty()) {
@@ -105,8 +105,8 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if (overlay instanceof ROI3DListData) {
-            importROIs((ROI3DListData) overlay);
+        if (overlay instanceof IJ3DROIListData) {
+            importROIs((IJ3DROIListData) overlay);
         }
     }
 
@@ -115,9 +115,9 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         // Currently not possible (creates copies of the ROI)
     }
 
-    private void importROIs(ROI3DListData overlay) {
-        for (ROI3D roi3D : overlay) {
-            ROI3D copy = new ROI3D();
+    private void importROIs(IJ3DROIListData overlay) {
+        for (IJ3DROI roi3D : overlay) {
+            IJ3DROI copy = new IJ3DROI();
             copy.setObject3D(roi3D.getObject3D());
             copy.copyMetadata(roi3D);
             rois.add(copy);
@@ -148,7 +148,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         return mainPanel;
     }
 
-    public ROI3DListData getSelectedROIOrAll(String title, String message) {
+    public IJ3DROIListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
             JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
             return null;
@@ -167,7 +167,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             else if (result == JOptionPane.YES_OPTION)
                 return rois;
             else {
-                ROI3DListData roi3DListData = new ROI3DListData();
+                IJ3DROIListData roi3DListData = new IJ3DROIListData();
                 roi3DListData.addAll(roiListControl.getSelectedValuesList());
                 return roi3DListData;
             }
@@ -328,7 +328,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //    }
 
     private void measureSelectedROI() {
-        ROI3DListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
+        IJ3DROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
         Measurement3DSettings settings = Measurement3DSettings.INSTANCE;
         ResultsTableData measurements = data.measure(ImageHandler.wrap(getCurrentImagePlus()), settings.getStatistics().getNativeValue(),
                 settings.isMeasureInPhysicalUnits(), "", new JIPipeProgressInfo());
@@ -385,19 +385,19 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private void importROIsFromFile() {
         Path path = JIPipeDesktop.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import 3D ROI", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
-            ROI3DListData data = ROI3DListData.importData(path, JIPipeProgressInfo.SILENT);
+            IJ3DROIListData data = IJ3DROIListData.importData(path, JIPipeProgressInfo.SILENT);
             importROIs(data);
         }
     }
 
     private void exportROIsToFile() {
-        ROI3DListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+        IJ3DROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
         if (result != null) {
             exportROIsToFile(result);
         }
     }
 
-    private void exportROIsToFile(ROI3DListData rois) {
+    private void exportROIsToFile(IJ3DROIListData rois) {
         Path path = JIPipeDesktop.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ROI_ZIP);
         if (path != null) {
             rois.save(path);
@@ -456,7 +456,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
-        List<ROI3D> selectedRois = roiListControl.getSelectedValuesList();
+        List<IJ3DROI> selectedRois = roiListControl.getSelectedValuesList();
         menu.removeAll();
         if (selectedRois.isEmpty()) {
             JMenuItem noSelection = new JMenuItem("No ROI selected");
@@ -465,12 +465,12 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             return;
         }
 
-        Color currentFillColor = selectedRois.stream().map(ROI3D::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
+        Color currentFillColor = selectedRois.stream().map(IJ3DROI::getFillColor).filter(Objects::nonNull).findAny().orElse(Color.RED);
         JMenuItem setFillColorItem = new JMenuItem("Set fill color ...", new SolidColorIcon(16, 16, currentFillColor));
         setFillColorItem.addActionListener(e -> {
             Color value = JColorChooser.showDialog(getViewerPanel(), "Set fill color", currentFillColor);
             if (value != null) {
-                for (ROI3D roi : selectedRois) {
+                for (IJ3DROI roi : selectedRois) {
                     roi.setFillColor(value);
                 }
                 roiListControl.repaint();
@@ -479,12 +479,12 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         });
         menu.add(setFillColorItem);
 
-        String currentName = selectedRois.stream().map(ROI3D::getName).filter(Objects::nonNull).findAny().orElse("");
+        String currentName = selectedRois.stream().map(IJ3DROI::getName).filter(Objects::nonNull).findAny().orElse("");
         JMenuItem setNameItem = new JMenuItem("Set name ...", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
         setNameItem.addActionListener(e -> {
             String value = JOptionPane.showInputDialog(getViewerPanel(), "Please set the name of the ROIs:", currentName);
             if (value != null) {
-                for (ROI3D roi : selectedRois) {
+                for (IJ3DROI roi : selectedRois) {
                     roi.setName(value);
                 }
                 roiListControl.repaint();
@@ -495,12 +495,12 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
         menu.addSeparator();
 
-        int currentCPosition = Math.max(0, selectedRois.stream().map(ROI3D::getChannel).min(Comparator.naturalOrder()).get());
+        int currentCPosition = Math.max(0, selectedRois.stream().map(IJ3DROI::getChannel).min(Comparator.naturalOrder()).get());
         JMenuItem setCPositionItem = new JMenuItem("Set channel ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setCPositionItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set channel", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
-                for (ROI3D roi : selectedRois) {
+                for (IJ3DROI roi : selectedRois) {
                     roi.setChannel(value.get());
                 }
                 roiListControl.repaint();
@@ -509,12 +509,12 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         });
         menu.add(setCPositionItem);
 
-        int currentTPosition = Math.max(0, selectedRois.stream().map(ROI3D::getFrame).min(Comparator.naturalOrder()).get());
+        int currentTPosition = Math.max(0, selectedRois.stream().map(IJ3DROI::getFrame).min(Comparator.naturalOrder()).get());
         JMenuItem setTPositionItem = new JMenuItem("Set T position ...", JIPipe.RESOURCES.getIcon16("actions/mark-location.png"));
         setTPositionItem.addActionListener(e -> {
             Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
             if (value.isPresent()) {
-                for (ROI3D roi : selectedRois) {
+                for (IJ3DROI roi : selectedRois) {
                     roi.setFrame(value.get());
                 }
                 roiListControl.repaint();
@@ -543,7 +543,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     public void removeSelectedROIs() {
-        ImmutableList<ROI3D> deleted = ImmutableList.copyOf(roiListControl.getSelectedValuesList());
+        ImmutableList<IJ3DROI> deleted = ImmutableList.copyOf(roiListControl.getSelectedValuesList());
         rois.removeAll(roiListControl.getSelectedValuesList());
         renderedRois.clear();
         updateListModel(Collections.emptySet());
@@ -555,11 +555,11 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         updateListModel(Collections.emptySet());
     }
 
-    public ROI3DListData getRois() {
+    public IJ3DROIListData getRois() {
         return rois;
     }
 
-    public void setRois(ROI3DListData rois) {
+    public void setRois(IJ3DROIListData rois) {
         this.rois = rois;
         updateListModel(Collections.emptySet());
     }
@@ -581,10 +581,10 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         updateListModel(Collections.emptySet());
     }
 
-    public void updateListModel(Collection<ROI3D> excludeFromFilter) {
-        DefaultListModel<ROI3D> model = new DefaultListModel<>();
-        List<ROI3D> selectedValuesList = roiListControl.getSelectedValuesList();
-        for (ROI3D roi : rois) {
+    public void updateListModel(Collection<IJ3DROI> excludeFromFilter) {
+        DefaultListModel<IJ3DROI> model = new DefaultListModel<>();
+        List<IJ3DROI> selectedValuesList = roiListControl.getSelectedValuesList();
+        for (IJ3DROI roi : rois) {
             boolean excluded = excludeFromFilter.contains(roi);
             if (!excluded && !selectedValuesList.isEmpty() && (filterListOnlySelected && !selectedValuesList.contains(roi)))
                 continue;
@@ -596,13 +596,13 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void updateContextPanels() {
-        List<ROI3D> selectedValuesList = roiListControl.getSelectedValuesList();
+        List<IJ3DROI> selectedValuesList = roiListControl.getSelectedValuesList();
         for (ROIManagerPlugin3DSelectionContextPanel selectionContextPanel : selectionContextPanels) {
             selectionContextPanel.selectionUpdated(rois, selectedValuesList);
         }
     }
 
-    public JList<ROI3D> getRoiListControl() {
+    public JList<IJ3DROI> getRoiListControl() {
         return roiListControl;
     }
 
@@ -610,13 +610,13 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         roiListControl.setSelectionInterval(0, roiListControl.getModel().getSize() - 1);
     }
 
-    public void setSelectedROI(Collection<ROI3D> select, boolean force) {
+    public void setSelectedROI(Collection<IJ3DROI> select, boolean force) {
         TIntList indices = new TIntArrayList();
-        DefaultListModel<ROI3D> model = (DefaultListModel<ROI3D>) roiListControl.getModel();
+        DefaultListModel<IJ3DROI> model = (DefaultListModel<IJ3DROI>) roiListControl.getModel();
 
         if (force) {
             boolean rebuild = false;
-            for (ROI3D roi : select) {
+            for (IJ3DROI roi : select) {
                 if (rois.contains(roi) && !model.contains(roi)) {
                     rebuild = true;
                     break;
@@ -625,11 +625,11 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             if (rebuild) {
                 roiListControl.clearSelection();
                 updateListModel(select);
-                model = (DefaultListModel<ROI3D>) roiListControl.getModel();
+                model = (DefaultListModel<IJ3DROI>) roiListControl.getModel();
             }
         }
 
-        for (ROI3D roi : select) {
+        for (IJ3DROI roi : select) {
             int i = model.indexOf(roi);
             if (i >= 0) {
                 indices.add(i);

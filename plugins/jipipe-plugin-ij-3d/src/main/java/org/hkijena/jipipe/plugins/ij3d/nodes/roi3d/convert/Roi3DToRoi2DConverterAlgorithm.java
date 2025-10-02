@@ -16,21 +16,19 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.convert;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-@SetJIPipeDocumentation(name = "Convert 3D ROI to 2D ROI", description = "Converts a 3D ROI list into a 2D ROI list.")
+@SetJIPipeDocumentation(name = "Convert IJ3D ROI to 2D ROI", description = "Converts a 3D ROI list into a 2D ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@MarkNodeAsUnstable
 public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public Roi3DToRoi2DConverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -42,7 +40,7 @@ public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData inputRois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
         ROI2DListData outputRois = inputRois.toRoi2D(progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }

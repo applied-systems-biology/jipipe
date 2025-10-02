@@ -22,14 +22,15 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
-@SetJIPipeDocumentation(name = "Remove 3D overlay", description = "Remove overlay ROIs")
+@SetJIPipeDocumentation(name = "IJ3D Remove 3D overlay", description = "Remove overlay ROIs")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay")
+@MarkNodeAsUnstable
 public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RemoveOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -42,7 +43,7 @@ public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).shallowCopy();
-        img.removeOverlaysOfType(ROI3DListData.class);
+        img.removeOverlaysOfType(IJ3DROIListData.class);
         iterationStep.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }
 }

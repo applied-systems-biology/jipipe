@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@SetJIPipeDocumentation(name = "3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
+@SetJIPipeDocumentation(name = "IJ3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
         "The method is based on a maximum Z-projection followed by a 2D Segmentation. " +
         "The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed. ")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Nuclei-Segmentation/")

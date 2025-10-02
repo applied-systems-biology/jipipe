@@ -18,10 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -33,8 +30,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -43,10 +40,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Split into individual 3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
+@SetJIPipeDocumentation(name = "Split into individual IJ3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@MarkNodeAsUnstable
 public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
@@ -74,12 +72,12 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData data = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData data = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (int i = 0; i < data.size(); i++) {
-            ROI3D roi = data.get(i);
+            IJ3DROI roi = data.get(i);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (generatedAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(generatedAnnotation.getContent())) {
 
@@ -96,7 +94,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 annotations.add(new JIPipeTextAnnotation(generatedAnnotation.getContent(), annotationValue.evaluateToString(variables)));
             }
-            ROI3DListData output = new ROI3DListData();
+            IJ3DROIListData output = new IJ3DROIListData();
             output.add(roi);
             iterationStep.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }

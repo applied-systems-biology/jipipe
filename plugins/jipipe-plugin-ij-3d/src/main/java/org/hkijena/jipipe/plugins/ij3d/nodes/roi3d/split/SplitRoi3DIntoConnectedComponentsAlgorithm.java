@@ -19,10 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -34,8 +31,8 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -50,11 +47,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Split 3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
+@SetJIPipeDocumentation(name = "Split IJ3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
 @ConfigureJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI3DListData.class, name = "Components", create = true)
+@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Components", create = true)
+@MarkNodeAsUnstable
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter("");
@@ -84,7 +82,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roiList = iterationStep.getInputData("Input", ROI3DListData.class, progressInfo);
+        IJ3DROIListData roiList = iterationStep.getInputData("Input", IJ3DROIListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
@@ -120,8 +118,8 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
                         componentGraph.addEdge(roi1Index, roi2Index);
                     }
                 } else {
-                    ROI3D roi1 = roiList.get(roi1Index);
-                    ROI3D roi2 = roiList.get((int) measurements.getValueAsDouble(row, "Roi2.Index"));
+                    IJ3DROI roi1 = roiList.get(roi1Index);
+                    IJ3DROI roi2 = roiList.get((int) measurements.getValueAsDouble(row, "Roi2.Index"));
                     if (roi1.getObject3D().hasOneVoxelColoc(roi2.getObject3D())) {
                         componentGraph.addEdge(roi1Index, roi2Index);
                     }
@@ -144,7 +142,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             componentNameAnnotation.addAnnotationIfEnabled(annotations, "" + i);
 
-            ROI3DListData componentList = new ROI3DListData();
+            IJ3DROIListData componentList = new IJ3DROIListData();
             for (Integer index : connectedSet) {
                 componentList.add(roiList.get(index));
             }

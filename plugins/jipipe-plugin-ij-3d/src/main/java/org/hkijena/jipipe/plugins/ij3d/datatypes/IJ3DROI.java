@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Wrapper around an {@link mcib3d.geom.Object3D} that also provides additional information and methods found within {@link ij.gui.Roi}
  */
-public class ROI3D {
+public class IJ3DROI {
     private Object3D object3D;
 
     private Map<String, String> metadata = new HashMap<>();
@@ -43,19 +43,19 @@ public class ROI3D {
 
     private Color fillColor = Color.RED;
 
-    public ROI3D() {
+    public IJ3DROI() {
     }
 
-    public ROI3D(ROI3D other) {
+    public IJ3DROI(IJ3DROI other) {
         this.object3D = IJ3DUtils.duplicateObject3D(other.object3D);
         copyMetadata(other);
     }
 
-    public ROI3D(Object3D object3D) {
+    public IJ3DROI(Object3D object3D) {
         this.object3D = object3D;
     }
 
-    public void copyMetadata(ROI3D other) {
+    public void copyMetadata(IJ3DROI other) {
         this.metadata = new HashMap<>(other.metadata);
         this.channel = other.channel;
         this.frame = other.frame;
