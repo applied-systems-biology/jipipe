@@ -215,8 +215,8 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
             }
             if (SystemUtils.OS_ARCH == null) {
                 return true;
-            } else if (SystemUtils.OS_ARCH.equals("arm64")) {
-                return getClassifier().contains("arm64") || getClassifier().contains("amd64") || getClassifier().contains("x86");
+            } else if (SystemUtils.OS_ARCH.equals("arm64") || SystemUtils.OS_ARCH.equals("aarch64")) {
+                return getClassifier().contains("arm64") || getClassifier().contains("amd64") || getClassifier().contains("x86") || getClassifier().contains("aarch64");
             } else if (SystemUtils.OS_ARCH.equals("amd64") || SystemUtils.OS_ARCH.equals("x86_64")) {
                 return getClassifier().contains("amd64") || getClassifier().contains("x86");
             } else {
