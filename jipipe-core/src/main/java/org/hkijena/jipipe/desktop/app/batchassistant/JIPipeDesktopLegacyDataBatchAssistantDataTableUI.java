@@ -75,7 +75,7 @@ import java.util.Set;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesktopWorkbenchPanel implements JIPipeParameterCollection.ParameterChangedEventListener {
 
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final MenuManager menuManager = new MenuManager();
@@ -92,7 +92,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
      * @param workbenchUI the workbench UI
      * @param dataTable   data table containing the visualization of the iteration steps
      */
-    public JIPipeDesktopDataBatchAssistantDataTableUI(JIPipeDesktopWorkbench workbenchUI, JIPipeDataTable dataTable) {
+    public JIPipeDesktopLegacyDataBatchAssistantDataTableUI(JIPipeDesktopWorkbench workbenchUI, JIPipeDataTable dataTable) {
         super(workbenchUI);
         this.dataTable = dataTable;
 
@@ -234,7 +234,7 @@ public class JIPipeDesktopDataBatchAssistantDataTableUI extends JIPipeDesktopWor
             String name = "Iteration steps: " + getDataTable().getDisplayName();
             getDesktopWorkbench().getDocumentTabPane().addTab(name,
                     JIPipe.RESOURCES.getIcon16("actions/database.png"),
-                    new JIPipeDesktopDataBatchAssistantDataTableUI(getDesktopWorkbench(), getDataTable()),
+                    new JIPipeDesktopLegacyDataBatchAssistantDataTableUI(getDesktopWorkbench(), getDataTable()),
                     JIPipeDesktopTabPane.CloseMode.withSilentCloseButton,
                     true);
             getDesktopWorkbench().getDocumentTabPane().switchToLastTab();

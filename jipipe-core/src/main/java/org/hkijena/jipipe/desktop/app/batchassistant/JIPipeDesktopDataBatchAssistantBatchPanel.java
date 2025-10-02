@@ -13,20 +13,17 @@
 
 package org.hkijena.jipipe.desktop.app.batchassistant;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 
 public class JIPipeDesktopDataBatchAssistantBatchPanel extends JIPipeDesktopProjectWorkbenchPanel {
 
     private final JIPipeDesktopDataBatchAssistantUI iterationStepAssistantUI;
-    private JIPipeDesktopDataBatchAssistantDataTableUI batchTable;
+    private JIPipeDesktopMinimalDataBatchAssistantDataTableUI batchTable;
 
     public JIPipeDesktopDataBatchAssistantBatchPanel(JIPipeDesktopProjectWorkbench workbench, JIPipeDesktopDataBatchAssistantUI iterationStepAssistantUI) {
         super(workbench);
@@ -36,13 +33,7 @@ public class JIPipeDesktopDataBatchAssistantBatchPanel extends JIPipeDesktopProj
 
     private void initialize() {
         setLayout(new BorderLayout());
-
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Preview iteration steps", JIPipe.RESOURCES.getIcon16("actions/format-list-ordered.png"), 4);
-        groupHeaderPanel.addToEndOfTitlePanel(UIUtils.createBalloonHelpButton("The node will be executed for each of the following steps (1 step per row). Please review if the data is assigned as expected."));
-
-        add(groupHeaderPanel, BorderLayout.NORTH);
-
-        this.batchTable = new JIPipeDesktopDataBatchAssistantDataTableUI(getDesktopWorkbench(), new JIPipeDataTable(JIPipeData.class));
+        this.batchTable = new JIPipeDesktopMinimalDataBatchAssistantDataTableUI(getDesktopWorkbench(), new JIPipeDataTable(JIPipeData.class));
         add(batchTable, BorderLayout.CENTER);
 //        add(new JLabel("test"), BorderLayout.CENTER);
     }

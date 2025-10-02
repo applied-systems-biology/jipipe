@@ -43,22 +43,19 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanel extends JIPipeDesk
     private void initialize() {
         setLayout(new BorderLayout());
 
-        JIPipeDesktopFormPanel.GroupHeaderPanel groupHeaderPanel = new JIPipeDesktopFormPanel.GroupHeaderPanel("Input data", JIPipe.RESOURCES.getIcon16("actions/insert-table.png"), 4);
-
-
         showAllInputsCheck.setOpaque(false);
         showAllInputsCheck.setSelected(SHOW_ALL_INPUT_DATA);
         showAllInputsCheck.addActionListener(e -> {
             SHOW_ALL_INPUT_DATA = showAllInputsCheck.isSelected();
             updateStatus();
         });
-        groupHeaderPanel.addToEndOfTitlePanel(showAllInputsCheck);
-
-        groupHeaderPanel.addToEndOfTitlePanel(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps.\n" +
-                "A green column indicates that the text annotation is used for determining which rows are put together into an iteration step.\n" +
-                "If a row has a unique iteration step, the associated column and its values are highlighted with a color."));
-
-        add(groupHeaderPanel, BorderLayout.NORTH);
+//        groupHeaderPanel.addToEndOfTitlePanel(showAllInputsCheck);
+//
+//        groupHeaderPanel.addToEndOfTitlePanel(UIUtils.createBalloonHelpButton("An overview of the available input data tables and which columns are considered for assigning data into iteration steps.\n" +
+//                "A green column indicates that the text annotation is used for determining which rows are put together into an iteration step.\n" +
+//                "If a row has a unique iteration step, the associated column and its values are highlighted with a color."));
+//
+//        add(groupHeaderPanel, BorderLayout.NORTH);
 
         add(contentPanel, BorderLayout.CENTER);
     }
