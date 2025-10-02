@@ -108,7 +108,14 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
 
     @Override
     public String getName() {
-        return example.getNodeInfo().getName() + ": " + example.getNodeTemplate().getName();
+        String result = example.getNodeInfo().getName() + ": " + example.getNodeTemplate().getName();
+        if(example.getNodeInfo().isUnstable()) {
+            result += " (unstable!)";
+        }
+        else if(example.getNodeInfo().isDeprecated()) {
+            result += " (deprecated)";
+        }
+        return result;
     }
 
     @Override

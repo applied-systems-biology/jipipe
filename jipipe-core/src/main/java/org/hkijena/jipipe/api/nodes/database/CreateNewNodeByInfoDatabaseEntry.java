@@ -106,7 +106,14 @@ public class CreateNewNodeByInfoDatabaseEntry implements JIPipeNodeDatabaseEntry
 
     @Override
     public String getName() {
-        return nodeInfo.getName();
+        String result = nodeInfo.getName();
+        if(nodeInfo.isUnstable()) {
+            result += " (unstable!)";
+        }
+        else if(nodeInfo.isDeprecated()) {
+            result += " (deprecated)";
+        }
+        return result;
     }
 
     @Override

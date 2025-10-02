@@ -197,7 +197,15 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.highlightedNodeBorderColor = ThemeUtils.getCurrentStyle().getNodeHighlightBorder();
         this.slotFillColor = ThemeUtils.getCurrentStyle().getNodeSlotBackground();
         this.slotParametersFillColor = ColorUtils.mix(getSlotFillColor(), getNodeFillColor(), 0.5);
-        this.mainTextColor = UIManager.getColor("Label.foreground");
+        if(node.getInfo().isUnstable()) {
+            this.mainTextColor = ThemeUtils.getCurrentStyle().getDangerColor();
+        }
+        else if(node.getInfo().isDeprecated()) {
+            this.mainTextColor = ThemeUtils.getCurrentStyle().getWarningColor();
+        }
+        else {
+            this.mainTextColor = UIManager.getColor("Label.foreground");
+        }
         this.nodeDisabledPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
                 new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{COLOR_DISABLED_1, COLOR_DISABLED_1, COLOR_DISABLED_2, COLOR_DISABLED_2}, MultipleGradientPaint.CycleMethod.REPEAT);
@@ -628,6 +636,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     protected String getDisplayedNodeName() {
+        if(node.getInfo().isUnstable()) {
+            return getNode().getName() + " (unstable!)";
+        }
+        if(node.getInfo().isDeprecated()) {
+            return getNode().getName() + " (deprecated)";
+        }
         return getNode().getName();
     }
 

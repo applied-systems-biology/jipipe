@@ -92,7 +92,11 @@ public class TooltipUtils {
         builder.append("# ").append(info.getName()).append("\n\n");
 
         if (info.isDeprecated()) {
-            builder.append("**This node is deprecated**\n\n");
+            builder.append("**This node is deprecated. There are likely replacement nodes with enhanced functionality.**\n\n");
+        }
+
+        if(info.isUnstable()) {
+            builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 
         if (!info.getAliases().isEmpty()) {
@@ -167,7 +171,11 @@ public class TooltipUtils {
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
 
         if (node.getInfo().isDeprecated()) {
-            builder.append("**This node is deprecated**\n\n");
+            builder.append("**This node is deprecated. There are likely replacement nodes with enhanced functionality.**\n\n");
+        }
+
+        if(node.getInfo().isUnstable()) {
+            builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 
         if (!info.getAliases().isEmpty()) {

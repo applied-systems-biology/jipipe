@@ -99,7 +99,14 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public String getName() {
-        return StringUtils.orElse(alias.getAlternativeName(), nodeInfo.getName());
+        String result = StringUtils.orElse(alias.getAlternativeName(), nodeInfo.getName());
+        if(nodeInfo.isUnstable()) {
+            result += " (unstable!)";
+        }
+        else if(nodeInfo.isDeprecated()) {
+            result += " (deprecated)";
+        }
+        return result;
     }
 
     @Override
