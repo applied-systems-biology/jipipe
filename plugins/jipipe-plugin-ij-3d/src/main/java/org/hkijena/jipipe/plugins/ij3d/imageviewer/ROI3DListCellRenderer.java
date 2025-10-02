@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -23,7 +23,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class ROI3DListCellRenderer extends JPanel implements ListCellRenderer<ROI3D> {
+public class ROI3DListCellRenderer extends JPanel implements ListCellRenderer<IJ3DROI> {
 
     private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
@@ -67,7 +67,7 @@ public class ROI3DListCellRenderer extends JPanel implements ListCellRenderer<RO
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends ROI3D> list, ROI3D value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends IJ3DROI> list, IJ3DROI value, int index, boolean isSelected, boolean cellHasFocus) {
 
         if (!StringUtils.isNullOrEmpty(value.getName()))
             nameLabel.setText(value.getName());

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -34,13 +34,13 @@ import java.util.Objects;
 public class ROI3DImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable dataTable = new JIPipeDataTable(ROI3DListData.class);
+        JIPipeDataTable dataTable = new JIPipeDataTable(IJ3DROIListData.class);
         if (!objects.isEmpty()) {
             for (Object object : objects) {
                 if (object instanceof RoiManager3D_2) {
                     RoiManager3D_2 manager = (RoiManager3D_2) object;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
-                    ROI3DListData listData = new ROI3DListData();
+                    IJ3DROIListData listData = new IJ3DROIListData();
                     listData.addFromPopulation(population, 0, 0);
                     if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
@@ -56,7 +56,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
                     }
                     RoiManager3D_2 manager = (RoiManager3D_2) window;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
-                    ROI3DListData listData = new ROI3DListData();
+                    IJ3DROIListData listData = new IJ3DROIListData();
                     listData.addFromPopulation(population, 0, 0);
                     if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
@@ -70,7 +70,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
 
     @Override
     public Class<? extends JIPipeData> getImportedJIPipeDataType() {
-        return ROI3DListData.class;
+        return IJ3DROIListData.class;
     }
 
     @Override

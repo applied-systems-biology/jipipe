@@ -20,10 +20,7 @@ import mcib3d.image3d.regionGrowing.Watershed3DVoronoi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -38,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Voronoi 3D", description = "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of" +
+@SetJIPipeDocumentation(name = "IJ3D Voronoi 3D", description = "The Voronoi algorithm will draw lines between objects at equal distances from the boundaries of" +
         " the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background.\n" +
         "\n" +
         "Neighbouring objects can then be computed as objects having a line in common. ")

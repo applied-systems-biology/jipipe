@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceInde
 import java.util.HashMap;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Watershed 3D segmentation", description = "The 3D Watershed operation works with two images, one containing the seeds of the objects, " +
+@SetJIPipeDocumentation(name = "IJ3D Watershed 3D segmentation", description = "The 3D Watershed operation works with two images, one containing the seeds of the objects, " +
         "that can be obtained from local maxima (see 3D filters), the other image containing signal data. " +
         "A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). " +
         "A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values.")

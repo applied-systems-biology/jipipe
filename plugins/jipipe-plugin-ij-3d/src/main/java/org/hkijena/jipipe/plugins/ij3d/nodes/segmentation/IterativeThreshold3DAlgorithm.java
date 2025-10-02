@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 import java.util.ArrayList;
 
-@SetJIPipeDocumentation(name = "3D iterative thresholding", description = "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, " +
+@SetJIPipeDocumentation(name = "IJ3D iterative thresholding", description = "Tests all thresholds and detect objects for all thresholds, it will then try to build a lineage of the objects detected, " +
         "linking them from one threshold to the next threshold, taking possible splits into account.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
 @AddJIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")

@@ -23,8 +23,8 @@ import mcib3d.image3d.ImageFloat;
 import mcib3d.image3d.ImageHandler;
 import org.apache.commons.lang3.function.TriFunction;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurement;
 import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurement;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
@@ -113,8 +113,8 @@ public class IJ3DUtils {
      * @param progressInfo the progress info
      * @return the 3D ROI
      */
-    public static ROI3DListData roi2DtoRoi3D(ROI2DListData roi2DList, boolean force2D, boolean fast, Neighborhood3D neighborhood, JIPipeProgressInfo progressInfo) {
-        ROI3DListData roi3DList = new ROI3DListData();
+    public static IJ3DROIListData roi2DtoRoi3D(ROI2DListData roi2DList, boolean force2D, boolean fast, Neighborhood3D neighborhood, JIPipeProgressInfo progressInfo) {
+        IJ3DROIListData roi3DList = new IJ3DROIListData();
 
         // Put into groups
         Map<ImageSliceIndex, List<Roi>> grouped;
@@ -162,7 +162,7 @@ public class IJ3DUtils {
                     ImageHandler imageHandler = ImageHandler.wrap(mask);
                     Objects3DPopulation population = new Objects3DPopulation(imageHandler);
 
-                    for (ROI3D roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
+                    for (IJ3DROI roi3D : roi3DList.addFromPopulation(population, group.getKey().getC() + 1, group.getKey().getT() + 1)) {
                         if (roi.getFillColor() != null) {
                             roi3D.setFillColor(roi.getFillColor());
                         }
@@ -202,7 +202,7 @@ public class IJ3DUtils {
         return result;
     }
 
-    public static void measureRoi3d(ImageHandler referenceImage, ROI3DListData roiList, int measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+    public static void measureRoi3d(ImageHandler referenceImage, IJ3DROIListData roiList, int measurements, boolean physicalUnits, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int lastPercentage = 0;
         for (int i = 0; i < roiList.size(); i++) {
             if (progressInfo.isCancelled()) {
@@ -218,14 +218,14 @@ public class IJ3DUtils {
         }
     }
 
-    public static void measureRoi3dRelation(ImageHandler referenceImage, ROI3DListData roi1List, ROI3DListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, boolean preciseColocalization, boolean ignoreC, boolean ignoreT, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
+    public static void measureRoi3dRelation(ImageHandler referenceImage, IJ3DROIListData roi1List, IJ3DROIListData roi2List, int measurements, boolean physicalUnits, boolean requireColocalization, boolean preciseColocalization, boolean ignoreC, boolean ignoreT, String columnPrefix, ResultsTableData target, JIPipeProgressInfo progressInfo) {
         int maxItems = roi1List.size() * roi2List.size();
         int currentItems = 0;
         int lastPercentage = 0;
         for (int i = 0; i < roi1List.size(); i++) {
-            ROI3D roi1 = roi1List.get(i);
+            IJ3DROI roi1 = roi1List.get(i);
             for (int j = 0; j < roi2List.size(); j++) {
-                ROI3D roi2 = roi2List.get(j);
+                IJ3DROI roi2 = roi2List.get(j);
                 ++currentItems;
                 if (progressInfo.isCancelled()) {
                     return;
@@ -264,7 +264,7 @@ public class IJ3DUtils {
         }
     }
 
-    public static void generateRoi3dRelationRowMeasurements(ImageHandler reference, int roi1Index, int roi2Index, int measurements, boolean physicalUnits, ResultsTableData target, ROI3D roi1, ROI3D roi2, int row, String columnPrefix) {
+    public static void generateRoi3dRelationRowMeasurements(ImageHandler reference, int roi1Index, int roi2Index, int measurements, boolean physicalUnits, ResultsTableData target, IJ3DROI roi1, IJ3DROI roi2, int row, String columnPrefix) {
         Object3D object1 = roi1.getObject3D();
         Object3D object2 = roi2.getObject3D();
 
@@ -351,7 +351,7 @@ public class IJ3DUtils {
             if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.IntersectionStats)) {
                 Object3DVoxels intersectionObject = object1.getIntersectionObject(object2);
                 if (intersectionObject != null) {
-                    generateRoi3dRowMeasurements(reference, -1, new ROI3D(intersectionObject), 38904, physicalUnits, target, row, "Intersection.");
+                    generateRoi3dRowMeasurements(reference, -1, new IJ3DROI(intersectionObject), 38904, physicalUnits, target, row, "Intersection.");
                 }
             }
             if (ROI3DRelationMeasurement.includes(measurements, ROI3DRelationMeasurement.CurrentStats)) {
@@ -371,7 +371,7 @@ public class IJ3DUtils {
         }
     }
 
-    public static void generateRoi3dRowMeasurements(ImageHandler referenceImage, int index, ROI3D roi3D, int measurements, boolean physicalUnits, ResultsTableData target, int row, String columnPrefix) {
+    public static void generateRoi3dRowMeasurements(ImageHandler referenceImage, int index, IJ3DROI roi3D, int measurements, boolean physicalUnits, ResultsTableData target, int row, String columnPrefix) {
         Object3D object3D = roi3D.getObject3D();
 
         if (ROI3DMeasurement.includes(measurements, ROI3DMeasurement.Index)) {

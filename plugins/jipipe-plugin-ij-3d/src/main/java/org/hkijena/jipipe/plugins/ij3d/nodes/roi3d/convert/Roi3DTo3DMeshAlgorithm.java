@@ -16,17 +16,14 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.convert;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3D;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
@@ -35,10 +32,11 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
+@SetJIPipeDocumentation(name = "IJ3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI3DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
+@MarkNodeAsUnstable
 public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private String meshNamePrefix;
@@ -131,10 +129,10 @@ public class Roi3DTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI3DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI3DListData.class, progressInfo);
+        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
         Scene3DData scene3DData = new Scene3DData();
         for (int i = 0; i < rois.size(); i++) {
-            ROI3D roi3D = rois.get(i);
+            IJ3DROI roi3D = rois.get(i);
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, rois.size());
             Scene3DUnindexedMeshGeometry geometry = roi3D.toGeometry(overrideMeshColor.getContentOrDefault(null), physicalSizes, forceMeshLengthUnit, meshLengthUnit, smooth, roiProgress);
             geometry.setName(StringUtils.nullToEmpty(meshNamePrefix) + StringUtils.nullToEmpty(geometry.getName()));
