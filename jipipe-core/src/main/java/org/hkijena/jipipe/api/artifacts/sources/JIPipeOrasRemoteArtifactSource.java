@@ -31,6 +31,7 @@ import org.hkijena.jipipe.utils.process.PeriodicProcessSidecarTask;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
 
@@ -101,10 +102,13 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
         private final long totalSize;
         private long lastSize = 0;
         private int lastPercentage = 0;
+        private boolean firstTick = true;
+        private boolean downloadComplete = false;
         
         // Time tracking fields
         private long startTime = System.currentTimeMillis();
         private long currentSpeed = 0;
+        private long finalSpeed = 0;
         
         // Animation fields
         private static final String[] ANIMATION_PATTERNS = {
@@ -124,6 +128,19 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                 long currentSize = FileUtils.sizeOfDirectory(tmpPath.toFile());
                 long currentTime = System.currentTimeMillis();
                 
+                // Check if download is complete
+                if (currentSize >= totalSize && !downloadComplete) {
+                    downloadComplete = true;
+                    onDownloadComplete(executor, currentSize, currentTime);
+                    return;
+                }
+                
+                // Show initial information on first tick
+                if (firstTick) {
+                    showInitialInfo(executor);
+                    firstTick = false;
+                }
+                
                 if(currentSize > lastSize) {
                     lastSize = currentSize;
                     
@@ -139,26 +156,47 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                         long elapsedMillis = currentTime - startTime;
                         String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
                         
-                        // Calculate estimated remaining time
+                        // Calculate estimated remaining time with better edge case handling
                         String estimatedDuration = "N/A";
-                        if (currentSpeed > 0 && currentSize < totalSize) {
-                            long remainingBytes = totalSize - currentSize;
-                            long estimatedMillis = (remainingBytes * 1000) / currentSpeed;
-                            estimatedDuration = StringUtils.formatDuration(estimatedMillis);
+                        if (currentSpeed > 0) {
+                            if (currentSize < totalSize) {
+                                long remainingBytes = totalSize - currentSize;
+                                // Handle edge case: if remaining bytes is very small, show minimal time
+                                if (remainingBytes < 1024) { // Less than 1KB
+                                    estimatedDuration = "< 1s";
+                                } else {
+                                    long estimatedMillis = (remainingBytes * 1000) / currentSpeed;
+                                    estimatedDuration = StringUtils.formatDuration(estimatedMillis);
+                                }
+                            } else {
+                                estimatedDuration = "Complete";
+                            }
+                        } else if (currentSize < totalSize) {
+                            estimatedDuration = "Calculating...";
                         }
                         
                         // Get animated arrow pattern
                         String animatedArrow = ANIMATION_PATTERNS[animationIndex];
                         animationIndex = (animationIndex + 1) % ANIMATION_PATTERNS.length;
                         
+                        // Format speed in MB/s
+                        String speedText;
+                        if (currentSpeed > 0) {
+                            double speedMBs = currentSpeed / (1024.0 * 1024.0);
+                            speedText = String.format(Locale.US, "%.2f MB/s", speedMBs);
+                        } else {
+                            speedText = "? MB/s";
+                        }
+                        
                         // Format progress message
-                        String progressMessage = String.format("O R A S [%s] [%d%%] Elapsed: %s | Estimated: %s | Downloaded: %s / %s",
+                        String progressMessage = String.format("O R A S [%s] [%d%%] Elapsed: %s | Estimated: %s | Downloaded: %s / %s | Speed: %s",
                                 animatedArrow,
                                 percentage,
                                 elapsedDuration,
                                 estimatedDuration,
                                 StringUtils.formatSize(Math.min(currentSize, totalSize)),
-                                StringUtils.formatSize(totalSize));
+                                StringUtils.formatSize(totalSize),
+                                speedText);
                         
                         executor.getProgressInfo().log(progressMessage);
                         lastPercentage = percentage;
@@ -167,6 +205,47 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
             }
             catch (Throwable ignored) {
             }
+        }
+        
+        private void showInitialInfo(ExtendedExecutor executor) {
+            String initialMessage = String.format("O R A S [>----] [0%%] Elapsed: 0s | Estimated: Calculating... | Downloaded: %s / %s | Speed: ? MB/s",
+                    StringUtils.formatSize(0),
+                    StringUtils.formatSize(totalSize));
+            executor.getProgressInfo().log(initialMessage);
+        }
+        
+        private void onDownloadComplete(ExtendedExecutor executor, long finalSize, long completionTime) {
+            // Calculate final speed
+            long totalTimeDiff = completionTime - startTime;
+            if (totalTimeDiff > 0) {
+                finalSpeed = (finalSize * 1000) / totalTimeDiff;
+            }
+            
+            // Format speed in MB/s
+            String speedText;
+            if (finalSpeed > 0) {
+                double speedMBs = finalSpeed / (1024.0 * 1024.0);
+                speedText = String.format("%.2f MB/s", speedMBs);
+            } else {
+                speedText = "? MB/s";
+            }
+            
+            // Calculate final statistics
+            long elapsedMillis = completionTime - startTime;
+            String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
+            
+            // Get final animation state
+            String animatedArrow = ANIMATION_PATTERNS[animationIndex];
+            
+            // Format completion message
+            String completionMessage = String.format("O R A S [%s] [100%%] Elapsed: %s | Downloaded: %s / %s | Speed: %s",
+                    animatedArrow,
+                    elapsedDuration,
+                    StringUtils.formatSize(finalSize),
+                    StringUtils.formatSize(totalSize),
+                    speedText);
+            
+            executor.getProgressInfo().log(completionMessage);
         }
     }
 }
