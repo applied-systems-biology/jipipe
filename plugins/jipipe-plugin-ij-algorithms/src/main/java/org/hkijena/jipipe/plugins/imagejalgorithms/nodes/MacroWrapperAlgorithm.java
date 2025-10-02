@@ -85,7 +85,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ROI2DListData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
-public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
+public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Byte.class,

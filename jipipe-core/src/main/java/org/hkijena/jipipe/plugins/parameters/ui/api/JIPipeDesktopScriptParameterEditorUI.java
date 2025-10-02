@@ -49,6 +49,11 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameterEditorUI<JIPipeScriptParameter> {
 
+    /**
+     * The script editor will look for a specific code editor dock and use that one if
+     */
+    public static final String DOCK_CODE = "CODE_EDITOR";
+
     private static final List<ExternalEditor> OPENED_EXTERNAL_EDITORS = new ArrayList<>();
     private CustomEditorPane textArea;
     private JLabel collapseInfoLabel;
