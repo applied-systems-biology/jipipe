@@ -45,9 +45,12 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueBu
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
@@ -76,10 +79,10 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private final JIPipeDesktopDataBatchAssistantInputPreviewPanel inputPreviewPanel;
     private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Iteration step preview calculation");
     private final StaticDebouncer updateStatusDebouncer;
-    JIPipeDesktopSplitPane splitPane1 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
-    JIPipeDesktopSplitPane splitPane2 = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.4);
+    JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
+    private static String LAST_SELECTED_ITEM;
 
 
     /**
@@ -271,15 +274,38 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         setLayout(new BorderLayout());
 
         // Setup split panes
-        add(splitPane1, BorderLayout.CENTER);
-        splitPane1.setTopComponent(splitPane2);
+        add(splitPane, BorderLayout.CENTER);
 
         initializeTopPanel();
         initializeParameterPanel();
+        initializeOutputsPanel();
+    }
 
-        splitPane1.setBottomComponent(batchPanel);
-        splitPane2.setTopComponent(inputPreviewPanel);
+    private void initializeOutputsPanel() {
+        JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.Top);
+        tabPane.setOpaque(true);
+        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
+        tabPane.registerSingletonTab("INPUT_PREVIEW",
+                "Inputs",
+                JIPipe.RESOURCES.getIcon16("actions/insert-table.png"),
+                () -> inputPreviewPanel,
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
+        tabPane.registerSingletonTab("ITERATION_STEP_PREVIEW",
+                "Preview",
+                JIPipe.RESOURCES.getIcon16("actions/format-list-ordered.png"),
+                () -> batchPanel,
+                JIPipeDesktopTabPane.SingletonTabMode.Present);
+        tabPane.getTabbedPane().addChangeListener(e -> {
+            String id = tabPane.getCurrentlySelectedSingletonTabId();
+            if(!StringUtils.isNullOrEmpty(id)) {
+                LAST_SELECTED_ITEM = id;
+            }
+        });
+        if(!StringUtils.isNullOrEmpty(LAST_SELECTED_ITEM)) {
+            tabPane.selectSingletonTab(LAST_SELECTED_ITEM);
+        }
 
+        splitPane.setBottomComponent(tabPane);
     }
 
 
@@ -310,7 +336,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
 
         panel.add(parameterPanel, BorderLayout.CENTER);
 
-        splitPane2.setBottomComponent(panel);
+        splitPane.setTopComponent(panel);
     }
 
     private void toggleParameterPanelAdvancedMode(JIPipeDesktopParameterFormPanel parameterPanel, boolean advancedMode) {
@@ -331,7 +357,10 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
-        toolBar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), calculatePreviewQueue).makeFlat());
+        JIPipeDesktopRunnableQueueButton queueButton = new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), calculatePreviewQueue).makeFlat();
+        queueButton.setTasksFinishedLabel("");
+        queueButton.setTaskSingleRunningLabel("Generating previews ...");
+        toolBar.add(queueButton);
 
         toolBar.add(Box.createHorizontalGlue());
 
