@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -180,6 +181,11 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implemen
     @JIPipeParameter("code")
     public void setCode(PythonScript code) {
         this.code = code;
+    }
+
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("code");
     }
 
     @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")

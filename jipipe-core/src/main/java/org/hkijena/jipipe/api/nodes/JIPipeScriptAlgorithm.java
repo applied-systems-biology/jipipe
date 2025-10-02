@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+
 /**
  * Interface that exposes a central {@link org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter} that
  * can be targeted by the code editor dock.
@@ -20,4 +23,10 @@ package org.hkijena.jipipe.api.nodes;
  * into a specific dock.
  */
 public interface JIPipeScriptAlgorithm {
+    /**
+     * The parameter access that points towards a parameter of the type {@link org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter} (or implementations).
+     * Will be called by {@link org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopScriptParameterEditorUI} to defer the script editor to the dedicated script editor dock panel if available.
+     * @return the script parameter access
+     */
+    JIPipeParameterAccess getScriptParameterAccess();
 }

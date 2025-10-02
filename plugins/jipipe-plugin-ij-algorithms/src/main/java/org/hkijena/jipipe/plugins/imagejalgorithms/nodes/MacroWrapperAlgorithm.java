@@ -441,6 +441,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements J
         this.code = code;
     }
 
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("code");
+    }
+
     @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterSerializationMode.Object)
     @SetJIPipeDocumentation(name = "Macro parameters", description = "The parameters are passed as variables to the macro.")
     public JIPipeDynamicParameterCollection getMacroParameters() {

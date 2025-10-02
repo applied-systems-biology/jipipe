@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -226,6 +227,11 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
     @JIPipeParameter("script")
     public void setScript(RScriptParameter script) {
         this.script = script;
+    }
+
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("script");
     }
 
     @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +
