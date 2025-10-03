@@ -60,6 +60,9 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
     private boolean isCollapsed;
     private Component pathEditorComponent;
     private JButton closeExternalEditorsButton;
+    private JToggleButton externalCodeToggle;
+    private JToggleButton collapseButton;
+    private JButton openIdeButton;
 
     public JIPipeDesktopScriptParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeScriptParameter.class, parameters);
@@ -101,17 +104,20 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JToggleButton externalCodeToggle = new JToggleButton("Use external file", JIPipe.RESOURCES.getIcon16("actions/edit-link.png"));
+        externalCodeToggle = new JToggleButton("", JIPipe.RESOURCES.getIcon16("actions/edit-link.png"));
+        externalCodeToggle.setToolTipText("Use external file");
         externalCodeToggle.setToolTipText("If enabled, the code is extracted from an external file.");
         externalCodeToggle.addActionListener(e -> toggleExternalCode());
         toolBar.add(externalCodeToggle);
 
-        JToggleButton collapseButton = new JToggleButton("Collapse", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
+        collapseButton = new JToggleButton("", JIPipe.RESOURCES.getIcon16("actions/eye-slash.png"));
+        collapseButton.setToolTipText("Collapse/show");
         collapseButton.setSelected(code.isCollapsed());
         collapseButton.addActionListener(e -> toggleCollapse());
         toolBar.add(collapseButton);
 
-        JButton openIdeButton = new JButton("Open in ...", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
+        openIdeButton = new JButton("", JIPipe.RESOURCES.getIcon16("actions/open-in-new-window.png"));
+        openIdeButton.setToolTipText("Open in ...");
         JPopupMenu popupMenu = UIUtils.addPopupMenuToButton(openIdeButton);
         popupMenu.add(UIUtils.createMenuItem("New tab", "Opens the editor in a new tab", JIPipe.RESOURCES.getIcon16("actions/tab-new.png"), this::openIDEInTab));
         popupMenu.add(UIUtils.createMenuItem("New window", "Opens the editor in a new window", JIPipe.RESOURCES.getIcon16("actions/window_new.png"), this::openIdeInNewWindow));
