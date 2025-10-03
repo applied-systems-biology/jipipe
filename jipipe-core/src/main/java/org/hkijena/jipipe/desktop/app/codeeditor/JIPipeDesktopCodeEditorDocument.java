@@ -13,8 +13,14 @@
 
 package org.hkijena.jipipe.desktop.app.codeeditor;
 
+import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
+
 /**
  * Interface for managing a document that is opened within a {@link JIPipeDesktopCodeEditorUI}
  */
 public interface JIPipeDesktopCodeEditorDocument {
+
+    JIPipeScriptParameter pull();
+
+    void push(JIPipeScriptParameter param);
 }

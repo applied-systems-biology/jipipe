@@ -90,7 +90,6 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override

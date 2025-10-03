@@ -93,7 +93,6 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override

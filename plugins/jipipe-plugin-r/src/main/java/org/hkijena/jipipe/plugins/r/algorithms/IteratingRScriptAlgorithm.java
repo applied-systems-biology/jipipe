@@ -194,7 +194,6 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implemen
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        script.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @JIPipeParameter(value = "variables", persistence = JIPipeParameterSerializationMode.Object)

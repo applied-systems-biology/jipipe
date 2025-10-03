@@ -194,7 +194,6 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        script.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @SetJIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +

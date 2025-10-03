@@ -153,7 +153,6 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        kernelScript.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @SetJIPipeDocumentation(name = "Preprocessing", description = "CLIJ2 requires some information about the output image(s) and the memory that is allocated by the kernel operation. " +

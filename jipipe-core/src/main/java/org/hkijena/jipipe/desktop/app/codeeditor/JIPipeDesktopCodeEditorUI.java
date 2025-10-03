@@ -20,7 +20,27 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
  * Cental panel for code editing
  */
 public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
+    private JIPipeDesktopCodeEditorDocument document;
+
+    public JIPipeDesktopCodeEditorUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopCodeEditorDocument document) {
+        super(desktopWorkbench);
+        setDocument(document);
+    }
+
     public JIPipeDesktopCodeEditorUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
+        initialize();
+    }
+
+    private void initialize() {
+
+    }
+
+    public void setDocument(JIPipeDesktopCodeEditorDocument document) {
+        this.document = document;
+    }
+
+    public JIPipeDesktopCodeEditorDocument getDocument() {
+        return document;
     }
 }

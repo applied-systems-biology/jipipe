@@ -91,7 +91,6 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm impleme
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override
