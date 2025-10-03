@@ -15,10 +15,18 @@ package org.hkijena.jipipe.desktop.app.codeeditor;
 
 import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 
+import javax.swing.*;
+
 /**
  * Interface for managing a document that is opened within a {@link JIPipeDesktopCodeEditorUI}
  */
 public interface JIPipeDesktopCodeEditorDocument {
+
+    void createActionsMenu(JIPipeDesktopCodeEditorUI editorUI, JPopupMenu popupMenu);
+
+    String getTitle();
+
+    Icon getIcon();
 
     JIPipeScriptParameter pull();
 

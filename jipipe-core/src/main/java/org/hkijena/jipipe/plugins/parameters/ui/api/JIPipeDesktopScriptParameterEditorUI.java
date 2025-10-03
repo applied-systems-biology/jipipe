@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.codeeditor.JIPipeDesktopCodeEditorUI;
+import org.hkijena.jipipe.desktop.app.codeeditor.JIPipeDesktopParameterCodeEditorDocument;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.hkijena.jipipe.plugins.parameters.ui.api.script.JIPipeDesktopScriptParameterEditorUIExternalEditor;
@@ -56,6 +57,8 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
     private JToggleButton collapseButton;
     private JButton openIdeButton;
     private JButton openCodePanelButton;
+    private JIPipeDesktopCodeEditorUI codeEditorDock;
+    private boolean withDock;
 
     public JIPipeDesktopScriptParameterEditorUI(InitializationParameters parameters) {
         super(JIPipeScriptParameter.class, parameters);
@@ -159,7 +162,7 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
         JIPipeDesktopCodeEditorUI editorDock = getCodeEditorDock();
         JIPipeDesktopDockPanel dockPanel = getDockPanel();
         if (editorDock != null && dockPanel != null) {
-            dockPanel.activatePanel(DOCK_CODE, true);
+            dockPanel.activatePanel(DOCK_CODE, false);
         }
     }
 
@@ -221,10 +224,33 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
     }
 
     @Override
-    public void reload() {
-        JIPipeDesktopCodeEditorUI codeEditorDock = getCodeEditorDock();
-        final boolean withDock = isScriptAlgorithmScriptParameter() && codeEditorDock != null;
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        if(!withDock) {
+            // If we are with a dock, we don't want to keep reloading
+            super.onParameterChanged(event);
+        }
+    }
 
+    @Override
+    public void onShownFirstTime() {
+        codeEditorDock = getCodeEditorDock();
+        withDock = isScriptAlgorithmScriptParameter() && codeEditorDock != null;
+
+        super.onShownFirstTime();
+
+        // We let the code dock do this itself
+//        if(withDock) {
+//            SwingUtilities.invokeLater(this::loadParameterIntoDock);
+//        }
+    }
+
+//    private void loadParameterIntoDock() {
+//        codeEditorDock.setDocument(new JIPipeDesktopParameterCodeEditorDocument(getParameterAccess()));
+//        showCodeDock();
+//    }
+
+    @Override
+    public void reload() {
         JIPipeScriptParameter code = getParameter();
 
         remove(textArea);
@@ -237,7 +263,6 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
         if (withDock) {
             add(openCodePanelButton, BorderLayout.CENTER);
-            SwingUtilities.invokeLater(this::showCodeDock);
         } else if (!code.isCollapsed() || !isCollapsed) {
             if (code.isCollapsed()) {
                 add(collapseInfoLabel, BorderLayout.CENTER);
