@@ -31,6 +31,7 @@ import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompen
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -66,12 +67,14 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
     private JIPipeDesktopRunSingleAlgorithmSettingsPanel currentRunSettingsPanel;
     private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads();
     private JIPipeDesktopTabPane tabPane;
+    private final JIPipeCefClientService cefClientService;
 
     /**
      * @param context SciJava context
      */
     public JIPipeDesktopRunSingleAlgorithmWindow(Context context) {
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         initialize();
         selectNode(null);
         reloadAlgorithmList();
@@ -83,6 +86,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
      */
     public JIPipeDesktopRunSingleAlgorithmWindow(Context context, JIPipeNodeInfo selectedNode) {
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         reloadAlgorithmList();
         selectNode(selectedNode);
     }
@@ -93,6 +97,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
      */
     public JIPipeDesktopRunSingleAlgorithmWindow(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         reloadAlgorithmList();
         selectNode(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
     }
@@ -506,5 +511,10 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
     @Override
     public JIPipeProject getProject() {
         return null;
+    }
+
+    @Override
+    public JIPipeCefClientService getCefClientService() {
+        return cefClientService;
     }
 }

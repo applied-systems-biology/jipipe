@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 
 import java.awt.*;
 
@@ -22,6 +23,13 @@ import java.awt.*;
  * A user interface that is running on a desktop machine
  */
 public interface JIPipeDesktopWorkbench extends JIPipeWorkbench {
+
+    /**
+     * Returns a {@link JIPipeCefClientService} for creating CEF browsers
+     * @return the CEF client service
+     */
+    JIPipeCefClientService getCefClientService();
+
     /**
      * @return The tab pane
      */

@@ -14,10 +14,16 @@
 package org.hkijena.jipipe.desktop.app;
 
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 
 import java.awt.*;
 
 public class JIPipeDesktopDummyWorkbench extends JIPipeDummyWorkbench implements JIPipeDesktopWorkbench {
+    @Override
+    public JIPipeCefClientService getCefClientService() {
+        return null;
+    }
+
     @Override
     public JIPipeDesktopTabPane getDocumentTabPane() {
         return null;
