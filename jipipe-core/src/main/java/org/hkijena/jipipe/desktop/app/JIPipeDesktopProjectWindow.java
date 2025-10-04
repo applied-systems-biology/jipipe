@@ -41,6 +41,7 @@ import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventEmitter;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
@@ -73,6 +74,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
+    private final JIPipeCefClientService cefClientService;
 
     /**
      * @param context          context
@@ -83,6 +85,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     public JIPipeDesktopProjectWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         JIPipeDesktopSplashScreen.getInstance().hideSplash();
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         OPEN_WINDOWS.add(this);
         WINDOW_OPENED_EVENT_EMITTER.emit(new WindowOpenedEvent(this));
         initialize();
@@ -757,5 +760,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
             }
         }
+    }
+
+    public JIPipeCefClientService getCefClientService() {
+        return cefClientService;
     }
 }

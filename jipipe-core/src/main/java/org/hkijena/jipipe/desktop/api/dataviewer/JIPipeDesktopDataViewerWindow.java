@@ -34,6 +34,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.window.JIPipeDesktopAlwaysOnTopToggle;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
@@ -82,9 +83,11 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
+    private final JIPipeCefClientService cefClientService;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
+        this.cefClientService = new JIPipeCefClientService(this);
         this.toggleAutoRefreshFromCache = new JIPipeDesktopSmallToggleButtonRibbonAction("Auto-refresh", "If enabled, automatically update the displayed data when the cache changes", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), true, (button) -> {
             if (button.isSelected()) {
                 refreshFromLocalCache();
@@ -606,6 +609,10 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private boolean isDisplayingLocallyCachedData() {
         return getWorkbench().getProject() != null && dataTableBrowser != null && dataTableBrowser.getLocalDataTable() instanceof JIPipeDataSlot && ((JIPipeDataSlot) dataTableBrowser.getLocalDataTable()).getNode() != null;
+    }
+
+    public JIPipeCefClientService getCefClientService() {
+        return cefClientService;
     }
 
     public static class DownloadFullDataRun extends DefaultJIPipeRunnable {

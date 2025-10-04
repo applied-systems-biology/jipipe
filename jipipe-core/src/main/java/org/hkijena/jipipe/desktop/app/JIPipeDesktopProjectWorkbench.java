@@ -70,6 +70,7 @@ import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdow
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
+import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.*;
@@ -1081,6 +1082,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 //        documentTabPane.switchToLastTab();
         JIPipeDesktopRunNextWindow runNextWindow = new JIPipeDesktopRunNextWindow(this);
         runNextWindow.setVisible(true);
+    }
+
+    @Override
+    public JIPipeCefClientService getCefClientService() {
+        return window.getCefClientService();
     }
 
     /**
