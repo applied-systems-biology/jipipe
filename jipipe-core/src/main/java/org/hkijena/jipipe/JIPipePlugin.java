@@ -15,11 +15,12 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.scijava.Disposable;
 
 /**
  * Interface shared between all JIPipe extensions
  */
-public interface JIPipePlugin extends JIPipeDependency {
+public interface JIPipePlugin extends JIPipeDependency, Disposable {
 
     /**
      * Returns true if the extension can be activated.
@@ -83,5 +84,9 @@ public interface JIPipePlugin extends JIPipeDependency {
      */
     default boolean isBeta() {
         return false;
+    }
+
+    @Override
+    default void dispose() {
     }
 }

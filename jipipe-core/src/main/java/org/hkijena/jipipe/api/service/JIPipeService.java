@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.service;
 
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeInitializationReport;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.components.*;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventEmitter;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventEmitter;
 import org.hkijena.jipipe.api.service.init.JIPipeServiceDefaultInitializer;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.JavaExtensionValidationReportContext;
+import org.scijava.log.LogLevel;
 import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
@@ -91,6 +93,22 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         metadataTypes = new JIPipeMetadataTypesServiceComponent(this);
         artifacts = new JIPipeArtifactsServiceComponent(this);
         nodeTemplates = new JIPipeNodeTemplatesServiceComponent(this);
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+
+        // Unload all plugins
+        for (String activatedPluginId : getPlugins().getActivatedPlugins()) {
+            logService.log(LogLevel.INFO, "Unloading plugin " + activatedPluginId);
+            try {
+                JIPipePlugin plugin = getPlugins().getKnownPluginById(activatedPluginId);
+                plugin.dispose();
+            } catch (Throwable e) {
+                getLogService().log(LogLevel.ERROR, "Failed to unload plugin " + activatedPluginId, e);
+            }
+        }
     }
 
     public JIPipeServiceState getState() {

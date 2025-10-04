@@ -39,6 +39,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
+import org.scijava.log.LogLevel;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
@@ -436,6 +437,10 @@ public final class JIPipe {
         if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
+        if(instance != null) {
+            instance.dispose();
+        }
+
         Timer timer = new Timer(500, e -> {
 //            System.exit(exitCode);
             // Context introduces a shutdown hook that causes a deadlock
