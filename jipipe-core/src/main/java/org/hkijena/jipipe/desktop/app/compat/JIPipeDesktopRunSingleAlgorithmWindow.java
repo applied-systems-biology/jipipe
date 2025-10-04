@@ -86,6 +86,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
      */
     public JIPipeDesktopRunSingleAlgorithmWindow(Context context, JIPipeNodeInfo selectedNode) {
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         reloadAlgorithmList();
         selectNode(selectedNode);
     }
@@ -96,6 +97,7 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
      */
     public JIPipeDesktopRunSingleAlgorithmWindow(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
         this.context = context;
+        this.cefClientService = new JIPipeCefClientService(this);
         reloadAlgorithmList();
         selectNode(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
     }
