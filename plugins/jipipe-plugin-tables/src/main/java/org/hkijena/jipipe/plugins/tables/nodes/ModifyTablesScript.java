@@ -86,7 +86,6 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override

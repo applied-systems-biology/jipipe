@@ -30,12 +30,14 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.util.Objects;
 
 /**
  * A UI for a parameter type
  */
-public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWorkbenchPanel implements Contextual, Disposable, JIPipeParameterCollection.ParameterChangedEventListener {
+public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWorkbenchPanel implements Contextual, Disposable, JIPipeParameterCollection.ParameterChangedEventListener, HierarchyListener {
     public static final int CONTROL_STYLE_PANEL = 1;
     public static final int CONTROL_STYLE_LIST = 2;
     public static final int CONTROL_STYLE_CHECKBOX = 4;
@@ -57,6 +59,7 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
         this.contextParent = initializationParameters.parent;
         this.parameterAccess = initializationParameters.parameterAccess;
         parameterAccess.getSource().getParameterChangedEventEmitter().subscribeWeak(this);
+        addHierarchyListener(this);
     }
 
     /**
@@ -264,6 +267,26 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
      */
     public Class<T> getEditorParameterClass() {
         return editorParameterClass;
+    }
+
+    @Override
+    public void hierarchyChanged(HierarchyEvent e) {
+        if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
+            if(isShowing()) {
+                onShownFirstTime();
+                removeHierarchyListener(this);
+            }
+        }
+    }
+
+    public void onShownFirstTime() {
+        if(reloadOnShownFirstTime()) {
+            reload();
+        }
+    }
+
+    public boolean reloadOnShownFirstTime() {
+        return false;
     }
 
     public static class InitializationParameters {

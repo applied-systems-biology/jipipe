@@ -85,7 +85,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ROI2DListData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
-public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
+public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Byte.class,
@@ -423,7 +423,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @SetJIPipeDocumentation(name = "Code", description = "The macro code. " + "Images are opened as windows named according to the input slot. You have to select windows with " +
@@ -439,6 +438,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("code")
     public void setCode(ImageJMacro code) {
         this.code = code;
+    }
+
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("code");
     }
 
     @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterSerializationMode.Object)

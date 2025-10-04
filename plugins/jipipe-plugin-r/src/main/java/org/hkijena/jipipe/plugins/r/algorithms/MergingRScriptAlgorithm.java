@@ -23,16 +23,14 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -80,7 +78,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @RegisterJIPipeEnvironmentUsage(REnvironment.class)
-public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
+public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -196,7 +194,6 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        script.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @SetJIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
@@ -229,6 +226,11 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("script")
     public void setScript(RScriptParameter script) {
         this.script = script;
+    }
+
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("script");
     }
 
     @SetJIPipeDocumentation(name = "Annotation merge strategy", description = "Determines how annotations that are added in the R script are " +

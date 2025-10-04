@@ -89,7 +89,6 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override

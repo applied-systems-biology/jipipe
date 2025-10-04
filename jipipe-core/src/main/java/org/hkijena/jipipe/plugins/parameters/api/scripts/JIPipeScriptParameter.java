@@ -31,7 +31,6 @@ import java.util.Objects;
 public abstract class JIPipeScriptParameter {
     private String code = "";
     private boolean collapsed = false;
-    private OptionalPathParameter externalScriptFile = new OptionalPathParameter(Paths.get(""), false);
     private String externalCodeBuffer;
     private FileTime externalCodeBufferLastUpdate;
 
@@ -49,22 +48,10 @@ public abstract class JIPipeScriptParameter {
     public JIPipeScriptParameter(JIPipeScriptParameter other) {
         this.code = other.code;
         this.collapsed = other.collapsed;
-        this.externalScriptFile = other.externalScriptFile;
     }
 
     @JsonGetter("code")
     public String getCode() {
-        if (externalScriptFile.isEnabled()) {
-            try {
-                if (externalCodeBuffer == null || !Objects.equals(externalCodeBufferLastUpdate, Files.getLastModifiedTime(externalScriptFile.getContent()))) {
-                    externalCodeBuffer = new String(Files.readAllBytes(externalScriptFile.getContent()), StandardCharsets.UTF_8);
-                }
-                return externalCodeBuffer;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return code;
-            }
-        }
         return code;
     }
 
@@ -82,35 +69,7 @@ public abstract class JIPipeScriptParameter {
     public String getCode(Path workDirectory) {
         if (workDirectory == null)
             return getCode();
-        if (externalScriptFile.isEnabled()) {
-            Path externalScriptPath = externalScriptFile.getContent();
-            if (!externalScriptPath.isAbsolute()) {
-                externalScriptPath = workDirectory.resolve(externalScriptPath);
-            }
-            try {
-                if (externalCodeBuffer == null || !Objects.equals(externalCodeBufferLastUpdate, Files.getLastModifiedTime(externalScriptPath))) {
-                    externalCodeBuffer = new String(Files.readAllBytes(externalScriptPath), StandardCharsets.UTF_8);
-                }
-                return externalCodeBuffer;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return code;
-            }
-        }
         return code;
-    }
-
-    /**
-     * Converts the external script file reference into a relative path
-     *
-     * @param workDirectory the current work directory
-     */
-    public void makeExternalScriptFileRelative(Path workDirectory) {
-        if (externalScriptFile.isEnabled() && workDirectory != null && externalScriptFile.getContent() != null) {
-            if (externalScriptFile.getContent().isAbsolute() && externalScriptFile.getContent().startsWith(workDirectory)) {
-                externalScriptFile.setContent(workDirectory.relativize(externalScriptFile.getContent()));
-            }
-        }
     }
 
     /**
@@ -144,27 +103,17 @@ public abstract class JIPipeScriptParameter {
         this.collapsed = collapsed;
     }
 
-    @JsonGetter("external-script-file")
-    public OptionalPathParameter getExternalScriptFile() {
-        return externalScriptFile;
-    }
-
-    @JsonSetter("external-script-file")
-    public void setExternalScriptFile(OptionalPathParameter externalScriptFile) {
-        this.externalScriptFile = externalScriptFile;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         JIPipeScriptParameter that = (JIPipeScriptParameter) o;
-        return collapsed == that.collapsed && Objects.equals(code, that.code) && Objects.equals(externalScriptFile, that.externalScriptFile);
+        return collapsed == that.collapsed && Objects.equals(code, that.code);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(code, collapsed, externalScriptFile);
+        return Objects.hash(code, collapsed);
     }
 
     /**

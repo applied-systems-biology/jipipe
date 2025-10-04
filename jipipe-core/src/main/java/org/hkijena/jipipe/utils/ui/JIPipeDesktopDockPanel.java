@@ -746,6 +746,13 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         }
     }
 
+    public void deactivatePanel(String id, boolean saveState) {
+        Panel panel = panels.get(id);
+        if (panel != null) {
+            deactivatePanel(panel, saveState);
+        }
+    }
+
     public <T extends JComponent> T getPanelComponent(String id, Class<T> klass) {
         Panel panel = panels.getOrDefault(id, null);
         if (panel != null) {

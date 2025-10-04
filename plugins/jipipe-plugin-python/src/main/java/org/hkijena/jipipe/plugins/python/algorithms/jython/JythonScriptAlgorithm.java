@@ -22,10 +22,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -52,7 +54,7 @@ import java.util.List;
         "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
         "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeScriptAlgorithm {
 
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -114,7 +116,6 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @SetJIPipeDocumentation(name = "Script", description = "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
@@ -127,7 +128,11 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     @JIPipeParameter("code")
     public void setCode(PythonScript code) {
         this.code = code;
+    }
 
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("code");
     }
 
     @SetJIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
