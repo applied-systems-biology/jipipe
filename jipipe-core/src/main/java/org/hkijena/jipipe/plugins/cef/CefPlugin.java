@@ -102,6 +102,16 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
+    public void dispose() {
+        super.dispose();
+
+        if(app != null) {
+            app.dispose();
+            app = null;
+        }
+    }
+
+    @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:cef";
     }
