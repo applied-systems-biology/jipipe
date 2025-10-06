@@ -79,7 +79,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -105,7 +105,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         tableDict = (PyDictionary) pythonInterpreter.get("table");
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 

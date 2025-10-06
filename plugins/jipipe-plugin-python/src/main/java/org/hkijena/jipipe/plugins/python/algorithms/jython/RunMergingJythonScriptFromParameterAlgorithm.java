@@ -84,7 +84,7 @@ public class RunMergingJythonScriptFromParameterAlgorithm extends JIPipeMergingA
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -112,7 +112,7 @@ public class RunMergingJythonScriptFromParameterAlgorithm extends JIPipeMergingA
         pythonInterpreter.set("output_slot_map", outputSlotMap);
         pythonInterpreter.set("progress_info", progressInfo);
         try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
-            pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+            pythonInterpreter.exec(code.getCode());
         }
     }
 

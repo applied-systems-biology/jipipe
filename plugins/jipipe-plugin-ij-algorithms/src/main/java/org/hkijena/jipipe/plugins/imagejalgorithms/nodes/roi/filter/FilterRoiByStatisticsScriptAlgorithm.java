@@ -123,7 +123,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(iterationStep.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         roiList = (List<PyDictionary>) pythonInterpreter.get("roi_list").__tojava__(List.class);
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
@@ -146,7 +146,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 

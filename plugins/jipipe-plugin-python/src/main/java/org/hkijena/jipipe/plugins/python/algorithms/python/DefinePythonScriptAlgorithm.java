@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 
-@SetJIPipeDocumentation(name = "Python script", description = "Defines a Python script")
+@SetJIPipeDocumentation(name = "Define Python script", description = "Defines a Python script")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true)
 @AddJIPipeOutputSlot(value = PythonScriptData.class, name = "Script", create = true)

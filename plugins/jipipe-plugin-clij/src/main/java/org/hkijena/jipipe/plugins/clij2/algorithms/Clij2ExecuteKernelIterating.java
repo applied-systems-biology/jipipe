@@ -106,7 +106,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         if (!getNonParameterInputSlots().isEmpty()) {
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
-        pythonInterpreter.exec(preprocessingScript.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(preprocessingScript.getCode());
 
         // Fetch constants
         Map<String, Object> clParameters = new HashMap<>();
@@ -142,7 +142,7 @@ public class Clij2ExecuteKernelIterating extends JIPipeIteratingAlgorithm {
         if (pythonInterpreter.get("cl_program") != null) {
             kernelName = pythonInterpreter.get("cl_program").__tojava__(String.class).toString();
         }
-        clij2.executeCode(kernelScript.getCode(getProjectDirectory()), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
+        clij2.executeCode(kernelScript.getCode(), kernelName, clDimensionsArr, clGlobalSizesArr, clParameters);
 
         // Extract outputs
         for (Map.Entry<String, JIPipeOutputDataSlot> entry : getOutputSlotMap().entrySet()) {

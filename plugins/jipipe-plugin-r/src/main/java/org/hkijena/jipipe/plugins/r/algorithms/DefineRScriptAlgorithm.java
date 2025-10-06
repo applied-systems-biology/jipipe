@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParamet
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.strings.RScriptData;
 
-@SetJIPipeDocumentation(name = "R script", description = "Defines an R script")
+@SetJIPipeDocumentation(name = "Define R script", description = "Defines an R script")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true)
 @AddJIPipeOutputSlot(value = RScriptData.class, name = "Script", create = true)

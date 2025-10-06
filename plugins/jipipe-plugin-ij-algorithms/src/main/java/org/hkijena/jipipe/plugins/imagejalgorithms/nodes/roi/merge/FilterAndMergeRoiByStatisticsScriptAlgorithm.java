@@ -97,7 +97,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         super.run(runContext, progressInfo);
         // Pass input to script
         pythonInterpreter.set("roi_lists", pythonDataRow);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         pythonDataRow = (List<PyDictionary>) pythonInterpreter.get("roi_lists").__tojava__(List.class);
 
         // Generate output
@@ -152,7 +152,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 

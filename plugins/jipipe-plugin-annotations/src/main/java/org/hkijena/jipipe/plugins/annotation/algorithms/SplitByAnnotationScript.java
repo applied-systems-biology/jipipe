@@ -93,7 +93,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -114,7 +114,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(iterationStep.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe

@@ -142,7 +142,7 @@ public class RunIteratingPythonScriptFromParameterAlgorithm extends JIPipeIterat
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode(getProjectDirectory())).append("\n");
+        code.append("\n").append(this.code.getCode()).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());

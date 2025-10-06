@@ -82,7 +82,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -118,7 +118,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         }
 
         pythonInterpreter.set("tables", rows);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
         for (int i = 0; i < rows.size(); i++) {

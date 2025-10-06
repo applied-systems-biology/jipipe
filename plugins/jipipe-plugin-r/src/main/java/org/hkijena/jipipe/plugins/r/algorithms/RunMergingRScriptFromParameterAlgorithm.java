@@ -164,7 +164,7 @@ public class RunMergingRScriptFromParameterAlgorithm extends JIPipeMergingAlgori
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode(getProjectDirectory())).append("\n");
+        code.append("\n").append(script.getCode()).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());

@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParamet
 import org.hkijena.jipipe.plugins.strings.ImageJMacroData;
 import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 
-@SetJIPipeDocumentation(name = "ImageJ macro", description = "Defines an ImageJ macro")
+@SetJIPipeDocumentation(name = "Define ImageJ macro", description = "Defines an ImageJ macro")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImageJMacroData.class, name = "Script", create = true)

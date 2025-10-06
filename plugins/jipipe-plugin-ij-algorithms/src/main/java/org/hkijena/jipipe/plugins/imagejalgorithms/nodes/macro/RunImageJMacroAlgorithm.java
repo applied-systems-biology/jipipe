@@ -19,6 +19,7 @@ import ij.macro.Interpreter;
 import ij.measure.ResultsTable;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -27,15 +28,13 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
@@ -47,6 +46,9 @@ import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExport
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExporterRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImportOperationRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImporterRef;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacroParameter;
+import org.hkijena.jipipe.plugins.strings.ImageJMacroData;
+import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
@@ -57,7 +59,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
+@SetJIPipeDocumentation(name = "Run ImageJ Macro", description = "Runs a custom ImageJ macro. JIPipe will iterate through the iteration steps and execute operations to convert JIPipe data into their ImageJ equivalent (see JIPipe to ImageJ parameter). Then the macro code is executed, followed by operations to import " +
+        "the result data into JIPipe data (see ImageJ to JIPipe parameter). Please feel free to click the 'Load example' button in the parameters to get started." +
+        "\n\nPlease keep in mind the following remarks:\n\n" +
+        "<ul>" +
+        "<li>Input images are opened as windows named according to the input slot. You have to select windows with the select() function or comparable functions.</li>" +
+        "<li>Output images are extracted by finding a window that is named according to the output slot. Ensure to rename() windows accordingly.</li>" +
+        "<li>To extract the 'Results' table output, add an output of type 'Results table' and set the name to 'Results'. Alternatively, you can configure the output in 'JIPipe to ImageJ' and override the name to 'Results'</li>" +
+        "<li>To import other tables, use a different slot name or set the appropriate configuration.</li>" +
+        "<li>Please note that there is only one ROI manager. This is a restriction of ImageJ.</li>" +
+        "<li>Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.</li>" +
+        "<li>You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name.</li>" +
+        "</ul>")
+@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(ImagePlusData.class)
+@AddJIPipeInputSlot(ROI2DListData.class)
+@AddJIPipeInputSlot(ResultsTableData.class)
+@AddJIPipeInputSlot(PathData.class)
+@AddJIPipeOutputSlot(ImagePlusData.class)
+@AddJIPipeOutputSlot(ROI2DListData.class)
+@AddJIPipeOutputSlot(ResultsTableData.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
+public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
+    public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(ImageJMacroData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Byte.class,
@@ -75,6 +99,8 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private int importDelay = 1000;
     private int exportDelay = 250;
+     private ImageJMacroParameter code = new ImageJMacroParameter();
+     private boolean externalCode = false;
 
     /**
      * @param info the info
@@ -105,6 +131,8 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
         this.importDelay = other.importDelay;
         this.exportDelay = other.exportDelay;
         this.macroParameters = new JIPipeDynamicParameterCollection(other.macroParameters);
+        this.code = new ImageJMacroParameter(other.code);
+        this.externalCode = other.externalCode;
         registerSubParameter(macroParameters);
 
         // Importer settings
@@ -116,8 +144,34 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
         outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImportOperationRef.class, this, this::getDefaultImporterRef, false);
         other.outputFromImageJImporters.copyTo(outputFromImageJImporters);
         registerSubParameter(outputFromImageJImporters);
+
+        updateSlots();
     }
 
+    private void updateSlots() {
+        toggleSlot(SLOT_SCRIPT, externalCode);
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("code".equals(access.getKey()) && externalCode) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @SetJIPipeDocumentation(name = "External code", description = "If enabled, run code from an input slot")
+    @JIPipeParameter(value = "external-code", important = true)
+    public boolean isExternalCode() {
+        return externalCode;
+    }
+
+    @JIPipeParameter("external-code")
+    public void setExternalCode(boolean externalCode) {
+        this.externalCode = externalCode;
+        updateSlots();
+    }
 
     @SetJIPipeDocumentation(name = "Wait before importing", description = "Additional waiting time in milliseconds before results generated by ImageJ are imported back into JIPipe after the execution of the macro. Increase this delay if results are missing or are duplicated.")
     @JIPipeParameter("import-delay")
@@ -159,6 +213,26 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Object getDefaultImporterRef(JIPipeDataSlotInfo info) {
         return new ImageJDataImportOperationRef(JIPipe.getImageJAdapters().getDefaultImporterFor(info.getDataClass()));
+    }
+
+    @SetJIPipeDocumentation(name = "Code", description = "The macro code. " + "Images are opened as windows named according to the input slot. You have to select windows with " +
+            "the select() function or comparable functions. You have have one results table input which " +
+            "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
+            "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
+            "Annotations can also be accessed via a function getJIPipeAnnotation(key) or getJIPipeTextAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
+    @JIPipeParameter("code")
+    public ImageJMacroParameter getCode() {
+        return code;
+    }
+
+    @JIPipeParameter("code")
+    public void setCode(ImageJMacroParameter code) {
+        this.code = code;
+    }
+
+    @Override
+    public JIPipeParameterAccess getScriptParameterAccess() {
+        return getParameterAccess("code");
     }
 
     @Override
@@ -268,7 +342,14 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    protected abstract String getMacroCode(JIPipeSingleIterationStep iterationStep, Path projectDirectory, JIPipeProgressInfo progressInfo);
+    private String getMacroCode(JIPipeSingleIterationStep iterationStep, Path projectDirectory, JIPipeProgressInfo progressInfo) {
+        if(externalCode) {
+            throw new RuntimeException("Not implemented yet");
+        }
+        else {
+            return code.getCode();
+        }
+    }
 
     private void passOutputData(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
@@ -278,8 +359,7 @@ public abstract class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm {
 
             if (configuration instanceof ImageJDataImporterRef) {
                 importer = ((ImageJDataImporterRef) configuration).getInstance();
-            } else if (configuration instanceof ImageJDataImportOperationRef) {
-                ImageJDataImportOperationRef operationRef = (ImageJDataImportOperationRef) configuration;
+            } else if (configuration instanceof ImageJDataImportOperationRef operationRef) {
                 importer = operationRef.getInstance();
                 operationRef.configure(parameters);
             } else {
