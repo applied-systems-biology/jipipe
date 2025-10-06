@@ -18,7 +18,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -29,6 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -37,6 +41,7 @@ import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParamet
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
@@ -53,6 +58,7 @@ import java.util.Map;
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
 public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeScriptAlgorithm {
+    public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
 
     private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -60,6 +66,7 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
     private boolean suppressLogs = false;
+    private boolean externalCode = false;
 
     /**
      * Creates a new instance
@@ -69,6 +76,7 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
     public RunPythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
+        updateSlots();
     }
 
     /**
@@ -83,7 +91,9 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.suppressLogs = other.suppressLogs;
+        this.externalCode = other.externalCode;
         registerSubParameter(scriptParameters);
+        updateSlots();
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Python operation. " +
@@ -139,7 +149,7 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode()).append("\n");
+        code.append("\n").append(getScriptCode(progressInfo)).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
@@ -204,4 +214,42 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
+
+    private void updateSlots() {
+        toggleSlot(SLOT_SCRIPT, externalCode);
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("code".equals(access.getKey()) && externalCode) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @SetJIPipeDocumentation(name = "External code", description = "If enabled, run code from an input slot")
+    @JIPipeParameter(value = "external-code", important = true)
+    public boolean isExternalCode() {
+        return externalCode;
+    }
+
+    @JIPipeParameter("external-code")
+    public void setExternalCode(boolean externalCode) {
+        this.externalCode = externalCode;
+        updateSlots();
+    }
+
+    private String getScriptCode(JIPipeProgressInfo progressInfo) {
+        if(externalCode) {
+            if( getInputSlot(SLOT_SCRIPT.getName()).getRowCount() > 1) {
+                progressInfo.warn("Multiple external scripts were provided. Running only the first one!");
+            }
+            return getInputSlot(SLOT_SCRIPT.getName()).getData(0, PythonScriptData.class, progressInfo).getData();
+        }
+        else {
+            return code.getCode();
+        }
+    }
+
 }

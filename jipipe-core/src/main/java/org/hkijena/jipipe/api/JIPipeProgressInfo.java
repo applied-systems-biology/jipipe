@@ -488,6 +488,14 @@ public class JIPipeProgressInfo implements Cancelable {
         }
     }
 
+    public void error(String message) {
+        log("[ERROR] " + message);
+    }
+
+    public void warn(String message) {
+        log("[WARNING] " + message);
+    }
+
     public interface StatusUpdatedEventListener {
         void onProgressStatusUpdated(StatusUpdatedEvent event);
     }
