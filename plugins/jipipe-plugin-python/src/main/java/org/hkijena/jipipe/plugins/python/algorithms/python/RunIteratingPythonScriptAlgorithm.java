@@ -52,7 +52,7 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
-public class RunIteratingPythonScriptFromParameterAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
+public class RunIteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
 
     private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -66,7 +66,7 @@ public class RunIteratingPythonScriptFromParameterAlgorithm extends JIPipeIterat
      *
      * @param info the info
      */
-    public RunIteratingPythonScriptFromParameterAlgorithm(JIPipeNodeInfo info) {
+    public RunIteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -76,7 +76,7 @@ public class RunIteratingPythonScriptFromParameterAlgorithm extends JIPipeIterat
      *
      * @param other the info
      */
-    public RunIteratingPythonScriptFromParameterAlgorithm(RunIteratingPythonScriptFromParameterAlgorithm other) {
+    public RunIteratingPythonScriptAlgorithm(RunIteratingPythonScriptAlgorithm other) {
         super(other);
         this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);

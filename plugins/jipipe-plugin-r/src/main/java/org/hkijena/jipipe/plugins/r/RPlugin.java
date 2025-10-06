@@ -125,8 +125,8 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "An R script",
                 null);
 
-        registerNodeType("r-script-iterating", RunIteratingRScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
-        registerNodeType("r-script-merging", RunMergingRScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("r-script-iterating", RunIteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("r-script-merging", RunMergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
 
         registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
         registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));

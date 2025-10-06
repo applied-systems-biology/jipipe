@@ -23,10 +23,10 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.RunIteratingJythonScriptFromParameterAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.RunJythonScriptFromParameterAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.RunMergingJythonScriptFromParameterAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.RunSimpleIteratingJythonScriptFromParameterAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunIteratingJythonScriptAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunJythonScriptAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunMergingJythonScriptAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunSimpleIteratingJythonScriptAlgorithm;
 import org.hkijena.jipipe.plugins.python.algorithms.python.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
@@ -74,14 +74,14 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerNodeType("python-script", RunJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-iterating-simple", RunSimpleIteratingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-iterating", RunIteratingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-merging", RunMergingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script", RunJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating-simple", RunSimpleIteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating", RunIteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-merging", RunMergingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
 
-        registerNodeType("cpython-script", RunPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("cpython-script-iterating", RunIteratingPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("cpython-script-merging", RunMergingPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script", RunPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-iterating", RunIteratingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-merging", RunMergingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
 
         registerNodeType("define-python-script", DefinePythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
         registerNodeType("import-python-script", ImportPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
