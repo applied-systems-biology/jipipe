@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.OptionalBitDepth;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -1463,7 +1463,7 @@ public class FastImageArithmeticsAlgorithm extends JIPipeIteratingAlgorithm {
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
-            if (!MacroUtils.isValidVariableName(inputSlot.getName())) {
+            if (!ScriptUtils.isValidVariableName(inputSlot.getName())) {
                 report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
                         reportContext,
                         "Invalid input name: " + inputSlot.getName(),

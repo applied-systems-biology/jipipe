@@ -56,7 +56,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -336,7 +336,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
                 String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
                 String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
                 String annotationNameAndValue = annotationName + "=" + annotationValue;
-                String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
+                String filterExpression = annotationName + " == " + "\"" + ScriptUtils.escapeString(annotationValue) + "\"";
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
                         JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",

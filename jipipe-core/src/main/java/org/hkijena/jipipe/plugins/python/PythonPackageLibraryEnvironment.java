@@ -31,7 +31,7 @@ import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -137,7 +137,7 @@ public abstract class PythonPackageLibraryEnvironment extends JIPipeArtifactEnvi
             if (!code.toString().contains("import sys")) {
                 code.append("import sys\n");
             }
-            code.append("sys.path.append(\"").append(MacroUtils.escapeString(PathUtils.relativeJIPipeUserDirToAbsolute(getLibraryDirectory()).toString())).append("\")\n");
+            code.append("sys.path.append(\"").append(ScriptUtils.escapeString(PathUtils.relativeJIPipeUserDirToAbsolute(getLibraryDirectory()).toString())).append("\")\n");
         }
     }
 

@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -70,9 +70,9 @@ public class JIPipeExpressionParameter extends DefaultExpressionParameter {
      */
     public static String escapeString(String s, boolean addQuotes) {
         if (addQuotes) {
-            return String.format("\"%s\"", MacroUtils.escapeString(s));
+            return String.format("\"%s\"", ScriptUtils.escapeString(s));
         } else {
-            return MacroUtils.escapeString(s);
+            return ScriptUtils.escapeString(s);
         }
     }
 
@@ -93,7 +93,7 @@ public class JIPipeExpressionParameter extends DefaultExpressionParameter {
      * @return if the key is a valid variable name
      */
     public static boolean isValidVariableName(String key) {
-        return MacroUtils.isValidVariableName(key);
+        return ScriptUtils.isValidVariableName(key);
     }
 
     @Override

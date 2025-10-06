@@ -37,7 +37,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.process.ExtendedExecutor;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -71,8 +71,8 @@ public class RUtils {
     public static void textAnnotationsToR(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
         code.append("JIPipe.TextAnnotations <- list()\n");
         for (JIPipeTextAnnotation annotation : annotations) {
-            code.append(String.format("JIPipe.TextAnnotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
-                    MacroUtils.escapeString(annotation.getValue())));
+            code.append(String.format("JIPipe.TextAnnotations$\"%s\" <- \"%s\"\n", ScriptUtils.escapeString(annotation.getName()),
+                    ScriptUtils.escapeString(annotation.getValue())));
         }
     }
 
@@ -91,9 +91,9 @@ public class RUtils {
 
             Object o = entry.getValue().get(Object.class);
             if (o instanceof String) {
-                value = "\"" + MacroUtils.escapeString((String) o) + "\"";
+                value = "\"" + ScriptUtils.escapeString((String) o) + "\"";
             } else if (o instanceof Path) {
-                value = "\"" + MacroUtils.escapeString("" + o) + "\"";
+                value = "\"" + ScriptUtils.escapeString("" + o) + "\"";
             } else if (o instanceof Number) {
                 if (o instanceof Float) {
                     float num = (float) o;
@@ -129,11 +129,11 @@ public class RUtils {
             } else if (o instanceof IntegerRange) {
                 value = "c(" + ((IntegerRange) o).getIntegers(0, 0, new JIPipeExpressionVariablesMap()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + ")";
             } else if (o instanceof StringList) {
-                value = "c(" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + ")";
+                value = "c(" + ((StringList) o).stream().map(s -> "\"" + ScriptUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + ")";
             }
 
             if (value != null) {
-                if (MacroUtils.isValidVariableName(entry.getKey())) {
+                if (ScriptUtils.isValidVariableName(entry.getKey())) {
                     code.append(entry.getKey()).append(" <- ").append(value).append("\n");
                 }
                 code.append("JIPipe.Variables$\"").append(entry.getKey()).append("\" <- ").append(value).append("\n");
@@ -153,9 +153,9 @@ public class RUtils {
         code.append("JIPipe.InputSlotRowTextAnnotations <- list()\n");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
             JIPipeDataSlot slot = inputSlotMap.get(entry.getKey());
-            String escapedKey = MacroUtils.escapeString(entry.getKey());
+            String escapedKey = ScriptUtils.escapeString(entry.getKey());
             code.append("JIPipe.InputSlotFolders$\"").append(escapedKey).append("\" <- \"")
-                    .append(MacroUtils.escapeString(entry.getValue() + "")).append("\"\n");
+                    .append(ScriptUtils.escapeString(entry.getValue() + "")).append("\"\n");
             code.append("JIPipe.InputSlotRowCounts$\"").append(escapedKey).append("\" <- ").append(slot.getRowCount()).append("\n");
             code.append("JIPipe.InputSlotRowTextAnnotations$\"").append(escapedKey).append("\" <- list()\n");
             StringBuilder stringBuilder = new StringBuilder();
@@ -165,9 +165,9 @@ public class RUtils {
                     if (stringBuilder.length() > 0)
                         stringBuilder.append(", ");
                     stringBuilder.append("\"")
-                            .append(MacroUtils.escapeString(annotation.getName()))
+                            .append(ScriptUtils.escapeString(annotation.getName()))
                             .append("\" = \"")
-                            .append(MacroUtils.escapeString(annotation.getValue()))
+                            .append(ScriptUtils.escapeString(annotation.getValue()))
                             .append("\"");
                 }
                 code.append("JIPipe.InputSlotRowTextAnnotations$\"").append(escapedKey).append("\"[[")
@@ -191,12 +191,12 @@ public class RUtils {
         code.append("JIPipe.OutputSlotFolders <- list()\n");
         code.append("JIPipe.OutputSlots.Table <- list()\n");
         for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-            code.append("JIPipe.OutputSlotFolders$\"").append(MacroUtils.escapeString(entry.getKey())).append("\" <- \"")
-                    .append(MacroUtils.escapeString(entry.getValue() + "")).append("\"\n");
-            code.append("JIPipe.OutputSlots.Table$\"").append(MacroUtils.escapeString(entry.getKey())).append("\" <- ")
-                    .append("list(rows=list(), ").append("slot=\"").append(MacroUtils.escapeString(entry.getKey()))
+            code.append("JIPipe.OutputSlotFolders$\"").append(ScriptUtils.escapeString(entry.getKey())).append("\" <- \"")
+                    .append(ScriptUtils.escapeString(entry.getValue() + "")).append("\"\n");
+            code.append("JIPipe.OutputSlots.Table$\"").append(ScriptUtils.escapeString(entry.getKey())).append("\" <- ")
+                    .append("list(rows=list(), ").append("slot=\"").append(ScriptUtils.escapeString(entry.getKey()))
                     .append("\", ").append("\"data-type\"=\"")
-                    .append(MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId())).append("\")\n");
+                    .append(ScriptUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId())).append("\")\n");
         }
 
         // The getter function
@@ -289,9 +289,9 @@ public class RUtils {
         }
         progressInfo.log("Running R: " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
-                return "\"" + MacroUtils.escapeString(s) + "\"";
+                return "\"" + ScriptUtils.escapeString(s) + "\"";
             } else {
-                return MacroUtils.escapeString(s);
+                return ScriptUtils.escapeString(s);
             }
         }).collect(Collectors.joining(" ")));
 
