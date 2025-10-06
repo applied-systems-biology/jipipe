@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
+import org.hkijena.jipipe.plugins.strings.RScriptData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -80,7 +82,10 @@ import java.util.Map;
 @RegisterJIPipeEnvironmentUsage(REnvironment.class)
 public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 
+    public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(RScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
+    
     private RScriptParameter script = new RScriptParameter();
+    private boolean externalCode = false;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(true, RUtils.ALLOWED_PARAMETER_CLASSES);
     private boolean cleanUpAfterwards = true;
@@ -96,11 +101,13 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.externalCode = other.externalCode;
         registerSubParameter(variables);
+        updateSlots();
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
-            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools &gt; Logs).")
+            "the processing was finished. Disable this to make it possible to debug your scripts. The directories are accessible via the logs (Tools > Logs).")
     @JIPipeParameter("cleanup-afterwards")
     public boolean isCleanUpAfterwards() {
         return cleanUpAfterwards;
@@ -109,6 +116,31 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
     @JIPipeParameter("cleanup-afterwards")
     public void setCleanUpAfterwards(boolean cleanUpAfterwards) {
         this.cleanUpAfterwards = cleanUpAfterwards;
+    }
+
+    private void updateSlots() {
+        toggleSlot(SLOT_SCRIPT, externalCode);
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("script".equals(access.getKey()) && externalCode) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @SetJIPipeDocumentation(name = "External code", description = "If enabled, run code from an input slot")
+    @JIPipeParameter(value = "external-code", important = true)
+    public boolean isExternalCode() {
+        return externalCode;
+    }
+
+    @JIPipeParameter("external-code")
+    public void setExternalCode(boolean externalCode) {
+        this.externalCode = externalCode;
+        updateSlots();
     }
 
     @Override
@@ -164,7 +196,7 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode()).append("\n");
+        code.append("\n").append(getScriptCode(iterationStep, progressInfo)).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -226,6 +258,19 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
     @JIPipeParameter("script")
     public void setScript(RScriptParameter script) {
         this.script = script;
+    }
+
+    private String getScriptCode(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+        if(externalCode) {
+             List<RScriptData> inputData = iterationStep.getInputData(SLOT_SCRIPT.getName(), RScriptData.class, progressInfo);
+            if(inputData.size() > 1) {
+                progressInfo.warn("Multiple external scripts were provided. Running only the first one!");
+            }
+            return inputData.getFirst().getData();
+        }
+        else {
+            return script.getCode();
+        }
     }
 
     @Override
