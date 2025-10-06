@@ -314,7 +314,7 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
                 }
             }
 
-            finalCode.append("\n").append(getMacroCode(iterationStep, getProjectDirectory(), progressInfo));
+            finalCode.append("\n").append(getMacroCode(iterationStep, progressInfo));
 
 
             try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
@@ -342,9 +342,9 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
         }
     }
 
-    private String getMacroCode(JIPipeSingleIterationStep iterationStep, Path projectDirectory, JIPipeProgressInfo progressInfo) {
+    private String getMacroCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         if(externalCode) {
-            throw new RuntimeException("Not implemented yet");
+            return iterationStep.getInputData(SLOT_SCRIPT.getName(), ImageJMacroData.class, progressInfo).getData();
         }
         else {
             return code.getCode();
