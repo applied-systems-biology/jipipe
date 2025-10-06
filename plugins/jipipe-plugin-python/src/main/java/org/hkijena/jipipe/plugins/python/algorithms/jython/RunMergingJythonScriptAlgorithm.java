@@ -46,7 +46,7 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Jython script (parameter, merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
+@SetJIPipeDocumentation(name = "Run Jython script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Each iteration step contains multiple input and output data items." +
         "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +

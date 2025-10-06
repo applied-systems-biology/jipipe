@@ -47,7 +47,7 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Run Python script (parameter, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
+@SetJIPipeDocumentation(name = "Run Python script (custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
