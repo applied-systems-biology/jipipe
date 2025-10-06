@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.python.core.PyDictionary;
@@ -57,7 +57,7 @@ import java.nio.file.Path;
 public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
-    private PythonScript code = new PythonScript();
+    private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             JIPipe.getParameterTypes().getRegisteredParameters().values());
 
@@ -86,14 +86,14 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
      */
     public SplitByAnnotationScript(SplitByAnnotationScript other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -114,7 +114,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(iterationStep.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe
@@ -137,12 +137,12 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
             "converted into their respective JIPipe types. The target slot is extracted from a variable 'output_slot' that should be present within the script." +
             " If the variable is set to null or empty, the data is discarded.")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 

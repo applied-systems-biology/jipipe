@@ -18,23 +18,24 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
+import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.python.core.PyDictionary;
@@ -46,15 +47,18 @@ import java.util.ArrayList;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Jython script (iterating)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
-        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types. " +
+@SetJIPipeDocumentation(name = "Run Jython script (simple iterating)", description = "Runs a Python script that iterates through each iteration step in one input slot. " +
+        "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
+        "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
-public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
-
-    private PythonScript code = new PythonScript();
+public class RunSimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm implements JIPipeScriptAlgorithm {
+    public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
+    
+    private PythonScriptParameter code = new PythonScriptParameter();
+    private boolean externalCode = false;
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             JIPipe.getParameterTypes().getRegisteredParameters().values());
 
@@ -63,9 +67,12 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param info the info
      */
-    public IteratingJythonScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
+    public RunSimpleIteratingJythonScriptAlgorithm(JIPipeNodeInfo info) {
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
+                .restrictInputSlotCount(1)
+                .build());
         registerSubParameter(scriptParameters);
+        updateSlots();
     }
 
     /**
@@ -73,17 +80,43 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param other the info
      */
-    public IteratingJythonScriptAlgorithm(IteratingJythonScriptAlgorithm other) {
+    public RunSimpleIteratingJythonScriptAlgorithm(RunSimpleIteratingJythonScriptAlgorithm other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
+        this.externalCode = other.externalCode;
         registerSubParameter(scriptParameters);
+        updateSlots();
+    }
+
+    private void updateSlots() {
+        toggleSlot(SLOT_SCRIPT, externalCode);
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("code".equals(access.getKey()) && externalCode) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @SetJIPipeDocumentation(name = "External code", description = "If enabled, run code from an input slot")
+    @JIPipeParameter(value = "external-code", important = true)
+    public boolean isExternalCode() {
+        return externalCode;
+    }
+
+    @JIPipeParameter("external-code")
+    public void setExternalCode(boolean externalCode) {
+        this.externalCode = externalCode;
+        updateSlots();
     }
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -109,23 +142,36 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
+        if (!getNonParameterInputSlots().isEmpty()) {
+            pythonInterpreter.set("input_slot", getFirstInputSlot());
+        }
         pythonInterpreter.set("progress_info", progressInfo);
         try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
-            pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+            pythonInterpreter.exec(getScriptCode(iterationStep, progressInfo));
+        }
+    }
+
+    private String getScriptCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+        if(externalCode) {
+            return iterationStep.getInputData(SLOT_SCRIPT.getName(), PythonScriptData.class, progressInfo).getData();
+        }
+        else {
+            return code.getCode();
         }
     }
 
     @SetJIPipeDocumentation(name = "Script", description = "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
+            "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +
             "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 

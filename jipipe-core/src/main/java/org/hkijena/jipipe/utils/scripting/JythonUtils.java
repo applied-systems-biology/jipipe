@@ -71,7 +71,7 @@ public class JythonUtils {
 
     public static void checkScriptParametersValidity(JIPipeCustomParameterCollection scriptParameters, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (String key : scriptParameters.getParameters().keySet()) {
-            if (!MacroUtils.isValidVariableName(key)) {
+            if (!ScriptUtils.isValidVariableName(key)) {
                 context.error().title("Invalid name!").explanation("'" + key + "' is an invalid Python variable name!").solution("Please ensure that script variables are compatible with the Python language.").report(report);
             }
         }

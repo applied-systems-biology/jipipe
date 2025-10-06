@@ -41,6 +41,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToHSBColorSpa
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.color.ToRGBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.*;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.macro.DefineImageJMacroAlgorithm;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.macro.ImportImageJMacroAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.compat.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.converters.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.*;
@@ -520,6 +522,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-ome-zarr-from-uri-as-imgplus", ImportOMEZARRFromURIAsImagePlusAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));
         registerNodeType("import-imagej-sample", ImportImageJSampleAlgorithm.class);
         registerNodeType("import-ome-xml-from-bioformats", BioFormatsExtractOMEXMLAlgorithm.class);
+        registerNodeType("define-imagej-macro", DefineImageJMacroAlgorithm.class);
+        registerNodeType("import-imagej-macro", ImportImageJMacroAlgorithm.class);
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.python.core.PyDictionary;
@@ -60,7 +60,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private PythonInterpreter pythonInterpreter;
-    private PythonScript code = new PythonScript();
+    private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             JIPipe.getParameterTypes().getRegisteredParameters().values());
 
@@ -81,7 +81,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
      */
     public FilterRoiByStatisticsScriptAlgorithm(FilterRoiByStatisticsScriptAlgorithm other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
@@ -123,7 +123,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(iterationStep.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         roiList = (List<PyDictionary>) pythonInterpreter.get("roi_list").__tojava__(List.class);
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
@@ -146,19 +146,19 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
     @SetJIPipeDocumentation(name = "Script", description = " The Python script contains a variable 'roi_list' " +
             "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics.")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 

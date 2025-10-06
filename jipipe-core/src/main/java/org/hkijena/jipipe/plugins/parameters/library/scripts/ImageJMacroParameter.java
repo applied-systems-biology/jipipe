@@ -19,12 +19,12 @@ import org.scijava.script.ScriptLanguage;
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class ImageJMacro extends JIPipeScriptParameter {
-    public ImageJMacro() {
+public class ImageJMacroParameter extends JIPipeScriptParameter {
+    public ImageJMacroParameter() {
         super();
     }
 
-    public ImageJMacro(ImageJMacro other) {
+    public ImageJMacroParameter(ImageJMacroParameter other) {
         super(other);
     }
 

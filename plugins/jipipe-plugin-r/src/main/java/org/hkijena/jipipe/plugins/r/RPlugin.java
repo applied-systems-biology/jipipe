@@ -30,9 +30,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.r.algorithms.ImportRDatasetAlgorithm;
-import org.hkijena.jipipe.plugins.r.algorithms.IteratingRScriptAlgorithm;
-import org.hkijena.jipipe.plugins.r.algorithms.MergingRScriptAlgorithm;
+import org.hkijena.jipipe.plugins.r.algorithms.*;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.r.setup.REnvironmentFromSystemSetupTool;
 import org.hkijena.jipipe.plugins.r.ui.RTokenMaker;
@@ -127,11 +125,14 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "An R script",
                 null);
 
-        registerNodeType("r-script-iterating", IteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
-        registerNodeType("r-script-merging", MergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("r-script-iterating", RunIteratingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("r-script-merging", RunMergingRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
 
         registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
         registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+
+        registerNodeType("define-r-script", DefineRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
+        registerNodeType("import-r-script", ImportRScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/rlogo_icon.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

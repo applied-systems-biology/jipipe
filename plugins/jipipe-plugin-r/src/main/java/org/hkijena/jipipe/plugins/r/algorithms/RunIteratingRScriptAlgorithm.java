@@ -24,14 +24,15 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColor
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
+import org.hkijena.jipipe.plugins.strings.RScriptData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -50,11 +52,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "R script (merging)", description = "Allows to execute a custom R script. " +
-        "The script is repeated for each iteration step. Please note the each iteration step can contain multiple items per slot. " +
+@SetJIPipeDocumentation(name = "R script (iterating)", description = "Allows to execute a custom R script. " +
+        "The script is repeated for each iteration step. Please note the each iteration step only contains one item (row) per slot. " +
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
-        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
+        "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
         "<li><code>JIPipe.TextAnnotations</code> contains the list of annotations (named strings)</li>" +
         "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
         "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
@@ -78,25 +80,30 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @RegisterJIPipeEnvironmentUsage(REnvironment.class)
-public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
+public class RunIteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
 
+    public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(RScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
+    
     private RScriptParameter script = new RScriptParameter();
-    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(true, RUtils.ALLOWED_PARAMETER_CLASSES);
+    private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
+    private boolean externalCode = false;
 
-    public MergingRScriptAlgorithm(JIPipeNodeInfo info) {
+    public RunIteratingRScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(variables);
     }
 
-    public MergingRScriptAlgorithm(MergingRScriptAlgorithm other) {
+    public RunIteratingRScriptAlgorithm(RunIteratingRScriptAlgorithm other) {
         super(other);
         this.script = new RScriptParameter(other.script);
-        this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.variables = new JIPipeDynamicParameterCollection(other.variables);
+        this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
+        this.externalCode = other.externalCode;
         registerSubParameter(variables);
+        updateSlots();
     }
 
     @SetJIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
@@ -111,13 +118,38 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
+    private void updateSlots() {
+        toggleSlot(SLOT_SCRIPT, externalCode);
+        emitParameterUIChangedEvent();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("script".equals(access.getKey()) && externalCode) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @SetJIPipeDocumentation(name = "External code", description = "If enabled, run code from an input slot")
+    @JIPipeParameter(value = "external-code", important = true)
+    public boolean isExternalCode() {
+        return externalCode;
+    }
+
+    @JIPipeParameter("external-code")
+    public void setExternalCode(boolean externalCode) {
+        this.externalCode = externalCode;
+        updateSlots();
+    }
+
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
     }
 
     @Override
-    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Get environment
@@ -164,7 +196,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode(getProjectDirectory())).append("\n");
+        code.append("\n").append(getScriptCode(iterationStep, progressInfo)).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -196,11 +228,18 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
         super.setBaseDirectory(baseDirectory);
     }
 
+    @JIPipeParameter(value = "variables", persistence = JIPipeParameterSerializationMode.Object)
+    @SetJIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
+            "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
+    public JIPipeDynamicParameterCollection getVariables() {
+        return variables;
+    }
+
     @SetJIPipeDocumentation(name = "Script", description = "The script that contains the R commands. " +
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
-            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot</li>" +
-            "<li><code>JIPipe.TextAnnotations</code> contains the list of annotations (named strings)</li>" +
+            "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
+            "<li><code>JIPipe.TextAnnotations</code> contains the list of text annotations (named strings)</li>" +
             "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
             "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
             "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
@@ -228,6 +267,15 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
         this.script = script;
     }
 
+    private String getScriptCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+        if(externalCode) {
+            return iterationStep.getInputData(SLOT_SCRIPT.getName(), RScriptData.class, progressInfo).getData();
+        }
+        else {
+            return script.getCode();
+        }
+    }
+
     @Override
     public JIPipeParameterAccess getScriptParameterAccess() {
         return getParameterAccess("script");
@@ -244,12 +292,4 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements J
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
-
-    @JIPipeParameter(value = "variables", persistence = JIPipeParameterSerializationMode.Object)
-    @SetJIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
-            "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
-    public JIPipeDynamicParameterCollection getVariables() {
-        return variables;
-    }
-
 }

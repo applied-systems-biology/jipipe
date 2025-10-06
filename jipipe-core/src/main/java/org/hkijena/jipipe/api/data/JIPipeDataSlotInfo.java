@@ -90,6 +90,8 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
         this.optional = optional;
     }
 
+
+
     /**
      * @param dataClass   slot data class
      * @param slotType    slot type
@@ -477,6 +479,91 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
                 }
                 return result;
             }
+        }
+    }
+
+    public static JIPipeDataSlotInfoBuilder builder() {
+        return new JIPipeDataSlotInfoBuilder();
+    }
+
+    public static final class JIPipeDataSlotInfoBuilder {
+        private boolean userModifiable = true;
+        private boolean optional = false;
+        private boolean storeToDisk = true;
+        private boolean virtual;
+        private String description;
+        private String customName;
+        private String name;
+        private JIPipeSlotType slotType;
+        private Class<? extends JIPipeData> dataClass;
+        private JIPipeDataSlotRole role;
+
+        private JIPipeDataSlotInfoBuilder() {
+        }
+
+        public static JIPipeDataSlotInfoBuilder aJIPipeDataSlotInfo() {
+            return new JIPipeDataSlotInfoBuilder();
+        }
+
+        public JIPipeDataSlotInfoBuilder userModifiable(boolean userModifiable) {
+            this.userModifiable = userModifiable;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder optional(boolean optional) {
+            this.optional = optional;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder storeToDisk(boolean storeToDisk) {
+            this.storeToDisk = storeToDisk;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder virtual(boolean virtual) {
+            this.virtual = virtual;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder customName(String customName) {
+            this.customName = customName;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder slotType(JIPipeSlotType slotType) {
+            this.slotType = slotType;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder dataClass(Class<? extends JIPipeData> dataClass) {
+            this.dataClass = dataClass;
+            return this;
+        }
+
+        public JIPipeDataSlotInfoBuilder role(JIPipeDataSlotRole role) {
+            this.role = role;
+            return this;
+        }
+
+        public JIPipeDataSlotInfo build() {
+            JIPipeDataSlotInfo jIPipeDataSlotInfo = new JIPipeDataSlotInfo(dataClass, slotType, name, description);
+            jIPipeDataSlotInfo.setUserModifiable(userModifiable);
+            jIPipeDataSlotInfo.setOptional(optional);
+            jIPipeDataSlotInfo.setStoreToDisk(storeToDisk);
+            jIPipeDataSlotInfo.setVirtual(virtual);
+            jIPipeDataSlotInfo.setCustomName(customName);
+            jIPipeDataSlotInfo.setRole(role);
+            return jIPipeDataSlotInfo;
         }
     }
 }

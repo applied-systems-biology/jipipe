@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.utils;
 
-import com.sun.jna.Pointer;
-import com.sun.jna.platform.win32.Kernel32;
-import com.sun.jna.platform.win32.WinNT;
 import org.apache.commons.exec.*;
 import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.text.WordUtils;
@@ -25,13 +22,12 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpression
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
 import org.hkijena.jipipe.utils.process.ExtendedExecutor;
 import org.hkijena.jipipe.utils.process.ProcessSidecarTask;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.io.*;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -187,9 +183,9 @@ public class ProcessUtils {
     public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
-                return "\"" + MacroUtils.escapeString(s) + "\"";
+                return "\"" + ScriptUtils.escapeString(s) + "\"";
             } else {
-                return MacroUtils.escapeString(s);
+                return ScriptUtils.escapeString(s);
             }
         }).collect(Collectors.joining(" ")));
 

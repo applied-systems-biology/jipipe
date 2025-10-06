@@ -13,8 +13,13 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.plugins.strings.StringData;
 
 /**
  * Interface that exposes a central {@link org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter} that

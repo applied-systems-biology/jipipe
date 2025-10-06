@@ -42,7 +42,6 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormP
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;
-import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderUI;
@@ -50,13 +49,12 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.data.WeakStore;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -278,7 +276,7 @@ public class JIPipeDesktopMinimalDataBatchAssistantDataTableUI extends JIPipeDes
                 String annotationName = ((JIPipeTextAnnotation) objectAtColumn).getName();
                 String annotationValue = ((JIPipeTextAnnotation) objectAtColumn).getValue();
                 String annotationNameAndValue = annotationName + "=" + annotationValue;
-                String filterExpression = annotationName + " == " + "\"" + MacroUtils.escapeString(annotationValue) + "\"";
+                String filterExpression = annotationName + " == " + "\"" + ScriptUtils.escapeString(annotationValue) + "\"";
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " name", "Copies the string '" + annotationName + "' into the clipboard",
                         JIPipe.RESOURCES.getIcon16("actions/edit-copy.png"), () -> UIUtils.copyToClipboard(StringUtils.nullToEmpty(annotationName))));
                 popupMenu.add(UIUtils.createMenuItem("Copy " + annotationName + " value", "Copies the string '" + annotationValue + "' into the clipboard",

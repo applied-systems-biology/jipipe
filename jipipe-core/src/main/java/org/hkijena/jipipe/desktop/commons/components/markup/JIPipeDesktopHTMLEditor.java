@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.OverlayJIPipeDesktopC
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.imageio.ImageIO;
@@ -456,7 +456,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
                 HTMLDocument document = (HTMLDocument) wysiwygEditorPane.getDocument();
                 String url = parameterCollection.get("url").get(String.class);
                 String text = StringUtils.orElse(parameterCollection.get("text").get(String.class), url);
-                wysiwygEditorKit.insertHTML(document, caretPosition, "<a href=\"" + MacroUtils.escapeString(url) + "\" >" + text + "</a>", 0, 0, HTML.Tag.A);
+                wysiwygEditorKit.insertHTML(document, caretPosition, "<a href=\"" + ScriptUtils.escapeString(url) + "\" >" + text + "</a>", 0, 0, HTML.Tag.A);
             } catch (BadLocationException | IOException e) {
                 throw new RuntimeException(e);
             }

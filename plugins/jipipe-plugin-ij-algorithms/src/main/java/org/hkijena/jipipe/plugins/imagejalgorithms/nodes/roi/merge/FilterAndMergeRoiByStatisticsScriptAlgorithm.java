@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.python.core.PyDictionary;
@@ -62,7 +62,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode("ij1-roi-statistics");
-    private PythonScript code = new PythonScript();
+    private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             JIPipe.getParameterTypes().getRegisteredParameters().values());
     private List<PyDictionary> pythonDataRow;
@@ -84,7 +84,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
      */
     public FilterAndMergeRoiByStatisticsScriptAlgorithm(FilterAndMergeRoiByStatisticsScriptAlgorithm other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
@@ -97,7 +97,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         super.run(runContext, progressInfo);
         // Pass input to script
         pythonInterpreter.set("roi_lists", pythonDataRow);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         pythonDataRow = (List<PyDictionary>) pythonInterpreter.get("roi_lists").__tojava__(List.class);
 
         // Generate output
@@ -152,7 +152,7 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "code"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -165,12 +165,12 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
             "with the column name as key and values being an array of strings or doubles. " +
             "The number of input rows can be accessed via the 'nrow' variable.")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 

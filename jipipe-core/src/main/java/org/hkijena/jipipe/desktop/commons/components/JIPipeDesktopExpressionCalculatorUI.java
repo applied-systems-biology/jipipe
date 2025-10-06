@@ -16,7 +16,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -136,7 +136,7 @@ public class JIPipeDesktopExpressionCalculatorUI extends JIPipeDesktopWorkbenchP
                 if (StringUtils.isValidDouble(valueField.getText())) {
                     evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", " + valueField.getText() + ")");
                 } else {
-                    evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", \"" + MacroUtils.escapeString(valueField.getText()) + "\")");
+                    evaluate("SET_VARIABLE(\"" + keyField.getText() + "\", \"" + ScriptUtils.escapeString(valueField.getText()) + "\")");
                 }
                 expressionEditor.requestFocusInWindow();
             } else {

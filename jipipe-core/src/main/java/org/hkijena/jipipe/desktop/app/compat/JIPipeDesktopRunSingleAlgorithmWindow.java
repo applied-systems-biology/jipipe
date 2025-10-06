@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 import org.scijava.Context;
 import org.scijava.command.CommandService;
 
@@ -409,9 +409,9 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
         String macro = String.format("run(\"Run JIPipe node\", \"nodeId=%s, threads=%d, parameters=%s, inputs=%s, outputs=%s\");",
                 getAlgorithmId(),
                 numThreads,
-                MacroUtils.escapeString(parameters),
-                MacroUtils.escapeString(inputs),
-                MacroUtils.escapeString(outputs));
+                ScriptUtils.escapeString(parameters),
+                ScriptUtils.escapeString(inputs),
+                ScriptUtils.escapeString(outputs));
         StringSelection selection = new StringSelection(macro);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);

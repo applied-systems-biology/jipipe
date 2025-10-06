@@ -31,8 +31,6 @@ import java.util.Objects;
 public abstract class JIPipeScriptParameter {
     private String code = "";
     private boolean collapsed = false;
-    private String externalCodeBuffer;
-    private FileTime externalCodeBufferLastUpdate;
 
     /**
      * Creates a new empty code
@@ -58,18 +56,6 @@ public abstract class JIPipeScriptParameter {
     @JsonSetter("code")
     public void setCode(String code) {
         this.code = code;
-    }
-
-    /**
-     * Gets the code. Supports relative external script paths
-     *
-     * @param workDirectory the work directory
-     * @return the code
-     */
-    public String getCode(Path workDirectory) {
-        if (workDirectory == null)
-            return getCode();
-        return code;
     }
 
     /**

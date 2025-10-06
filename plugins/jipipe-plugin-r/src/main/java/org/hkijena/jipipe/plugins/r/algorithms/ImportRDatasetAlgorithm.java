@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -70,7 +70,7 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         Path tempFile = JIPipe.getTemporaryFile("jipipe-r", ".csv");
         String code = "library(datasets)\n" +
-                "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + MacroUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
+                "write.csv(" + dataset.variableName + ", row.names = FALSE, file=\"" + ScriptUtils.escapeString(tempFile.toAbsolutePath().toString()) + "\")\n";
         RUtils.runR(code,
                 environment,
                 progressInfo);

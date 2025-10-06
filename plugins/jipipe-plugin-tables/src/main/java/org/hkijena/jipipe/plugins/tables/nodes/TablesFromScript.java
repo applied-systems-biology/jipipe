@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 import org.python.core.PyDictionary;
@@ -54,7 +54,7 @@ import java.util.List;
 public class TablesFromScript extends JIPipeAlgorithm {
 
     private PythonInterpreter pythonInterpreter;
-    private PythonScript code = new PythonScript();
+    private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             JIPipe.getParameterTypes().getRegisteredParameters().values());
 
@@ -73,7 +73,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
      */
     public TablesFromScript(TablesFromScript other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
     }
@@ -86,7 +86,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
+        JythonUtils.checkScriptValidity(code.getCode(), scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
         JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
     }
 
@@ -95,7 +95,7 @@ public class TablesFromScript extends JIPipeAlgorithm {
         this.pythonInterpreter = new PythonInterpreter();
         JythonUtils.passParametersToPython(pythonInterpreter, scriptParameters);
 
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        pythonInterpreter.exec(code.getCode());
         List<PyDictionary> rows = (List<PyDictionary>) pythonInterpreter.get("tables").__tojava__(List.class);
 
         for (PyDictionary row : rows) {
@@ -112,12 +112,12 @@ public class TablesFromScript extends JIPipeAlgorithm {
             "<li>'nrow' is an integer that contains the number of rows.</li>" +
             "<li>'annotations' is a dictionary from string to string containing all annotations</li></ul>")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 

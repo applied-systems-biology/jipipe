@@ -42,7 +42,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.process.ExtendedExecutor;
-import org.hkijena.jipipe.utils.scripting.MacroUtils;
+import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -81,8 +81,8 @@ public class PythonUtils {
     public static void annotationsToPython(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
         code.append("jipipe_annotations = {}\n");
         for (JIPipeTextAnnotation annotation : annotations) {
-            code.append("jipipe_annotations[\"").append(MacroUtils.escapeString(annotation.getName())).append("\"] = ")
-                    .append("\"").append(MacroUtils.escapeString(StringUtils.nullToEmpty(annotation.getValue()))).append("\"\n");
+            code.append("jipipe_annotations[\"").append(ScriptUtils.escapeString(annotation.getName())).append("\"] = ")
+                    .append("\"").append(ScriptUtils.escapeString(StringUtils.nullToEmpty(annotation.getValue()))).append("\"\n");
         }
     }
 
@@ -101,9 +101,9 @@ public class PythonUtils {
 
             Object o = entry.getValue().get(Object.class);
             if (o instanceof String) {
-                value = "\"" + MacroUtils.escapeString((String) o) + "\"";
+                value = "\"" + ScriptUtils.escapeString((String) o) + "\"";
             } else if (o instanceof Path) {
-                value = "\"" + MacroUtils.escapeString("" + o) + "\"";
+                value = "\"" + ScriptUtils.escapeString("" + o) + "\"";
             } else if (o instanceof Number) {
                 if (o instanceof Float) {
                     float num = (float) o;
@@ -139,11 +139,11 @@ public class PythonUtils {
             } else if (o instanceof IntegerRange) {
                 value = "[" + ((IntegerRange) o).getIntegers(0, 0, new JIPipeExpressionVariablesMap()).stream().map(i -> i + "").collect(Collectors.joining(", ")) + "]";
             } else if (o instanceof StringList) {
-                value = "[" + ((StringList) o).stream().map(s -> "\"" + MacroUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + "]";
+                value = "[" + ((StringList) o).stream().map(s -> "\"" + ScriptUtils.escapeString(s) + "\"").collect(Collectors.joining(", ")) + "]";
             }
 
             if (value != null) {
-                if (MacroUtils.isValidVariableName(entry.getKey())) {
+                if (ScriptUtils.isValidVariableName(entry.getKey())) {
                     code.append(entry.getKey()).append(" = ").append(value).append("\n");
                 }
                 code.append("jipipe_variables[\"").append(entry.getKey()).append("\"] = ").append(value).append("\n");
@@ -159,9 +159,9 @@ public class PythonUtils {
     public static void inputSlotsToPython(StringBuilder code, Map<String, Path> inputSlotPaths) {
         code.append("jipipe_inputs = {}\n");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
-            code.append("jipipe_inputs[\"").append(MacroUtils.escapeString(entry.getKey()))
+            code.append("jipipe_inputs[\"").append(ScriptUtils.escapeString(entry.getKey()))
                     .append("\"] = jipipe.data_slot.import_from_folder(\"")
-                    .append(MacroUtils.escapeString(entry.getValue().toString())).append("\")\n");
+                    .append(ScriptUtils.escapeString(entry.getValue().toString())).append("\")\n");
         }
     }
 
@@ -172,18 +172,18 @@ public class PythonUtils {
         }
         code.append("jipipe_outputs = {}\n");
         for (Map.Entry<String, Path> entry : outputSlotPaths.entrySet()) {
-            code.append("jipipe_outputs[\"").append(MacroUtils.escapeString(entry.getKey()))
+            code.append("jipipe_outputs[\"").append(ScriptUtils.escapeString(entry.getKey()))
                     .append("\"] = jipipe.data_slot.DataSlot(storage_path=\"")
-                    .append(MacroUtils.escapeString(entry.getValue().toString()))
+                    .append(ScriptUtils.escapeString(entry.getValue().toString()))
                     .append("\", data_type=\"")
-                    .append(MacroUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId()))
-                    .append("\", name=\"").append(MacroUtils.escapeString(entry.getKey())).append("\"").append(")\n");
+                    .append(ScriptUtils.escapeString(JIPipeDataInfo.getInstance(outputSlotMap.get(entry.getKey()).getAcceptedDataType()).getId()))
+                    .append("\", name=\"").append(ScriptUtils.escapeString(entry.getKey())).append("\"").append(")\n");
         }
     }
 
     public static void addPostprocessorCode(StringBuilder code, List<JIPipeOutputDataSlot> outputSlots) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
-            code.append("jipipe_outputs[\"").append(MacroUtils.escapeString(outputSlot.getName())).append("\"].save()\n");
+            code.append("jipipe_outputs[\"").append(ScriptUtils.escapeString(outputSlot.getName())).append("\"].save()\n");
         }
     }
 
@@ -293,9 +293,9 @@ public class PythonUtils {
     public static void setupLogger(CommandLine commandLine, DefaultExecutor executor, boolean suppressLogs, JIPipeProgressInfo progressInfo) {
         progressInfo.log("Running " + Arrays.stream(commandLine.toStrings()).map(s -> {
             if (s.contains(" ")) {
-                return "\"" + MacroUtils.escapeString(s) + "\"";
+                return "\"" + ScriptUtils.escapeString(s) + "\"";
             } else {
-                return MacroUtils.escapeString(s);
+                return ScriptUtils.escapeString(s);
             }
         }).collect(Collectors.joining(" ")));
 

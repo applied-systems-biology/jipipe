@@ -19,12 +19,12 @@ import org.scijava.script.ScriptLanguage;
 /**
  * Encapsulates ImageJ macro code to be detected by the parameter system
  */
-public class PythonScript extends JIPipeScriptParameter {
-    public PythonScript() {
+public class PythonScriptParameter extends JIPipeScriptParameter {
+    public PythonScriptParameter() {
         super();
     }
 
-    public PythonScript(PythonScript other) {
+    public PythonScriptParameter(PythonScriptParameter other) {
         super(other);
     }
 
