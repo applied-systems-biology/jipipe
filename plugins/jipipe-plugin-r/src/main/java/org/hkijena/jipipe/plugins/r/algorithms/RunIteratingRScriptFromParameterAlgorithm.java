@@ -78,19 +78,19 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ImagePlusColorRGBData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @RegisterJIPipeEnvironmentUsage(REnvironment.class)
-public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
+public class RunIteratingRScriptFromParameterAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(true, RUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private boolean cleanUpAfterwards = true;
 
-    public IteratingRScriptAlgorithm(JIPipeNodeInfo info) {
+    public RunIteratingRScriptFromParameterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(variables);
     }
 
-    public IteratingRScriptAlgorithm(IteratingRScriptAlgorithm other) {
+    public RunIteratingRScriptFromParameterAlgorithm(RunIteratingRScriptFromParameterAlgorithm other) {
         super(other);
         this.script = new RScriptParameter(other.script);
         this.variables = new JIPipeDynamicParameterCollection(other.variables);

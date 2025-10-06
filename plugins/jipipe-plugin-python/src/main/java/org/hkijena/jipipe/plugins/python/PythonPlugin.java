@@ -23,13 +23,11 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.IteratingJythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.JythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.MergingJythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.jython.SimpleIteratingJythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.python.IteratingPythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.python.MergingPythonScriptAlgorithm;
-import org.hkijena.jipipe.plugins.python.algorithms.python.PythonScriptAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunIteratingJythonScriptFromParameterAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunJythonScriptFromParameterAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunMergingJythonScriptFromParameterAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.jython.RunSimpleIteratingJythonScriptFromParameterAlgorithm;
+import org.hkijena.jipipe.plugins.python.algorithms.python.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -76,13 +74,17 @@ public class PythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerNodeType("python-script", JythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-iterating", IteratingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("python-script-merging", MergingJythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("cpython-script", PythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
-        registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script", RunJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating-simple", RunSimpleIteratingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-iterating", RunIteratingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("python-script-merging", RunMergingJythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+
+        registerNodeType("cpython-script", RunPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-iterating", RunIteratingPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("cpython-script-merging", RunMergingPythonScriptFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+
+        registerNodeType("define-python-script", DefinePythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("import-python-script", ImportPythonScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }

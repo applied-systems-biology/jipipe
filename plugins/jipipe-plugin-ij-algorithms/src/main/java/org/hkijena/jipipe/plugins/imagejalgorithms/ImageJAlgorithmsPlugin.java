@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.MacroWrapperAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.RunImageJMacroFromParameterAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.binary.*;
@@ -487,7 +487,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-generate-filter-kernel-3d", GenerateStructureElement3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/morphology.png"));
         registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
         registerNodeType("render-jipipe-project", RenderJIPipeProjectAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/viewimage.png"));
-        registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
+        registerNodeType("external-imagej-macro", RunImageJMacroFromParameterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"));
 
         registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);
 

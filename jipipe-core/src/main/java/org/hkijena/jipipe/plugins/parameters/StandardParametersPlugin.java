@@ -73,8 +73,8 @@ import org.hkijena.jipipe.plugins.parameters.library.ranges.IntNumberRangeParame
 import org.hkijena.jipipe.plugins.parameters.library.ranges.NumberRangeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.*;
 import org.hkijena.jipipe.plugins.parameters.library.roi.*;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacro;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacroParameter;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
@@ -218,14 +218,14 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
         registerParameterEditor(JIPipeScriptParameter.class, JIPipeDesktopScriptParameterEditorUI.class);
         registerParameterType("ij-macro-code",
-                ImageJMacro.class,
+                ImageJMacroParameter.class,
                 JIPipeParameterArchetype.Value, null,
                 null,
                 "ImageJ macro",
                 "An ImageJ macro code",
                 null);
         registerParameterType("python-code",
-                PythonScript.class,
+                PythonScriptParameter.class,
                 JIPipeParameterArchetype.Value, null,
                 null,
                 "Python script",

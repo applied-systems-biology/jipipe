@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.plugins.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.python.core.PyArray;
 import org.python.core.PyDictionary;
 import org.python.util.PythonInterpreter;
@@ -55,7 +55,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
 
     private OpenCLKernelScript kernelScript = new OpenCLKernelScript();
     private String kernelFunction = "";
-    private PythonScript preprocessingScript = new PythonScript();
+    private PythonScriptParameter preprocessingScript = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             CLIJPlugin.ALLOWED_PARAMETER_TYPES);
     private StringAndStringPairParameterList outputSizes = new StringAndStringPairParameterList();
@@ -73,7 +73,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
         super(other);
         this.kernelScript = new OpenCLKernelScript(other.kernelScript);
         this.kernelFunction = other.kernelFunction;
-        this.preprocessingScript = new PythonScript(other.preprocessingScript);
+        this.preprocessingScript = new PythonScriptParameter(other.preprocessingScript);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.outputSizes = new StringAndStringPairParameterList(other.outputSizes);
         registerSubParameter(scriptParameters);
@@ -165,12 +165,12 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
             "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +
             "You can change the executed program by setting a variable 'cl_program'. Otherwise the one generated from parameter values is used.")
     @JIPipeParameter("preprocessing-script")
-    public PythonScript getPreprocessingScript() {
+    public PythonScriptParameter getPreprocessingScript() {
         return preprocessingScript;
     }
 
     @JIPipeParameter("preprocessing-script")
-    public void setPreprocessingScript(PythonScript preprocessingScript) {
+    public void setPreprocessingScript(PythonScriptParameter preprocessingScript) {
         this.preprocessingScript = preprocessingScript;
     }
 

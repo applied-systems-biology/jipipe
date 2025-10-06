@@ -89,9 +89,18 @@ public class StringsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new OpenInNativeApplicationDataImportOperation(".json"));
         registerDatatype("uri", URIData.class, JIPipe.RESOURCES.getIcon16URL("data-types/path.png"),
                 new OpenInNativeApplicationDataImportOperation(".uri"));
+        registerDatatype("python-script", PythonScriptData.class, JIPipe.RESOURCES.getIcon16URL("mimetypes/text-x-python.png"),
+                new OpenInNativeApplicationDataImportOperation(".py"));
+        registerDatatype("r-script", RScriptData.class, JIPipe.RESOURCES.getIcon16URL("mimetypes/text-x-r.png"),
+                new OpenInNativeApplicationDataImportOperation(".R"));
+        registerDatatype("ijm-script", ImageJMacroData.class, JIPipe.RESOURCES.getIcon16URL("apps/imagej.png"),
+                new OpenInNativeApplicationDataImportOperation(".ijm"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
         registerDatatypeConversion(new StringDataConverter(URIData.class));
+        registerDatatypeConversion(new StringDataConverter(PythonScriptData.class));
+        registerDatatypeConversion(new StringDataConverter(RScriptData.class));
+        registerDatatypeConversion(new StringDataConverter(ImageJMacroData.class));
         registerDefaultDataTypeViewer(StringData.class, StringDataViewer.class);
 
         registerNodeType("define-string", StringDefinitionDataSource.class);

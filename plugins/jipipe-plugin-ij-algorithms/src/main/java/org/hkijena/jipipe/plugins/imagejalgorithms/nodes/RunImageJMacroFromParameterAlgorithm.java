@@ -49,7 +49,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExport
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataExporterRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImportOperationRef;
 import org.hkijena.jipipe.plugins.parameters.library.references.ImageJDataImporterRef;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacro;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacroParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -64,7 +64,7 @@ import java.util.Map;
 /**
  * An algorithm that wraps around an ImageJ macro
  */
-@SetJIPipeDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro. JIPipe will iterate through the iteration steps and execute operations to convert JIPipe data into their ImageJ equivalent (see JIPipe to ImageJ parameter). Then the macro code is executed, followed by operations to import " +
+@SetJIPipeDocumentation(name = "Run ImageJ Macro (parameter)", description = "Runs a custom ImageJ macro. JIPipe will iterate through the iteration steps and execute operations to convert JIPipe data into their ImageJ equivalent (see JIPipe to ImageJ parameter). Then the macro code is executed, followed by operations to import " +
         "the result data into JIPipe data (see ImageJ to JIPipe parameter). Please feel free to click the 'Load example' button in the parameters to get started." +
         "\n\nPlease keep in mind the following remarks:\n\n" +
         "<ul>" +
@@ -85,7 +85,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ROI2DListData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
-public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
+public class RunImageJMacroFromParameterAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,
             Byte.class,
@@ -100,7 +100,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements J
     private final List<Window> initiallyOpenedWindows = new ArrayList<>();
     private final InputSlotMapParameterCollection inputToImageJExporters;
     private final OutputSlotMapParameterCollection outputFromImageJImporters;
-    private ImageJMacro code = new ImageJMacro();
+    private ImageJMacroParameter code = new ImageJMacroParameter();
     private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private int importDelay = 1000;
 
@@ -109,7 +109,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements J
     /**
      * @param info the info
      */
-    public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
+    public RunImageJMacroFromParameterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .build());
         registerSubParameter(macroParameters);
@@ -130,9 +130,9 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements J
      *
      * @param other the original
      */
-    public MacroWrapperAlgorithm(MacroWrapperAlgorithm other) {
+    public RunImageJMacroFromParameterAlgorithm(RunImageJMacroFromParameterAlgorithm other) {
         super(other);
-        this.code = new ImageJMacro(other.code);
+        this.code = new ImageJMacroParameter(other.code);
         this.importDelay = other.importDelay;
         this.exportDelay = other.exportDelay;
         this.macroParameters = new JIPipeDynamicParameterCollection(other.macroParameters);
@@ -431,12 +431,12 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm implements J
             "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
             "Annotations can also be accessed via a function getJIPipeAnnotation(key) or getJIPipeTextAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
     @JIPipeParameter("code")
-    public ImageJMacro getCode() {
+    public ImageJMacroParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(ImageJMacro code) {
+    public void setCode(ImageJMacroParameter code) {
         this.code = code;
     }
 

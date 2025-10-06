@@ -237,8 +237,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     public abstract void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations);
 
     private void updateParameterSlot() {
-        if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
-            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
+        if (getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration slotConfiguration) {
             if (parameterSlotAlgorithmSettings.isHasParameterSlot()) {
                 JIPipeDataSlotInfo existing = slotConfiguration.getInputSlots().getOrDefault(SLOT_PARAMETERS, null);
                 if (existing != null && existing.getDataClass() != ParametersData.class) {

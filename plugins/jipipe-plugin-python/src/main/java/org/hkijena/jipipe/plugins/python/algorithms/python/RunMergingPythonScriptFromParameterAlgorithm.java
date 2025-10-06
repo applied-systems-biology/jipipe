@@ -22,10 +22,10 @@ import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
-import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScript;
+import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
@@ -47,14 +47,14 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@SetJIPipeDocumentation(name = "Python script (iterating)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
+@SetJIPipeDocumentation(name = "Run Python script (parameter, merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
-public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
+public class RunMergingPythonScriptFromParameterAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 
-    private PythonScript code = new PythonScript();
+    private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
             PythonUtils.ALLOWED_PARAMETER_CLASSES);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -66,7 +66,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param info the info
      */
-    public IteratingPythonScriptAlgorithm(JIPipeNodeInfo info) {
+    public RunMergingPythonScriptFromParameterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
@@ -76,9 +76,9 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
      *
      * @param other the info
      */
-    public IteratingPythonScriptAlgorithm(IteratingPythonScriptAlgorithm other) {
+    public RunMergingPythonScriptFromParameterAlgorithm(RunMergingPythonScriptFromParameterAlgorithm other) {
         super(other);
-        this.code = new PythonScript(other.code);
+        this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -117,7 +117,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     }
 
     @Override
-    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         StringBuilder code = new StringBuilder();
 
         // Get the environments
@@ -147,7 +147,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
 
-        // Run Python
+        // Run code
         PythonUtils.runPython(code.toString(),
                 pythonEnvironment,
                 Collections.emptyList(), suppressLogs, progressInfo);
@@ -177,12 +177,12 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
             "The script is designed to be used with the JIPipe Python API (supplied automatically by default). " +
             "You can find the full API documentation here: https://jipipe.hki-jena.de/apidocs/python-current/index.html")
     @JIPipeParameter("code")
-    public PythonScript getCode() {
+    public PythonScriptParameter getCode() {
         return code;
     }
 
     @JIPipeParameter("code")
-    public void setCode(PythonScript code) {
+    public void setCode(PythonScriptParameter code) {
         this.code = code;
     }
 
@@ -208,5 +208,4 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm imp
     public void setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode annotationMergeStrategy) {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
-
 }
