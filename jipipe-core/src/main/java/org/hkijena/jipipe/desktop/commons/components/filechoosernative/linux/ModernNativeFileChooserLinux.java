@@ -267,12 +267,13 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Add current directory if available
                 if (currentDirectory != null && currentDirectory.exists()) {
                     args.add("--filename");
-                    args.add(currentDirectory.getAbsolutePath());
+                    args.add(currentDirectory.getAbsolutePath() + "/");
                 }
 
                 // Add file filter if available
                 for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
-                    args.add("--file-filter=" + filter.getDescription() + " | " + Arrays.stream(filter.getExtensions()).map(s -> "*." + s).collect(Collectors.joining(" ")));
+                    args.add("--file-filter");
+                    args.add(filter.getDescription() + " | " + Arrays.stream(filter.getExtensions()).map(s -> "*." + s).collect(Collectors.joining(" ")));
                 }
 
                 // Add multiple selection support (only for open action)
@@ -281,7 +282,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 }
 
                 // Execute the command
-                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(zenityPath,
+                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(zenityPath, false,
                         JIPipeProgressInfo.STDOUT, args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (zenity returns empty string when cancelled)
@@ -319,18 +320,17 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         Path kDialogPath = findKDialog();
         Path zenityPath = findZenity();
 
-        // If KDialog is available, try to use it first
-        // Kdialog only if KDE
-        if (GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO && kDialogPath != null) {
-            ModernNativeFileChooserResponse result = showKDEFolderBrowser();
-            if (result != ModernNativeFileChooserResponse.Error) {
-                return result;
-            }
+        if(zenityPath != null) {
+            // Zenity also supports KDE
+            return showGtkFolderBrowser();
         }
 
-        // Fall back to Zenity if KDialog failed or not available
-        if (zenityPath != null) {
-            return showGtkFolderBrowser();
+        boolean isGtk = GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO;
+
+        // If KDialog is available, try to use it first
+        // Kdialog only if KDE
+        if (!isGtk && kDialogPath != null) {
+            return showKDEFolderBrowser();
         }
 
         return ModernNativeFileChooserResponse.Error;
@@ -401,18 +401,17 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         Path kDialogPath = findKDialog();
         Path zenityPath = findZenity();
 
-        // If KDialog is available, try to use it first
-        // Kdialog only if KDE
-        if (GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO && kDialogPath != null) {
-            ModernNativeFileChooserResponse result = showKDEFileChooser(action);
-            if (result != ModernNativeFileChooserResponse.Error) {
-                return result;
-            }
+        if(zenityPath != null) {
+            // Zenity also supports KDE
+            return showGtkFileChooser(action);
         }
 
-        // Fall back to Zenity if KDialog failed or not available
-        if (zenityPath != null) {
-            return showGtkFileChooser(action);
+        boolean isGtk = GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO;
+
+        // If KDialog is available, try to use it first
+        // Kdialog only if KDE
+        if (!isGtk && kDialogPath != null) {
+            return showKDEFileChooser(action);
         }
 
         return ModernNativeFileChooserResponse.Error;

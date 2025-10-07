@@ -980,35 +980,20 @@ public class JIPipeDesktop {
     public static List<Path> selectMulti(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, PathIOMode ioMode, PathType pathMode, FileNameExtensionFilter... extensionFilters) {
         List<Path> selected;
         if (ioMode == PathIOMode.Open) {
-            switch (pathMode) {
-                case FilesOnly:
-                    selected = openFiles(parent, workbench, key, title, description);
-                    break;
-                case DirectoriesOnly:
-                    selected = openDirectories(parent, workbench, key, title, description);
-                    break;
-                case FilesAndDirectories:
-                    selected = openPaths(parent, workbench, key, title, description);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported: " + pathMode);
-            }
+            selected = switch (pathMode) {
+                case FilesOnly -> openFiles(parent, workbench, key, title, description);
+                case DirectoriesOnly -> openDirectories(parent, workbench, key, title, description);
+                case FilesAndDirectories -> openPaths(parent, workbench, key, title, description);
+                default -> throw new UnsupportedOperationException("Unsupported: " + pathMode);
+            };
             return selected;
         } else {
-            Path saveSelection;
-            switch (pathMode) {
-                case FilesOnly:
-                    saveSelection = saveFile(parent, workbench, key, title, description);
-                    break;
-                case DirectoriesOnly:
-                    saveSelection = saveDirectory(parent, workbench, key, title, description);
-                    break;
-                case FilesAndDirectories:
-                    saveSelection = savePath(parent, workbench, key, title, description);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("Unsupported: " + pathMode);
-            }
+            Path saveSelection = switch (pathMode) {
+                case FilesOnly -> saveFile(parent, workbench, key, title, description);
+                case DirectoriesOnly -> saveDirectory(parent, workbench, key, title, description);
+                case FilesAndDirectories -> savePath(parent, workbench, key, title, description);
+                default -> throw new UnsupportedOperationException("Unsupported: " + pathMode);
+            };
             if (saveSelection != null) {
                 return Arrays.asList(saveSelection);
             } else {
