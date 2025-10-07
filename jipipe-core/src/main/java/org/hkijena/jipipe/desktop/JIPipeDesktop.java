@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAdvancedFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -131,7 +132,7 @@ public class JIPipeDesktop {
                 fileChooser.addFilter(extensionFilter.getDescription(), extensionFilter.getExtensions());
             }
             fileChooser.setMultiSelectionEnabled(false);
-            ModernNativeFileChooser.Response response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
             return switch (response) {
                 case OK -> fileChooser.getSelectedFile().toPath();
                 case Cancelled -> null;

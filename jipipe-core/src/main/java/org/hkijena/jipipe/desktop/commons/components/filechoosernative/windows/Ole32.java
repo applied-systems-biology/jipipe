@@ -7,7 +7,7 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32;
+package org.hkijena.jipipe.desktop.commons.components.filechoosernative.windows;
 
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;

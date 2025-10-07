@@ -20,12 +20,12 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32;
+package org.hkijena.jipipe.desktop.commons.components.filechoosernative.windows;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.WString;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
 
 import java.awt.*;
 import java.io.File;
@@ -192,7 +192,7 @@ public class WindowsFileChooser {
      *
      * @param parent the parent window of the dialog
      */
-    public ModernNativeFileChooser.Response showOpenDialog(Window parent) {
+    public ModernNativeFileChooserResponse showOpenDialog(Window parent) {
         return showDialog(parent, true);
     }
 
@@ -201,7 +201,7 @@ public class WindowsFileChooser {
      *
      * @param parent the parent window of the dialog
      */
-    public ModernNativeFileChooser.Response showSaveDialog(Window parent) {
+    public ModernNativeFileChooserResponse showSaveDialog(Window parent) {
         return showDialog(parent, false);
     }
 
@@ -213,7 +213,7 @@ public class WindowsFileChooser {
      *
      * @return true if the user clicked ok, false otherwise
      */
-    public ModernNativeFileChooser.Response showDialog(Window parent, boolean open) {
+    public ModernNativeFileChooserResponse showDialog(Window parent, boolean open) {
         final Comdlg32.OpenFileName params = new Comdlg32.OpenFileName();
         params.Flags =
                 // use explorer-style interface
@@ -323,7 +323,7 @@ public class WindowsFileChooser {
                         "GetOpenFileName failed with error " + errCode);
             }
         }
-        return approved ? ModernNativeFileChooser.Response.OK : ModernNativeFileChooser.Response.Cancelled;
+        return approved ? ModernNativeFileChooserResponse.OK : ModernNativeFileChooserResponse.Cancelled;
     }
 
     /*
