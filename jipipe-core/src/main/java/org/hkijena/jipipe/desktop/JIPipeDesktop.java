@@ -127,9 +127,9 @@ public class JIPipeDesktop {
         else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
-            fileChooser.setMode(ModernNativeFileChooser.Mode.Files);
+            fileChooser.setMode(PathType.FilesOnly);
             for (FileNameExtensionFilter extensionFilter : extensionFilters) {
-                fileChooser.addFilter(extensionFilter.getDescription(), extensionFilter.getExtensions());
+                fileChooser.addFilter(extensionFilter);
             }
             fileChooser.setMultiSelectionEnabled(false);
             ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));

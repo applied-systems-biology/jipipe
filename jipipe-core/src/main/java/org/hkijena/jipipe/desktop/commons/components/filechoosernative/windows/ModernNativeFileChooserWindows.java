@@ -17,6 +17,7 @@ import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNat
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserImplementation;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,8 +46,8 @@ public class ModernNativeFileChooserWindows implements ModernNativeFileChooserIm
 
         final ModernNativeFileChooserResponse result = fc.showDialog(parent, action == PathIOMode.Open);
         if (result == ModernNativeFileChooserResponse.OK) {
-            selectedFiles = multiSelectionEnabled ? fc.getSelectedFiles() : new File[]{fc.getSelectedFile()};
-            currentDirectory = fc.getCurrentDirectory();
+            fileChooser.setSelectedFiles(fileChooser.isMultiSelectionEnabled() ? fc.getSelectedFiles() : new File[]{fc.getSelectedFile()});
+            fileChooser.setCurrentDirectory(fc.getCurrentDirectory());
         }
         return result;
     }
@@ -54,14 +55,14 @@ public class ModernNativeFileChooserWindows implements ModernNativeFileChooserIm
     @Override
     public ModernNativeFileChooserResponse showFolderBrowser(Window parent) {
         final WindowsFolderBrowser fb = new WindowsFolderBrowser();
-        if (!dialogTitle.isEmpty()) {
-            fb.setTitle(dialogTitle);
+        if (!StringUtils.isNullOrEmpty(fileChooser.getDialogTitle())) {
+            fb.setTitle(fileChooser.getDialogTitle());
         }
         final File file = fb.showDialog(parent);
         if (file != null) {
-            selectedFiles = new File[]{file};
-            currentDirectory = file.getParentFile() != null ?
-                    file.getParentFile() : file;
+            fileChooser.setSelectedFiles(new File[]{file});
+            fileChooser.setCurrentDirectory(file.getParentFile() != null ?
+                    file.getParentFile() : file);
             return ModernNativeFileChooserResponse.OK;
         }
 

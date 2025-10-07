@@ -12,7 +12,11 @@ package org.hkijena.jipipe.desktop.commons.components.filechoosernative;
 import com.sun.jna.Platform;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.linux.GtkDesktopEnvironmentDetector;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.linux.ModernNativeFileChooserLinux;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.macos.ModernNativeFileChooserMacOS;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.windows.ModernNativeFileChooserWindows;
 import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -51,7 +55,7 @@ public class ModernNativeFileChooser {
     protected File currentDirectory;
     protected List<FileNameExtensionFilter> filters = new ArrayList<>();
     protected boolean multiSelectionEnabled = false;
-    protected Mode mode = Mode.Files;
+    protected PathType mode = PathType.FilesOnly;
     protected String defaultFile = "";
     protected String dialogTitle = "";
     protected String openButtonText = "";
@@ -126,48 +130,26 @@ public class ModernNativeFileChooser {
     private ModernNativeFileChooserResponse showDialog(Window parent, PathIOMode action) {
         try {
             if (Platform.isWindows()) {
-                if (mode == Mode.Files) {
-                    return showWindowsFileChooser(parent, action);
-                } else if (mode == Mode.Directories) {
-                    return showWindowsFolderBrowser(parent);
+                if(mode == PathType.FilesOnly) {
+                    return new ModernNativeFileChooserWindows(this).showFileChooser(parent, action);
+                }
+                else if(mode == PathType.DirectoriesOnly) {
+                    return new ModernNativeFileChooserWindows(this).showFolderBrowser(parent);
                 }
             } else if (Platform.isMac()) {
-                if (mode == Mode.Files) {
-                    return showMacFileChooser((Frame) parent, action);
-                } else if (mode == Mode.Directories) {
-                    return showMacFolderBrowser((Frame) parent);
+                if(mode == PathType.FilesOnly) {
+                    return new ModernNativeFileChooserMacOS(this).showFileChooser(parent, action);
+                }
+                else if(mode == PathType.DirectoriesOnly) {
+                    return new ModernNativeFileChooserMacOS(this).showFolderBrowser(parent);
                 }
             }
             else if(Platform.isLinux()) {
-                // Try KDialog first for KDE environments, then fall back to Zenity
-                Path kDialogPath = findKDialog();
-                Path zenityPath = findZenity();
-                
-                // If KDialog is available, try to use it first
-                // Kdialog only if KDE
-                if (GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO && kDialogPath != null) {
-                    if(mode == Mode.Files) {
-                        ModernNativeFileChooserResponse result = showKDEFileChooser(parent, action);
-                        if (result != ModernNativeFileChooserResponse.Error) {
-                            return result;
-                        }
-                    }
-                    else if(mode == Mode.Directories) {
-                        ModernNativeFileChooserResponse result = showKDEFolderBrowser(parent, action);
-                        if (result != ModernNativeFileChooserResponse.Error) {
-                            return result;
-                        }
-                    }
+                if(mode == PathType.FilesOnly) {
+                    return new ModernNativeFileChooserLinux(this).showFileChooser(parent, action);
                 }
-                
-                // Fall back to Zenity if KDialog failed or not available
-                if (zenityPath != null) {
-                    if(mode == Mode.Files) {
-                        return showGtkFileChooser(parent, action);
-                    }
-                    else if(mode == Mode.Directories) {
-                        return showGtkFolderBrowser(parent, action);
-                    }
+                else if(mode == PathType.DirectoriesOnly) {
+                    return new ModernNativeFileChooserLinux(this).showFolderBrowser(parent);
                 }
             }
         }
@@ -194,7 +176,7 @@ public class ModernNativeFileChooser {
         return result;
     }
 
-    public Mode getMode() {
+    public PathType getMode() {
         return mode;
     }
 
@@ -203,7 +185,7 @@ public class ModernNativeFileChooser {
      *
      * @param mode the selection mode
      */
-    public void setMode(Mode mode) {
+    public void setMode(PathType mode) {
         this.mode = mode;
     }
 
@@ -266,25 +248,11 @@ public class ModernNativeFileChooser {
         return currentDirectory;
     }
 
-    public void setCurrentDirectory(String currentDirectoryPath) {
-        this.currentDirectory = (currentDirectoryPath != null ? new File(currentDirectoryPath) : null);
+    public void setCurrentDirectory(File currentDirectoryPath) {
+        this.currentDirectory = currentDirectoryPath;
     }
 
-    /**
-     * the available selection modes of the dialog
-     */
-    public enum Mode {
-        Files(JFileChooser.FILES_ONLY),
-        Directories(JFileChooser.DIRECTORIES_ONLY),
-        FilesAndDirectories(JFileChooser.FILES_AND_DIRECTORIES);
-        private final int jFileChooserValue;
-
-        Mode(int jfcv) {
-            this.jFileChooserValue = jfcv;
-        }
-
-        public int getJFileChooserValue() {
-            return jFileChooserValue;
-        }
+    public void setSelectedFiles(File[] files) {
+        this.selectedFiles = files;
     }
 }

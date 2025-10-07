@@ -18,22 +18,24 @@ import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNat
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserImplementation;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImplementation {
 
     // Cached paths for Linux tools
     private static Path cachedKDialogPath;
     private static Path cachedZenityPath;
-
     private final ModernNativeFileChooser fileChooser;
 
     public ModernNativeFileChooserLinux(ModernNativeFileChooser fileChooser) {
@@ -67,30 +69,30 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
     }
 
 
-    private ModernNativeFileChooserResponse showKDEFolderBrowser(Window parent, PathIOMode action) {
+    private ModernNativeFileChooserResponse showKDEFolderBrowser() {
         Path kDialogPath = findKDialog();
+        File currentDirectory = fileChooser.getCurrentDirectory();
         if (kDialogPath != null) {
             try {
                 // Build the kdialog command
-                ArrayList<String> command = new ArrayList<>();
-                command.add(kDialogPath.toString());
-                command.add("--getexistingdirectory");
+                ArrayList<String> args = new ArrayList<>();
+                args.add("--getexistingdirectory");
 
-                // Add title if available
-                if (!StringUtils.isNullOrEmpty(dialogTitle)) {
-                    command.add("--title");
-                    command.add(dialogTitle);
+                if (currentDirectory != null && currentDirectory.isDirectory()) {
+                    args.add(currentDirectory.getAbsolutePath());
+                } else {
+                    args.add(PathUtils.getHomeDirectory().toString());
                 }
 
-                // Add current directory if available
-                if (currentDirectory != null && currentDirectory.exists()) {
-                    command.add("--initial");
-                    command.add(currentDirectory.getAbsolutePath());
+                // Add title if available
+                if (!StringUtils.isNullOrEmpty(fileChooser.getDialogTitle())) {
+                    args.add("--title");
+                    args.add(fileChooser.getDialogTitle());
                 }
 
                 // Execute the command
-                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(kDialogPath,
-                        new JIPipeProgressInfo(), command.toArray(new String[0]))).trim();
+                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(kDialogPath, false,
+                        new JIPipeProgressInfo(), args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (kdialog returns non-zero exit code)
                 if (result.isEmpty()) {
@@ -100,9 +102,9 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Validate the selected directory
                 File selectedDir = new File(result);
                 if (selectedDir.exists() && selectedDir.isDirectory()) {
-                    selectedFiles = new File[]{selectedDir};
-                    currentDirectory = selectedDir.getParentFile() != null ?
-                            selectedDir.getParentFile() : selectedDir;
+                    fileChooser.setSelectedFiles(new File[]{selectedDir});
+                    fileChooser.setCurrentDirectory(selectedDir.getParentFile() != null ?
+                            selectedDir.getParentFile() : selectedDir);
                     return ModernNativeFileChooserResponse.OK;
                 } else {
                     return ModernNativeFileChooserResponse.Error;
@@ -115,54 +117,53 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         return ModernNativeFileChooserResponse.Error;
     }
 
-    private ModernNativeFileChooserResponse showKDEFileChooser(Window parent, PathIOMode action) {
+    private ModernNativeFileChooserResponse showKDEFileChooser(PathIOMode action) {
         Path kDialogPath = findKDialog();
+        File currentDirectory = fileChooser.getCurrentDirectory();
         if (kDialogPath != null) {
             try {
                 // Build the kdialog command
-                ArrayList<String> command = new ArrayList<>();
-                command.add(kDialogPath.toString());
+                ArrayList<String> args = new ArrayList<>();
 
                 // Use different command based on action type
                 if (action == PathIOMode.Open) {
-                    command.add("--getopenfilename");
+                    args.add("--getopenfilename");
                 } else if (action == PathIOMode.Save) {
-                    command.add("--getsavefilename");
+                    args.add("--getsavefilename");
                 }
 
                 // Add current directory as first argument (startDir)
                 if (currentDirectory != null && currentDirectory.exists()) {
-                    command.add(currentDirectory.getAbsolutePath());
+                    args.add(currentDirectory.getAbsolutePath());
                 } else {
-                    command.add(".");
+                    args.add(PathUtils.getHomeDirectory().toString());
                 }
 
                 // Add file filter as second argument (name or mimetype filter)
-                if (filters != null && !filters.isEmpty()) {
-                    String filterPattern = buildKDEFilterPattern();
-                    if (!StringUtils.isNullOrEmpty(filterPattern)) {
-                        command.add(filterPattern);
-                    } else {
-                        command.add("*");
+                if(!fileChooser.getFilters().isEmpty()) {
+                    StringBuilder builder = new StringBuilder();
+                    for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
+                        for (String extension : filter.getExtensions()) {
+                            builder.append("*.").append(extension).append(" ");
+                        }
                     }
-                } else {
-                    command.add("*");
+                    args.add(builder.toString().trim());
                 }
 
                 // Add title if available
-                if (!StringUtils.isNullOrEmpty(dialogTitle)) {
-                    command.add("--title");
-                    command.add(dialogTitle);
+                if (!StringUtils.isNullOrEmpty(fileChooser.getDialogTitle())) {
+                    args.add("--title");
+                    args.add(fileChooser.getDialogTitle());
                 }
 
                 // Add multiple selection support (only for open action)
-                if (multiSelectionEnabled && action == PathIOMode.Open) {
-                    command.add("--multiple");
+                if (fileChooser.isMultiSelectionEnabled() && action == PathIOMode.Open) {
+                    args.add("--multiple");
                 }
 
                 // Execute the command
                 String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(kDialogPath, false,
-                        JIPipeProgressInfo.STDOUT, command.toArray(new String[0]))).trim();
+                        JIPipeProgressInfo.STDOUT, args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (kdialog returns empty string when cancelled)
                 if (result.isEmpty()) {
@@ -172,12 +173,12 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Parse the selected files
                 File[] selectedFiles = parseKDEFileSelection(result);
                 if (selectedFiles != null && selectedFiles.length > 0) {
-                    this.selectedFiles = selectedFiles;
+                    fileChooser.setSelectedFiles(selectedFiles);
                     // Update current directory to the directory of the first selected file
                     if (selectedFiles[0] != null) {
                         File firstFileDir = selectedFiles[0].getParentFile();
                         if (firstFileDir != null) {
-                            this.currentDirectory = firstFileDir;
+                            fileChooser.setCurrentDirectory(firstFileDir);
                         }
                     }
                     return ModernNativeFileChooserResponse.OK;
@@ -192,91 +193,32 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         return ModernNativeFileChooserResponse.Error;
     }
 
-    /**
-     * Builds a KDE filter pattern from the internal filters
-     * KDialog format: "Filter Name (*.ext1 *.ext2)"
-     *
-     * @return The filter pattern string
-     */
-    private String buildKDEFilterPattern() {
-        if (filters == null || filters.isEmpty()) {
-            return "";
-        }
-
-        // Use the first filter for now
-        String[] filterSpec = filters.get(0);
-        if (filterSpec.length < 2) {
-            return "";
-        }
-
-        StringBuilder pattern = new StringBuilder(filterSpec[0]); // Filter name
-        pattern.append(" (");
-
-        for (int i = 1; i < filterSpec.length; i++) {
-            if (i > 1) {
-                pattern.append(" ");
-            }
-            pattern.append("*").append(filterSpec[i]);
-        }
-
-        pattern.append(")");
-        return pattern.toString();
-    }
-
-    /**
-     * Builds a Zenity filter pattern from the internal filters
-     * Zenity format: "*.ext1 *.ext2"
-     *
-     * @return The filter pattern string
-     */
-    private String buildZenityFilterPattern() {
-        if (filters == null || filters.isEmpty()) {
-            return "";
-        }
-
-        // Use the first filter for now
-        String[] filterSpec = filters.get(0);
-        if (filterSpec.length < 2) {
-            return "";
-        }
-
-        StringBuilder pattern = new StringBuilder();
-
-        for (int i = 1; i < filterSpec.length; i++) {
-            if (i > 1) {
-                pattern.append(" ");
-            }
-            pattern.append("*").append(filterSpec[i]);
-        }
-
-        return pattern.toString();
-    }
-
-    private ModernNativeFileChooserResponse showGtkFolderBrowser(Window parent, Action action) {
+    private ModernNativeFileChooserResponse showGtkFolderBrowser() {
         Path zenityPath = findZenity();
+        File currentDirectory = fileChooser.getCurrentDirectory();
         if (zenityPath != null) {
             try {
                 // Build the zenity command
-                ArrayList<String> command = new ArrayList<>();
-                command.add(zenityPath.toString());
-                command.add("--file-selection");
-                command.add("--directory");
+                ArrayList<String> args = new ArrayList<>();
+
+                args.add("--file-selection");
+                args.add("--directory");
 
                 // Add title if available
-                if (!StringUtils.isNullOrEmpty(dialogTitle)) {
-                    command.add("--title");
-                    command.add(dialogTitle);
+                if (!StringUtils.isNullOrEmpty(fileChooser.getDialogTitle())) {
+                    args.add("--title");
+                    args.add(fileChooser.getDialogTitle());
                 }
 
                 // Add current directory if available
                 if (currentDirectory != null && currentDirectory.exists()) {
-                    command.add("--filename");
-                    command.add(currentDirectory.getAbsolutePath());
+                    args.add("--filename");
+                    args.add(currentDirectory.getAbsolutePath());
                 }
 
                 // Execute the command
                 String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(zenityPath,
-                        JIPipeProgressInfo.STDOUT, command.toArray(new String[0]))).trim();
+                        JIPipeProgressInfo.STDOUT, args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (zenity returns empty string when cancelled)
                 if (result.isEmpty()) {
@@ -286,9 +228,9 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Validate the selected directory
                 File selectedDir = new File(result);
                 if (selectedDir.exists() && selectedDir.isDirectory()) {
-                    selectedFiles = new File[]{selectedDir};
-                    currentDirectory = selectedDir.getParentFile() != null ?
-                            selectedDir.getParentFile() : selectedDir;
+                    fileChooser.setSelectedFiles(new File[]{selectedDir});
+                    fileChooser.setCurrentDirectory(selectedDir.getParentFile() != null ?
+                            selectedDir.getParentFile() : selectedDir);
                     return ModernNativeFileChooserResponse.OK;
                 } else {
                     return ModernNativeFileChooserResponse.Error;
@@ -301,49 +243,46 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         return ModernNativeFileChooserResponse.Error;
     }
 
-    private ModernNativeFileChooserResponse showGtkFileChooser(Window parent, PathIOMode action) {
+    private ModernNativeFileChooserResponse showGtkFileChooser(PathIOMode action) {
         Path zenityPath = findZenity();
+        File currentDirectory = fileChooser.getCurrentDirectory();
         if (zenityPath != null) {
             try {
                 // Build the zenity command
-                ArrayList<String> command = new ArrayList<>();
-                command.add(zenityPath.toString());
-                command.add("--file-selection");
+                ArrayList<String> args = new ArrayList<>();
+
+                args.add("--file-selection");
 
                 // Add save flag for save action
                 if (action == PathIOMode.Save) {
-                    command.add("--save");
+                    args.add("--save");
                 }
 
                 // Add title if available
-                if (!StringUtils.isNullOrEmpty(dialogTitle)) {
-                    command.add("--title");
-                    command.add(dialogTitle);
+                if (!StringUtils.isNullOrEmpty(fileChooser.getDialogTitle())) {
+                    args.add("--title");
+                    args.add(fileChooser.getDialogTitle());
                 }
 
                 // Add current directory if available
                 if (currentDirectory != null && currentDirectory.exists()) {
-                    command.add("--filename");
-                    command.add(currentDirectory.getAbsolutePath());
+                    args.add("--filename");
+                    args.add(currentDirectory.getAbsolutePath());
                 }
 
                 // Add file filter if available
-                if (filters != null && !filters.isEmpty()) {
-                    String filterPattern = buildZenityFilterPattern();
-                    if (!StringUtils.isNullOrEmpty(filterPattern)) {
-                        command.add("--file-filter");
-                        command.add(filterPattern);
-                    }
+                for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
+                    args.add("--file-filter=" + filter.getDescription() + " | " + Arrays.stream(filter.getExtensions()).map(s -> "*." + s).collect(Collectors.joining(" ")));
                 }
 
                 // Add multiple selection support (only for open action)
-                if (multiSelectionEnabled && action == PathIOMode.Open) {
-                    command.add("--multiple");
+                if (fileChooser.isMultiSelectionEnabled() && action == PathIOMode.Open) {
+                    args.add("--multiple");
                 }
 
                 // Execute the command
                 String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(zenityPath,
-                        JIPipeProgressInfo.STDOUT, command.toArray(new String[0]))).trim();
+                        JIPipeProgressInfo.STDOUT, args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (zenity returns empty string when cancelled)
                 if (result.isEmpty()) {
@@ -353,12 +292,12 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Parse the selected files
                 File[] selectedFiles = parseZenityFileSelection(result);
                 if (selectedFiles != null && selectedFiles.length > 0) {
-                    this.selectedFiles = selectedFiles;
+                    fileChooser.setSelectedFiles(selectedFiles);
                     // Update current directory to the directory of the first selected file
                     if (selectedFiles[0] != null) {
                         File firstFileDir = selectedFiles[0].getParentFile();
                         if (firstFileDir != null) {
-                            this.currentDirectory = firstFileDir;
+                            fileChooser.setCurrentDirectory(firstFileDir);
                         }
                     }
                     return ModernNativeFileChooserResponse.OK;
@@ -373,14 +312,28 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         return ModernNativeFileChooserResponse.Error;
     }
 
-    @Override
-    public ModernNativeFileChooserResponse showFileChooser(Window parent, Action action) {
-        return null;
-    }
 
     @Override
     public ModernNativeFileChooserResponse showFolderBrowser(Window parent) {
-        return null;
+        // Try KDialog first for KDE environments, then fall back to Zenity
+        Path kDialogPath = findKDialog();
+        Path zenityPath = findZenity();
+
+        // If KDialog is available, try to use it first
+        // Kdialog only if KDE
+        if (GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO && kDialogPath != null) {
+            ModernNativeFileChooserResponse result = showKDEFolderBrowser();
+            if (result != ModernNativeFileChooserResponse.Error) {
+                return result;
+            }
+        }
+
+        // Fall back to Zenity if KDialog failed or not available
+        if (zenityPath != null) {
+            return showGtkFolderBrowser();
+        }
+
+        return ModernNativeFileChooserResponse.Error;
     }
 
     /**
@@ -440,5 +393,28 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         }
 
         return files.toArray(new File[0]);
+    }
+
+    @Override
+    public ModernNativeFileChooserResponse showFileChooser(Window parent, PathIOMode action) {
+        // Try KDialog first for KDE environments, then fall back to Zenity
+        Path kDialogPath = findKDialog();
+        Path zenityPath = findZenity();
+
+        // If KDialog is available, try to use it first
+        // Kdialog only if KDE
+        if (GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO && kDialogPath != null) {
+            ModernNativeFileChooserResponse result = showKDEFileChooser(action);
+            if (result != ModernNativeFileChooserResponse.Error) {
+                return result;
+            }
+        }
+
+        // Fall back to Zenity if KDialog failed or not available
+        if (zenityPath != null) {
+            return showGtkFileChooser(action);
+        }
+
+        return ModernNativeFileChooserResponse.Error;
     }
 }

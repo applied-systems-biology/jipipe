@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.plugins.processes.ProcessEnvironment;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.process.ExtendedExecutor;
 import org.hkijena.jipipe.utils.process.ProcessSidecarTask;
 import org.hkijena.jipipe.utils.scripting.ScriptUtils;
@@ -228,7 +229,7 @@ public class ProcessUtils {
         for (String arg : args) {
             commandLine.addArgument(arg, handleQuoting);
         }
-        progressInfo.log("Running " + executable + " " + String.join(" ", args));
+        progressInfo.log("Running " + executable + " " + JsonUtils.toJsonString(args));
         DefaultExecutor executor = new DefaultExecutor();
 
         // Capture stdout

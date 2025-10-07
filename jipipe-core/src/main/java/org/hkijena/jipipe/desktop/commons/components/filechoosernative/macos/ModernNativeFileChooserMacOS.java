@@ -17,10 +17,13 @@ import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNat
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserImplementation;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.util.Locale;
 
 public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImplementation {
 
@@ -33,34 +36,32 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
     @Override
     public ModernNativeFileChooserResponse showFileChooser(Window parent, PathIOMode action) {
          int mode = action == PathIOMode.Open ? FileDialog.LOAD : FileDialog.SAVE;
-        String title = !dialogTitle.isEmpty() ? dialogTitle : (action == PathIOMode.Open ? "Open" : "Save As");
-        FileDialog fd = new FileDialog(parent, title, mode);
-        fd.setMultipleMode(multiSelectionEnabled);
+        String title = StringUtils.orElse(fileChooser.getDialogTitle(), action == PathIOMode.Open ? "Open" : "Save");
+        FileDialog fd = new FileDialog((Frame)parent, title, mode);
+        fd.setMultipleMode(fileChooser.isMultiSelectionEnabled());
 
-        if (!defaultFile.isEmpty())
-            fd.setFile(defaultFile);
+        if(!StringUtils.isNullOrEmpty(fileChooser.getDefaultFile())) {
+            fd.setFile(fileChooser.getDefaultFile());
+        }
 
-        if (currentDirectory != null) {
-            if (currentDirectory.isDirectory())
-                fd.setDirectory(currentDirectory.getAbsolutePath());
-            else
-                fd.setDirectory(currentDirectory.getParent());
+        if(fileChooser.getCurrentDirectory() != null) {
+            if(fileChooser.getCurrentDirectory().isDirectory()) {
+                fd.setDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
+            }
+            else {
+                fd.setDirectory(fileChooser.getCurrentDirectory().getParent());
+            }
         }
 
         fd.setFilenameFilter((dir, filename) -> {
-            if (filters.isEmpty())
+            if (fileChooser.getFilters().isEmpty()) {
                 return true;
+            }
 
-            // filterSpec is formatted as [ name, ext1, ext2, ext3, ... ]
-            for (String[] filterSpec : filters) {
-                for (int i = 1; i < filterSpec.length; i++) {
-                    String filter = filterSpec[i].toLowerCase();
-                    if (filter.startsWith("*")) {
-                        if (filename.toLowerCase().endsWith(filter.substring(1)))
-                            return true;
-                    } else {
-                        if (filename.toLowerCase().endsWith(filter))
-                            return true;
+            for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
+                for (String extension : filter.getExtensions()) {
+                    if (filename.toLowerCase(Locale.ROOT).endsWith("."  + extension.toLowerCase(Locale.ROOT))) {
+                        return true;
                     }
                 }
             }
@@ -70,9 +71,8 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
         fd.setVisible(true);
 
         if (fd.getFile() != null) {
-            selectedFiles = multiSelectionEnabled ?
-                    fd.getFiles() : new File[]{new File(fd.getDirectory(), fd.getFile())};
-            currentDirectory = new File(fd.getDirectory());
+            fileChooser.setSelectedFiles(fileChooser.isMultiSelectionEnabled() ? fd.getFiles() : new File[]{new File(fd.getDirectory(), fd.getFile())});
+            fileChooser.setCurrentDirectory(new File(fd.getDirectory()));
             return ModernNativeFileChooserResponse.OK;
         }
 
@@ -81,17 +81,15 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
 
     @Override
     public ModernNativeFileChooserResponse showFolderBrowser(Window parent) {
-        String title = !dialogTitle.isEmpty() ? dialogTitle : "Open";
-        FileDialog fd = new FileDialog(parent, title, FileDialog.LOAD);
-        if (!dialogTitle.isEmpty())
-            fd.setTitle(dialogTitle);
+        String title = StringUtils.orElse(fileChooser.getDialogTitle(), "Open");
+        FileDialog fd = new FileDialog((Frame)parent, title, FileDialog.LOAD);
 
         try {
             System.setProperty("apple.awt.fileDialogForDirectories", "true");
             fd.setVisible(true);
             if (fd.getFile() != null) {
-                selectedFiles = new File[]{new File(fd.getDirectory(), fd.getFile())};
-                currentDirectory = new File(fd.getDirectory());
+                fileChooser.setSelectedFiles(new File[]{new File(fd.getDirectory(), fd.getFile())});
+                fileChooser.setCurrentDirectory(new File(fd.getDirectory()));
                 return ModernNativeFileChooserResponse.OK;
             }
         } finally {
