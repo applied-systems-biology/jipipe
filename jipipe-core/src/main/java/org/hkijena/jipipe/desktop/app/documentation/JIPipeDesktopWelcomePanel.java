@@ -111,15 +111,37 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        JTextPane textPane = UIUtils.createBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
-                "</html>", false);
-        textPane.setMaximumSize(new Dimension(300, 40));
-        actionPanel.add(textPane);
+        JButton openTutorialsButton = new JButton("Tutorials");
+        openTutorialsButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/graduation-cap.png"));
+        openTutorialsButton.setToolTipText("Opens the website with tutorials");
+        openTutorialsButton.setOpaque(false);
+        openTutorialsButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        openTutorialsButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        openTutorialsButton.addActionListener(e -> doActionOpenTutorials());
+        actionPanel.add(openTutorialsButton);
+
+        JButton customizeButton = new JButton("Customize JIPipe");
+        customizeButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/palette.png"));
+        customizeButton.setToolTipText("Opens the customization tool");
+        customizeButton.setOpaque(false);
+        customizeButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        customizeButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        customizeButton.addActionListener(e -> doActionOpenCustomization());
+        actionPanel.add(customizeButton);
+
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 32));
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 80));
         heroPanel.add(actionPanel);
+    }
+
+    private void doActionOpenCustomization() {
+
+    }
+
+    private void doActionOpenTutorials() {
+        UIUtils.desktopOpenURL("https://www.jipipe.org/tutorials/", true);
     }
 
     private void initializeHeroActions(JPanel heroPanel) {
@@ -136,6 +158,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         startNowButton.setToolTipText("Switches to an empty project");
         startNowButton.setBackground(colorSuccess);
         startNowButton.setForeground(Color.WHITE);
+        startNowButton.setIcon(JIPipe.RESOURCES.getIcon32Inverted("actions/stock_new-text.png"));
         startNowButton.setUI(new JIPipeDesktopRoundedButtonUI(8, colorHover, colorHover));
         startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEmptyBorder(16, 16, 16, 16)));
@@ -146,6 +169,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         JButton openProjectButton = new JButton("Open project");
         openProjectButton.setToolTipText("Opens a *.jip project file");
+        openProjectButton.setIcon(JIPipe.RESOURCES.getIcon32("actions/fileopen.png"));
         openProjectButton.setOpaque(false);
         openProjectButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         openProjectButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
@@ -155,6 +179,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         actionPanel.add(Box.createHorizontalStrut(8));
 
         JButton openROCrateButton = new JButton("Import RO-Crate");
+        openROCrateButton.setIcon(JIPipe.RESOURCES.getIcon32("apps/ro-crate.png"));
         openROCrateButton.setToolTipText("Opens a *.crate.zip that contains a JIPipe workflow");
         openROCrateButton.setOpaque(false);
         openROCrateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
