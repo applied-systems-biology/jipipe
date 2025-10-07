@@ -27,7 +27,9 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.traverse.BreadthFirstIterator;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -59,7 +61,7 @@ public class ProcessUtils {
      * @param variables                    additional variables for the arguments (can be null)
      * @param overrideEnvironmentVariables additional environment variables
      * @param handleQuoting                if argument quoting is handled by commons exec (can be buggy)
-     * @param sidecars  additional tasks that are handled during process execution
+     * @param sidecars                     additional tasks that are handled during process execution
      * @param progressInfo                 the progress info
      */
     public static void runProcess(ProcessEnvironment environment, JIPipeExpressionVariablesMap variables, Map<String, String> overrideEnvironmentVariables, boolean handleQuoting, List<ProcessSidecarTask> sidecars, JIPipeProgressInfo progressInfo) {
@@ -80,7 +82,7 @@ public class ProcessUtils {
 
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             String existing = systemEnv.get(entry.getKey());
-            if(existing == null || !existing.equals(entry.getValue())) {
+            if (existing == null || !existing.equals(entry.getValue())) {
                 progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
             }
         }
@@ -112,8 +114,7 @@ public class ProcessUtils {
             executor.execute(commandLine, environmentVariables);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             for (ProcessSidecarTask sidecar : sidecars) {
                 sidecar.stop();
             }
@@ -210,8 +211,23 @@ public class ProcessUtils {
      * @return the stdout
      */
     public static String queryFast(Path executable, JIPipeProgressInfo progressInfo, String... args) {
+        return queryFast(executable, true, progressInfo, args);
+    }
+
+    /**
+     * Queries standard output with a timeout.
+     * Does not listen to cancellation signals
+     *
+     * @param executable   the executable
+     * @param progressInfo the progress info
+     * @param args         executable args
+     * @return the stdout
+     */
+    public static String queryFast(Path executable, boolean handleQuoting, JIPipeProgressInfo progressInfo, String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());
-        commandLine.addArguments(args);
+        for (String arg : args) {
+            commandLine.addArgument(arg, handleQuoting);
+        }
         progressInfo.log("Running " + executable + " " + String.join(" ", args));
         DefaultExecutor executor = new DefaultExecutor();
 

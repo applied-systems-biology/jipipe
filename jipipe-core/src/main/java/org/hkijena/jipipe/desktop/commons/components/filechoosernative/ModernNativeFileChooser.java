@@ -266,25 +266,29 @@ public class ModernNativeFileChooser {
                     command.add("--getsavefilename");
                 }
                 
+                // Add current directory as first argument (startDir)
+                if (currentDirectory != null && currentDirectory.exists()) {
+                    command.add(currentDirectory.getAbsolutePath());
+                } else {
+                    command.add(".");
+                }
+                
+                // Add file filter as second argument (name or mimetype filter)
+                if (filters != null && !filters.isEmpty()) {
+                    String filterPattern = buildKDEFilterPattern();
+                    if (!StringUtils.isNullOrEmpty(filterPattern)) {
+                        command.add(filterPattern);
+                    } else {
+                        command.add("*");
+                    }
+                } else {
+                    command.add("*");
+                }
+                
                 // Add title if available
                 if (!StringUtils.isNullOrEmpty(dialogTitle)) {
                     command.add("--title");
                     command.add(dialogTitle);
-                }
-                
-                // Add current directory if available
-                if (currentDirectory != null && currentDirectory.exists()) {
-                    command.add("--initial");
-                    command.add(currentDirectory.getAbsolutePath());
-                }
-                
-                // Add file filter if available
-                if (filters != null && !filters.isEmpty()) {
-                    String filterPattern = buildKDEFilterPattern();
-                    if (!StringUtils.isNullOrEmpty(filterPattern)) {
-                        command.add("--file-filter");
-                        command.add(filterPattern);
-                    }
                 }
                 
                 // Add multiple selection support (only for open action)
@@ -293,7 +297,7 @@ public class ModernNativeFileChooser {
                 }
                 
                 // Execute the command
-                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(kDialogPath,
+                String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(kDialogPath, false,
                     JIPipeProgressInfo.STDOUT, command.toArray(new String[0]))).trim();
                 
                 // Check if user cancelled (kdialog returns empty string when cancelled)
