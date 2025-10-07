@@ -355,9 +355,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         for (String filePath : filePaths) {
             if (!StringUtils.isNullOrEmpty(filePath)) {
                 File file = new File(filePath.trim());
-                if (file.exists()) {
-                    files.add(file);
-                }
+                files.add(file);
             }
         }
 
@@ -386,9 +384,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Remove backslash escaping
                 filePath = filePath.replace("\\ ", " ");
                 File file = new File(filePath);
-                if (file.exists()) {
-                    files.add(file);
-                }
+                files.add(file);
             }
         }
 
