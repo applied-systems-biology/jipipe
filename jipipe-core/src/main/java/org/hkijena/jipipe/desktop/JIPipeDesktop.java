@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAdvancedFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -54,8 +55,26 @@ public class JIPipeDesktop {
      */
     public static Path openFile(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+        final JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType = instance.getFileChooserType();
+        return openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+    }
+
+    /**
+     * Lets the user choose a file
+     *
+     * @param parent           parent component
+     * @param workbench        the workbench
+     * @param key              location where the dialog is opened
+     * @param title            dialog title
+     * @param description      optional description (only supported by specific file chooser types)
+     * @param extensionFilters optional extension filters. the first one is chosen automatically
+     * @return selected file or null if dialog was cancelled
+     */
+    public static Path openFile(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType, FileNameExtensionFilter... extensionFilters) {
+        JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
-        if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Native) {
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
             dialog.setDirectory(currentPath.toString());
@@ -69,7 +88,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -86,7 +105,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
@@ -103,7 +122,24 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else {
+        }
+        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
+            ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
+            fileChooser.setTitle(title);
+            fileChooser.setMode(ModernNativeFileChooser.Mode.Files);
+            for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                fileChooser.addFilter(extensionFilter.getDescription(), extensionFilter.getExtensions());
+            }
+            fileChooser.setMultiSelectionEnabled(false);
+            ModernNativeFileChooser.Response response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            return switch (response) {
+                case OK -> fileChooser.getSelectedFile().toPath();
+                case Cancelled -> null;
+                case Error ->
+                        openFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
+            };
+        }
+        else {
             Path result = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,

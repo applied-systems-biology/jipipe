@@ -529,7 +529,7 @@ public class ModernNativeFileChooser {
         return Response.Cancelled;
     }
 
-    public Response showMacFolderBrowser(Frame parent) {
+    private Response showMacFolderBrowser(Frame parent) {
         String title = !dialogTitle.isEmpty() ? dialogTitle : "Open";
         FileDialog fd = new FileDialog(parent, title, FileDialog.LOAD);
         if (!dialogTitle.isEmpty())
