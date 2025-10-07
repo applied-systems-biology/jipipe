@@ -65,6 +65,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -2371,6 +2372,88 @@ public class UIUtils {
             return panel;
         }
     }
+
+    /**
+     * Returns the effective UI scale factor currently applied by Swing for the given component's screen.
+     * <p>
+     * Works with:
+     * <ul>
+     *   <li>Java's automatic HiDPI scaling (JDK 9+), including per-monitor DPI on Windows/macOS/Linux.</li>
+     *   <li>CLI override via -Dsun.java2d.uiScale=..., e.g. "2", "1.5", "150%".</li>
+     * </ul>
+     * If {@code comp} is null or has no GraphicsConfiguration yet, the default screen device is used.
+     */
+    public static double getScale(Component comp) {
+        // 1) If user explicitly forced a scale via CLI, respect it.
+        Double forced = parseSunUiScaleProperty();
+        if (forced != null && forced > 0.0) {
+            return forced;
+        }
+
+        // 2) Ask AWT what scale is active for this device (reflects automatic HiDPI).
+        GraphicsConfiguration gc = null;
+        if (comp != null) {
+            gc = comp.getGraphicsConfiguration();
+            // If the component isn’t realized yet, gc may be null.
+            if (gc == null) {
+                Window w = SwingUtilities.getWindowAncestor(comp);
+                if (w != null) gc = w.getGraphicsConfiguration();
+            }
+        }
+        if (gc == null) {
+            try {
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice sd = ge.getDefaultScreenDevice();
+                if (sd != null) gc = sd.getDefaultConfiguration();
+            } catch (HeadlessException ignore) {
+                // fall through to 1.0
+            }
+        }
+
+        if (gc != null) {
+            // On HiDPI, scaleX == scaleY for UI rendering; guard just in case.
+            AffineTransform tx = gc.getDefaultTransform();
+            double sx = tx.getScaleX();
+            double sy = tx.getScaleY();
+            if (isValidScale(sx) && isValidScale(sy)) {
+                // Prefer X (they should match). If they don't, return the larger to be safe.
+                return (Math.abs(sx - sy) < 1e-6) ? sx : Math.max(sx, sy);
+            }
+        }
+
+        // 3) Fallback: no GC or suspicious values → assume 1.0
+        return 1.0;
+    }
+
+    private static boolean isValidScale(double s) {
+        return s > 0.0 && Double.isFinite(s);
+    }
+
+    /**
+     * Parses -Dsun.java2d.uiScale if present.
+     * Accepts plain numbers (e.g., "1.5", "2") or percentages (e.g., "150%").
+     * Returns null if not set or unparsable.
+     */
+    private static Double parseSunUiScaleProperty() {
+        String raw = System.getProperty("sun.java2d.uiScale");
+        if (raw == null || raw.isBlank()) return null;
+        raw = raw.trim().toLowerCase(Locale.ROOT);
+
+        try {
+            if (raw.endsWith("%")) {
+                String num = raw.substring(0, raw.length() - 1).trim();
+                double pct = Double.parseDouble(num);
+                if (pct > 0.0) return pct / 100.0;
+            } else {
+                double v = Double.parseDouble(raw);
+                if (v > 0.0) return v;
+            }
+        } catch (NumberFormatException ignore) {
+            // fall through to null
+        }
+        return null;
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
