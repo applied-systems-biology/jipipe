@@ -10,13 +10,16 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosernative;
 
 import com.sun.jna.Platform;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.linux.GtkDesktopEnvironmentDetector;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32.WindowsFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32.WindowsFolderBrowser;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -39,7 +42,7 @@ import java.util.Collections;
  *
  * @see JFileChooser, WindowsFileChooser, WindowsFileBrowser
  */
-public class JnaFileChooser {
+public class ModernNativeFileChooser {
     protected File[] selectedFiles;
     protected File currentDirectory;
     protected ArrayList<String[]> filters;
@@ -49,11 +52,12 @@ public class JnaFileChooser {
     protected String dialogTitle;
     protected String openButtonText;
     protected String saveButtonText;
+
     /**
      * creates a new file chooser with multiselection disabled and mode set
      * to allow file selection only.
      */
-    public JnaFileChooser() {
+    public ModernNativeFileChooser() {
         filters = new ArrayList<>();
         multiSelectionEnabled = false;
         mode = Mode.Files;
@@ -69,7 +73,7 @@ public class JnaFileChooser {
      *
      * @param currentDirectory the initial directory
      */
-    public JnaFileChooser(File currentDirectory) {
+    public ModernNativeFileChooser(File currentDirectory) {
         this();
         if (currentDirectory != null) {
             this.currentDirectory = currentDirectory.isDirectory() ?
@@ -82,7 +86,7 @@ public class JnaFileChooser {
      *
      * @param currentDirectoryPath the initial directory
      */
-    public JnaFileChooser(String currentDirectoryPath) {
+    public ModernNativeFileChooser(String currentDirectoryPath) {
         this(currentDirectoryPath != null ?
                 new File(currentDirectoryPath) : null);
     }
@@ -91,9 +95,8 @@ public class JnaFileChooser {
      * shows a dialog for opening files
      *
      * @param parent the parent window
-     * @return true if the user clicked OK
      */
-    public boolean showOpenDialog(Window parent) {
+    public Response showOpenDialog(Window parent) {
         return showDialog(parent, Action.Open);
     }
 
@@ -101,85 +104,95 @@ public class JnaFileChooser {
      * shows a dialog for saving files
      *
      * @param parent the parent window
-     * @return true if the user clicked OK
      */
-    public boolean showSaveDialog(Window parent) {
+    public Response showSaveDialog(Window parent) {
         return showDialog(parent, Action.Save);
     }
 
-    private boolean showDialog(Window parent, Action action) {
-        if (Platform.isWindows()) {
-            if (mode == Mode.Files) {
-                return showWindowsFileChooser(parent, action);
-            } else if (mode == Mode.Directories) {
-                return showWindowsFolderBrowser(parent);
-            }
-        } else if (Platform.isMac()) {
-            if (mode == Mode.Files)
-                return showMacFileChooser((Frame) parent, action);
-            else if (mode == Mode.Directories)
-                return showMacFolderBrowser((Frame) parent);
-        }
-
-        // fallback to Swing
-        return showSwingFileChooser(parent, action);
-    }
-
-    private boolean showSwingFileChooser(Window parent, Action action) {
-        final JFileChooser fc = new JFileChooser(currentDirectory);
-        fc.setMultiSelectionEnabled(multiSelectionEnabled);
-        fc.setFileSelectionMode(mode.getJFileChooserValue());
-
-        // set select file
-        if (!defaultFile.isEmpty() & action == Action.Save) {
-            File fsel = new File(defaultFile);
-            fc.setSelectedFile(fsel);
-        }
-        if (!dialogTitle.isEmpty()) {
-            fc.setDialogTitle(dialogTitle);
-        }
-        if (action == Action.Open & !openButtonText.isEmpty()) {
-            fc.setApproveButtonText(openButtonText);
-        } else if (action == Action.Save & !saveButtonText.isEmpty()) {
-            fc.setApproveButtonText(saveButtonText);
-        }
-
-        // build filters
-        if (!filters.isEmpty()) {
-            boolean useAcceptAllFilter = false;
-            for (final String[] spec : filters) {
-                // the "All Files" filter is handled specially by JFileChooser
-                if (spec[1].equals("*")) {
-                    useAcceptAllFilter = true;
-                    continue;
+    private Response showDialog(Window parent, Action action) {
+        try {
+            if (Platform.isWindows()) {
+                if (mode == Mode.Files) {
+                    return showWindowsFileChooser(parent, action);
+                } else if (mode == Mode.Directories) {
+                    return showWindowsFolderBrowser(parent);
                 }
-                fc.addChoosableFileFilter(new FileNameExtensionFilter(
-                        spec[0], Arrays.copyOfRange(spec, 1, spec.length)));
+            } else if (Platform.isMac()) {
+                if (mode == Mode.Files) {
+                    return showMacFileChooser((Frame) parent, action);
+                } else if (mode == Mode.Directories) {
+                    return showMacFolderBrowser((Frame) parent);
+                }
             }
-            fc.setAcceptAllFileFilterUsed(useAcceptAllFilter);
+            else if(Platform.isLinux()) {
+                GtkDesktopEnvironmentDetector.Result gtkDetectionResult = GtkDesktopEnvironmentDetector.detect();
+                if(gtkDetectionResult.verdict() == GtkDesktopEnvironmentDetector.Verdict.YES) {
+                    if(mode ==  Mode.Files) {
+                        return showGtkFileChooser(parent, action);
+                    }
+                    else if(mode == Mode.Directories) {
+                        return showGtkFolderBrowser(parent, action);
+                    }
+                }
+                else {
+                    if(mode ==  Mode.Files) {
+                        return showKDEFileChooser(parent, action);
+                    }
+                    else if(mode == Mode.Directories) {
+                        return showKDEFolderBrowser(parent, action);
+                    }
+                }
+            }
+        }
+        catch (Throwable t) {
+            t.printStackTrace();
         }
 
-        int result;
-        if (action == Action.Open) {
-            result = fc.showOpenDialog(parent);
-        } else {
-            if (saveButtonText.isEmpty()) {
-                result = fc.showSaveDialog(parent);
-            } else {
-                result = fc.showDialog(parent, null);
-            }
-        }
-        if (result == JFileChooser.APPROVE_OPTION) {
-            selectedFiles = multiSelectionEnabled ?
-                    fc.getSelectedFiles() : new File[]{fc.getSelectedFile()};
-            currentDirectory = fc.getCurrentDirectory();
-            return true;
-        }
-
-        return false;
+        // Respond back that the implementation should use JIPipe's fallback
+        return Response.Error;
     }
 
-    private boolean showWindowsFileChooser(Window parent, Action action) {
+    private Path findKDialog() {
+        // TODO
+    }
+
+    private Path findZenity() {
+        // TODO
+    }
+
+    private Response showKDEFolderBrowser(Window parent, Action action) {
+        Path kDialogPath = findKDialog();
+        if(kDialogPath != null) {
+            // TODO run with ProcessUtils.queryFast(...) and ProgressInfo.STDOUT
+        }
+        return Response.Error;
+    }
+
+    private Response showKDEFileChooser(Window parent, Action action) {
+        Path kDialogPath = findKDialog();
+        if(kDialogPath != null) {
+            // TODO run with ProcessUtils.queryFast(...) and ProgressInfo.STDOUT
+        }
+        return Response.Error;
+    }
+
+    private Response showGtkFolderBrowser(Window parent, Action action) {
+        Path zenityPath = findZenity();
+        if(zenityPath != null) {
+            // TODO run with ProcessUtils.queryFast(...) and ProgressInfo.STDOUT
+        }
+        return Response.Error;
+    }
+
+    private Response showGtkFileChooser(Window parent, Action action) {
+        Path zenityPath = findZenity();
+        if(zenityPath != null) {
+            // TODO run with ProcessUtils.queryFast(...) and ProgressInfo.STDOUT
+        }
+        return Response.Error;
+    }
+
+    private Response showWindowsFileChooser(Window parent, Action action) {
         final WindowsFileChooser fc = new WindowsFileChooser(currentDirectory);
         fc.setFilters(filters);
         fc.setMultiSelectionEnabled(multiSelectionEnabled);
@@ -190,15 +203,15 @@ public class JnaFileChooser {
             fc.setTitle(dialogTitle);
         }
 
-        final boolean result = fc.showDialog(parent, action == Action.Open);
-        if (result) {
+        final Response result = fc.showDialog(parent, action == Action.Open);
+        if (result == Response.OK) {
             selectedFiles = multiSelectionEnabled ? fc.getSelectedFiles() : new File[]{fc.getSelectedFile()};
             currentDirectory = fc.getCurrentDirectory();
         }
         return result;
     }
 
-    private boolean showWindowsFolderBrowser(Window parent) {
+    private Response showWindowsFolderBrowser(Window parent) {
         final WindowsFolderBrowser fb = new WindowsFolderBrowser();
         if (!dialogTitle.isEmpty()) {
             fb.setTitle(dialogTitle);
@@ -208,13 +221,13 @@ public class JnaFileChooser {
             selectedFiles = new File[]{file};
             currentDirectory = file.getParentFile() != null ?
                     file.getParentFile() : file;
-            return true;
+            return Response.OK;
         }
 
-        return false;
+        return Response.Cancelled;
     }
 
-    private boolean showMacFileChooser(Frame parent, Action action) {
+    private Response showMacFileChooser(Frame parent, Action action) {
         int mode = action == Action.Open ? FileDialog.LOAD : FileDialog.SAVE;
         String title = !dialogTitle.isEmpty() ?
                 dialogTitle : (action == Action.Open ? "Open" : "Save As");
@@ -257,13 +270,13 @@ public class JnaFileChooser {
             selectedFiles = multiSelectionEnabled ?
                     fd.getFiles() : new File[]{new File(fd.getDirectory(), fd.getFile())};
             currentDirectory = new File(fd.getDirectory());
-            return true;
+            return Response.OK;
         }
 
-        return false;
+        return Response.Cancelled;
     }
 
-    public boolean showMacFolderBrowser(Frame parent) {
+    public Response showMacFolderBrowser(Frame parent) {
         String title = !dialogTitle.isEmpty() ? dialogTitle : "Open";
         FileDialog fd = new FileDialog(parent, title, FileDialog.LOAD);
         if (!dialogTitle.isEmpty())
@@ -275,13 +288,13 @@ public class JnaFileChooser {
             if (fd.getFile() != null) {
                 selectedFiles = new File[]{new File(fd.getDirectory(), fd.getFile())};
                 currentDirectory = new File(fd.getDirectory());
-                return true;
+                return Response.OK;
             }
         } finally {
             System.setProperty("apple.awt.fileDialogForDirectories", "false");
         }
 
-        return false;
+        return Response.Cancelled;
     }
 
     /**
@@ -378,6 +391,12 @@ public class JnaFileChooser {
     }
 
     private enum Action {Open, Save}
+
+    public enum Response {
+        OK,
+        Cancelled,
+        Error
+    }
 
     /**
      * the available selection modes of the dialog

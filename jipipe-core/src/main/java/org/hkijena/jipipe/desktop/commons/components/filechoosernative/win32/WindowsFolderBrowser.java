@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 /* This file is part of JnaFileChooser.
  *
  * JnaFileChooser is free software: you can redistribute it and/or modify it
@@ -7,13 +20,11 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.hkijena.jipipe.desktop.commons.components.filechoosernative;
+package org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32.Ole32;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32.Shell32;
 
 import java.awt.*;
 import java.io.File;

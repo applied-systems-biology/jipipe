@@ -1,3 +1,16 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
 /* This file is part of JnaFileChooser.
  *
  * JnaFileChooser is free software: you can redistribute it and/or modify it
@@ -7,12 +20,12 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
  * or FITNESS FOR A PARTICULAR PURPOSE.
  */
-package org.hkijena.jipipe.desktop.commons.components.filechoosernative;
+package org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.WString;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.win32.Comdlg32;
+import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooser;
 
 import java.awt.*;
 import java.io.File;
@@ -143,7 +156,7 @@ public class WindowsFileChooser {
 
     // this is a package private method used by the JnaFileChooser
     // facade to directly set the filter list
-    void setFilters(ArrayList<String[]> filters) {
+    public void setFilters(ArrayList<String[]> filters) {
         this.filters = filters;
     }
 
@@ -178,9 +191,8 @@ public class WindowsFileChooser {
      * show the dialog for opening a file
      *
      * @param parent the parent window of the dialog
-     * @return true if the user clicked ok, false otherwise
      */
-    public boolean showOpenDialog(Window parent) {
+    public ModernNativeFileChooser.Response showOpenDialog(Window parent) {
         return showDialog(parent, true);
     }
 
@@ -188,9 +200,8 @@ public class WindowsFileChooser {
      * show the dialog for saving a file
      *
      * @param parent the parent window of the dialog
-     * @return true if the user clicked ok, false otherwise
      */
-    public boolean showSaveDialog(Window parent) {
+    public ModernNativeFileChooser.Response showSaveDialog(Window parent) {
         return showDialog(parent, false);
     }
 
@@ -202,7 +213,7 @@ public class WindowsFileChooser {
      *
      * @return true if the user clicked ok, false otherwise
      */
-    boolean showDialog(Window parent, boolean open) {
+    public ModernNativeFileChooser.Response showDialog(Window parent, boolean open) {
         final Comdlg32.OpenFileName params = new Comdlg32.OpenFileName();
         params.Flags =
                 // use explorer-style interface
@@ -312,7 +323,7 @@ public class WindowsFileChooser {
                         "GetOpenFileName failed with error " + errCode);
             }
         }
-        return approved;
+        return approved ? ModernNativeFileChooser.Response.OK : ModernNativeFileChooser.Response.Cancelled;
     }
 
     /*
