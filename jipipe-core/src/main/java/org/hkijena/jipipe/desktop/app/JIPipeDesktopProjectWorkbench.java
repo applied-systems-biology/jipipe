@@ -41,6 +41,7 @@ import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
@@ -694,6 +695,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
 
+        toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
+
         JMenu pluginsMenu = new JMenu("Plugins");
         pluginsMenu.add(UIUtils.createMenuItem("JIPipe plugins",
                 "Opens the JIPipe plugin manager",
@@ -841,6 +844,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         ImageJUpdater updater = new ImageJUpdater();
         JIPipe.getInstance().getContext().inject(updater);
         updater.run();
+    }
+
+    private void openCustomizer() {
+        new JIPipeDesktopCustomizerDialog(this).setVisible(true);
     }
 
     private void openArtifactManager() {
