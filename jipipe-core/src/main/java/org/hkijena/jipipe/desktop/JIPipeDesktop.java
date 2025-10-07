@@ -556,8 +556,23 @@ public class JIPipeDesktop {
      */
     public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+        return saveDirectory(parent, workbench, key, title, description, instance.getFileChooserType());
+    }
+
+    /**
+     * Lets the user choose a directory
+     *
+     * @param parent      parent component
+     * @param workbench   the workbench
+     * @param key         location where the dialog is opened
+     * @param title       dialog title
+     * @param description optional description (only supported by specific file chooser types)
+     * @return selected directory or null if dialog was cancelled
+     */
+    public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+        JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
-        if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -568,7 +583,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -580,7 +595,7 @@ public class JIPipeDesktop {
                 return null;
             }
         }
-        else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
+        else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             return openDirectory(parent, workbench, key, title, description);
         }
         else {
@@ -609,7 +624,22 @@ public class JIPipeDesktop {
      */
     public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, Path currentPath, String title, HTMLText description) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
-        if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
+        return saveDirectory(parent, workbench, currentPath, title, description, instance.getFileChooserType());
+    }
+
+    /**
+     * Lets the user choose a directory
+     *
+     * @param parent      parent component
+     * @param workbench   the workbench
+     * @param currentPath starting location/default value
+     * @param title       dialog title
+     * @param description optional description (only supported by specific file chooser types)
+     * @return selected directory or null if dialog was cancelled
+     */
+    public static Path saveDirectory(Component parent, JIPipeWorkbench workbench, Path currentPath, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+        JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -618,7 +648,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -627,11 +657,27 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        } else {
+        }
+        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
+            // Has no equivalent for "save directory", so use open directory
+            ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
+            fileChooser.setTitle(title);
+            fileChooser.setMode(PathType.DirectoriesOnly);
+            fileChooser.setMultiSelectionEnabled(false);
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            return switch (response) {
+                case OK -> fileChooser.getSelectedFile().toPath();
+                case Cancelled -> null;
+                case Error ->
+                        saveDirectory(parent, workbench, currentPath, title, description, instance.getSafeFallbackFileChooserType());
+            };
+        }
+        else {
             return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
-                    description, currentPath,
+                    description,
+                    currentPath,
                     PathIOMode.Open,
                     PathType.DirectoriesOnly);
         }
