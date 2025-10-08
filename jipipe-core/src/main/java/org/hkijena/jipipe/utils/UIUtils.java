@@ -1915,7 +1915,26 @@ public class UIUtils {
         return panel;
     }
 
+    public static JPanel gridHorizontal(Component... components) {
+        JPanel panel = new JPanel(new GridLayout(1, components.length));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
     public static JPanel gridVertical(Component... components) {
+        JPanel panel = new JPanel(new GridLayout( components.length, 1));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel gridBagVertical(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
@@ -1949,7 +1968,7 @@ public class UIUtils {
         }
     }
 
-    public static JPanel gridHorizontal(Component... components) {
+    public static JPanel gridBagHorizontal(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
@@ -2459,6 +2478,26 @@ public class UIUtils {
             // fall through to null
         }
         return null;
+    }
+
+    public static JPanel borderNSEWC(Component north, Component south, Component east, Component west, Component center) {
+        JPanel panel = new JPanel(new BorderLayout());
+        if(north != null) {
+            panel.add(north, BorderLayout.NORTH);
+        }
+        if(south != null) {
+            panel.add(south, BorderLayout.SOUTH);
+        }
+        if(east != null) {
+            panel.add(east, BorderLayout.EAST);
+        }
+        if(west != null) {
+            panel.add(west, BorderLayout.WEST);
+        }
+        if(center != null) {
+            panel.add(center, BorderLayout.CENTER);
+        }
+        return panel;
     }
 
 

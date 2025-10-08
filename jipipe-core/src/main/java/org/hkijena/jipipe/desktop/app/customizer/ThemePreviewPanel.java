@@ -1,308 +1,225 @@
 package org.hkijena.jipipe.desktop.app.customizer;
 
-import com.google.common.collect.ImmutableSet;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.ColorUIResource;
-import javax.swing.plaf.LayerUI;
-import javax.swing.plaf.metal.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Objects;
-import java.util.function.Supplier;
 
 public class ThemePreviewPanel extends JPanel {
+    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
+    private JIPipeDesktopModernThemeStyle themeStyle = new  JIPipeDesktopModernThemeStyle();
+    private float scale = 1;
 
-    public static final class Config {
-        public final float uiScale;          // e.g. 1.0f, 1.25f, 1.5f, 2.0f
-        public final MetalTheme metalTheme;  // your custom theme or OceanTheme
-        public final boolean paintScale;     // true = also scale Graphics2D
+    private final PreviewComponent previewTabBar = new PreviewComponent();
+    private final PreviewComponent previewSplitLeft = new PreviewComponent();
+    private final PreviewComponent previewSplitRight = new PreviewComponent();
+    private final PreviewComponent previewTabActive = new PreviewComponent("Active tab");
+    private final PreviewComponent previewTabInactive1 = new PreviewComponent("Inactive tab");
+    private final PreviewComponent previewTabInactive2 = new PreviewComponent("Inactive tab");
 
-        public Config(float uiScale, MetalTheme theme, boolean paintScale) {
-            this.uiScale = uiScale;
-            this.metalTheme = Objects.requireNonNull(theme);
-            this.paintScale = paintScale;
+    private final JLabel previewLabelTiny = new JLabel("Tiny text");
+    private final JLabel previewLabelSmall = new JLabel("Small text");
+    private final JLabel previewLabelNormal = new JLabel("Normal text");
+    private final JLabel previewLabelLarge = new JLabel("Large text");
+    private final JLabel previewLabelHuge = new JLabel("Huge text");
+
+    private final JLabel previewLabelColorForeground = new JLabel("Text color foreground");
+    private final JLabel previewLabelColorMuted = new JLabel("Text color muted");
+    private final JLabel previewLabelColorInverted = new JLabel("Text color inverted");
+    private final JLabel previewLabelColorMutedInverted = new JLabel("Text color muted inverted");
+    private final JLabel previewLabelColorLink = new JLabel("Text color link");
+
+    public ThemePreviewPanel() {
+        initialize();
+        updatePreview();
+    }
+
+    private void initialize() {
+        setOpaque(true);
+        setLayout(new BorderLayout(8,8));
+        add(previewTabBar, BorderLayout.NORTH);
+        JPanel previewSplitPanel = new JPanel(new BorderLayout(8,8));
+        previewSplitPanel.setBorder(UIUtils.createEmptyBorder(8));
+        previewSplitPanel.setOpaque(false);
+        previewSplitPanel.add(previewSplitLeft, BorderLayout.WEST);
+        previewSplitPanel.add(previewSplitRight, BorderLayout.CENTER);
+        add(previewSplitPanel, BorderLayout.CENTER);
+
+        previewTabBar.setLayout(new BoxLayout(previewTabBar, BoxLayout.X_AXIS));
+        previewTabBar.add(previewTabActive);
+        previewTabBar.add(previewTabInactive1);
+        previewTabBar.add(previewTabInactive2);
+
+        previewSplitLeft.setLayout(new BoxLayout(previewSplitLeft, BoxLayout.Y_AXIS));
+        previewSplitLeft.add(previewLabelTiny);
+        previewSplitLeft.add(previewLabelSmall);
+        previewSplitLeft.add(previewLabelNormal);
+        previewSplitLeft.add(previewLabelLarge);
+        previewSplitLeft.add(previewLabelHuge);
+        previewSplitLeft.add(Box.createVerticalStrut(32));
+        previewSplitLeft.add(previewLabelColorForeground);
+        previewSplitLeft.add(previewLabelColorMuted);
+        previewSplitLeft.add(previewLabelColorInverted);
+        previewSplitLeft.add(previewLabelColorMutedInverted);
+        previewSplitLeft.add(previewLabelColorLink);
+    }
+
+    private void updatePreview() {
+        setBackground(themeStyle.getWindowBackground());
+
+        // Update scales
+        previewTabActive.setScale(scale);
+        previewTabInactive1.setScale(scale);
+        previewTabInactive2.setScale(scale);
+
+        // Update fonts
+        previewLabelTiny.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeTiny() * scale)));
+        previewLabelSmall.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeSmall() * scale)));
+        previewLabelNormal.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+        previewLabelLarge.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeLarge() * scale)));
+        previewLabelHuge.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeHuge() * scale)));
+
+        previewLabelColorForeground.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+        previewLabelColorInverted.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+        previewLabelColorLink.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+        previewLabelColorMuted.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+        previewLabelColorMutedInverted.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeNormal() * scale)));
+
+        // Update panel previews
+        previewSplitLeft.setBackgroundColor(themeStyle.getPanelBackground());
+        previewSplitRight.setBackgroundColor(themeStyle.getPanelBackground());
+
+        // Update tab designs
+        previewTabBar.setBackgroundColor(themeStyle.getWindowBackground());
+        previewTabActive.setBackgroundColor(themeStyle.getTabSelectedBackground());
+        previewTabActive.setBorderColor(themeStyle.getTabSelectedHighlight());
+
+        previewTabActive.getLabel().setIcon(getIcon16("actions/configure.png"));
+        previewTabInactive1.getLabel().setIcon(getIcon16("actions/help-info.png"));
+        previewTabInactive2.getLabel().setIcon(getIcon16("actions/graph-compartments.png"));
+
+        revalidate();
+        repaint(50);
+    }
+
+    private Icon getIcon16(String name) {
+        if(themeStyle.getBrightness() != ThemeUtils.getCurrentStyle().getBrightness()) {
+            return JIPipe.RESOURCES.getIcon16Inverted(name);
+        }
+        else {
+            return JIPipe.RESOURCES.getIcon16(name);
         }
     }
 
-    /**
-     * Creates a preview panel that is visually independent from your app’s global UI settings.
-     * It swaps Metal theme and scaled defaults only during subtree construction, then restores.
-     */
-    public static ThemePreviewPanel create(Config cfg) {
-        assert EventQueue.isDispatchThread();
-        // Snapshot current app-wide state
-        LookAndFeel lafBefore = UIManager.getLookAndFeel();
-        UIDefaults defaultsBefore = UIManager.getLookAndFeelDefaults();
-        MetalTheme themeBefore = (lafBefore instanceof MetalLookAndFeel)
-                ? MetalLookAndFeel.getCurrentTheme()
-                : null;
+    public JIPipeDesktopUITheme getTheme() {
+        return theme;
+    }
 
-        try {
-            // Install Metal + desired theme for construction
-            MetalLookAndFeel.setCurrentTheme(cfg.metalTheme);
-            if (!(lafBefore instanceof MetalLookAndFeel)) {
-                UIManager.setLookAndFeel(new MetalLookAndFeel());
-            } else {
-                // refresh defaults after theme swap
-                UIManager.setLookAndFeel(lafBefore);
-            }
+    public void setTheme(JIPipeDesktopUITheme theme) {
+        this.theme = theme;
+        updatePreview();
+    }
 
-            // Build a *scaled* defaults table we’ll apply to the subtree
-            UIDefaults scaled = copyAndScaleDefaults(UIManager.getLookAndFeelDefaults(), cfg.uiScale);
-            // Build subtree under these defaults by temporarily swapping UIManager defaults
-            return buildWithTemporaryDefaults(() -> new ThemePreviewPanel(cfg, scaled), scaled, cfg.paintScale);
-        } catch (UnsupportedLookAndFeelException e) {
-            throw new RuntimeException(e);
-        } finally {
-            // Restore global theme/LAF immediately so nothing outside is affected
-            try {
-                if (themeBefore != null) MetalLookAndFeel.setCurrentTheme(themeBefore);
-                UIManager.setLookAndFeel(lafBefore);
-            } catch (UnsupportedLookAndFeelException ignored) { }
-            // Re-attach the original defaults table
-            UIManager.getLookAndFeelDefaults().putAll(defaultsBefore);
+    public JIPipeDesktopModernThemeStyle getThemeStyle() {
+        return themeStyle;
+    }
+
+    public void setThemeStyle(JIPipeDesktopModernThemeStyle themeStyle) {
+        this.themeStyle = themeStyle;
+        updatePreview();
+    }
+
+    public float getScale() {
+        return scale;
+    }
+
+    public void setScale(float scale) {
+        this.scale = scale;
+        updatePreview();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        if(theme != JIPipeDesktopUITheme.Modern) {
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.drawString("No preview available", 0,0);
+        }
+        else {
+            super.paint(g);
         }
     }
 
-    private final Config cfg;
-    private final UIDefaults localDefaults;
-    private JLayer<JComponent> scaledLayer;
+    public static class PreviewComponent extends JPanel {
 
-    private ThemePreviewPanel(Config cfg, UIDefaults localDefaults) {
-        super(new BorderLayout());
-        this.cfg = cfg;
-        this.localDefaults = localDefaults;
+        private final JLabel label = new JLabel();
+        private int cornerRadius = 8;
+        private Color borderColor;
+        private Color backgroundColor;
 
-        // Build the miniature “scene”
-        JComponent scene = buildScene();
-
-        // Apply per-subtree defaults via a root JComponent client property trick:
-        // Many UIs read defaults on install; we force an update under our local table.
-        applyDefaultsToSubtree(scene, localDefaults);
-
-        if (cfg.paintScale && cfg.uiScale != 1.0f) {
-            scaledLayer = new JLayer<>(scene, new ScaleLayerUI(cfg.uiScale));
-            add(scaledLayer, BorderLayout.CENTER);
-        } else {
-            add(scene, BorderLayout.CENTER);
+        public PreviewComponent() {
+            initialize();
         }
 
-        setBorder(new EmptyBorder(8, 8, 8, 8));
-    }
-
-    // ---- Utility: Build with temporary defaults so UIs install with our table ----
-    private static ThemePreviewPanel buildWithTemporaryDefaults(
-            Supplier<ThemePreviewPanel> builder,
-            UIDefaults local, boolean paintScale) {
-        UIDefaults before = UIManager.getLookAndFeelDefaults();
-        try {
-            UIManager.getLookAndFeelDefaults().putAll(local);
-            ThemePreviewPanel p = builder.get();
-            SwingUtilities.updateComponentTreeUI(p);
-            return p;
-        } finally {
-            UIManager.getLookAndFeelDefaults().putAll(before);
+        public PreviewComponent(String text) {
+            initialize();
+            add(label, BorderLayout.CENTER);
+            label.setText(text);
         }
-    }
 
-    // ---- Utility: Apply fonts/colors/icons from local defaults to subtree ----
-    private static void applyDefaultsToSubtree(Component c, UIDefaults defs) {
-        if (c instanceof JComponent jc) {
-            // Try to refresh the UI under our defaults
-            jc.putClientProperty("Preview.UIDefaults", defs); // marker if you want later updates
-            jc.updateUI();
+        private void initialize() {
+            setOpaque(false);
+            setLayout(new BorderLayout());
+            setBorder(UIUtils.createEmptyBorder(8));
         }
-        if (c instanceof Container cont) {
-            for (Component child : cont.getComponents()) applyDefaultsToSubtree(child, defs);
+
+        @Override
+        protected void paintComponent(Graphics g) {
+           super.paintComponent(g);
+
+           if(backgroundColor != null) {
+               g.setColor(backgroundColor);
+               g.fillRoundRect(0, 0, getWidth() -1, getHeight() -1, cornerRadius, cornerRadius);
+           }
+           if(borderColor != null) {
+               g.setColor(borderColor);
+               g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
+           }
         }
-    }
 
-    // ---- Build the little demo scene ----
-    private JComponent buildScene() {
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.add("Overview", buildOverview());
-        tabs.add("Controls", buildControls());
-        tabs.add("Split", buildSplit());
-        return tabs;
-    }
-
-    private JComponent buildOverview() {
-        JPanel p = new JPanel(new BorderLayout(8,8));
-        JLabel title = new JLabel("Preview Title — Metal");
-        title.setFont(title.getFont().deriveFont(Font.BOLD, title.getFont().getSize2D() + 2f));
-        title.setBorder(new EmptyBorder(4,4,4,4));
-
-        JTextArea info = new JTextArea("""
-            This preview shows buttons, a toolbar, tabs, lists, and a table.
-            Fonts, colors, and icons reflect the *local* defaults for this component only.
-            """);
-        info.setEditable(false);
-        info.setLineWrap(true);
-        info.setWrapStyleWord(true);
-        info.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Description"),
-                new EmptyBorder(6,6,6,6)));
-
-        JToolBar tb = new JToolBar();
-        tb.setFloatable(false);
-        tb.add(new AbstractAction("New", UIManager.getIcon("FileView.fileIcon")) {
-            public void actionPerformed(ActionEvent e) {}
-        });
-        tb.add(new AbstractAction("Open", UIManager.getIcon("FileView.directoryIcon")) {
-            public void actionPerformed(ActionEvent e) {}
-        });
-        tb.addSeparator();
-        tb.add(new AbstractAction("Save", UIManager.getIcon("FileView.floppyDriveIcon")) {
-            public void actionPerformed(ActionEvent e) {}
-        });
-
-        p.add(title, BorderLayout.NORTH);
-        p.add(new JScrollPane(info), BorderLayout.CENTER);
-        p.add(tb, BorderLayout.SOUTH);
-        return p;
-    }
-
-    private JComponent buildControls() {
-        JPanel p = new JPanel();
-        p.setLayout(new GridBagLayout());
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.insets = new Insets(4,4,4,4);
-        gc.gridx = 0; gc.gridy = 0; gc.anchor = GridBagConstraints.LINE_END;
-        p.add(new JLabel("Text field:"), gc);
-        gc.gridx = 1; gc.anchor = GridBagConstraints.LINE_START;
-        p.add(new JTextField("Hello Metal", 14), gc);
-
-        gc.gridy++; gc.gridx = 0; gc.anchor = GridBagConstraints.LINE_END;
-        p.add(new JLabel("Combo:"), gc);
-        gc.gridx = 1; gc.anchor = GridBagConstraints.LINE_START;
-        p.add(new JComboBox<>(new String[]{"Alpha","Beta","Gamma"}), gc);
-
-        gc.gridy++; gc.gridx = 0; p.add(new JLabel("Check:"), gc);
-        gc.gridx = 1; p.add(new JCheckBox("Enable feature", true), gc);
-
-        gc.gridy++; gc.gridx = 0; p.add(new JLabel("Radio:"), gc);
-        gc.gridx = 1;
-        ButtonGroup g = new ButtonGroup();
-        JRadioButton r1 = new JRadioButton("Small");
-        JRadioButton r2 = new JRadioButton("Medium", true);
-        JRadioButton r3 = new JRadioButton("Large");
-        g.add(r1); g.add(r2); g.add(r3);
-        JPanel radios = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        radios.add(r1); radios.add(r2); radios.add(r3);
-        p.add(radios, gc);
-
-        gc.gridy++; gc.gridx = 0; p.add(new JLabel("Buttons:"), gc);
-        gc.gridx = 1;
-        JPanel btns = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-        btns.add(new JButton("Primary"));
-        btns.add(new JButton("Secondary"));
-        JButton danger = new JButton("Danger");
-        danger.setForeground(new Color(180, 0, 0));
-        btns.add(danger);
-        p.add(btns, gc);
-
-        gc.gridy++; gc.gridx = 0; p.add(new JLabel("List:"), gc);
-        gc.gridx = 1;
-        JList<String> list = new JList<>(new String[]{"One","Two","Three","Four"});
-        list.setVisibleRowCount(3);
-        p.add(new JScrollPane(list), gc);
-
-        gc.gridy++; gc.gridx = 0; p.add(new JLabel("Table:"), gc);
-        gc.gridx = 1;
-        JTable table = new JTable(new Object[][]{
-                {"A", 1, true}, {"B", 2, false}, {"C", 3, true}
-        }, new Object[]{"Col", "Num", "Flag"});
-        table.setPreferredScrollableViewportSize(new Dimension(240, 64));
-        p.add(new JScrollPane(table), gc);
-
-        return p;
-    }
-
-    private JComponent buildSplit() {
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,
-                new JScrollPane(new JTextArea("Left pane\n\nResizable...")),
-                new JScrollPane(new JTextArea("Right pane\n\nResizable...")));
-        split.setDividerLocation(0.5);
-        split.setResizeWeight(0.5);
-        return split;
-    }
-
-    // ---- Scale fonts and some numeric defaults ----
-    private static UIDefaults copyAndScaleDefaults(UIDefaults base, float scale) {
-        UIDefaults scaled = new UIDefaults();
-        for (Object k : ImmutableSet.copyOf(base.keySet())) {
-            Object v = base.get(k);
-            if (v instanceof Font f) {
-                scaled.put(k, f.deriveFont(f.getSize2D() * scale));
-            } else if (v instanceof Integer i && isSizeKey(String.valueOf(k))) {
-                scaled.put(k, Math.max(1, Math.round(i * scale)));
-            } else {
-                scaled.put(k, v);
-            }
+        public JLabel getLabel() {
+            return label;
         }
-        // A few common keys to ensure readable typography
-        Font control = (Font) scaled.get("controlFont");
-        if (control != null) scaled.put("Label.font", control);
-        return scaled;
-    }
 
-    private static boolean isSizeKey(String key) {
-        // Heuristic: scale keys that look like sizes/widths/margins
-        String k = key.toLowerCase();
-        return k.endsWith("size") || k.endsWith("width") || k.endsWith("height")
-                || k.endsWith("padding") || k.contains("insets") || k.endsWith("thickness");
-    }
-
-    // ---- Optional paint-time scale to simulate different DPIs without relayout ----
-    private static final class ScaleLayerUI extends LayerUI<JComponent> {
-        private final float scale;
-        private ScaleLayerUI(float scale) { this.scale = scale; }
-        @Override public void paint(Graphics g, JComponent c) {
-            if (scale == 1.0f) { super.paint(g, c); return; }
-            Graphics2D g2 = (Graphics2D) g.create();
-            g2.scale(scale, scale);
-            // Clip to unscaled logical bounds so scrollbars etc. behave
-            Shape old = g2.getClip();
-            g2.setClip(0, 0, (int)(c.getWidth() / scale), (int)(c.getHeight() / scale));
-            super.paint(g2, c);
-            g2.setClip(old);
-            g2.dispose();
+        public void setScale(float scale) {
+            label.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (scale * 12)));
         }
-        @Override public Dimension getPreferredSize(JComponent c) {
-            Dimension d = super.getPreferredSize(c);
-            return new Dimension((int)(d.width * scale), (int)(d.height * scale));
+
+        public int getCornerRadius() {
+            return cornerRadius;
         }
-    }
 
-    // --- Convenience demo frame (optional) ---
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            JFrame f = new JFrame("Preview Sandbox");
-            f.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        public void setCornerRadius(int cornerRadius) {
+            this.cornerRadius = cornerRadius;
+        }
 
-            // Example with a custom Metal theme
-            MetalTheme theme = new DefaultMetalTheme() {
-                private final ColorUIResource primary1 = new ColorUIResource(0x355D8A);
-                private final ColorUIResource primary2 = new ColorUIResource(0x6A8DB8);
-                private final ColorUIResource primary3 = new ColorUIResource(0xC7D7EA);
-                @Override protected ColorUIResource getPrimary1() { return primary1; }
-                @Override protected ColorUIResource getPrimary2() { return primary2; }
-                @Override protected ColorUIResource getPrimary3() { return primary3; }
-                @Override public String getName() { return "Custom Blue"; }
-            };
+        public Color getBorderColor() {
+            return borderColor;
+        }
 
-            JPanel grid = new JPanel(new GridLayout(1, 3, 12, 12));
-            grid.add(ThemePreviewPanel.create(new Config(1.0f, theme, false)));
-            grid.add(ThemePreviewPanel.create(new Config(1.25f, theme, false)));
-            grid.add(ThemePreviewPanel.create(new Config(1.5f, theme, true))); // also paint-scale
+        public void setBorderColor(Color borderColor) {
+            this.borderColor = borderColor;
+        }
 
-            grid.setBorder(new EmptyBorder(12,12,12,12));
-            f.setContentPane(grid);
-            f.pack();
-            f.setLocationByPlatform(true);
-            f.setVisible(true);
-        });
+        public Color getBackgroundColor() {
+            return backgroundColor;
+        }
+
+        public void setBackgroundColor(Color backgroundColor) {
+            this.backgroundColor = backgroundColor;
+        }
     }
 }
