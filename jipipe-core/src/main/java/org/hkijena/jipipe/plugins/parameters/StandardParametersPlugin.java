@@ -79,6 +79,7 @@ import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.plugins.parameters.tools.ExpressionTesterJIPipeDesktopMenuExtension;
+import org.hkijena.jipipe.plugins.parameters.tools.FileChooserTesterJIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.plugins.parameters.tools.ParameterTesterJIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.plugins.parameters.ui.api.*;
 import org.hkijena.jipipe.plugins.parameters.ui.library.*;
@@ -165,6 +166,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
         registerMenuExtension(ParameterTesterJIPipeDesktopMenuExtension.class);
         registerMenuExtension(ExpressionTesterJIPipeDesktopMenuExtension.class);
+        registerMenuExtension(FileChooserTesterJIPipeDesktopMenuExtension.class);
     }
 
     private void registerVectorParameters() {
