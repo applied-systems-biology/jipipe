@@ -22,6 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -131,7 +132,7 @@ public class JIPipeDesktop {
                 fileChooser.addFilter(extensionFilter);
             }
             fileChooser.setMultiSelectionEnabled(false);
-            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> fileChooser.getSelectedFile().toPath();
                 case Cancelled -> null;
@@ -284,7 +285,7 @@ public class JIPipeDesktop {
                 fileChooser.addFilter(extensionFilter);
             }
             fileChooser.setMultiSelectionEnabled(false);
-            ModernNativeFileChooserResponse response = fileChooser.showSaveDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showSaveDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> fileChooser.getSelectedFile().toPath();
                 case Cancelled -> null;
@@ -517,7 +518,7 @@ public class JIPipeDesktop {
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.DirectoriesOnly);
             fileChooser.setMultiSelectionEnabled(false);
-            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> fileChooser.getSelectedFile().toPath();
                 case Cancelled -> null;
@@ -655,7 +656,7 @@ public class JIPipeDesktop {
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.DirectoriesOnly);
             fileChooser.setMultiSelectionEnabled(false);
-            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> fileChooser.getSelectedFile().toPath();
                 case Cancelled -> null;
@@ -744,7 +745,7 @@ public class JIPipeDesktop {
                 fileChooser.addFilter(extensionFilter);
             }
             fileChooser.setMultiSelectionEnabled(true);
-            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
                 case Cancelled -> null;
@@ -839,7 +840,7 @@ public class JIPipeDesktop {
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.DirectoriesOnly);
             fileChooser.setMultiSelectionEnabled(true);
-            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
                 case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
                 case Cancelled -> Collections.emptyList();
@@ -1008,7 +1009,7 @@ public class JIPipeDesktop {
     }
 
     private static FileDialog createFileDialog(Component parent, String title, int mode) {
-        Window windowAncestor = SwingUtilities.getWindowAncestor(parent);
+        Window windowAncestor = UIUtils.getWindowOrWindowAncestor(parent);
         if (windowAncestor instanceof Frame) {
             return new FileDialog((Frame) parent, title, mode);
         } else if (windowAncestor instanceof Dialog) {
