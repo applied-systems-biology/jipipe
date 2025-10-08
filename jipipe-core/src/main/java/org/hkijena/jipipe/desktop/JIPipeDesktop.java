@@ -123,8 +123,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        }
-        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.FilesOnly);
@@ -139,8 +138,7 @@ public class JIPipeDesktop {
                 case Error ->
                         openFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
             };
-        }
-        else {
+        } else {
             Path result = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
@@ -180,7 +178,7 @@ public class JIPipeDesktop {
      * @param key              location where the dialog is opened
      * @param title            dialog title
      * @param description      optional description (only supported by specific file chooser types)
-     * @param fileChooserType the file chooser type to use
+     * @param fileChooserType  the file chooser type to use
      * @param extensionFilters extension filters. the first one is chosen automatically
      * @return selected file or null if dialog was cancelled
      */
@@ -278,8 +276,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        }
-        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.FilesOnly);
@@ -294,8 +291,7 @@ public class JIPipeDesktop {
                 case Error ->
                         saveFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
             };
-        }
-        else {
+        } else {
             Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
@@ -329,11 +325,11 @@ public class JIPipeDesktop {
     /**
      * Lets the user choose a file or directory
      *
-     * @param parent      parent component
-     * @param workbench   the workbench
-     * @param key         location where the dialog is opened
-     * @param title       dialog title
-     * @param description optional description (only supported by specific file chooser types)
+     * @param parent          parent component
+     * @param workbench       the workbench
+     * @param key             location where the dialog is opened
+     * @param title           dialog title
+     * @param description     optional description (only supported by specific file chooser types)
      * @param fileChooserType the file chooser type to use
      * @return selected file or null if dialog was cancelled
      */
@@ -399,11 +395,11 @@ public class JIPipeDesktop {
     /**
      * Lets the user choose a file or directory
      *
-     * @param parent      parent component
-     * @param workbench   the workbench
-     * @param key         location where the dialog is opened
-     * @param title       dialog title
-     * @param description optional description (only supported by specific file chooser types)
+     * @param parent          parent component
+     * @param workbench       the workbench
+     * @param key             location where the dialog is opened
+     * @param title           dialog title
+     * @param description     optional description (only supported by specific file chooser types)
      * @param fileChooserType the file chooser type to use
      * @return selected file or null if dialog was cancelled
      */
@@ -469,11 +465,11 @@ public class JIPipeDesktop {
     /**
      * Lets the user choose a directory
      *
-     * @param parent      parent component
-     * @param workbench   the workbench
-     * @param key         location where the dialog is opened
-     * @param title       dialog title
-     * @param description optional description (only supported by specific file chooser types)
+     * @param parent          parent component
+     * @param workbench       the workbench
+     * @param key             location where the dialog is opened
+     * @param title           dialog title
+     * @param description     optional description (only supported by specific file chooser types)
      * @param fileChooserType the file chooser type to use
      * @return selected directory or null if dialog was cancelled
      */
@@ -516,8 +512,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        }
-        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.DirectoriesOnly);
@@ -529,8 +524,7 @@ public class JIPipeDesktop {
                 case Error ->
                         openDirectory(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType());
             };
-        }
-        else {
+        } else {
             Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
@@ -594,11 +588,9 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        }
-        else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             return openDirectory(parent, workbench, key, title, description);
-        }
-        else {
+        } else {
             Path path = JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
@@ -657,8 +649,7 @@ public class JIPipeDesktop {
             } else {
                 return null;
             }
-        }
-        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             // Has no equivalent for "save directory", so use open directory
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
@@ -671,8 +662,7 @@ public class JIPipeDesktop {
                 case Error ->
                         saveDirectory(parent, workbench, currentPath, title, description, instance.getSafeFallbackFileChooserType());
             };
-        }
-        else {
+        } else {
             return JIPipeDesktopFileChooserNext.showDialogSingle(parent,
                     workbench,
                     title,
@@ -695,8 +685,23 @@ public class JIPipeDesktop {
      */
     public static List<Path> openFiles(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+        return openFiles(parent, workbench, key, title, description, instance.getFileChooserType(), extensionFilters);
+    }
+
+    /**
+     * Lets the user choose multiple files
+     *
+     * @param parent      parent component
+     * @param workbench   the workbench
+     * @param key         location where the dialog is opened
+     * @param title       dialog title
+     * @param description optional description (only supported by specific file chooser types)
+     * @return selected list of files. Is empty if dialog was cancelled.
+     */
+    public static List<Path> openFiles(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType, FileNameExtensionFilter... extensionFilters) {
+        JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
-        if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Native) {
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Native) {
             FileDialog dialog = createFileDialog(parent, title, FileDialog.LOAD);
             dialog.setTitle(title);
             dialog.setDirectory(currentPath.toString());
@@ -707,7 +712,7 @@ public class JIPipeDesktop {
                 instance.setLastDirectoryBy(key, files[0].toPath().getParent());
             }
             return Arrays.stream(files).map(File::toPath).collect(Collectors.toList());
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
@@ -719,7 +724,7 @@ public class JIPipeDesktop {
             } else {
                 return Collections.emptyList();
             }
-        } else if (instance.getFileChooserType() == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.AdvancedLegacy) {
             JIPipeDesktopAdvancedFileChooser fileChooser = new JIPipeDesktopAdvancedFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
             fileChooser.setMultiSelectionEnabled(true);
@@ -731,6 +736,21 @@ public class JIPipeDesktop {
             } else {
                 return Collections.emptyList();
             }
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
+            ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
+            fileChooser.setTitle(title);
+            fileChooser.setMode(PathType.FilesOnly);
+            for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                fileChooser.addFilter(extensionFilter);
+            }
+            fileChooser.setMultiSelectionEnabled(true);
+            ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(SwingUtilities.getWindowAncestor(parent));
+            return switch (response) {
+                case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+                case Cancelled -> null;
+                case Error ->
+                        openFiles(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
+            };
         } else {
             List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(parent,
                     workbench,
@@ -766,11 +786,11 @@ public class JIPipeDesktop {
     /**
      * Lets the user choose multiple directories
      *
-     * @param parent      parent component
-     * @param workbench   the workbench
-     * @param key         location where the dialog is opened
-     * @param title       dialog title
-     * @param description optional description (only supported by specific file chooser types)
+     * @param parent          parent component
+     * @param workbench       the workbench
+     * @param key             location where the dialog is opened
+     * @param title           dialog title
+     * @param description     optional description (only supported by specific file chooser types)
      * @param fileChooserType the file chooser type to use
      * @return selected list of files. Is empty if dialog was cancelled.
      */
@@ -814,8 +834,7 @@ public class JIPipeDesktop {
             } else {
                 return Collections.emptyList();
             }
-        }
-        else if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative){
+        } else if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative) {
             ModernNativeFileChooser fileChooser = new ModernNativeFileChooser(currentPath.toFile());
             fileChooser.setTitle(title);
             fileChooser.setMode(PathType.DirectoriesOnly);
@@ -824,10 +843,10 @@ public class JIPipeDesktop {
             return switch (response) {
                 case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
                 case Cancelled -> Collections.emptyList();
-                case Error -> openDirectories(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType());
+                case Error ->
+                        openDirectories(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType());
             };
-        }
-        else {
+        } else {
             List<Path> paths = JIPipeDesktopFileChooserNext.showDialog(parent,
                     workbench,
                     title,
@@ -861,11 +880,11 @@ public class JIPipeDesktop {
     /**
      * Lets the user choose multiple files or directories
      *
-     * @param parent      parent component
-     * @param workbench   the workbench
-     * @param key         location where the dialog is opened
-     * @param title       dialog title
-     * @param description optional description (only supported by specific file chooser types)
+     * @param parent          parent component
+     * @param workbench       the workbench
+     * @param key             location where the dialog is opened
+     * @param title           dialog title
+     * @param description     optional description (only supported by specific file chooser types)
      * @param fileChooserType the file chooser type to use
      * @return selected list of files. Is empty if dialog was cancelled.
      */
@@ -967,17 +986,17 @@ public class JIPipeDesktop {
         List<Path> selected;
         if (ioMode == PathIOMode.Open) {
             selected = switch (pathMode) {
-                case FilesOnly -> openFiles(parent, workbench, key, title, description);
+                case FilesOnly -> openFiles(parent, workbench, key, title, description, extensionFilters);
                 case DirectoriesOnly -> openDirectories(parent, workbench, key, title, description);
-                case FilesAndDirectories -> openPaths(parent, workbench, key, title, description);
+                case FilesAndDirectories -> openPaths(parent, workbench, key, title, description, extensionFilters);
                 default -> throw new UnsupportedOperationException("Unsupported: " + pathMode);
             };
             return selected;
         } else {
             Path saveSelection = switch (pathMode) {
-                case FilesOnly -> saveFile(parent, workbench, key, title, description);
+                case FilesOnly -> saveFile(parent, workbench, key, title, description, extensionFilters);
                 case DirectoriesOnly -> saveDirectory(parent, workbench, key, title, description);
-                case FilesAndDirectories -> savePath(parent, workbench, key, title, description);
+                case FilesAndDirectories -> savePath(parent, workbench, key, title, description, extensionFilters);
                 default -> throw new UnsupportedOperationException("Unsupported: " + pathMode);
             };
             if (saveSelection != null) {

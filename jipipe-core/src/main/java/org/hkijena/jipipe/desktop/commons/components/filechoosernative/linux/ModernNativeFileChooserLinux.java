@@ -29,6 +29,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImplementation {
@@ -140,7 +141,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 }
 
                 // Add file filter as second argument (name or mimetype filter)
-                if(!fileChooser.getFilters().isEmpty()) {
+                if (!fileChooser.getFilters().isEmpty()) {
                     StringBuilder builder = new StringBuilder();
                     for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
                         for (String extension : filter.getExtensions()) {
@@ -159,6 +160,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Add multiple selection support (only for open action)
                 if (fileChooser.isMultiSelectionEnabled() && action == PathIOMode.Open) {
                     args.add("--multiple");
+                    args.add("--separate-output");
                 }
 
                 // Execute the command
@@ -279,6 +281,8 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
                 // Add multiple selection support (only for open action)
                 if (fileChooser.isMultiSelectionEnabled() && action == PathIOMode.Open) {
                     args.add("--multiple");
+                    args.add("--separator");
+                    args.add("<|SEPARATOR|>");
                 }
 
                 // Execute the command
@@ -320,7 +324,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         Path kDialogPath = findKDialog();
         Path zenityPath = findZenity();
 
-        if(zenityPath != null) {
+        if (zenityPath != null) {
             // Zenity also supports KDE
             return showGtkFolderBrowser();
         }
@@ -349,7 +353,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         }
 
         // Zenity returns files separated by newlines for multiple selections
-        String[] filePaths = zenityOutput.split("\\r?\\n");
+        String[] filePaths = zenityOutput.split(Pattern.quote("<|SEPARATOR|>"));
 
         ArrayList<File> files = new ArrayList<>();
         for (String filePath : filePaths) {
@@ -364,7 +368,8 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
 
     /**
      * Parses the output from KDialog's --getopenfilename command
-     * KDialog returns file paths separated by spaces, with spaces in paths escaped
+     * KDialog returns file paths separated by spaces with escaped spaces (old format)
+     * or separated by newlines when --separate-output is used (new format)
      *
      * @param kdialogOutput The output from KDialog
      * @return Array of selected files, or null if parsing failed
@@ -374,16 +379,13 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
             return null;
         }
 
-        // KDialog returns files separated by spaces, with spaces in paths escaped
-        // We need to split on spaces that are not preceded by a backslash
-        String[] filePaths = kdialogOutput.split("(?<!\\\\)\\s+");
-
         ArrayList<File> files = new ArrayList<>();
+
+        // New format: each file path is on a separate line
+        String[] filePaths = kdialogOutput.split(Pattern.quote("\n"));
         for (String filePath : filePaths) {
             if (!StringUtils.isNullOrEmpty(filePath)) {
-                // Remove backslash escaping
-                filePath = filePath.replace("\\ ", " ");
-                File file = new File(filePath);
+                File file = new File(filePath.trim());
                 files.add(file);
             }
         }
@@ -397,12 +399,12 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
         Path kDialogPath = findKDialog();
         Path zenityPath = findZenity();
 
-        if(zenityPath != null) {
+        if (zenityPath != null) {
             // Zenity also supports KDE
             return showGtkFileChooser(action);
         }
 
-        boolean isGtk = GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.NO;
+        boolean isGtk = GtkDesktopEnvironmentDetector.detect().verdict() == GtkDesktopEnvironmentDetector.Verdict.YES;
 
         // If KDialog is available, try to use it first
         // Kdialog only if KDE
