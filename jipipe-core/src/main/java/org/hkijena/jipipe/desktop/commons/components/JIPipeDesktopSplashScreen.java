@@ -15,11 +15,13 @@ package org.hkijena.jipipe.desktop.commons.components;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
+import org.hkijena.jipipe.JIPipeJavaPluginSplashIcon;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -35,6 +37,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipePluginDiscoveredEventListener {
 
@@ -50,6 +54,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     private JPanel poweredByIconContainerBottom;
     private int poweredByIconTargetCycler = 0;
     private JIPipeService service;
+    private Set<String> addedIconIds = new HashSet<>();
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);
@@ -168,10 +173,20 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     public void onJIPipePluginDiscovered(JIPipePluginDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaPlugin) {
             SwingUtilities.invokeLater(() -> {
-                for (ImageIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
+                for (JIPipeJavaPluginSplashIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
                     addIcon(icon);
                 }
             });
+        }
+    }
+
+    public void addIcon(JIPipeJavaPluginSplashIcon icon) {
+        if(icon == null || StringUtils.isNullOrEmpty(icon.getId()) || icon.getIcon() == null) {
+            return;
+        }
+        if(!addedIconIds.contains(icon.getId())) {
+            addIcon(icon.getIcon());
+            addedIconIds.add(icon.getId());
         }
     }
 

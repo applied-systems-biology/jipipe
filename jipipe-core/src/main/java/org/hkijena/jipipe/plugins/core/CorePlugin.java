@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.core;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
@@ -220,10 +217,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/imagej.png"),
-                JIPipe.RESOURCES.getIcon32("apps/fiji.png"),
-                JIPipe.RESOURCES.getIcon32("apps/scijava.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return Arrays.asList(JIPipeJavaPluginSplashIcon.builder().id("imagej").icon(JIPipe.RESOURCES.getIcon32("apps/imagej.png")).name("ImageJ").url("https://imagej.net").build(),
+                JIPipeJavaPluginSplashIcon.builder().id("fiji").icon(JIPipe.RESOURCES.getIcon32("apps/fiji.png")).name("Fiji").url("https://fiji.sc/").build(),
+                JIPipeJavaPluginSplashIcon.builder().id("scijava").icon(JIPipe.RESOURCES.getIcon32("apps/scijava.png")).name("SciJava").url("https://scijava.org/").build());
     }
 
     @Override

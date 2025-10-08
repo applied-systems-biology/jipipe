@@ -15,10 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes;
 
 import ome.xml.model.enums.DimensionOrder;
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
@@ -382,8 +379,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/bio-formats.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("bio-formats").name("Bio-Formats").icon(JIPipe.RESOURCES.getIcon32("apps/bio-formats.png")).url("https://www.openmicroscopy.org/bio-formats/").build());
     }
 
 

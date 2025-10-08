@@ -15,10 +15,7 @@ package org.hkijena.jipipe.plugins.ijtrackmate;
 
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
@@ -216,8 +213,8 @@ public class TrackMatePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(RESOURCES.getIcon32("trackmate.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("trackmate").name("TrackMate").icon(RESOURCES.getIcon32("trackmate.png")).url("https://github.com/trackmate-sc/TrackMate").build());
     }
 
     @Override

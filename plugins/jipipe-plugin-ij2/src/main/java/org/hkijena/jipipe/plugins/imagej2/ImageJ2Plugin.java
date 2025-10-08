@@ -232,8 +232,8 @@ public class ImageJ2Plugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(JIPipe.RESOURCES.getIcon32("apps/imglib2.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("imglib2").name("ImgLib2").icon(JIPipe.RESOURCES.getIcon32("apps/imglib2.png")).url("https://github.com/imglib/imglib2").build());
     }
 
     @Override

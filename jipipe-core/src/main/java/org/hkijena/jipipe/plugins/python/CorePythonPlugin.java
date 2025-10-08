@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.python;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -110,8 +107,8 @@ public class CorePythonPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(JIPipe.RESOURCES.getIcon32("apps/python.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return Collections.singletonList(JIPipeJavaPluginSplashIcon.builder().id("python").icon(JIPipe.RESOURCES.getIcon32("apps/python.png")).name("Python").url("https://www.python.org/").build());
     }
 
     @Override

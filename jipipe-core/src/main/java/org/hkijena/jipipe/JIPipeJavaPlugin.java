@@ -77,7 +77,7 @@ public interface JIPipeJavaPlugin extends SciJavaPlugin, JIPipePlugin {
      *
      * @return the icons
      */
-    default List<ImageIcon> getSplashIcons() {
+    default List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
         return Collections.emptyList();
     }
 }

@@ -71,8 +71,8 @@ public class OpenCvPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(RESOURCES.getIcon32("opencv.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("opencv").name("OpenCV").icon(RESOURCES.getIcon32("opencv.png")).url("https://opencv.org/").build());
     }
 
     @Override

@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.ijweka;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.metadata.JIPipeOrganizationMetadata;
@@ -171,8 +168,8 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/weka-32.png")));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("weka").name("Trainable Weka Segmentation").icon(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/weka-32.png"))).url("https://imagej.net/plugins/tws/").build());
     }
 
     @Override

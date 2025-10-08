@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.omero;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -261,8 +258,8 @@ public class OMEROPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(RESOURCES.getIcon32("omero.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("omero").name("OMERO").icon(RESOURCES.getIcon32("omero.png")).url("https://www.openmicroscopy.org/omero/").build());
     }
 
     @Override
