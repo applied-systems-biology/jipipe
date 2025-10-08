@@ -169,7 +169,7 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
-        return List.of(JIPipeJavaPluginSplashIcon.builder().id("omnipose").name("Omnipose").icon(JIPipe.RESOURCES.getIcon32("apps/omnipose.png")).url("https://github.com/kevinjohncutler/omnipose").build());
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("omnipose").name("Omnipose").icon(RESOURCES.getIcon32("omnipose.png")).url("https://github.com/kevinjohncutler/omnipose").build());
     }
 
     @Override

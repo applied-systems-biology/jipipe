@@ -68,6 +68,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
@@ -793,6 +794,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // "Help" entry
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/help.png"));
+
+        helpMenu.add(UIUtils.createMenuItem("Report issue/feature request", "Shows options on how to report issues or issue a feature request", JIPipe.RESOURCES.getIcon16("actions/stock_mail-send.png"), () -> {
+            JIPipeDesktopSupportAssistantWindow.show(getWindow());
+        }));
 
         JMenuItem offlineManual = new JMenuItem("Manual", JIPipe.RESOURCES.getIcon16("actions/help.png"));
         offlineManual.setToolTipText("Opens the online manual in a browser.");
