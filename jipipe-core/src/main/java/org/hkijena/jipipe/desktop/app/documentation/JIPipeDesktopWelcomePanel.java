@@ -15,6 +15,9 @@ package org.hkijena.jipipe.desktop.app.documentation;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
+import org.hkijena.jipipe.JIPipeJavaPluginSplashIcon;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -309,10 +312,34 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getJIPipeUserDir(false).toString()), new JLabel("Profile directory"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(CefPlugin.hasCef() ? "Yes" : "No"), new JLabel("CEF"), null);
+        technicalInfo.addToForm(createPluginIconsPanel(), new JLabel("Powered by"), null);
 
         technicalInfo.setMaximumSize(new Dimension(300, 200));
 
         bottomPanel.add(technicalInfo, BorderLayout.WEST);
+    }
+
+    private Component createPluginIconsPanel() {
+        JPanel iconsPanel = UIUtils.boxHorizontal();
+        iconsPanel.setOpaque(false);
+        for (JIPipePlugin plugin : JIPipe.getInstance().getPlugins().getKnownPluginsList()) {
+            if(plugin instanceof JIPipeJavaPlugin javaPlugin) {
+                for (JIPipeJavaPluginSplashIcon icon : javaPlugin.getSplashIcons()) {
+                    ImageIcon imageIcon = BufferedImageUtils.scaleImageIconToFit(icon.getIcon(), 16, 16);
+                    JButton button = new JButton(imageIcon);
+                    UIUtils.makeButtonFlat25x25(button);
+                    button.setOpaque(false);
+                    button.setToolTipText(icon.getName());
+                    if(!StringUtils.isNullOrEmpty(icon.getUrl())) {
+                        button.addActionListener(e -> {
+                            UIUtils.desktopOpenURL(icon.getUrl(), true);
+                        });
+                    }
+                    iconsPanel.add(button);
+                }
+            }
+        }
+        return iconsPanel;
     }
 
     private void initializeHeroLogo(JPanel heroPanel) {

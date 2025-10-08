@@ -37,37 +37,40 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipePluginDiscoveredEventListener {
 
-    private static final int ICON_SPACING = 4;
+    private static final int ICON_SPACING = 16;
     private static final Object instanceLock = new Object();
     private static volatile JIPipeDesktopSplashScreen instance;
     private final SpinnerIcon spinnerIcon;
     private final JLabel statusLabel;
     private Context context;
     private JPanel poweredByContainer;
-    private JPanel poweredByIconContainerTop;
-    private JPanel poweredByIconContainerMiddle;
-    private JPanel poweredByIconContainerBottom;
-    private int poweredByIconTargetCycler = 0;
+    private final JLabel poweredByIconLabel = new JLabel();
     private JIPipeService service;
-    private Set<String> addedIconIds = new HashSet<>();
+    private final List<JIPipeJavaPluginSplashIcon> icons = new ArrayList<>();
+    private JIPipeJavaPluginSplashIcon currentlyShowcasedIcon;
+
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);
         this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
+
+        Timer iconTimer = new Timer(2000, e -> updateIconShowcase());
+        iconTimer.setRepeats(true);
+        iconTimer.start();
     }
 
     public static void main(String[] args) {
         getInstance().showSplash(null);
-        Timer timer = new Timer(1000, e -> {
-            getInstance().addIcon(JIPipe.RESOURCES.getIcon32("apps/jipipe.png"));
-        });
-        timer.start();
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/jipipe.png")).id("jipipe").name("JIPipe").url("https://jipipe.org/").build());
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/scijava.png")).id("scijava").name("SciJava").url("https://jipipe.org/").build());
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/fiji.png")).id("fiji").name("Fiji").url("https://jipipe.org/").build());
     }
 
     public static JIPipeDesktopSplashScreen getInstance() {
@@ -89,52 +92,36 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         poweredByContainer.setOpaque(false);
         poweredByContainer.setVisible(false);
         poweredByContainer.setLocation(20, 203);
-        poweredByContainer.setSize(contentWidth, 130);
+        poweredByContainer.setSize(contentWidth, 200);
 
         JLabel versionLabel = new JLabel(JIPipe.getJIPipeVersion());
         versionLabel.setOpaque(false);
         versionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 32));
         versionLabel.setSize(150, 40);
-        versionLabel.setLocation(600,150);
+        versionLabel.setLocation(600, 150);
         getContentPane().add(versionLabel);
 
         statusLabel.setSize(contentWidth, 25);
         statusLabel.setLocation(20, 562);
         getContentPane().add(statusLabel);
 
-        JPanel poweredByContent = new JPanel(new BorderLayout());
+        JPanel poweredByContent = UIUtils.boxHorizontal();
         poweredByContent.setOpaque(false);
         poweredByContainer.add(poweredByContent, BorderLayout.CENTER);
 
         JLabel poweredByLabel = new JLabel("Powered by ...");
-        poweredByLabel.setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
+        poweredByLabel.setBorder(UIUtils.createEmptyBorder(16));
         poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-        poweredByContent.add(poweredByLabel, BorderLayout.NORTH);
+        poweredByContent.add(poweredByLabel);
 
-        final int iconContainerHeight = 36;
+        JPanel separatorPanel = new JPanel();
+        separatorPanel.setOpaque(false);
+        separatorPanel.setBorder(BorderFactory.createMatteBorder(0,2,0,0, ThemeUtils.getCurrentStyle().getBorderColor()));
+        poweredByContent.add(separatorPanel);
 
-        poweredByIconContainerTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        poweredByIconContainerTop.add(Box.createHorizontalStrut(16 + ICON_SPACING));
-        poweredByIconContainerTop.setOpaque(false);
-        poweredByIconContainerTop.setMaximumSize(new Dimension(contentWidth, iconContainerHeight));
-        poweredByIconContainerTop.setPreferredSize(new Dimension(contentWidth, iconContainerHeight));
-
-        poweredByIconContainerMiddle = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        poweredByIconContainerMiddle.setOpaque(false);
-        poweredByIconContainerMiddle.setMaximumSize(new Dimension(contentWidth, iconContainerHeight));
-        poweredByIconContainerMiddle.setPreferredSize(new Dimension(contentWidth, iconContainerHeight));
-
-        poweredByIconContainerBottom = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        poweredByIconContainerBottom.setOpaque(false);
-        poweredByIconContainerBottom.add(Box.createHorizontalStrut(16 + ICON_SPACING));
-        poweredByIconContainerBottom.setMaximumSize(new Dimension(contentWidth, iconContainerHeight));
-        poweredByIconContainerBottom.setPreferredSize(new Dimension(contentWidth, iconContainerHeight));
-
-        poweredByContent.add(UIUtils.makeNonOpaque(UIUtils.gridVertical(poweredByIconContainerTop, poweredByIconContainerMiddle, poweredByIconContainerBottom)), BorderLayout.CENTER);
-
-
-//        poweredByContainer.setBorder(BorderFactory.createLineBorder(Color.RED));
-//        poweredByContent.setBorder(BorderFactory.createLineBorder(Color.GREEN));
+        poweredByIconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        poweredByIconLabel.setBorder(UIUtils.createEmptyBorder(16));
+        poweredByContent.add(poweredByIconLabel);
 
         getContentPane().add(poweredByContainer);
 
@@ -181,32 +168,47 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     }
 
     public void addIcon(JIPipeJavaPluginSplashIcon icon) {
-        if(icon == null || StringUtils.isNullOrEmpty(icon.getId()) || icon.getIcon() == null) {
+        if (icon == null || StringUtils.isNullOrEmpty(icon.getId()) || icon.getIcon() == null) {
             return;
         }
-        if(!addedIconIds.contains(icon.getId())) {
-            addIcon(icon.getIcon());
-            addedIconIds.add(icon.getId());
+
+        if(icons.stream().noneMatch(i -> i.getId().equals(icon.getId()))) {
+
+            ImageIcon imageIcon = icon.getIcon();
+            if (imageIcon.getIconWidth() != 32 && imageIcon.getIconHeight() != 32) {
+                Image scaledInstance = imageIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(scaledInstance);
+            }
+
+            JIPipeJavaPluginSplashIcon copy = new JIPipeJavaPluginSplashIcon(icon);
+            copy.setIcon(imageIcon);
+            icons.add(copy);
+
+            Collections.shuffle(icons);
+
+            updateIconShowcase();
         }
     }
 
-    public void addIcon(ImageIcon icon) {
-        if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
-            Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-            icon = new ImageIcon(scaledInstance);
+    private void updateIconShowcase() {
+
+        if(!icons.isEmpty()) {
+            int nextIndex;
+            if(currentlyShowcasedIcon != null) {
+                nextIndex = Math.max(0, icons.indexOf(currentlyShowcasedIcon) + 1) % icons.size();
+            }
+            else {
+                nextIndex = 0;
+            }
+            currentlyShowcasedIcon = icons.get(nextIndex);
         }
-        JLabel label = new JLabel(icon);
-        label.setBorder(BorderFactory.createEmptyBorder(0,ICON_SPACING,0,ICON_SPACING));
 
-        JComponent target = switch (poweredByIconTargetCycler) {
-            case 0 -> poweredByIconContainerMiddle;
-            case 1 -> poweredByIconContainerTop;
-            default -> poweredByIconContainerBottom;
-        };
-        poweredByIconTargetCycler = (poweredByIconTargetCycler + 1) % 3;
-        target.add(label);
+        if(currentlyShowcasedIcon != null) {
+            poweredByIconLabel.setIcon(currentlyShowcasedIcon.getIcon());
+            poweredByIconLabel.setText("<html><strong>" + currentlyShowcasedIcon.getName() + "</strong><br/>" + currentlyShowcasedIcon.getUrl() + "</html>");
+        }
 
-        poweredByContainer.setVisible(poweredByIconContainerMiddle.getComponentCount() > 0);
+        poweredByContainer.setVisible(currentlyShowcasedIcon != null);
         revalidate();
         repaint();
     }
