@@ -13,25 +13,37 @@
 
 package org.hkijena.jipipe.utils;
 
+import javax.swing.*;
+
 /**
- * Determines the type of selected path
+ * Determines the type of path
  */
 public enum PathType {
-    FilesOnly,
-    DirectoriesOnly,
-    FilesAndDirectories;
+    FilesOnly(JFileChooser.FILES_ONLY),
+    DirectoriesOnly(JFileChooser.DIRECTORIES_ONLY),
+    FilesAndDirectories(JFileChooser.FILES_AND_DIRECTORIES);
 
+
+    private final int nativeValue;
+
+    PathType(int nativeValue) {
+        this.nativeValue = nativeValue;
+    }
 
     @Override
     public String toString() {
-        switch (this) {
-            case FilesOnly:
-                return "Only files";
-            case DirectoriesOnly:
-                return "Only directories";
-            case FilesAndDirectories:
-                return "Files or directories";
-        }
-        throw new UnsupportedOperationException();
+        return switch (this) {
+            case FilesOnly -> "Only files";
+            case DirectoriesOnly -> "Only directories";
+            case FilesAndDirectories -> "Files or directories";
+        };
+    }
+
+    /**
+     * Returns the native value that corresponds to {@link JFileChooser}
+     * @return the native value
+     */
+    public int getNativeValue() {
+        return nativeValue;
     }
 }

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,7 +35,8 @@ import java.nio.file.Paths;
 public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
 
     public static String ID = "org.hkijena.jipipe:file-chooser";
-    private FileChooserType fileChooserType = FileChooserType.Advanced;
+    private FileChooserType fileChooserType = FileChooserType.ModernNative;
+    private FileChooserType fallbackFileChooserType = FileChooserType.Advanced;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
     private Path lastDataDirectory;
@@ -60,18 +62,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     @SetJIPipeDocumentation(name = "File dialog design", description = "Determines which file dialog type is used within JIPipe. " +
             "<ul>" +
+            "<li>ModernNative: Attempts to use native Windows/macOS/Linux dialogs. Otherwise falls back to the fallback chooser.</li>" +
             "<li>Advanced: A dialog that extends Java's standard dialog by modern features.</li>" +
             "<li>Standard: The standard platform-independent file dialog provided by Java.</li>" +
             "<li>Native: Use the operating system's native dialog (GTK on Linux). Can cause issues depending on the operating system.</li>" +
             "</ul>")
-    @JIPipeParameter("file-chooser-type")
+    @JIPipeParameter("file-chooser-type-v2")
     public FileChooserType getFileChooserType() {
         return fileChooserType;
     }
 
-    @JIPipeParameter("file-chooser-type")
+    @JIPipeParameter("file-chooser-type-v2")
     public void setFileChooserType(FileChooserType fileChooserType) {
         this.fileChooserType = fileChooserType;
+    }
+
+
+
+    public static String getID() {
+        return ID;
+    }
+
+    public static void setID(String ID) {
+        JIPipeFileChooserApplicationSettings.ID = ID;
     }
 
     /**
@@ -82,21 +95,12 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
      * @return the last path or Paths.get() (home directory)
      */
     public Path getLastDirectoryBy(JIPipeWorkbench workbench, LastDirectoryKey key) {
-        Path result;
-        switch (key) {
-            case Data:
-                result = getLastDataDirectory();
-                break;
-            case External:
-                result = getLastExternalDirectory();
-                break;
-            case Projects:
-                result = getLastProjectsDirectory();
-                break;
-            default:
-                result = getLastParametersDirectory();
-                break;
-        }
+        Path result = switch (key) {
+            case Data -> getLastDataDirectory();
+            case External -> getLastExternalDirectory();
+            case Projects -> getLastProjectsDirectory();
+            default -> getLastParametersDirectory();
+        };
         if (workbench != null && workbench.getProject() != null && workbench.getProject().getWorkDirectory() != null && result.equals(Paths.get("").toAbsolutePath())) {
             result = workbench.getProject().getWorkDirectory();
         }
@@ -245,7 +249,29 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
         return "Allows to change the open/save dialogs";
     }
 
+    @SetJIPipeDocumentation(name = "File dialog design (fallback)", description = "Determines which file dialog type is used within JIPipe if the first choice fails (only ModernNative). " +
+            "<ul>" +
+            "<li>ModernNative: Not supported and will act like 'Advanced'</li>" +
+            "<li>Advanced: A dialog that extends Java's standard dialog by modern features.</li>" +
+            "<li>Standard: The standard platform-independent file dialog provided by Java.</li>" +
+            "<li>Native: Use the operating system's native dialog (GTK on Linux). Can cause issues depending on the operating system.</li>" +
+            "</ul>")
+    @JIPipeParameter("file-chooser-type-fallback")
+    public FileChooserType getFallbackFileChooserType() {
+        return fallbackFileChooserType;
+    }
+
+    @JIPipeParameter("file-chooser-type-fallback")
+    public void setFallbackFileChooserType(FileChooserType fallbackFileChooserType) {
+        this.fallbackFileChooserType = fallbackFileChooserType;
+    }
+
+    public FileChooserType getSafeFallbackFileChooserType() {
+        return fallbackFileChooserType != FileChooserType.ModernNative ? fallbackFileChooserType : FileChooserType.Advanced;
+    }
+
     public enum FileChooserType {
+        ModernNative,
         Advanced,
         AdvancedLegacy,
         Standard,

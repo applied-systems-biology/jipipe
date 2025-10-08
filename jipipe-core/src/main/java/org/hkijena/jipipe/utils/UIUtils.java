@@ -92,6 +92,13 @@ public class UIUtils {
     public static final Color COLOR_SUCCESS = ThemeUtils.getCurrentStyle().getSuccessColor();
 
 
+    public static Window getWindowOrWindowAncestor(Component component) {
+        if(component instanceof Window) {
+            return (Window) component;
+        }
+        return SwingUtilities.windowForComponent(component);
+    }
+
     public static void addPanningToScrollPane(JScrollPane scrollPane) {
         JViewport viewport = scrollPane.getViewport();
 
