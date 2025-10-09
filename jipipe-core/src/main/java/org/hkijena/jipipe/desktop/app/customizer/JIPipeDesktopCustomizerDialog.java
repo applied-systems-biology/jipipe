@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.app.customizer;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -155,7 +156,9 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         settingsPanel.addWideToForm(UIUtils.borderNSEWC(null, null, scaleLabel, null, scaleSlider));
         settingsPanel.addWideToForm(UIUtils.createJLabel("The preview might be slightly inaccurate", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
         settingsPanel.addWideToForm(UIUtils.createJLabel("Non-integral scales may not correctly work", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
-
+        if(SystemUtils.IS_OS_MAC_OSX) {
+            settingsPanel.addWideToForm(UIUtils.createJLabel("May not work on macOS", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
+        }
 
         settingsPanel.addGroupHeader("File chooser", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         settingsPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea("You can change the UI JIPipe uses when you open/save files."));
