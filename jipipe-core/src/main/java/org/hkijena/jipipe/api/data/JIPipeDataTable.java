@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;

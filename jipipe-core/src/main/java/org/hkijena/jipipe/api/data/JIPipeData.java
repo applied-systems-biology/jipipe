@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;

@@ -11,7 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.data;
+package org.hkijena.jipipe.api.data.documentation;
+
+import org.hkijena.jipipe.api.data.JIPipeData;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,22 +21,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Added to {@link JIPipeData} classes to explain how the data type stores its data.
+ * Must be attached to {@link JIPipeData} classes to explain how the data type stores its data.
+ * The documentation follows a subset of the <a href="https://www.researchobject.org/ro-crate/specification/1.2/index.html">RO-Crate Metadata Specification 1.2</a>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface JIPipeDataStorageDocumentation {
     /**
-     * The storage documentation. Can contain HTML.
-     *
-     * @return the storage documentation.
+     * The entities that are describing the contents of the data storage
+     * @return the entities
      */
-    String humanReadableDescription();
-
-    /**
-     * URL pointing to a JSON schema that describes how the data directory should be structured
-     *
-     * @return URL to a JSON schema document
-     */
-    String jsonSchemaURL();
+    Entity[] value();
 }

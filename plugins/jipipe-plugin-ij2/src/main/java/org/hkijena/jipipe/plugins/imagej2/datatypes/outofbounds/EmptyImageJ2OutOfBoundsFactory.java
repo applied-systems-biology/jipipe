@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 @SetJIPipeDocumentation(name = "IJ2 Empty Out Of Bounds factory", description = "An empty out of bounds behavior. Please note that this factory type is not usable in IJ2 algorithms.")

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imagej2.datatypes.shapes;
 
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 
 @SetJIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")

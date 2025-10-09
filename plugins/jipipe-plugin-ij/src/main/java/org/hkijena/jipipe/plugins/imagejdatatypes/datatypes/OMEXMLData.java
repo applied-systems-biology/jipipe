@@ -8,7 +8,7 @@ import loci.formats.services.OMEXMLService;
 import ome.xml.meta.OMEXMLMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
