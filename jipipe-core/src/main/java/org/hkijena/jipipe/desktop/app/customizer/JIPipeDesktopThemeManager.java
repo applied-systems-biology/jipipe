@@ -19,9 +19,13 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -81,6 +85,11 @@ public class JIPipeDesktopThemeManager extends JFrame {
     private void initializeSettingsPanel(JPanel settingsPanel) {
         settingsPanel.add(new JScrollPane(styleJList), BorderLayout.CENTER);
         styleJList.setCellRenderer(new JIPipeDesktopModernThemeStyleListCellRenderer());
+        styleJList.addListSelectionListener(e -> {
+            if(styleJList.getSelectedValue() != null) {
+                themePreviewPanel.setThemeStyle(styleJList.getSelectedValue());
+            }
+        });
 
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
@@ -88,18 +97,96 @@ public class JIPipeDesktopThemeManager extends JFrame {
         toolBar.add(UIUtils.createButton("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), this::createNewTheme));
         toolBar.add(UIUtils.createButton("Edit", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"), this::editSelectedTheme));
         toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(UIUtils.createButton("Apply", JIPipe.RESOURCES.getIcon16("actions/dialog-ok.png"), this::applySelectedTheme));
         toolBar.add(UIUtils.createIconOnlyButton("Delete", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"), this::deleteSelectedTheme));
+
+        settingsPanel.add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void applySelectedTheme() {
+
+        JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
+        if(style == null || StringUtils.isNullOrEmpty(style.getId())) {
+            return;
+        }
+
+        JIPipeGeneralUIApplicationSettings uiSettings = JIPipeGeneralUIApplicationSettings.getInstance();
+
+        uiSettings.setTheme(JIPipeDesktopUITheme.Modern);
+        uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(style.getId()));
+
+        JIPipe.getSettings().save();
+
+        JOptionPane.showMessageDialog(workbench.getWindow(),
+                "Please restart ImageJ/JIPipe to apply the settings",
+                "Customize JIPipe",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void deleteSelectedTheme() {
+        JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
+        if(style == null) {
+            return;
+        }
+        if(style.isBuiltIn()) {
+            JOptionPane.showMessageDialog(themePreviewPanel, "You cannot delete built-in styles", "Delete style", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        boolean isCurrentStyle = ThemeUtils.getCurrentStyle().getId().equals(style.getId());
+        if(isCurrentStyle) {
+            if(JOptionPane.showConfirmDialog(this, "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
+                    "Do you want to delete it anyway?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                return;
+            }
 
+            JIPipeGeneralUIApplicationSettings uiSettings = JIPipeGeneralUIApplicationSettings.getInstance();
+            uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(ThemeUtils.DEFAULT_STYLE_ID));
+            JIPipe.getSettings().save();
+
+            JOptionPane.showMessageDialog(workbench.getWindow(),
+                    "Please restart ImageJ/JIPipe to apply the settings",
+                    "Customize JIPipe",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
+        else {
+            if(JOptionPane.showConfirmDialog(this, "Do you want to delete the selected style?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+
+        ThemeUtils.deleteStyle(style.getId());
     }
 
     private void editSelectedTheme() {
+        JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
+        if(style == null) {
+            return;
+        }
+        if(style.isBuiltIn()) {
+            JOptionPane.showMessageDialog(themePreviewPanel, "You cannot edit built-in styles. But you can create your own style based on a copy.", "Edit style", JOptionPane.INFORMATION_MESSAGE);
+            style = new JIPipeDesktopModernThemeStyle(style);
+            style.setId(null);
+            style.setSavePath(null);
+        }
 
+        openEditor(style);
     }
 
     private void createNewTheme() {
+        JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
+        if(style == null) {
+            style = new JIPipeDesktopModernThemeStyle();
+        }
+        style = new JIPipeDesktopModernThemeStyle(style);
+        style.setId(null);
+        style.setSavePath(null);
 
+        openEditor(style);
+    }
+
+    private void openEditor(JIPipeDesktopModernThemeStyle style) {
+        JIPipeDesktopThemeEditorDocument document = new JIPipeDesktopThemeEditorDocument(style);
+        JIPipeDesktopThemeEditor editor = new JIPipeDesktopThemeEditor(workbench, document);
+        editor.setVisible(true);
     }
 }

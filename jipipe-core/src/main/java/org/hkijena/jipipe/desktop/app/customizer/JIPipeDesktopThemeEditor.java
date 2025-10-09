@@ -45,6 +45,14 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
         newDocument();
     }
 
+    public JIPipeDesktopThemeEditor(JIPipeDesktopWorkbench workbench, JIPipeDesktopThemeEditorDocument document) {
+        this.workbench = workbench;
+        this.settingsPanel = new JIPipeDesktopParameterFormPanel(workbench, document, MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING);
+        this.updatePreviewDebouncer = new StaticDebouncer(250, this::refreshPreview);
+        initialize();
+        loadDocument(document);
+    }
+
     private void initialize() {
         setTitle("JIPipe - Theme editor");
         setIconImage(UIUtils.getJIPipeIcon128());
@@ -69,15 +77,21 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
 
         toolBar.add(UIUtils.createButton("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), this::newDocument));
         toolBar.add(UIUtils.createButton("New from template", JIPipe.RESOURCES.getIcon16("actions/document-new-from-template.png"), this::newDocumentFromExisting));
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(UIUtils.createButton("Save", JIPipe.RESOURCES.getIcon16("actions/document-save.png"), this::saveDocument));
 
         toolBar.setFloatable(false);
-        toolBar.setOpaque(false);
+        UIUtils.makeNonOpaque(toolBar, true);
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
         // Final preparation
         pack();
         setSize(1024, 768);
         setLocationRelativeTo(workbench.getWindow());
+    }
+
+    private void saveDocument() {
+
     }
 
     private void newDocument() {
@@ -110,11 +124,26 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
         document = new JIPipeDesktopThemeEditorDocument(style);
         document.getParameterChangedEventEmitter().subscribe(this);
         settingsPanel.setDisplayedParameters(document);
+        setTitle("JIPipe - Theme editor - Untitled");
+        refreshPreview();
+    }
+
+    private void loadDocument(JIPipeDesktopThemeEditorDocument newDocument) {
+        this.document.getParameterChangedEventEmitter().unsubscribe(this);
+        this.document = newDocument;
+        document.getParameterChangedEventEmitter().subscribe(this);
+        settingsPanel.setDisplayedParameters(document);
+        if(newDocument.getSavePath() != null) {
+            setTitle("JIPipe - Theme editor - " +  newDocument.getSavePath().getFileName());
+        }
+        else {
+            setTitle("JIPipe - Theme editor - Untitled");
+        }
         refreshPreview();
     }
 
     private void refreshPreview() {
-
+        themePreviewPanel.setThemeStyle(document.toStyle());
     }
 
     @Override

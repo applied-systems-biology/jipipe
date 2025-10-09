@@ -36,6 +36,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUIThemeBrightness;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
@@ -151,6 +152,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeDesktopUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
+        registerEnumParameterType("theme-brightness",
+                JIPipeDesktopUIThemeBrightness.class,
+                "Theme brightness",
+                "Brightness of a theme. Determines some basic characteristics.");
         registerEnumParameterType("jipipe:graph-run-partition-inherited-boolean",
                 JIPipeGraphRunPartitionInheritedBoolean.class,
                 "Graph run partition boolean (inheritable)",

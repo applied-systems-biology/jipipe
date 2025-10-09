@@ -114,6 +114,23 @@ public class ThemeUtils {
         return new JIPipeDesktopModernThemeStyle();
     }
 
+    public static JIPipeDesktopModernThemeStyle saveStyle(JIPipeDesktopModernThemeStyle style, String id) {
+        id = StringUtils.makeFilesystemCompatible(id);
+        Path path = getUserStylesDirectory().resolve(id + ".json");
+
+        JsonUtils.saveToFile(style, path);
+
+        if(!AVAILABLE_STYLE_IDS.contains(id)) {
+            AVAILABLE_STYLE_IDS.add(id);
+        }
+
+        JIPipeDesktopModernThemeStyle copy = new JIPipeDesktopModernThemeStyle(style);
+        copy.setId(id);
+        copy.setSavePath(path);
+
+        return copy;
+    }
+
     public static void switchTheme(JIPipeDesktopUITheme theme, JIPipeDesktopModernThemeStyle style) {
         if (theme != null) {
             CURRENT_THEME = theme;
@@ -299,6 +316,21 @@ public class ThemeUtils {
             return Color.getHSBColor(colorHue,
                     CURRENT_STYLE.getNodeBorderSaturation(),
                     CURRENT_STYLE.getNodeBorderBrightness());
+        }
+    }
+
+    public static void deleteStyle(String id) {
+        JIPipeDesktopModernThemeStyle style = getStyleFromId(id);
+        if(style.isBuiltIn()) {
+            return;
+        }
+
+        try {
+            Files.delete(style.getSavePath());
+            AVAILABLE_STYLE_IDS.remove(style.getId());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }

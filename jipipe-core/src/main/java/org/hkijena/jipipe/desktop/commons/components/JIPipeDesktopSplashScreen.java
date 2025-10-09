@@ -61,7 +61,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
 
-        Timer iconTimer = new Timer(2000, e -> updateIconShowcase());
+        Timer iconTimer = new Timer(3000, e -> updateIconShowcase());
         iconTimer.setRepeats(true);
         iconTimer.start();
     }
