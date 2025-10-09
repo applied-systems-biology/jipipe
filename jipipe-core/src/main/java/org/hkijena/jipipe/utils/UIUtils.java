@@ -73,12 +73,14 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -2498,6 +2500,39 @@ public class UIUtils {
             panel.add(center, BorderLayout.CENTER);
         }
         return panel;
+    }
+
+    public static boolean saveUIScaleToJaunch(float newScale, boolean alsoImageJ) {
+        Path imageJDir = PathUtils.getImageJDir();
+        boolean success = true;
+        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
+            success = false;
+        }
+        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("jipipe.toml"))) {
+            success = false;
+        }
+        return success;
+    }
+
+    private static boolean saveUIScaleToJaunch(float newScale, Path jaunchConfigPath) {
+        if(Files.isRegularFile(jaunchConfigPath)) {
+            try {
+                Path backupFile = jaunchConfigPath.getParent().resolve(jaunchConfigPath.getFileName() + ".bak");
+                String config = Files.readString(jaunchConfigPath);
+                config = config.replace("-Dsun.java2d.uiScale=[a-zA-Z]+", "-Dsun.java2d.uiScale=" + newScale);
+                config = config.replace("-Dsun.java2d.uiScale=[0-9%\\.]+", "-Dsun.java2d.uiScale=" + newScale);
+
+                Files.copy(jaunchConfigPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
+                Files.writeString(jaunchConfigPath, config);
+            } catch (Exception e) {
+                JIPipe.getInstance().getLogService().error("Save UI scale - Error:" + e.getMessage());
+                JIPipe.getInstance().getLogService().error(e);
+            }
+        }
+        else {
+            JIPipe.getInstance().getLogService().error("Save UI scale: Unable to find " + jaunchConfigPath);
+        }
+        return false;
     }
 
 

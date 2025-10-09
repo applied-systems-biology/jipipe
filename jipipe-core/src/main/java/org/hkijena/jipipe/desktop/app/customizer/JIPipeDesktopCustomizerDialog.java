@@ -6,6 +6,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -162,6 +163,35 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
     }
 
     private void doActionSave() {
+        // Apply JIPipe settings
+        JIPipeGeneralUIApplicationSettings uiSettings = JIPipeGeneralUIApplicationSettings.getInstance();
+        JIPipeFileChooserApplicationSettings fileChooserSettings = JIPipeFileChooserApplicationSettings.getInstance();
+
+        uiSettings.setTheme(getCurrentlySelectedTheme());
+        uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(getCurrentlySelectedThemeStyleId()));
+
+        if(fileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+            fileChooserSettings.setFileChooserType(fileChooserType);
+        }
+        if(fallbackFileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+            fileChooserSettings.setFallbackFileChooserType(fileChooserType);
+        }
+
+        JIPipe.getSettings().save();
+
+        // Apply the scaling configuration
+        int newRoundedScale = getRoundedScale(scaleSlider.getValue());
+        int originalRoundedScale = getRoundedScale((int) (systemScale * 100));
+        if(newRoundedScale != originalRoundedScale) {
+            boolean alsoImageJ = JOptionPane.showConfirmDialog(this, "Do you want to apply your scale settings also to Fiji/ImageJ?", "Apply", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
+            if(!UIUtils.saveUIScaleToJaunch(newRoundedScale / 100f, alsoImageJ)) {
+                JOptionPane.showMessageDialog(workbench.getWindow(),
+                        "Your UI scale setting of " +  newRoundedScale + "% could not be saved.",
+                        "Customize JIPipe",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
         JOptionPane.showMessageDialog(workbench.getWindow(),
                 "Please restart ImageJ/JIPipe to apply the settings",
                 "Customize JIPipe",
