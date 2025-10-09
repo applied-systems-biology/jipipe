@@ -41,6 +41,9 @@ import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeEditor;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeManager;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
@@ -67,6 +70,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
@@ -694,6 +698,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Tools menu
         JMenu toolsMenu = new JMenu("Tools");
 
+        toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
+        toolsMenu.add(UIUtils.createMenuItem("Theme manager/editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeManagerAndEditor));
+
         JMenu pluginsMenu = new JMenu("Plugins");
         pluginsMenu.add(UIUtils.createMenuItem("JIPipe plugins",
                 "Opens the JIPipe plugin manager",
@@ -791,6 +798,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/help.png"));
 
+        helpMenu.add(UIUtils.createMenuItem("Report issue/feature request", "Shows options on how to report issues or issue a feature request", JIPipe.RESOURCES.getIcon16("actions/stock_mail-send.png"), () -> {
+            JIPipeDesktopSupportAssistantWindow.show(getWindow());
+        }));
+
         JMenuItem offlineManual = new JMenuItem("Manual", JIPipe.RESOURCES.getIcon16("actions/help.png"));
         offlineManual.setToolTipText("Opens the online manual in a browser.");
         offlineManual.addActionListener(e -> openManual());
@@ -837,10 +848,18 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         add(menu, BorderLayout.NORTH);
     }
 
+    private void openThemeManagerAndEditor() {
+        new JIPipeDesktopThemeManager(this).setVisible(true);
+    }
+
     private void openImageJPluginManager() {
         ImageJUpdater updater = new ImageJUpdater();
         JIPipe.getInstance().getContext().inject(updater);
         updater.run();
+    }
+
+    private void openCustomizer() {
+        new JIPipeDesktopCustomizerDialog(this).setVisible(true);
     }
 
     private void openArtifactManager() {

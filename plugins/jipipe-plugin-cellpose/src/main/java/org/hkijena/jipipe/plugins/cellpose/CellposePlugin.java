@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.cellpose;
 
 import com.google.common.collect.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
@@ -157,8 +154,8 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/cellpose.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("cellpose").name("Cellpose").icon(JIPipe.RESOURCES.getIcon32("apps/cellpose.png")).url("https://www.cellpose.org/").build());
     }
 
     @Override

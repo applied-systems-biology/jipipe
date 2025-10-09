@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.plugins.omnipose;
 
 import com.google.common.collect.Sets;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -171,8 +168,8 @@ public class OmniposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(RESOURCES.getIcon32("omnipose.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("omnipose").name("Omnipose").icon(RESOURCES.getIcon32("omnipose.png")).url("https://github.com/kevinjohncutler/omnipose").build());
     }
 
     @Override

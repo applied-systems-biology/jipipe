@@ -15,6 +15,9 @@ package org.hkijena.jipipe.desktop.app.documentation;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeJavaPlugin;
+import org.hkijena.jipipe.JIPipeJavaPluginSplashIcon;
+import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
@@ -22,6 +25,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeProjectTemplatesServiceCo
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.project.templatedownloader.JIPipeDesktopProjectTemplateDownloaderRun;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -29,6 +33,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopImageFrameComponent;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopTemplateProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.plugins.cef.CefPlugin;
@@ -111,15 +116,81 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        JTextPane textPane = UIUtils.createBorderlessReadonlyTextPane("<html>... or <a href=\"https://www.jipipe.org/tutorials/\">learn</a> how to use JIPipe (online tutorials)" +
-                "</html>", false);
-        textPane.setMaximumSize(new Dimension(300, 40));
-        actionPanel.add(textPane);
+        JButton openTutorialsButton = new JButton("Tutorials");
+        openTutorialsButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/graduation-cap.png"));
+        openTutorialsButton.setToolTipText("Opens the website with tutorials");
+        openTutorialsButton.setOpaque(false);
+        openTutorialsButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        openTutorialsButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        openTutorialsButton.addActionListener(e -> doActionOpenTutorials());
+        actionPanel.add(openTutorialsButton);
+
+        JButton communityButton = new JButton("Ask the community");
+        communityButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/comment-dots.png"));
+        communityButton.setToolTipText("Opens the community page on image.sc");
+        communityButton.setOpaque(false);
+        communityButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        communityButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        communityButton.addActionListener(e -> doActionOpenCommunity());
+        actionPanel.add(communityButton);
+
+        JButton customizeButton = new JButton("Customize JIPipe");
+        customizeButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/palette.png"));
+        customizeButton.setToolTipText("Opens the customization tool");
+        customizeButton.setOpaque(false);
+        customizeButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        customizeButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        customizeButton.addActionListener(e -> doActionOpenCustomization());
+        actionPanel.add(customizeButton);
+
+        JButton issueButton = new JButton("Feature request/report issue");
+        issueButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/stock_mail-send.png"));
+        issueButton.setToolTipText("Shows options on how to report issues or ask for features");
+        issueButton.setOpaque(false);
+        issueButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        issueButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        issueButton.addActionListener(e -> doActionReportIssue());
+        actionPanel.add(issueButton);
+
+
+        JButton moreButton = new JButton("More");
+        moreButton.setIcon(JIPipe.RESOURCES.getIcon24("actions/view-more.png"));
+        moreButton.setOpaque(false);
+        moreButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        moreButton.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        JPopupMenu moreMenu = UIUtils.addPopupMenuToButton(moreButton);
+        moreMenu.add(UIUtils.createMenuItem("Visit our website for the newest updates", "Opens jipipe.org", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"), this::doActionOpenWebsite));
+        moreMenu.add(UIUtils.createMenuItem("JIPipe source code", "Finds the source code on GitHub", JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"), this::doActionOpenSourceCode));
+        actionPanel.add(moreButton);
 
         actionPanel.add(Box.createHorizontalGlue());
 
-        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 32));
+        actionPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 80));
         heroPanel.add(actionPanel);
+    }
+
+    private void doActionReportIssue() {
+        JIPipeDesktopSupportAssistantWindow.show(getDesktopProjectWorkbench().getWindow());
+    }
+
+    private void doActionOpenSourceCode() {
+        UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe", true);
+    }
+
+    private void doActionOpenWebsite() {
+        UIUtils.desktopOpenURL("https://jipipe.org/", true);
+    }
+
+    private void doActionOpenCommunity() {
+        UIUtils.desktopOpenURL("https://forum.image.sc/tag/jipipe", true);
+    }
+
+    private void doActionOpenCustomization() {
+        new JIPipeDesktopCustomizerDialog(getDesktopProjectWorkbench()).setVisible(true);
+    }
+
+    private void doActionOpenTutorials() {
+        UIUtils.desktopOpenURL("https://www.jipipe.org/tutorials/", true);
     }
 
     private void initializeHeroActions(JPanel heroPanel) {
@@ -136,6 +207,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         startNowButton.setToolTipText("Switches to an empty project");
         startNowButton.setBackground(colorSuccess);
         startNowButton.setForeground(Color.WHITE);
+        startNowButton.setIcon(JIPipe.RESOURCES.getIcon32Inverted("actions/stock_new-text.png"));
         startNowButton.setUI(new JIPipeDesktopRoundedButtonUI(8, colorHover, colorHover));
         startNowButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         startNowButton.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4), BorderFactory.createEmptyBorder(16, 16, 16, 16)));
@@ -146,6 +218,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
 
         JButton openProjectButton = new JButton("Open project");
         openProjectButton.setToolTipText("Opens a *.jip project file");
+        openProjectButton.setIcon(JIPipe.RESOURCES.getIcon32("actions/fileopen.png"));
         openProjectButton.setOpaque(false);
         openProjectButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         openProjectButton.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(new Color(0xabb8c3), 1, 8), BorderFactory.createEmptyBorder(12, 12, 12, 12)));
@@ -155,6 +228,7 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         actionPanel.add(Box.createHorizontalStrut(8));
 
         JButton openROCrateButton = new JButton("Import RO-Crate");
+        openROCrateButton.setIcon(JIPipe.RESOURCES.getIcon32("apps/ro-crate.png"));
         openROCrateButton.setToolTipText("Opens a *.crate.zip that contains a JIPipe workflow");
         openROCrateButton.setOpaque(false);
         openROCrateButton.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
@@ -216,58 +290,9 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         bottomPanel.setOpaque(false);
         bottomPanel.setMaximumSize(new Dimension(Short.MAX_VALUE, 200));
 
-        initializeHeroLinksPanel(bottomPanel);
         initializeHeroTechnicalInfoPanel(bottomPanel);
 
         heroPanel.add(bottomPanel);
-    }
-
-    private void initializeHeroLinksPanel(JPanel bottomPanel) {
-
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.setOpaque(false);
-
-        toolBar.add(Box.createHorizontalStrut(8));
-
-        JButton openWebsiteButton = new JButton("Visit our website", JIPipe.RESOURCES.getIcon16("actions/web-browser.png"));
-        openWebsiteButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
-        openWebsiteButton.setToolTipText("https://www.jipipe.org/");
-        openWebsiteButton.addActionListener(e -> UIUtils.desktopOpenURL("https://www.jipipe.org/", true));
-        openWebsiteButton.setOpaque(false);
-        openWebsiteButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openWebsiteButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openCommunityButton = new JButton("Community", JIPipe.RESOURCES.getIcon16("actions/dialog-messages.png"));
-        openCommunityButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
-        openCommunityButton.setToolTipText("https://forum.image.sc/tag/jipipe");
-        openCommunityButton.addActionListener(e -> UIUtils.desktopOpenURL("https://forum.image.sc/tag/jipipe", true));
-        openCommunityButton.setOpaque(false);
-        openCommunityButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openCommunityButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton openSourceCodeButton = new JButton("Source code", JIPipe.RESOURCES.getIcon16("actions/dialog-xml-editor.png"));
-        openSourceCodeButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
-        openSourceCodeButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/");
-        openSourceCodeButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/", true));
-        openSourceCodeButton.setOpaque(false);
-        openSourceCodeButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(openSourceCodeButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        JButton reportIssueButton = new JButton("Report issue", JIPipe.RESOURCES.getIcon16("actions/mail-message.png"));
-        reportIssueButton.setAlignmentY(JComponent.BOTTOM_ALIGNMENT);
-        reportIssueButton.setToolTipText("https://github.com/applied-systems-biology/jipipe/issues");
-        reportIssueButton.addActionListener(e -> UIUtils.desktopOpenURL("https://github.com/applied-systems-biology/jipipe/issues", true));
-        reportIssueButton.setOpaque(false);
-        reportIssueButton.setBackground(new Color(0, 0, 0, 0));
-        toolBar.add(reportIssueButton);
-        toolBar.add(Box.createHorizontalStrut(4));
-
-        bottomPanel.add(toolBar, BorderLayout.WEST);
-
     }
 
     private void initializeHeroTechnicalInfoPanel(JPanel bottomPanel) {
@@ -287,10 +312,34 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getDataTypes().getRegisteredDataTypes().size() + " types"), new JLabel("Registered data types"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(JIPipe.getJIPipeUserDir(false).toString()), new JLabel("Profile directory"), null);
         technicalInfo.addToForm(UIUtils.createReadonlyBorderlessTextField(CefPlugin.hasCef() ? "Yes" : "No"), new JLabel("CEF"), null);
+        technicalInfo.addToForm(createPluginIconsPanel(), new JLabel("Powered by"), null);
 
         technicalInfo.setMaximumSize(new Dimension(300, 200));
 
-        bottomPanel.add(technicalInfo, BorderLayout.EAST);
+        bottomPanel.add(technicalInfo, BorderLayout.WEST);
+    }
+
+    private Component createPluginIconsPanel() {
+        JPanel iconsPanel = UIUtils.boxHorizontal();
+        iconsPanel.setOpaque(false);
+        for (JIPipePlugin plugin : JIPipe.getInstance().getPlugins().getKnownPluginsList()) {
+            if(plugin instanceof JIPipeJavaPlugin javaPlugin) {
+                for (JIPipeJavaPluginSplashIcon icon : javaPlugin.getSplashIcons()) {
+                    ImageIcon imageIcon = BufferedImageUtils.scaleImageIconToFit(icon.getIcon(), 16, 16);
+                    JButton button = new JButton(imageIcon);
+                    UIUtils.makeButtonFlat25x25(button);
+                    button.setOpaque(false);
+                    button.setToolTipText(icon.getName());
+                    if(!StringUtils.isNullOrEmpty(icon.getUrl())) {
+                        button.addActionListener(e -> {
+                            UIUtils.desktopOpenURL(icon.getUrl(), true);
+                        });
+                    }
+                    iconsPanel.add(button);
+                }
+            }
+        }
+        return iconsPanel;
     }
 
     private void initializeHeroLogo(JPanel heroPanel) {

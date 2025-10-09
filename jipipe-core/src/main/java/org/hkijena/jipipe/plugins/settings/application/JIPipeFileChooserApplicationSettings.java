@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.settings.application;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -271,11 +272,22 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     }
 
     public enum FileChooserType {
-        ModernNative,
-        Advanced,
-        AdvancedLegacy,
-        Standard,
-        Native
+        ModernNative("Prefer OS dialogs (recommended)"),
+        Advanced("JIPipe"),
+        AdvancedLegacy("JIPipe (legacy)"),
+        Standard("Java Swing"),
+        Native("Java Native");
+
+        private final String name;
+
+        FileChooserType(String name) {
+            this.name = name.replace("OS", StringUtils.getOSName());
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 
     public enum LastDirectoryKey {

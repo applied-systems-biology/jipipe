@@ -65,19 +65,19 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
+import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -1914,7 +1914,26 @@ public class UIUtils {
         return panel;
     }
 
+    public static JPanel gridHorizontal(Component... components) {
+        JPanel panel = new JPanel(new GridLayout(1, components.length));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
     public static JPanel gridVertical(Component... components) {
+        JPanel panel = new JPanel(new GridLayout( components.length, 1));
+        for (Component component : components) {
+            if (component != null) {
+                panel.add(component);
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel gridBagVertical(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
@@ -1948,7 +1967,7 @@ public class UIUtils {
         }
     }
 
-    public static JPanel gridHorizontal(Component... components) {
+    public static JPanel gridBagHorizontal(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
@@ -2378,6 +2397,142 @@ public class UIUtils {
             return panel;
         }
     }
+
+    /**
+     * Returns the effective UI scale factor currently applied by Swing for the given component's screen.
+     * <p>
+     * Works with:
+     * <ul>
+     *   <li>Java's automatic HiDPI scaling (JDK 9+), including per-monitor DPI on Windows/macOS/Linux.</li>
+     *   <li>CLI override via -Dsun.java2d.uiScale=..., e.g. "2", "1.5", "150%".</li>
+     * </ul>
+     * If {@code comp} is null or has no GraphicsConfiguration yet, the default screen device is used.
+     */
+    public static double getScale(Component comp) {
+        // 1) If user explicitly forced a scale via CLI, respect it.
+        Double forced = parseSunUiScaleProperty();
+        if (forced != null && forced > 0.0) {
+            return forced;
+        }
+
+        // 2) Ask AWT what scale is active for this device (reflects automatic HiDPI).
+        GraphicsConfiguration gc = null;
+        if (comp != null) {
+            gc = comp.getGraphicsConfiguration();
+            // If the component isn’t realized yet, gc may be null.
+            if (gc == null) {
+                Window w = SwingUtilities.getWindowAncestor(comp);
+                if (w != null) gc = w.getGraphicsConfiguration();
+            }
+        }
+        if (gc == null) {
+            try {
+                GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsDevice sd = ge.getDefaultScreenDevice();
+                if (sd != null) gc = sd.getDefaultConfiguration();
+            } catch (HeadlessException ignore) {
+                // fall through to 1.0
+            }
+        }
+
+        if (gc != null) {
+            // On HiDPI, scaleX == scaleY for UI rendering; guard just in case.
+            AffineTransform tx = gc.getDefaultTransform();
+            double sx = tx.getScaleX();
+            double sy = tx.getScaleY();
+            if (isValidScale(sx) && isValidScale(sy)) {
+                // Prefer X (they should match). If they don't, return the larger to be safe.
+                return (Math.abs(sx - sy) < 1e-6) ? sx : Math.max(sx, sy);
+            }
+        }
+
+        // 3) Fallback: no GC or suspicious values → assume 1.0
+        return 1.0;
+    }
+
+    private static boolean isValidScale(double s) {
+        return s > 0.0 && Double.isFinite(s);
+    }
+
+    /**
+     * Parses -Dsun.java2d.uiScale if present.
+     * Accepts plain numbers (e.g., "1.5", "2") or percentages (e.g., "150%").
+     * Returns null if not set or unparsable.
+     */
+    private static Double parseSunUiScaleProperty() {
+        String raw = System.getProperty("sun.java2d.uiScale");
+        if (raw == null || raw.isBlank()) return null;
+        raw = raw.trim().toLowerCase(Locale.ROOT);
+
+        try {
+            if (raw.endsWith("%")) {
+                String num = raw.substring(0, raw.length() - 1).trim();
+                double pct = Double.parseDouble(num);
+                if (pct > 0.0) return pct / 100.0;
+            } else {
+                double v = Double.parseDouble(raw);
+                if (v > 0.0) return v;
+            }
+        } catch (NumberFormatException ignore) {
+            // fall through to null
+        }
+        return null;
+    }
+
+    public static JPanel borderNSEWC(Component north, Component south, Component east, Component west, Component center) {
+        JPanel panel = new JPanel(new BorderLayout());
+        if(north != null) {
+            panel.add(north, BorderLayout.NORTH);
+        }
+        if(south != null) {
+            panel.add(south, BorderLayout.SOUTH);
+        }
+        if(east != null) {
+            panel.add(east, BorderLayout.EAST);
+        }
+        if(west != null) {
+            panel.add(west, BorderLayout.WEST);
+        }
+        if(center != null) {
+            panel.add(center, BorderLayout.CENTER);
+        }
+        return panel;
+    }
+
+    public static boolean saveUIScaleToJaunch(float newScale, boolean alsoImageJ) {
+        Path imageJDir = PathUtils.getImageJDir();
+        boolean success = true;
+        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
+            success = false;
+        }
+        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("jipipe.toml"))) {
+            success = false;
+        }
+        return success;
+    }
+
+    private static boolean saveUIScaleToJaunch(float newScale, Path jaunchConfigPath) {
+        if(Files.isRegularFile(jaunchConfigPath)) {
+            try {
+                Path backupFile = jaunchConfigPath.getParent().resolve(jaunchConfigPath.getFileName() + ".bak");
+                String config = Files.readString(jaunchConfigPath);
+                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[a-zA-Z]+", "-Dsun.java2d.uiScale=" + newScale);
+                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[0-9%\\.]+", "-Dsun.java2d.uiScale=" + newScale);
+
+                Files.copy(jaunchConfigPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
+                Files.writeString(jaunchConfigPath, config, StandardOpenOption.WRITE);
+                return true;
+            } catch (Exception e) {
+                JIPipe.getInstance().getLogService().error("Save UI scale - Error:" + e.getMessage());
+                JIPipe.getInstance().getLogService().error(e);
+            }
+        }
+        else {
+            JIPipe.getInstance().getLogService().error("Save UI scale: Unable to find " + jaunchConfigPath);
+        }
+        return false;
+    }
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

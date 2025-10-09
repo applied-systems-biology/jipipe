@@ -149,8 +149,8 @@ public class CLIJPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/clij.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("clij").name("CLIJ/CLIJ2/CLIJx").icon(JIPipe.RESOURCES.getIcon32("apps/clij.png")).url("https://clij.github.io/").build());
     }
 
     @Override

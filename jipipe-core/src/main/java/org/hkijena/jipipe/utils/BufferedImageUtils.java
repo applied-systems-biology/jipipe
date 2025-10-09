@@ -19,6 +19,7 @@ import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 
 import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -284,6 +285,36 @@ public class BufferedImageUtils {
         if (scale != 1.0) {
             Image scaledInstance = image.getScaledInstance((int) Math.max(1, image.getWidth() * scale), (int) Math.max(1, image.getHeight() * scale), Image.SCALE_SMOOTH);
             image = toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
+        }
+        return image;
+    }
+
+    public static Image scaleAwtImageToFit(Image image, int maxWidth, int maxHeight) {
+        double scale = 1.0;
+        if (maxWidth > 0) {
+            scale = 1.0 * maxWidth / image.getWidth(null);
+        }
+        if (maxHeight > 0) {
+            scale = Math.min(1.0 * maxHeight / image.getHeight(null), scale);
+        }
+        if (scale != 1.0) {
+            Image scaledInstance = image.getScaledInstance((int) Math.max(1, image.getWidth(null) * scale), (int) Math.max(1, image.getHeight(null) * scale), Image.SCALE_SMOOTH);
+            image = toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
+        }
+        return image;
+    }
+
+    public static ImageIcon scaleImageIconToFit(ImageIcon image, int maxWidth, int maxHeight) {
+        double scale = 1.0;
+        if (maxWidth > 0) {
+            scale = 1.0 * maxWidth / image.getIconWidth();
+        }
+        if (maxHeight > 0) {
+            scale = Math.min(1.0 * maxHeight / image.getIconHeight(), scale);
+        }
+        if (scale != 1.0) {
+            Image scaledInstance = image.getImage().getScaledInstance((int) (image.getIconWidth() * scale), (int) (image.getIconHeight() * scale), Image.SCALE_SMOOTH);
+            image = new ImageIcon(scaledInstance);
         }
         return image;
     }

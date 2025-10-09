@@ -13,10 +13,7 @@
 
 package org.hkijena.jipipe.plugins.core;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
 import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
@@ -39,6 +36,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUIThemeBrightness;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.data.CopyContainingFolderDataImportOperation;
 import org.hkijena.jipipe.plugins.core.data.DefaultDataDisplayOperation;
@@ -154,6 +152,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeDesktopUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
+        registerEnumParameterType("theme-brightness",
+                JIPipeDesktopUIThemeBrightness.class,
+                "Theme brightness",
+                "Brightness of a theme. Determines some basic characteristics.");
         registerEnumParameterType("jipipe:graph-run-partition-inherited-boolean",
                 JIPipeGraphRunPartitionInheritedBoolean.class,
                 "Graph run partition boolean (inheritable)",
@@ -220,10 +222,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/imagej.png"),
-                JIPipe.RESOURCES.getIcon32("apps/fiji.png"),
-                JIPipe.RESOURCES.getIcon32("apps/scijava.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return Arrays.asList(JIPipeJavaPluginSplashIcon.builder().id("imagej").icon(JIPipe.RESOURCES.getIcon32("apps/imagej.png")).name("ImageJ").url("https://imagej.net").build(),
+                JIPipeJavaPluginSplashIcon.builder().id("fiji").icon(JIPipe.RESOURCES.getIcon32("apps/fiji.png")).name("Fiji").url("https://fiji.sc/").build(),
+                JIPipeJavaPluginSplashIcon.builder().id("scijava").icon(JIPipe.RESOURCES.getIcon32("apps/scijava.png")).name("SciJava").url("https://scijava.org/").build());
     }
 
     @Override

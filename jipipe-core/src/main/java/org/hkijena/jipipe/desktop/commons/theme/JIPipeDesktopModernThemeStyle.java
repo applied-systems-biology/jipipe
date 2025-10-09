@@ -1,15 +1,20 @@
 package org.hkijena.jipipe.desktop.commons.theme;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class JIPipeDesktopModernThemeStyle {
 
+    private String id = ThemeUtils.DEFAULT_STYLE_ID;
+    private Path savePath;
+
     @JsonProperty("name")
-    private String name = "JIPipe Light";
+    private String name = ThemeUtils.DEFAULT_STYLE_ID;
 
     @JsonProperty("brightness")
     private JIPipeDesktopUIThemeBrightness brightness = JIPipeDesktopUIThemeBrightness.Light;
@@ -178,6 +183,58 @@ public class JIPipeDesktopModernThemeStyle {
     private int cornerRadius = 15;
 
     public JIPipeDesktopModernThemeStyle() {
+    }
+
+    public JIPipeDesktopModernThemeStyle(JIPipeDesktopModernThemeStyle other) {
+        this.id = other.id;
+        this.savePath = other.savePath;
+        this.name = other.name;
+        this.brightness = other.brightness;
+        this.primaryColor = other.primaryColor;
+        this.secondaryColor = other.secondaryColor;
+        this.successColor = other.successColor;
+        this.dangerColor = other.dangerColor;
+        this.warningColor = other.warningColor;
+        this.fontSizeHuge = other.fontSizeHuge;
+        this.fontSizeLarge = other.fontSizeLarge;
+        this.fontSizeNormal = other.fontSizeNormal;
+        this.fontSizeSmall = other.fontSizeSmall;
+        this.fontSizeTiny = other.fontSizeTiny;
+        this.textForeground = other.textForeground;
+        this.textMuted = other.textMuted;
+        this.textForegroundInverted = other.textForegroundInverted;
+        this.textMutedInverted = other.textMutedInverted;
+        this.textLink = other.textLink;
+        this.textCaret = other.textCaret;
+        this.windowBackground = other.windowBackground;
+        this.panelBackground = other.panelBackground;
+        this.menuBackground = other.menuBackground;
+        this.borderColor = other.borderColor;
+        this.scrollBarThumb = other.scrollBarThumb;
+        this.tabSelectedBackground = other.tabSelectedBackground;
+        this.tabSelectedHighlight = other.tabSelectedHighlight;
+        this.selectionBackground = other.selectionBackground;
+        this.selectionHighlight = other.selectionHighlight;
+        this.selectionForeground = other.selectionForeground;
+        this.listAlternateBackground = other.listAlternateBackground;
+        this.buttonBackground = other.buttonBackground;
+        this.buttonDisabledBackground = other.buttonDisabledBackground;
+        this.buttonToggled = other.buttonToggled;
+        this.formBackground = other.formBackground;
+        this.formDisabledBackground = other.formDisabledBackground;
+        this.formForeground = other.formForeground;
+        this.viewportBackground = other.viewportBackground;
+        this.tooltipBackground = other.tooltipBackground;
+        this.tooltipForeground = other.tooltipForeground;
+        this.categoryBackground = other.categoryBackground;
+        this.categoryBorder = other.categoryBorder;
+        this.nodeHighlightBorder = other.nodeHighlightBorder;
+        this.nodeSlotBackground = other.nodeSlotBackground;
+        this.nodeFillSaturation = other.nodeFillSaturation;
+        this.nodeFillBrightness = other.nodeFillBrightness;
+        this.nodeBorderSaturation = other.nodeBorderSaturation;
+        this.nodeBorderBrightness = other.nodeBorderBrightness;
+        this.cornerRadius = other.cornerRadius;
     }
 
     public static void main(String[] args) {
@@ -566,5 +623,25 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setCornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
+    }
+
+    public boolean isBuiltIn() {
+        return savePath == null;
     }
 }

@@ -13,13 +13,17 @@
 
 package org.hkijena.jipipe.desktop.commons.components;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
+import org.hkijena.jipipe.JIPipeJavaPluginSplashIcon;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
 import org.scijava.log.LogListener;
@@ -33,26 +37,40 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, Contextual, JIPipePluginDiscoveredEventListener {
 
+    private static final int ICON_SPACING = 16;
     private static final Object instanceLock = new Object();
     private static volatile JIPipeDesktopSplashScreen instance;
     private final SpinnerIcon spinnerIcon;
     private final JLabel statusLabel;
     private Context context;
     private JPanel poweredByContainer;
-    private JPanel poweredByIconContainer;
+    private final JLabel poweredByIconLabel = new JLabel();
     private JIPipeService service;
+    private final List<JIPipeJavaPluginSplashIcon> icons = new ArrayList<>();
+    private JIPipeJavaPluginSplashIcon currentlyShowcasedIcon;
+
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);
         this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
+
+        Timer iconTimer = new Timer(3000, e -> updateIconShowcase());
+        iconTimer.setRepeats(true);
+        iconTimer.start();
     }
 
     public static void main(String[] args) {
         getInstance().showSplash(null);
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/jipipe.png")).id("jipipe").name("JIPipe").url("https://jipipe.org/").build());
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/scijava.png")).id("scijava").name("SciJava").url("https://jipipe.org/").build());
+        getInstance().addIcon(JIPipeJavaPluginSplashIcon.builder().icon(JIPipe.RESOURCES.getIcon32("apps/fiji.png")).id("fiji").name("Fiji").url("https://jipipe.org/").build());
     }
 
     public static JIPipeDesktopSplashScreen getInstance() {
@@ -65,30 +83,45 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     }
 
     private void initialize() {
-        setSize(640, 480);
+        setSize(800, 600);
         setContentPane(new ContentPanel());
+
+        final int contentWidth = 759;
 
         poweredByContainer = new JPanel(new BorderLayout());
         poweredByContainer.setOpaque(false);
         poweredByContainer.setVisible(false);
         poweredByContainer.setLocation(20, 203);
-        poweredByContainer.setSize(574, 138);
+        poweredByContainer.setSize(contentWidth, 200);
 
-        statusLabel.setSize(574, 25);
-        statusLabel.setLocation(20, 450);
+        JLabel versionLabel = new JLabel(JIPipe.getJIPipeVersion());
+        versionLabel.setOpaque(false);
+        versionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 32));
+        versionLabel.setSize(150, 40);
+        versionLabel.setLocation(600, 150);
+        getContentPane().add(versionLabel);
+
+        statusLabel.setSize(contentWidth, 25);
+        statusLabel.setLocation(20, 562);
         getContentPane().add(statusLabel);
 
-        JPanel poweredByContent = new JPanel(new BorderLayout());
+        JPanel poweredByContent = UIUtils.boxHorizontal();
         poweredByContent.setOpaque(false);
-        poweredByContainer.add(poweredByContent, BorderLayout.EAST);
+        poweredByContainer.add(poweredByContent, BorderLayout.CENTER);
 
-        JLabel poweredByLabel = new JLabel("Powered by");
-        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
-        poweredByContent.add(poweredByLabel, BorderLayout.NORTH);
+        JLabel poweredByLabel = new JLabel("Powered by ...");
+        poweredByLabel.setBorder(UIUtils.createEmptyBorder(16));
+        poweredByLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        poweredByContent.add(poweredByLabel);
 
-        poweredByIconContainer = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        poweredByIconContainer.setOpaque(false);
-        poweredByContent.add(poweredByIconContainer, BorderLayout.CENTER);
+        JPanel separatorPanel = new JPanel();
+        separatorPanel.setOpaque(false);
+        separatorPanel.setBorder(BorderFactory.createMatteBorder(0,2,0,0, ThemeUtils.getCurrentStyle().getBorderColor()));
+        poweredByContent.add(separatorPanel);
+
+        poweredByIconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+        poweredByIconLabel.setBorder(UIUtils.createEmptyBorder(16));
+        poweredByContent.add(poweredByIconLabel);
 
         getContentPane().add(poweredByContainer);
 
@@ -127,19 +160,57 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     public void onJIPipePluginDiscovered(JIPipePluginDiscoveredEvent event) {
         if (event.getExtension() instanceof JIPipeJavaPlugin) {
             SwingUtilities.invokeLater(() -> {
-                for (ImageIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
-                    if (icon.getIconWidth() != 32 && icon.getIconHeight() != 32) {
-                        Image scaledInstance = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
-                        icon = new ImageIcon(scaledInstance);
-                    }
-                    JLabel label = new JLabel(icon);
-                    poweredByIconContainer.add(label);
-                    revalidate();
-                    repaint();
+                for (JIPipeJavaPluginSplashIcon icon : ((JIPipeJavaPlugin) event.getExtension()).getSplashIcons()) {
+                    addIcon(icon);
                 }
-                poweredByContainer.setVisible(poweredByIconContainer.getComponentCount() > 0);
             });
         }
+    }
+
+    public void addIcon(JIPipeJavaPluginSplashIcon icon) {
+        if (icon == null || StringUtils.isNullOrEmpty(icon.getId()) || icon.getIcon() == null) {
+            return;
+        }
+
+        if(icons.stream().noneMatch(i -> i.getId().equals(icon.getId()))) {
+
+            ImageIcon imageIcon = icon.getIcon();
+            if (imageIcon.getIconWidth() != 32 && imageIcon.getIconHeight() != 32) {
+                Image scaledInstance = imageIcon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
+                imageIcon = new ImageIcon(scaledInstance);
+            }
+
+            JIPipeJavaPluginSplashIcon copy = new JIPipeJavaPluginSplashIcon(icon);
+            copy.setIcon(imageIcon);
+            icons.add(copy);
+
+            Collections.shuffle(icons);
+
+            updateIconShowcase();
+        }
+    }
+
+    private void updateIconShowcase() {
+
+        if(!icons.isEmpty()) {
+            int nextIndex;
+            if(currentlyShowcasedIcon != null) {
+                nextIndex = Math.max(0, icons.indexOf(currentlyShowcasedIcon) + 1) % icons.size();
+            }
+            else {
+                nextIndex = 0;
+            }
+            currentlyShowcasedIcon = icons.get(nextIndex);
+        }
+
+        if(currentlyShowcasedIcon != null) {
+            poweredByIconLabel.setIcon(currentlyShowcasedIcon.getIcon());
+            poweredByIconLabel.setText("<html><strong>" + currentlyShowcasedIcon.getName() + "</strong><br/>" + currentlyShowcasedIcon.getUrl() + "</html>");
+        }
+
+        poweredByContainer.setVisible(currentlyShowcasedIcon != null);
+        revalidate();
+        repaint();
     }
 
     @Override
@@ -192,7 +263,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         @Override
         public void paint(Graphics g) {
             g.drawImage(backgroundImage, 0, 0, null);
-            g.setColor(Color.DARK_GRAY);
+            g.setColor(ThemeUtils.getCurrentStyle().getBorderColor());
             g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
             super.paint(g);
         }

@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.r;
 import org.apache.commons.compress.utils.Sets;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeJavaPlugin;
-import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
@@ -97,8 +94,8 @@ public class RPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     @Override
-    public List<ImageIcon> getSplashIcons() {
-        return Arrays.asList(JIPipe.RESOURCES.getIcon32("apps/rlogo_icon.png"));
+    public List<JIPipeJavaPluginSplashIcon> getSplashIcons() {
+        return List.of(JIPipeJavaPluginSplashIcon.builder().id("rlang").name("R").icon(JIPipe.RESOURCES.getIcon32("apps/rlogo_icon.png")).url("https://www.r-project.org/").build());
     }
 
     @Override

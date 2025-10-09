@@ -3,6 +3,8 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThemeUtils {
+    public static final String DEFAULT_STYLE_ID = "JIPipe Light";
     public static Theme RSYNTAX_THEME_LIGHT;
     public static Theme RSYNTAX_THEME_DARK;
     private static boolean INSTALLED_LISTENER;
@@ -32,6 +35,7 @@ public class ThemeUtils {
     private static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.Modern;
     private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new JIPipeDesktopModernThemeStyle();
     private static List<String> AVAILABLE_STYLE_IDS;
+    private static final AvailableThemesChangedEventEmitter CHANGED_EVENT_EMITTER = new AvailableThemesChangedEventEmitter();
 
     public static boolean isUsingDarkTheme() {
         return CURRENT_THEME == JIPipeDesktopUITheme.Modern && CURRENT_STYLE.getBrightness() == JIPipeDesktopUIThemeBrightness.Dark;
@@ -77,10 +81,14 @@ public class ThemeUtils {
         reapplyCurrentTheme();
     }
 
+    public static AvailableThemesChangedEventEmitter getAvailableThemesChangedEventEmitter() {
+        return CHANGED_EVENT_EMITTER;
+    }
+
     public static JIPipeDesktopModernThemeStyle getStyleFromId(String id) {
 
         // JIPipe light is the default style of the configuration
-        if ("JIPipe Light".equals(id)) {
+        if (DEFAULT_STYLE_ID.equals(id)) {
             return new JIPipeDesktopModernThemeStyle();
         }
 
@@ -88,7 +96,9 @@ public class ThemeUtils {
         try {
             URL url = ResourceUtils.getPluginResource("styles/" + id + ".json");
             if (url != null) {
-                return JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
+                JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
+                style.setId(id);
+                return style;
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();
@@ -98,7 +108,10 @@ public class ThemeUtils {
         try {
             Path path = getUserStylesDirectory().resolve(id + ".json");
             if (Files.exists(path)) {
-                return JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
+                JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
+                style.setId(id);
+                style.setSavePath(path);
+                return style;
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();
@@ -106,6 +119,25 @@ public class ThemeUtils {
 
         // Fall back to the default "JIPipe Light" style
         return new JIPipeDesktopModernThemeStyle();
+    }
+
+    public static JIPipeDesktopModernThemeStyle saveStyle(JIPipeDesktopModernThemeStyle style, String id) {
+        id = StringUtils.makeFilesystemCompatible(id);
+        Path path = getUserStylesDirectory().resolve(id + ".json");
+
+        JsonUtils.saveToFile(style, path);
+
+        if(!AVAILABLE_STYLE_IDS.contains(id)) {
+            AVAILABLE_STYLE_IDS.add(id);
+        }
+
+        JIPipeDesktopModernThemeStyle copy = new JIPipeDesktopModernThemeStyle(style);
+        copy.setId(id);
+        copy.setSavePath(path);
+
+        CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
+
+        return copy;
     }
 
     public static void switchTheme(JIPipeDesktopUITheme theme, JIPipeDesktopModernThemeStyle style) {
@@ -293,6 +325,42 @@ public class ThemeUtils {
             return Color.getHSBColor(colorHue,
                     CURRENT_STYLE.getNodeBorderSaturation(),
                     CURRENT_STYLE.getNodeBorderBrightness());
+        }
+    }
+
+    public static void deleteStyle(String id) {
+        JIPipeDesktopModernThemeStyle style = getStyleFromId(id);
+        if(style.isBuiltIn()) {
+            return;
+        }
+
+        try {
+            Files.delete(style.getSavePath());
+            AVAILABLE_STYLE_IDS.remove(style.getId());
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
+    }
+
+    public static class AvailableThemesChangedEvent extends AbstractJIPipeEvent {
+
+        public AvailableThemesChangedEvent(Object source) {
+            super(source);
+        }
+    }
+
+    public interface AvailableThemesChangedEventListener {
+        void onAvailableThemesChanged(AvailableThemesChangedEvent event);
+    }
+
+    public static class AvailableThemesChangedEventEmitter extends JIPipeEventEmitter<AvailableThemesChangedEvent, AvailableThemesChangedEventListener> {
+
+        @Override
+        protected void call(AvailableThemesChangedEventListener availableThemesChangedEventListener, AvailableThemesChangedEvent event) {
+            availableThemesChangedEventListener.onAvailableThemesChanged(event);
         }
     }
 }

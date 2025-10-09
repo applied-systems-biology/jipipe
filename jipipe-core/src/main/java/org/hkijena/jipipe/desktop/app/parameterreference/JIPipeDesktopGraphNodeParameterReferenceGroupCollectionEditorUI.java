@@ -154,7 +154,7 @@ public class JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI ext
         removeButton.addActionListener(e -> removeSelectedItems());
         toolBar.add(removeButton);
 
-        leftPanel.add(UIUtils.gridVertical(toolBar, noGroupsLabel), BorderLayout.NORTH);
+        leftPanel.add(UIUtils.gridBagVertical(toolBar, noGroupsLabel), BorderLayout.NORTH);
     }
 
     private void addParameterReference() {
