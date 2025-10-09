@@ -70,10 +70,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -2519,11 +2516,12 @@ public class UIUtils {
             try {
                 Path backupFile = jaunchConfigPath.getParent().resolve(jaunchConfigPath.getFileName() + ".bak");
                 String config = Files.readString(jaunchConfigPath);
-                config = config.replace("-Dsun.java2d.uiScale=[a-zA-Z]+", "-Dsun.java2d.uiScale=" + newScale);
-                config = config.replace("-Dsun.java2d.uiScale=[0-9%\\.]+", "-Dsun.java2d.uiScale=" + newScale);
+                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[a-zA-Z]+", "-Dsun.java2d.uiScale=" + newScale);
+                config = config.replaceAll("-Dsun\\.java2d\\.uiScale=[0-9%\\.]+", "-Dsun.java2d.uiScale=" + newScale);
 
                 Files.copy(jaunchConfigPath, backupFile, StandardCopyOption.REPLACE_EXISTING);
-                Files.writeString(jaunchConfigPath, config);
+                Files.writeString(jaunchConfigPath, config, StandardOpenOption.WRITE);
+                return true;
             } catch (Exception e) {
                 JIPipe.getInstance().getLogService().error("Save UI scale - Error:" + e.getMessage());
                 JIPipe.getInstance().getLogService().error(e);
