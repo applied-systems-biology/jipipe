@@ -90,7 +90,9 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryLayout.panelBackground = style.getPanelBackground();
         categoryLayout.menuBackground = style.getMenuBackground();
         categoryLayout.borderColor = style.getBorderColor();
-        categoryLayout.cornerRadius = style.getCornerRadius();
+        categoryLayout.islandsCornerRadius = style.getIslandsCornerRadius();
+        categoryLayout.islandsDrawBorder = style.isIslandsDrawBorder();
+        categoryLayout.islandsBorderColor = style.getIslandsBorderColor();
         
         categoryInteractiveElements.buttonBackground = style.getButtonBackground();
         categoryInteractiveElements.buttonDisabledBackground = style.getButtonDisabledBackground();
@@ -148,7 +150,9 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setPanelBackground(categoryLayout.getPanelBackground());
         result.setMenuBackground(categoryLayout.getMenuBackground());
         result.setBorderColor(categoryLayout.getBorderColor());
-        result.setCornerRadius(categoryLayout.getCornerRadius());
+        result.setIslandsCornerRadius(categoryLayout.getIslandsCornerRadius());
+        result.setIslandsDrawBorder(categoryLayout.isIslandsDrawBorder());
+        result.setIslandsBorderColor(categoryLayout.getIslandsBorderColor());
         
         result.setButtonBackground(categoryInteractiveElements.getButtonBackground());
         result.setButtonDisabledBackground(categoryInteractiveElements.getButtonDisabledBackground());
@@ -522,7 +526,9 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private Color panelBackground = new Color(0xFFFFFF);
         private Color menuBackground = new Color(0xFFFFFF);
         private Color borderColor = new Color(0xdedee2);
-        private int cornerRadius = 15;
+        private int islandsCornerRadius = 15;
+        private boolean islandsDrawBorder;
+        private Color islandsBorderColor;
 
         @SetJIPipeDocumentation(name = "Window background", description = "Main window background color")
         @JIPipeParameter("window-background")
@@ -568,15 +574,37 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
             this.borderColor = borderColor;
         }
 
-        @SetJIPipeDocumentation(name = "Corner radius", description = "Split pane and UI corner radius (0-32)")
+        @SetJIPipeDocumentation(name = "Islands corner radius", description = "Split pane islands and UI corner radius (0-32)")
         @JIPipeParameter("corner-radius")
-        public int getCornerRadius() {
-            return cornerRadius;
+        public int getIslandsCornerRadius() {
+            return islandsCornerRadius;
         }
 
         @JIPipeParameter("corner-radius")
-        public void setCornerRadius(int cornerRadius) {
-            this.cornerRadius = cornerRadius;
+        public void setIslandsCornerRadius(int islandsCornerRadius) {
+            this.islandsCornerRadius = islandsCornerRadius;
+        }
+
+        @SetJIPipeDocumentation(name = "Draw islands border", description = "If enabled, draw a border around split pane islands")
+        @JIPipeParameter("islands-draw-border")
+        public boolean isIslandsDrawBorder() {
+            return islandsDrawBorder;
+        }
+
+        @JIPipeParameter("islands-draw-border")
+        public void setIslandsDrawBorder(boolean islandsDrawBorder) {
+            this.islandsDrawBorder = islandsDrawBorder;
+        }
+
+        @SetJIPipeDocumentation(name = "Islands border color", description = "The color of island borders if enabled")
+        @JIPipeParameter("islands-border-color")
+        public Color getIslandsBorderColor() {
+            return islandsBorderColor;
+        }
+
+        @JIPipeParameter("islands-border-color")
+        public void setIslandsBorderColor(Color islandsBorderColor) {
+            this.islandsBorderColor = islandsBorderColor;
         }
     }
 

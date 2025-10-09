@@ -135,6 +135,8 @@ public class ThemePreviewPanel extends JPanel {
         previewSplitRightForms.setOpaque(false);
         previewSplitRightForms.setLayout(new BoxLayout(previewSplitRightForms, BoxLayout.Y_AXIS));
 
+        previewSplitRightForms.add(Box.createVerticalStrut(16));
+
         previewSplitRightForms.add(previewHeaderPanelActive);
         previewHeaderPanelActive.leftLabel();
 
@@ -202,10 +204,12 @@ public class ThemePreviewPanel extends JPanel {
 
 
         // Update panel previews
-        previewSplitLeft.setCornerRadius((int) (themeStyle.getCornerRadius() * scale));
-        previewSplitRight.setCornerRadius((int) (themeStyle.getCornerRadius() * scale));
+        previewSplitLeft.setCornerRadius((int) (themeStyle.getIslandsCornerRadius() * scale));
+        previewSplitRight.setCornerRadius((int) (themeStyle.getIslandsCornerRadius() * scale));
         previewSplitLeft.setBackgroundColor(themeStyle.getPanelBackground());
         previewSplitRight.setBackgroundColor(themeStyle.getPanelBackground());
+        previewSplitLeft.setBorderColor(themeStyle.isIslandsDrawBorder() ? themeStyle.getIslandsBorderColor() : null);
+        previewSplitRight.setBorderColor(themeStyle.isIslandsDrawBorder() ? themeStyle.getIslandsBorderColor() : null);
 
         // Update tab designs
         previewTabBar.setBackgroundColor(themeStyle.getWindowBackground());
@@ -444,7 +448,7 @@ public class ThemePreviewPanel extends JPanel {
 
             g2d.drawImage(dataTypeIconImage, (int)(nodeX + 32 * scale), nodeY + nodeCellHeight + iconStart, (int)(scale * 16), (int)(scale * 16),null );
             g2d.setFont(mainFont);
-            UIUtils.drawStringVerticallyCentered(g2d, "Node", (int)(nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, secondaryFontMetrics);
+            UIUtils.drawStringVerticallyCentered(g2d, "Node", (int)(nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
         }
     }
 

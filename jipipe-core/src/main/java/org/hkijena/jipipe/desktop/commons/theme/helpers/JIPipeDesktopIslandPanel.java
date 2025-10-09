@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.commons.theme.helpers;
 
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -13,13 +14,15 @@ import java.awt.*;
 public class JIPipeDesktopIslandPanel extends JPanel {
 
     private final int cornerRadius;
+    private final JIPipeDesktopModernThemeStyle style;
 
     public JIPipeDesktopIslandPanel(JComponent content) {
-        this.cornerRadius = ThemeUtils.getCurrentStyle().getCornerRadius();
+        this.style = ThemeUtils.getCurrentStyle();
+        this.cornerRadius = style.getIslandsCornerRadius();
         setLayout(new BorderLayout());
         setOpaque(true);
         setBorder(UIUtils.createEmptyBorder(5));
-        setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        setBackground(style.getWindowBackground());
         add(content, BorderLayout.CENTER);
     }
 
@@ -31,11 +34,13 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int arc = cornerRadius;
-        g2.setColor(ThemeUtils.getCurrentStyle().getPanelBackground());
+        g2.setColor(style.getPanelBackground());
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
 
-//        g2.setColor(UIUtils.CURRENT_STYLE.getWindowBackground());
-//        g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
+        if(style.isIslandsDrawBorder()) {
+            g2.setColor(style.getIslandsBorderColor());
+            g2.drawRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+        }
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldValue);
     }
