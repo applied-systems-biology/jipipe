@@ -154,6 +154,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
 
         settingsPanel.addWideToForm(UIUtils.borderNSEWC(null, null, scaleLabel, null, scaleSlider));
         settingsPanel.addWideToForm(UIUtils.createJLabel("The preview might be slightly inaccurate", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
+        settingsPanel.addWideToForm(UIUtils.createJLabel("Non-integral scales may not correctly work", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
 
 
         settingsPanel.addGroupHeader("File chooser", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
