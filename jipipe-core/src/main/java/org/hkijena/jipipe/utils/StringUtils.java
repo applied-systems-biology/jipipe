@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
+import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.text.WordUtils;
@@ -686,4 +687,18 @@ public class StringUtils {
         }
     }
 
+    public static CharSequence getOSName() {
+        if(SystemUtils.IS_OS_WINDOWS) {
+            return "Windows";
+        }
+        else if(SystemUtils.IS_OS_LINUX) {
+            return "Linux";
+        }
+        else if(SystemUtils.IS_OS_MAC) {
+            return "macOS";
+        }
+        else {
+            return "OS";
+        }
+    }
 }

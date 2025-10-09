@@ -7,12 +7,15 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesktopWorkbenchAccess {
 
@@ -21,16 +24,82 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
     private final JIPipeDesktopFormPanel settingsPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
 
     private final JComboBox<JIPipeDesktopUITheme> themeJComboBox = new JComboBox<>(JIPipeDesktopUITheme.values());
-    private final JComboBox<JIPipeDesktopModernThemeStyle> themeStyleJComboBox = new JComboBox<>();
+    private final JComboBox<String> themeStyleJComboBox = new JComboBox<>();
     private final JSlider scaleSlider = new JSlider(25, 500, 100);
     private final JLabel scaleLabel = new JLabel("100%");
     private final JComboBox<JIPipeFileChooserApplicationSettings.FileChooserType> fileChooserTypeJComboBox = new JComboBox<>(JIPipeFileChooserApplicationSettings.FileChooserType.values());
     private final JComboBox<JIPipeFileChooserApplicationSettings.FileChooserType> fallbackFileChooserTypeJComboBox = new JComboBox<>(JIPipeFileChooserApplicationSettings.FileChooserType.values());
+    private final double systemScale;
 
     public JIPipeDesktopCustomizerDialog(JIPipeDesktopWorkbench workbench) {
         super(workbench.getWindow());
         this.workbench = workbench;
+        this.systemScale = UIUtils.getScale(workbench.getWindow());
         initialize();
+        loadDefaults();
+        registerEvents();
+        updatePreview();
+    }
+
+    private void loadDefaults() {
+        JIPipeGeneralUIApplicationSettings uiSettings = JIPipeGeneralUIApplicationSettings.getInstance();
+        JIPipeFileChooserApplicationSettings fileChooserSettings = JIPipeFileChooserApplicationSettings.getInstance();
+        themeStyleJComboBox.setModel(new DefaultComboBoxModel<>(ThemeUtils.getAvailableStyleIds().toArray(new String[0])));
+        themeJComboBox.setSelectedItem(uiSettings.getTheme());
+        themeStyleJComboBox.setSelectedItem(uiSettings.getThemeStyle().getValue());
+        fileChooserTypeJComboBox.setSelectedItem(fileChooserSettings.getFileChooserType());
+        fallbackFileChooserTypeJComboBox.setSelectedItem(fileChooserSettings.getSafeFallbackFileChooserType());
+        int scalePercent = (int) (systemScale * 100);
+        scaleSlider.setValue(getRoundedScale(scalePercent));
+    }
+
+    private void registerEvents() {
+        scaleSlider.addChangeListener(e -> {
+            updatePreview();
+        });
+        themeJComboBox.addActionListener(e -> {
+            updatePreview();
+        });
+        themeStyleJComboBox.addActionListener(e -> {
+            updatePreview();
+        });
+    }
+
+    private JIPipeDesktopUITheme getCurrentlySelectedTheme() {
+        if(themeJComboBox.getSelectedItem() instanceof JIPipeDesktopUITheme theme) {
+            return theme;
+        }
+        return JIPipeDesktopUITheme.Modern;
+    }
+
+    private String getCurrentlySelectedThemeStyleId() {
+        if(!StringUtils.isNullOrEmpty(themeStyleJComboBox.getSelectedItem())) {
+            String id = themeStyleJComboBox.getSelectedItem().toString();
+            if(ThemeUtils.getAvailableStyleIds().contains(id)) {
+                return id;
+            }
+        }
+        return "JIPipe Light";
+    }
+
+    private JIPipeDesktopModernThemeStyle getCurrentlySelectedThemeStyle() {
+        return ThemeUtils.getStyleFromId(getCurrentlySelectedThemeStyleId());
+    }
+
+    private static int getRoundedScale(int scale) {
+        return Math.round(scale / 25f) * 25;
+    }
+
+    private void updatePreview() {
+        int roundedScale = getRoundedScale(scaleSlider.getValue());
+        scaleLabel.setText(roundedScale + "%");
+        themePreviewPanel.setTheme(getCurrentlySelectedTheme());
+        themePreviewPanel.setThemeStyle(getCurrentlySelectedThemeStyle());
+
+        // The scale needs to be corrected relative to the current system scale
+        int scalePercent = (int) (systemScale * 100);
+        themePreviewPanel.setScale(roundedScale * 1.0f / getRoundedScale(scalePercent));
+
     }
 
     private void initialize() {
@@ -73,6 +142,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         settingsPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("<html>Tip: You can use <strong>Tools &gt; Theme editor</strong> to create your own style.</html>", false));
         settingsPanel.addToForm(themeJComboBox, new JLabel("Theme"));
         settingsPanel.addToForm(themeStyleJComboBox, new JLabel("Style"));
+
         settingsPanel.addGroupHeader("UI Scale", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         settingsPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea("If the interface is too large or too small, you can change the UI scale."));
 
@@ -80,22 +150,15 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         scaleSlider.setMajorTickSpacing(100);
         scaleSlider.setMinorTickSpacing(25);
         scaleLabel.setMinimumSize(new Dimension(50, 20));
-        scaleSlider.addChangeListener(e -> {
-            updateScale();
-        });
 
         settingsPanel.addWideToForm(UIUtils.borderNSEWC(null, null, scaleLabel, null, scaleSlider));
+        settingsPanel.addWideToForm(UIUtils.createJLabel("The preview might be slightly inaccurate", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
+
+
         settingsPanel.addGroupHeader("File chooser", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         settingsPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea("You can change the UI JIPipe uses when you open/save files."));
-        settingsPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea("We recommend to use the ModernNative file chooser as default and Advanced as fallback."));
         settingsPanel.addToForm(fileChooserTypeJComboBox, new JLabel("Default"));
         settingsPanel.addToForm(fallbackFileChooserTypeJComboBox, new JLabel("Fallback"));
-    }
-
-    private void updateScale() {
-        int roundedScale = Math.round(scaleSlider.getValue() / 25f) * 25;
-        scaleLabel.setText(roundedScale + "%");
-        themePreviewPanel.setScale(roundedScale / 100f);
     }
 
     private void doActionSave() {

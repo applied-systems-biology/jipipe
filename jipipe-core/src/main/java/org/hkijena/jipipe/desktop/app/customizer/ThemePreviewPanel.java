@@ -155,6 +155,9 @@ public class ThemePreviewPanel extends JPanel {
         previewTabActive.setScale(scale);
         previewTabInactive1.setScale(scale);
         previewTabInactive2.setScale(scale);
+        previewTabActive.getLabel().setForeground(themeStyle.getTextForeground());
+        previewTabInactive1.getLabel().setForeground(themeStyle.getTextForeground());
+        previewTabInactive2.getLabel().setForeground(themeStyle.getTextForeground());
 
         // Update fonts preview
         previewLabelTiny.setFont(createScaledTinyFont());
@@ -236,18 +239,22 @@ public class ThemePreviewPanel extends JPanel {
         previewHeaderPanelActive.setCornerRadius((int) (4 * scale));
         previewHeaderPanelActive.setBackgroundColor(themeStyle.getCategoryBackground());
         previewHeaderPanelActive.setSizeMinMaxHeightPreferred(32, scale);
+        previewHeaderPanelActive.getLabel().setForeground(themeStyle.getTextForeground());
 
         previewHeaderPanelInactive.getLabel().setIcon(getIcon16("actions/configure.png"));
         previewHeaderPanelInactive.getLabel().setFont(new  Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
         previewHeaderPanelInactive.setCornerRadius((int) (4 * scale));
         previewHeaderPanelInactive.setBorderColor(themeStyle.getCategoryBorder());
         previewHeaderPanelInactive.setSizeMinMaxHeightPreferred(32, scale);
+        previewHeaderPanelInactive.getLabel().setForeground(themeStyle.getTextForeground());
 
         // Update button
         previewButton.getLabel().setIcon(getIcon16("actions/dialog-ok.png"));
+        previewButton.setScale(scale);
         previewButton.setCornerRadius((int) (scale * 5));
         previewButton.setBorderColor(themeStyle.getBorderColor());
         previewButton.setSizeMinMaxHeightPreferred(42, scale);
+        previewButton.getLabel().setForeground(themeStyle.getTextForeground());
 
         // Update text field/form
         previewTextField.setScale(scale);
@@ -347,8 +354,11 @@ public class ThemePreviewPanel extends JPanel {
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
         if(theme != JIPipeDesktopUITheme.Modern) {
-
-            g2d.drawString("No preview available", 0,0);
+            g2d.setFont(new Font(Font.DIALOG, Font.PLAIN,  (int) (themeStyle.getFontSizeHuge() * scale)));
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            String text = "No preview available for this theme";
+            int stringWidth =  fontMetrics.stringWidth(text);
+            UIUtils.drawStringVerticallyCentered(g2d, text, getWidth() / 2 - stringWidth / 2, getHeight() / 2, fontMetrics);
         }
         else {
             super.paint(g);
@@ -416,7 +426,7 @@ public class ThemePreviewPanel extends JPanel {
             g2d.drawRect(nodeX, nodeY, nodeWidth, nodeHeight);
 
             Image dataTypeIconImage = JIPipe.RESOURCES.getIcon16("data-types/data-type.png").getImage();
-            int iconStart = (int) ((JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale) / 2 - 16.0 / 2);
+            int iconStart = (int) ((JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale) / 2 - (16.0 / 2) * scale);
             g2d.drawImage(dataTypeIconImage,nodeX + iconStart, nodeY + iconStart, (int)(scale * 16), (int)(scale * 16),null );
             g2d.drawImage(dataTypeIconImage,nodeX + iconStart, nodeY + nodeCellHeight * 2 + iconStart, (int)(scale * 16), (int)(scale * 16),null );
 
