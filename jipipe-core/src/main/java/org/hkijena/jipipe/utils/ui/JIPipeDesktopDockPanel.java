@@ -278,7 +278,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             backgroundWidth = layeredPane.getWidth();
         }
 
-        layeredPaneMain.setBounds(backgroundLeft, 0, Math.max(backgroundWidth, minimumBackgroundWidth), getHeight());
+        layeredPaneMain.setBounds(backgroundLeft, 0, Math.max(backgroundWidth, minimumBackgroundWidth) - 2, getHeight());
 //        layeredPaneBackground.setBounds(100,100,100,100);
 //        layeredPaneBackground.setBounds(0,0,layeredPane.getWidth(),getHeight());
 
