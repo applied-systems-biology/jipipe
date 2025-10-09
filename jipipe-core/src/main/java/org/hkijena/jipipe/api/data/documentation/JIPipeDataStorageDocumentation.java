@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.data.documentation;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 
 import java.lang.annotation.ElementType;
@@ -32,4 +33,10 @@ public @interface JIPipeDataStorageDocumentation {
      * @return the entities
      */
     Entity[] value();
+
+    /**
+     * Allows inheriting storage documentation from the given data types.
+     * @return the inherited documentation classes.
+     */
+    Class<? extends JIPipeData>[] inherits() default {};
 }

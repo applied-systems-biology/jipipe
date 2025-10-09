@@ -74,4 +74,17 @@ public final class EncodingFormats {
     public static final String XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     public static final String PPT = "application/vnd.ms-powerpoint";
     public static final String PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+
+    // ==== SCRIPT FORMATS ====
+    public static final String PYTHON = "text/x-python";
+    public static final String R_SCRIPT = "text/x-r-source";
+    public static final String IMAGEJ_MACRO = "text/plain"; // .ijm files, typically plain text
+    public static final String JAVASCRIPT = "application/javascript";
+    public static final String SHELL_SCRIPT = "application/x-sh";
+    public static final String POWERSHELL = "application/x-powershell";
+    public static final String PERL = "text/x-perl";
+    public static final String RUBY = "text/x-ruby";
+    public static final String MATLAB = "text/x-matlab";
+    public static final String PHP = "application/x-httpd-php";
+    public static final String SQL = "application/sql";
 }

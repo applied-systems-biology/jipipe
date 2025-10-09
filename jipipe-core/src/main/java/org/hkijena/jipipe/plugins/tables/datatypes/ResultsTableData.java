@@ -38,6 +38,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.Entity;
+import org.hkijena.jipipe.api.data.documentation.EntityType;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -74,8 +77,9 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @SetJIPipeDocumentation(name = "ImageJ table", description = "An ImageJ results table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
+@JIPipeDataStorageDocumentation(
+        @Entity(id = "glob://./*.csv", type = EntityType.File, name = "CSV table", description = "CSV file containing the data", encodingFormat = EncodingFormats.CSV)
+)
 @LabelAsJIPipeCommonData
 @JIPipeFastThumbnail
 public class ResultsTableData implements JIPipeData, TableModel {

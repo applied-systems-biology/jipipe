@@ -22,8 +22,7 @@ import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Thumbnail", description = "Thumbnail data (used internally)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeDataStorageDocumentation({ })
 @LabelAsJIPipeHidden
 public interface JIPipeThumbnailData extends JIPipeData {
 

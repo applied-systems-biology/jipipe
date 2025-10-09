@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.documentation.Entity;
+import org.hkijena.jipipe.api.data.documentation.EntityType;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -45,8 +47,9 @@ import java.util.stream.Collectors;
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
 @SetJIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeDataStorageDocumentation(
+        @Entity(id="./", type = EntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
+)
 @LabelAsJIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
 

@@ -16,6 +16,9 @@ package org.hkijena.jipipe.api.data.utils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.Entity;
+import org.hkijena.jipipe.api.data.documentation.EntityType;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -32,8 +35,9 @@ import java.nio.file.Path;
  * You also still need to add the proper {@link SetJIPipeDocumentation} annotation and
  * the JIPipeData importData(Path) static function.
  */
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@JIPipeDataStorageDocumentation(
+        @Entity(id = "glob://./*.json", type = EntityType.File, name = "JSON file", description = "The JSON file", encodingFormat = EncodingFormats.JSON)
+)
 public abstract class JIPipeSerializedJsonObjectData implements JIPipeData {
 
     public JIPipeSerializedJsonObjectData() {

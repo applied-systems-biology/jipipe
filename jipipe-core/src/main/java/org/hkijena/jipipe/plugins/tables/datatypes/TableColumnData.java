@@ -28,8 +28,7 @@ import java.util.List;
  * This type allows data to be provided
  */
 @SetJIPipeDocumentation(name = "Table column", description = "A table column")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeDataStorageDocumentation({ })
 public interface TableColumnData extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.

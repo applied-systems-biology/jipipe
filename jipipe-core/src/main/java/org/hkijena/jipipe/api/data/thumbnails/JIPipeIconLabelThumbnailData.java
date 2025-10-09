@@ -28,8 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Text and icon thumbnail", description = "Text and icon thumbnail data (used internally)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
+@JIPipeDataStorageDocumentation(value = {}, inherits = {JIPipeSerializedJsonObjectData.class})
 @LabelAsJIPipeHidden
 public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData implements JIPipeThumbnailData {
 

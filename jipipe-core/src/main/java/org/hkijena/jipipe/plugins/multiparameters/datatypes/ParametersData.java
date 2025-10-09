@@ -24,6 +24,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.Entity;
+import org.hkijena.jipipe.api.data.documentation.EntityType;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -42,11 +45,14 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
 @JsonSerialize(using = ParametersData.Serializer.class)
 @JsonDeserialize(using = ParametersData.Deserializer.class)
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the parameters. " +
-        "The JSON data is an object with keys being the parameter keys. The value is an object with two " +
-        "items <code>value</code> and <code>type-id</code>. <code>value</code> contains the serialized parameter value." +
-        " <code>type-id</code> contains the standardized parameter type ID.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/parameters-data.schema.json")
+@JIPipeDataStorageDocumentation(
+        @Entity(id = "glob://./*.json",
+                type = EntityType.File,
+                name = "Serialized parameters",
+                description = "The JSON data is an object with keys being the parameter keys. The value is an object with two " +
+                "items <code>value</code> and <code>type-id</code>. <code>value</code> contains the serialized parameter value." +
+                " <code>type-id</code> contains the standardized parameter type ID.", encodingFormat = EncodingFormats.JSON)
+)
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
