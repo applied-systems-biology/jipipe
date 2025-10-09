@@ -37,6 +37,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         this.id = style.getId();
         this.savePath = style.getSavePath();
 
+        fromStyle(style);
+
         registerSubParameters(categoryBasics);
     }
 
@@ -46,6 +48,10 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
 
     public Path getSavePath() {
         return savePath;
+    }
+
+    private void fromStyle(JIPipeDesktopModernThemeStyle style) {
+        categoryBasics.brightness = style.getBrightness();
     }
 
     public JIPipeDesktopModernThemeStyle toStyle() {
