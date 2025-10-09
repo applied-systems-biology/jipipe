@@ -211,7 +211,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
             uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(ThemeUtils.DEFAULT_STYLE_ID));
             JIPipe.getSettings().save();
 
-            JOptionPane.showMessageDialog(workbench.getWindow(),
+            JOptionPane.showMessageDialog(this,
                     "Please restart ImageJ/JIPipe to apply the settings",
                     "Customize JIPipe",
                     JOptionPane.INFORMATION_MESSAGE);
