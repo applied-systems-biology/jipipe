@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ThemeUtils {
+    public static final String DEFAULT_STYLE_ID = "JIPipe Light";
     public static Theme RSYNTAX_THEME_LIGHT;
     public static Theme RSYNTAX_THEME_DARK;
     private static boolean INSTALLED_LISTENER;
@@ -80,7 +81,7 @@ public class ThemeUtils {
     public static JIPipeDesktopModernThemeStyle getStyleFromId(String id) {
 
         // JIPipe light is the default style of the configuration
-        if ("JIPipe Light".equals(id)) {
+        if (DEFAULT_STYLE_ID.equals(id)) {
             return new JIPipeDesktopModernThemeStyle();
         }
 
@@ -88,7 +89,9 @@ public class ThemeUtils {
         try {
             URL url = ResourceUtils.getPluginResource("styles/" + id + ".json");
             if (url != null) {
-                return JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
+                JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper().readValue(url, JIPipeDesktopModernThemeStyle.class);
+                style.setId(id);
+                return style;
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();
@@ -98,7 +101,10 @@ public class ThemeUtils {
         try {
             Path path = getUserStylesDirectory().resolve(id + ".json");
             if (Files.exists(path)) {
-                return JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
+                JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeDesktopModernThemeStyle.class);
+                style.setId(id);
+                style.setSavePath(path);
+                return style;
             }
         } catch (Exception ignored) {
             ignored.printStackTrace();

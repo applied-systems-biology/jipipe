@@ -33,7 +33,6 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
-
     private JLabel alternativeLabel;
 
     /**

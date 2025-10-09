@@ -81,7 +81,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
                 return id;
             }
         }
-        return "JIPipe Light";
+        return ThemeUtils.DEFAULT_STYLE_ID;
     }
 
     private JIPipeDesktopModernThemeStyle getCurrentlySelectedThemeStyle() {
@@ -141,7 +141,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
 
     private void initializeSettingsPanel() {
         settingsPanel.addGroupHeader("Theme", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
-        settingsPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("<html>Tip: You can use <strong>Tools &gt; Theme editor</strong> to create your own style.</html>", false));
+        settingsPanel.addWideToForm(UIUtils.createBorderlessReadonlyTextPane("<html>Tip: You can use <strong>Tools &gt; Theme manager/editor</strong> to create your own style.</html>", false));
         settingsPanel.addToForm(themeJComboBox, new JLabel("Theme"));
         settingsPanel.addToForm(themeStyleJComboBox, new JLabel("Style"));
 

@@ -29,24 +29,28 @@ import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterCollection.ParameterChangedEventListener {
+public class JIPipeDesktopThemeManager extends JFrame {
 
     private final JIPipeDesktopWorkbench workbench;
     private final ThemePreviewPanel themePreviewPanel = new ThemePreviewPanel();
-    private final JIPipeDesktopParameterFormPanel settingsPanel;
-    private JIPipeDesktopThemeEditorDocument document = new JIPipeDesktopThemeEditorDocument();
-    private final StaticDebouncer updatePreviewDebouncer;
+    private final JList<JIPipeDesktopModernThemeStyle> styleJList = new JList<>();
 
-    public JIPipeDesktopThemeEditor(JIPipeDesktopWorkbench workbench) {
+    public JIPipeDesktopThemeManager(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;
-        this.settingsPanel = new JIPipeDesktopParameterFormPanel(workbench, document, MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING);
-        this.updatePreviewDebouncer = new StaticDebouncer(250, this::refreshPreview);
         initialize();
-        newDocument();
+        reloadList();
+    }
+
+    private void reloadList() {
+        DefaultListModel<JIPipeDesktopModernThemeStyle> model = new DefaultListModel<>();
+        for (String id : ThemeUtils.getAvailableStyleIds()) {
+            model.addElement(ThemeUtils.getStyleFromId(id));
+        }
+        styleJList.setModel(model);
     }
 
     private void initialize() {
-        setTitle("JIPipe - Theme editor");
+        setTitle("JIPipe - Theme manager");
         setIconImage(UIUtils.getJIPipeIcon128());
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new BorderLayout(8, 8));
@@ -54,6 +58,8 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
 
         getContentPane().setLayout(new BorderLayout(8, 8));
         getContentPane().setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+
+        JPanel settingsPanel = new JPanel(new BorderLayout(8,8));
 
         // Create split-pane
         setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
@@ -64,15 +70,7 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
 
         getContentPane().add(splitPane, BorderLayout.CENTER);
 
-        // Create toolbar
-        JToolBar toolBar = new JToolBar();
-
-        toolBar.add(UIUtils.createButton("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), this::newDocument));
-        toolBar.add(UIUtils.createButton("New from template", JIPipe.RESOURCES.getIcon16("actions/document-new-from-template.png"), this::newDocumentFromExisting));
-
-        toolBar.setFloatable(false);
-        toolBar.setOpaque(false);
-        getContentPane().add(toolBar, BorderLayout.NORTH);
+        initializeSettingsPanel(settingsPanel);
 
         // Final preparation
         pack();
@@ -80,45 +78,28 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
         setLocationRelativeTo(workbench.getWindow());
     }
 
-    private void newDocument() {
-        String id = JIPipeGeneralUIApplicationSettings.getInstance().getThemeStyle().getValue();
-        if(!ThemeUtils.getAvailableStyleIds().contains(id)) {
-            id = ThemeUtils.DEFAULT_STYLE_ID;
-        }
-        newDocumentFromExisting(id);
+    private void initializeSettingsPanel(JPanel settingsPanel) {
+        settingsPanel.add(new JScrollPane(styleJList), BorderLayout.CENTER);
+        styleJList.setCellRenderer(new JIPipeDesktopModernThemeStyleListCellRenderer());
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        toolBar.add(UIUtils.createButton("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), this::createNewTheme));
+        toolBar.add(UIUtils.createButton("Edit", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"), this::editSelectedTheme));
+        toolBar.add(Box.createHorizontalGlue());
+        toolBar.add(UIUtils.createIconOnlyButton("Delete", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"), this::deleteSelectedTheme));
     }
 
-    private void newDocumentFromExisting() {
-        Object id = JOptionPane.showInputDialog(this,
-                "Please select the theme style that you want to use as base:",
-                "New theme from template",
-                JOptionPane.PLAIN_MESSAGE,
-                null,
-                ThemeUtils.getAvailableStyleIds().toArray(),
-                ThemeUtils.DEFAULT_STYLE_ID);
-        if(id instanceof String str) {
-            newDocumentFromExisting(str);
-        }
-    }
-
-    private void newDocumentFromExisting(String id) {
-        newDocumentFromExisting(ThemeUtils.getStyleFromId(id));
-    }
-
-    private void newDocumentFromExisting(JIPipeDesktopModernThemeStyle style) {
-        document.getParameterChangedEventEmitter().unsubscribe(this);
-        document = new JIPipeDesktopThemeEditorDocument(style);
-        document.getParameterChangedEventEmitter().subscribe(this);
-        settingsPanel.setDisplayedParameters(document);
-        refreshPreview();
-    }
-
-    private void refreshPreview() {
+    private void deleteSelectedTheme() {
 
     }
 
-    @Override
-    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        updatePreviewDebouncer.debounce();
+    private void editSelectedTheme() {
+
+    }
+
+    private void createNewTheme() {
+
     }
 }

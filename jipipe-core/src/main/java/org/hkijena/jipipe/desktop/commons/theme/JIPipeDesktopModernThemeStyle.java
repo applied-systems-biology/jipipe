@@ -4,9 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.*;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class JIPipeDesktopModernThemeStyle {
+
+    private String id = "JIPipe Light";
+    private Path savePath;
 
     @JsonProperty("name")
     private String name = "JIPipe Light";
@@ -566,5 +570,25 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setCornerRadius(int cornerRadius) {
         this.cornerRadius = cornerRadius;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Path getSavePath() {
+        return savePath;
+    }
+
+    public void setSavePath(Path savePath) {
+        this.savePath = savePath;
+    }
+
+    public boolean isBuiltIn() {
+        return savePath == null;
     }
 }

@@ -43,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeEditor;
+import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeManager;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopWelcomePanel;
@@ -698,7 +699,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenu toolsMenu = new JMenu("Tools");
 
         toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
-        toolsMenu.add(UIUtils.createMenuItem("Theme editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeEditor));
+        toolsMenu.add(UIUtils.createMenuItem("Theme manager/editor", "Allows to create custom JIPipe theme", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openThemeManagerAndEditor));
 
         JMenu pluginsMenu = new JMenu("Plugins");
         pluginsMenu.add(UIUtils.createMenuItem("JIPipe plugins",
@@ -847,8 +848,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         add(menu, BorderLayout.NORTH);
     }
 
-    private void openThemeEditor() {
-        new JIPipeDesktopThemeEditor(this).setVisible(true);
+    private void openThemeManagerAndEditor() {
+        new JIPipeDesktopThemeManager(this).setVisible(true);
     }
 
     private void openImageJPluginManager() {
