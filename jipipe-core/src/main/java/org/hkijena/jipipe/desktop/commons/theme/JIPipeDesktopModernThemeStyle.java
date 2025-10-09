@@ -179,8 +179,18 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("node-border-brightness")
     private float nodeBorderBrightness = 0.5f;
 
+    /*
+    * Islands/panels
+     */
+
     @JsonProperty("corner-radius")
-    private int cornerRadius = 15;
+    private int islandsCornerRadius = 15;
+
+    @JsonProperty("draw-island-border")
+    private boolean islandsDrawBorder = false;
+
+    @JsonProperty("islands-border-color")
+    private Color islandsBorderColor = new Color(0xdedee2);
 
     public JIPipeDesktopModernThemeStyle() {
     }
@@ -234,11 +244,29 @@ public class JIPipeDesktopModernThemeStyle {
         this.nodeFillBrightness = other.nodeFillBrightness;
         this.nodeBorderSaturation = other.nodeBorderSaturation;
         this.nodeBorderBrightness = other.nodeBorderBrightness;
-        this.cornerRadius = other.cornerRadius;
+        this.islandsCornerRadius = other.islandsCornerRadius;
+        this.islandsDrawBorder = other.islandsDrawBorder;
+        this.islandsBorderColor = other.islandsBorderColor;
     }
 
     public static void main(String[] args) {
         JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
+    }
+
+    public boolean isIslandsDrawBorder() {
+        return islandsDrawBorder;
+    }
+
+    public void setIslandsDrawBorder(boolean islandsDrawBorder) {
+        this.islandsDrawBorder = islandsDrawBorder;
+    }
+
+    public Color getIslandsBorderColor() {
+        return islandsBorderColor;
+    }
+
+    public void setIslandsBorderColor(Color islandsBorderColor) {
+        this.islandsBorderColor = islandsBorderColor;
     }
 
     public int getFontSizeHuge() {
@@ -617,12 +645,12 @@ public class JIPipeDesktopModernThemeStyle {
         this.nodeBorderBrightness = nodeBorderBrightness;
     }
 
-    public int getCornerRadius() {
-        return Math.max(0, Math.min(32, cornerRadius));
+    public int getIslandsCornerRadius() {
+        return Math.max(0, Math.min(32, islandsCornerRadius));
     }
 
-    public void setCornerRadius(int cornerRadius) {
-        this.cornerRadius = cornerRadius;
+    public void setIslandsCornerRadius(int islandsCornerRadius) {
+        this.islandsCornerRadius = islandsCornerRadius;
     }
 
     public String getId() {

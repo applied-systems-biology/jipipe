@@ -56,7 +56,7 @@ public class JIPipeDesktopModernPillTabbedPaneUI extends BasicTabbedPaneUI {
     protected void installDefaults() {
         super.installDefaults();
 
-        cornerRadius = ThemeUtils.getCurrentStyle().getCornerRadius();
+        cornerRadius = ThemeUtils.getCurrentStyle().getIslandsCornerRadius();
         tabAreaBackground = UIManager.getColor("TabbedPane.tabAreaBackground");
         selectColor = UIManager.getColor("TabbedPane.selected");
         selectHighlight = UIManager.getColor("TabbedPane.selectHighlight");
