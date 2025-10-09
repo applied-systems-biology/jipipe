@@ -3,6 +3,8 @@ package org.hkijena.jipipe.utils;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rsyntaxtextarea.Theme;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
@@ -33,6 +35,7 @@ public class ThemeUtils {
     private static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.Modern;
     private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new JIPipeDesktopModernThemeStyle();
     private static List<String> AVAILABLE_STYLE_IDS;
+    private static final AvailableThemesChangedEventEmitter CHANGED_EVENT_EMITTER = new AvailableThemesChangedEventEmitter();
 
     public static boolean isUsingDarkTheme() {
         return CURRENT_THEME == JIPipeDesktopUITheme.Modern && CURRENT_STYLE.getBrightness() == JIPipeDesktopUIThemeBrightness.Dark;
@@ -76,6 +79,10 @@ public class ThemeUtils {
 
         // Must always be run
         reapplyCurrentTheme();
+    }
+
+    public static AvailableThemesChangedEventEmitter getAvailableThemesChangedEventEmitter() {
+        return CHANGED_EVENT_EMITTER;
     }
 
     public static JIPipeDesktopModernThemeStyle getStyleFromId(String id) {
@@ -127,6 +134,8 @@ public class ThemeUtils {
         JIPipeDesktopModernThemeStyle copy = new JIPipeDesktopModernThemeStyle(style);
         copy.setId(id);
         copy.setSavePath(path);
+
+        CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
 
         return copy;
     }
@@ -331,6 +340,27 @@ public class ThemeUtils {
         }
         catch (Exception e) {
             e.printStackTrace();
+        }
+
+        CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
+    }
+
+    public static class AvailableThemesChangedEvent extends AbstractJIPipeEvent {
+
+        public AvailableThemesChangedEvent(Object source) {
+            super(source);
+        }
+    }
+
+    public interface AvailableThemesChangedEventListener {
+        void onAvailableThemesChanged(AvailableThemesChangedEvent event);
+    }
+
+    public static class AvailableThemesChangedEventEmitter extends JIPipeEventEmitter<AvailableThemesChangedEvent, AvailableThemesChangedEventListener> {
+
+        @Override
+        protected void call(AvailableThemesChangedEventListener availableThemesChangedEventListener, AvailableThemesChangedEvent event) {
+            availableThemesChangedEventListener.onAvailableThemesChanged(event);
         }
     }
 }

@@ -238,6 +238,7 @@ public class ThemePreviewPanel extends JPanel {
         previewHeaderPanelActive.getLabel().setFont(new  Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
         previewHeaderPanelActive.setCornerRadius((int) (4 * scale));
         previewHeaderPanelActive.setBackgroundColor(themeStyle.getCategoryBackground());
+        previewHeaderPanelActive.setBorderColor(themeStyle.getCategoryBorder());
         previewHeaderPanelActive.setSizeMinMaxHeightPreferred(32, scale);
         previewHeaderPanelActive.getLabel().setForeground(themeStyle.getTextForeground());
 

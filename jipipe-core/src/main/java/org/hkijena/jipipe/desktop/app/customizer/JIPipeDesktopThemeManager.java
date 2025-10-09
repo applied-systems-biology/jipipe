@@ -15,25 +15,27 @@ package org.hkijena.jipipe.desktop.app.customizer;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeModernThemeStyleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.nio.file.Path;
+import java.util.List;
 
-public class JIPipeDesktopThemeManager extends JFrame {
+public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.AvailableThemesChangedEventListener {
 
     private final JIPipeDesktopWorkbench workbench;
     private final ThemePreviewPanel themePreviewPanel = new ThemePreviewPanel();
@@ -43,6 +45,8 @@ public class JIPipeDesktopThemeManager extends JFrame {
         this.workbench = workbench;
         initialize();
         reloadList();
+
+        ThemeUtils.getAvailableThemesChangedEventEmitter().subscribe(this);
     }
 
     private void reloadList() {
@@ -96,11 +100,75 @@ public class JIPipeDesktopThemeManager extends JFrame {
 
         toolBar.add(UIUtils.createButton("New", JIPipe.RESOURCES.getIcon16("actions/document-new.png"), this::createNewTheme));
         toolBar.add(UIUtils.createButton("Edit", JIPipe.RESOURCES.getIcon16("actions/stock_edit.png"), this::editSelectedTheme));
+        toolBar.addSeparator();
+        toolBar.add(UIUtils.createButton("Export", JIPipe.RESOURCES.getIcon16("actions/document-export.png"), this::exportSelectedTheme));
+        toolBar.add(UIUtils.createButton("Import", JIPipe.RESOURCES.getIcon16("actions/document-import.png"), this::importTheme));
         toolBar.add(Box.createHorizontalGlue());
         toolBar.add(UIUtils.createButton("Apply", JIPipe.RESOURCES.getIcon16("actions/dialog-ok.png"), this::applySelectedTheme));
         toolBar.add(UIUtils.createIconOnlyButton("Delete", JIPipe.RESOURCES.getIcon16("actions/edit-delete.png"), this::deleteSelectedTheme));
 
         settingsPanel.add(toolBar, BorderLayout.NORTH);
+    }
+
+    private void importTheme() {
+        List<Path> paths = JIPipeDesktop.openFiles(this,
+                workbench,
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                "Import JIPipe theme styles",
+                HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JSON);
+        for (int i = 0; i < paths.size(); i++) {
+            String progress = "[" + (i + 1) + "/" + paths.size() + "] ";
+            Path path = paths.get(i);
+            try {
+                List<String> availableStyleIds = ThemeUtils.getAvailableStyleIds();
+                JIPipeDesktopModernThemeStyle style = JsonUtils.readFromFile(path, JIPipeDesktopModernThemeStyle.class);
+                String id = StringUtils.makeFilesystemCompatible(StringUtils.nullToEmpty(style.getName()));
+                if(StringUtils.isNullOrEmpty(id) || availableStyleIds.contains(id)) {
+                    id = path.getFileName().toString();
+                    id = id.substring(0, id.length() - 5);
+                }
+                if(StringUtils.isNullOrEmpty(id)) {
+                    JOptionPane.showMessageDialog(this,
+                            "Unable to  determine style id",
+                            progress + "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                if(availableStyleIds.contains(id)) {
+                    JOptionPane.showMessageDialog(this, "Unable to find a unique ID for the style you want to import!\n" +
+                            "Consider renaming the file.", progress + "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                ThemeUtils.saveStyle(style, id);
+                JOptionPane.showMessageDialog(this,
+                        "Successfully imported " + path + " as " + id,
+                        progress + "Success",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+            catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Unable to read " + path.toString(),
+                        progress + "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            }
+        }
+
+    }
+
+    private void exportSelectedTheme() {
+        JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
+        if(style == null || StringUtils.isNullOrEmpty(style.getId())) {
+            return;
+        }
+
+        Path path = JIPipeDesktop.saveFile(this,
+                workbench,
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
+                "Export JIPipe theme style",
+                HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JSON);
+        if(path != null) {
+            JsonUtils.saveToFile(style, path);
+        }
     }
 
     private void applySelectedTheme() {
@@ -188,5 +256,17 @@ public class JIPipeDesktopThemeManager extends JFrame {
         JIPipeDesktopThemeEditorDocument document = new JIPipeDesktopThemeEditorDocument(style);
         JIPipeDesktopThemeEditor editor = new JIPipeDesktopThemeEditor(workbench, document);
         editor.setVisible(true);
+    }
+
+    @Override
+    public void dispose() {
+        ThemeUtils.getAvailableThemesChangedEventEmitter().unsubscribe(this);
+
+        super.dispose();
+    }
+
+    @Override
+    public void onAvailableThemesChanged(ThemeUtils.AvailableThemesChangedEvent event) {
+        reloadList();
     }
 }
