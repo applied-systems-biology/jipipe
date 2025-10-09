@@ -250,8 +250,10 @@ public class ThemeUtils {
         if (AVAILABLE_STYLE_IDS == null) {
             AVAILABLE_STYLE_IDS = new ArrayList<>();
             AVAILABLE_STYLE_IDS.add("JIPipe Light");
+            AVAILABLE_STYLE_IDS.add("JIPipe Classic Light");
             AVAILABLE_STYLE_IDS.add("JIPipe Dark");
             AVAILABLE_STYLE_IDS.add("JIPipe Dark Neon");
+            AVAILABLE_STYLE_IDS.add("JIPipe Dark High Contrast");
 
             // List styles in the profile directory
             try {

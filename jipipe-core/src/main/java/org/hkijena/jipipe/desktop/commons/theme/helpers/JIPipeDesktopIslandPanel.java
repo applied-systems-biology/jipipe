@@ -35,11 +35,11 @@ public class JIPipeDesktopIslandPanel extends JPanel {
 
         int arc = cornerRadius;
         g2.setColor(style.getPanelBackground());
-        g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+        g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 
         if(style.isIslandsDrawBorder()) {
             g2.setColor(style.getIslandsBorderColor());
-            g2.drawRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+            g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
         }
 
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldValue);
