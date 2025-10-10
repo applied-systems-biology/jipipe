@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -10,10 +12,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatchi
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorTestUtils.*;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 class JIPipeMultiIterationStepGeneratorTest {
     /**
@@ -27,7 +28,16 @@ class JIPipeMultiIterationStepGeneratorTest {
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(false);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
+
+        // Expect 3 iteration steps
         assertEquals(3, result.size());
+
+        // Expect the following layout
+        assertEquals(expectedResult(
+                step(slot("Input", 0)),
+                step(slot("Input", 1)),
+                step(slot("Input", 2))
+        ), build(generator));
     }
 
     /**
@@ -41,7 +51,16 @@ class JIPipeMultiIterationStepGeneratorTest {
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(true);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
+
+        // Expect 3 iteration steps
         assertEquals(3, result.size());
+
+        // Expect the following layout
+        assertEquals(expectedResult(
+                step(slot("Input", 0)),
+                step(slot("Input", 1)),
+                step(slot("Input", 2))
+        ), build(generator));
     }
 
     /**
@@ -55,69 +74,16 @@ class JIPipeMultiIterationStepGeneratorTest {
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(true);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
+
+        // Expect 2 iteration steps
         assertEquals(2, result.size());
+
+        // Expect the following layout
+        assertEquals(expectedResult(
+                step(slot("Input", 0, 1)),
+                step(slot("Input", 2))
+        ), build(generator));
     }
 
-    private static DummyColumn column(String columnName, String... values) {
-        return new DummyColumn(columnName, values);
-    }
 
-    private static JIPipeInputDataSlot createDummyTable(String name, DummyColumn... columns) {
-        final int numRows = getNumRows(columns);
-        JIPipeInputDataSlot dummySlot = new DummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, name, ""), null);
-
-        for (int row = 0; row < numRows; row++) {
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            for (DummyColumn column : columns) {
-               annotations.add(new JIPipeTextAnnotation(column.columnName(), column.columnValues()[row]));
-            }
-            dummySlot.addData(new JIPipeEmptyData(),
-                    annotations,
-                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
-                    Collections.emptyList(),
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting,
-                    JIPipeProgressInfo.SILENT);
-        }
-
-        return dummySlot;
-    }
-
-    private static int getNumRows(DummyColumn[] columns) {
-        int count = -1;
-        for (DummyColumn column : columns) {
-            if(count == -1) {
-                count = column.numRows();
-            }
-            else if(count != column.numRows()) {
-                throw new IllegalArgumentException("Wrong number of rows for column " + column.numRows());
-            }
-        }
-        return count;
-    }
-
-    private record DummyColumn(String columnName, String... columnValues) {
-        int numRows() {
-            return columnValues().length;
-        }
-    }
-
-    /**
-     * A dummy slot that does not invoke JIPipe for testing data acceptance
-     */
-    public static class DummySlot extends JIPipeInputDataSlot {
-
-        public DummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
-            super(info, node);
-        }
-
-        @Override
-        public boolean accepts(JIPipeData data) {
-            return true;
-        }
-
-        @Override
-        public boolean accepts(Class<? extends JIPipeData> klass) {
-            return true;
-        }
-    }
 }
