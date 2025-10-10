@@ -13,6 +13,7 @@ public class JIPipeDataCrateMetadataEntry {
     private String name = "";
     private JIPipeDataCrateEntityType type;
     private String id;
+    private JIPipeDataCrateEntityPresence presence = JIPipeDataCrateEntityPresence.Mandatory;
 
     public JIPipeDataCrateMetadataEntry() {
     }
@@ -156,5 +157,13 @@ public class JIPipeDataCrateMetadataEntry {
         }
 
         return true;
+    }
+
+    public JIPipeDataCrateEntityPresence getPresence() {
+        return presence;
+    }
+
+    public void setPresence(JIPipeDataCrateEntityPresence presence) {
+        this.presence = presence;
     }
 }

@@ -45,6 +45,9 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeEmptyThumbnailData;
@@ -77,9 +80,9 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "OME ImageJ Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
 @LabelAsJIPipeHeavyData
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +
-        "ability of OME TIFF to link them together). Although, we do recommend having multiple files, as sometimes OME TIFF can store absolute paths. " +
-        "If only standard TIFF files are present, only one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ome-image-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id="glob:./*.tif", type = JIPipeDataCrateEntityType.File, name = "OME-TIFF file", description = "The OME-TIFF file (TIFF is also supported)", encodingFormat = EncodingFormats.TIFF)
+})
 public class OMEImageData implements JIPipeData {
 
     private final ImagePlus image;

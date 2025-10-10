@@ -23,8 +23,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Mirror Out Of Bounds factory", description = "Creates appropriate strategies that virtually mirror an image at its borders.")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2OutOfBoundsFactoryData.class)
 public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
 
     private OutOfBoundsMirrorFactory.Boundary boundary = OutOfBoundsMirrorFactory.Boundary.SINGLE;

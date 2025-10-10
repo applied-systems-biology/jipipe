@@ -23,10 +23,10 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
+import org.hkijena.jipipe.plugins.imagej2.datatypes.shapes.ImageJ2ShapeData;
 
 @SetJIPipeDocumentation(name = "IJ2 Constant Long Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2OutOfBoundsFactoryData.class)
 public class LongConstantValueImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
 
     private long value = 0;

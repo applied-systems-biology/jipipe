@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -30,8 +33,9 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id="glob:./*.npy", type = JIPipeDataCrateEntityType.File, name = "Size model", description = "The size model", encodingFormat = EncodingFormats.BINARY)
+})
 @Deprecated
 @LabelAsJIPipeHidden
 public class LegacyCellposeSizeModelData implements JIPipeData {

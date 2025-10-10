@@ -39,8 +39,7 @@ import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "IJ2 Dataset", description = "An ImageJ2 image")
 @LabelAsJIPipeHeavyData
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
-        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
 public class ImageJ2DatasetData implements JIPipeData {
 
     private final Dataset dataset;

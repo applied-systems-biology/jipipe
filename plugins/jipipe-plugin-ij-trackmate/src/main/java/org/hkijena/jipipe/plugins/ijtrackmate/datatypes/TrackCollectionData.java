@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ModelData.class)
 public class TrackCollectionData extends SpotsCollectionData {
     private final Map<String, Range<Double>> edgeFeatureRanges = new HashMap<>();
     private final Map<String, Range<Double>> trackFeatureRanges = new HashMap<>();

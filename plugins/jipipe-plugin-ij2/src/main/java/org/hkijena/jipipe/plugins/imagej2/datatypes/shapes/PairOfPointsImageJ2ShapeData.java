@@ -26,8 +26,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Pair Of Points Shape", description = "A Shape representing a pair of points. " +
         "The Shape as its origin at the first point, and the second one is simply found by adding the value of the offset array to its position.")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2ShapeData.class)
 public class PairOfPointsImageJ2ShapeData extends ImageJ2ShapeData {
 
     private LongList offset = new LongList();

@@ -69,4 +69,9 @@ public @interface DefineJIPipeDataCrateEntity {
      */
     String[] encodingFormat() default {};
 
+    /**
+     * Allows marking the entity as optional, suggested, or mandatory
+     * @return if the entity should be present or not
+     */
+    JIPipeDataCrateEntityPresence presence() default JIPipeDataCrateEntityPresence.Mandatory;
 }

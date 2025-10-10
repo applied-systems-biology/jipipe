@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -26,8 +28,9 @@ import java.io.IOException;
 import java.nio.file.*;
 
 @SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "A *.ilp project file",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ilastik-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id ="glob:./*.ilp", type = JIPipeDataCrateEntityType.File, name = "Ilastik project", description = "The Ilastik project")
+})
 public class IlastikModelData implements JIPipeData {
 
     private final byte[] data;

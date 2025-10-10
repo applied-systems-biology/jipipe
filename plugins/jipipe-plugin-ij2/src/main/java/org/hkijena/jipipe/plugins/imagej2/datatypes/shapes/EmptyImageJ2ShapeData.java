@@ -20,8 +20,7 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 @SetJIPipeDocumentation(name = "IJ2 Empty Shape", description = "An empty shape. Please note that this shape type is not usable in IJ2 algorithms.")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2ShapeData.class)
 public class EmptyImageJ2ShapeData extends ImageJ2ShapeData {
 
     public EmptyImageJ2ShapeData() {

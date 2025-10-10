@@ -19,8 +19,7 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 
 @SetJIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedParameterCollectionData.class)
 public abstract class ImageJ2ShapeData extends JIPipeSerializedParameterCollectionData {
 
 

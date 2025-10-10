@@ -24,6 +24,9 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -34,8 +37,11 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "TrackMate model", description = "A TrackMate model")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
 @LabelAsJIPipeHeavyData
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.xml", type = JIPipeDataCrateEntityType.File, name = "TrackMate model", description = "The TrackMate model", encodingFormat = EncodingFormats.XML),
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.tif", type = JIPipeDataCrateEntityType.File, name = "TrackMate model image", description = "Image that is the basis of the model", encodingFormat = EncodingFormats.TIFF)
+})
 public class ModelData implements JIPipeData {
 
     private final Model model;

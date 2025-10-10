@@ -48,7 +48,7 @@ import java.nio.file.Path;
  * Unlike {@link JIPipeSerializedJsonObjectData}, this data is serialized in a way to fully restore its data type during deserialization,
  * removing the requirement of storing the data type ID within the JSON.
  */
-@ConfigureJIPipeDataCrate(entities = {}, inherits = JsonData.class)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
 @JsonSerialize(using = JIPipeSerializedParameterCollectionData.Serializer.class)
 @JsonDeserialize(using = JIPipeSerializedParameterCollectionData.Deserializer.class)
 public abstract class JIPipeSerializedParameterCollectionData extends AbstractJIPipeParameterCollection implements JIPipeData {

@@ -32,8 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  * Contains a CLIJ image
  */
 @SetJIPipeDocumentation(name = "GPU image", description = "Image data stored on the GPU utilized by CLIJ")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
-        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
 @LabelAsJIPipeHeavyData
 public class CLIJImageData implements JIPipeData {
 

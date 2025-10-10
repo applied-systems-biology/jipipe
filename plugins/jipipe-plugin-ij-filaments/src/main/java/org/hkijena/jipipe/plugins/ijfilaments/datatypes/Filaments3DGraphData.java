@@ -35,6 +35,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
@@ -75,8 +76,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Filaments 3D", description = "Stores 3D filaments as graph")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "A *.json file containing a JGraphT graph in its serialized form",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
 @JsonSerialize(using = FilamentsDataSerializer.class)
 @JsonDeserialize(using = FilamentsDataDeserializer.class)
 public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEdge> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {

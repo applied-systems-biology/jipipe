@@ -32,6 +32,9 @@ import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -70,9 +73,9 @@ import java.util.zip.ZipOutputStream;
  * Contains {@link Roi}
  */
 @SetJIPipeDocumentation(name = "ImageJ 2D ROI list", description = "Collection of ROI")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one file in *.roi or *.zip format. " +
-        "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
-        "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "regex:\\./.*\\.(roi|zip)", type = JIPipeDataCrateEntityType.File, name = "ROI/ZIP file", description = "In ImageJ format")
+})
 @LabelAsJIPipeCommonData
 public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariOverlay {
 

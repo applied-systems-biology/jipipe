@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @SetJIPipeDocumentation(name = "TrackMate spots", description = "Spots detected by TrackMate")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ModelData.class)
 public class SpotsCollectionData extends ModelData {
 
     private final Map<String, Range<Double>> spotFeatureRanges = new HashMap<>();

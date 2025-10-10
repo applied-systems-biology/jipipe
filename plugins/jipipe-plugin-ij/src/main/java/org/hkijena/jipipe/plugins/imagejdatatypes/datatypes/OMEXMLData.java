@@ -22,8 +22,7 @@ import java.nio.file.Path;
  * Encapsulates OME an XML
  */
 @SetJIPipeDocumentation(name = "OME XML", description = "XML data that follows the OME XML specifications")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single *.xml file that stores the current data.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/xml-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = XMLData.class)
 public class OMEXMLData extends XMLData {
 
     private OMEXMLMetadata metadata;

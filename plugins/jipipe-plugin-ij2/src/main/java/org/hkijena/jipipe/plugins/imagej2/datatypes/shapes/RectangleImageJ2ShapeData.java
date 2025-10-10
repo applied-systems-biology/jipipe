@@ -22,8 +22,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 @SetJIPipeDocumentation(name = "IJ2 Rectangle Shape", description = "A 2D rectangle shape")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2ShapeData.class)
 public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
 
     private int span = 3;

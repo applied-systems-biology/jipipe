@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
@@ -47,8 +48,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @SetJIPipeDocumentation(name = "OpenCV Image", description = "An OpenCV image")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
-        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
 @LabelAsJIPipeHeavyData
 public class OpenCvImageData implements JIPipeData {
     private final opencv_core.MatVector images;

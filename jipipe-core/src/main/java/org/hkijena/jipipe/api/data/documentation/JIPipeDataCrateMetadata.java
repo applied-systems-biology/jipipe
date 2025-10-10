@@ -43,6 +43,9 @@ public interface JIPipeDataCrateMetadata {
         Set<Class<? extends JIPipeData>> handledClasses = new HashSet<>();
         handledClasses.add(dataClass); // Prevent loop
         for (Class<? extends JIPipeData> inherited : rootConfig.inherits()) {
+            if(inherited == dataClass) {
+                throw new IllegalArgumentException("Data crate definition for " + dataClass + " inherits from itself!");
+            }
             createEntities(inherited, handledClasses, result);
         }
 
@@ -72,6 +75,7 @@ public interface JIPipeDataCrateMetadata {
             entry.setDescription(entity.description());
             entry.setEncodingFormat(List.of(entity.encodingFormat()));
             entry.setType(entity.type());
+            entry.setPresence(entity.presence());
 
             result.put(entry);
         }

@@ -23,6 +23,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -40,8 +43,10 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @SetJIPipeDocumentation(name = "LUT", description = "A function that converts an intensity to a RGB color value")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one file in *.json format that describes the LUT gradient stops.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/lut-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "JSON file",
+                description = "The JSON file that contains the LUT gradient stops as list within the root object", encodingFormat = EncodingFormats.JSON)
+)
 public class LUTData implements JIPipeData {
 
     private List<ColorUtils.GradientStop> gradientStops = new ArrayList<>();

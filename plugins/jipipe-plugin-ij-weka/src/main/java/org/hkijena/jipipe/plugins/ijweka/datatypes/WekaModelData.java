@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -34,9 +34,12 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Weka model", description = "A model for the Trainable Weka Filter")
-@ConfigureJIPipeDataCrate(humanReadableDescription = "A file with *.json extension containing metadata. A *.model file that contains the classifier. " +
-        "An optional *.arff file that contains the data used to train the model.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/weka-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id="glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Metadata JSON", description = "Metadata for the Weka model", encodingFormat = EncodingFormats.JSON),
+        @DefineJIPipeDataCrateEntity(id="glob:./*.model", type = JIPipeDataCrateEntityType.File, name = "Weka model", description = "The Weka model", encodingFormat = EncodingFormats.BINARY),
+        @DefineJIPipeDataCrateEntity(id="glob:./*.arff", type = JIPipeDataCrateEntityType.File, name = "Training data", description = "The training data",
+                presence = JIPipeDataCrateEntityPresence.Recommended, encodingFormat = EncodingFormats.BINARY)
+})
 public class WekaModelData implements JIPipeData {
 
     private final WekaSegmentation segmentation;
