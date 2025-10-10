@@ -26,12 +26,12 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JIPipeDataCrate {
+public @interface ConfigureJIPipeDataCrate {
     /**
      * The entities that are describing the contents of the data storage
      * @return the entities
      */
-    JIPipeDataCrateEntity[] entities();
+    DefineJIPipeDataCrateEntity[] entities();
 
     /**
      * Allows inheriting storage documentation from the given data types.

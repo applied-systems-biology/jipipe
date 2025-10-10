@@ -25,9 +25,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -45,8 +45,8 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
 @JsonSerialize(using = ParametersData.Serializer.class)
 @JsonDeserialize(using = ParametersData.Deserializer.class)
-@JIPipeDataCrate(
-        entities = @JIPipeDataCrateEntity(id = "glob:./*.json",
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id = "glob:./*.json",
                 type = JIPipeDataCrateEntityType.File,
                 name = "Serialized parameters",
                 description = "The JSON data is an object with keys being the parameter keys. The value is an object with two " +

@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -38,7 +38,7 @@ import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Image thumbnail", description = "Image thumbnail data (used internally)")
 @LabelAsJIPipeHeavyData
-@JIPipeDataCrate(entities = @JIPipeDataCrateEntity(id = "regex:\\./.*\\.(tif|tiff|png|jpeg|jpg)", type = JIPipeDataCrateEntityType.File, name = "Thumbnail image",
+@ConfigureJIPipeDataCrate(entities = @DefineJIPipeDataCrateEntity(id = "regex:\\./.*\\.(tif|tiff|png|jpeg|jpg)", type = JIPipeDataCrateEntityType.File, name = "Thumbnail image",
         description = "The image", encodingFormat = {EncodingFormats.TIFF, EncodingFormats.PNG, EncodingFormats.JPEG}))
 @LabelAsJIPipeHidden
 public class JIPipeImageThumbnailData implements JIPipeThumbnailData {

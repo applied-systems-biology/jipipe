@@ -8,8 +8,8 @@ import java.lang.annotation.RetentionPolicy;
  * An entity, as described by the <a href="https://www.researchobject.org/ro-crate/specification/1.2/index.html">RO-Crate Metadata Specification 1.2</a>.
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Repeatable(JIPipeDataCrateEntities.class)
-public @interface JIPipeDataCrateEntity {
+@Repeatable(DefineJIPipeDataCrateEntities.class)
+public @interface DefineJIPipeDataCrateEntity {
     /**
      * The unique ID of the entity within the data container.
      * <p>

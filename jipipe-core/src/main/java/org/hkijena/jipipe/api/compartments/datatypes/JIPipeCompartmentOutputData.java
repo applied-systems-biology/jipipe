@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
  */
 @SetJIPipeDocumentation(name = "Output data", description = "Output of a compartment")
 @LabelAsJIPipeHidden
-@JIPipeDataCrate(entities = {})
+@ConfigureJIPipeDataCrate(entities = {})
 public class JIPipeCompartmentOutputData implements JIPipeData {
     public static JIPipeCompartmentOutputData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new JIPipeCompartmentOutputData();

@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -30,7 +30,7 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
-@JIPipeDataCrate(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
+@ConfigureJIPipeDataCrate(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
 @Deprecated
 @LabelAsJIPipeHidden

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.plugins.tables.MutableTableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -28,7 +28,7 @@ import java.util.List;
  * This type allows data to be provided
  */
 @SetJIPipeDocumentation(name = "Table column", description = "A table column")
-@JIPipeDataCrate(entities = { })
+@ConfigureJIPipeDataCrate(entities = { })
 public interface TableColumnData extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.

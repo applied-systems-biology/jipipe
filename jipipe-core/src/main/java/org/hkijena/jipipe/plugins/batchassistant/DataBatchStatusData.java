@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeIconLabelThumbnailData;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Iteration step status", description = "Structural data indicating the status of a iteration step")
 @LabelAsJIPipeHidden
-@JIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
 @JIPipeFastThumbnail
 public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
 

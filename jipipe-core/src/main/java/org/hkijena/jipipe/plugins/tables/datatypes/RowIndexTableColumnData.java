@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
  * Generates numbers from 0 to row count
  */
 @SetJIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
-@JIPipeDataCrate(entities = {})
+@ConfigureJIPipeDataCrate(entities = {})
 public class RowIndexTableColumnData implements TableColumnData {
     public static RowIndexTableColumnData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumnData();

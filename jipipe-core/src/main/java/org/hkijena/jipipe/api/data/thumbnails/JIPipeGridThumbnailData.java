@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -32,7 +32,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Grid thumbnail", description = "Grid thumbnail data (used internally)")
 @LabelAsJIPipeHeavyData
-@JIPipeDataCrate(entities = {}, inherits = JIPipeDataTable.class)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeDataTable.class)
 @LabelAsJIPipeHidden
 public class JIPipeGridThumbnailData implements JIPipeThumbnailData {
 

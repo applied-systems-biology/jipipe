@@ -17,12 +17,12 @@ import net.imglib2.algorithm.neighborhood.HyperSphereShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 @SetJIPipeDocumentation(name = "IJ2 Hypersphere Shape", description = "A Shape representing a hypersphere.")
-@JIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
+@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class HyperSphereImageJ2ShapeData extends ImageJ2ShapeData {
 

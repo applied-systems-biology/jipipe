@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
@@ -61,7 +61,7 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 @SetJIPipeDocumentation(name = "IJ3D ROI list", description = "Collection of 3D ROI from ImageJ 3D Suite")
-@JIPipeDataCrate(humanReadableDescription = "Contains one file in *.zip format. " +
+@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains one file in *.zip format. " +
         "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
         "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
 @LabelAsJIPipeHeavyData

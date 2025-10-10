@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -34,7 +34,7 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Weka model", description = "A model for the Trainable Weka Filter")
-@JIPipeDataCrate(humanReadableDescription = "A file with *.json extension containing metadata. A *.model file that contains the classifier. " +
+@ConfigureJIPipeDataCrate(humanReadableDescription = "A file with *.json extension containing metadata. A *.model file that contains the classifier. " +
         "An optional *.arff file that contains the data used to train the model.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/weka-model-data.schema.json")
 public class WekaModelData implements JIPipeData {

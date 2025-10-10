@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -40,15 +40,15 @@ import java.util.stream.Collectors;
 /**
  * Base class for any JIPipe data wrapper class
  * There must be a static function importData({@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) that imports the data from a row storage folder.
- * Additionally, there must be an annotation of type {@link JIPipeDataCrate} that describes the structure of a valid row storage folder for humans.
- * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataCrate} annotation can be omitted for abstract data types or interfaces.
- * {@link JIPipeDataCrate} can be inherited from parent classes.
+ * Additionally, there must be an annotation of type {@link ConfigureJIPipeDataCrate} that describes the structure of a valid row storage folder for humans.
+ * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link ConfigureJIPipeDataCrate} annotation can be omitted for abstract data types or interfaces.
+ * {@link ConfigureJIPipeDataCrate} can be inherited from parent classes.
  * <p>
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
 @SetJIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
-@JIPipeDataCrate(
-        entities = @JIPipeDataCrateEntity(id="./", type = JIPipeDataCrateEntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id="./", type = JIPipeDataCrateEntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
 )
 @LabelAsJIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
@@ -137,7 +137,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return the storage documentation
      */
     static HTMLText getStorageDocumentation(Class<? extends JIPipeData> klass) {
-        JIPipeDataCrate annotation = klass.getAnnotation(JIPipeDataCrate.class);
+        ConfigureJIPipeDataCrate annotation = klass.getAnnotation(ConfigureJIPipeDataCrate.class);
         if (annotation != null) {
             return new HTMLText(annotation.humanReadableDescription());
         } else {
@@ -163,7 +163,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      * @return the storage documentation
      */
     static String getStorageSchema(Class<? extends JIPipeData> klass) {
-        JIPipeDataCrate annotation = klass.getAnnotation(JIPipeDataCrate.class);
+        ConfigureJIPipeDataCrate annotation = klass.getAnnotation(ConfigureJIPipeDataCrate.class);
         if (annotation != null) {
             return annotation.jsonSchemaURL();
         } else {

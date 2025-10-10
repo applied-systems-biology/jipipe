@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "TrackMate model", description = "A TrackMate model")
-@JIPipeDataCrate(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
+@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
 @LabelAsJIPipeHeavyData
 public class ModelData implements JIPipeData {
 

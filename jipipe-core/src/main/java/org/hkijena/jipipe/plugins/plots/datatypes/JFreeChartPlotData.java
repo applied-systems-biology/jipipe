@@ -27,9 +27,9 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
@@ -69,14 +69,14 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "JFreeChart Plot", description = "A plot")
 @JsonSerialize(using = JFreeChartPlotData.Serializer.class)
-@JIPipeDataCrate(entities = {
-        @JIPipeDataCrateEntity(id = "./plot-metadata.json", type = JIPipeDataCrateEntityType.File, name = "Plot metadata", description = "The serialized information about the plot. " + "The plot metadata JSON contains entries <code>title</code>, <code>export-width</code>," +
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "./plot-metadata.json", type = JIPipeDataCrateEntityType.File, name = "Plot metadata", description = "The serialized information about the plot. " + "The plot metadata JSON contains entries <code>title</code>, <code>export-width</code>," +
                 "<code>export-height</code>, <code>background-color</code>, <code>grid-color</code>, " +
                 "<code>with-legend</code>, <code>title-font-size</code>, <code>legend-font-size</code>, <code>color-map</code>, and <code>plot-series</code>.<br/>" +
                 "<code>plot-series</code> is mandatory and is a list of objects with each object having an object <code>metadata</code>, and " +
                 "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
                 "Additional metadata in the root object and series metadata depend on the exact plot type.", encodingFormat = EncodingFormats.JSON),
-        @JIPipeDataCrateEntity(id = "path:./series{index}.csv", type = JIPipeDataCrateEntityType.File, name = "Series table", description = "The data of series {index}.", encodingFormat = EncodingFormats.CSV),
+        @DefineJIPipeDataCrateEntity(id = "path:./series{index}.csv", type = JIPipeDataCrateEntityType.File, name = "Series table", description = "The data of series {index}.", encodingFormat = EncodingFormats.CSV),
 })
 @LabelAsJIPipeCommonData
 public abstract class JFreeChartPlotData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {

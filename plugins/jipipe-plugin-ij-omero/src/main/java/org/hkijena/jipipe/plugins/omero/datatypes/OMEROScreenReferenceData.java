@@ -19,7 +19,7 @@ import omero.gateway.model.ScreenData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -35,7 +35,7 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO screen
  */
 @SetJIPipeDocumentation(name = "OMERO Screen", description = "An OMERO screen ID")
-@JIPipeDataCrate(humanReadableDescription = "Contains a single *.json file that stores the <pre>screen-id</pre> in a JSON object.",
+@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single *.json file that stores the <pre>screen-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-screen-reference-data.schema.json")
 public class OMEROScreenReferenceData implements JIPipeData {
     private long screenId;

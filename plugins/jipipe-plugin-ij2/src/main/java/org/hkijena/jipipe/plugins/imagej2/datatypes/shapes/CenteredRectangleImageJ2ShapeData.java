@@ -19,7 +19,7 @@ import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Centered Rectangle Shape", description = "This specific factory differs to RectangleShape in that it allows non-isotropic rectangular shapes. However, it constrains the the neighborhood to be symmetric by its origin.\n" +
         "The size of the neighborhood is specified by an int[] span array, so that in every dimension d, the extent of the neighborhood is given by 2 × span[d] + 1.")
-@JIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
+@ConfigureJIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
 

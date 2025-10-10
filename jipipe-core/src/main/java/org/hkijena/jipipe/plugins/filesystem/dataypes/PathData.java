@@ -20,8 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -40,8 +40,8 @@ import java.nio.file.Paths;
  * Encapsulates a {@link java.nio.file.Path}
  */
 @SetJIPipeDocumentation(name = "Path", description = "A file or folder")
-@JIPipeDataCrate(entities = {
-        @JIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Path JSON", description = """
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Path JSON", description = """
                 Contains the path information. \
                 The JSON data has following structure: <pre>\
                 {
