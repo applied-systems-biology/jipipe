@@ -8,11 +8,18 @@ import java.util.Map;
 import java.util.Set;
 
 public interface JIPipeDataCrateMetadata {
+
+    /**
+     * Returns a sorted list of entries
+     * @return the entries
+     */
+    List<JIPipeDataCrateMetadataEntry> getEntries();
+
     /**
      * Returns the entries
      * @return the entries
      */
-    Map<String, JIPipeDataCrateMetadataEntry> getEntries();
+    Map<String, JIPipeDataCrateMetadataEntry> getEntriesMap();
 
     /**
      * Checks if the crate metadata is valid
@@ -69,4 +76,6 @@ public interface JIPipeDataCrateMetadata {
             result.put(entry);
         }
     }
+
+    boolean isEmpty();
 }

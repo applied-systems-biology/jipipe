@@ -1,8 +1,6 @@
 package org.hkijena.jipipe.api.data.documentation;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A description of a JIPipe data that follows a subset of the <a href="https://www.researchobject.org/ro-crate/specification/1.2/index.html">RO-Crate Metadata Specification 1.2</a>.
@@ -15,8 +13,13 @@ public class JIPipeMutableDataCrateMetadata implements JIPipeDataCrateMetadata {
     }
 
     @Override
-    public Map<String, JIPipeDataCrateMetadataEntry> getEntries() {
+    public Map<String, JIPipeDataCrateMetadataEntry> getEntriesMap() {
         return Collections.unmodifiableMap(entries);
+    }
+
+    @Override
+    public List<JIPipeDataCrateMetadataEntry> getEntries() {
+        return entries.values().stream().sorted(Comparator.comparing(JIPipeDataCrateMetadataEntry::getId)).toList();
     }
 
     @Override
@@ -27,6 +30,11 @@ public class JIPipeMutableDataCrateMetadata implements JIPipeDataCrateMetadata {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return entries.isEmpty();
     }
 
     public void setEntries(Map<String, JIPipeDataCrateMetadataEntry> entries) {

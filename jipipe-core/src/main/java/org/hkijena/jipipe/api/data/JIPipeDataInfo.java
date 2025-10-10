@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateMetadata;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -45,8 +46,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     private final boolean heavy;
 
     private final boolean common;
-    private final HTMLText storageDocumentation;
-    private final String storageSchema;
+    private final JIPipeDataCrateMetadata dataCrate;
     private List<String> additionalCitations = new ArrayList<>();
 
     private JIPipeDataInfo(Class<? extends JIPipeData> dataClass) {
@@ -57,8 +57,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.hidden = JIPipeData.isHidden(dataClass);
         this.heavy = JIPipeData.isHeavy(dataClass);
         this.common = JIPipeData.isCommon(dataClass);
-        this.storageDocumentation = JIPipeData.getStorageDocumentation(dataClass);
-        this.storageSchema = JIPipeData.getStorageSchema(dataClass);
+        this.dataCrate = JIPipeDataCrateMetadata.create(dataClass);
         // Load additional citations
         for (AddJIPipeCitation citation : dataClass.getAnnotationsByType(AddJIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
@@ -136,10 +135,6 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         return heavy;
     }
 
-    public HTMLText getStorageDocumentation() {
-        return storageDocumentation;
-    }
-
     /**
      * A list of additional citations
      *
@@ -197,8 +192,8 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         return (JIPipeData) ReflectionUtils.newInstance(dataClass, args);
     }
 
-    public String getStorageSchema() {
-        return storageSchema;
+    public JIPipeDataCrateMetadata getDataCrate() {
+        return dataCrate;
     }
 
     /**

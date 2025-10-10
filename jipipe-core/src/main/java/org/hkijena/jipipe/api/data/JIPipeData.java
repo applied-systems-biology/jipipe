@@ -128,58 +128,6 @@ public interface JIPipeData extends Closeable, AutoCloseable {
         return klass.getAnnotationsByType(LabelAsJIPipeCommonData.class).length > 0;
     }
 
-
-    /**
-     * Returns the storage documentation for the data type or null if none was provided.
-     * Will go through parent classes to find a storage documentation
-     *
-     * @param klass the class
-     * @return the storage documentation
-     */
-    static HTMLText getStorageDocumentation(Class<? extends JIPipeData> klass) {
-        ConfigureJIPipeDataCrate annotation = klass.getAnnotation(ConfigureJIPipeDataCrate.class);
-        if (annotation != null) {
-            return new HTMLText(annotation.humanReadableDescription());
-        } else {
-            if (klass == JIPipeData.class) {
-                return null;
-            } else {
-                Class<?> superclass = klass.getSuperclass();
-                if (superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
-                    return getStorageDocumentation((Class<? extends JIPipeData>) superclass);
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the URL pointing to a JSON schema that describes the storage of the data type.
-     * Will return null if none was provided.
-     * Will go through parent classes to find a storage documentation
-     *
-     * @param klass the class
-     * @return the storage documentation
-     */
-    static String getStorageSchema(Class<? extends JIPipeData> klass) {
-        ConfigureJIPipeDataCrate annotation = klass.getAnnotation(ConfigureJIPipeDataCrate.class);
-        if (annotation != null) {
-            return annotation.jsonSchemaURL();
-        } else {
-            if (klass == JIPipeData.class) {
-                return null;
-            } else {
-                Class<?> superclass = klass.getSuperclass();
-                if (superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
-                    return getStorageSchema((Class<? extends JIPipeData>) superclass);
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
     /**
      * Gets name sorted list of data classes
      *

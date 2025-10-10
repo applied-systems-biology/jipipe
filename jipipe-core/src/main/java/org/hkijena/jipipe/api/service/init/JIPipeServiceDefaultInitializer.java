@@ -417,8 +417,8 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
     private void validateDataTypes(JIPipeInitializationReport issues) {
         for (Class<? extends JIPipeData> dataType : getService().getDataTypes().getRegisteredDataTypes().values()) {
             JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
-            if (info.getStorageDocumentation() == null) {
-                getService().getLogService().warn("Data type '" + dataType + "' has no storage documentation.");
+            if (!info.getDataCrate().isValid()) {
+                getService().getLogService().warn("Data type '" + dataType + "' has invalid data crate metadata.");
                 issues.getErroneousDataTypes().add(dataType);
             }
             if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
