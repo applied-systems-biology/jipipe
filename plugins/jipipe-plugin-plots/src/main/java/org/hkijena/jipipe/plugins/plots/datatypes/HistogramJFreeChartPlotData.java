@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -38,6 +39,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "JFreeChart Histogram plot", description = "Bar chart that displays the number of items for each bin. Please note that this plot requires " +
         "raw values as input. A pre-defined histogram table should be rendered with an XY bar plot.")
 @JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Value", description = "Values to generate a histogram from.", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JFreeChartPlotData.class)
 public class HistogramJFreeChartPlotData extends JFreeChartPlotData {
 
     private String binAxisLabel = "Bin";

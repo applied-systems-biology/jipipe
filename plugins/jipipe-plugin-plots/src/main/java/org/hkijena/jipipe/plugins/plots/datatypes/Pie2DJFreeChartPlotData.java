@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
@@ -31,6 +32,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "JFreeChart 2D pie plot", description = "Plot that shows the amount for each category as slice in a pie.")
 @JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "Amount", description = "The values to be displayed", isNumeric = true),
         @JFreeChartPlotColumn(name = "Category", description = "The categories to be displayed", isNumeric = false)}, maxSeriesCount = 1)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = PieJFreeChartPlotData.class)
 public class Pie2DJFreeChartPlotData extends PieJFreeChartPlotData {
 
     private int labelFontSize = 12;

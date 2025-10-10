@@ -16,7 +16,10 @@ package org.hkijena.jipipe.plugins.strings;
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -25,8 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "XML", description = "Text in extended markup language (XML)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.xml file that stores the current data.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/xml-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id = "glob:./*.xml", type = JIPipeDataCrateEntityType.File, name = "XML file", description = "The XML file", encodingFormat = EncodingFormats.XML)
+)
 public class XMLData extends StringData {
     public XMLData(String data) {
         super(data);

@@ -25,7 +25,7 @@ import ij.gui.Roi;
 import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -43,7 +43,7 @@ import java.util.Optional;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ModelData.class)
 public class TrackCollectionData extends SpotsCollectionData {
     private final Map<String, Range<Double>> edgeFeatureRanges = new HashMap<>();
     private final Map<String, Range<Double>> trackFeatureRanges = new HashMap<>();

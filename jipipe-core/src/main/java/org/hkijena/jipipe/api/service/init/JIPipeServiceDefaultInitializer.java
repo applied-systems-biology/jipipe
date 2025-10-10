@@ -248,7 +248,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         }
 
         registerFeaturesProgress.log("Registering remaining " + getService().getNodes().getScheduledRegistrationTasks().size() + " features ...");
-        for (JIPipeNodeRegistrationTask task : getService().getNodes().getScheduledRegistrationTasks()) {
+        for (JIPipeNodeRegistrationTask task : ImmutableList.copyOf(getService().getNodes().getScheduledRegistrationTasks())) {
             try {
                 task.register();
             } catch (Throwable ex) {
@@ -416,10 +416,17 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
 
     private void validateDataTypes(JIPipeInitializationReport issues) {
         for (Class<? extends JIPipeData> dataType : getService().getDataTypes().getRegisteredDataTypes().values()) {
-            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
-            if (info.getStorageDocumentation() == null) {
-                getService().getLogService().warn("Data type '" + dataType + "' has no storage documentation.");
+            try {
+                JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
+                if (!info.getDataCrate().isValid()) {
+                    getService().getLogService().warn("Data type '" + dataType + "' has invalid data crate metadata.");
+                    issues.getErroneousDataTypes().add(dataType);
+                }
+            }
+            catch (Exception e) {
+                getService().getLogService().warn("Data type '" + dataType + "' has invalid data crate metadata. (error during construction!)");
                 issues.getErroneousDataTypes().add(dataType);
+                issues.getErrors().add(e);
             }
             if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
                 continue;

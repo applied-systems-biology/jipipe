@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -33,8 +33,12 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id="glob:./*.json", type = JIPipeDataCrateEntityType.File, encodingFormat = EncodingFormats.JSON,
+        name = "Metadata file", description = "Contains the name of the model file (name) and has a boolean is-pretrained to determine if the name refers to a pretrained model"),
+        @DefineJIPipeDataCrateEntity(id = "glob:./*", type = JIPipeDataCrateEntityType.File, presence = JIPipeDataCrateEntityPresence.Optional, encodingFormat = EncodingFormats.BINARY,
+        name = "Model file (binary)", description = "The Cellpose model file")
+})
 public class CellposeModelData implements JIPipeData {
 
     private byte[] data;

@@ -17,14 +17,13 @@ import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Mirror Out Of Bounds factory", description = "Creates appropriate strategies that virtually mirror an image at its borders.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2OutOfBoundsFactoryData.class)
 public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
 
     private OutOfBoundsMirrorFactory.Boundary boundary = OutOfBoundsMirrorFactory.Boundary.SINGLE;

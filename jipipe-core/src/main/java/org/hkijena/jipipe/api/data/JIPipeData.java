@@ -14,6 +14,9 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -37,15 +40,16 @@ import java.util.stream.Collectors;
 /**
  * Base class for any JIPipe data wrapper class
  * There must be a static function importData({@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) that imports the data from a row storage folder.
- * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
- * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
- * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
+ * Additionally, there must be an annotation of type {@link ConfigureJIPipeDataCrate} that describes the structure of a valid row storage folder for humans.
+ * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link ConfigureJIPipeDataCrate} annotation can be omitted for abstract data types or interfaces.
+ * {@link ConfigureJIPipeDataCrate} can be inherited from parent classes.
  * <p>
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
 @SetJIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id="./", type = JIPipeDataCrateEntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
+)
 @LabelAsJIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
 
@@ -122,58 +126,6 @@ public interface JIPipeData extends Closeable, AutoCloseable {
      */
     static boolean isCommon(Class<? extends JIPipeData> klass) {
         return klass.getAnnotationsByType(LabelAsJIPipeCommonData.class).length > 0;
-    }
-
-
-    /**
-     * Returns the storage documentation for the data type or null if none was provided.
-     * Will go through parent classes to find a storage documentation
-     *
-     * @param klass the class
-     * @return the storage documentation
-     */
-    static HTMLText getStorageDocumentation(Class<? extends JIPipeData> klass) {
-        JIPipeDataStorageDocumentation annotation = klass.getAnnotation(JIPipeDataStorageDocumentation.class);
-        if (annotation != null) {
-            return new HTMLText(annotation.humanReadableDescription());
-        } else {
-            if (klass == JIPipeData.class) {
-                return null;
-            } else {
-                Class<?> superclass = klass.getSuperclass();
-                if (superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
-                    return getStorageDocumentation((Class<? extends JIPipeData>) superclass);
-                } else {
-                    return null;
-                }
-            }
-        }
-    }
-
-    /**
-     * Returns the URL pointing to a JSON schema that describes the storage of the data type.
-     * Will return null if none was provided.
-     * Will go through parent classes to find a storage documentation
-     *
-     * @param klass the class
-     * @return the storage documentation
-     */
-    static String getStorageSchema(Class<? extends JIPipeData> klass) {
-        JIPipeDataStorageDocumentation annotation = klass.getAnnotation(JIPipeDataStorageDocumentation.class);
-        if (annotation != null) {
-            return annotation.jsonSchemaURL();
-        } else {
-            if (klass == JIPipeData.class) {
-                return null;
-            } else {
-                Class<?> superclass = klass.getSuperclass();
-                if (superclass != null && JIPipeData.class.isAssignableFrom(superclass)) {
-                    return getStorageSchema((Class<? extends JIPipeData>) superclass);
-                } else {
-                    return null;
-                }
-            }
-        }
     }
 
     /**

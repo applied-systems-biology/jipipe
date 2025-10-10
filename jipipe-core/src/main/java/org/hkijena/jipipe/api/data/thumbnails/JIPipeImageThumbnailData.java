@@ -23,7 +23,10 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -35,8 +38,8 @@ import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Image thumbnail", description = "Image thumbnail data (used internally)")
 @LabelAsJIPipeHeavyData
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
-        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = @DefineJIPipeDataCrateEntity(id = "regex:\\./.*\\.(tif|tiff|png|jpeg|jpg)", type = JIPipeDataCrateEntityType.File, name = "Thumbnail image",
+        description = "The image", encodingFormat = {EncodingFormats.TIFF, EncodingFormats.PNG, EncodingFormats.JPEG}))
 @LabelAsJIPipeHidden
 public class JIPipeImageThumbnailData implements JIPipeThumbnailData {
 

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -38,6 +39,7 @@ import java.util.Collections;
 import java.util.Locale;
 
 @SetJIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ParameterFormData.class)
 public class BooleanFormData extends ParameterFormData {
 
     private boolean value = true;

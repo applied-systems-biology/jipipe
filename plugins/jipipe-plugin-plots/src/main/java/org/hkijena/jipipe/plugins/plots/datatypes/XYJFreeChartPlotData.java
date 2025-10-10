@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -29,6 +30,7 @@ import java.util.Set;
  * Any plot has following columns:
  * X (Double), Y (Double)
  */
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JFreeChartPlotData.class)
 public abstract class XYJFreeChartPlotData extends JFreeChartPlotData {
 
     private String xAxisLabel = "X";

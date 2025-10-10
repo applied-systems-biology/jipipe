@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -32,6 +33,7 @@ import java.awt.*;
         @JFreeChartPlotColumn(name = "Category", description = "Category for each value. Displayed in the X axis.", isNumeric = false),
         @JFreeChartPlotColumn(name = "Group", description = "Group for each value. Bars are colored by this column.", isNumeric = false)},
         maxSeriesCount = Integer.MAX_VALUE)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = BoxAndWhiskerCategoryJFreeChartPlotData.class)
 public class BarBoxAndWhiskerCategoryJFreeChartPlotData extends BoxAndWhiskerCategoryJFreeChartPlotData {
 
     /**

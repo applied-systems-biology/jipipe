@@ -23,7 +23,10 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesApplicationSettings;
@@ -42,10 +45,14 @@ import java.nio.file.Path;
 @SetJIPipeDocumentation(name = "ImageJ FFT Image")
 @ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF " +
-        "must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). " +
-        "fht_info.json contains a JSON object that defines following properties: quadrant-swap-needed (boolean), original-width (integer), original-height (integer), " +
-        "original-bit-depth (integer; 8, 16, or 32 are valid values), power-spectrum-mean (double).", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-fft-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = {
+                @DefineJIPipeDataCrateEntity(id = "glob:./fht*.tif", type = JIPipeDataCrateEntityType.File, name = "FHT image", description = "The FHT image as OME-TIFF/TIFF", encodingFormat = EncodingFormats.TIFF),
+                @DefineJIPipeDataCrateEntity(id = "glob:./power_spectrum*.tif", type = JIPipeDataCrateEntityType.File, name = "Power spectrum image", description = "The power spectrum image as OME-TIFF/TIFF", encodingFormat = EncodingFormats.TIFF),
+                @DefineJIPipeDataCrateEntity(id = "./fht_info.json", type = JIPipeDataCrateEntityType.File, name = "Metadata", description = "Contains a JSON object that defines following properties: quadrant-swap-needed (boolean), " +
+                        "original-width (integer), original-height (integer), original-bit-depth (integer; 8, 16, or 32 are valid values), power-spectrum-mean (double).", encodingFormat = EncodingFormats.JSON)
+        }
+)
 @ImageTypeInfo
 public class ImagePlusFFTData extends ImagePlusData implements FFTImageData {
 

@@ -18,7 +18,10 @@ import org.apache.commons.lang3.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
@@ -34,8 +37,9 @@ import java.nio.file.Path;
  * A data type that contains a string
  */
 @SetJIPipeDocumentation(name = "String", description = "A text")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id = "glob:./*.txt", type = JIPipeDataCrateEntityType.File, name = "Text file", description = "The text file", encodingFormat = EncodingFormats.TXT)
+)
 public class StringData implements JIPipeData {
 
     private final String data;

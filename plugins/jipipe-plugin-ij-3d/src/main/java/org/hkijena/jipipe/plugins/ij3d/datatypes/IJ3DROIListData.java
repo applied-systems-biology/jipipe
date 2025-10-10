@@ -28,7 +28,10 @@ import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
@@ -61,9 +64,10 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 @SetJIPipeDocumentation(name = "IJ3D ROI list", description = "Collection of 3D ROI from ImageJ 3D Suite")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.zip format. " +
-        "The *.zip contains multiple 3D ImageJ Suite ROI. Please note that if multiple *.zip files are present, only " +
-        "one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/roi-list-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.zip", type = JIPipeDataCrateEntityType.File, name = "IJ3D Suite 3D ROI ZIP",
+                description = "ZIP files that contain IJ3D Suite ROI3D files", encodingFormat = EncodingFormats.ZIP)
+})
 @LabelAsJIPipeHeavyData
 @LabelAsJIPipeCommonData
 public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {

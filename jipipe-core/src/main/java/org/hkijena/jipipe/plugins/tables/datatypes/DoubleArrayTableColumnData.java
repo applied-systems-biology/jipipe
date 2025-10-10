@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.tables.MutableTableColumnData;
@@ -28,8 +28,7 @@ import java.util.Collections;
  * {@link TableColumnData} that contains doubles.
  */
 @SetJIPipeDocumentation(name = "Numeric table column", description = "A table column that contains numbers (64bit floating point)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ResultsTableData.class)
 public class DoubleArrayTableColumnData implements MutableTableColumnData {
 
     private double[] data;

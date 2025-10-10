@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 
@@ -28,8 +28,7 @@ import javax.swing.*;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Text and icon thumbnail", description = "Text and icon thumbnail data (used internally)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = {JIPipeSerializedJsonObjectData.class})
 @LabelAsJIPipeHidden
 public class JIPipeIconLabelThumbnailData extends JIPipeSerializedJsonObjectData implements JIPipeThumbnailData {
 

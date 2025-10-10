@@ -16,7 +16,10 @@ package org.hkijena.jipipe.plugins.strings;
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -25,8 +28,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "R script", description = "An R script")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.R file that stores the current string.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
+@ConfigureJIPipeDataCrate(
+        entities = @DefineJIPipeDataCrateEntity(id = "glob:./*.R", type = JIPipeDataCrateEntityType.File, name = "R script", description = "The R script file", encodingFormat = EncodingFormats.R_SCRIPT)
+)
 public class RScriptData extends StringData {
     public RScriptData(String data) {
         super(data);

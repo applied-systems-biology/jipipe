@@ -19,9 +19,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -36,7 +37,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "TrackMate spot detector", description = "A spot detector for TrackMate")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a JSON file that stores the properties of the spot detector", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JIPipeSerializedJsonObjectData.class)
 public class SpotDetectorData implements JIPipeData {
 
     private final SpotDetectorFactory<?> spotDetectorFactory;

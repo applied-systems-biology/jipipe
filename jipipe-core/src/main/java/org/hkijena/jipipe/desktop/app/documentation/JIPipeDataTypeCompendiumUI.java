@@ -20,10 +20,12 @@ import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateMetadataEntry;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.service.components.JIPipeDatatypesServiceComponent;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopDataInfoListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.util.Comparator;
@@ -247,12 +249,34 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
         }
 
         // Storage information
-        if (info.getStorageDocumentation() != null) {
-            builder.append("## Data storage\n\n");
-            builder.append("Following information was provided about the standardized storage of this data type:\n\n");
-            builder.append(info.getStorageDocumentation().getBody());
-            builder.append("\n\nPlease visit following link for a JSON schema that describes the data storage: ");
-            builder.append(info.getStorageSchema());
+        builder.append("## Data storage (JIPipe data crate)\n\n");
+        if (!info.getDataCrate().isEmpty()) {
+            builder.append("<table>");
+            builder.append("<tr>");
+            builder.append("<td><strong>Presence</strong></td>");
+            builder.append("<td><strong>ID</strong></td>");
+            builder.append("<td><strong>Type</strong></td>");
+            builder.append("<td><strong>Protocol</strong></td>");
+            builder.append("<td><strong>Path</strong></td>");
+            builder.append("<td><strong>Name</strong></td>");
+            builder.append("<td><strong>Description</strong></td>");
+            builder.append("<td><strong>Encoding format</strong></td>");
+            builder.append("</tr>");
+            for (JIPipeDataCrateMetadataEntry entry : info.getDataCrate().getEntries()) {
+                builder.append("<tr>");
+                builder.append("<td>").append(entry.getPresence()).append("</td>");
+                builder.append("<td><code>").append(entry.getId()).append("</code></td>");
+                builder.append("<td>").append(entry.getType()).append("</td>");
+                builder.append("<td><code>").append(entry.getIdProtocol()).append("</code></td>");
+                builder.append("<td><code>").append(entry.getIdPath()).append("</code></td>");
+                builder.append("<td>").append(entry.getName()).append("</td>");
+                builder.append("<td>").append(entry.getDescription()).append("</td>");
+                builder.append("<td>").append(JsonUtils.toJsonString(entry.getEncodingFormat())).append("</td>");
+                builder.append("</tr>");
+            }
+            builder.append("</table>");
+        } else {
+            builder.append("* the storage is empty (structural or abstract data type)");
         }
         builder.append("\n\n");
 
@@ -300,8 +324,6 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
             builder.append("## Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Data type ID</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</td></tr>");
-            builder.append("<tr><td><strong>Storage schema URL</strong></td><td><a href=\"").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema()))
-                    .append("\">").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema())).append("</a></td></tr>");
             for (String dependencyCitation : info.getAdditionalCitations()) {
                 builder.append("<tr><td><strong>Refer to/Also cite</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }

@@ -19,7 +19,10 @@ import omero.gateway.model.DatasetData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -32,8 +35,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>dataset-id</pre> in a JSON object.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-dataset-reference-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "JSON file", encodingFormat = EncodingFormats.JSON,
+                description = "Stores the <pre>dataset-id</pre> in a JSON object.")
+})
 public class OMERODatasetReferenceData implements JIPipeData {
     private long datasetId;
     private String name;

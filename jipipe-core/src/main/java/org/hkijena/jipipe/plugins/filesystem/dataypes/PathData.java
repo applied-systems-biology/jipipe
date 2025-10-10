@@ -19,7 +19,10 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
@@ -37,13 +40,17 @@ import java.nio.file.Paths;
  * Encapsulates a {@link java.nio.file.Path}
  */
 @SetJIPipeDocumentation(name = "Path", description = "A file or folder")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file. The JSON data has following structure: " +
-        "<pre>" +
-        "{\n" +
-        "    \"jipipe:data-type\": \"[Data type ID]\",\n" +
-        "    \"path\": \"[The path]\"\n" +
-        "}" +
-        "</pre>", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/path-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Path JSON", description = """
+                Contains the path information. \
+                The JSON data has following structure: <pre>\
+                {
+                    "jipipe:data-type": "[Data type ID]",
+                    "path": "[The path]"
+                }\
+                </pre>""",
+                encodingFormat = EncodingFormats.JSON)
+})
 @JIPipeFastThumbnail
 public class PathData implements JIPipeData {
     private String path;

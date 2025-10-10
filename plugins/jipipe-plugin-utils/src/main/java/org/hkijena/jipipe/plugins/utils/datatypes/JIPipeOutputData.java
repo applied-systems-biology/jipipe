@@ -15,8 +15,10 @@ package org.hkijena.jipipe.plugins.utils.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -27,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "JIPipe output", description = "Output of a JIPipe run")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = FolderData.class)
 public class JIPipeOutputData extends FolderData {
     /**
      * Initializes file data from a file

@@ -19,15 +19,14 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Periodic Line Shape", description = "Iterate over what is termed \"Periodic lines\" (see Jones and Soilles, 1996)")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2ShapeData.class)
 @AddJIPipeCitation("Jones and Soilles. Periodic lines: Definition, cascades, and application to granulometries. Pattern Recognition Letters (1996) vol. 17 (10) pp. 1057-1063")
 public class PeriodicLineImageJ2ShapeData extends ImageJ2ShapeData {
 

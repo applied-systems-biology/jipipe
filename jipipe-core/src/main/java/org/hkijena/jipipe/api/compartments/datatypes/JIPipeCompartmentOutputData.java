@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
@@ -28,8 +28,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
  */
 @SetJIPipeDocumentation(name = "Output data", description = "Output of a compartment")
 @LabelAsJIPipeHidden
-@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {})
 public class JIPipeCompartmentOutputData implements JIPipeData {
     public static JIPipeCompartmentOutputData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new JIPipeCompartmentOutputData();

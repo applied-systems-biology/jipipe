@@ -18,7 +18,10 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
+import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -31,8 +34,10 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO project
  */
 @SetJIPipeDocumentation(name = "OMERO Group", description = "An OMERO group ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>group-id</pre> in a JSON object.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-group-data.schema.json")
+@ConfigureJIPipeDataCrate(entities = {
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "JSON file", encodingFormat = EncodingFormats.JSON,
+                description = "Stores the <pre>group-id</pre> in a JSON object.")
+})
 public class OMEROGroupReferenceData implements JIPipeData {
     private long groupId;
 
