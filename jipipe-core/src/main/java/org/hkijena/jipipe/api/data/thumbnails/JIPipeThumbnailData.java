@@ -17,12 +17,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Thumbnail", description = "Thumbnail data (used internally)")
-@JIPipeDataStorageDocumentation({ })
+@JIPipeDataCrate(entities = { })
 @LabelAsJIPipeHidden
 public interface JIPipeThumbnailData extends JIPipeData {
 

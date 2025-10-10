@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.data.documentation;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 
 import java.lang.annotation.ElementType;
@@ -27,12 +26,12 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface JIPipeDataStorageDocumentation {
+public @interface JIPipeDataCrate {
     /**
      * The entities that are describing the contents of the data storage
      * @return the entities
      */
-    Entity[] value();
+    JIPipeDataCrateEntity[] entities();
 
     /**
      * Allows inheriting storage documentation from the given data types.

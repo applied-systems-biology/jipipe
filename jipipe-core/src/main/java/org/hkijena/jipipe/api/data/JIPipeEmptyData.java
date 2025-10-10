@@ -16,13 +16,12 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
 @SetJIPipeDocumentation(name = "Empty data", description = "An empty data type")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "The storage folder is empty.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeDataCrate(entities = {})
 @LabelAsJIPipeHidden
 public class JIPipeEmptyData implements JIPipeData {
     public static JIPipeEmptyData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {

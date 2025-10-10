@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.ilastik.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.nio.file.*;
 
 @SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A *.ilp project file",
+@JIPipeDataCrate(humanReadableDescription = "A *.ilp project file",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ilastik-model-data.schema.json")
 public class IlastikModelData implements JIPipeData {
 

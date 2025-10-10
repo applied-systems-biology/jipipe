@@ -15,11 +15,11 @@ package org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds;
 
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 
 @SetJIPipeDocumentation(name = "IJ2 Out Of Bounds factory", description = "An ImageJ2 generator for values outside the image bounds")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
+@JIPipeDataCrate(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public abstract class ImageJ2OutOfBoundsFactoryData extends JIPipeSerializedParameterCollectionData {
 

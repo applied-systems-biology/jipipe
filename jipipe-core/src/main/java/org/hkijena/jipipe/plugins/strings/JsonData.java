@@ -17,9 +17,9 @@ import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -28,8 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Json", description = "Text in JSON format")
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.json", type = EntityType.File, name = "JSON file", description = "The JSON file", encodingFormat = EncodingFormats.JSON)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "JSON file", description = "The JSON file", encodingFormat = EncodingFormats.JSON)
 )
 public class JsonData extends StringData {
     public JsonData(String data) {

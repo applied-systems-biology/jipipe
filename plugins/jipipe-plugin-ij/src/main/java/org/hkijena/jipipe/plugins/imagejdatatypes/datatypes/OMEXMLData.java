@@ -8,7 +8,7 @@ import loci.formats.services.OMEXMLService;
 import ome.xml.meta.OMEXMLMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.plugins.strings.XMLData;
@@ -22,7 +22,7 @@ import java.nio.file.Path;
  * Encapsulates OME an XML
  */
 @SetJIPipeDocumentation(name = "OME XML", description = "XML data that follows the OME XML specifications")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.xml file that stores the current data.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single *.xml file that stores the current data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/xml-data.schema.json")
 public class OMEXMLData extends XMLData {
 

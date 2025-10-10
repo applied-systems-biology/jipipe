@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -33,7 +33,7 @@ import java.nio.file.Path;
  * Wrapper around Cellpose models
  */
 @SetJIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
+@JIPipeDataCrate(humanReadableDescription = "A single file without extension that contains the Cellpose model",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
 public class CellposeModelData implements JIPipeData {
 

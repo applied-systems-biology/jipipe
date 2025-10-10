@@ -25,9 +25,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.data.context.JIPipeMutableDataContext;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataAnnotationInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableInfo;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
@@ -57,9 +57,9 @@ import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiPredicate;
 
 @SetJIPipeDocumentation(name = "Data table", description = "A table of data")
-@JIPipeDataStorageDocumentation({
-        @Entity(id = "./data-table.json", type = EntityType.File, name = "Metadata file", description = "Data table metadata file", encodingFormat = EncodingFormats.JSON),
-        @Entity(id = "path://./{row}/", type = EntityType.Dataset, name = "Row directories", description = "Contains the serialized data of the given row")
+@JIPipeDataCrate(entities = {
+        @JIPipeDataCrateEntity(id = "./data-table.json", type = JIPipeDataCrateEntityType.File, name = "Metadata file", description = "Data table metadata file", encodingFormat = EncodingFormats.JSON),
+        @JIPipeDataCrateEntity(id = "path:./{row}/", type = JIPipeDataCrateEntityType.Dataset, name = "Row directories", description = "Contains the serialized data of the given row")
 })
 @LabelAsJIPipeHeavyData
 public class JIPipeDataTable implements JIPipeData, TableModel {

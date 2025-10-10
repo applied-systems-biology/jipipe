@@ -19,7 +19,7 @@ import omero.gateway.model.ProjectData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -35,7 +35,7 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO project
  */
 @SetJIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
 public class OMEROProjectReferenceData implements JIPipeData {
     private long projectId;

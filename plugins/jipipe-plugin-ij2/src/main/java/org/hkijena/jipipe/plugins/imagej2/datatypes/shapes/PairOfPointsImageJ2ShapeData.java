@@ -18,7 +18,7 @@ import net.imglib2.algorithm.neighborhood.PairOfPointsShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
@@ -26,7 +26,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 @SetJIPipeDocumentation(name = "IJ2 Pair Of Points Shape", description = "A Shape representing a pair of points. " +
         "The Shape as its origin at the first point, and the second one is simply found by adding the value of the offset array to its position.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class PairOfPointsImageJ2ShapeData extends ImageJ2ShapeData {
 

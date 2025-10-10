@@ -19,9 +19,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
@@ -37,8 +37,8 @@ import java.nio.file.Path;
  * A data type that contains a string
  */
 @SetJIPipeDocumentation(name = "String", description = "A text")
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.txt", type = EntityType.File, name = "Text file", description = "The text file", encodingFormat = EncodingFormats.TXT)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.txt", type = JIPipeDataCrateEntityType.File, name = "Text file", description = "The text file", encodingFormat = EncodingFormats.TXT)
 )
 public class StringData implements JIPipeData {
 

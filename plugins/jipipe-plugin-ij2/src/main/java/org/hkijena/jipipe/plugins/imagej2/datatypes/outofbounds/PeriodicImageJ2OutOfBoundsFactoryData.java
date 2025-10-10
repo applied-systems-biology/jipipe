@@ -17,11 +17,11 @@ import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsPeriodicFactory;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 @SetJIPipeDocumentation(name = "IJ2 Periodic Out Of Bounds factory", description = "Create appropriate strategies that virtually extend a image periodically.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class PeriodicImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFactoryData {
 

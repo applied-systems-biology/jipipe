@@ -17,9 +17,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -35,8 +35,8 @@ import java.nio.file.Path;
  * You also still need to add the proper {@link SetJIPipeDocumentation} annotation and
  * the JIPipeData importData(Path) static function.
  */
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.json", type = EntityType.File, name = "JSON file", description = "The JSON file", encodingFormat = EncodingFormats.JSON)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "JSON file", description = "The JSON file", encodingFormat = EncodingFormats.JSON)
 )
 public abstract class JIPipeSerializedJsonObjectData implements JIPipeData {
 

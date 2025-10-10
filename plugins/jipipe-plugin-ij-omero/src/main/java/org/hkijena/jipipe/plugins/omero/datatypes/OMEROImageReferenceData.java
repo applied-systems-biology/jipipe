@@ -19,7 +19,7 @@ import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -32,7 +32,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-image-reference-data.schema.json")
 public class OMEROImageReferenceData implements JIPipeData {
     private String description;

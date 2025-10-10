@@ -44,7 +44,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeEmptyThumbnailData;
@@ -77,7 +77,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "OME ImageJ Image", description = "Image that contains additional OME-XML metadata. " +
         "It can be converted into an image, a ROI list, or an XML text.")
 @LabelAsJIPipeHeavyData
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +
+@JIPipeDataCrate(humanReadableDescription = "Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the " +
         "ability of OME TIFF to link them together). Although, we do recommend having multiple files, as sometimes OME TIFF can store absolute paths. " +
         "If only standard TIFF files are present, only one will be loaded.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/ome-image-data.schema.json")
 public class OMEImageData implements JIPipeData {

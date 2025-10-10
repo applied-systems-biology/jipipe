@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.api.data.documentation;
 
 /**
- * Entity types that are supported by {@link Entity}
+ * Entity types that are supported by {@link JIPipeDataCrateEntity}
  */
-public enum EntityType {
+public enum JIPipeDataCrateEntityType {
     /**
      * Refers to a file entity
      */

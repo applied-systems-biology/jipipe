@@ -17,12 +17,12 @@ import net.imglib2.algorithm.neighborhood.DiamondShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 @SetJIPipeDocumentation(name = "IJ2 Diamond Shape")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class DiamondImageJ2ShapeData extends ImageJ2ShapeData {
 

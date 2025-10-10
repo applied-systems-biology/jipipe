@@ -17,9 +17,9 @@ import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -28,8 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "XML", description = "Text in extended markup language (XML)")
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.xml", type = EntityType.File, name = "XML file", description = "The XML file", encodingFormat = EncodingFormats.XML)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.xml", type = JIPipeDataCrateEntityType.File, name = "XML file", description = "The XML file", encodingFormat = EncodingFormats.XML)
 )
 public class XMLData extends StringData {
     public XMLData(String data) {

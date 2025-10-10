@@ -22,7 +22,7 @@ import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @SetJIPipeDocumentation(name = "LUT", description = "A function that converts an intensity to a RGB color value")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.json format that describes the LUT gradient stops.",
+@JIPipeDataCrate(humanReadableDescription = "Contains one file in *.json format that describes the LUT gradient stops.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/lut-data.schema.json")
 public class LUTData implements JIPipeData {
 

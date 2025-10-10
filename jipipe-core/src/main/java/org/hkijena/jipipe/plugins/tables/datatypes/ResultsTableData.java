@@ -39,9 +39,9 @@ import org.hkijena.jipipe.api.LabelAsJIPipeCommonData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
@@ -77,8 +77,8 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @SetJIPipeDocumentation(name = "ImageJ table", description = "An ImageJ results table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.csv", type = EntityType.File, name = "CSV table", description = "CSV file containing the data", encodingFormat = EncodingFormats.CSV)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.csv", type = JIPipeDataCrateEntityType.File, name = "CSV table", description = "CSV file containing the data", encodingFormat = EncodingFormats.CSV)
 )
 @LabelAsJIPipeCommonData
 @JIPipeFastThumbnail

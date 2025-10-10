@@ -19,7 +19,7 @@ import omero.gateway.model.PlateData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
@@ -35,7 +35,7 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO plate
  */
 @SetJIPipeDocumentation(name = "OMERO Plate", description = "An OMERO plate ID")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>plate-id</pre> in a JSON object.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a single *.json file that stores the <pre>plate-id</pre> in a JSON object.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-plate-reference-data.schema.json")
 public class OMEROPlateReferenceData implements JIPipeData {
     private long plateId;

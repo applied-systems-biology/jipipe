@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.tables.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 
@@ -24,8 +24,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
  * Generates numbers from 0 to row count
  */
 @SetJIPipeDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeDataCrate(entities = {})
 public class ZeroTableColumnData implements TableColumnData {
     public static ZeroTableColumnData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ZeroTableColumnData();

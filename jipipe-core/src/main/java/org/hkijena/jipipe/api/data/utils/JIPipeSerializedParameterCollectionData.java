@@ -23,12 +23,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.strings.JsonData;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -47,8 +48,7 @@ import java.nio.file.Path;
  * Unlike {@link JIPipeSerializedJsonObjectData}, this data is serialized in a way to fully restore its data type during deserialization,
  * removing the requirement of storing the data type ID within the JSON.
  */
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+@JIPipeDataCrate(entities = {}, inherits = JsonData.class)
 @JsonSerialize(using = JIPipeSerializedParameterCollectionData.Serializer.class)
 @JsonDeserialize(using = JIPipeSerializedParameterCollectionData.Deserializer.class)
 public abstract class JIPipeSerializedParameterCollectionData extends AbstractJIPipeParameterCollection implements JIPipeData {

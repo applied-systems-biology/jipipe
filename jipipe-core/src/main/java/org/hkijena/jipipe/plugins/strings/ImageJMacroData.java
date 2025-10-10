@@ -17,9 +17,9 @@ import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.EncodingFormats;
-import org.hkijena.jipipe.api.data.documentation.Entity;
-import org.hkijena.jipipe.api.data.documentation.EntityType;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntity;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -28,8 +28,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "ImageJ macro", description = "An ImageJ macro")
-@JIPipeDataStorageDocumentation(
-        @Entity(id = "glob://./*.ijm", type = EntityType.File, name = "ImageJ macro", description = "The ImageJ macro file", encodingFormat = EncodingFormats.IMAGEJ_MACRO)
+@JIPipeDataCrate(
+        entities = @JIPipeDataCrateEntity(id = "glob:./*.ijm", type = JIPipeDataCrateEntityType.File, name = "ImageJ macro", description = "The ImageJ macro file", encodingFormat = EncodingFormats.IMAGEJ_MACRO)
 )
 public class ImageJMacroData extends StringData {
     public ImageJMacroData(String data) {

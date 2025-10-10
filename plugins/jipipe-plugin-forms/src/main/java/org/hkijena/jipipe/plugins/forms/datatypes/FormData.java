@@ -21,7 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.documentation.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -49,7 +49,7 @@ import java.nio.file.Paths;
  */
 @SetJIPipeDocumentation(name = "Form", description = "Data that describes a user input element.")
 @JsonSerialize(using = FormData.Serializer.class)
-@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
+@JIPipeDataCrate(humanReadableDescription = "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/form-data.schema.json")
 public abstract class FormData extends AbstractJIPipeParameterCollection implements JIPipeData, JIPipeValidatable {
 
