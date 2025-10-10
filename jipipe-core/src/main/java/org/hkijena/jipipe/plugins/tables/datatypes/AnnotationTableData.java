@@ -17,6 +17,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -29,6 +30,7 @@ import java.util.Map;
  * A special kind of {@link ResultsTableData} that stores annotation columns.
  */
 @SetJIPipeDocumentation(name = "Annotation table", description = "A table that contains data annotations and other metadata")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ResultsTableData.class)
 public class AnnotationTableData extends ResultsTableData {
 
     public AnnotationTableData() {

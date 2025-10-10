@@ -18,10 +18,12 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 /**
@@ -31,6 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @ConfigureJIPipeNode(menuPath = "Images\n4D")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 4)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
 public class ImagePlus4DData extends ImagePlusData implements Image4DData {
 
     /**

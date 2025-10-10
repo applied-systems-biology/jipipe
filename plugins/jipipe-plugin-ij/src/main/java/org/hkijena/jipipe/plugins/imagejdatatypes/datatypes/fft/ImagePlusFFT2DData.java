@@ -18,9 +18,11 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleData;
 
 /**
  * 2D image in frequency space
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 @ConfigureJIPipeNode(menuPath = "Images\nFFT")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 2)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusFFTData.class)
 public class ImagePlusFFT2DData extends ImagePlusFFTData {
 
     /**

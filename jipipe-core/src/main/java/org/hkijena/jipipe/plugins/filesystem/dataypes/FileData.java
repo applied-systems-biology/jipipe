@@ -15,8 +15,10 @@ package org.hkijena.jipipe.plugins.filesystem.dataypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
+import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 
 import java.nio.file.Path;
 
@@ -25,6 +27,7 @@ import java.nio.file.Path;
  */
 @SetJIPipeDocumentation(name = "File", description = "A path to a file")
 @JIPipeFastThumbnail
+@ConfigureJIPipeDataCrate(entities = {}, inherits = PathData.class)
 public class FileData extends PathData {
 
     public FileData(Path path) {

@@ -250,23 +250,25 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeDesktopCompendiumUI<JIPipe
 
         // Storage information
         builder.append("## Data storage (JIPipe data crate)\n\n");
-        if (info.getDataCrate().isEmpty()) {
+        if (!info.getDataCrate().isEmpty()) {
             builder.append("<table>");
-            builder.append("<tr><td><strong>Presence</strong></td>");
-            builder.append("<tr><td><strong>ID</strong></td>");
+            builder.append("<tr>");
+            builder.append("<td><strong>Presence</strong></td>");
+            builder.append("<td><strong>ID</strong></td>");
             builder.append("<td><strong>Type</strong></td>");
             builder.append("<td><strong>Protocol</strong></td>");
             builder.append("<td><strong>Path</strong></td>");
             builder.append("<td><strong>Name</strong></td>");
             builder.append("<td><strong>Description</strong></td>");
-            builder.append("<td><strong>Encoding format</strong></td></tr>");
+            builder.append("<td><strong>Encoding format</strong></td>");
+            builder.append("</tr>");
             for (JIPipeDataCrateMetadataEntry entry : info.getDataCrate().getEntries()) {
                 builder.append("<tr>");
                 builder.append("<td>").append(entry.getPresence()).append("</td>");
-                builder.append("<td>").append(entry.getId()).append("</td>");
+                builder.append("<td><code>").append(entry.getId()).append("</code></td>");
                 builder.append("<td>").append(entry.getType()).append("</td>");
-                builder.append("<td>").append(entry.getIdProtocol()).append("</td>");
-                builder.append("<td>").append(entry.getIdPath()).append("</td>");
+                builder.append("<td><code>").append(entry.getIdProtocol()).append("</code></td>");
+                builder.append("<td><code>").append(entry.getIdPath()).append("</code></td>");
                 builder.append("<td>").append(entry.getName()).append("</td>");
                 builder.append("<td>").append(entry.getDescription()).append("</td>");
                 builder.append("<td>").append(JsonUtils.toJsonString(entry.getEncodingFormat())).append("</td>");

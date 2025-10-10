@@ -37,7 +37,7 @@ public interface JIPipeDataCrateMetadata {
         JIPipeMutableDataCrateMetadata result = new JIPipeMutableDataCrateMetadata();
         final ConfigureJIPipeDataCrate rootConfig = dataClass.getAnnotation(ConfigureJIPipeDataCrate.class);
         if (rootConfig == null) {
-            throw new IllegalArgumentException("ConfigureJIPipeDataCrate annotation is null");
+            throw new IllegalArgumentException("The data class " + dataClass.getName() + " must have a @ConfigureJIPipeDataCrate annotation!");
         }
 
         Set<Class<? extends JIPipeData>> handledClasses = new HashSet<>();
@@ -61,6 +61,9 @@ public interface JIPipeDataCrateMetadata {
         }
         handledClasses.add(dataClass);
         final ConfigureJIPipeDataCrate config = dataClass.getAnnotation(ConfigureJIPipeDataCrate.class);
+        if(config == null) {
+            throw new IllegalStateException("Tried to inherit crate metadata from " + dataClass + ", but has no @ConfigureJIPipeDataCrate annotation!");
+        }
         for (Class<? extends JIPipeData> inherited : config.inherits()) {
             createEntities(inherited, handledClasses, result);
         }

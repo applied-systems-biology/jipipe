@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
@@ -43,6 +44,7 @@ import java.util.Collections;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Selection input form", description = "A form element that allows the user to select one of multiple options")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ParameterFormData.class)
 public class EnumFormData extends ParameterFormData {
 
     private String value = "";

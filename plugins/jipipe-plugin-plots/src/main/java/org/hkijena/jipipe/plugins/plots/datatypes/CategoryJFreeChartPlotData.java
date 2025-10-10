@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.jfree.data.category.CategoryDataset;
@@ -27,6 +28,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
  * Values are assigned a category that is its X-axis.
  * Colors are assigned by its group
  */
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JFreeChartPlotData.class)
 public abstract class CategoryJFreeChartPlotData extends JFreeChartPlotData {
 
     private String categoryAxisLabel = "Category";

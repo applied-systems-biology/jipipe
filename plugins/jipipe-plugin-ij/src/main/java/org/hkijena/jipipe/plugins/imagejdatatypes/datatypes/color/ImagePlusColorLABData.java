@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
@@ -39,6 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
 @ConfigureJIPipeNode(menuPath = "Images\nColor")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusColorData.class)
 public class ImagePlusColorLABData extends ImagePlusColorData {
 
     public ImagePlusColorLABData(ImagePlus image) {

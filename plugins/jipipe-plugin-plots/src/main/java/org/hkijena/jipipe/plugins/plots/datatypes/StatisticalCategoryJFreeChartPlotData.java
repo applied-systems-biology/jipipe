@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.plots.datatypes;
 
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.statistics.DefaultStatisticalCategoryDataset;
 import org.jfree.data.statistics.StatisticalCategoryDataset;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Values are assigned a category that is its X-axis.
  * Colors are assigned by its group
  */
+@ConfigureJIPipeDataCrate(entities = {}, inherits = CategoryJFreeChartPlotData.class)
 public abstract class StatisticalCategoryJFreeChartPlotData extends CategoryJFreeChartPlotData {
 
     /**

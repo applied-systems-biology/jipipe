@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
 @ConfigureJIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = ShortProcessor.class, bitDepth = 16, numDimensions = 4)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus4DGreyscaleData.class)
 public class ImagePlus4DGreyscale16UData extends ImagePlus4DGreyscaleData {
 
     public ImagePlus4DGreyscale16UData(ImagePlus image) {

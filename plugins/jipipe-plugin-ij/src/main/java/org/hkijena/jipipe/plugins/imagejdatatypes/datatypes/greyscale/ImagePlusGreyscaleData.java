@@ -19,12 +19,14 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.converters.ImplicitImageTypeConverter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft.ImagePlusFFTData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 /**
@@ -36,6 +38,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 @ConfigureJIPipeNode(menuPath = "Images\nGreyscale")
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
 public class ImagePlusGreyscaleData extends ImagePlusData implements GreyscaleImageData {
 
     public ImagePlusGreyscaleData(ImagePlus image) {

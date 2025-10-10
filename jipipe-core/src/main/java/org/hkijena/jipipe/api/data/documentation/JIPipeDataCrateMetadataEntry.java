@@ -114,28 +114,19 @@ public class JIPipeDataCrateMetadataEntry {
      * @return the protocol. Returns null if the ID is invalid.
      */
     public String getIdProtocol() {
-        if(!id.contains("./")) {
-            return null;
-        }
-        int index = id.indexOf(":./");
-        if(index != -1) {
-            return id.substring(0, index);
-        } else {
+        // It's fine like that, because we don't expect standard paths to have :
+        if(!id.contains(":")) {
             return "";
         }
+        return id.substring(0, id.indexOf(":"));
     }
 
     public String getIdPath() {
-        if(!id.contains("./")) {
-            return null;
-        }
-        int index = id.indexOf(":./");
-        if(index != -1) {
-            return id.substring(index + 1);
-        }
-        else {
+        // It's fine like that, because we don't expect standard paths to have :
+        if(!id.contains(":")) {
             return id;
         }
+        return id.substring(id.indexOf(":") + 1);
     }
 
     public boolean isValid() {

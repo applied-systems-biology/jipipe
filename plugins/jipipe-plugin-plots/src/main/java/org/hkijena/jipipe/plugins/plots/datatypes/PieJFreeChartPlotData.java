@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.plots.datatypes;
 
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 
@@ -21,6 +22,7 @@ import org.jfree.data.general.PieDataset;
  * Any pie plot has following columns:
  * Amount (Double), Category (String)
  */
+@ConfigureJIPipeDataCrate(entities = {}, inherits = JFreeChartPlotData.class)
 public abstract class PieJFreeChartPlotData extends JFreeChartPlotData {
 
     /**

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
@@ -32,6 +33,7 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "JFreeChart XY line plot", description = "Plot that displays the Y values against the X values.")
 @JFreeChartPlotMetadata(columns = {@JFreeChartPlotColumn(name = "X", description = "The X values", isNumeric = true),
         @JFreeChartPlotColumn(name = "Y", description = "The Y values", isNumeric = true)}, maxSeriesCount = Integer.MAX_VALUE)
+@ConfigureJIPipeDataCrate(entities = {}, inherits = XYJFreeChartPlotData.class)
 public class LineXYJFreeChartPlotData extends XYJFreeChartPlotData {
 
     private int lineThickness = 1;

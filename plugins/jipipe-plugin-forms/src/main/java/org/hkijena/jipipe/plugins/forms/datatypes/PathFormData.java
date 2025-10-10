@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
@@ -43,6 +44,7 @@ import java.nio.file.Paths;
 import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Path input form", description = "A form element that allows the user to input a path to a file or folder")
+@ConfigureJIPipeDataCrate(entities = {}, inherits = ParameterFormData.class)
 public class PathFormData extends ParameterFormData {
 
     private Path value = Paths.get("");
