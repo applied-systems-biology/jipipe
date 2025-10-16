@@ -39,7 +39,7 @@
   "tooltip-foreground" : "#CED0D6",
   "category-background" : "#1d1e21",
   "category-border" : "#1d1e21",
-  "node-highlight-border" : "#48494f",
+  "node-highlight-border" : "#CED0D6",
   "node-slot-background" : "#303030",
   "node-fill-saturation": 0.4,
   "node-fill-brightness": 0.3,

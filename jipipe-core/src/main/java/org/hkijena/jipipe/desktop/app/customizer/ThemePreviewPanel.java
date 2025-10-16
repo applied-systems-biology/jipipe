@@ -389,8 +389,8 @@ public class ThemePreviewPanel extends JPanel {
 
             // Nodes
             int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
-            paintNode(scale, style, g2d, 25, 10, (int) (150 * scale), 186.0f / 360.0f);
-            paintNode(scale, style, g2d, 50, 10 + nodeCellHeight * 4, (int) (150 * scale), 0);
+            paintNode(scale, style, g2d, 25, 10, (int) (150 * scale), 186.0f / 360.0f, false);
+            paintNode(scale, style, g2d, 50, 10 + nodeCellHeight * 4, (int) (150 * scale), 0, true);
 
             // Scrollbar
             int scrollBarSize = (int) (12 * scale);
@@ -402,7 +402,7 @@ public class ThemePreviewPanel extends JPanel {
 
         }
 
-        private static void paintNode(float scale, JIPipeDesktopModernThemeStyle style, Graphics2D g2d, int nodeX, int nodeY, int nodeWidth, float hue) {
+        private static void paintNode(float scale, JIPipeDesktopModernThemeStyle style, Graphics2D g2d, int nodeX, int nodeY, int nodeWidth, float hue, boolean selected) {
             int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
             int nodeHeight = 3 *  nodeCellHeight;
 
@@ -449,6 +449,12 @@ public class ThemePreviewPanel extends JPanel {
             g2d.drawImage(dataTypeIconImage, (int)(nodeX + 32 * scale), nodeY + nodeCellHeight + iconStart, (int)(scale * 16), (int)(scale * 16),null );
             g2d.setFont(mainFont);
             UIUtils.drawStringVerticallyCentered(g2d, "Node", (int)(nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
+
+            if(selected) {
+                g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SELECTION);
+                g2d.setColor(style.getNodeHighlightBorder());
+                g2d.drawRect(nodeX - 4, nodeY - 4, nodeWidth + 8, nodeHeight + 8);
+            }
         }
     }
 
@@ -458,6 +464,7 @@ public class ThemePreviewPanel extends JPanel {
         private int cornerRadius = 8;
         private Color borderColor;
         private Color backgroundColor;
+        private Stroke borderStroke = new BasicStroke(1);
 
         public PreviewComponent() {
             initialize();
@@ -478,6 +485,7 @@ public class ThemePreviewPanel extends JPanel {
         @Override
         protected void paintComponent(Graphics g) {
            super.paintComponent(g);
+           Graphics2D g2d = (Graphics2D) g;
 
            if(backgroundColor != null) {
                g.setColor(backgroundColor);
@@ -485,6 +493,7 @@ public class ThemePreviewPanel extends JPanel {
            }
            if(borderColor != null) {
                g.setColor(borderColor);
+               g2d.setStroke(borderStroke);
                g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
            }
         }
@@ -550,6 +559,14 @@ public class ThemePreviewPanel extends JPanel {
         public void leftLabel() {
             label.setHorizontalAlignment(JLabel.LEFT);
             label.setVerticalAlignment(JLabel.CENTER);
+        }
+
+        public Stroke getBorderStroke() {
+            return borderStroke;
+        }
+
+        public void setBorderStroke(Stroke borderStroke) {
+            this.borderStroke = borderStroke;
         }
     }
 }
