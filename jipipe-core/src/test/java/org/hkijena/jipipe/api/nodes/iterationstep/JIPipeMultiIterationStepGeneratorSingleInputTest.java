@@ -4,10 +4,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorTestUtils.*;
 
-import java.util.*;
+import java.util.List;
+
+import static org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorTestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 class JIPipeMultiIterationStepGeneratorSingleInputTest {
     /**
@@ -134,7 +136,7 @@ class JIPipeMultiIterationStepGeneratorSingleInputTest {
         // Expect the following layout
         assertEquals(expectedResult(
                 step(
-                        slot("Input 1", 0,1,2),
+                        slot("Input 1", 0, 1, 2),
                         slot("Input 2", 0)
                 )
         ), build(generator));
@@ -186,5 +188,7 @@ class JIPipeMultiIterationStepGeneratorSingleInputTest {
                 )
         ), build(generator));
     }
+
+
 
 }
