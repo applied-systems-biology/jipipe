@@ -1,22 +1,16 @@
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+
 import static org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorTestUtils.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.util.*;
-
-class JIPipeMultiIterationStepGeneratorTest {
+class JIPipeMultiIterationStepGeneratorMultiInputTest {
     /**
      * A basic test that applies a simple iteration case (1 input of N items = N iteration steps)
      * Uses the default selection method (use # to denote reference columns)
