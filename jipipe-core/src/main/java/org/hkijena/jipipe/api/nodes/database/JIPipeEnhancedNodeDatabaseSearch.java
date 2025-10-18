@@ -17,6 +17,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
+
 /**
  * ComfyUI-inspired search for JIPipe nodes with improved relevance:
  * - IDF-weighted token coverage (rare query tokens matter more)
@@ -24,6 +30,8 @@ import java.util.stream.Collectors;
  * - Phrase/order & compact span bonus
  * - Recall floor to prune unrelated items
  * - Usage-frequency-aware secondary sort (in-memory)
+ * - Phrase DB normalization (resource-backed, e.g. "8-bit" == "8 bit" == "8bit")
+ * - Perfect match (name == query) always found & ranked first
  *
  * Keeps visibility/existence filters, deprecation penalty, type-distance soft bias,
  * and pinned-first ordering. confirm* methods intentionally left minimal per request.
@@ -51,7 +59,12 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
     private static final int MAX_TYPE_DISTANCE_TO_INCLUDE = 64;
 
     private static final LevenshteinDistance LD = LevenshteinDistance.getDefaultInstance();
-    private static final Pattern SPLIT_WORD_PATTERN = Pattern.compile(" |\\b|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])|(?<=\\d)(?=\\D)|(?<=\\D)(?=\\d)|[_\\-\\/\\.]");
+    private static final Pattern SPLIT_WORD_PATTERN = Pattern.compile(
+            "[\\s_\\-/\\.]+|(?<=[a-z])(?=[A-Z])|(?=[A-Z][a-z])");
+
+    // ---------- Phrase DB (resource-backed) ----------
+    // Canonicalization map: variant -> canonical
+    private static final Map<String, String> PHRASE_CANON = loadPhraseCanon();
 
     public JIPipeEnhancedNodeDatabaseSearch(JIPipeNodeDatabase nodeDatabase) {
         this.nodeDatabase = nodeDatabase;
@@ -115,7 +128,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                         JIPipeSlotType targetSlotType,
                                                         Class<? extends JIPipeData> targetDataType) {
 
-        final String text = normalize(rawText);
+        // Normalize + phrase-canonicalize the query before tokenization
+        final String text = canonicalize(normalize(rawText));
         final boolean hasQuery = !text.isEmpty();
         final QueryParts queryParts = splitQuery(text);
         final QueryRep Q = QueryRep.from(queryParts);
@@ -158,9 +172,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         // ---------- Build candidate views + corpus DF/IDF ----------
         final List<CandidateView> views = new ArrayList<>(candidates.size());
         final Map<String, Integer> df = new HashMap<>();
+        final List<JIPipeNodeDatabaseEntry> exactNameMatches = new ArrayList<>();
+
         for (JIPipeNodeDatabaseEntry e : candidates) {
             CandidateView v = CandidateView.from(e);
             views.add(v);
+
+            // Perfect name match (after normalization + canonicalization)
+            if (canonicalize(normalize(e.getName())).equals(text)) {
+                exactNameMatches.add(e);
+            }
+
             Set<String> uniq = new HashSet<>();
             uniq.addAll(v.nameTokens);
             uniq.addAll(v.tokenTokens);
@@ -179,6 +201,16 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             JIPipeNodeDatabaseEntry e = candidates.get(i);
             CandidateView v = views.get(i);
 
+            // Perfect match takes absolute precedence:
+            final boolean isExact = exactNameMatches.contains(e);
+            if (isExact) {
+                // Force the smallest possible score and best bucket
+                primaryScore.put(e, -1e6);
+                long freq = USAGE_COUNTS.getOrDefault(e.getName(), 0L);
+                auxKeys.put(e, new SortKey(-1, -freq, 0.0, -1.0, -1.0));
+                continue;
+            }
+
             // Field-wise coverage scores in [0..1]
             CoverageScore covName   = coverageAgainst(Q, v.nameTokens, v.nameStems, idf);
             CoverageScore covTokens = coverageAgainst(Q, v.tokenTokens, v.tokenStems, idf);
@@ -193,8 +225,8 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                     + covTokens.coverage * TOKENS_FIELD_WEIGHT
                     + covExtra.coverage * EXTRA_FIELD_WEIGHT;
 
-            // Wildcard: if provided and matches the normalized name, nudge coverage upward
-            if (wildcardPattern != null && wildcardPattern.matcher(normalize(e.getName())).find()) {
+            // Wildcard: if provided and matches the normalized+canonicalized name, nudge coverage upward
+            if (wildcardPattern != null && wildcardPattern.matcher(canonicalize(normalize(e.getName()))).find()) {
                 coverage = Math.min(1.0, coverage + 0.05);
             }
 
@@ -208,9 +240,9 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             }
 
             // Small tie-breaks: normalized LD to name, and length penalty
-            String nameNorm = normalize(e.getName());
-            double ldName = normalizedLD(Q.raw, nameNorm);
-            double lengthPenalty = 0.15 * (1.0 - (Math.min(Q.raw.length(), nameNorm.length()) / (double) Math.max(Q.raw.length(), nameNorm.length())));
+            String nameNormCanon = canonicalize(normalize(e.getName()));
+            double ldName = normalizedLD(Q.raw, nameNormCanon);
+            double lengthPenalty = 0.15 * (1.0 - (Math.min(Q.raw.length(), nameNormCanon.length()) / (double) Math.max(Q.raw.length(), nameNormCanon.length())));
 
             // Type distance soft bias
             int td = (targetSlotType != null && targetDataType != null)
@@ -240,18 +272,19 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             auxKeys.put(e, new SortKey(mainBucket, -freq, span, -coverage, fused));
         }
 
-        // Tail cut now that coverage floor exists
+        // Tail cut now that coverage floor exists (never drop perfect matches)
         List<JIPipeNodeDatabaseEntry> filtered = new ArrayList<>(candidates);
-        filtered.removeIf(e -> Double.isInfinite(primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY)));
+        filtered.removeIf(e -> !exactNameMatches.contains(e) && Double.isInfinite(primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY)));
         if (!filtered.isEmpty()) {
             double p90 = percentile(primaryScore, filtered, 0.90);
-            filtered.removeIf(e -> primaryScore.get(e) > p90 * 1.25);
+            filtered.removeIf(e -> !exactNameMatches.contains(e) && primaryScore.get(e) > p90 * 1.25);
         }
 
-        // Final sort: pinned first, then bucket → primary score → name
+        // Final sort: pinned first, then exact-match bucket, then bucket → primary score → name
         Comparator<JIPipeNodeDatabaseEntry> baseComparator = Comparator
-                .comparing((JIPipeNodeDatabaseEntry e) -> auxKeys.get(e).main)
-                .thenComparingDouble(primaryScore::get)
+                .comparing((JIPipeNodeDatabaseEntry e) -> exactNameMatches.contains(e) ? 0 : 1)
+                .thenComparing((JIPipeNodeDatabaseEntry e) -> auxKeys.getOrDefault(e, new SortKey(9,0,0,0,0)).main)
+                .thenComparingDouble(e -> primaryScore.getOrDefault(e, Double.POSITIVE_INFINITY))
                 .thenComparing(JIPipeNodeDatabaseEntry::getName, String.CASE_INSENSITIVE_ORDER);
 
         filtered.sort(Comparator
@@ -319,14 +352,17 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         }
 
         static CandidateView from(JIPipeNodeDatabaseEntry e) {
-            String name = normalize(e.getName());
-            List<String> tokens = toStrings(e.getTokens()).stream()
-                    .map(JIPipeEnhancedNodeDatabaseSearch::normalize)
-                    .collect(Collectors.toList());
-            String extra = normalize(extraBlob(e));
-
             CandidateView candidateView = e.getAttachment(CandidateView.class);
-            if(candidateView == null) {
+            if (candidateView == null) {
+
+                // Normalize + phrase-canonicalize before tokenization
+                String name = canonicalize(normalize(e.getName()));
+                List<String> tokens = toStrings(e.getTokens()).stream()
+                        .map(JIPipeEnhancedNodeDatabaseSearch::normalize)
+                        .map(JIPipeEnhancedNodeDatabaseSearch::canonicalize)
+                        .collect(Collectors.toList());
+                String extra = canonicalize(normalize(extraBlob(e)));
+
                 candidateView = new CandidateView(
                         splitWords(name),
                         splitWords(String.join(" ", tokens)),
@@ -482,9 +518,27 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         return n.replaceAll("\\s+", " ");
     }
 
+    /** Apply phrase canonicalization using resource-backed DB */
+    private static String canonicalize(String normalized) {
+        if (normalized.isEmpty() || PHRASE_CANON.isEmpty()) return normalized;
+        // Simple pass: replace longer variants first to avoid cascading micro-replacements
+        // Build a list of variants sorted by length desc
+        List<Map.Entry<String,String>> entries = new ArrayList<>(PHRASE_CANON.entrySet());
+        entries.sort((a,b) -> Integer.compare(b.getKey().length(), a.getKey().length()));
+        String s = normalized;
+        for (Map.Entry<String,String> e : entries) {
+            String variant = e.getKey();
+            String canon = e.getValue();
+            // Replace exact substring occurrences; both already normalized
+            s = s.replace(variant, canon);
+        }
+        return s;
+    }
+
     private static QueryParts splitQuery(String q) {
         if (q == null) q = "";
         q = normalize(q);
+        q = canonicalize(q);
         if (q.isEmpty()) return new QueryParts("", Collections.emptyList());
         String[] parts = q.split("\\s+");
         return new QueryParts(q, Arrays.stream(parts).filter(p -> !p.isEmpty()).collect(Collectors.toList()));
@@ -584,5 +638,66 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         Arrays.sort(arr);
         int idx = (int) Math.floor(Math.max(0, Math.min(arr.length - 1, p * (arr.length - 1))));
         return arr[idx];
+    }
+
+    /* ------------------------------- Phrase DB loader ------------------------------- */
+
+    private static Map<String, String> loadPhraseCanon() {
+        // Try resource first
+        final String resourcePath = "/org/hkijena/jipipe/search/phrases.txt";
+        Map<String, String> canon = new HashMap<>();
+        boolean loaded = false;
+        try (InputStream is = JIPipeEnhancedNodeDatabaseSearch.class.getResourceAsStream(resourcePath)) {
+            if (is != null) {
+                try (BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                    String line;
+                    while ((line = br.readLine()) != null) {
+                        line = line.trim();
+                        if (line.isEmpty() || line.startsWith("#")) continue;
+                        // allow comma or semicolon separators
+                        String[] parts = line.split("[,;]");
+                        List<String> forms = new ArrayList<>();
+                        for (String p : parts) {
+                            String f = canonicalNormalize(p);
+                            if (!f.isEmpty()) forms.add(f);
+                        }
+                        if (forms.size() >= 2) {
+                            String canonical = forms.get(0);
+                            for (String f : forms) {
+                                canon.put(f, canonical);
+                            }
+                        } else if (forms.size() == 1) {
+                            String f = forms.get(0);
+                            canon.put(f, f);
+                        }
+                    }
+                    loaded = true;
+                }
+            }
+        } catch (Exception ignore) {
+            // fall back
+        }
+
+        if (!loaded) {
+            // Built-in minimal defaults so your examples work even without the resource present
+            String[][] defaults = new String[][]{
+                    {"2d", "2 d", "2-d"},
+                    {"3d", "3 d", "3-d"},
+                    {"8-bit", "8 bit", "8bit"},
+                    {"16-bit", "16 bit", "16bit"},
+                    {"roi", "region of interest"}
+            };
+            for (String[] group : defaults) {
+                String canonical = canonicalNormalize(group[0]);
+                for (String v : group) {
+                    canon.put(canonicalNormalize(v), canonical);
+                }
+            }
+        }
+        return canon;
+    }
+
+    private static String canonicalNormalize(String s) {
+        return normalize(s);
     }
 }
