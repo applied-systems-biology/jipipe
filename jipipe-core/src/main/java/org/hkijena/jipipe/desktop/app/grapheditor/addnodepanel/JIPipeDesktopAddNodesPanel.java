@@ -622,14 +622,27 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         searchField.addActionListener(e -> reloadAlgorithmList());
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
+            public void keyPressed(KeyEvent e) {
+                // Handle key events before they interfere with text selection
+                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+                    e.consume(); // Consume the event to prevent default behavior
+                    SwingUtilities.invokeLater(() -> {
+                        algorithmList.requestFocus();
+                        algorithmList.setSelectedIndex(0);
+                    });
+                } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    e.consume(); // Consume the event to prevent default behavior
+                    SwingUtilities.invokeLater(() -> {
+                        insertFirstAtCursor();
+                        graphEditorUI.getCanvasUI().requestFocus();
+                    });
+                }
+            }
+            
+            @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
-                if (e.getKeyCode() == KeyEvent.VK_DOWN) {
-                    algorithmList.requestFocus();
-                } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    insertFirstAtCursor();
-                    graphEditorUI.getCanvasUI().requestFocus();
-                }
+                // Additional handling can be added here if needed
             }
         });
         toolBar.add(searchField);
@@ -700,20 +713,31 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         });
         algorithmList.addKeyListener(new KeyAdapter() {
             @Override
-            public void keyReleased(KeyEvent e) {
-
+            public void keyPressed(KeyEvent e) {
+                // Handle key events before they interfere with text selection
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    if (algorithmList.getSelectedValue() != null) {
-                        insertAtCursor(algorithmList.getSelectedValue());
-                        graphEditorUI.getCanvasUI().requestFocus();
-                    }
+                    e.consume(); // Consume the event to prevent default behavior
+                    SwingUtilities.invokeLater(() -> {
+                        if (algorithmList.getSelectedValue() != null) {
+                            insertAtCursor(algorithmList.getSelectedValue());
+                            graphEditorUI.getCanvasUI().requestFocus();
+                        }
+                    });
                 } else if (e.getKeyCode() == KeyEvent.VK_UP) {
                     if (algorithmList.getSelectedIndex() == 0) {
-                        searchField.getTextField().requestFocus();
+                        e.consume(); // Consume the event to prevent default behavior
+                        SwingUtilities.invokeLater(() -> {
+                            searchField.getTextField().requestFocus();
+                            searchField.getTextField().selectAll();
+                        });
                     }
                 }
-
+            }
+            
+            @Override
+            public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
+                // Additional handling can be added here if needed
             }
         });
     }
@@ -733,10 +757,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     public void focusSearchBar() {
         JTextField textField = searchField.getTextField();
-        textField.selectAll();
-        textField.grabFocus();
-        textField.requestFocus();
-        searchField.grabAttentionAnimation();
+        // Use invokeLater to ensure proper focus handling
+        SwingUtilities.invokeLater(() -> {
+            textField.selectAll();
+            textField.grabFocus();
+            textField.requestFocus();
+            searchField.grabAttentionAnimation();
+        });
     }
 
     private MainCategoryFilter getSelectedMainCategory() {

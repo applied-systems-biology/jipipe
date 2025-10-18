@@ -39,6 +39,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     private final Timer attentionAnimationTimer;
     private String[] searchStrings = new String[0];
     private double attentionAnimationStatus = 1;
+    private boolean isProgrammaticFocusChange = false;
 
     /**
      * Creates a new instance
@@ -72,8 +73,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
 
         JButton searchButton = new JButton(JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
         searchButton.addActionListener(e -> {
-            textField.requestFocusInWindow();
-            textField.selectAll();
+            isProgrammaticFocusChange = true;
+            try {
+                textField.requestFocusInWindow();
+                textField.selectAll();
+            } finally {
+                isProgrammaticFocusChange = false;
+            }
         });
         UIUtils.makeButtonFlat25x25(searchButton);
         searchButton.setRequestFocusEnabled(false);
@@ -93,8 +99,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     }
 
     public void clear() {
-        setText("");
-        textField.requestFocusInWindow();
+        isProgrammaticFocusChange = true;
+        try {
+            setText("");
+            textField.requestFocusInWindow();
+        } finally {
+            isProgrammaticFocusChange = false;
+        }
     }
 
     public void addButton(String name, Icon icon, Consumer<JIPipeDesktopSearchTextField> action) {
@@ -141,6 +152,21 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
                 listener.actionPerformed(new ActionEvent(this, 1, "search-text-changed"));
             }
         });
+        
+        // Add focus listener to prevent selection conflicts
+        textField.addFocusListener(new java.awt.event.FocusAdapter() {
+            @Override
+            public void focusGained(java.awt.event.FocusEvent e) {
+                if (isProgrammaticFocusChange) {
+                    // Only select all when it's a programmatic focus change
+                    SwingUtilities.invokeLater(() -> {
+                        if (textField.isFocusOwner()) {
+                            textField.selectAll();
+                        }
+                    });
+                }
+            }
+        });
     }
 
     private void updateSearchStrings() {
@@ -168,7 +194,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     }
 
     public void grabAttentionAnimation() {
-        attentionAnimationStatus = 0;
-        attentionAnimationTimer.restart();
+        isProgrammaticFocusChange = true;
+        try {
+            attentionAnimationStatus = 0;
+            attentionAnimationTimer.restart();
+            textField.requestFocusInWindow();
+        } finally {
+            isProgrammaticFocusChange = false;
+        }
     }
 }
