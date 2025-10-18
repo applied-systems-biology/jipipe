@@ -181,6 +181,10 @@ public class JIPipeMultiIterationStepGenerator {
 
     public List<JIPipeMultiIterationStep> build(JIPipeProgressInfo progressInfo) {
 
+        if(slotList.isEmpty()) {
+            return new ArrayList<>();
+        }
+
         // Special case: Merge all
         if (getReferenceColumns() == REFERENCE_COLUMN_MERGE_ALL) {
             return applyMergeAllSolver(progressInfo.resolveAndLog("Merge into one batch"));
