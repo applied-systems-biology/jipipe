@@ -44,19 +44,19 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
     private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
-    private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Legacy;
+    private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Enhanced;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Node search implementation", description = "The method responsible for handling the node search")
-    @JIPipeParameter("search-implementation")
+    @JIPipeParameter("search-implementation-v2")
     public JIPipeNodeDatabaseSearchImplementation getSearchImplementation() {
         return searchImplementation;
     }
 
-    @JIPipeParameter("search-implementation")
+    @JIPipeParameter("search-implementation-v2")
     public void setSearchImplementation(JIPipeNodeDatabaseSearchImplementation searchImplementation) {
         this.searchImplementation = searchImplementation;
     }
