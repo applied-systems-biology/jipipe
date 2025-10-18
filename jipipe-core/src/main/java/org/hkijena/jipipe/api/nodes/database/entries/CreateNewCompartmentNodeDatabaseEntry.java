@@ -11,10 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.database;
+package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
@@ -27,7 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabaseEntry {
+public class CreateNewCompartmentNodeDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
 
     private final WeightedTokens tokens = new WeightedTokens();
 
@@ -122,7 +126,7 @@ public class CreateNewCompartmentNodeDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public boolean isDeprecated() {
+    public boolean isDeprecatedOrUnstable() {
         return false;
     }
 }

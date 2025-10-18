@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.database;
+package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
@@ -20,6 +20,10 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -32,7 +36,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEntry {
+public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
     private final String id;
     private final JIPipeNodeExample example;
     private final WeightedTokens tokens = new WeightedTokens();
@@ -195,7 +199,7 @@ public class CreateNewNodeByExampleDatabaseEntry implements JIPipeNodeDatabaseEn
     }
 
     @Override
-    public boolean isDeprecated() {
-        return exampleNode.getInfo().isDeprecated();
+    public boolean isDeprecatedOrUnstable() {
+        return exampleNode.getInfo().isDeprecated() || exampleNode.getInfo().isUnstable();
     }
 }

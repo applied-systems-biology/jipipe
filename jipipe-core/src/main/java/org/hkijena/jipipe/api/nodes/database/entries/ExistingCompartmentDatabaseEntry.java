@@ -11,13 +11,17 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.database;
+package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -27,7 +31,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry {
+public class ExistingCompartmentDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
     private final String id;
     private final JIPipeProjectCompartment compartment;
     private final WeightedTokens tokens = new WeightedTokens();
@@ -142,7 +146,7 @@ public class ExistingCompartmentDatabaseEntry implements JIPipeNodeDatabaseEntry
     }
 
     @Override
-    public boolean isDeprecated() {
+    public boolean isDeprecatedOrUnstable() {
         return false;
     }
 }
