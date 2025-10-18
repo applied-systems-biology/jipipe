@@ -1,9 +1,13 @@
-package org.hkijena.jipipe.api.nodes.database;
+package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -15,7 +19,7 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabaseEntry {
+public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
 
     private final JIPipeNodeTemplate template;
     private final JIPipeNodeDatabasePipelineVisibility visibility;
@@ -154,7 +158,7 @@ public class CreateNewNodesByTemplateDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public boolean isDeprecated() {
+    public boolean isDeprecatedOrUnstable() {
         return false;
     }
 }

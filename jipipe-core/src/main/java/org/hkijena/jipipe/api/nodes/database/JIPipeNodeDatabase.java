@@ -35,6 +35,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     private final JIPipeNodeDatabaseUpdater updater;
     //    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
     private final JIPipeLegacyNodeDatabaseSearch legacySearch;
+    private final JIPipeEnhancedNodeDatabaseSearch  enhancedSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
 
 
@@ -47,6 +48,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         this.updater = new JIPipeNodeDatabaseUpdater(this);
 //        this.luceneSearch = new JIPipeLuceneNodeDatabaseSearch(this);
         this.legacySearch = new JIPipeLegacyNodeDatabaseSearch(this);
+        this.enhancedSearch = new JIPipeEnhancedNodeDatabaseSearch(this);
         rebuildImmediately();
     }
 
@@ -92,6 +94,9 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     public JIPipeNodeDatabaseSearch getSearch() {
         if (getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Legacy) {
             return legacySearch;
+        }
+        if(getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Enhanced) {
+            return enhancedSearch;
         }
         return legacySearch;
     }

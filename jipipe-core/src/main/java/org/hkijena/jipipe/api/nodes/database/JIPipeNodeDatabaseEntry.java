@@ -58,5 +58,9 @@ public interface JIPipeNodeDatabaseEntry {
 
     boolean canAddOutputSlots();
 
-    boolean isDeprecated();
+    boolean isDeprecatedOrUnstable();
+
+    <T> T getAttachment(Class<T> attachmentClass);
+
+    <T> void attach(T attachment);
 }

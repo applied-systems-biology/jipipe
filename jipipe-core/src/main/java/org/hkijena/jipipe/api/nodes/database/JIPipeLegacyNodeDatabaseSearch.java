@@ -136,7 +136,7 @@ public class JIPipeLegacyNodeDatabaseSearch implements JIPipeNodeDatabaseSearch 
 
 
             double ranking = queryTextRanking(entry, text, textTokens);
-            if (entry.isDeprecated()) {
+            if (entry.isDeprecatedOrUnstable()) {
                 ranking *= 0.8;
             }
 
@@ -195,7 +195,7 @@ public class JIPipeLegacyNodeDatabaseSearch implements JIPipeNodeDatabaseSearch 
             double textRanking = queryTextRanking(entry, text, textTokens);
             double dataTypeRanking = -weight(bestConversionDistance, 5);
             double ranking = textTokens.isEmpty() ? dataTypeRanking : textRanking;
-            if (entry.isDeprecated()) {
+            if (entry.isDeprecatedOrUnstable()) {
                 ranking *= 0.8;
             }
 

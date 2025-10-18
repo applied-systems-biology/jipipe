@@ -11,12 +11,16 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.database;
+package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -28,11 +32,10 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabaseEntry {
+public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
 
     private final String id;
     private final JIPipeNodeInfo nodeInfo;
-    private final JIPipeNodeMenuLocation alias;
     private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
@@ -41,10 +44,9 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
     private final Set<String> categoryIds = new HashSet<>();
     private final List<String> locationInfos = new ArrayList<>();
 
-    public CreateNewNodeByInfoAliasDatabaseEntry(String id, JIPipeNodeInfo nodeInfo, JIPipeNodeMenuLocation alias) {
+    public CreateNewNodeByInfoDatabaseEntry(String id, JIPipeNodeInfo nodeInfo) {
         this.id = id;
         this.nodeInfo = nodeInfo;
-        this.alias = alias;
         JIPipeGraphNode node = nodeInfo.newInstance();
         this.canAddInputSlots = node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration &&
                 ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canAddInputSlot();
@@ -57,11 +59,17 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
     }
 
     private void initializeLocationInfos() {
-        locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
+        locationInfos.add((nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath()).trim());
+        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
+            locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
+        }
     }
 
     private void initializeCategoryIds() {
-        categoryIds.add(alias.getCategory().getId());
+        categoryIds.add(nodeInfo.getCategory().getId());
+        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
+            categoryIds.add(alias.getCategory().getId());
+        }
     }
 
     private void initializeSlots() {
@@ -88,7 +96,10 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
         for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
             tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
         }
-        tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
+        tokens.add(nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath(), WeightedTokens.WEIGHT_MENU);
+        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
+            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
+        }
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
@@ -99,7 +110,7 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
 
     @Override
     public String getName() {
-        String result = StringUtils.orElse(alias.getAlternativeName(), nodeInfo.getName());
+        String result = nodeInfo.getName();
         if(nodeInfo.isUnstable()) {
             result += " (unstable!)";
         }
@@ -193,7 +204,7 @@ public class CreateNewNodeByInfoAliasDatabaseEntry implements JIPipeNodeDatabase
     }
 
     @Override
-    public boolean isDeprecated() {
+    public boolean isDeprecatedOrUnstable() {
         return nodeInfo.isDeprecated();
     }
 }

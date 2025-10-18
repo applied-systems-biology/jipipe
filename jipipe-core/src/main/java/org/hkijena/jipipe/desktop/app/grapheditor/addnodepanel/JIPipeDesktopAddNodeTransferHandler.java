@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.*;
+import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
