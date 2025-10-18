@@ -191,6 +191,10 @@ if [ ! -e "./dependencies/freemarker-2.3.34.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/freemarker-2.3.34.jar https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.34/freemarker-2.3.34.jar || exit 1
 fi
+if [ ! -e "./dependencies/simmetrics-core-4.1.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/simmetrics-core-4.1.1.jar https://repo1.maven.org/maven2/com/github/mpkorstanje/simmetrics-core/4.1.1/simmetrics-core-4.1.1.jar || exit 1
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html || exit 1
