@@ -46,6 +46,7 @@
     "jakarta.json-2.0.1.jar": "https://repo1.maven.org/maven2/org/glassfish/jakarta.json/2.0.1/jakarta.json-2.0.1.jar",
     "jte-3.2.1.jar": "https://repo1.maven.org/maven2/gg/jte/jte/3.2.1/jte-3.2.1.jar",
     "freemarker-2.3.34.jar": "https://repo1.maven.org/maven2/org/freemarker/freemarker/2.3.34/freemarker-2.3.34.jar",
+    "simmetrics-core-4.1.1.jar": "https://repo1.maven.org/maven2/com/github/mpkorstanje/simmetrics-core/4.1.1/simmetrics-core-4.1.1.jar",
     "LICENSE_Javaluator.html": "https://opensource.org/licenses/lgpl-3.0.html",
     "LICENSE_JGraphT.txt": "https://raw.githubusercontent.com/jgrapht/jgrapht/master/license-EPL.txt",
     "LICENSE_OpenHTMLToPDF.txt": "https://raw.githubusercontent.com/danfickle/openhtmltopdf/open-dev-v1/LICENSE",
