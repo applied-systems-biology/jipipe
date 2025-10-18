@@ -918,7 +918,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         buttonPanel.add(UIUtils.makeButtonTransparent(cancelButton));
         JButton saveButton = new JButton("Save", JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
         saveButton.addActionListener(e -> {
-            JIPipe.autoSaveSettings();
+            JIPipe.getSettings().save();
             saved.set(true);
             dialog.setVisible(false);
         });
