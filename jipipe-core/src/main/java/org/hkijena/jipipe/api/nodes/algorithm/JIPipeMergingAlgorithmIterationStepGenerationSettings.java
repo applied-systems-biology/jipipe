@@ -28,12 +28,15 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeIterationStepTextAnnotationColumMatching columnMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
@@ -74,6 +77,15 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.dataAnnotationMergeStrategy = other.getDataAnnotationMergeStrategy();
         this.solverPreference =  other.getSolverPreference();
         this.forceNAIsAny = false;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 
     @SetJIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +

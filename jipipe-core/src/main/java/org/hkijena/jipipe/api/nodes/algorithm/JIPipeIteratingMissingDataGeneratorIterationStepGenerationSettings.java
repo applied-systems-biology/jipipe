@@ -28,12 +28,15 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 /**
  * Groups iteration step generation settings
@@ -60,6 +63,15 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
         this.solverPreference =  other.solverPreference;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 
     @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
