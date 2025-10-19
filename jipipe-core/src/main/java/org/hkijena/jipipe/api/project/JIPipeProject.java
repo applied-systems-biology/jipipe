@@ -103,6 +103,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private boolean isCleaningUp;
     private boolean isLoading;
     private Path projectFile;
+    private String projectJIPipeVersion = JIPipe.getJIPipeVersion();
 
     /**
      * A JIPipe project
@@ -851,6 +852,7 @@ public class JIPipeProject implements JIPipeValidatable {
         // Write standard metadata
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
+        generator.writeStringField("jipipe:project-jipipe-version", JIPipe.getJIPipeVersion());
         generator.writeObjectField("metadata", metadata);
         generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         generator.writeObjectField("runtime-partitions", runtimePartitions);
@@ -1058,6 +1060,22 @@ public class JIPipeProject implements JIPipeValidatable {
                 metadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(jsonNode.get("metadata"));
             }
 
+            // Load dependencies
+            projectJIPipeVersion = "0.0.0";
+            if(jsonNode.has("jipipe:project-jipipe-version")) {
+                projectJIPipeVersion = jsonNode.get("jipipe:project-jipipe-version").asText();
+            }
+            else if(jsonNode.has("dependencies")) {
+                // Search for the org.hkijena.jipipe:core dependency
+                List<JIPipeDependency> dependencies = JsonUtils.getObjectMapper().readerForListOf(JIPipeDependency.class).readValue(jsonNode.get("dependencies"));
+                for (JIPipeDependency dependency : dependencies) {
+                    if("org.hkijena.jipipe:core".equals(dependency.getDependencyId())) {
+                        projectJIPipeVersion = dependency.getDependencyVersion();
+                        break;
+                    }
+                }
+            }
+
             // Load partitions
             if (jsonNode.has("runtime-partitions")) {
                 JsonNode sub = jsonNode.get("runtime-partitions");
@@ -1170,7 +1188,12 @@ public class JIPipeProject implements JIPipeValidatable {
             // Update node visibilities
             updateCompartmentVisibility();
 
-            // Checking for error
+            // Apply upgrades
+            if(VersionUtils.compareVersions(projectJIPipeVersion, JIPipe.getJIPipeVersion()) < 0) {
+                applyProjectUpgrade(context, report, progressInfo);
+            }
+
+            // Checking for errors
             for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
                 UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInParentGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
@@ -1196,6 +1219,16 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         } finally {
             isLoading = false;
+        }
+    }
+
+    private void applyProjectUpgrade(JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Loaded project, which was designed for JIPipe " + projectJIPipeVersion + ", but this is JIPipe " + JIPipe.getJIPipeVersion() + ". Upgrading ...");
+        for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
+            graphNode.applyProjectUpgrade(projectJIPipeVersion, context.custom("Upgrades"), report);
+        }
+        for (JIPipeProjectSettingsSheet sheet : settingsSheets.values()) {
+            sheet.applyProjectUpgrade(projectJIPipeVersion, context.custom("Upgrades"), report);
         }
     }
 
@@ -1391,6 +1424,15 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public <T extends JIPipeEnvironment> JIPipeEnvironmentConfigurator<T> getEnvironmentConfigurator(Class<T> klass, JIPipeEnvironmentConfigurationCache configurationCache) {
         return new JIPipeEnvironmentConfigurator<>(klass, configurationCache, null, this);
+    }
+
+    /**
+     * The JIPipe version that this project was designed for.
+     * Defaults to the current JIPipe version.
+     * @return the project's JIPipe version
+     */
+    public String getProjectJIPipeVersion() {
+        return projectJIPipeVersion;
     }
 
     public interface CompartmentAddedEventListener {

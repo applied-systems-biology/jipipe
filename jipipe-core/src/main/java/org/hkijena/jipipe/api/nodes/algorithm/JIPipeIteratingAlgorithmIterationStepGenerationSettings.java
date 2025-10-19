@@ -28,12 +28,15 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 /**
  * Groups iteration step generation settings
@@ -216,5 +219,14 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
                 .addParameter("Merge same annotation values", "annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
                 .addParameter("Merge same data annotation values", "data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
                 .build();
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 }

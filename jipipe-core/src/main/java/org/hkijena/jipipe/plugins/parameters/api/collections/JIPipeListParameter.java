@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.deser.ContextualDeserializer;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.JIPipeProjectUpgradable;
 import org.hkijena.jipipe.api.parameters.JIPipeCustomTextDescriptionParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidatable;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeListParameter.Serializer.class)
 @JsonDeserialize(using = JIPipeListParameter.Deserializer.class)
-public abstract class JIPipeListParameter<T> extends ArrayList<T> implements JIPipeValidatable, JIPipeCustomTextDescriptionParameter {
+public abstract class JIPipeListParameter<T> extends ArrayList<T> implements JIPipeValidatable, JIPipeCustomTextDescriptionParameter, JIPipeProjectUpgradable {
     private Class<T> contentClass;
     private Supplier<T> customInstanceGenerator;
 
@@ -113,6 +114,15 @@ public abstract class JIPipeListParameter<T> extends ArrayList<T> implements JIP
 
     public void setCustomInstanceGenerator(Supplier<T> customInstanceGenerator) {
         this.customInstanceGenerator = customInstanceGenerator;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        for (T t : this) {
+            if(t instanceof JIPipeProjectUpgradable upgradable) {
+                upgradable.applyProjectUpgrade(fromVersion, context, report);
+            }
+        }
     }
 
     /**

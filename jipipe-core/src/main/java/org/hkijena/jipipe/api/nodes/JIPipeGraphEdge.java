@@ -15,6 +15,9 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.api.compat.JIPipeProjectUpgradable;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
 
@@ -23,7 +26,7 @@ import java.util.UUID;
 /**
  * A custom graph edge
  */
-public class JIPipeGraphEdge extends DefaultEdge {
+public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgradable {
 
     private boolean userCanDisconnect;
 
@@ -77,6 +80,11 @@ public class JIPipeGraphEdge extends DefaultEdge {
     @JsonSetter("uuid")
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        // Nothing to do
     }
 
     /**
