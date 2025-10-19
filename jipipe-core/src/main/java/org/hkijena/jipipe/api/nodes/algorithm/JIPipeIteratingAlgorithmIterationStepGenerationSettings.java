@@ -23,16 +23,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatchi
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 /**
  * Groups iteration step generation settings
@@ -46,8 +50,7 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
-
-    private boolean forceFlowGraphSolver = false;
+    private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
 
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings() {
     }
@@ -61,20 +64,20 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+        this.solverPreference = other.solverPreference;
     }
 
-    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonGetter("force-flow-graph-solver")
-    public boolean isForceFlowGraphSolver() {
-        return forceFlowGraphSolver;
+    @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
+    @JIPipeParameter(value = "solver-preference", pinned = true)
+    @JsonGetter("solver-preference")
+    public JIPipeIterationStepSolverPreference getSolverPreference() {
+        return solverPreference;
     }
 
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonSetter("force-flow-graph-solver")
-    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
-        this.forceFlowGraphSolver = forceFlowGraphSolver;
+    @JIPipeParameter("solver-preference")
+    @JsonSetter("solver-preference")
+    public void setSolverPreference(JIPipeIterationStepSolverPreference solverPreference) {
+        this.solverPreference = solverPreference;
     }
 
     @SetJIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
@@ -121,19 +124,22 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     public void setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching columnMatching) {
         boolean needsTriggerStructureChange = columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom || this.columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom;
         this.columnMatching = columnMatching;
-        if (needsTriggerStructureChange)
+        if (needsTriggerStructureChange) {
             emitParameterUIChangedEvent();
+        }
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
-            if (getColumnMatching() != JIPipeIterationStepTextAnnotationColumMatching.Custom)
+            if (getColumnMatching() != JIPipeIterationStepTextAnnotationColumMatching.Custom) {
                 return false;
+            }
         }
         if (access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
-            if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression)
+            if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression) {
                 return false;
+            }
         }
         return JIPipeIterationStepGenerationSettings.super.isParameterUIVisible(tree, access);
     }
@@ -144,8 +150,9 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     @JsonGetter("custom-matched-columns-expression")
     public StringQueryExpression getCustomColumns() {
-        if (customColumns == null)
+        if (customColumns == null) {
             customColumns = new StringQueryExpression();
+        }
         return customColumns;
     }
 
@@ -216,5 +223,14 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
                 .addParameter("Merge same annotation values", "annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
                 .addParameter("Merge same data annotation values", "data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
                 .build();
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if (VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 }

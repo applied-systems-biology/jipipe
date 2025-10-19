@@ -109,7 +109,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 iterationStepGenerationSettings.getCustomColumns());
         builder.setAnnotationMatchingMethod(iterationStepGenerationSettings.getAnnotationMatchingMethod());
         builder.setCustomAnnotationMatching(iterationStepGenerationSettings.getCustomAnnotationMatching());
-        builder.setForceFlowGraphSolver(iterationStepGenerationSettings.isForceFlowGraphSolver());
+        builder.setSolverPreference(iterationStepGenerationSettings.getSolverPreference());
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
         iterationSteps.sort(Comparator.naturalOrder());
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();

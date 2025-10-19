@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -164,6 +165,15 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeHardwareAccelerationMode.class,
                 "Hardware acceleration modes",
                 "A library or method used for allowing processes to be accelerated");
+         registerEnumParameterType("jipipe:iteration-step-solver-preference",
+                 JIPipeIterationStepSolverPreference.class,
+                 "Iteration step solver preference",
+                 "The solver is responsible for generating the iteration steps. " +
+                         "There are three main solvers: " +
+                         "(1) Single dictionary - fast, but only works if there is exactly one reference column. " +
+                         "(2) Multi dictionary - fast and can handle multiple reference columns. Introduced with JIPipe 6.0.0 and behaves like the more expensive flow graph solver. " +
+                         "(3) Flow graph - slow and can handle multiple reference columns. " +
+                         "The legacy setting is automatically used for older JIPipe projects. Otherwise, Auto selects the fastest option.");
 
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 

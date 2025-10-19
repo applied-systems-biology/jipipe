@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeMetadataObject;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
+import org.hkijena.jipipe.api.compat.JIPipeProjectUpgradable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -71,7 +72,7 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeGraph.Serializer.class)
 @JsonDeserialize(using = JIPipeGraph.Deserializer.class)
-public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener {
+public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable, JIPipeProjectUpgradable, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeParameterCollection.ParameterStructureChangedEventListener {
 
     private final BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
     private final Map<UUID, UUID> nodeCompartmentUUIDs = new HashMap<>();
@@ -2072,6 +2073,16 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             return project.getCompartmentGraph() == this;
         }
         return false;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        for (JIPipeGraphNode graphNode : getGraphNodes()) {
+            graphNode.applyProjectUpgrade(fromVersion, context, report);
+        }
+        for (JIPipeGraphEdge edge : graph.edgeSet()) {
+            edge.applyProjectUpgrade(fromVersion, context, report);
+        }
     }
 
     public interface GraphChangedEventListener {

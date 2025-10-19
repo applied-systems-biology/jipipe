@@ -119,7 +119,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 iterationStepGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(iterationStepGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(iterationStepGenerationSettings.getAnnotationMatchingMethod());
-        builder.setForceFlowGraphSolver(iterationStepGenerationSettings.isForceFlowGraphSolver());
+        builder.setSolverPreference(iterationStepGenerationSettings.getSolverPreference());
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
         iterationSteps.removeIf(JIPipeMultiIterationStep::isEmpty);
         iterationSteps.sort(Comparator.naturalOrder());

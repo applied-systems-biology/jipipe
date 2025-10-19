@@ -132,7 +132,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
                 iterationStepGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(iterationStepGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(iterationStepGenerationSettings.getAnnotationMatchingMethod());
-        builder.setForceFlowGraphSolver(iterationStepGenerationSettings.isForceFlowGraphSolver());
+        builder.setSolverPreference(iterationStepGenerationSettings.getSolverPreference());
         builder.setForceNAIsAny(iterationStepGenerationSettings.isForceNAIsAny());
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
         iterationSteps.sort(Comparator.naturalOrder());

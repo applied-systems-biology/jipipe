@@ -16,9 +16,11 @@ package org.hkijena.jipipe.api.parameters;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.compat.JIPipeProjectUpgradable;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
@@ -39,7 +41,7 @@ import java.util.Set;
 /**
  * Interfaced for a parameterized object
  */
-public interface JIPipeParameterCollection {
+public interface JIPipeParameterCollection extends JIPipeProjectUpgradable {
 
     /**
      * Allows to override the visibility of parameters inside the UI
@@ -235,6 +237,22 @@ public interface JIPipeParameterCollection {
      */
     default void deserializeFromJsonNode(JsonNode jsonNode) {
         ParameterUtils.deserializeParametersFromJson(this, jsonNode, new UnspecifiedValidationReportContext(), new JIPipeValidationReport());
+    }
+
+    @Override
+    default void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        JIPipeParameterTree tree = new JIPipeParameterTree(this);
+        for (JIPipeParameterCollection source : tree.getRegisteredSources()) {
+            if(source != this) {
+                source.applyProjectUpgrade(fromVersion, context, report);
+            }
+        }
+        for (JIPipeParameterAccess access : tree.getParameters().values()) {
+            Object object = access.get(Object.class);
+            if(object instanceof JIPipeProjectUpgradable upgradable) {
+                upgradable.applyProjectUpgrade(fromVersion, context, report);
+            }
+        }
     }
 
     /**

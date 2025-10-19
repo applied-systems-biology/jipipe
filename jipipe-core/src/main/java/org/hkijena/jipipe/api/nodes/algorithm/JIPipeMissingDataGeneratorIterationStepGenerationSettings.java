@@ -13,18 +13,24 @@
 
 package org.hkijena.jipipe.api.nodes.algorithm;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 /**
  * Groups iteration step generation settings
@@ -36,9 +42,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
     private boolean allowMerging = false;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
-
-    private boolean forceFlowGraphSolver = false;
-
+    private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
 
     public JIPipeMissingDataGeneratorIterationStepGenerationSettings() {
     }
@@ -50,19 +54,30 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.allowMerging = other.allowMerging;
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+        this.solverPreference =  other.solverPreference;
 
     }
 
-    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
-    @JIPipeParameter("force-flow-graph-solver")
-    public boolean isForceFlowGraphSolver() {
-        return forceFlowGraphSolver;
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 
-    @JIPipeParameter("force-flow-graph-solver")
-    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
-        this.forceFlowGraphSolver = forceFlowGraphSolver;
+    @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
+    @JIPipeParameter(value = "solver-preference", pinned = true)
+    @JsonGetter("solver-preference")
+    public JIPipeIterationStepSolverPreference getSolverPreference() {
+        return solverPreference;
+    }
+
+    @JIPipeParameter("solver-preference")
+    @JsonSetter("solver-preference")
+    public void setSolverPreference(JIPipeIterationStepSolverPreference solverPreference) {
+        this.solverPreference = solverPreference;
     }
 
     @SetJIPipeDocumentation(name = "Grouping method", description = "Algorithms with multiple inputs require to match the incoming data " +

@@ -23,16 +23,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatchi
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerRange;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends AbstractJIPipeParameterCollection implements JIPipeIterationStepGenerationSettings {
     private JIPipeIterationStepTextAnnotationColumMatching columnMatching = JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion;
@@ -43,7 +47,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy = JIPipeDataAnnotationMergeMode.MergeTables;
-    private boolean forceFlowGraphSolver = false;
+    private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
     private boolean forceNAIsAny = false;
 
     public JIPipeMergingAlgorithmIterationStepGenerationSettings() {
@@ -58,7 +62,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+        this.solverPreference =  other.solverPreference;
         this.forceNAIsAny = other.forceNAIsAny;
     }
 
@@ -71,8 +75,17 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.annotationMatchingMethod = other.getAnnotationMatchingMethod();
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.getCustomAnnotationMatching());
         this.dataAnnotationMergeStrategy = other.getDataAnnotationMergeStrategy();
-        this.forceFlowGraphSolver = other.isForceFlowGraphSolver();
+        this.solverPreference =  other.getSolverPreference();
         this.forceNAIsAny = false;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+            solverPreference = JIPipeIterationStepSolverPreference.Legacy;
+        }
     }
 
     @SetJIPipeDocumentation(name = "Force NA is ANY (if available)", description = "If enabled, missing annotations are considered as ANY (and thus merged with other data) even if there is only one input. " +
@@ -89,17 +102,17 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
         this.forceNAIsAny = forceNAIsAny;
     }
 
-    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonGetter("force-flow-graph-solver")
-    public boolean isForceFlowGraphSolver() {
-        return forceFlowGraphSolver;
+    @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
+    @JIPipeParameter(value = "solver-preference", pinned = true)
+    @JsonGetter("solver-preference")
+    public JIPipeIterationStepSolverPreference getSolverPreference() {
+        return solverPreference;
     }
 
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonSetter("force-flow-graph-solver")
-    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
-        this.forceFlowGraphSolver = forceFlowGraphSolver;
+    @JIPipeParameter("solver-preference")
+    @JsonSetter("solver-preference")
+    public void setSolverPreference(JIPipeIterationStepSolverPreference solverPreference) {
+        this.solverPreference = solverPreference;
     }
 
     @SetJIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 
 import java.util.ArrayList;
@@ -75,6 +76,10 @@ public class VersionUtils {
             result[i] = Integer.parseInt(items[i]);
         }
         return result;
+    }
+
+    public static boolean isUpgradingFrom(String version) {
+        return compareVersions(version, JIPipe.getJIPipeVersion()) < 0;
     }
 
     public List<int[]> equalizeVersionComponents(int[]... versions) {

@@ -160,6 +160,12 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         this.continueOnFailureExportFailedInputs = continueOnFailureExportFailedInputs;
     }
 
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+        wrappedGraph.applyProjectUpgrade(fromVersion, context, report);
+    }
+
     public boolean isPreventUpdateSlots() {
         return preventUpdateSlots;
     }

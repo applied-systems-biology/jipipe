@@ -124,7 +124,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().get(id);
                 JIPipeValidationReport report = new JIPipeValidationReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-                project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
+                project = template.loadAsProject(report, notifications, JIPipeProgressInfo.SILENT);
             } catch (Exception e) {
                 e.printStackTrace();
             }
