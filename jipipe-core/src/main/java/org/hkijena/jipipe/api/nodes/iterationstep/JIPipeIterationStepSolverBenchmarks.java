@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public final class JIPipeIterationStepSolverBenchmarks {
         int slots = 3;
         int groups = 200; // cardinality for #Group
         int idsPerGroup = 10; // cardinality for #ID
+
 
         List<JIPipeInputDataSlot> input = new ArrayList<>();
         Random rnd = new Random();
@@ -59,5 +61,10 @@ public final class JIPipeIterationStepSolverBenchmarks {
         System.out.println("FlowGraph time:    " + (t1 - t0) + " ms, steps=" + flow.size());
         System.out.println("Composite time:    " + (t3 - t2) + " ms, steps=" + comp.size());
         System.out.println("Steps equal?       " + (flow.size() == comp.size()));
+
+        if(flow.size() != comp.size()) {
+            System.out.println("Flow graph: " + JsonUtils.toJsonString(JIPipeMultiIterationStepGeneratorTestUtils.stepsToMap(flow)));
+            System.out.println("Composite: " + JsonUtils.toJsonString(JIPipeMultiIterationStepGeneratorTestUtils.stepsToMap(comp)));
+        }
     }
 }

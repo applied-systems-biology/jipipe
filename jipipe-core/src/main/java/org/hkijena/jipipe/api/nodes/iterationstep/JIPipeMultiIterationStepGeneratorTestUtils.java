@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
 
@@ -42,6 +43,10 @@ public final class JIPipeMultiIterationStepGeneratorTestUtils {
      */
     public static Set<Map<String, Set<Integer>>> build(JIPipeMultiIterationStepGenerator generator) {
         List<JIPipeMultiIterationStep> steps = generator.build(JIPipeProgressInfo.SILENT);
+        return stepsToMap(steps);
+    }
+
+    public static @NotNull HashSet<Map<String, Set<Integer>>> stepsToMap(List<JIPipeMultiIterationStep> steps) {
         var result = new HashSet<Map<String, Set<Integer>>>();
         for (JIPipeMultiIterationStep step : steps) {
             Map<String, Set<Integer>> representation = new HashMap<>();
