@@ -2,14 +2,14 @@ package org.hkijena.jipipe.api.nodes.iterationstep.solvers;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.iterationstep.IterationStepSolver;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolver;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SplitAllSolver implements IterationStepSolver {
+public class SplitAllSolver implements JIPipeIterationStepSolver {
     @Override
     public List<JIPipeMultiIterationStep> solve(JIPipeMultiIterationStepGenerator generator, JIPipeProgressInfo progressInfo) {
         List<JIPipeMultiIterationStep> split = new ArrayList<>();

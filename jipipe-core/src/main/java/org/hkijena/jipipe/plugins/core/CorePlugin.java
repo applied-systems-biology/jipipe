@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -164,6 +165,10 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeHardwareAccelerationMode.class,
                 "Hardware acceleration modes",
                 "A library or method used for allowing processes to be accelerated");
+         registerEnumParameterType("jipipe:iteration-step-solver-preference",
+                 JIPipeIterationStepSolverPreference.class,
+                 "Iteration step solver preference",
+                 "Preference for iteration step solvers.");
 
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 

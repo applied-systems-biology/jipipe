@@ -6,13 +6,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.iterationstep.IterationStepSolver;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolver;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 
 import java.util.*;
 
-public class SingleKeyDictionarySolver implements IterationStepSolver {
+public class SingleKeyDictionarySolver implements JIPipeIterationStepSolver {
     @Override
     public List<JIPipeMultiIterationStep> solve(JIPipeMultiIterationStepGenerator generator, JIPipeProgressInfo progressInfo) {
         final List<JIPipeDataSlot> slotList = generator.getSlots();

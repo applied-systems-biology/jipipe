@@ -46,7 +46,7 @@ public class JIPipeMultiIterationStepGenerator {
     private boolean applyMerging = true;
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
-    private JIPipeMultiIterationStepGeneratorSolverPreference solverPreference = JIPipeMultiIterationStepGeneratorSolverPreference.Auto;
+    private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
     private boolean forceNAIsAny = false;
 
     private final CompositeDictionarySolver compositeDictionarySolver = new CompositeDictionarySolver();
@@ -258,11 +258,11 @@ public class JIPipeMultiIterationStepGenerator {
         this.forceNAIsAny = forceNAIsAny;
     }
 
-    public JIPipeMultiIterationStepGeneratorSolverPreference getSolverPreference() {
+    public JIPipeIterationStepSolverPreference getSolverPreference() {
         return solverPreference;
     }
 
-    public void setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference solverPreference) {
+    public void setSolverPreference(JIPipeIterationStepSolverPreference solverPreference) {
         this.solverPreference = solverPreference;
     }
 }

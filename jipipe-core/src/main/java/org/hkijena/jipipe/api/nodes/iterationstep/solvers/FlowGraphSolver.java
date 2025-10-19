@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
-import org.hkijena.jipipe.api.nodes.iterationstep.IterationStepSolver;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolver;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -21,7 +21,7 @@ import org.jgrapht.graph.DefaultEdge;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FlowGraphSolver implements IterationStepSolver {
+public class FlowGraphSolver implements JIPipeIterationStepSolver {
     @Override
     public List<JIPipeMultiIterationStep> solve(JIPipeMultiIterationStepGenerator generator, JIPipeProgressInfo progressInfo) {
         DefaultDirectedGraph<RowNode, DefaultEdge> graph = new DefaultDirectedGraph<>(DefaultEdge.class);

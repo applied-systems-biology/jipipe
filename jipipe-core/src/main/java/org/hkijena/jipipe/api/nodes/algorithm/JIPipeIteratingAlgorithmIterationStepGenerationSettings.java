@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatchi
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
-import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorSolverPreference;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -47,7 +47,7 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
-    private JIPipeMultiIterationStepGeneratorSolverPreference solverPreference = JIPipeMultiIterationStepGeneratorSolverPreference.Auto;
+    private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
 
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings() {
     }
@@ -67,13 +67,13 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
     @JIPipeParameter("solver-preference")
     @JsonGetter("solver-preference")
-    public JIPipeMultiIterationStepGeneratorSolverPreference getSolverPreference() {
+    public JIPipeIterationStepSolverPreference getSolverPreference() {
         return solverPreference;
     }
 
     @JIPipeParameter("solver-preference")
     @JsonSetter("solver-preference")
-    public void setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference solverPreference) {
+    public void setSolverPreference(JIPipeIterationStepSolverPreference solverPreference) {
         this.solverPreference = solverPreference;
     }
 

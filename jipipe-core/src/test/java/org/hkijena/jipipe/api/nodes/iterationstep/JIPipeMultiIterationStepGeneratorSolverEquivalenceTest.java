@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.api.nodes.iterationstep;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatching;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.junit.jupiter.api.Test;
@@ -42,7 +41,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -78,7 +77,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -114,7 +113,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -141,7 +140,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -189,7 +188,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -222,7 +221,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -263,7 +262,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }
@@ -300,7 +299,7 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         );
 
         // Test all solvers
-        for (JIPipeMultiIterationStepGeneratorSolverPreference preference : JIPipeMultiIterationStepGeneratorSolverPreference.values()) {
+        for (JIPipeIterationStepSolverPreference preference : JIPipeIterationStepSolverPreference.values()) {
             generator.setSolverPreference(preference);
             assertEquals(expected, build(generator));
         }

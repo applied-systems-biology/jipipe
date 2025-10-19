@@ -4,6 +4,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.util.List;
 
-public interface IterationStepSolver {
+public interface JIPipeIterationStepSolver {
     List<JIPipeMultiIterationStep> solve(JIPipeMultiIterationStepGenerator generator, JIPipeProgressInfo progressInfo);
 }

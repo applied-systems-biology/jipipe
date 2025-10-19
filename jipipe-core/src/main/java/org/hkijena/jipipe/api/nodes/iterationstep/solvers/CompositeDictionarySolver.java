@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.nodes.iterationstep.solvers;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.iterationstep.IterationStepSolver;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolver;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenerator;
 
@@ -16,7 +16,7 @@ import java.util.*;
  * - Supports forceNAIsAny: empty components fan out to all observed values at that position
  * - Supports applyMerging on/off
  */
-public class CompositeDictionarySolver implements IterationStepSolver {
+public class CompositeDictionarySolver implements JIPipeIterationStepSolver {
 
     @Override
     public List<JIPipeMultiIterationStep> solve(JIPipeMultiIterationStepGenerator g, JIPipeProgressInfo progress) {
