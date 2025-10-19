@@ -120,7 +120,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeIterati
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
-            builder.setForceFlowGraphSolver(batchGenerationSettings.isForceFlowGraphSolver());
+            builder.setSolverPreference(batchGenerationSettings.getSolverPreference());
             List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
             iterationSteps.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();

@@ -91,8 +91,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
                 tableMergeSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(tableMergeSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(tableMergeSettings.getAnnotationMatchingMethod());
-        builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
-        builder.setForceFlowGraphSolver(tableMergeSettings.isForceFlowGraphSolver());
+        builder.setSolverPreference(tableMergeSettings.getSolverPreference());
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
         iterationSteps.sort(Comparator.naturalOrder());
         boolean withLimit = tableMergeSettings.getLimit().isEnabled();

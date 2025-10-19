@@ -252,7 +252,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 iterationStepGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(iterationStepGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(iterationStepGenerationSettings.getAnnotationMatchingMethod());
-        builder.setForceFlowGraphSolver(iterationStepGenerationSettings.isForceFlowGraphSolver());
+        builder.setSolverPreference(iterationStepGenerationSettings.getSolverPreference());
         List<JIPipeMultiIterationStep> iterationSteps = builder.build(progressInfo);
         iterationSteps.sort(Comparator.naturalOrder());
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();

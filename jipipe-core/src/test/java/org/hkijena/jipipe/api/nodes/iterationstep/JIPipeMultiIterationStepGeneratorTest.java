@@ -202,7 +202,7 @@ class JIPipeMultiIterationStepGeneratorTest {
         ));
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(false);
-        generator.setForceFlowGraphSolver(true);
+        generator.setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference.ForceFlowGraph);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
 
         // Expect 3 iteration steps
@@ -242,7 +242,7 @@ class JIPipeMultiIterationStepGeneratorTest {
         ));
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(false);
-        generator.setForceFlowGraphSolver(true);
+        generator.setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference.ForceFlowGraph);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
 
         // Expect 2 iteration steps
@@ -275,7 +275,7 @@ class JIPipeMultiIterationStepGeneratorTest {
         ));
         generator.setReferenceColumns(JIPipeIterationStepTextAnnotationColumMatching.PrefixHashUnion, new StringQueryExpression());
         generator.setApplyMerging(false);
-        generator.setForceFlowGraphSolver(true);
+        generator.setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference.ForceFlowGraph);
         List<JIPipeMultiIterationStep> result = generator.build(JIPipeProgressInfo.SILENT);
 
         // Expect 3 iteration steps

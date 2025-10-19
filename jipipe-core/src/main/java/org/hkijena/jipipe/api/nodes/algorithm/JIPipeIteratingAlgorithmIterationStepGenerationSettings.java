@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIterationStepTextAnnotationColumMatchi
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGeneratorSolverPreference;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -46,8 +47,7 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     private OptionalIntegerRange limit = new OptionalIntegerRange(new IntegerRange("0-9"), false);
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
-
-    private boolean forceFlowGraphSolver = false;
+    private JIPipeMultiIterationStepGeneratorSolverPreference solverPreference = JIPipeMultiIterationStepGeneratorSolverPreference.Auto;
 
     public JIPipeIteratingAlgorithmIterationStepGenerationSettings() {
     }
@@ -61,20 +61,20 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.forceFlowGraphSolver = other.forceFlowGraphSolver;
+        this.solverPreference =  other.solverPreference;
     }
 
-    @SetJIPipeDocumentation(name = "Force flow graph solver", description = "If enabled, disable the faster dictionary-based solver. Use this if you experience unexpected behavior.")
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonGetter("force-flow-graph-solver")
-    public boolean isForceFlowGraphSolver() {
-        return forceFlowGraphSolver;
+    @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
+    @JIPipeParameter("solver-preference")
+    @JsonGetter("solver-preference")
+    public JIPipeMultiIterationStepGeneratorSolverPreference getSolverPreference() {
+        return solverPreference;
     }
 
-    @JIPipeParameter("force-flow-graph-solver")
-    @JsonSetter("force-flow-graph-solver")
-    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
-        this.forceFlowGraphSolver = forceFlowGraphSolver;
+    @JIPipeParameter("solver-preference")
+    @JsonSetter("solver-preference")
+    public void setSolverPreference(JIPipeMultiIterationStepGeneratorSolverPreference solverPreference) {
+        this.solverPreference = solverPreference;
     }
 
     @SetJIPipeDocumentation(name = "Annotation matching method", description = "Allows to customize when two annotation sets are considered as equal. " +
