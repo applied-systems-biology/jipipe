@@ -64,11 +64,11 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.solverPreference =  other.solverPreference;
+        this.solverPreference = other.solverPreference;
     }
 
     @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
-    @JIPipeParameter("solver-preference")
+    @JIPipeParameter(value = "solver-preference", pinned = true)
     @JsonGetter("solver-preference")
     public JIPipeIterationStepSolverPreference getSolverPreference() {
         return solverPreference;
@@ -124,19 +124,22 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     public void setColumnMatching(JIPipeIterationStepTextAnnotationColumMatching columnMatching) {
         boolean needsTriggerStructureChange = columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom || this.columnMatching == JIPipeIterationStepTextAnnotationColumMatching.Custom;
         this.columnMatching = columnMatching;
-        if (needsTriggerStructureChange)
+        if (needsTriggerStructureChange) {
             emitParameterUIChangedEvent();
+        }
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "custom-matched-columns-expression".equals(access.getKey())) {
-            if (getColumnMatching() != JIPipeIterationStepTextAnnotationColumMatching.Custom)
+            if (getColumnMatching() != JIPipeIterationStepTextAnnotationColumMatching.Custom) {
                 return false;
+            }
         }
         if (access.getSource() == this && "custom-annotation-matching".equals(access.getKey())) {
-            if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression)
+            if (getAnnotationMatchingMethod() != JIPipeTextAnnotationMatchingMethod.CustomExpression) {
                 return false;
+            }
         }
         return JIPipeIterationStepGenerationSettings.super.isParameterUIVisible(tree, access);
     }
@@ -147,8 +150,9 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     @StringParameterSettings(monospace = true, icon = "data-types/annotation.png")
     @JsonGetter("custom-matched-columns-expression")
     public StringQueryExpression getCustomColumns() {
-        if (customColumns == null)
+        if (customColumns == null) {
             customColumns = new StringQueryExpression();
+        }
         return customColumns;
     }
 
@@ -225,7 +229,7 @@ public class JIPipeIteratingAlgorithmIterationStepGenerationSettings extends Abs
     public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         super.applyProjectUpgrade(fromVersion, context, report);
 
-        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+        if (VersionUtils.isUpgradingFrom("5.3.0")) {
             solverPreference = JIPipeIterationStepSolverPreference.Legacy;
         }
     }

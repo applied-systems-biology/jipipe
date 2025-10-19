@@ -103,7 +103,7 @@ public class JIPipeMergingAlgorithmIterationStepGenerationSettings extends Abstr
     }
 
     @SetJIPipeDocumentation(name = "Solver", description = "Allows to override the iteration step solver")
-    @JIPipeParameter("solver-preference")
+    @JIPipeParameter(value = "solver-preference", pinned = true)
     @JsonGetter("solver-preference")
     public JIPipeIterationStepSolverPreference getSolverPreference() {
         return solverPreference;
