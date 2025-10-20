@@ -10,6 +10,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
+import java.util.List;
 
 public class JIPipeDesktopGraphCanvasPaintManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -110,6 +111,42 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         y2 = (int) (a1 * scale) + viewY;
         xCoords.add(x2);
         yCoords.add(y2);
+    }
+
+
+    /**
+     * Draws an edge between source point and the target point
+     *
+     * @param g             the graphics
+     * @param sourcePoint   the source point
+     * @param sourceBounds  bounds of the source
+     * @param targetPoint   the target point
+     * @param shape         the line shape
+     * @param scale         the scale
+     * @param viewX         the view x
+     * @param viewY         the view y
+     * @param arrowHeadMode How arrow heads should be displayed
+     */
+    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, List<Point> controlPoints, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+        Point nextSource = sourcePoint;
+        Point nextTarget;
+        Rectangle nextSourceBounds = sourceBounds;
+
+        if (controlPoints.isEmpty()) {
+            nextTarget = targetPoint;
+        } else {
+            for (Point gridLocation : controlPoints) {
+                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+                paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
+
+                nextSource = nextTarget;
+                nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
+            }
+
+            nextTarget = targetPoint;
+        }
+
+        paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
     }
 
     /**

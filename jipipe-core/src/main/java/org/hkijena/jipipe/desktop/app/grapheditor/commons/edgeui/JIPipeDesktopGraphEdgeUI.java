@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -24,11 +25,15 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Set;
+import java.util.List;
 
 public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveObjectUI, Comparable<JIPipeDesktopGraphEdgeUI> {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -159,34 +164,53 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         }
     }
 
+    private List<Point> getControlPoints()  {
+        if(edge.getControlPoints().isEmpty()) {
+            return Collections.emptyList();
+        }
+        else {
+            String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
+            List<Point> controlPoints = new ArrayList<>(edge.getControlPoints().size());
+            for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints()) {
+                Point gridLocation = controlPoint.getLocationWithin(compartmentUUID);
+                controlPoints.add(gridLocation);
+            }
+            return controlPoints;
+        }
+    }
+
     private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape) {
         JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Thin : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
 
         g.setStroke(stroke);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, getControlPoints(), uiShape, scale, viewX, viewY, arrowHeadMode);
     }
 
     private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        List<Point> controlPoints = getControlPoints();
+
         g.setStroke(strokeBorder);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
         g.setStroke(stroke);
 
         g.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, canvasUI.getResources().getImprovedStrokeBackgroundColor()));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
     }
 
     private void paintMultiColor(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        List<Point> controlPoints = getControlPoints();
+
         g.setStroke(strokeBorder);
         Color edgeColor = canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax);
         Color edgeOutlineColor = ThemeUtils.isUsingDarkTheme() ? edgeColor.brighter() : edgeColor.darker();
 
         g.setColor(edgeOutlineColor);
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
         g.setStroke(stroke);
 
         g.setPaint(edgeColor);
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
     }
 }

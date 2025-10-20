@@ -26,6 +26,23 @@ public class JIPipeGraphEdgeControlPoint {
     }
 
     /**
+     * Returns the location within the specified compartment or null if none is set
+     *
+     * @param compartment The compartment ID. Set to empty string for no compartment.
+     * @return The UI location or null if unset
+     */
+    public Point getLocationWithin(String compartment) {
+        compartment = StringUtils.orElse(compartment, "_");
+        Integer x = metadataStore.getInteger(Path.of("location", compartment, "x"), null);
+        Integer y = metadataStore.getInteger(Path.of("location", compartment, "y"), null);
+        if (x == null || y == null) {
+            return null;
+        } else {
+            return new Point(x, y);
+        }
+    }
+
+    /**
      * Sets the UI location of this control point within the specified compartment
      *
      * @param compartment The compartment ID. Set to empty string for no compartment.
