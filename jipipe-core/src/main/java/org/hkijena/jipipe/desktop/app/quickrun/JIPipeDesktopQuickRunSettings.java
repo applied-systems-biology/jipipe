@@ -47,7 +47,7 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
         if (project != null) {
             Path projectTempDir = project.newTemporaryDirectory();
             // Check if the project's temporary directory path is suitable
-            if (PathUtils.isPathSuitableAsTemporaryBaseDirectory(projectTempDir)) {
+            if (!JIPipeRuntimeApplicationSettings.getInstance().isGuardLongTempPaths() || PathUtils.isPathSuitableAsTemporaryBaseDirectory(projectTempDir)) {
                 outputPath = projectTempDir;
             } else {
                 // Use global temporary directory instead
