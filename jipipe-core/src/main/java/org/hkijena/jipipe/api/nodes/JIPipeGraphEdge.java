@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -32,6 +34,7 @@ public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgrada
 
     private String uuid;
     private Shape uiShape = Shape.Elbow;
+    private List<JIPipeGraphEdgeControlPoint> controlPoints = new ArrayList<>();
 
     /**
      * Initializes a new graph edge that cannot be disconnected by users
@@ -80,6 +83,16 @@ public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgrada
     @JsonSetter("uuid")
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    @JsonGetter("control-points")
+    public List<JIPipeGraphEdgeControlPoint> getControlPoints() {
+        return controlPoints;
+    }
+
+    @JsonSetter("control-points")
+    public void setControlPoints(List<JIPipeGraphEdgeControlPoint> controlPoints) {
+        this.controlPoints = controlPoints;
     }
 
     @Override
