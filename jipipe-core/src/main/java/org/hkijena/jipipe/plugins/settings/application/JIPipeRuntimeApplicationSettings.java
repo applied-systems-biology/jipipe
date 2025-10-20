@@ -34,6 +34,7 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     private boolean allowCache = true;
     private OptionalPathParameter tempDirectory = new OptionalPathParameter();
     private boolean perProjectTempDirectory = true;
+    private boolean guardLongTempPaths = true;
     private int defaultRunThreads = 1;
     private int defaultQuickRunThreads = 1;
     private int logLimit = 15;
@@ -48,7 +49,18 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
         return JIPipe.getSettings().getById(ID, JIPipeRuntimeApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enable, store temporary files are stored next to the current project file if possible")
+    @SetJIPipeDocumentation(name = "Auto-redirect long paths", description = "If enabled and the project's temporary directory has a long path, automatically use the global temporary directory")
+    @JIPipeParameter("guard-long-tmp-paths")
+    public boolean isGuardLongTempPaths() {
+        return guardLongTempPaths;
+    }
+
+    @JIPipeParameter("guard-long-tmp-paths")
+    public void setGuardLongTempPaths(boolean guardLongTempPaths) {
+        this.guardLongTempPaths = guardLongTempPaths;
+    }
+
+    @SetJIPipeDocumentation(name = "Temporary directory per project", description = "If enabled, store temporary files are stored next to the current project file if possible")
     @JIPipeParameter("per-project-temp-directory")
     public boolean isPerProjectTempDirectory() {
         return perProjectTempDirectory;

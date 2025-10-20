@@ -22,6 +22,7 @@ import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSet
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
 
@@ -44,7 +45,14 @@ public class JIPipeDesktopQuickRunSettings extends AbstractJIPipeParameterCollec
      */
     public JIPipeDesktopQuickRunSettings(JIPipeProject project) {
         if (project != null) {
-            outputPath = project.newTemporaryDirectory();
+            Path projectTempDir = project.newTemporaryDirectory();
+            // Check if the project's temporary directory path is suitable
+            if (!JIPipeRuntimeApplicationSettings.getInstance().isGuardLongTempPaths() || PathUtils.isPathSuitableAsTemporaryBaseDirectory(projectTempDir)) {
+                outputPath = projectTempDir;
+            } else {
+                // Use global temporary directory instead
+                outputPath = JIPipe.getTemporaryDirectory("run");
+            }
         } else {
             outputPath = JIPipe.getTemporaryDirectory("run");
         }
