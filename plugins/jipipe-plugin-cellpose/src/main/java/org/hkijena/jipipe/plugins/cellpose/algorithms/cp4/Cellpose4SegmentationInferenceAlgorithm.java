@@ -105,7 +105,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     private final Cellpose2SegmentationThresholdSettings segmentationThresholdSettings;
     private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
 
-    private final Cellpose2ChannelSettings channelSettings;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3D = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -121,7 +120,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         this.gpuSettings = new Cellpose2GPUSettings();
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings();
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
-        this.channelSettings = new Cellpose2ChannelSettings();
 
         updateOutputSlots();
 
@@ -129,7 +127,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-        registerSubParameter(channelSettings);
     }
 
     public Cellpose4SegmentationInferenceAlgorithm(Cellpose4SegmentationInferenceAlgorithm other) {
@@ -138,7 +135,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         this.segmentationTweaksSettings = new Cellpose3SegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
-        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 //        this.sizeModelAnnotationName = new OptionalDataAnnotationNameParameter(other.sizeModelAnnotationName);
 
@@ -154,7 +150,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-        registerSubParameter(channelSettings);
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
@@ -389,25 +384,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             }
         }
 
-        // Channels
-        if (channelSettings.getSegmentedChannel().isEnabled()) {
-            arguments.add("--chan");
-            arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
-        } else {
-            arguments.add("--chan");
-            arguments.add("0");
-        }
-        if (channelSettings.getNuclearChannel().isEnabled()) {
-            arguments.add("--chan2");
-            arguments.add(channelSettings.getNuclearChannel().getContent() + "");
-        }
-        if (channelSettings.isAllChannels()) {
-            arguments.add("--all_channels");
-        }
-        if (channelSettings.isInvert()) {
-            arguments.add("--invert");
-        }
-
         // Model
         arguments.add("--pretrained_model");
         arguments.add(modelNameOrPath);
@@ -502,12 +478,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     @JIPipeParameter("diameter")
     public void setDiameter(OptionalDoubleParameter diameter) {
         this.diameter = diameter;
-    }
-
-    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
-    public Cellpose2ChannelSettings getChannelSettings() {
-        return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced segmentation settings.")
