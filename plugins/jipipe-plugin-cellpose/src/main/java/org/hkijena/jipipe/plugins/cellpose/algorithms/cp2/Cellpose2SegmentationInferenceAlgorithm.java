@@ -75,7 +75,7 @@ import java.util.Map;
                 "<li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li>" +
                 "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
                 "</ul>" +
-                "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
+                "Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
