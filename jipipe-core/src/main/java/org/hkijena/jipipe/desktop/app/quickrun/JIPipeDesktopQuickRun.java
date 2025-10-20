@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.util.*;
 
@@ -165,6 +166,13 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
 
     @Override
     public void run() {
+
+        // Warn if the current output path may be too long
+        if (!PathUtils.isPathSuitableAsTemporaryBaseDirectory(settings.getOutputPath())) {
+            getProgressInfo().warn("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+            getProgressInfo().warn("The current output path may be too long and could cause path length issues. Consider using a shorter project path or saving results to a different location.");
+            getProgressInfo().warn("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        }
 
         // Remove outdated cache if needed
         if (JIPipeGeneralDataApplicationSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
