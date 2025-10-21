@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
@@ -67,12 +68,29 @@ public class CellposeUtils {
         }
 
         // Run the module
-        PythonUtils.runPython(arguments.toArray(new String[0]),
-                environment,
-                Collections.emptyList(),
-                additionalEnvironmentVariables,
-                suppressLogs,
-                false, progressInfo);
+        try {
+            PythonUtils.runPython(arguments.toArray(new String[0]),
+                    environment,
+                    Collections.emptyList(),
+                    additionalEnvironmentVariables,
+                    suppressLogs,
+                    false,
+                    progressInfo);
+        }
+        catch (Exception e) {
+            // Search for the hallmarks of CUDA issues
+            String logAsString = progressInfo.getLog().toString();
+            if(logAsString.contains("is not compatible with the current PyTorch installation") && logAsString.contains("The current PyTorch install supports CUDA capabilities")) {
+                progressInfo.aggressive("GPU not compatible to Cellpose!", "Try disabling GPU support in the node's settings or globally");
+                throw new JIPipeValidationRuntimeException(e,
+                        "GPU not compatible to current Cellpose version",
+                        "You GPU is not capable of running the provided Cellpose version. The GPU is either too old or too new.",
+                        "Try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally (bottom right corner of the window). " +
+                                "If you absolutely require GPU support, you can setup a custom Cellpose environment and point JIPipe at it using project or node connected services.");
+            }
+
+            throw new RuntimeException(e);
+        }
     }
 
     public static String getCellposeCustomCode() {
