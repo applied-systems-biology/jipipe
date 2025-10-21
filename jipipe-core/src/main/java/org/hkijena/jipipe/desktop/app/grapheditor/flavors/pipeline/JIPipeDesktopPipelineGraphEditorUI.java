@@ -37,10 +37,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeContextActionWrapperUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.CopyEdgeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.DeleteWorkflowNodesAndEdgesContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.GroupNodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.IsolateNodesUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewParameterSetNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddTunnelEntranceUIContextAction;
@@ -160,6 +157,8 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new AddNewParameterSetNodeUIContextAction(),
                 new AddTunnelEntranceUIContextAction(),
                 new AddTunnelExitUIContextAction(),
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
+                new AddEdgeControlPointUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),

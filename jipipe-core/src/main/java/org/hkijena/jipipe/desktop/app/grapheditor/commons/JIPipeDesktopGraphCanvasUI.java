@@ -25,10 +25,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -59,6 +56,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopZoomViewPort;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
@@ -723,6 +721,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 gridLocation.x += gridLeft;
                 gridLocation.y += gridTop;
                 value.moveToGridLocation(gridLocation, true, true);
+            }
+        }
+        for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
+            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
+                Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
+                point.x += gridLeft;
+                point.y += gridTop;
+                controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), point);
             }
         }
         Point cursor = getGraphEditorCursor();
@@ -1530,6 +1536,15 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             ui.moveToClosestGridPoint(new Point(ui.getX() - minX + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH,
                     ui.getY() - minY + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT), true, save);
         }
+        for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
+            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
+                Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
+                Point point1 = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(point, zoom);
+                point1.x = point1.x - minX + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
+                point1.y = point1.y - minY + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
+                controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), JIPipeDesktopGraphCanvasGrid.realLocationToGrid(point1, zoom));
+            }
+        }
         getDesktopWorkbench().setProjectModified(oldModified);
         setGraphEditCursor(JIPipeDesktopGraphCanvasGrid.gridToRealLocation(new Point(1, 1), zoom));
         minDimensions = null;
@@ -1784,6 +1799,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (!dragManagerMove.isBeingDragged(value)) {
                     Point storedGridLocation = value.getStoredGridLocation();
                     value.moveToGridLocation(new Point(storedGridLocation.x - negativeDx, storedGridLocation.y - negativeDy), true, true);
+                }
+            }
+            for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
+                for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
+                    Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
+                    point.x -= negativeDx;
+                    point.y -= negativeDy;
+                    controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), point);
                 }
             }
         }

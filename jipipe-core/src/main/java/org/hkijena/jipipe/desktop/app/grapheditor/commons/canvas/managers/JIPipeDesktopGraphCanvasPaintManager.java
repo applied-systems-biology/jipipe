@@ -137,7 +137,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         } else {
             for (Point gridLocation : controlPoints) {
                 nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
-                paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
+                paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, ArrowHeadMode.None);
 
                 nextSource = nextTarget;
                 nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
@@ -147,6 +147,12 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         }
 
         paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
+
+        g.setPaint(Color.RED);
+        for (Point gridLocation : controlPoints) {
+            Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+            g.fillOval(point.x, point.y, 5, 5);
+        }
     }
 
     /**

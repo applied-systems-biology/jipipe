@@ -2,10 +2,13 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -77,7 +80,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
             case Line ->
                     isMouseOverLineEdge(mouseX, mouseY, sourcePointRange.center, targetPointRange.center, hitThreshold);
             case Elbow ->
-                    isMouseOverElbowEdge(mouseX, mouseY, sourcePointRange.center, sourceNodeUI.getBounds(), targetPointRange.center, hitThreshold);
+                    isMouseOverElbowEdge(mouseX, mouseY, sourcePointRange.center, sourceNodeUI.getBounds(), targetPointRange.center, hitThreshold, edgeUI);
             default -> false;
         };
     }
@@ -191,21 +194,49 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * @param hitThreshold the distance threshold for hit detection
      * @return true if mouse is over the elbow edge
      */
-    private boolean isMouseOverElbowEdge(int mouseX, int mouseY, Point sourcePoint, Rectangle targetBounds, Point targetPoint, int hitThreshold) {
-        // Use the paint manager's coordinate generation logic for consistency
-        TIntArrayList xCoords = new TIntArrayList(8);
-        TIntArrayList yCoords = new TIntArrayList(8);
+    private boolean isMouseOverElbowEdge(int mouseX, int mouseY, Point sourcePoint, Rectangle targetBounds, Point targetPoint, int hitThreshold, JIPipeDesktopGraphEdgeUI edgeUI) {
+        // Get control points from the edge UI
+        List<Point> controlPoints = new ArrayList<>();
+        if (edgeUI != null) {
+            String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
+            for (org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint controlPoint : edgeUI.getEdge().getControlPoints()) {
+                Point gridLocation = controlPoint.getLocationWithin(compartmentUUID);
+                if (gridLocation != null) {
+                    Point realLocation = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, canvasUI.getZoom());
+                    controlPoints.add(realLocation);
+                }
+            }
+        }
 
-        // Generate coordinates using the same method as rendering
-        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint, 1, 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
-
-        // Process the coordinate arrays returned by createElbowEdgeCoordinates
-        for (int i = 0; i < xCoords.size() - 1; i++) {
-            Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
-            Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
-
-            if (isMouseOverLineEdge(mouseX, mouseY, segmentStart, segmentEnd, hitThreshold)) {
+        // If there are control points, process each segment
+        if (!controlPoints.isEmpty()) {
+            Point currentSource = sourcePoint;
+            for (Point controlPoint : controlPoints) {
+                if (isMouseOverLineEdge(mouseX, mouseY, currentSource, controlPoint, hitThreshold)) {
+                    return true;
+                }
+                currentSource = controlPoint;
+            }
+            // Check the final segment to the target
+            if (isMouseOverLineEdge(mouseX, mouseY, currentSource, targetPoint, hitThreshold)) {
                 return true;
+            }
+        } else {
+            // No control points, use the original elbow edge logic
+            TIntArrayList xCoords = new TIntArrayList(8);
+            TIntArrayList yCoords = new TIntArrayList(8);
+
+            // Generate coordinates using the same method as rendering
+            canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, targetBounds, targetPoint, canvasUI.getZoom(), 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
+
+            // Process the coordinate arrays returned by createElbowEdgeCoordinates
+            for (int i = 0; i < xCoords.size() - 1; i++) {
+                Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
+                Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
+
+                if (isMouseOverLineEdge(mouseX, mouseY, segmentStart, segmentEnd, hitThreshold)) {
+                    return true;
+                }
             }
         }
 
@@ -286,7 +317,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
             case Line ->
                     isLineIntersectingRectangle(sourcePointRange.center, targetPointRange.center, rectangle, hitThreshold);
             case Elbow -> isElbowIntersectingRectangle(sourcePointRange.center, sourceNodeUI.getBounds(),
-                    targetPointRange.center, rectangle, hitThreshold);
+                    targetPointRange.center, rectangle, hitThreshold, edgeUI);
             default -> false;
         };
     }
@@ -420,21 +451,49 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      * @return true if the elbow edge intersects with the rectangle, false otherwise
      */
     private boolean isElbowIntersectingRectangle(Point sourcePoint, Rectangle sourceBounds,
-                                                 Point targetPoint, Rectangle2D rectangle, int hitThreshold) {
-        // Generate elbow edge coordinates using the same method as rendering
-        TIntArrayList xCoords = new TIntArrayList(8);
-        TIntArrayList yCoords = new TIntArrayList(8);
+                                                 Point targetPoint, Rectangle2D rectangle, int hitThreshold, JIPipeDesktopGraphEdgeUI edgeUI) {
+        // Get control points from the edge UI
+        List<Point> controlPoints = new ArrayList<>();
+        if (edgeUI != null) {
+            String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
+            for (org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint controlPoint : edgeUI.getEdge().getControlPoints()) {
+                Point gridLocation = controlPoint.getLocationWithin(compartmentUUID);
+                if (gridLocation != null) {
+                    Point realLocation = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, canvasUI.getZoom());
+                    controlPoints.add(realLocation);
+                }
+            }
+        }
 
-        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
-                1, 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
-
-        // Test each segment of the elbow against the rectangle
-        for (int i = 0; i < xCoords.size() - 1; i++) {
-            Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
-            Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
-
-            if (isLineIntersectingRectangle(segmentStart, segmentEnd, rectangle, hitThreshold)) {
+        // If there are control points, process each segment
+        if (!controlPoints.isEmpty()) {
+            Point currentSource = sourcePoint;
+            for (Point controlPoint : controlPoints) {
+                if (isLineIntersectingRectangle(currentSource, controlPoint, rectangle, hitThreshold)) {
+                    return true;
+                }
+                currentSource = controlPoint;
+            }
+            // Check the final segment to the target
+            if (isLineIntersectingRectangle(currentSource, targetPoint, rectangle, hitThreshold)) {
                 return true;
+            }
+        } else {
+            // No control points, use the original elbow edge logic
+            TIntArrayList xCoords = new TIntArrayList(8);
+            TIntArrayList yCoords = new TIntArrayList(8);
+
+            canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
+                    canvasUI.getZoom(), 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
+
+            // Test each segment of the elbow against the rectangle
+            for (int i = 0; i < xCoords.size() - 1; i++) {
+                Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
+                Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
+
+                if (isLineIntersectingRectangle(segmentStart, segmentEnd, rectangle, hitThreshold)) {
+                    return true;
+                }
             }
         }
 
