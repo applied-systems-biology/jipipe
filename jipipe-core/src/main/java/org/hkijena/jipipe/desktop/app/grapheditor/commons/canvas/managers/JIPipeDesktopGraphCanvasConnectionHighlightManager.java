@@ -55,7 +55,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 sourceUI.getBounds(),
                                 targetPoint.center,
@@ -85,7 +85,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 sourceUI.getBounds(),
                                 targetPoint.center,
@@ -124,7 +124,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 sourceUI.getBounds(),
                                 targetPoint.center,
@@ -152,7 +152,7 @@ public class JIPipeDesktopGraphCanvasConnectionHighlightManager {
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 sourceUI.getBounds(),
                                 targetPoint.center,

@@ -34,8 +34,8 @@ import org.jetbrains.annotations.NotNull;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveObjectUI, Comparable<JIPipeDesktopGraphEdgeUI> {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -156,25 +156,25 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
             JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
 
             if (multiColor) {
-                paintMultiColor(g, stroke, strokeBorder, scale, viewX, viewY, multiColor, multiColorIndex, multiColorMax, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
+                paintMultiColor(g, stroke, strokeBorder, scale, viewX, viewY, multiColor, multiColorIndex, multiColorMax, arrowHeadMode);
             } else {
-                paintRegular(g, stroke, strokeBorder, scale, viewX, viewY, sourcePoint, sourceNodeUI, targetPoint, uiShape, arrowHeadMode);
+                paintRegular(g, stroke, strokeBorder, scale, viewX, viewY, sourcePoint, targetPoint, arrowHeadMode);
             }
         } else {
             // Just a single stroke
-            paintThin(g, stroke, scale, viewX, viewY, enableArrows, multiColor, multiColorIndex, multiColorMax, sourcePoint, sourceNodeUI, targetPoint, uiShape);
+            paintThin(g, stroke, scale, viewX, viewY, enableArrows, multiColor, multiColorIndex, multiColorMax);
         }
     }
 
     /**
      * Gets the control points in grid location for the current compartment
+     *
      * @return the control points in grid location
      */
-    public List<Point> getControlPoints()  {
-        if(edge.getControlPoints().isEmpty()) {
+    public List<Point> getControlPoints() {
+        if (edge.getControlPoints().isEmpty()) {
             return Collections.emptyList();
-        }
-        else {
+        } else {
             String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
             List<Point> controlPoints = new ArrayList<>(edge.getControlPoints().size());
             for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints()) {
@@ -187,6 +187,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
     /**
      * Gets the rendered line segments in real coordinates
+     *
      * @param scale the zoom
      * @param viewX the view x shift
      * @param viewY the view y shift
@@ -240,7 +241,8 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     private void addEdgeCoordinates(Point nextSource, Rectangle nextSourceBounds, Point nextTarget, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows, SegmentedLines result) {
         switch (shape) {
             case Line -> addLineEdgeCoordinates(nextSource, nextTarget, scale, viewX, viewY, enableArrows, result);
-            case Elbow -> addElbowEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, scale, viewX, viewY, enableArrows, result);
+            case Elbow ->
+                    addElbowEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, scale, viewX, viewY, enableArrows, result);
             default -> throw new IllegalArgumentException("Unsupported shape " + shape);
         }
     }
@@ -251,7 +253,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         int dy;
         dx = 0;
         dy = arrowHeadShift;
-        result.add((int) (scale * sourcePoint.x) + viewX,  (int) (scale * sourcePoint.y) + viewY);
+        result.add((int) (scale * sourcePoint.x) + viewX, (int) (scale * sourcePoint.y) + viewY);
         result.add((int) (scale * targetPoint.x) + viewX + dx, (int) (scale * targetPoint.y) + viewY + dy);
     }
 
@@ -324,45 +326,45 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         result.add(x2, y2);
     }
 
-    private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape) {
+    private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax) {
         JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Thin : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
 
         g.setStroke(stroke);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, getControlPoints(), uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, getRenderedLineSegments(scale, viewX, viewY, enableArrows), arrowHeadMode);
     }
 
-    private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
-        List<Point> controlPoints = getControlPoints();
+    private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, PointRange targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, viewX, viewY, arrowHeadMode != JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None);
 
         g.setStroke(strokeBorder);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, renderedLineSegments, arrowHeadMode);
         g.setStroke(stroke);
 
         g.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source, target, sourcePoint, targetPoint, canvasUI.getResources().getImprovedStrokeBackgroundColor()));
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, renderedLineSegments, arrowHeadMode);
     }
 
-    private void paintMultiColor(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
-        List<Point> controlPoints = getControlPoints();
+    private void paintMultiColor(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, boolean multiColor, int multiColorIndex, int multiColorMax, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
+        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, viewX, viewY, arrowHeadMode != JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None);
 
         g.setStroke(strokeBorder);
         Color edgeColor = canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax);
         Color edgeOutlineColor = ThemeUtils.isUsingDarkTheme() ? edgeColor.brighter() : edgeColor.darker();
 
         g.setColor(edgeOutlineColor);
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, renderedLineSegments, arrowHeadMode);
         g.setStroke(stroke);
 
         g.setPaint(edgeColor);
-        canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, renderedLineSegments, arrowHeadMode);
     }
 
     public static class SegmentedLines {
-        private final TIntArrayList index = new  TIntArrayList();
-        private final TIntArrayList xCoords = new  TIntArrayList();
-        private final TIntArrayList yCoords = new   TIntArrayList();
+        private final TIntArrayList segmentIndex = new TIntArrayList();
+        private final TIntArrayList xCoords = new TIntArrayList();
+        private final TIntArrayList yCoords = new TIntArrayList();
         private int segmentCounter = 0;
 
         public SegmentedLines() {
@@ -373,13 +375,37 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         }
 
         public void add(int x, int y) {
-            index.add(segmentCounter);
+            segmentIndex.add(segmentCounter);
             xCoords.add(x);
             yCoords.add(y);
         }
 
         public boolean isEmpty() {
-            return index.isEmpty() && xCoords.isEmpty() && yCoords.isEmpty();
+            return segmentIndex.isEmpty() && xCoords.isEmpty() && yCoords.isEmpty();
+        }
+
+        public boolean isMultiSegmented() {
+            return segmentCounter > 0;
+        }
+
+        public int getSegmentCount() {
+            return segmentCounter;
+        }
+
+        public int size() {
+            return segmentIndex.size();
+        }
+
+        public int getX(int index) {
+            return xCoords.get(index);
+        }
+
+        public int getY(int index) {
+            return yCoords.get(index);
+        }
+
+        public int getSegmentIndex(int index) {
+            return this.segmentIndex.get(index);
         }
     }
 }

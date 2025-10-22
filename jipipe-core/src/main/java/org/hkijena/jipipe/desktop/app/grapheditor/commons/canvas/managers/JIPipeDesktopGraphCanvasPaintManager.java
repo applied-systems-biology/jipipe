@@ -31,7 +31,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
 
-    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+    private void paintCustomElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
 
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
@@ -127,7 +127,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
      * @param viewY         the view y
      * @param arrowHeadMode How arrow heads should be displayed
      */
-    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, List<Point> controlPoints, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+    public void paintCustomEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, List<Point> controlPoints, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
         Point nextSource = sourcePoint;
         Point nextTarget;
         Rectangle nextSourceBounds = sourceBounds;
@@ -137,7 +137,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         } else {
             for (Point gridLocation : controlPoints) {
                 nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
-                paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, ArrowHeadMode.None);
+                paintCustomEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, ArrowHeadMode.None);
 
                 nextSource = nextTarget;
                 nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
@@ -146,7 +146,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
             nextTarget = targetPoint;
         }
 
-        paintEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
+        paintCustomEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
 
         g.setPaint(Color.RED);
         for (Point gridLocation : controlPoints) {
@@ -168,10 +168,10 @@ public class JIPipeDesktopGraphCanvasPaintManager {
      * @param viewY         the view y
      * @param arrowHeadMode How arrow heads should be displayed
      */
-    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+    public void paintCustomEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
         switch (shape) {
             case Elbow:
-                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode);
+                paintCustomElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode);
                 break;
             case Line: {
                 int arrowHeadShift = arrowHeadMode != ArrowHeadMode.None ? canvasUI.getResources().getArrowHeadShift() : 0;
@@ -228,6 +228,29 @@ public class JIPipeDesktopGraphCanvasPaintManager {
                     viewX,
                     viewY,
                     false, false, 0, 0);
+        }
+    }
+
+    public void paintEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI.SegmentedLines segmentedLines, ArrowHeadMode arrowHeadMode) {
+        if(segmentedLines.size() < 2) {
+            return;
+        }
+        if(segmentedLines.size() == 2) {
+            // A simple line
+            int x1 = segmentedLines.getX(0);
+            int y1 = segmentedLines.getY(0);
+            int x2 = segmentedLines.getX(1);
+            int y2 = segmentedLines.getY(1);
+            return;
+        }
+        for (int i = 1; i < segmentedLines.size(); i++) {
+            int x1 = segmentedLines.getX(i -1);
+            int y1 = segmentedLines.getY(i-1);
+            int x2 = segmentedLines.getX(i);
+            int y2 = segmentedLines.getY(i);
+            if(x1 == x2 && y1 == y2) {
+                continue;
+            }
         }
     }
 
