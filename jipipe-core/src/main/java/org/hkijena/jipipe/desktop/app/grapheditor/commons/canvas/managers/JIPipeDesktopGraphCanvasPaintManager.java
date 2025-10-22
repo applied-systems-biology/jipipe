@@ -232,25 +232,20 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
     public void paintEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI.SegmentedLines segmentedLines, ArrowHeadMode arrowHeadMode) {
-        if(segmentedLines.size() < 2) {
+        if (segmentedLines.size() < 2) {
             return;
         }
-        if(segmentedLines.size() == 2) {
-            // A simple line
-            int x1 = segmentedLines.getX(0);
-            int y1 = segmentedLines.getY(0);
-            int x2 = segmentedLines.getX(1);
-            int y2 = segmentedLines.getY(1);
-            return;
+        int[] xPoints = segmentedLines.getXPoints();
+        int[] yPoints = segmentedLines.getYPoints();
+        if(arrowHeadMode == ArrowHeadMode.Filled) {
+            yPoints[yPoints.length - 1] += canvasUI.getResources().getArrowHeadShift();
         }
-        for (int i = 1; i < segmentedLines.size(); i++) {
-            int x1 = segmentedLines.getX(i -1);
-            int y1 = segmentedLines.getY(i-1);
-            int x2 = segmentedLines.getX(i);
-            int y2 = segmentedLines.getY(i);
-            if(x1 == x2 && y1 == y2) {
-                continue;
-            }
+        g.drawPolyline(xPoints, yPoints, xPoints.length);
+        if (arrowHeadMode  == ArrowHeadMode.Filled) {
+            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1] - canvasUI.getResources().getArrowHeadShift(), arrowHeadMode);
+        }
+        else if(arrowHeadMode == ArrowHeadMode.Thin) {
+            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1], arrowHeadMode);
         }
     }
 
