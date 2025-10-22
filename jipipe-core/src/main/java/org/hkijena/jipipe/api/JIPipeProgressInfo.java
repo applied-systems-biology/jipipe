@@ -505,7 +505,7 @@ public class JIPipeProgressInfo implements Cancelable {
 
         warn("  " + "v".repeat(length));
         for (String s : text) {
-            warn("| " + s);
+            error("| " + s);
         }
         warn("  " + "^".repeat(length));
     }

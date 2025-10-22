@@ -89,6 +89,14 @@ public class CellposeUtils {
                         "You can also try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally. " +
                                 "If you absolutely require GPU support, you can setup a custom Cellpose environment and point JIPipe at it using project or node connected services.");
             }
+            if(logAsString.contains("torch.OutOfMemoryError: CUDA out of memory")) {
+                progressInfo.aggressive("Ran out of GPU memory! Consider running on CPU");
+                throw new JIPipeValidationRuntimeException(e,
+                        "Cellpose ran out of memory",
+                        "Cellpose cannot run this process on GPU, as your GPU does not have enough memory.",
+                        "Disable the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally. " +
+                                "If you absolutely require GPU acceleration, you will have to run this workload on another computer or upgrade the included hardware.");
+            }
 
             throw new RuntimeException(e);
         }
