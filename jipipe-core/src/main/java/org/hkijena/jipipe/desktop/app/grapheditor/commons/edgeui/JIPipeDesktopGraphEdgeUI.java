@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
+import gnu.trove.list.array.TIntArrayList;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeSerializedGraphConnection;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.core.nodes.JIPipeCommentNode;
@@ -164,7 +166,11 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         }
     }
 
-    private List<Point> getControlPoints()  {
+    /**
+     * Gets the control points in grid location for the current compartment
+     * @return the control points in grid location
+     */
+    public List<Point> getControlPoints()  {
         if(edge.getControlPoints().isEmpty()) {
             return Collections.emptyList();
         }
@@ -177,6 +183,145 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
             }
             return controlPoints;
         }
+    }
+
+    /**
+     * Gets the rendered line segments in real coordinates
+     * @param scale the zoom
+     * @param viewX the view x shift
+     * @param viewY the view y shift
+     * @return the line segments
+     */
+    public SegmentedLines getRenderedLineSegments(double scale, int viewX, int viewY, boolean enableArrows) {
+
+        JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
+        JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
+        SegmentedLines result = new SegmentedLines();
+
+        if (sourceNodeUI == null || targetNodeUI == null) {
+            return result;
+        }
+
+        PointRange sourcePoint = getSourcePointRange();
+        PointRange targetPoint = getTargetPointRange();
+        sourcePoint.add(sourceNodeUI.getLocation());
+        targetPoint.add(targetNodeUI.getLocation());
+        final JIPipeGraphEdge.Shape shape = edge.getUiShape();
+
+        // Tighten the point ranges: Bringing the centers together
+        // TODO: Not working for control point edges correctly
+        // TODO: we need to tighten to the first control point if we have control points
+        PointRange.tighten(sourcePoint, targetPoint);
+
+        Point nextSource = sourcePoint.center;
+        Point nextTarget;
+        Rectangle nextSourceBounds = sourceNodeUI.getBounds();
+
+        if (edge.getControlPoints().isEmpty()) {
+            nextTarget = targetPoint.center;
+        } else {
+            List<Point> controlPoints = getControlPoints();
+            for (Point gridLocation : controlPoints) {
+                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+                addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, enableArrows, result);
+
+                nextSource = nextTarget;
+                nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
+                result.nextSegment();
+            }
+
+            nextTarget = targetPoint.center;
+        }
+
+        addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, enableArrows, result);
+        return result;
+    }
+
+    private void addEdgeCoordinates(Point nextSource, Rectangle nextSourceBounds, Point nextTarget, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows, SegmentedLines result) {
+        switch (shape) {
+            case Line -> addLineEdgeCoordinates(nextSource, nextTarget, scale, viewX, viewY, enableArrows, result);
+            case Elbow -> addElbowEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, scale, viewX, viewY, enableArrows, result);
+            default -> throw new IllegalArgumentException("Unsupported shape " + shape);
+        }
+    }
+
+    private void addLineEdgeCoordinates(Point sourcePoint, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows, SegmentedLines result) {
+        int arrowHeadShift = enableArrows ? canvasUI.getResources().getArrowHeadShift() : 0;
+        int dx;
+        int dy;
+        dx = 0;
+        dy = arrowHeadShift;
+        result.add((int) (scale * sourcePoint.x) + viewX,  (int) (scale * sourcePoint.y) + viewY);
+        result.add((int) (scale * targetPoint.x) + viewX + dx, (int) (scale * targetPoint.y) + viewY + dy);
+    }
+
+    public void addElbowEdgeCoordinates(Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows, SegmentedLines result) {
+        int buffer;
+        int sourceA;
+        int targetA;
+        int sourceB;
+        int targetB;
+        int componentStartB;
+        int componentEndB;
+
+        buffer = JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT / 2;
+        sourceA = sourcePoint.y;
+        targetA = targetPoint.y;
+        if (enableArrows) {
+            targetA += canvasUI.getResources().getArrowHeadShift();
+        }
+        sourceB = sourcePoint.x;
+        targetB = targetPoint.x;
+        componentStartB = sourceBounds.x;
+        componentEndB = sourceBounds.x + sourceBounds.width;
+
+        int a0 = sourceA;
+        int b0 = sourceB;
+        int a1 = sourceA;
+        int b1 = sourceB;
+
+        addElbowPolygonCoordinate(a0, b0, scale, viewX, viewY, result);
+
+        // Target point is above the source. We have to navigate around it
+        if (sourceA > targetA) {
+            // Add some space in major direction
+            a1 += buffer;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+
+            // Go left or right
+            if (targetB <= b1) {
+                b1 = Math.max(0, componentStartB - buffer);
+            } else {
+                b1 = componentEndB + buffer;
+            }
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+
+            // Go to target height
+            a1 = Math.max(0, targetA - buffer);
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+        } else if (sourceB != targetB) {
+            // Add some space in major direction
+            int dA = targetA - sourceA;
+            a1 = Math.min(sourceA + buffer, sourceA + dA / 2);
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+        }
+
+        // Target point X is shifted
+        if (b1 != targetB) {
+            b1 = targetB;
+            addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+        }
+
+        // Go to end point
+        a1 = targetA;
+        addElbowPolygonCoordinate(a1, b1, scale, viewX, viewY, result);
+    }
+
+    private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, SegmentedLines result) {
+        int x2, y2;
+        x2 = (int) (b1 * scale) + viewX;
+        y2 = (int) (a1 * scale) + viewY;
+        result.add(x2, y2);
     }
 
     private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax, PointRange sourcePoint, JIPipeDesktopGraphNodeUI sourceNodeUI, PointRange targetPoint, JIPipeGraphEdge.Shape uiShape) {
@@ -212,5 +357,29 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
         g.setPaint(edgeColor);
         canvasUI.getPaintManager().paintEdge(g, sourcePoint.center, sourceNodeUI.getBounds(), targetPoint.center, controlPoints, uiShape, scale, viewX, viewY, arrowHeadMode);
+    }
+
+    public static class SegmentedLines {
+        private final TIntArrayList index = new  TIntArrayList();
+        private final TIntArrayList xCoords = new  TIntArrayList();
+        private final TIntArrayList yCoords = new   TIntArrayList();
+        private int segmentCounter = 0;
+
+        public SegmentedLines() {
+        }
+
+        public void nextSegment() {
+            ++segmentCounter;
+        }
+
+        public void add(int x, int y) {
+            index.add(segmentCounter);
+            xCoords.add(x);
+            yCoords.add(y);
+        }
+
+        public boolean isEmpty() {
+            return index.isEmpty() && xCoords.isEmpty() && yCoords.isEmpty();
+        }
     }
 }

@@ -452,48 +452,20 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      */
     private boolean isElbowIntersectingRectangle(Point sourcePoint, Rectangle sourceBounds,
                                                  Point targetPoint, Rectangle2D rectangle, int hitThreshold, JIPipeDesktopGraphEdgeUI edgeUI) {
-        // Get control points from the edge UI
-        List<Point> controlPoints = new ArrayList<>();
-        if (edgeUI != null) {
-            String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
-            for (JIPipeGraphEdgeControlPoint controlPoint : edgeUI.getEdge().getControlPoints()) {
-                Point gridLocation = controlPoint.getLocationWithin(compartmentUUID);
-                if (gridLocation != null) {
-                    Point realLocation = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, canvasUI.getZoom());
-                    controlPoints.add(realLocation);
-                }
-            }
-        }
+        // No control points, use the original elbow edge logic
+        TIntArrayList xCoords = new TIntArrayList(8);
+        TIntArrayList yCoords = new TIntArrayList(8);
 
-        // If there are control points, process each segment
-        if (!controlPoints.isEmpty()) {
-            Point currentSource = sourcePoint;
-            for (Point controlPoint : controlPoints) {
-                if (isLineIntersectingRectangle(currentSource, controlPoint, rectangle, hitThreshold)) {
-                    return true;
-                }
-                currentSource = controlPoint;
-            }
-            // Check the final segment to the target
-            if (isLineIntersectingRectangle(currentSource, targetPoint, rectangle, hitThreshold)) {
+        canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
+                canvasUI.getZoom(), 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
+
+        // Test each segment of the elbow against the rectangle
+        for (int i = 0; i < xCoords.size() - 1; i++) {
+            Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
+            Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
+
+            if (isLineIntersectingRectangle(segmentStart, segmentEnd, rectangle, hitThreshold)) {
                 return true;
-            }
-        } else {
-            // No control points, use the original elbow edge logic
-            TIntArrayList xCoords = new TIntArrayList(8);
-            TIntArrayList yCoords = new TIntArrayList(8);
-
-            canvasUI.getPaintManager().createElbowEdgeCoordinates(sourcePoint, sourceBounds, targetPoint,
-                    canvasUI.getZoom(), 0, 0, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None, xCoords, yCoords);
-
-            // Test each segment of the elbow against the rectangle
-            for (int i = 0; i < xCoords.size() - 1; i++) {
-                Point segmentStart = new Point(xCoords.get(i), yCoords.get(i));
-                Point segmentEnd = new Point(xCoords.get(i + 1), yCoords.get(i + 1));
-
-                if (isLineIntersectingRectangle(segmentStart, segmentEnd, rectangle, hitThreshold)) {
-                    return true;
-                }
             }
         }
 
@@ -501,82 +473,6 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
     }
 
     public boolean addControlPointToEdge(JIPipeDesktopGraphEdgeUI edgeUI, Point realLocation) {
-        JIPipeGraphEdge edge = edgeUI.getEdge();
-
-        // Convert cursor position from real coordinates to grid coordinates
-        Point gridCursor = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(realLocation, canvasUI.getZoom());
-
-        // Get source and target node positions
-        PointRange sourcePoint = edgeUI.getSourcePointRange();
-        PointRange targetPoint = edgeUI.getTargetPointRange();
-
-        if (sourcePoint == null || targetPoint == null) {
-            return false;
-        }
-
-        // Convert to grid coordinates
-        Point sourceGrid = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(sourcePoint.center, canvasUI.getZoom());
-        Point targetGrid = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(targetPoint.center, canvasUI.getZoom());
-
-        // Find the best segment to add the control point
-        int bestSegmentIndex = findBestSegmentForControlPoint(edge, sourceGrid, targetGrid, gridCursor, canvasUI);
-
-        if (bestSegmentIndex >= 0) {
-            // Create a new control point
-            JIPipeGraphEdgeControlPoint newControlPoint = new JIPipeGraphEdgeControlPoint();
-            newControlPoint.setLocationWithin(canvasUI.getCompartmentUUID(), gridCursor);
-
-            // Insert the control point at the appropriate position
-            edge.getControlPoints().add(bestSegmentIndex, newControlPoint);
-            canvasUI.repaintLowLag();
-            return true;
-        }
-
         return false;
-    }
-
-    /**
-     * Finds the best segment index to add a control point
-     *
-     * @param edge       The edge to analyze
-     * @param sourceGrid Source position in grid coordinates
-     * @param targetGrid Target position in grid coordinates
-     * @param cursorGrid Cursor position in grid coordinates
-     * @param canvasUI   The canvas UI
-     * @return The segment index where the control point should be added, or -1 if no suitable segment found
-     */
-    private int findBestSegmentForControlPoint(JIPipeGraphEdge edge, Point sourceGrid, Point targetGrid, Point cursorGrid, JIPipeDesktopGraphCanvasUI canvasUI) {
-        List<JIPipeGraphEdgeControlPoint> controlPoints = edge.getControlPoints();
-
-        // If no control points exist, add at the beginning (between source and target)
-        if (controlPoints.isEmpty()) {
-            return 0;
-        }
-
-        // Create a list of all segment endpoints (source, control points, target)
-        List<Point> segmentPoints = new ArrayList<>();
-        segmentPoints.add(sourceGrid);
-
-        String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
-        for (JIPipeGraphEdgeControlPoint controlPoint : controlPoints) {
-            Point location = controlPoint.getLocationWithin(compartmentUUID);
-            if (location != null) {
-                segmentPoints.add(location);
-            }
-        }
-        segmentPoints.add(targetGrid);
-
-        // Find the segment closest to the cursor
-        int bestSegmentIndex = -1;
-
-        for (int i = 0; i < segmentPoints.size() - 1; i++) {
-            Point p1 = segmentPoints.get(i);
-            Point p2 = segmentPoints.get(i + 1);
-
-            // Calculate distance from cursor to the line segment
-            // TODO: find the actual segment that the cursor hovers
-        }
-
-        return bestSegmentIndex + 1; // Convert to insertion index
     }
 }
