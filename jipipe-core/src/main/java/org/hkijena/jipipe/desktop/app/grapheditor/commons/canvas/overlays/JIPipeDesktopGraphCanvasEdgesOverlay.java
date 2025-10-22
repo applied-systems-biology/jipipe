@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -131,26 +132,37 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
 
             if (edgeUI.isCommentEdge()) {
                 paintCommentEdge(g, edgeUI, edgeHasMultiColor, multiColorIndex, multiColorMax);
+                paintEdgeControlPoints(g, edgeUI);
             } else if (selection.contains(edgeUI)) {
                 if (edgeHasMultiColor) {
                     paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                     ++multiColorIndex;
+                    paintEdgeControlPoints(g, edgeUI);
                 } else {
                     paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
+                    paintEdgeControlPoints(g, edgeUI);
                 }
             } else {
                 if (multiColor) {
                     if (edgeHasMultiColor) {
                         paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                         ++multiColorIndex;
+                        paintEdgeControlPoints(g, edgeUI);
                     } else {
                         // Mute the edge
                         paintMutedEdge(g, edgeUI, strokeMuted);
                     }
                 } else {
                     paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
+                    paintEdgeControlPoints(g, edgeUI);
                 }
             }
+        }
+    }
+
+    private void paintEdgeControlPoints(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI) {
+        for (JIPipeDesktopGraphEdgeControlPointUI controlPoint : edgeUI.getControlPoints()) {
+            controlPoint.paint(g);
         }
     }
 }

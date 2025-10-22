@@ -370,7 +370,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
             int index = lineSegments.getSegmentIndex(i);
 
             if (isMouseOverLineEdge(realLocation.x, realLocation.y, new Point(x1, y1), new Point(x2, y2), hitThreshold)) {
-                edgeUI.getEdge().addControlPoint(index, StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()), toGrid.x, toGrid.y);
+                edgeUI.addControlPoint(index, StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()), toGrid.x, toGrid.y);
                 canvasUI.repaintLowLag();
                 return true;
             }

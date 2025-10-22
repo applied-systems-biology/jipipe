@@ -164,8 +164,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         initializeOverlays();
 
         // Add the initial set of nodes and edges
-        addNewNodes(true);
-        addNewEdges();
+        updateInteractiveObjects(true);
 
         // Subscribe events
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
@@ -176,6 +175,23 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Reload resources
         resources.updateAssets();
+    }
+
+    public void updateInteractiveObjects(boolean force) {
+        // Handle nodes
+        removeOldNodes();     // Remove invalid UIs
+        addNewNodes(force);   // Add missing UIs
+
+        // Handle edges
+        removeOldEdges();
+        addNewEdges();
+        updateEdgeControlPoints();
+    }
+
+    private void updateEdgeControlPoints() {
+        for (JIPipeDesktopGraphEdgeUI edgeUI : edgeUIs.values()) {
+            edgeUI.updateControlPointUIs();
+        }
     }
 
     private void initializeOverlays() {
@@ -1565,14 +1581,6 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
     }
 
-    /**
-     * Removes all UIs and adds them back in
-     */
-    public void fullRedraw() {
-        removeAllNodes();
-        addNewNodes(true);
-    }
-
     public List<GraphInteractiveObjectUIContextAction> getContextActions() {
         return contextActions;
     }
@@ -1703,12 +1711,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             for (JIPipeDesktopGraphNodeUI ui : nodeUIs.values()) {
                 ui.moveToStoredGridLocation(true);
             }
-            removeOldNodes();     // Remove invalid UIs
-            addNewNodes(true);   // Add missing UIs
-
-            // Update edge UIs
-            removeOldEdges();
-            addNewEdges();
+            updateInteractiveObjects(true);
         } finally {
             updateCanvasLock.unlock(stamp);
         }

@@ -42,12 +42,15 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     private final JIPipeDataSlot source;
     private final JIPipeDataSlot target;
     private final JIPipeGraphEdge edge;
+    private final List<JIPipeDesktopGraphEdgeControlPointUI>  controlPoints = new ArrayList<>();
 
     public JIPipeDesktopGraphEdgeUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
         this.canvasUI = canvasUI;
         this.source = source;
         this.target = target;
         this.edge = edge;
+
+        updateControlPointUIs();
     }
 
     public JIPipeSerializedGraphConnection toConnection() {
@@ -146,7 +149,6 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         PointRange targetPoint = getTargetPointRange();
         sourcePoint.add(sourceNodeUI.getLocation());
         targetPoint.add(targetNodeUI.getLocation());
-        JIPipeGraphEdge.Shape uiShape = edge.getUiShape();
 
         // Tighten the point ranges: Bringing the centers together
         PointRange.tighten(sourcePoint, targetPoint);
@@ -371,6 +373,23 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
             controlPoint.setX(controlPoint.getX() + dx);
             controlPoint.setY(controlPoint.getY() + dy);
         }
+    }
+
+    public void updateControlPointUIs() {
+        controlPoints.clear();
+        for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()))) {
+            JIPipeDesktopGraphEdgeControlPointUI ui = new JIPipeDesktopGraphEdgeControlPointUI(canvasUI, source, target, edge, controlPoint);
+            controlPoints.add(ui);
+        }
+    }
+
+    public void addControlPoint(int index, String compartment, int x, int y) {
+        edge.addControlPoint(index, compartment, x, y);
+        updateControlPointUIs();
+    }
+
+    public List<JIPipeDesktopGraphEdgeControlPointUI> getControlPoints() {
+        return controlPoints;
     }
 
     public static class SegmentedLines {
