@@ -5,6 +5,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
@@ -103,12 +104,18 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
 
             if (negativeDx < 0 || negativeDy < 0) {
                 // Negative expansion
-                for (JIPipeDesktopGraphNodeUI value : canvasUI.getNodeUIs().values()) {
-                    if (!currentlyDraggedOffsets.containsKey(value)) {
-                        Point storedGridLocation = value.getStoredGridLocation();
-                        value.moveToGridLocation(new Point(storedGridLocation.x - negativeDx, storedGridLocation.y - negativeDy), true, true);
+                for (JIPipeDesktopGraphNodeUI nodeUI : canvasUI.getNodeUIs().values()) {
+                    if (!currentlyDraggedOffsets.containsKey(nodeUI)) {
+                        Point storedGridLocation = nodeUI.getStoredGridLocation();
+                        nodeUI.moveToGridLocation(new Point(storedGridLocation.x - negativeDx, storedGridLocation.y - negativeDy), true, true);
                     }
                 }
+
+                // Move control points
+                for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
+                    edgeUI.moveControlPointsByGrid(-negativeDx, -negativeDy);
+                }
+
             }
 
             for (Map.Entry<JIPipeDesktopGraphInteractiveObjectUI, Point> entry : currentlyDraggedOffsets.entrySet()) {

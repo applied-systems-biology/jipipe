@@ -724,11 +724,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
         for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
-            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
-                Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
-                point.x += gridLeft;
-                point.y += gridTop;
-                controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), point);
+            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints(StringUtils.nullToEmpty(getCompartmentUUID()))) {
+                controlPoint.setX(controlPoint.getX() + gridLeft);
+                controlPoint.setY(controlPoint.getY() + gridTop);
             }
         }
         Point cursor = getGraphEditorCursor();
@@ -1537,12 +1535,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     ui.getY() - minY + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT), true, save);
         }
         for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
-            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
-                Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
-                Point point1 = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(point, zoom);
+            for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints(StringUtils.nullToEmpty(getCompartmentUUID()))) {
+                Point point1 = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(controlPoint.toPoint(), zoom);
                 point1.x = point1.x - minX + JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
                 point1.y = point1.y - minY + JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
-                controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), JIPipeDesktopGraphCanvasGrid.realLocationToGrid(point1, zoom));
+                controlPoint.set(JIPipeDesktopGraphCanvasGrid.realLocationToGrid(point1, zoom));
             }
         }
         getDesktopWorkbench().setProjectModified(oldModified);
@@ -1802,11 +1799,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 }
             }
             for (JIPipeDesktopGraphEdgeUI value : edgeUIs.values()) {
-                for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints()) {
-                    Point point = controlPoint.getLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()));
+                for (JIPipeGraphEdgeControlPoint controlPoint : value.getEdge().getControlPoints(StringUtils.nullToEmpty(getCompartmentUUID()))) {
+                    Point point = controlPoint.toPoint();
                     point.x -= negativeDx;
                     point.y -= negativeDy;
-                    controlPoint.setLocationWithin(StringUtils.nullToEmpty(getCompartmentUUID()), point);
+                    controlPoint.set(point);
                 }
             }
         }

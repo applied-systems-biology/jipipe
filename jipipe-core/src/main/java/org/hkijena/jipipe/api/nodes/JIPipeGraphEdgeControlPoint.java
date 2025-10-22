@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.PathMetadataStore;
@@ -10,57 +11,42 @@ import java.nio.file.Path;
 import java.util.UUID;
 
 public class JIPipeGraphEdgeControlPoint {
-    private PathMetadataStore metadataStore = new PathMetadataStore();
+
+    @JsonProperty("x")
+    private int x;
+    @JsonProperty("y")
+    private int y;
 
     public JIPipeGraphEdgeControlPoint() {
     }
 
-    @JsonGetter("metadata")
-    public PathMetadataStore getMetadataStore() {
-        return metadataStore;
+    public JIPipeGraphEdgeControlPoint(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 
-    @JsonSetter("metadata")
-    public void setMetadataStore(PathMetadataStore metadataStore) {
-        this.metadataStore = metadataStore;
+    public int getX() {
+        return x;
     }
 
-    /**
-     * Returns the location within the specified compartment or null if none is set
-     *
-     * @param compartment The compartment ID. Set to empty string for no compartment.
-     * @return The UI location or null if unset
-     */
-    public Point getLocationWithin(String compartment) {
-        compartment = StringUtils.orElse(compartment, "_");
-        Integer x = metadataStore.getInteger(Path.of("location", compartment, "x"), null);
-        Integer y = metadataStore.getInteger(Path.of("location", compartment, "y"), null);
-        if (x == null || y == null) {
-            return null;
-        } else {
-            return new Point(x, y);
-        }
+    public void setX(int x) {
+        this.x = x;
     }
 
-    /**
-     * Sets the UI location of this control point within the specified compartment
-     *
-     * @param compartment The compartment ID. Set to empty string for no compartment.
-     * @param location    The UI location. Can be null to reset the location
-     */
-    public void setLocationWithin(String compartment, Point location) {
-        compartment = StringUtils.orElse(compartment, "_");
-        metadataStore.put(Path.of("location", compartment, "x"), location.x);
-        metadataStore.put(Path.of("location", compartment, "y"), location.y);
+    public int getY() {
+        return y;
     }
 
-    /**
-     * Sets the UI location of this control point within the specified compartment
-     *
-     * @param compartment The compartment ID
-     * @param location    The UI location. Can be null to reset the location
-     */
-    public void setLocationWithin(UUID compartment, Point location) {
-        setLocationWithin(StringUtils.nullToEmpty(compartment), location);
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public Point toPoint() {
+        return new Point(x, y);
+    }
+
+    public void set(Point point) {
+        this.x = point.x;
+        this.y = point.y;
     }
 }

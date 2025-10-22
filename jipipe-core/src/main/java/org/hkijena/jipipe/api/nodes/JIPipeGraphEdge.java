@@ -21,9 +21,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.jgrapht.graph.DefaultEdge;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * A custom graph edge
@@ -34,7 +32,7 @@ public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgrada
 
     private String uuid;
     private Shape uiShape = Shape.Elbow;
-    private List<JIPipeGraphEdgeControlPoint> controlPoints = new ArrayList<>();
+    private Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints = new HashMap<>();
 
     /**
      * Initializes a new graph edge that cannot be disconnected by users
@@ -86,18 +84,27 @@ public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgrada
     }
 
     @JsonGetter("control-points")
-    public List<JIPipeGraphEdgeControlPoint> getControlPoints() {
+    public Map<String, List<JIPipeGraphEdgeControlPoint>> getControlPoints() {
         return controlPoints;
     }
 
     @JsonSetter("control-points")
-    public void setControlPoints(List<JIPipeGraphEdgeControlPoint> controlPoints) {
+    public void setControlPoints(Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints) {
         this.controlPoints = controlPoints;
+    }
+
+    public List<JIPipeGraphEdgeControlPoint> getControlPoints(String compartment) {
+        return controlPoints.getOrDefault(StringUtils.nullToEmpty(compartment), Collections.emptyList());
     }
 
     @Override
     public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         // Nothing to do
+    }
+
+    public void addControlPoint(int index, String compartment, int x, int y) {
+        List<JIPipeGraphEdgeControlPoint> points = controlPoints.computeIfAbsent(StringUtils.nullToEmpty(compartment), k -> new ArrayList<>());
+        points.add(index, new JIPipeGraphEdgeControlPoint(x, y));
     }
 
     /**

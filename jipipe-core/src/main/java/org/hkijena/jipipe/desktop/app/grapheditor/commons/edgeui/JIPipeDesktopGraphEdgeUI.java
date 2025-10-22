@@ -171,15 +171,14 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
      *
      * @return the control points in grid location
      */
-    public List<Point> getControlPoints() {
+    public List<Point> getControlPointsInGridCoordinates() {
         if (edge.getControlPoints().isEmpty()) {
             return Collections.emptyList();
         } else {
             String compartmentUUID = StringUtils.nullToEmpty(canvasUI.getCompartmentUUID());
             List<Point> controlPoints = new ArrayList<>(edge.getControlPoints().size());
-            for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints()) {
-                Point gridLocation = controlPoint.getLocationWithin(compartmentUUID);
-                controlPoints.add(gridLocation);
+            for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints(compartmentUUID)) {
+                controlPoints.add(controlPoint.toPoint());
             }
             return controlPoints;
         }
@@ -221,7 +220,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         if (edge.getControlPoints().isEmpty()) {
             nextTarget = targetPoint.center;
         } else {
-            List<Point> controlPoints = getControlPoints();
+            List<Point> controlPoints = getControlPointsInGridCoordinates();
             for (Point gridLocation : controlPoints) {
                 nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
                 addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
@@ -364,6 +363,14 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
         g.setPaint(edgeColor);
         canvasUI.getPaintManager().paintEdge(g, renderedLineSegments, arrowHeadMode);
+    }
+
+    public void moveControlPointsByGrid(int dx, int dy) {
+        List<JIPipeGraphEdgeControlPoint> controlPoints = edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()));
+        for (JIPipeGraphEdgeControlPoint controlPoint : controlPoints) {
+            controlPoint.setX(controlPoint.getX() + dx);
+            controlPoint.setY(controlPoint.getY() + dy);
+        }
     }
 
     public static class SegmentedLines {
