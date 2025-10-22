@@ -85,7 +85,8 @@ public class CellposeUtils {
                 throw new JIPipeValidationRuntimeException(e,
                         "GPU not compatible to current Cellpose version",
                         "You GPU is not capable of running the provided Cellpose version. The GPU is either too old or too new.",
-                        "Try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally (bottom right corner of the window). " +
+                        "If you are using Nvidia (CUDA), try limiting the CUDA version to a maximum of 126 which may work with older GPUs (see bottom right corner of the window). " +
+                        "You can also try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally. " +
                                 "If you absolutely require GPU support, you can setup a custom Cellpose environment and point JIPipe at it using project or node connected services.");
             }
 
