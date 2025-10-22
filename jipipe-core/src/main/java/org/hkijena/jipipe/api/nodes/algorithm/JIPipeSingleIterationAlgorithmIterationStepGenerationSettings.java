@@ -61,7 +61,7 @@ public class JIPipeSingleIterationAlgorithmIterationStepGenerationSettings exten
         return new JIPipeIterationStepGenerationSettingsVisualization.Builder()
                 .addParameter("Merge same annotation values", "annotation-merge-strategy", getAnnotationMergeStrategy(), JIPipeTextAnnotationMergeMode.Merge)
                 .addParameter("Merge same data annotation values", "data-annotation-merge-strategy", getDataAnnotationMergeStrategy(), JIPipeDataAnnotationMergeMode.MergeTables)
-                .setCenterIcon("actions/data-flow-merge.png")
+                .setCenterIcon("nodeui/data-flow-merge-16x32.png")
                 .build();
     }
 }

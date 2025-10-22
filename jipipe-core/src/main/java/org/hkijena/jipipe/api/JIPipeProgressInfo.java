@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Cancelable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -494,6 +495,19 @@ public class JIPipeProgressInfo implements Cancelable {
 
     public void warn(String message) {
         log("[WARNING] " + message);
+    }
+
+    public void aggressive(String... text) {
+        if(text.length==0) {
+            return;
+        }
+        int length = Arrays.stream(text).map(String::length).reduce(0, Integer::max);
+
+        warn("  " + "v".repeat(length));
+        for (String s : text) {
+            error("| " + s);
+        }
+        warn("  " + "^".repeat(length));
     }
 
     public interface StatusUpdatedEventListener {

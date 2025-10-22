@@ -404,8 +404,9 @@ public class PythonUtils {
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
+        Map<String, String> systemVariables = System.getenv();
         JIPipeExpressionVariablesMap existingEnvironmentVariables = new JIPipeExpressionVariablesMap();
-        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
+        for (Map.Entry<String, String> entry : systemVariables.entrySet()) {
             existingEnvironmentVariables.put(entry.getKey(), entry.getValue());
             environmentVariables.put(entry.getKey(), entry.getValue());
         }
@@ -418,7 +419,9 @@ public class PythonUtils {
 
 
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
-            progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            if(!systemVariables.containsKey(entry.getKey()) || !Objects.equals(systemVariables.get(entry.getKey()), entry.getValue())) {
+                progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
+            }
         }
 
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap();

@@ -78,7 +78,7 @@ import java.util.stream.Collectors;
                 "<li><b>Styles:</b> A vector summarizing each image.</li>" +
                 "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
                 "</ul>" +
-                "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
+                "Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")
