@@ -36,6 +36,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -44,11 +45,9 @@ import java.util.Objects;
 @SetJIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, name = "Path", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class PathDataSource extends JIPipeAlgorithm {
+public class PathDataSource extends AbstractPathDataSource {
 
-    private Path currentWorkingDirectory;
     private Path path;
-    private boolean needsToExist = true;
 
     /**
      * Initializes the algorithm
@@ -67,8 +66,6 @@ public class PathDataSource extends JIPipeAlgorithm {
     public PathDataSource(PathDataSource other) {
         super(other);
         this.path = other.path;
-        this.currentWorkingDirectory = other.currentWorkingDirectory;
-        this.needsToExist = other.needsToExist;
     }
 
     @Override
@@ -94,130 +91,28 @@ public class PathDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("path")
     public void setPath(Path path) {
         this.path = PathUtils.normalize(path);
-        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
-            String name = path != null ? path.getFileName().toString() : "";
-            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
-                getFirstOutputSlot().getInfo().setCustomName(name);
-                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
-            }
-        }
-    }
-
-    @SetJIPipeDocumentation(name = "Needs to exist", description = "If true, the selected path needs to exist.")
-    @JIPipeParameter("needs-to-exist")
-    public boolean isNeedsToExist() {
-        return needsToExist;
-    }
-
-    @JIPipeParameter("needs-to-exist")
-    public void setNeedsToExist(boolean needsToExist) {
-        this.needsToExist = needsToExist;
-    }
-
-    /**
-     * @return The file name as absolute path
-     */
-    public Path getAbsolutePath() {
-        if (path == null)
-            return null;
-        else if (currentWorkingDirectory != null)
-            return currentWorkingDirectory.resolve(path);
-        else
-            return path;
+        updateOutputSlotIfEnabled();
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        if (needsToExist && (path == null || !Files.exists(getAbsolutePath()))) {
-            report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                    reportContext,
-                    "Input path does not exist!",
-                    "The path '" + getAbsolutePath() + "' does not exist.",
-                    "Please provide a valid input path."));
+    protected List<Path> getPaths_() {
+        if(path != null) {
+            return List.of(path);
+        }
+        else {
+            return List.of();
         }
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
-        Path source = getAbsolutePath();
-        if (source == null || !Files.exists(source)) {
-            if (isNeedsToExist()) {
-                throw new RuntimeException("Path " + getPath() + " does not exist!");
-            }
-            progressInfo.log("Unable to archive: " + getPath());
-        } else {
-            Path target;
-            if (source.startsWith(originalBaseDirectory)) {
-                // The data is located in the project directory. We can directly copy the file.
-                Path relativePath = originalBaseDirectory.relativize(source);
-                target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
-            } else {
-                // The data is located outside the project directory. Needs to be copied into a unique directory.
-                target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getPath().getFileName());
-            }
-
-            if (Files.exists(target)) {
-                progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
-                return;
-            }
-
-            progressInfo.log("Copy " + source + " -> " + target);
-            try {
-                Files.createDirectories(target.getParent());
-                if (Files.isRegularFile(source)) {
-                    Files.copy(source, target);
-                } else {
-                    FileUtils.copyDirectory(source.toFile(), target.toFile());
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            setPath(target);
+    protected void setPaths_(List<Path> paths) {
+        if(paths.isEmpty()) {
+            setPath(null);
+        }
+        else {
+            setPath(paths.getFirst());
         }
     }
 
-    @Override
-    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
-        super.reportArchiveValidation(context, report, originalBaseDirectory);
 
-        Path source = getAbsolutePath();
-        if (source == null || !Files.exists(source)) {
-            if (isNeedsToExist()) {
-                context.error().title("Unable to find path").explanation("The path " + getPath() + " does not exist").report(report);
-            }
-        } else {
-            if (!source.startsWith(originalBaseDirectory)) {
-                report.report(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning, context, "Path not relative to project", "The path " + getPath() + " is not located relative to the project file. " +
-                        "The resulting archive will contain directories with randomly generated names."));
-            }
-        }
-    }
-
-    @Override
-    public void setBaseDirectory(Path baseDirectory) {
-        super.setBaseDirectory(baseDirectory);
-
-        if (path != null) {
-            // Make absolute
-            if (!path.isAbsolute()) {
-                if (currentWorkingDirectory != null) {
-                    setPath(currentWorkingDirectory.resolve(path));
-                } else if (baseDirectory != null) {
-                    setPath(baseDirectory.resolve(path));
-                }
-            }
-            // Make relative if already absolute and workDirectory != null
-            JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-            if (settings == null || settings.isRelativizePaths()) {
-                if (path.isAbsolute()) {
-                    if (baseDirectory != null && path.startsWith(baseDirectory)) {
-                        setPath(baseDirectory.relativize(path));
-                    }
-                }
-            }
-        }
-
-        currentWorkingDirectory = baseDirectory;
-    }
 }
