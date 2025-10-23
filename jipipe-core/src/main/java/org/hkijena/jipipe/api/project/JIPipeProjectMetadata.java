@@ -39,6 +39,7 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private boolean restoreTabs = true;
     private boolean autoAddAuthors = true;
     private boolean showCompartmentsRunPanelInOverview = true;
+    private boolean showCompartmentsInOverview = true;
 
     @SetJIPipeDocumentation(name = "Automatically add new authors", description = "If enabled, automatically add the configured authors in " +
             "the application settings to the project if enabled.")
@@ -167,5 +168,16 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     @JIPipeParameter("show-compartments-run-panel-in-overview")
     public void setShowCompartmentsRunPanelInOverview(boolean showCompartmentsRunPanelInOverview) {
         this.showCompartmentsRunPanelInOverview = showCompartmentsRunPanelInOverview;
+    }
+
+    @SetJIPipeDocumentation(name = "Show compartments in project overview", description = "If enabled, show a 'Compartments' panel in the project overview")
+    @JIPipeParameter("show-compartments-panel-in-overview")
+    public boolean isShowCompartmentsInOverview() {
+        return showCompartmentsInOverview;
+    }
+
+    @JIPipeParameter("show-compartments-panel-in-overview")
+    public void setShowCompartmentsInOverview(boolean showCompartmentsInOverview) {
+        this.showCompartmentsInOverview = showCompartmentsInOverview;
     }
 }

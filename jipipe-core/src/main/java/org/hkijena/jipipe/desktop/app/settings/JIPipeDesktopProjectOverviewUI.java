@@ -234,6 +234,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
 
         createRunSetsPanel();
         createRunCompartmentsPanel();
+        createCompartmentsPanel();
 
         createCompartmentsTipIfNeeded(tipsPanel);
         createCompartmentsOutputTipIfNeeded(tipsPanel);
@@ -556,6 +557,50 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
             }
 
             addPanelToCenterPanel(JIPipe.RESOURCES.getIcon32("actions/run-play.png"), "Run compartment", listPanel);
+        }
+    }
+
+    private void createCompartmentsPanel() {
+        if (!getProject().getMetadata().isShowCompartmentsInOverview()) {
+            return;
+        }
+
+        if (!getProject().getCompartments().isEmpty()) {
+            JPanel listPanel = UIUtils.boxVertical();
+
+            for (JIPipeProjectCompartment compartment : getProject().getCompartments().values()) {
+                JPanel compartmentPanel = new JPanel(new BorderLayout(16, 0));
+                compartmentPanel.setBorder(BorderFactory.createCompoundBorder(
+                        BorderFactory.createEmptyBorder(4, 4, 4, 4),
+                        new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+                ));
+                Color color = null;
+                if (compartment.getProjectOverviewColor().isEnabled()) {
+                    color = compartment.getProjectOverviewColor().getContent();
+                }
+                compartmentPanel.add(new JLabel(new SolidColorIcon(8, 32, color != null ? color : UIManager.getColor("Panel.background"), UIUtils.getControlBorderColor())), BorderLayout.WEST);
+                compartmentPanel.add(new JLabel(compartment.getName(), JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"), JLabel.LEFT), BorderLayout.CENTER);
+
+                compartmentPanel.add(UIUtils.boxHorizontal(
+                        UIUtils.createButton("Go to", JIPipe.RESOURCES.getIcon16("actions/go-jump.png"), () -> {
+                            getDesktopProjectWorkbench().getOrOpenPipelineEditorTab(compartment, true);
+                        }),
+                        UIUtils.createButton("Help", JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> {
+                            dockPanel.activatePanel(DOCK_NODE_CONTEXT_HELP, true);
+                            JIPipeDesktopFormHelpPanel helpPanel = dockPanel.getPanelComponent(DOCK_NODE_CONTEXT_HELP, JIPipeDesktopFormHelpPanel.class);
+                            if (!StringUtils.isNullOrEmpty(compartment.getCustomDescription().toPlainText().trim())) {
+                                helpPanel.showContent(new MarkdownText("# " + compartment.getName() + "\n\n" + compartment.getCustomDescription().getBody()));
+                            } else {
+                                helpPanel.showContent(new MarkdownText("# " + compartment.getName() + "\n\n*No description provided*"));
+                            }
+
+                        })
+                ), BorderLayout.EAST);
+
+                listPanel.add(compartmentPanel);
+            }
+
+            addPanelToCenterPanel(JIPipe.RESOURCES.getIcon32("actions/graph-compartments.png"), "Compartments", listPanel);
         }
     }
 
