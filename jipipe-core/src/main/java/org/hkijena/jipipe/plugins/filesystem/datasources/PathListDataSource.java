@@ -53,31 +53,10 @@ public class PathListDataSource extends AbstractPathDataSource {
 
     private PathList paths = new PathList();
 
-
-    /**
-     * Creates a new instance
-     *
-     * @param info The algorithm info
-     */
     public PathListDataSource(JIPipeNodeInfo info) {
         super(info);
     }
 
-    @Override
-    public List<Path> getPathsAs(PathLinkageType type) {
-        return List.of();
-    }
-
-    @Override
-    public void setPathsTo(List<Path> paths) {
-
-    }
-
-    /**
-     * Copies the algorithm
-     *
-     * @param other The original
-     */
     public PathListDataSource(PathListDataSource other) {
         super(other);
         this.paths.addAll(other.paths);
@@ -113,36 +92,13 @@ public class PathListDataSource extends AbstractPathDataSource {
         updateOutputSlotIfEnabled();
     }
 
-    /**
-     * @return Folder paths as absolute paths
-     */
-    public PathList getAbsolutePaths() {
-        PathList result = new PathList();
-        for (Path folderPath : paths) {
-            if (folderPath == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && !folderPath.isAbsolute())
-                result.add(currentWorkingDirectory.resolve(folderPath));
-            else
-                result.add(folderPath);
-        }
-        return result;
+    @Override
+    protected List<Path> getPaths_() {
+        return paths;
     }
 
-    /**
-     * @return Relative paths (if available)
-     */
-    public PathList getRelativePaths() {
-        PathList result = new PathList();
-        for (Path path : paths) {
-            if (path == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && path.isAbsolute() && path.startsWith(currentWorkingDirectory)) {
-                result.add(currentWorkingDirectory.relativize(path));
-            } else {
-                result.add(path);
-            }
-        }
-        return result;
+    @Override
+    protected void setPaths_(List<Path> paths) {
+        setPaths(new PathList(paths));
     }
 }

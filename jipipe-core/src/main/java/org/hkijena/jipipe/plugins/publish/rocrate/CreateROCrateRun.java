@@ -93,6 +93,13 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         createReadme(tmpPath, builder);
         createDiagram(tmpPath, builder);
 
+        // Ensure that the input directory exists
+        if(!Files.isDirectory(tmpPath.resolve("inputs"))) {
+            PathUtils.createDirectories(tmpPath.resolve("inputs"));
+            // Create something in there
+           PathUtils.createKeepFile(tmpPath.resolve("inputs").resolve(".keep"));
+        }
+
         // Compress the container
         RoCrate crate = builder.build();
         addROCrateMainEntity(crate);
@@ -108,9 +115,8 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
     private void addProjectToROCrate(RoCrate.RoCrateBuilder builder, Path tmpPath, Map<String, String> projectDirectories) {
         try {
-            project.saveProject(tmpPath.resolve("project_.jip"), false);
             JIPipeProject copyProject = new JIPipeProject();
-            copyProject.fromJson(JsonUtils.readFromFile(tmpPath.resolve("project_.jip"), JsonNode.class),
+            copyProject.fromJson(JsonUtils.readFromFile(tmpPath.resolve("project.jip"), JsonNode.class),
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
                     new JIPipeNotificationInbox(), getProgressInfo().resolve("Load project copy"));

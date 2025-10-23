@@ -51,11 +51,14 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));
     private final JPanel setupPanel = new JPanel();
     private final JIPipeDesktopParameterFormPanel parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), new JIPipeDummyParameterCollection(), MarkdownText.EMPTY, JIPipeDesktopFormPanel.WITH_SCROLLING | JIPipeDesktopFormPanel.WITH_DOCUMENTATION | JIPipeDesktopParameterFormPanel.DOCUMENTATION_NO_UI);
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Publish Local");    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
+    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Publish Local");
+    private final JButton confirmButton = UIUtils.createButton("Publish now", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"), this::startPublish);
     private final JLabel invalidMessage = new JLabel("Unable to publish. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/warning.png"), JLabel.LEFT);
     private final JLabel warningMessage = new JLabel("Some additional checks are recommended. Please review the items on the left.", JIPipe.RESOURCES.getIcon16("emblems/emblem-important-blue.png"), JLabel.LEFT);
+    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
     private final List<JIPipeDesktopPublisherAssistantCondition> conditions = new ArrayList<>();
     private JIPipeDesktopPublisherAssistantConditionStatus currentStatus = JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
+
     public JIPipeDesktopPublisherAssistant(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
         initialize();
@@ -89,7 +92,10 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         repaint(50);
 
         updateAssistant();
-    }    private final JButton refreshButton = UIUtils.createButton("Refresh", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::updateAssistant);
+
+        splitPane.applyRatio();
+    }
+
 
     private void switchToExecution(JIPipeRunnable runnable) {
 
@@ -105,6 +111,8 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         repaint(50);
 
         runExecuteUI.startRun();
+
+        splitPane.applyRatio();
     }
 
     private void initializeSetupPanel() {
@@ -235,10 +243,14 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        JOptionPane.showMessageDialog(this, "There were errors during the export process.\n" +
+                        "Please open the JIPipe log to review them.",
+                getAssistantTitle(), JOptionPane.ERROR_MESSAGE);
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
                 LocalDateTime.now(),
                 event.getRun().getProgressInfo().getLog().toString(),
                 new JIPipeNotificationInbox(),
                 false));
+        switchToSetup();
     }
 }

@@ -38,10 +38,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Provides an input file
@@ -102,38 +99,13 @@ public class FileListDataSource extends AbstractPathDataSource {
         updateOutputSlotIfEnabled();
     }
 
-    /**
-     * @return Absolute file names
-     */
-    public PathList getAbsoluteFileNames() {
-        PathList result = new PathList();
-        for (Path fileName : files) {
-            if (fileName == null) {
-                result.add(null);
-            } else if (currentWorkingDirectory != null && !fileName.isAbsolute()) {
-                result.add(currentWorkingDirectory.resolve(fileName));
-            } else {
-                result.add(fileName);
-            }
-        }
-        return result;
+    @Override
+    protected List<Path> getPaths_() {
+        return files;
     }
 
-    /**
-     * @return Relative file names (if available)
-     */
-    public PathList getRelativeFileNames() {
-        PathList result = new PathList();
-        for (Path fileName : files) {
-            if (fileName == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && fileName.isAbsolute() && fileName.startsWith(currentWorkingDirectory)) {
-                result.add(currentWorkingDirectory.relativize(fileName));
-            } else {
-                result.add(fileName);
-            }
-        }
-        return result;
+    @Override
+    protected void setPaths_(List<Path> paths) {
+        setFiles(new PathList(paths));
     }
-
 }

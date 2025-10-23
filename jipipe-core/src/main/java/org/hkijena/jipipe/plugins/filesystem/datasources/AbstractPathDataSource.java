@@ -83,7 +83,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+    public void archiveReportValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
         List<Path> absoluteFileNames = getPathsAs(PathLinkageType.Absolute);
         List<Path> paths = getPathsAs(PathLinkageType.Any);
 
@@ -120,39 +120,27 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     }
 
     private void autoRelativizePaths(Path baseDirectory) {
-        boolean modified = false;
-        List<Path> paths = getPaths_();
-        for (int i = 0; i < paths.size(); ++i) {
-            Path folderPath = paths.get(i);
-            if (folderPath != null) {
-                // Make absolute
-                if (!folderPath.isAbsolute()) {
-                    if (currentWorkingDirectory != null) {
-                        folderPath = currentWorkingDirectory.resolve(folderPath);
-                        modified = true;
-                    } else if (baseDirectory != null) {
-                        folderPath = baseDirectory.resolve(folderPath);
-                        modified = true;
-                    }
-                }
-                // Make relative if already absolute and workDirectory != null
-                JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-                if (settings == null || settings.isRelativizePaths()) {
-                    if (folderPath.isAbsolute()) {
-                        if (baseDirectory != null && folderPath.startsWith(baseDirectory)) {
-                            folderPath = baseDirectory.relativize(folderPath);
+        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
+        if (settings == null || settings.isRelativizePaths()) {
+            boolean modified = false;
+            List<Path> paths = getPaths_();
+            for (int i = 0; i < paths.size(); ++i) {
+                Path path = paths.get(i);
+                if (path != null) {
+                    if (path.isAbsolute()) {
+                        if (baseDirectory != null && path.startsWith(baseDirectory)) {
+                            path = baseDirectory.relativize(path);
                             modified = true;
                         }
                     }
                 }
-
                 if (modified) {
-                    paths.set(i, folderPath);
+                    paths.set(i, path);
                 }
             }
-        }
-        if(modified) {
-            setPaths_(paths);
+            if (modified) {
+                setPaths_(paths);
+            }
         }
     }
 
@@ -194,57 +182,23 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
-        PathList relativeFileNames = getRelativePaths();
-        PathList absoluteFileNames = getAbsolutePaths();
-        List<Path> newPaths = new ArrayList<>();
-        Set<String> externalFileNames = new HashSet<>();
+    public Set<Path> archiveDiscoverExternalPaths(JIPipeProgressInfo progressInfo) {
+        return new HashSet<>(getPathsAs(PathLinkageType.Absolute));
+    }
 
-        for (int i = 0; i < relativeFileNames.size(); i++) {
-            Path source = absoluteFileNames.get(i);
-            if (source == null || !Files.exists(source)) {
-                throw new RuntimeException("Path " + relativeFileNames.get(i) + " does not exist!");
-            } else {
-                Path target;
-                if (source.startsWith(originalBaseDirectory)) {
-                    // The data is located in the project directory. We can directly copy the file.
-                    Path relativePath = originalBaseDirectory.relativize(source);
-                    target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
-                } else {
-                    // The data is located outside the project directory. Needs to be copied into a unique directory.
-                    String externalFileName = relativeFileNames.get(i).getFileName().toString();
-                    if (!externalFileNames.contains(externalFileName)) {
-                        // Not yet in external storage. Add it
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    } else {
-                        // We need to make a new target dir (UUID)
-                        progressInfo.log("Warning: Duplicate path name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    }
-                }
-
-                if (Files.exists(target)) {
-                    progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
-                    continue;
-                }
-
-                progressInfo.log("Copy " + source + " -> " + target);
-                try {
-                    Files.createDirectories(target.getParent());
-                    if (Files.isRegularFile(source)) {
-                        Files.copy(source, target);
-                    } else {
-                        FileUtils.copyDirectory(source.toFile(), target.toFile());
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                newPaths.add(target);
+    @Override
+    public void archiveUpdateExternalPaths(Map<Path, Path> updateMap, JIPipeProgressInfo progressInfo) {
+        List<Path> updatedPaths = new  ArrayList<>();
+        for (Path src : getPathsAs(PathLinkageType.Absolute)) {
+            Path dst = updateMap.get(src);
+            if(dst != null) {
+                updatedPaths.add(dst);
+            }
+            else {
+                progressInfo.aggressive("MISSING MAPPING", src.toString(), "to", "?");
             }
         }
-        setPaths_(newPaths);
+        setPaths_(updatedPaths);
     }
 
     public List<Path> getPathsAs(PathLinkageType type) {
@@ -253,15 +207,15 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
             for (Path path : getPaths_()) {
                 if(path.isAbsolute()) {
                     if(!PathUtils.isNullOrEmpty(currentWorkingDirectory) && path.startsWith(currentWorkingDirectory)) {
-                        result.add(currentWorkingDirectory.relativize(path));
+                        result.add(currentWorkingDirectory.relativize(path).normalize());
                     }
                     else {
                         // Use user home
-                        result.add(PathUtils.getHomeDirectory().relativize(path));
+                        result.add(PathUtils.getHomeDirectory().relativize(path).normalize());
                     }
                 }
                 else {
-                    result.add(path);
+                    result.add(path.normalize());
                 }
             }
             return result;
@@ -271,15 +225,15 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
             for (Path path : getPaths_()) {
                 if(!path.isAbsolute()) {
                     if(!PathUtils.isNullOrEmpty(currentWorkingDirectory)) {
-                        result.add(currentWorkingDirectory.resolve(path));
+                        result.add(currentWorkingDirectory.resolve(path).normalize());
                     }
                     else {
                         // Use user home
-                        result.add(PathUtils.getHomeDirectory().resolve(path));
+                        result.add(PathUtils.getHomeDirectory().resolve(path).normalize());
                     }
                 }
                 else {
-                    result.add(path);
+                    result.add(path.normalize());
                 }
             }
             return result;

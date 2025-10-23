@@ -39,10 +39,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Provides an input folder
@@ -53,26 +50,14 @@ import java.util.UUID;
 public class FolderListDataSource extends AbstractPathDataSource {
 
     private PathList folderPaths = new PathList();
-    private Path currentWorkingDirectory;
 
-    /**
-     * Creates a new instance
-     *
-     * @param info The algorithm info
-     */
     public FolderListDataSource(JIPipeNodeInfo info) {
         super(info);
     }
 
-    /**
-     * Copies the algorithm
-     *
-     * @param other The original
-     */
     public FolderListDataSource(FolderListDataSource other) {
         super(other);
         this.folderPaths.addAll(other.folderPaths);
-        this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
@@ -105,37 +90,14 @@ public class FolderListDataSource extends AbstractPathDataSource {
         updateOutputSlotIfEnabled();
     }
 
-    /**
-     * @return Folder paths as absolute paths
-     */
-    public PathList getAbsoluteFolderPaths() {
-        PathList result = new PathList();
-        for (Path folderPath : folderPaths) {
-            if (folderPath == null) {
-                result.add(null);
-            } else if (currentWorkingDirectory != null && !folderPath.isAbsolute()) {
-                result.add(currentWorkingDirectory.resolve(folderPath));
-            } else {
-                result.add(folderPath);
-            }
-        }
-        return result;
+    @Override
+    protected List<Path> getPaths_() {
+        return folderPaths;
     }
 
-    /**
-     * @return Relative paths (if available)
-     */
-    public PathList getRelativeFolderPaths() {
-        PathList result = new PathList();
-        for (Path folderPath : folderPaths) {
-            if (folderPath == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && folderPath.isAbsolute() && folderPath.startsWith(currentWorkingDirectory)) {
-                result.add(currentWorkingDirectory.relativize(folderPath));
-            } else {
-                result.add(folderPath);
-            }
-        }
-        return result;
+    @Override
+    protected void setPaths_(List<Path> paths) {
+        setFolderPaths(new PathList(paths));
     }
+
 }

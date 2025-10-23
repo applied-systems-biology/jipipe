@@ -498,7 +498,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     .report(report);
         } else {
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                node.reportArchiveValidation(JIPipeValidationReportContext.UNSPECIFIED.node(node), report, getWorkDirectory());
+                node.archiveReportValidation(JIPipeValidationReportContext.UNSPECIFIED.node(node), report, getWorkDirectory());
             }
         }
         return report;
