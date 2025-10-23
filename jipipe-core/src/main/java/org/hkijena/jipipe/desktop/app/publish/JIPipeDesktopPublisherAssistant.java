@@ -14,13 +14,16 @@
 package org.hkijena.jipipe.desktop.app.publish;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -34,6 +37,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,7 +45,7 @@ import java.util.List;
  * Base class that handles UI for publishing-related tasks.
  * Designed for displaying conditions (fulfilled/unfulfilled/warning) to users
  */
-public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
+public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private final JIPipeDesktopFormPanel notificationList = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.LEFT_RIGHT, new JIPipeDesktopSplitPane.DynamicSidebarRatio(350, false));
@@ -56,6 +60,7 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
         super(workbench);
         initialize();
         queue.getFinishedEventEmitter().subscribe(this);
+        queue.getInterruptedEventEmitter().subscribe(this);
     }
 
     private void initialize() {
@@ -204,6 +209,11 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
+                LocalDateTime.now(),
+                event.getRun().getProgressInfo().getLog().toString(),
+                new JIPipeNotificationInbox(),
+                true));
         onPublicationFinished(event.getRun());
         closePublisher();
     }
@@ -223,8 +233,12 @@ public abstract class JIPipeDesktopPublisherAssistant extends JIPipeDesktopProje
     }
 
 
-
-
-
-
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(new JIPipeRunnableLogEntry(getAssistantTitle(),
+                LocalDateTime.now(),
+                event.getRun().getProgressInfo().getLog().toString(),
+                new JIPipeNotificationInbox(),
+                false));
+    }
 }
