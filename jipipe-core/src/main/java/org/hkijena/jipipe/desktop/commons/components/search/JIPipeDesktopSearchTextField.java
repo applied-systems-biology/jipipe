@@ -14,7 +14,10 @@
 package org.hkijena.jipipe.desktop.commons.components.search;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -30,7 +33,7 @@ import java.util.function.Predicate;
 /**
  * A {@link org.jdesktop.swingx.JXTextField} designed for searching
  */
-public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<String> {
+public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<String>, JIPipeRunnable.StartedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     public static final int ANIMATION_DELAY = 80;
     public static final double ANIMATION_SPEED = 0.05;
@@ -40,15 +43,39 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     private String[] searchStrings = new String[0];
     private double attentionAnimationStatus = 1;
     private boolean isProgrammaticFocusChange = false;
+    private final JButton searchButton = new JButton();
+    private final JIPipeRunnableQueue queue;
+    private final Icon readyIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/search.png");
+    private final SpinnerIcon busyIcon = new SpinnerIcon(searchButton);
 
-    /**
-     * Creates a new instance
-     */
     public JIPipeDesktopSearchTextField() {
+        this(null);
+    }
+
+    public JIPipeDesktopSearchTextField(JIPipeRunnableQueue queue) {
+        this.queue = queue;
         this.attentionAnimationTimer = new Timer(ANIMATION_DELAY, e -> updateAttentionAnimation());
         this.attentionAnimationTimer.setRepeats(true);
         this.attentionAnimationTimer.setCoalesce(false);
         initialize();
+        updateIcon();
+
+        if (queue != null) {
+            queue.getStartedEventEmitter().subscribe(this);
+            queue.getFinishedEventEmitter().subscribe(this);
+            queue.getInterruptedEventEmitter().subscribe(this);
+        }
+    }
+
+    private void updateIcon() {
+        if(queue == null || queue.isEmpty()) {
+            busyIcon.stop();
+            searchButton.setIcon(readyIcon);
+        }
+        else {
+            busyIcon.start();
+            searchButton.setIcon(busyIcon);
+        }
     }
 
     private void updateAttentionAnimation() {
@@ -70,8 +97,6 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         setBackground(UIManager.getColor("TextField.background"));
         setBorder(UIUtils.createControlBorder());
 
-
-        JButton searchButton = new JButton(JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
         searchButton.addActionListener(e -> {
             isProgrammaticFocusChange = true;
             try {
@@ -152,7 +177,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
                 listener.actionPerformed(new ActionEvent(this, 1, "search-text-changed"));
             }
         });
-        
+
         // Add focus listener to prevent selection conflicts
         textField.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override
@@ -184,11 +209,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
 
     @Override
     public boolean test(String s) {
-        if (s == null)
+        if (s == null) {
             s = "";
+        }
         for (String searchString : getSearchStrings()) {
-            if (!s.toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT)))
+            if (!s.toLowerCase(Locale.ROOT).contains(searchString.toLowerCase(Locale.ROOT))) {
                 return false;
+            }
         }
         return true;
     }
@@ -202,5 +229,20 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         } finally {
             isProgrammaticFocusChange = false;
         }
+    }
+
+    @Override
+    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
+        SwingUtilities.invokeLater(this::updateIcon);
+    }
+
+    @Override
+    public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
+        SwingUtilities.invokeLater(this::updateIcon);
+    }
+
+    @Override
+    public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
+        SwingUtilities.invokeLater(this::updateIcon);
     }
 }

@@ -254,7 +254,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         mainToolBar.setFloatable(false);
         mainToolBar.add(Box.createHorizontalStrut(8));
 
-        searchField = new JIPipeDesktopSearchTextField();
+        searchField = new JIPipeDesktopSearchTextField(queue);
         searchField.setText(LAST_SEARCH);
         searchField.addActionListener(e -> reloadList());
         searchField.getTextField().selectAll();
