@@ -24,6 +24,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGr
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
 public class RemoveEdgeControlPointUIContextAction implements GraphInteractiveObjectUIContextAction {
@@ -46,6 +47,11 @@ public class RemoveEdgeControlPointUIContextAction implements GraphInteractiveOb
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return selection.stream().anyMatch(ui -> ui instanceof JIPipeDesktopGraphEdgeControlPointUI);
+    }
+
+     @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
 
     @Override
