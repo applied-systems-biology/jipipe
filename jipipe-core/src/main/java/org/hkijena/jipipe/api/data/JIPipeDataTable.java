@@ -1273,6 +1273,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         try {
             int rowCount = getRowCount_();
             for (int row = 0; row < rowCount; ++row) {
+                if(saveProgress.isCancelled()) {
+                    return;
+                }
                 JIPipeDataTableRowInfo rowMetadata = new JIPipeDataTableRowInfo();
                 rowMetadata.setIndex(row);
                 rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getDataItemStore(row).getDataClass()));
@@ -1281,6 +1284,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, rowCount);
                 exportDataRow_(storage, row, previewSizes, rowProgress);
                 for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
+                    if(saveProgress.isCancelled()) {
+                        return;
+                    }
                     JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
                     JIPipeWriteDataStorage dataAnnotationStore = saveDataAnnotationRow_(storage, dataAnnotationProgress, row, previewSizes, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
                     JIPipeDataAnnotationInfo dataAnnotationMetadata = new JIPipeDataAnnotationInfo(dataAnnotation.getName(),
