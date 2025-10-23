@@ -50,6 +50,7 @@ public class JIPipeDesktopGraphCanvasResources {
     public static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
     public static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
     public static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
+    public static final int CONTROL_POINT_SIZE = 13;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");

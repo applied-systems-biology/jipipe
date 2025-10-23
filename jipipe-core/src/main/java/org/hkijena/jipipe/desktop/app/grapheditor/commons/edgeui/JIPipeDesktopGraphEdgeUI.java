@@ -189,12 +189,13 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     /**
      * Gets the rendered line segments in real coordinates
      *
-     * @param scale the zoom
+     * @param scale the scale for the output coordinates
+     * @param zoom the zoom used for input coordinates
      * @param viewX the view x shift
      * @param viewY the view y shift
      * @return the line segments
      */
-    public SegmentedLines getRenderedLineSegments(double scale, int viewX, int viewY) {
+    public SegmentedLines getRenderedLineSegments(double scale, double zoom, int viewX, int viewY) {
 
         JIPipeDesktopGraphNodeUI sourceNodeUI = getSourceNodeUI();
         JIPipeDesktopGraphNodeUI targetNodeUI = getTargetNodeUI();
@@ -224,7 +225,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         } else {
             List<Point> controlPoints = getControlPointsInGridCoordinates();
             for (Point gridLocation : controlPoints) {
-                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, zoom);
                 addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
 
                 nextSource = nextTarget;
@@ -331,14 +332,14 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
         g.setStroke(stroke);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
-        canvasUI.getPaintManager().paintEdge(g, getRenderedLineSegments(scale, viewX, viewY), arrowHeadMode);
+        canvasUI.getPaintManager().paintEdge(g, getRenderedLineSegments(scale, canvasUI.getZoom(), viewX, viewY), arrowHeadMode);
     }
 
     private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, PointRange targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
         if(edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
             arrowHeadMode = JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
         }
-        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, viewX, viewY);
+        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, canvasUI.getZoom(), viewX, viewY);
 
         g.setStroke(strokeBorder);
         g.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
@@ -353,7 +354,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         if(edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
             arrowHeadMode = JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
         }
-        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, viewX, viewY);
+        SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, canvasUI.getZoom(), viewX, viewY);
 
         g.setStroke(strokeBorder);
         Color edgeColor = canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax);

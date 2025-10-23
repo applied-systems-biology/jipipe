@@ -43,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.MSTGraphAutoLayoutImplementation;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.SugiyamaGraphAutoLayoutImplementation;
@@ -843,6 +844,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         // Try to pick a node UI
         JIPipeDesktopGraphNodeUI nodeUI = pickNodeUI(mouseEvent);
         JIPipeDesktopGraphEdgeUI edgeUI = null;
+        JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI = null;
 
         if (nodeUI != null) {
             nodeUI.mouseClicked(mouseEvent);
@@ -850,7 +852,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 return;
             }
         } else {
-            edgeUI = pickEdgeUI(mouseEvent);
+            edgeControlPointUI = pickEdgeControlPointUI(mouseEvent);
+            if(edgeControlPointUI == null) {
+                edgeUI = pickEdgeUI(mouseEvent);
+            }
         }
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
@@ -869,7 +874,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             if (selectionManager.getSelection().size() <= 1) {
                 if (nodeUI != null) {
                     selectionManager.selectOnly(nodeUI);
-                } else {
+                }
+                else if(edgeControlPointUI != null) {
+                    selectionManager.selectOnly(edgeControlPointUI);
+                }
+                else {
                     selectionManager.selectOnly(edgeUI);
                 }
             }
@@ -883,6 +892,21 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
 
+    }
+
+    private JIPipeDesktopGraphEdgeControlPointUI pickEdgeControlPointUI(MouseEvent mouseEvent) {
+        // Create translated point accounting for zoom and view
+        int mouseX = mouseEvent.getX();
+        int mouseY = mouseEvent.getY();
+
+        for (JIPipeDesktopGraphEdgeUI edgeUI : edgeUIs.values()) {
+            for (JIPipeDesktopGraphEdgeControlPointUI controlPoint : edgeUI.getControlPoints()) {
+                if(getToolLayerMask().test(controlPoint) && controlPoint.doesContainPoint(mouseX, mouseY)) {
+                    return controlPoint;
+                }
+            }
+        }
+        return null;
     }
 
     /**
@@ -1016,9 +1040,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
         }
 
-        // Try to pick a node UI
+        // Try to pick a UI
         JIPipeDesktopGraphNodeUI nodeUI = pickNodeUI(mouseEvent);
         JIPipeDesktopGraphEdgeUI edgeUI = null;
+        JIPipeDesktopGraphEdgeControlPointUI controlPointUI = null;
 
         if (nodeUI != null) {
             nodeUI.mouseClicked(mouseEvent);
@@ -1026,7 +1051,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 return;
             }
         } else {
-            edgeUI = pickEdgeUI(mouseEvent);
+            controlPointUI = pickEdgeControlPointUI(mouseEvent);
+            if(controlPointUI == null) {
+                edgeUI = pickEdgeUI(mouseEvent);
+            }
         }
 
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
@@ -1037,7 +1065,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             }
 
             // Selection handling
-            if (nodeUI == null && edgeUI != null) {
+            if(controlPointUI != null) {
+                if (mouseEvent.isShiftDown()) {
+                    selectionManager.toggleSelection(controlPointUI);
+                } else if (!selectionManager.getSelection().contains(controlPointUI)) {
+                    selectionManager.selectOnly(controlPointUI);
+                }
+            }
+            else if (nodeUI == null && edgeUI != null) {
                 if (mouseEvent.isShiftDown()) {
                     selectionManager.toggleSelection(edgeUI);
                 } else if (!selectionManager.getSelection().contains(edgeUI)) {
@@ -1824,6 +1859,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                     }
                 }
                 nodeUI.moveToGridLocation(newGridLocation, true, true);
+            }
+            else if(interactiveObjectUI instanceof JIPipeDesktopGraphEdgeControlPointUI controlPointUI) {
+                Point gridLocation = controlPointUI.getGridLocation();
+                Point newGridLocation = new Point(gridLocation.x + gridDx, gridLocation.y + gridDy);
+                controlPointUI.setGridLocation(newGridLocation);
             }
         }
 

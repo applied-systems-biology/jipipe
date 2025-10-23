@@ -1,9 +1,9 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -33,7 +33,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
         
         // Get the rendered line segments from the edge UI
-        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), 0, 0);
+        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), canvasUI.getZoom(), 0, 0);
         
         if (lineSegments.isEmpty()) {
             return false;
@@ -202,7 +202,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
         
         // Get the rendered line segments from the edge UI
-        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), 0, 0);
+        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), canvasUI.getZoom(), 0, 0);
         
         if (lineSegments.isEmpty()) {
             return false;
@@ -355,7 +355,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
 
         // Get the rendered line segments from the edge UI
-        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), 0, 0);
+        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), canvasUI.getZoom(), 0, 0);
 
         if (lineSegments.isEmpty()) {
             return false;
@@ -377,5 +377,9 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         }
 
         return false;
+    }
+
+    public boolean isMouseOverEdgeControlPoint(int mouseX, int mouseY, JIPipeDesktopGraphEdgeUI edgeUI, JIPipeDesktopGraphEdgeControlPointUI controlPoint) {
+        return controlPoint.doesContainPoint(mouseX, mouseY);
     }
 }

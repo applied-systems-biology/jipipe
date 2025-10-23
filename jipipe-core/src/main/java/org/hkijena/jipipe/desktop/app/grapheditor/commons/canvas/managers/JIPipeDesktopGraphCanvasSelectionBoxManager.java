@@ -3,6 +3,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -77,6 +78,11 @@ public class JIPipeDesktopGraphCanvasSelectionBoxManager {
             for (JIPipeDesktopGraphEdgeUI ui : canvasUI.getEdgeUIs().values()) {
                 if (canvasUI.getToolLayerMask().test(ui) && canvasUI.getEdgeManager().doesEdgeIntersectRectangle(ui, selectionRectangle)) {
                     newSelection.add(ui);
+                }
+                for (JIPipeDesktopGraphEdgeControlPointUI controlPoint : ui.getControlPoints()) {
+                    if (canvasUI.getToolLayerMask().test(controlPoint) && controlPoint.doesEdgeIntersectRectangle(selectionRectangle)) {
+                        newSelection.add(controlPoint);
+                    }
                 }
             }
 
