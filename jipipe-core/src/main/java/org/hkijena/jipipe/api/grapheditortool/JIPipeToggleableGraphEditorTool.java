@@ -32,6 +32,10 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         return true;
     }
 
+    default boolean allowsDragEdgeControlPoints() {
+        return true;
+    }
+
     default boolean canRenderEdge(JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
         return true;
     }

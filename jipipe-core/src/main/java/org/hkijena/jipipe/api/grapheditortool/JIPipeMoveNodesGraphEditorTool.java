@@ -90,6 +90,11 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
     }
 
     @Override
+    public boolean allowsDragEdgeControlPoints() {
+        return false;
+    }
+
+    @Override
     public void mouseClicked(MouseEvent e) {
 
     }

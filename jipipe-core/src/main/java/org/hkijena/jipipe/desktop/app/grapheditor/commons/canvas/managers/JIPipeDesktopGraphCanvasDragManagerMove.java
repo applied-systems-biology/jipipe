@@ -5,6 +5,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUIUpdatedEvent;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -37,17 +38,31 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
     }
 
     public boolean startDragCurrentNodeSelection(MouseEvent mouseEvent) {
-        if (canvasUI.getToolManager().currentToolAllowsNodeDragging()) {
+        if (canvasUI.getToolManager().currentToolAllowsNodeDragging() || canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
             this.hasDragSnapshot = false;
             canvasUI.getDragManagerConnect().cancelDragging();
             for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : canvasUI.getSelectionManager().getSelection()) {
                 if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI nodeUI) {
-                    if (nodeUI.getNode().isUiLocked())
+                    if (!canvasUI.getToolManager().currentToolAllowsNodeDragging()) {
                         continue;
+                    }
+                    if (nodeUI.getNode().isUiLocked()) {
+                        continue;
+                    }
                     Point offset = new Point();
                     offset.x = nodeUI.getX() - mouseEvent.getX();
                     offset.y = nodeUI.getY() - mouseEvent.getY();
                     currentlyDraggedOffsets.put(nodeUI, offset);
+                }
+                else if(interactiveObjectUI instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                    if(!canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
+                        continue;
+                    }
+                    Point offset = new Point();
+                    Point renderedLocation = edgeControlPointUI.getRenderedLocation();
+                    offset.x = renderedLocation.x - mouseEvent.getX();
+                    offset.y = renderedLocation.y - mouseEvent.getY();
+                    currentlyDraggedOffsets.put(edgeControlPointUI, offset);
                 }
             }
             return !currentlyDraggedOffsets.isEmpty();
@@ -80,6 +95,21 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                         break;
                     }
                 }
+                else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                    int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
+                    int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
+
+                    Point targetGridPoint = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(new Point(x, y), canvasUI.getZoom());
+                    Point gridLocation = edgeControlPointUI.getGridLocation();
+                    int dx = targetGridPoint.x - gridLocation.x;
+                    int dy = targetGridPoint.y - gridLocation.y;
+
+                    if (dx != 0 || dy != 0) {
+                        gridDx = dx;
+                        gridDy = dy;
+                        break;
+                    }
+                }
             }
 
             int negativeDx = 0;
@@ -90,6 +120,19 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                     if (entry.getKey() instanceof JIPipeDesktopGraphNodeUI currentlyDragged) {
 
                         Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
+                        if (newGridLocation.x <= 0) {
+                            negativeDx = Math.min(negativeDx, newGridLocation.x - 1);
+                            lastTimeExpandedNegative = currentTimeMillis;
+                        }
+                        if (newGridLocation.y <= 0) {
+                            negativeDy = Math.min(negativeDy, newGridLocation.y - 1);
+                            lastTimeExpandedNegative = currentTimeMillis;
+                        }
+                    }
+                    else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                        Point gridLocation = edgeControlPointUI.getGridLocation();
+                        Point newGridLocation = new Point(gridLocation.x + gridDx, gridLocation.y + gridDy);
+
                         if (newGridLocation.x <= 0) {
                             negativeDx = Math.min(negativeDx, newGridLocation.x - 1);
                             lastTimeExpandedNegative = currentTimeMillis;
@@ -113,7 +156,9 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
 
                 // Move control points
                 for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
-                    edgeUI.moveControlPointsByGrid(-negativeDx, -negativeDy);
+                    if (!currentlyDraggedOffsets.containsKey(edgeUI)) {
+                        edgeUI.moveControlPointsByGrid(-negativeDx, -negativeDy);
+                    }
                 }
 
             }
@@ -130,6 +175,19 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                     }
 
                     currentlyDragged.moveToGridLocation(newGridLocation, true, true);
+                }
+                else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                    Point gridLocation = edgeControlPointUI.getGridLocation();
+                    Point newGridLocation = new Point(gridLocation.x + gridDx, gridLocation.y + gridDy);
+
+                    if (!hasDragSnapshot) {
+                        // Check if something would change
+                        if (!Objects.equals(gridLocation, newGridLocation)) {
+                            createMoveSnapshotIfNeeded();
+                        }
+                    }
+
+                    edgeControlPointUI.setGridLocation(newGridLocation);
                 }
 
             }
@@ -163,8 +221,9 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
 
     public boolean mousePressed(MouseEvent mouseEvent) {
         if (currentlyDraggedOffsets.isEmpty()) {
-            JIPipeDesktopGraphNodeUI ui = canvasUI.pickNodeUI(mouseEvent);
-            if (ui != null) {
+            JIPipeDesktopGraphNodeUI nodeUI = canvasUI.pickNodeUI(mouseEvent);
+            JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI = canvasUI.pickEdgeControlPointUI(mouseEvent);
+            if (nodeUI != null || edgeControlPointUI != null) {
 //                if (mouseEvent.isShiftDown()) {
 //                    if (canvasUI.getSelectionManager().getSelection().contains(ui))
 //                        canvasUI.getSelectionManager().removeFromSelection(ui);

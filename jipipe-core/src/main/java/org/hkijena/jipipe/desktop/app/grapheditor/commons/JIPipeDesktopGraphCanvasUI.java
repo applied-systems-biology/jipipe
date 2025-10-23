@@ -894,7 +894,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     }
 
-    private JIPipeDesktopGraphEdgeControlPointUI pickEdgeControlPointUI(MouseEvent mouseEvent) {
+    public JIPipeDesktopGraphEdgeControlPointUI pickEdgeControlPointUI(MouseEvent mouseEvent) {
         // Create translated point accounting for zoom and view
         int mouseX = mouseEvent.getX();
         int mouseY = mouseEvent.getY();
