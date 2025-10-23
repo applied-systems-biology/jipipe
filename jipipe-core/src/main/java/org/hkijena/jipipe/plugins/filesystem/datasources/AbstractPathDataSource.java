@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -67,16 +68,16 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     @Override
     public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
-        PathList relativeFileNames = getRelativePaths();
-        PathList absoluteFileNames = getAbsolutePaths();
+        List<Path> absoluteFileNames = getPathsAs(PathLinkageType.Absolute);
+        List<Path> paths = getPathsAs(PathLinkageType.Any);
 
-        for (int i = 0; i < relativeFileNames.size(); i++) {
+        for (int i = 0; i < absoluteFileNames.size(); i++) {
             Path source = absoluteFileNames.get(i);
             if (source == null || !Files.exists(source)) {
-                context.warning().title("Unable to find path").explanation("The path " + getPaths().get(i) + " does not exist").report(report);
+                context.warning().title("Unable to find path").explanation("The path " + paths.get(i) + " does not exist").report(report);
             } else {
                 if (!source.startsWith(originalBaseDirectory)) {
-                    context.warning().title("Path not relative to project").explanation("The path " + getPaths().get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
+                    context.warning().title("Path not relative to project").explanation("The path " + paths.get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
                 }
             }
         }
@@ -84,8 +85,8 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        for (Path path : getAbsolutePaths()) {
-            if (path == null) {
+        for (Path path : getPathsAs(PathLinkageType.Absolute)) {
+            if (PathUtils.isNullOrEmpty(path)) {
                 reportContext.warning().title("Input path not set!").explanation("One of the paths is not set.").solution("Please provide a valid input path.").report(report);
             } else if (!Files.exists(path)) {
                 reportContext.warning().title("Input path does not exist!").explanation("The path '" + path + "' does not exist.").solution("Please provide a valid input path.").report(report);
@@ -122,8 +123,9 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
                     }
                 }
 
-                if (modified)
+                if (modified) {
                     this.paths.set(i, folderPath);
+                }
             }
         }
         currentWorkingDirectory = baseDirectory;

@@ -864,4 +864,8 @@ public class PathUtils {
         // If we get here, the path seems reasonably suitable
         return true;
     }
+
+    public static boolean isNullOrEmpty(Path path) {
+        return path == null || StringUtils.isNullOrEmpty(path.toString());
+    }
 }
