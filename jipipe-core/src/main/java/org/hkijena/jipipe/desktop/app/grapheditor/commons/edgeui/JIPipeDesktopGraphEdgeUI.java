@@ -211,10 +211,10 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         targetPoint.add(targetNodeUI.getLocation());
         final JIPipeGraphEdge.Shape shape = edge.getUiShape();
 
-        // Tighten the point ranges: Bringing the centers together
-        // TODO: Not working for control point edges correctly
-        // TODO: we need to tighten to the first control point if we have control points
-        PointRange.tighten(sourcePoint, targetPoint);
+       if(edge.getControlPoints().isEmpty()) {
+           // Tighten here only if there are no control points
+           PointRange.tighten(sourcePoint, targetPoint);
+       }
 
         Point nextSource = sourcePoint.center;
         Point nextTarget;
@@ -224,6 +224,15 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
             nextTarget = targetPoint.center;
         } else {
             List<Point> controlPoints = getControlPointsInGridCoordinates();
+
+            // Apply tighten for start -> controlpoint0
+            {
+                Point firstControlPointGrid = controlPoints.getFirst();
+                Point firstControlPointReal = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(firstControlPointGrid, zoom);
+                PointRange.tighten(sourcePoint, new PointRange(firstControlPointReal, firstControlPointReal, firstControlPointReal));
+                nextSource = sourcePoint.center;
+            }
+
             for (Point gridLocation : controlPoints) {
                 nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, zoom);
                 addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
@@ -232,6 +241,9 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
                 nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
                 result.nextSegment();
             }
+
+            // Apply tighten for controlpoint.last() -> target
+            PointRange.tighten(new PointRange(nextSource, nextSource, nextSource), targetPoint);
 
             nextTarget = targetPoint.center;
         }

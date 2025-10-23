@@ -51,7 +51,7 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
         return point;
     }
 
-    public void paint(Graphics2D graphics2D, JIPipeDesktopGraphEdgeUI edgeUI, boolean multiColor, int multiColorIndex, int multiColorMax) {
+    public void paint(Graphics2D graphics2D, boolean multiColor, int multiColorIndex, int multiColorMax) {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int size = getRenderedSize();
         Point location = getRenderedLocation();

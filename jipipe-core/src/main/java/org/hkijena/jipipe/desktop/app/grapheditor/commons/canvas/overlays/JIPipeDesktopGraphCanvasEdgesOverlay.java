@@ -162,7 +162,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
 
     private void paintEdgeControlPoints(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, boolean multiColor, int multiColorIndex, int multiColorMax) {
         for (JIPipeDesktopGraphEdgeControlPointUI controlPoint : edgeUI.getControlPoints()) {
-            controlPoint.paint(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
+            controlPoint.paint(g, multiColor, multiColorIndex, multiColorMax);
         }
     }
 }
