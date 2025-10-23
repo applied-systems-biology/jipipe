@@ -42,7 +42,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     private final JIPipeDataSlot source;
     private final JIPipeDataSlot target;
     private final JIPipeGraphEdge edge;
-    private final List<JIPipeDesktopGraphEdgeControlPointUI>  controlPoints = new ArrayList<>();
+    private final List<JIPipeDesktopGraphEdgeControlPointUI> controlPoints = new ArrayList<>();
 
     public JIPipeDesktopGraphEdgeUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
         this.canvasUI = canvasUI;
@@ -190,7 +190,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
      * Gets the rendered line segments in real coordinates
      *
      * @param scale the scale for the output coordinates
-     * @param zoom the zoom used for input coordinates
+     * @param zoom  the zoom used for input coordinates
      * @param viewX the view x shift
      * @param viewY the view y shift
      * @return the line segments
@@ -211,10 +211,10 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         targetPoint.add(targetNodeUI.getLocation());
         final JIPipeGraphEdge.Shape shape = edge.getUiShape();
 
-       if(edge.getControlPoints().isEmpty()) {
-           // Tighten here only if there are no control points
-           PointRange.tighten(sourcePoint, targetPoint);
-       }
+        if (edge.getControlPoints().isEmpty()) {
+            // Tighten here only if there are no control points
+            PointRange.tighten(sourcePoint, targetPoint);
+        }
 
         Point nextSource = sourcePoint.center;
         Point nextTarget;
@@ -225,27 +225,30 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
         } else {
             List<Point> controlPoints = getControlPointsInGridCoordinates();
 
-            // Apply tighten for start -> controlpoint0
-            {
-                Point firstControlPointGrid = controlPoints.getFirst();
-                Point firstControlPointReal = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(firstControlPointGrid, zoom);
-                PointRange.tighten(sourcePoint, new PointRange(firstControlPointReal, firstControlPointReal, firstControlPointReal));
-                nextSource = sourcePoint.center;
-            }
+            if (!controlPoints.isEmpty()) {
+                // Apply tighten for start -> controlpoint0
+                {
+                    Point firstControlPointGrid = controlPoints.getFirst();
+                    Point firstControlPointReal = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(firstControlPointGrid, zoom);
+                    PointRange.tighten(sourcePoint, new PointRange(firstControlPointReal, firstControlPointReal, firstControlPointReal));
+                    nextSource = sourcePoint.center;
+                }
 
-            for (Point gridLocation : controlPoints) {
-                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, zoom);
-                addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
+                for (Point gridLocation : controlPoints) {
+                    nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, zoom);
+                    addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
 
-                nextSource = nextTarget;
-                nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
-                result.nextSegment();
+                    nextSource = nextTarget;
+                    nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
+                    result.nextSegment();
+                }
             }
 
             // Apply tighten for controlpoint.last() -> target
             PointRange.tighten(new PointRange(nextSource, nextSource, nextSource), targetPoint);
 
             nextTarget = targetPoint.center;
+
         }
 
         addEdgeCoordinates(nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, result);
@@ -337,7 +340,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     }
 
     private void paintThin(Graphics2D g, Stroke stroke, double scale, int viewX, int viewY, boolean enableArrows, boolean multiColor, int multiColorIndex, int multiColorMax) {
-        if(edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
+        if (edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
             enableArrows = false;
         }
         JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode = enableArrows ? JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Thin : JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
@@ -348,7 +351,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     }
 
     private void paintRegular(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, PointRange sourcePoint, PointRange targetPoint, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
-        if(edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
+        if (edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
             arrowHeadMode = JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
         }
         SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, canvasUI.getZoom(), viewX, viewY);
@@ -363,7 +366,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     }
 
     private void paintMultiColor(Graphics2D g, Stroke stroke, Stroke strokeBorder, double scale, int viewX, int viewY, boolean multiColor, int multiColorIndex, int multiColorMax, JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode arrowHeadMode) {
-        if(edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
+        if (edge.getUiShape() == JIPipeGraphEdge.Shape.Line) {
             arrowHeadMode = JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.None;
         }
         SegmentedLines renderedLineSegments = getRenderedLineSegments(scale, canvasUI.getZoom(), viewX, viewY);
@@ -391,7 +394,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     public void updateControlPointUIs() {
         controlPoints.clear();
         for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()))) {
-            JIPipeDesktopGraphEdgeControlPointUI ui = new JIPipeDesktopGraphEdgeControlPointUI(canvasUI, this, source, target,  controlPoint);
+            JIPipeDesktopGraphEdgeControlPointUI ui = new JIPipeDesktopGraphEdgeControlPointUI(canvasUI, this, source, target, controlPoint);
             controlPoints.add(ui);
         }
     }
