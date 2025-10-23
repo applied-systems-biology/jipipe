@@ -38,10 +38,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Provides an input file
@@ -49,10 +46,9 @@ import java.util.UUID;
 @SetJIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filenames", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class FileListDataSource extends JIPipeAlgorithm {
+public class FileListDataSource extends AbstractPathDataSource {
 
     private PathList files = new PathList();
-    private Path currentWorkingDirectory;
 
     /**
      * Initializes the algorithm
@@ -71,7 +67,6 @@ public class FileListDataSource extends JIPipeAlgorithm {
     public FileListDataSource(FileListDataSource other) {
         super(other);
         this.files.addAll(other.files);
-        this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
@@ -101,181 +96,16 @@ public class FileListDataSource extends JIPipeAlgorithm {
     public void setFiles(PathList files) {
         this.files = files;
         PathUtils.normalizeList(files);
-        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
-            String name = files.size() == 1 ? files.get(0).getFileName().toString() : "";
-            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
-                getFirstOutputSlot().getInfo().setCustomName(name);
-                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
-            }
-        }
-    }
-
-    /**
-     * @return Absolute file names
-     */
-    public PathList getAbsoluteFileNames() {
-        PathList result = new PathList();
-        for (Path fileName : files) {
-            if (fileName == null) {
-                result.add(null);
-            } else if (currentWorkingDirectory != null && !fileName.isAbsolute()) {
-                result.add(currentWorkingDirectory.resolve(fileName));
-            } else {
-                result.add(fileName);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * @return Relative file names (if available)
-     */
-    public PathList getRelativeFileNames() {
-        PathList result = new PathList();
-        for (Path fileName : files) {
-            if (fileName == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && fileName.isAbsolute() && fileName.startsWith(currentWorkingDirectory)) {
-                result.add(currentWorkingDirectory.relativize(fileName));
-            } else {
-                result.add(fileName);
-            }
-        }
-        return result;
+        updateOutputSlotIfEnabled();
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
-        PathList relativeFileNames = getRelativeFileNames();
-        PathList absoluteFileNames = getAbsoluteFileNames();
-        PathList newPaths = new PathList();
-        Set<String> externalFileNames = new HashSet<>();
-
-        for (int i = 0; i < relativeFileNames.size(); i++) {
-            Path source = absoluteFileNames.get(i);
-            if (source == null || !Files.isRegularFile(source)) {
-                throw new RuntimeException("File " + relativeFileNames.get(i) + " does not exist!");
-            } else {
-                Path target;
-                if (source.startsWith(originalBaseDirectory)) {
-                    // The data is located in the project directory. We can directly copy the file.
-                    Path relativePath = originalBaseDirectory.relativize(source);
-                    target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
-                } else {
-                    // The data is located outside the project directory. Needs to be copied into a unique directory.
-                    String externalFileName = relativeFileNames.get(i).getFileName().toString();
-                    if (!externalFileNames.contains(externalFileName)) {
-                        // Not yet in external storage. Add it
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    } else {
-                        // We need to make a new target dir (UUID)
-                        progressInfo.log("Warning: Duplicate file name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    }
-                }
-
-                if (Files.exists(target)) {
-                    progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
-                    continue;
-                }
-
-                progressInfo.log("Copy " + source + " -> " + target);
-                try {
-                    Files.createDirectories(target.getParent());
-                    Files.copy(source, target);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                newPaths.add(target);
-            }
-        }
-        setFiles(newPaths);
+    protected List<Path> getPaths_() {
+        return files;
     }
 
     @Override
-    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
-        PathList relativeFileNames = getRelativeFileNames();
-        PathList absoluteFileNames = getAbsoluteFileNames();
-
-        for (int i = 0; i < relativeFileNames.size(); i++) {
-            Path source = absoluteFileNames.get(i);
-            if (source == null || !Files.isRegularFile(source)) {
-                context.warning().title("Unable to find file").explanation("The file " + getFiles().get(i) + " does not exist").report(report);
-            } else {
-                if (!source.startsWith(originalBaseDirectory)) {
-                    context.warning().title("File not relative to project").explanation("The file " + getFiles().get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
-                }
-            }
-        }
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        for (Path fileName : getAbsoluteFileNames()) {
-            if (fileName == null) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        reportContext,
-                        "Input file not set!",
-                        "One of the input paths is not set.",
-                        "Please provide a valid input file."));
-            } else if (!Files.isRegularFile(fileName)) {
-                report.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Warning,
-                        reportContext,
-                        "Input file does not exist!",
-                        "The file '" + fileName + "' does not exist.",
-                        "Please provide a valid input file."));
-            }
-        }
-    }
-
-    @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
-    @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
-    public void convertPathsToAbsolute() {
-        setParameter("file-names", getAbsoluteFileNames());
-    }
-
-    @SetJIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
-    @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
-    public void convertPathsToRelative() {
-        setParameter("file-names", getRelativeFileNames());
-    }
-
-    @Override
-    public void setBaseDirectory(Path baseDirectory) {
-        super.setBaseDirectory(baseDirectory);
-
-        boolean modified = false;
-        for (int i = 0; i < files.size(); ++i) {
-            Path fileName = files.get(i);
-            if (fileName != null) {
-                // Make absolute
-                if (!fileName.isAbsolute()) {
-                    if (currentWorkingDirectory != null) {
-                        fileName = currentWorkingDirectory.resolve(fileName);
-                        modified = true;
-                    } else if (baseDirectory != null) {
-                        fileName = baseDirectory.resolve(fileName);
-                        modified = true;
-                    }
-                }
-                // Make relative if already absolute and workDirectory != null
-                JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-                if (settings == null || settings.isRelativizePaths()) {
-                    if (fileName.isAbsolute()) {
-                        if (baseDirectory != null && fileName.startsWith(baseDirectory)) {
-                            fileName = baseDirectory.relativize(fileName);
-                            modified = true;
-                        }
-                    }
-                }
-
-                if (modified)
-                    this.files.set(i, fileName);
-            }
-        }
-        currentWorkingDirectory = baseDirectory;
+    protected void setPaths_(List<Path> paths) {
+        setFiles(new PathList(paths));
     }
 }

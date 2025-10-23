@@ -31,7 +31,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
@@ -246,8 +245,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
                     break;
                 }
             }
-            if (noChanges)
+            if (noChanges) {
                 return false;
+            }
         }
 
         slots.clear();
@@ -322,8 +322,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false)
     @SetJIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
-        if (customName == null || customName.isEmpty())
+        if (customName == null || customName.isEmpty()) {
             return getInfo().getName();
+        }
         return customName;
     }
 
@@ -699,10 +700,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public JIPipeOutputDataSlot getOutputSlot(String name) {
         JIPipeOutputDataSlot slot = outputSlotMap.get(name);
-        if (slot == null)
+        if (slot == null) {
             return null;
-        if (!slot.isOutput())
+        }
+        if (!slot.isOutput()) {
             throw new IllegalArgumentException("The slot " + name + " is not an output slot!");
+        }
         return slot;
     }
 
@@ -715,10 +718,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public JIPipeInputDataSlot getInputSlot(String name) {
         JIPipeInputDataSlot slot = inputSlotMap.get(name);
-        if (slot == null)
+        if (slot == null) {
             return null;
-        if (!slot.isInput())
+        }
+        if (!slot.isInput()) {
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
+        }
         return slot;
     }
 
@@ -861,8 +866,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     @StringParameterSettings(multiline = true)
     @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true, functional = false)
     public HTMLText getCustomDescription() {
-        if (customDescription == null)
+        if (customDescription == null) {
             customDescription = new HTMLText();
+        }
         return customDescription;
     }
 
@@ -932,20 +938,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         getBaseDirectoryChangedEventEmitter().emit(new BaseDirectoryChangedEvent(this, baseDirectory));
     }
 
-    /**
-     * Called when the node is being archived into the specified storage.
-     * The function is called on the copy of the node
-     *
-     * @param projectStorage         the storage where the data will be archived. storage where the project itself is located.
-     * @param wrappedExternalStorage storage where wrapped external files are put
-     * @param progressInfo           the progress info
-     * @param originalBaseDirectory  current project directory
-     */
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
-        // Do nothing
-    }
-
-    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
+    public void archiveReportValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
 
     }
 
@@ -1087,10 +1080,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
 
     public boolean isVisibleIn(UUID compartmentUUIDInGraph) {
         UUID currentCompartmentUUID = getCompartmentUUIDInParentGraph();
-        if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
+        if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID)) {
             return true;
-        if (parentGraph == null)
+        }
+        if (parentGraph == null) {
             return false;
+        }
         return parentGraph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
@@ -1111,8 +1106,9 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
                         compartment = projectCompartment.getName();
                     }
                 }
-                if (compartment == null)
+                if (compartment == null) {
                     compartment = compartmentUUID.toString();
+                }
             }
         }
         return compartment;
@@ -1277,10 +1273,12 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         JIPipeParameterTree referenceTree = new JIPipeParameterTree(referenceInstance);
         stringBuilder.append("<ul>");
         for (String key : currentTree.getParameters().keySet()) {
-            if ("jipipe:node:name".equals(key))
+            if ("jipipe:node:name".equals(key)) {
                 continue;
-            if ("jipipe:node:description".equals(key))
+            }
+            if ("jipipe:node:description".equals(key)) {
                 continue;
+            }
             JIPipeParameterAccess currentAccess = currentTree.getParameterAccess(key);
             JIPipeParameterAccess referenceAccess = referenceTree.getParameterAccess(key);
             Object reference = referenceAccess != null ? referenceAccess.get(Object.class) : null;
@@ -1440,6 +1438,27 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     @JIPipeParameter(value = "jipipe:environment-overrides", persistence = JIPipeParameterSerializationMode.Object, icon = "actions/environment.png")
     public JIPipeGraphNodeEnvironmentOverridesParameter getEnvironmentOverrides() {
         return environmentOverrides;
+    }
+
+    /**
+     * First step of the archiving process that discovers all external paths.
+     * This is required to find the correct path root for the second archive step.
+     *
+     * @param progressInfo the progress info
+     * @return the external file paths
+     */
+    public Set<Path> archiveDiscoverExternalPaths(JIPipeProgressInfo progressInfo) {
+        return null;
+    }
+
+    /**
+     * Second step of the archiving process. Executed after archiveDiscoverExternalPaths().
+     *
+     * @param updateMap    the map that updates the paths from the current to the archived (relative) paths. Contains only paths that have been returned by archiveDiscoverExternalPaths()
+     * @param progressInfo the progress info
+     */
+    public void archiveUpdateExternalPaths(Map<Path, Path> updateMap, JIPipeProgressInfo progressInfo) {
+
     }
 
     public interface NodeSlotsChangedEventListener {

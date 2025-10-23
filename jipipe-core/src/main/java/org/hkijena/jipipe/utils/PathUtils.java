@@ -864,4 +864,31 @@ public class PathUtils {
         // If we get here, the path seems reasonably suitable
         return true;
     }
+
+    public static boolean isNullOrEmpty(Path path) {
+        return path == null || StringUtils.isNullOrEmpty(path.toString());
+    }
+
+    public static Set<Path> ensureAbsoluteNormalized(Set<Path> paths) {
+        Set<Path> result = new HashSet<>();
+        for (Path path : paths) {
+            if(!path.isAbsolute()) {
+                result.add(getHomeDirectory().resolve(path).normalize());
+            }
+            else {
+                result.add(path.normalize());
+            }
+        }
+        return result;
+    }
+
+    public static void createKeepFile(Path path) {
+        if(!Files.exists(path)) {
+            try {
+                Files.createFile(path);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
 }

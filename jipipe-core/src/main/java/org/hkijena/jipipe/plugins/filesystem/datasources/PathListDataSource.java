@@ -41,10 +41,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Provides an input folder
@@ -52,29 +49,17 @@ import java.util.UUID;
 @SetJIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, name = "Paths", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class PathListDataSource extends JIPipeAlgorithm {
+public class PathListDataSource extends AbstractPathDataSource {
 
     private PathList paths = new PathList();
-    private Path currentWorkingDirectory;
 
-    /**
-     * Creates a new instance
-     *
-     * @param info The algorithm info
-     */
     public PathListDataSource(JIPipeNodeInfo info) {
         super(info);
     }
 
-    /**
-     * Copies the algorithm
-     *
-     * @param other The original
-     */
     public PathListDataSource(PathListDataSource other) {
         super(other);
         this.paths.addAll(other.paths);
-        this.currentWorkingDirectory = other.currentWorkingDirectory;
     }
 
     @Override
@@ -104,176 +89,16 @@ public class PathListDataSource extends JIPipeAlgorithm {
     public void setPaths(PathList paths) {
         this.paths = paths;
         PathUtils.normalizeList(paths);
-        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
-            String name = paths.size() == 1 ? paths.get(0).getFileName().toString() : "";
-            if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
-                getFirstOutputSlot().getInfo().setCustomName(name);
-                getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
-            }
-        }
-    }
-
-    /**
-     * @return Folder paths as absolute paths
-     */
-    public PathList getAbsolutePaths() {
-        PathList result = new PathList();
-        for (Path folderPath : paths) {
-            if (folderPath == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && !folderPath.isAbsolute())
-                result.add(currentWorkingDirectory.resolve(folderPath));
-            else
-                result.add(folderPath);
-        }
-        return result;
-    }
-
-    /**
-     * @return Relative paths (if available)
-     */
-    public PathList getRelativePaths() {
-        PathList result = new PathList();
-        for (Path path : paths) {
-            if (path == null)
-                result.add(null);
-            else if (currentWorkingDirectory != null && path.isAbsolute() && path.startsWith(currentWorkingDirectory)) {
-                result.add(currentWorkingDirectory.relativize(path));
-            } else {
-                result.add(path);
-            }
-        }
-        return result;
+        updateOutputSlotIfEnabled();
     }
 
     @Override
-    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
-        PathList relativeFileNames = getRelativePaths();
-        PathList absoluteFileNames = getAbsolutePaths();
-        PathList newPaths = new PathList();
-        Set<String> externalFileNames = new HashSet<>();
-
-        for (int i = 0; i < relativeFileNames.size(); i++) {
-            Path source = absoluteFileNames.get(i);
-            if (source == null || !Files.exists(source)) {
-                throw new RuntimeException("Path " + relativeFileNames.get(i) + " does not exist!");
-            } else {
-                Path target;
-                if (source.startsWith(originalBaseDirectory)) {
-                    // The data is located in the project directory. We can directly copy the file.
-                    Path relativePath = originalBaseDirectory.relativize(source);
-                    target = projectStorage.getFileSystemPath().resolve(relativeInputsPath).resolve(relativePath);
-                } else {
-                    // The data is located outside the project directory. Needs to be copied into a unique directory.
-                    String externalFileName = relativeFileNames.get(i).getFileName().toString();
-                    if (!externalFileNames.contains(externalFileName)) {
-                        // Not yet in external storage. Add it
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    } else {
-                        // We need to make a new target dir (UUID)
-                        progressInfo.log("Warning: Duplicate path name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
-                        target = wrappedExternalStorage.resolve(relativeInputsPath).resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
-                        externalFileNames.add(externalFileName);
-                    }
-                }
-
-                if (Files.exists(target)) {
-                    progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
-                    continue;
-                }
-
-                progressInfo.log("Copy " + source + " -> " + target);
-                try {
-                    Files.createDirectories(target.getParent());
-                    if (Files.isRegularFile(source)) {
-                        Files.copy(source, target);
-                    } else {
-                        FileUtils.copyDirectory(source.toFile(), target.toFile());
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                newPaths.add(target);
-            }
-        }
-        setPaths(newPaths);
+    protected List<Path> getPaths_() {
+        return paths;
     }
 
     @Override
-    public void reportArchiveValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
-        PathList relativeFileNames = getRelativePaths();
-        PathList absoluteFileNames = getAbsolutePaths();
-
-        for (int i = 0; i < relativeFileNames.size(); i++) {
-            Path source = absoluteFileNames.get(i);
-            if (source == null || !Files.exists(source)) {
-                context.warning().title("Unable to find path").explanation("The path " + getPaths().get(i) + " does not exist").report(report);
-            } else {
-                if (!source.startsWith(originalBaseDirectory)) {
-                    context.warning().title("Path not relative to project").explanation("The path " + getPaths().get(i) + " is not located relative to the project file. The resulting archive will contain directories with randomly generated names.").report(report);
-                }
-            }
-        }
-    }
-
-    @SetJIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
-    @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
-    public void convertPathsToAbsolute() {
-        setParameter("paths", getAbsolutePaths());
-    }
-
-    @SetJIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
-    @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
-    public void convertPathsToRelative() {
-        setParameter("paths", getRelativePaths());
-    }
-
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        for (Path path : getAbsolutePaths()) {
-            if (path == null) {
-                reportContext.warning().title("Input path not set!").explanation("One of the paths is not set.").solution("Please provide a valid input path.").report(report);
-            } else if (!Files.exists(path)) {
-                reportContext.warning().title("Input path does not exist!").explanation("The path '" + path + "' does not exist.").solution("Please provide a valid input path.").report(report);
-            }
-        }
-    }
-
-    @Override
-    public void setBaseDirectory(Path baseDirectory) {
-        super.setBaseDirectory(baseDirectory);
-
-        boolean modified = false;
-        for (int i = 0; i < paths.size(); ++i) {
-            Path folderPath = paths.get(i);
-            if (folderPath != null) {
-                // Make absolute
-                if (!folderPath.isAbsolute()) {
-                    if (currentWorkingDirectory != null) {
-                        folderPath = currentWorkingDirectory.resolve(folderPath);
-                        modified = true;
-                    } else if (baseDirectory != null) {
-                        folderPath = baseDirectory.resolve(folderPath);
-                        modified = true;
-                    }
-                }
-                // Make relative if already absolute and workDirectory != null
-                JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-                if (settings == null || settings.isRelativizePaths()) {
-                    if (folderPath.isAbsolute()) {
-                        if (baseDirectory != null && folderPath.startsWith(baseDirectory)) {
-                            folderPath = baseDirectory.relativize(folderPath);
-                            modified = true;
-                        }
-                    }
-                }
-
-                if (modified)
-                    this.paths.set(i, folderPath);
-            }
-        }
-        currentWorkingDirectory = baseDirectory;
+    protected void setPaths_(List<Path> paths) {
+        setPaths(new PathList(paths));
     }
 }

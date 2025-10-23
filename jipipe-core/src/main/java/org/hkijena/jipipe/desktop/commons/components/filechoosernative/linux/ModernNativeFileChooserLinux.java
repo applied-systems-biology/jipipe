@@ -287,7 +287,7 @@ public class ModernNativeFileChooserLinux implements ModernNativeFileChooserImpl
 
                 // Execute the command
                 String result = StringUtils.nullToEmpty(ProcessUtils.queryFast(zenityPath, false,
-                        JIPipeProgressInfo.STDOUT, args.toArray(new String[0]))).trim();
+                        JIPipeProgressInfo.SILENT, args.toArray(new String[0]))).trim();
 
                 // Check if user cancelled (zenity returns empty string when cancelled)
                 if (result.isEmpty()) {

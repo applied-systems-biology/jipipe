@@ -21,9 +21,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.utils.ProjectArchiveUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
 
@@ -43,6 +48,8 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
             throw new RuntimeException("The project must be saved at least once!");
         }
 
+        final Path targetPath = projectStorage.getFileSystemPath();
+
         JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.setProgress(0, 3);
         progressInfo.log("Copying project ...");
@@ -53,17 +60,47 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         copyProject.setWorkDirectory(project.getWorkDirectory());
         ImmutableList<JIPipeGraphNode> graphNodes = ImmutableList.copyOf(copyProject.getGraph().getGraphNodes());
         progressInfo.setProgress(0, graphNodes.size());
-        JIPipeProgressInfo archivingProgress = progressInfo.resolve("Archiving data");
+
+        // Find all absolute paths that will need to be archived - based on that we then can find the root path
+        JIPipeProgressInfo discoveryProgress = progressInfo.resolve("Discovering archived data");
+        Set<Path> toArchive = new HashSet<>();
         for (int i = 0; i < graphNodes.size(); i++) {
             JIPipeGraphNode graphNode = graphNodes.get(i);
-            graphNode.archiveTo(projectStorage, wrappedExternalStorage, archivingProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size()), getProject().getWorkDirectory(), inputsSubPath);
+            toArchive.addAll(graphNode.archiveDiscoverExternalPaths(discoveryProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size())));
+        }
+        discoveryProgress.log("-> Discovered " + toArchive.size() + " paths");
+
+        // Ensure absolute paths
+        toArchive = PathUtils.ensureAbsoluteNormalized(toArchive);
+
+        // Create the mapping for the files to be archived
+        Map<Path, Path> updateMap = ProjectArchiveUtils.shortestRelativeMapping(toArchive);
+
+        // Make mapping relative to inputsSubPath
+        for (Path key : ImmutableList.copyOf(updateMap.keySet())) {
+            updateMap.put(key, inputsSubPath.resolve(updateMap.get(key)));
+        }
+
+        // Print to log
+        progressInfo.log("Mapping results: ");
+        for (Map.Entry<Path, Path> entry : updateMap.entrySet()) {
+            progressInfo.log("- " + entry.getKey() + " -> " + entry.getValue());
+        }
+
+        // Archive
+        ProjectArchiveUtils.materializeMapping(updateMap, targetPath, false, progressInfo.resolve("Copy files"));
+
+        JIPipeProgressInfo updatingProgress = progressInfo.resolve("Updating nodes");
+        for (int i = 0; i < graphNodes.size(); i++) {
+            JIPipeGraphNode graphNode = graphNodes.get(i);
+            graphNode.archiveUpdateExternalPaths(updateMap, updatingProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size()));
         }
 
         progressInfo.setProgress(2, 3);
         progressInfo.log("Writing project ...");
-        Path fileSystemPath = projectStorage.getFileSystemPath();
-        copyProject.setWorkDirectory(fileSystemPath);
-        copyProject.saveProject(fileSystemPath.resolve("project.jip"), true);
+
+        copyProject.setWorkDirectory(targetPath);
+        copyProject.saveProject(targetPath.resolve("project.jip"), true);
         progressInfo.setProgress(3, 3);
     }
 }
