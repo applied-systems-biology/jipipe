@@ -120,6 +120,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryGraphEditor.nodeFillBrightness = style.getNodeFillBrightness();
         categoryGraphEditor.nodeBorderSaturation = style.getNodeBorderSaturation();
         categoryGraphEditor.nodeBorderBrightness = style.getNodeBorderBrightness();
+        categoryGraphEditor.edgeBorderColorDefault  = style.getEdgeBorderColorDefault();
+        categoryGraphEditor.edgeBorderColorConvert = style.getEdgeBorderColorConvert();
     }
 
     public JIPipeDesktopModernThemeStyle toStyle() {
@@ -180,6 +182,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setNodeFillBrightness(categoryGraphEditor.getNodeFillBrightness());
         result.setNodeBorderSaturation(categoryGraphEditor.getNodeBorderSaturation());
         result.setNodeBorderBrightness(categoryGraphEditor.getNodeBorderBrightness());
+        result.setEdgeBorderColorDefault(categoryGraphEditor.getEdgeBorderColorDefault());
+        result.setEdgeBorderColorConvert(categoryGraphEditor.getEdgeBorderColorConvert());
 
         return result;
     }
@@ -775,6 +779,30 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private float nodeFillBrightness = 0.9f;
         private float nodeBorderSaturation = 0.1f;
         private float nodeBorderBrightness = 0.5f;
+        private Color edgeBorderColorDefault = new  Color(0x737880);
+        private Color edgeBorderColorConvert = new Color(0x2957C2);
+
+        @SetJIPipeDocumentation(name = "Edge border color (default)", description = "The standard edge border color")
+        @JIPipeParameter("edge-border-color-default")
+        public Color getEdgeBorderColorDefault() {
+            return edgeBorderColorDefault;
+        }
+
+        @JIPipeParameter("edge-border-color-default")
+        public void setEdgeBorderColorDefault(Color edgeBorderColorDefault) {
+            this.edgeBorderColorDefault = edgeBorderColorDefault;
+        }
+
+        @SetJIPipeDocumentation(name = "Edge border color (convert)", description = "The edge border color for data conversions")
+        @JIPipeParameter("edge-border-color-convert")
+        public Color getEdgeBorderColorConvert() {
+            return edgeBorderColorConvert;
+        }
+
+        @JIPipeParameter("edge-border-color-convert")
+        public void setEdgeBorderColorConvert(Color edgeBorderColorConvert) {
+            this.edgeBorderColorConvert = edgeBorderColorConvert;
+        }
 
         @SetJIPipeDocumentation(name = "Node highlight border", description = "Node highlight border color")
         @JIPipeParameter("node-highlight-border")

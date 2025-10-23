@@ -44,5 +44,6 @@
   "node-fill-saturation": 0.5,
   "node-fill-brightness": 0.3,
   "node-border-saturation": 0.5,
-  "node-border-brightness": 0.9
+  "node-border-brightness": 0.9,
+  "edge-border-color": "#3E3E3E"
 }

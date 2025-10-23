@@ -47,5 +47,6 @@
   "node-border-brightness" : 0.9,
   "corner-radius" : 3,
   "draw-island-border" : true,
-  "islands-border-color" : "#999999"
+  "islands-border-color" : "#999999",
+  "edge-border-color": "#999999"
 }

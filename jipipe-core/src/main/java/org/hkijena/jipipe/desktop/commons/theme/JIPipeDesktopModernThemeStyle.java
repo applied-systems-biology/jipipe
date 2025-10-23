@@ -179,6 +179,13 @@ public class JIPipeDesktopModernThemeStyle {
     @JsonProperty("node-border-brightness")
     private float nodeBorderBrightness = 0.5f;
 
+    @JsonProperty("edge-border-color-default")
+    private Color edgeBorderColorDefault = new Color(0x737880);
+
+    @JsonProperty("edge-border-color-convert")
+    private Color edgeBorderColorConvert = new Color(0x2957C2);
+
+
     /*
     * Islands/panels
      */
@@ -244,6 +251,8 @@ public class JIPipeDesktopModernThemeStyle {
         this.nodeFillBrightness = other.nodeFillBrightness;
         this.nodeBorderSaturation = other.nodeBorderSaturation;
         this.nodeBorderBrightness = other.nodeBorderBrightness;
+        this.edgeBorderColorDefault  = other.edgeBorderColorDefault;
+        this.edgeBorderColorConvert = other.edgeBorderColorConvert;
         this.islandsCornerRadius = other.islandsCornerRadius;
         this.islandsDrawBorder = other.islandsDrawBorder;
         this.islandsBorderColor = other.islandsBorderColor;
@@ -251,6 +260,22 @@ public class JIPipeDesktopModernThemeStyle {
 
     public static void main(String[] args) {
         JsonUtils.saveToFile(new JIPipeDesktopModernThemeStyle(), Paths.get("/home/ruman/style.json"));
+    }
+
+    public Color getEdgeBorderColorDefault() {
+        return edgeBorderColorDefault;
+    }
+
+    public void setEdgeBorderColorDefault(Color edgeBorderColorDefault) {
+        this.edgeBorderColorDefault = edgeBorderColorDefault;
+    }
+
+    public Color getEdgeBorderColorConvert() {
+        return edgeBorderColorConvert;
+    }
+
+    public void setEdgeBorderColorConvert(Color edgeBorderColorConvert) {
+        this.edgeBorderColorConvert = edgeBorderColorConvert;
     }
 
     public boolean isIslandsDrawBorder() {
