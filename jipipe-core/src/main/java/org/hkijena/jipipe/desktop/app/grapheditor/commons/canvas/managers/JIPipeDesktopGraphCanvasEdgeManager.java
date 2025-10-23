@@ -382,4 +382,8 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
     public boolean isMouseOverEdgeControlPoint(int mouseX, int mouseY, JIPipeDesktopGraphEdgeUI edgeUI, JIPipeDesktopGraphEdgeControlPointUI controlPoint) {
         return controlPoint.doesContainPoint(mouseX, mouseY);
     }
+
+    public void clearControlPoints(JIPipeDesktopGraphEdgeUI edgeUI) {
+        edgeUI.clearControlPoints();
+    }
 }

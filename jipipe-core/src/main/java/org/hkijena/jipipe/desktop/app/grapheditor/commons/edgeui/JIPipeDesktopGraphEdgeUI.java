@@ -391,7 +391,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     public void updateControlPointUIs() {
         controlPoints.clear();
         for (JIPipeGraphEdgeControlPoint controlPoint : edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()))) {
-            JIPipeDesktopGraphEdgeControlPointUI ui = new JIPipeDesktopGraphEdgeControlPointUI(canvasUI, source, target, edge, controlPoint);
+            JIPipeDesktopGraphEdgeControlPointUI ui = new JIPipeDesktopGraphEdgeControlPointUI(canvasUI, this, source, target,  controlPoint);
             controlPoints.add(ui);
         }
     }
@@ -399,10 +399,25 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     public void addControlPoint(int index, String compartment, int x, int y) {
         edge.addControlPoint(index, compartment, x, y);
         updateControlPointUIs();
+        canvasUI.repaintLowLag();
     }
 
     public List<JIPipeDesktopGraphEdgeControlPointUI> getControlPoints() {
         return controlPoints;
+    }
+
+    public void clearControlPoints() {
+        List<JIPipeGraphEdgeControlPoint> points = edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()));
+        points.clear();
+        updateControlPointUIs();
+        canvasUI.repaintLowLag();
+    }
+
+    public void removeControlPoint(JIPipeDesktopGraphEdgeControlPointUI ui) {
+        List<JIPipeGraphEdgeControlPoint> points = edge.getControlPoints(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()));
+        points.remove(ui.getControlPoint());
+        updateControlPointUIs();
+        canvasUI.repaintLowLag();
     }
 
     public static class SegmentedLines {

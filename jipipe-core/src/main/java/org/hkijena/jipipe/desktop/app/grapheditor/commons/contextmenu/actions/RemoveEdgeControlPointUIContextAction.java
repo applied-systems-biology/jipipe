@@ -15,46 +15,46 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
-public class AddEdgeControlPointUIContextAction implements EdgesOnlyUIContextAction {
+public class RemoveEdgeControlPointUIContextAction implements GraphInteractiveObjectUIContextAction {
 
     @Override
     public String getName() {
-        return "Add control point";
+        return "Remove control point";
     }
 
     @Override
     public String getDescription() {
-        return "Adds a control point into the edge that allows to customize its route";
+        return "Removes the selected control points.";
     }
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/format-insert-node.png");
+        return JIPipe.RESOURCES.getIcon16("actions/node-delete.png");
     }
 
     @Override
-    public boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection) {
-        return !selection.isEmpty();
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        return selection.stream().anyMatch(ui -> ui instanceof JIPipeDesktopGraphEdgeControlPointUI);
     }
 
     @Override
-    public void runEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphEdgeUI> selection) {
-        Point graphEditorCursor = canvasUI.getGraphEditorCursor();
-        if (graphEditorCursor == null) {
-            return;
-        }
-
-        JIPipeDesktopGraphCanvasEdgeManager edgeManager = canvasUI.getEdgeManager();
-        for (JIPipeDesktopGraphEdgeUI edgeUI : selection) {
-            edgeManager.addControlPointToEdge(edgeUI, graphEditorCursor);
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        for (JIPipeDesktopGraphInteractiveObjectUI ui : selection) {
+            if(ui instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                edgeControlPointUI.getEdgeUI().removeControlPoint(edgeControlPointUI);
+            }
         }
     }
+
 }

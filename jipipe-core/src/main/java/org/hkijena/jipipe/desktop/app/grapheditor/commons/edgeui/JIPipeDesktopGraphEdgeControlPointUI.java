@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -16,16 +15,16 @@ import java.util.Set;
 
 public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphInteractiveObjectUI {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
+    private final JIPipeDesktopGraphEdgeUI edgeUI;
     private final JIPipeDataSlot source;
     private final JIPipeDataSlot target;
-    private final JIPipeGraphEdge edge;
     private final JIPipeGraphEdgeControlPoint controlPoint;
 
-    public JIPipeDesktopGraphEdgeControlPointUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge, JIPipeGraphEdgeControlPoint controlPoint) {
+    public JIPipeDesktopGraphEdgeControlPointUI(JIPipeDesktopGraphCanvasUI canvasUI, JIPipeDesktopGraphEdgeUI edgeUI, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdgeControlPoint controlPoint) {
         this.canvasUI = canvasUI;
+        this.edgeUI = edgeUI;
         this.source = source;
         this.target = target;
-        this.edge = edge;
         this.controlPoint = controlPoint;
     }
 
@@ -101,5 +100,25 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
         int centerY = point.y - size / 2;
         Rectangle rectangle = new Rectangle(centerX - size / 2, centerY - size / 2, size, size);
         return copy.intersects(rectangle);
+    }
+
+    public JIPipeDesktopGraphEdgeUI getEdgeUI() {
+        return edgeUI;
+    }
+
+    public JIPipeDesktopGraphCanvasUI getCanvasUI() {
+        return canvasUI;
+    }
+
+    public JIPipeDataSlot getSource() {
+        return source;
+    }
+
+    public JIPipeDataSlot getTarget() {
+        return target;
+    }
+
+    public JIPipeGraphEdgeControlPoint getControlPoint() {
+        return controlPoint;
     }
 }

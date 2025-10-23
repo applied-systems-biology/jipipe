@@ -23,38 +23,33 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
-public class AddEdgeControlPointUIContextAction implements EdgesOnlyUIContextAction {
+public class ClearEdgeControlsPointUIContextAction implements EdgesOnlyUIContextAction {
 
     @Override
     public String getName() {
-        return "Add control point";
+        return "Clear control points";
     }
 
     @Override
     public String getDescription() {
-        return "Adds a control point into the edge that allows to customize its route";
+        return "Removes all control points within the selected edges";
     }
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/format-insert-node.png");
+        return JIPipe.RESOURCES.getIcon16("actions/format-remove-node.png");
     }
 
     @Override
     public boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection) {
-        return !selection.isEmpty();
+        return selection.stream().anyMatch(ui -> !ui.getControlPoints().isEmpty());
     }
 
     @Override
     public void runEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphEdgeUI> selection) {
-        Point graphEditorCursor = canvasUI.getGraphEditorCursor();
-        if (graphEditorCursor == null) {
-            return;
-        }
-
         JIPipeDesktopGraphCanvasEdgeManager edgeManager = canvasUI.getEdgeManager();
         for (JIPipeDesktopGraphEdgeUI edgeUI : selection) {
-            edgeManager.addControlPointToEdge(edgeUI, graphEditorCursor);
+            edgeManager.clearControlPoints(edgeUI);
         }
     }
 }

@@ -159,6 +159,8 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 new AddTunnelExitUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new AddEdgeControlPointUIContextAction(),
+                new RemoveEdgeControlPointUIContextAction(),
+                new ClearEdgeControlsPointUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
