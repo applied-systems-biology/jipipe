@@ -40,29 +40,45 @@ import java.util.*;
 public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     private Path currentWorkingDirectory;
+    private boolean autoRelativizePaths = true;
+    private boolean autoUpdateOutputSlotLabel = true;
 
     public AbstractPathDataSource(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
+        initializeDefaults();
     }
 
     public AbstractPathDataSource(JIPipeNodeInfo info) {
         super(info);
+        initializeDefaults();
     }
 
     public AbstractPathDataSource(AbstractPathDataSource other) {
         super(other);
         this.currentWorkingDirectory = other.currentWorkingDirectory;
+        this.autoRelativizePaths = other.autoRelativizePaths;
+        this.autoUpdateOutputSlotLabel = other.autoUpdateOutputSlotLabel;
+    }
+
+    private void initializeDefaults() {
+        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
+        if (settings != null) {
+            autoUpdateOutputSlotLabel = settings.isAutoLabelOutputWithFileName();
+        }
     }
 
     public void updateOutputSlotIfEnabled() {
-        JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
-        if (settings != null && settings.isAutoLabelOutputWithFileName()) {
+        if (autoUpdateOutputSlotLabel) {
             List<Path> paths = getPathsAs(PathLinkageType.Any);
             String name = paths.size() == 1 ? paths.getFirst().getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
                 getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
             }
+        }
+        else {
+            getFirstOutputSlot().getInfo().setCustomName("");
+            getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
         }
     }
 
@@ -97,8 +113,15 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
+        if(autoRelativizePaths) {
+            autoRelativizePaths(baseDirectory);
+        }
+        currentWorkingDirectory = baseDirectory;
+    }
 
+    private void autoRelativizePaths(Path baseDirectory) {
         boolean modified = false;
+        List<Path> paths = getPaths_();
         for (int i = 0; i < paths.size(); ++i) {
             Path folderPath = paths.get(i);
             if (folderPath != null) {
@@ -124,11 +147,13 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
                 }
 
                 if (modified) {
-                    this.paths.set(i, folderPath);
+                    paths.set(i, folderPath);
                 }
             }
         }
-        currentWorkingDirectory = baseDirectory;
+        if(modified) {
+            setPaths_(paths);
+        }
     }
 
     @SetJIPipeDocumentation(name = "To absolute", description = "Converts the stored paths to absolute paths.")
@@ -145,11 +170,34 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         emitParameterUIChangedEvent();
     }
 
+    @SetJIPipeDocumentation(name = "Automatically make paths relative", description = "If enabled, absolute paths are made relative to the project file when the project is saved.")
+    @JIPipeParameter("auto-relativize-paths")
+    public boolean isAutoRelativizePaths() {
+        return autoRelativizePaths;
+    }
+
+    @JIPipeParameter("auto-relativize-paths")
+    public void setAutoRelativizePaths(boolean autoRelativizePaths) {
+        this.autoRelativizePaths = autoRelativizePaths;
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-label output slot", description = "If enabled, the label of the output slot is automatically set to the current file/directory name if there is exactly one path")
+    @JIPipeParameter("auto-update-output-slot-label")
+    public boolean isAutoUpdateOutputSlotLabel() {
+        return autoUpdateOutputSlotLabel;
+    }
+
+    @JIPipeParameter("auto-update-output-slot-label")
+    public void setAutoUpdateOutputSlotLabel(boolean autoUpdateOutputSlotLabel) {
+        this.autoUpdateOutputSlotLabel = autoUpdateOutputSlotLabel;
+        updateOutputSlotIfEnabled();
+    }
+
     @Override
     public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory, Path relativeInputsPath) {
         PathList relativeFileNames = getRelativePaths();
         PathList absoluteFileNames = getAbsolutePaths();
-        PathList newPaths = new PathList();
+        List<Path> newPaths = new ArrayList<>();
         Set<String> externalFileNames = new HashSet<>();
 
         for (int i = 0; i < relativeFileNames.size(); i++) {
@@ -196,15 +244,45 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
                 newPaths.add(target);
             }
         }
-        setPaths(newPaths);
+        setPaths_(newPaths);
     }
 
     public List<Path> getPathsAs(PathLinkageType type) {
         if(type == PathLinkageType.Relative) {
-
+            List<Path> result = new ArrayList<>();
+            for (Path path : getPaths_()) {
+                if(path.isAbsolute()) {
+                    if(!PathUtils.isNullOrEmpty(currentWorkingDirectory) && path.startsWith(currentWorkingDirectory)) {
+                        result.add(currentWorkingDirectory.relativize(path));
+                    }
+                    else {
+                        // Use user home
+                        result.add(PathUtils.getHomeDirectory().relativize(path));
+                    }
+                }
+                else {
+                    result.add(path);
+                }
+            }
+            return result;
         }
         else if(type == PathLinkageType.Absolute) {
-
+            List<Path> result = new ArrayList<>();
+            for (Path path : getPaths_()) {
+                if(!path.isAbsolute()) {
+                    if(!PathUtils.isNullOrEmpty(currentWorkingDirectory)) {
+                        result.add(currentWorkingDirectory.resolve(path));
+                    }
+                    else {
+                        // Use user home
+                        result.add(PathUtils.getHomeDirectory().resolve(path));
+                    }
+                }
+                else {
+                    result.add(path);
+                }
+            }
+            return result;
         }
         else {
             return getPaths_();
