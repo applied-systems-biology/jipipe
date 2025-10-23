@@ -48,8 +48,8 @@ public class JIPipeDesktopGraphCanvasResources {
     public static final int RESIZE_HANDLE_DISTANCE = 12;
     public static final int RESIZE_HANDLE_SIZE = 10;
     public static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-    public static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
-    public static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
+    public static final Color COLOR_EDGE_DEFAULT = ThemeUtils.getCurrentStyle().getEdgeBorderColorDefault();
+    public static final Color COLOR_EDGE_CONVERT = ThemeUtils.getCurrentStyle().getEdgeBorderColorConvert();
     public static final int CONTROL_POINT_SIZE = 7;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 

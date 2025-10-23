@@ -15,7 +15,7 @@ import java.awt.*;
 
 public class ThemePreviewPanel extends JPanel {
     private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
-    private JIPipeDesktopModernThemeStyle themeStyle = new  JIPipeDesktopModernThemeStyle();
+    private JIPipeDesktopModernThemeStyle themeStyle = new JIPipeDesktopModernThemeStyle();
     private float scale = 1;
 
     private final PreviewComponent previewTabBar = new PreviewComponent();
@@ -63,7 +63,7 @@ public class ThemePreviewPanel extends JPanel {
 
     private void initialize() {
         setOpaque(true);
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         add(previewTabBar, BorderLayout.NORTH);
 
         // Dock panel
@@ -78,12 +78,12 @@ public class ThemePreviewPanel extends JPanel {
         previewDockPanel.setBorder(UIUtils.createEmptyBorder(8));
 
         // Split panel (islands)
-        JPanel previewSplitPanel = new JPanel(new BorderLayout(8,8));
+        JPanel previewSplitPanel = new JPanel(new BorderLayout(8, 8));
         previewSplitPanel.setBorder(UIUtils.createEmptyBorder(8));
         previewSplitPanel.setOpaque(false);
         previewSplitPanel.add(previewSplitLeft, BorderLayout.WEST);
         previewSplitPanel.add(previewSplitRight, BorderLayout.CENTER);
-        add(UIUtils.makeNonOpaque(UIUtils.borderNSEWC(null, null, null,previewDockPanel, previewSplitPanel)), BorderLayout.CENTER);
+        add(UIUtils.makeNonOpaque(UIUtils.borderNSEWC(null, null, null, previewDockPanel, previewSplitPanel)), BorderLayout.CENTER);
 
         // Tab panel
         previewTabBar.setLayout(new BoxLayout(previewTabBar, BoxLayout.X_AXIS));
@@ -239,7 +239,7 @@ public class ThemePreviewPanel extends JPanel {
 
         // Update header panels
         previewHeaderPanelActive.getLabel().setIcon(getIcon16("actions/configure.png"));
-        previewHeaderPanelActive.getLabel().setFont(new  Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
+        previewHeaderPanelActive.getLabel().setFont(new Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
         previewHeaderPanelActive.setCornerRadius((int) (4 * scale));
         previewHeaderPanelActive.setBackgroundColor(themeStyle.getCategoryBackground());
         previewHeaderPanelActive.setBorderColor(themeStyle.getCategoryBorder());
@@ -247,7 +247,7 @@ public class ThemePreviewPanel extends JPanel {
         previewHeaderPanelActive.getLabel().setForeground(themeStyle.getTextForeground());
 
         previewHeaderPanelInactive.getLabel().setIcon(getIcon16("actions/configure.png"));
-        previewHeaderPanelInactive.getLabel().setFont(new  Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
+        previewHeaderPanelInactive.getLabel().setFont(new Font(Font.DIALOG, Font.BOLD, (int) (scale * themeStyle.getFontSizeNormal())));
         previewHeaderPanelInactive.setCornerRadius((int) (4 * scale));
         previewHeaderPanelInactive.setBorderColor(themeStyle.getCategoryBorder());
         previewHeaderPanelInactive.setSizeMinMaxHeightPreferred(32, scale);
@@ -289,10 +289,9 @@ public class ThemePreviewPanel extends JPanel {
     }
 
     private Icon getIcon24(String name) {
-        if(themeStyle.getBrightness() != ThemeUtils.getCurrentStyle().getBrightness()) {
+        if (themeStyle.getBrightness() != ThemeUtils.getCurrentStyle().getBrightness()) {
             return new ScaledIcon(JIPipe.RESOURCES.getIcon24Inverted(name), scale);
-        }
-        else {
+        } else {
             return new ScaledIcon(JIPipe.RESOURCES.getIcon24(name), scale);
         }
     }
@@ -310,18 +309,17 @@ public class ThemePreviewPanel extends JPanel {
     }
 
     private Font createScaledTinyFont() {
-        return new Font(Font.DIALOG,  Font.PLAIN, (int) (themeStyle.getFontSizeTiny() * scale));
+        return new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeTiny() * scale));
     }
 
     private Font createScaledSmallFont() {
-        return new Font(Font.DIALOG,  Font.PLAIN, (int) (themeStyle.getFontSizeTiny() * scale));
+        return new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeTiny() * scale));
     }
 
     private Icon getIcon16(String name) {
-        if(themeStyle.getBrightness() != ThemeUtils.getCurrentStyle().getBrightness()) {
+        if (themeStyle.getBrightness() != ThemeUtils.getCurrentStyle().getBrightness()) {
             return new ScaledIcon(JIPipe.RESOURCES.getIcon16Inverted(name), scale);
-        }
-        else {
+        } else {
             return new ScaledIcon(JIPipe.RESOURCES.getIcon16(name), scale);
         }
     }
@@ -358,14 +356,13 @@ public class ThemePreviewPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
-        if(theme != JIPipeDesktopUITheme.Modern) {
-            g2d.setFont(new Font(Font.DIALOG, Font.PLAIN,  (int) (themeStyle.getFontSizeHuge() * scale)));
+        if (theme != JIPipeDesktopUITheme.Modern) {
+            g2d.setFont(new Font(Font.DIALOG, Font.PLAIN, (int) (themeStyle.getFontSizeHuge() * scale)));
             FontMetrics fontMetrics = g2d.getFontMetrics();
             String text = "No preview available for this theme";
-            int stringWidth =  fontMetrics.stringWidth(text);
+            int stringWidth = fontMetrics.stringWidth(text);
             UIUtils.drawStringVerticallyCentered(g2d, text, getWidth() / 2 - stringWidth / 2, getHeight() / 2, fontMetrics);
-        }
-        else {
+        } else {
             super.paint(g);
         }
     }
@@ -387,10 +384,18 @@ public class ThemePreviewPanel extends JPanel {
             g2d.setPaint(style.getViewportBackground());
             g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
 
-            // Nodes
+
+            // Grid
             int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
-            paintNode(scale, style, g2d, 25, 10, (int) (150 * scale), 186.0f / 360.0f, false);
-            paintNode(scale, style, g2d, 50, 10 + nodeCellHeight * 4, (int) (150 * scale), 0, true);
+
+            // Edge
+            paintEdge(g2d, scale, nodeCellHeight * 2, 0, nodeCellHeight * 2, nodeCellHeight * 3, style.getEdgeBorderColorConvert());
+            paintEdge(g2d, scale, nodeCellHeight * 4, nodeCellHeight * 3, nodeCellHeight * 4, nodeCellHeight * 8, style.getEdgeBorderColorDefault());
+            g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
+
+            // Nodes
+            paintNode(scale, style, g2d, 25, nodeCellHeight, (int) (150 * scale), 186.0f / 360.0f, false);
+            paintNode(scale, style, g2d, 50, nodeCellHeight + nodeCellHeight * 3 + nodeCellHeight * 3, (int) (150 * scale), 0, true);
 
             // Scrollbar
             int scrollBarSize = (int) (12 * scale);
@@ -399,12 +404,25 @@ public class ThemePreviewPanel extends JPanel {
             g2d.setPaint(style.getScrollBarThumb());
 
             g2d.fillRect(getWidth() - scrollBarSize - 1, verticalScrollBarStart, scrollBarSize, verticalScrollBarEnd - verticalScrollBarStart);
+        }
 
+        private void paintEdge(Graphics2D g2d, float scale, int x1, int y1, int x2, int y2, Color borderColor) {
+            final JIPipeDesktopModernThemeStyle style = themePreviewPanel.themeStyle;
+            BasicStroke strokeBorder = new BasicStroke((int) Math.max(1, scale * 4) + 2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+            BasicStroke strokeFill = new BasicStroke((int) Math.max(1, scale * 4), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+
+            g2d.setPaint(borderColor);
+            g2d.setStroke(strokeBorder);
+            g2d.drawLine(x1, y1, x2, y2);
+
+            g2d.setPaint(style.getPanelBackground());
+            g2d.setStroke(strokeFill);
+            g2d.drawLine(x1, y1, x2, y2);
         }
 
         private static void paintNode(float scale, JIPipeDesktopModernThemeStyle style, Graphics2D g2d, int nodeX, int nodeY, int nodeWidth, float hue, boolean selected) {
             int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
-            int nodeHeight = 3 *  nodeCellHeight;
+            int nodeHeight = 3 * nodeCellHeight;
 
             Color nodeBorderColor = Color.getHSBColor(hue, style.getNodeBorderSaturation(), style.getNodeBorderBrightness());
             Color nodeFillColor = Color.getHSBColor(hue, style.getNodeFillSaturation(), style.getNodeFillBrightness());
@@ -432,8 +450,8 @@ public class ThemePreviewPanel extends JPanel {
 
             Image dataTypeIconImage = JIPipe.RESOURCES.getIcon16("data-types/data-type.png").getImage();
             int iconStart = (int) ((JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale) / 2 - (16.0 / 2) * scale);
-            g2d.drawImage(dataTypeIconImage,nodeX + iconStart, nodeY + iconStart, (int)(scale * 16), (int)(scale * 16),null );
-            g2d.drawImage(dataTypeIconImage,nodeX + iconStart, nodeY + nodeCellHeight * 2 + iconStart, (int)(scale * 16), (int)(scale * 16),null );
+            g2d.drawImage(dataTypeIconImage, nodeX + iconStart, nodeY + iconStart, (int) (scale * 16), (int) (scale * 16), null);
+            g2d.drawImage(dataTypeIconImage, nodeX + iconStart, nodeY + nodeCellHeight * 2 + iconStart, (int) (scale * 16), (int) (scale * 16), null);
 
             g2d.setPaint(style.getTextForeground());
 
@@ -443,14 +461,14 @@ public class ThemePreviewPanel extends JPanel {
             FontMetrics secondaryFontMetrics = g2d.getFontMetrics(secondaryFont);
 
             g2d.setFont(secondaryFont);
-            UIUtils.drawStringVerticallyCentered(g2d, "Input", (int)(nodeX + scale * 25), nodeY + nodeCellHeight / 2, secondaryFontMetrics);
-            UIUtils.drawStringVerticallyCentered(g2d, "Output", (int)(nodeX + scale * 25), nodeY + nodeCellHeight * 2 + nodeCellHeight / 2, secondaryFontMetrics);
+            UIUtils.drawStringVerticallyCentered(g2d, "Input", (int) (nodeX + scale * 25), nodeY + nodeCellHeight / 2, secondaryFontMetrics);
+            UIUtils.drawStringVerticallyCentered(g2d, "Output", (int) (nodeX + scale * 25), nodeY + nodeCellHeight * 2 + nodeCellHeight / 2, secondaryFontMetrics);
 
-            g2d.drawImage(dataTypeIconImage, (int)(nodeX + 32 * scale), nodeY + nodeCellHeight + iconStart, (int)(scale * 16), (int)(scale * 16),null );
+            g2d.drawImage(dataTypeIconImage, (int) (nodeX + 32 * scale), nodeY + nodeCellHeight + iconStart, (int) (scale * 16), (int) (scale * 16), null);
             g2d.setFont(mainFont);
-            UIUtils.drawStringVerticallyCentered(g2d, "Node", (int)(nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
+            UIUtils.drawStringVerticallyCentered(g2d, "Node", (int) (nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
 
-            if(selected) {
+            if (selected) {
                 g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SELECTION);
                 g2d.setColor(style.getNodeHighlightBorder());
                 g2d.drawRect(nodeX - 4, nodeY - 4, nodeWidth + 8, nodeHeight + 8);
@@ -484,18 +502,18 @@ public class ThemePreviewPanel extends JPanel {
 
         @Override
         protected void paintComponent(Graphics g) {
-           super.paintComponent(g);
-           Graphics2D g2d = (Graphics2D) g;
+            super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
 
-           if(backgroundColor != null) {
-               g.setColor(backgroundColor);
-               g.fillRoundRect(0, 0, getWidth() -1, getHeight() -1, cornerRadius, cornerRadius);
-           }
-           if(borderColor != null) {
-               g.setColor(borderColor);
-               g2d.setStroke(borderStroke);
-               g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
-           }
+            if (backgroundColor != null) {
+                g.setColor(backgroundColor);
+                g.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
+            }
+            if (borderColor != null) {
+                g.setColor(borderColor);
+                g2d.setStroke(borderStroke);
+                g.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, cornerRadius, cornerRadius);
+            }
         }
 
         public JLabel getLabel() {
