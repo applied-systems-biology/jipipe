@@ -195,7 +195,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         toolBar.setFloatable(false);
 
-        canvasUI.fullRedraw();
+        canvasUI.updateInteractiveObjects(true);
         canvasUI.getSelectionManager().getNodeUISelectedEventEmitter().subscribe(this);
         canvasUI.getSelectionManager().getNodeSelectionChangedEventEmitter().subscribe(this);
         canvasUI.getDefaultAlgorithmUIActionRequestedEventEmitter().subscribe(this);

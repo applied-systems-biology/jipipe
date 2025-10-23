@@ -95,6 +95,11 @@ public class JIPipeConnectGraphEditorTool implements JIPipeToggleableGraphEditor
     }
 
     @Override
+    public boolean allowsDragEdgeControlPoints() {
+        return true;
+    }
+
+    @Override
     public void mouseClicked(MouseEvent e) {
 
     }

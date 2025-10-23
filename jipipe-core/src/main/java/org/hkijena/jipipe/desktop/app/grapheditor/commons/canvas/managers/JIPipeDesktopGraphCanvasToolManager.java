@@ -50,4 +50,8 @@ public class JIPipeDesktopGraphCanvasToolManager {
     public void setToDefaultTool() {
         setCurrentTool(null);
     }
+
+    public boolean currentToolAllowsEdgeControlPointDragging() {
+        return currentTool == null || currentTool.allowsDragEdgeControlPoints();
+    }
 }

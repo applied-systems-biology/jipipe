@@ -807,4 +807,61 @@ public class PathUtils {
             return false;
         }
     }
+
+    /**
+     * Estimates if a path is suitable as a temporary base directory by checking if it's likely to cause path length issues.
+     * This heuristic considers the total path length and the remaining space for file names.
+     *
+     * @param path the path to evaluate
+     * @return true if the path is likely suitable, false if it might cause path length issues
+     */
+    public static boolean isPathSuitableAsTemporaryBaseDirectory(Path path) {
+        if (path == null) {
+            return false;
+        }
+
+        // Convert to absolute path if not already
+        Path absolutePath = path.isAbsolute() ? path : path.toAbsolutePath();
+        
+        // Get the total path length
+        String pathString = absolutePath.toString();
+        int pathLength = pathString.length();
+        
+        // Conservative estimates for maximum path lengths on different operating systems
+        // Windows: ~260 characters (MAX_PATH)
+        // Linux: typically 4096 characters
+        // macOS: typically 1024 characters
+        int conservativeMaxLength;
+        if (SystemUtils.IS_OS_WINDOWS) {
+            conservativeMaxLength = 200; // Leave room for file names
+        } else if (SystemUtils.IS_OS_MAC_OSX) {
+            conservativeMaxLength = 800; // Leave room for file names
+        } else { // Linux and other Unix-like systems
+            conservativeMaxLength = 3000; // Leave room for file names
+        }
+        
+        // If the path itself is already too long, it's not suitable
+        if (pathLength >= conservativeMaxLength) {
+            return false;
+        }
+        
+        // Check if the path is very deep (many nested directories)
+        int nameCount = absolutePath.getNameCount();
+        if (nameCount > 10) { // More than 10 nested directories might be problematic
+            return false;
+        }
+        
+        // Additional heuristic: check if the path contains many long directory names
+        int totalNameLength = 0;
+        for (int i = 0; i < nameCount; i++) {
+            totalNameLength += absolutePath.getName(i).toString().length();
+        }
+        int averageNameLength = totalNameLength / nameCount;
+        if (averageNameLength > 30) { // Directory names are very long on average
+            return false;
+        }
+        
+        // If we get here, the path seems reasonably suitable
+        return true;
+    }
 }

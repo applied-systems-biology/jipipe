@@ -80,7 +80,7 @@ import java.util.*;
                 "<li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li>" +
                 "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
                 "</ul>" +
-                "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
+                "Please note that you need to setup a valid Python environment with Cellpose installed. ")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows XY")

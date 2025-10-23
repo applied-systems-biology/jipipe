@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
+package org.hkijena.jipipe.plugins.cellpose.algorithms.cp4;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
-import org.hkijena.jipipe.plugins.cellpose.environments.cp3.Cellpose3Environment;
+import org.hkijena.jipipe.plugins.cellpose.environments.cp4.Cellpose4Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationOutputSettings;
@@ -67,7 +67,7 @@ import java.util.List;
 import java.util.Map;
 
 
-@SetJIPipeDocumentation(name = "Cellpose segmentation (3.x)", description =
+@SetJIPipeDocumentation(name = "Cellpose segmentation (4.x)", description =
         "Runs Cellpose on the input image with the given model(s). This node supports both segmentation in 3D and executing " +
                 "Cellpose for each 2D image plane. " +
                 "This node can generate a multitude of outputs, although only ROI is activated by default. " +
@@ -82,7 +82,7 @@ import java.util.Map;
                 "</ul>" +
                 "Please note that you need to setup a valid Python environment with Cellpose installed.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true, description = "The input images")
-@AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 3.x segmentation model'", role = JIPipeDataSlotRole.ParametersLooping)
+@AddJIPipeInputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The models (pretrained/custom). All workloads are repeated per model. To provide a pretrained model, use 'Pretrained Cellpose 4.x segmentation model'", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows XY")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows Z")
@@ -90,8 +90,8 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-@RegisterJIPipeEnvironmentUsage(Cellpose3Environment.class)
-public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
+@RegisterJIPipeEnvironmentUsage(Cellpose4Environment.class)
+public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
@@ -105,7 +105,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     private final Cellpose2SegmentationThresholdSettings segmentationThresholdSettings;
     private final Cellpose2SegmentationOutputSettings segmentationOutputSettings;
 
-    private final Cellpose2ChannelSettings channelSettings;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3D = true;
     private OptionalTextAnnotationNameParameter diameterAnnotation = new OptionalTextAnnotationNameParameter("Diameter", true);
@@ -115,13 +114,12 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
 //    private OptionalDataAnnotationNameParameter sizeModelAnnotationName = new OptionalDataAnnotationNameParameter("Size model", true);
 
-    public Cellpose3SegmentationInferenceAlgorithm(JIPipeNodeInfo info) {
+    public Cellpose4SegmentationInferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new Cellpose3SegmentationTweaksSettings();
         this.gpuSettings = new Cellpose2GPUSettings();
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings();
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings();
-        this.channelSettings = new Cellpose2ChannelSettings();
 
         updateOutputSlots();
 
@@ -129,16 +127,14 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-        registerSubParameter(channelSettings);
     }
 
-    public Cellpose3SegmentationInferenceAlgorithm(Cellpose3SegmentationInferenceAlgorithm other) {
+    public Cellpose4SegmentationInferenceAlgorithm(Cellpose4SegmentationInferenceAlgorithm other) {
         super(other);
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new Cellpose3SegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new Cellpose2SegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new Cellpose2SegmentationOutputSettings(other.segmentationOutputSettings);
-        this.channelSettings = new Cellpose2ChannelSettings(other.channelSettings);
         this.suppressLogs = other.suppressLogs;
 //        this.sizeModelAnnotationName = new OptionalDataAnnotationNameParameter(other.sizeModelAnnotationName);
 
@@ -154,7 +150,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-        registerSubParameter(channelSettings);
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
@@ -210,7 +205,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
         // Get environment
-        Cellpose3Environment environment = getEnvironment(Cellpose3Environment.class, runContext, progressInfo);
+        Cellpose4Environment environment = getEnvironment(Cellpose4Environment.class, runContext, progressInfo);
 
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
@@ -239,7 +234,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         }
     }
 
-    private void processModel(Path workDirectory, Cellpose3Environment environment, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+    private void processModel(Path workDirectory, Cellpose4Environment environment, CellposeModelInfo modelInfo, JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         // We need a 2D and a 3D branch due to incompatibilities on the side of Cellpose
         final Path io2DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-2d");
         final Path io3DPath = PathUtils.resolveAndMakeSubDirectory(workDirectory, "io-3d");
@@ -356,7 +351,7 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         }
     }
 
-    private void runCellpose(Cellpose3Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
+    private void runCellpose(Cellpose4Environment environment, JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, String modelNameOrPath) {
         List<String> arguments = new ArrayList<>();
         arguments.add("-m");
         arguments.add("cellpose");
@@ -387,25 +382,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             } else {
                 arguments.add(gpuSettings.getGpuDevice().getContent() + "");
             }
-        }
-
-        // Channels
-        if (channelSettings.getSegmentedChannel().isEnabled()) {
-            arguments.add("--chan");
-            arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
-        } else {
-            arguments.add("--chan");
-            arguments.add("0");
-        }
-        if (channelSettings.getNuclearChannel().isEnabled()) {
-            arguments.add("--chan2");
-            arguments.add(channelSettings.getNuclearChannel().getContent() + "");
-        }
-        if (channelSettings.isAllChannels()) {
-            arguments.add("--all_channels");
-        }
-        if (channelSettings.isInvert()) {
-            arguments.add("--invert");
         }
 
         // Model
@@ -502,12 +478,6 @@ public class Cellpose3SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     @JIPipeParameter("diameter")
     public void setDiameter(OptionalDoubleParameter diameter) {
         this.diameter = diameter;
-    }
-
-    @SetJIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", icon = "apps/cellpose.png")
-    public Cellpose2ChannelSettings getChannelSettings() {
-        return channelSettings;
     }
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced segmentation settings.")

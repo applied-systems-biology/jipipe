@@ -19,6 +19,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -26,11 +28,13 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.*;
+import java.util.List;
 
 public class JIPipeDesktopGraphCanvasNodeManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -227,12 +231,29 @@ public class JIPipeDesktopGraphCanvasNodeManager {
 
         // Update the location relative to the mouse
         Point cursor = canvasUI.getGraphEditorCursor();
+        double shiftX = (cursor.x / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_WIDTH;
+        double shiftY = (cursor.y / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT;
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             Point original = originalLocations.getOrDefault(algorithm, null);
             if (original != null) {
-                original.x = (int) (original.x - minX + (cursor.x / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
-                original.y = (int) (original.y - minY + (cursor.y / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
+                original.x = (int) ((original.x - minX) + shiftX);
+                original.y = (int) ((original.y - minY) + shiftY);
                 algorithm.setNodeUILocationWithin(compartment, original);
+            }
+        }
+
+        // Update control points
+        for (JIPipeGraphEdge edge : graph.getGraph().edgeSet()) {
+            Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints = edge.getControlPoints();
+            List<JIPipeGraphEdgeControlPoint> sourcePoints = controlPoints.get("");
+            if(sourcePoints != null && !sourcePoints.isEmpty()) {
+                List<JIPipeGraphEdgeControlPoint> newControlPoints = new ArrayList<>();
+                for (JIPipeGraphEdgeControlPoint sourcePoint : sourcePoints) {
+                    Point original = sourcePoint.toPoint();
+                    newControlPoints.add(new JIPipeGraphEdgeControlPoint((int) ((original.x - minX) + shiftX), (int) ((original.y - minY) + shiftY)));
+                }
+                controlPoints.clear();
+                controlPoints.put(StringUtils.nullToEmpty(compartment),  newControlPoints);
             }
         }
 
@@ -240,6 +261,8 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), canvasUI.getCompartmentUUID());
         }
-        return canvasUI.getGraph().mergeWith(graph);
+        Map<UUID, JIPipeGraphNode> merged = canvasUI.getGraph().mergeWith(graph);
+        canvasUI.updateInteractiveObjects(true);
+        return merged;
     }
 }

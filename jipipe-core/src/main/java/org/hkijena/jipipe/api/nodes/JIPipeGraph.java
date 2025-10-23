@@ -1148,7 +1148,16 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             // Info: the parent graph was now set by the target graph
             JIPipeGraphNode copySource = newToNewMapping.get(edge.getKey().getNode().getUUIDInParentGraph());
             JIPipeGraphNode copyTarget = newToNewMapping.get(edge.getValue().getNode().getUUIDInParentGraph());
-            connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
+            JIPipeOutputDataSlot copySourceSlot = copySource.getOutputSlotMap().get(edge.getKey().getName());
+            JIPipeInputDataSlot copyTargetSlot = copyTarget.getInputSlotMap().get(edge.getValue().getName());
+            connect(copySourceSlot, copyTargetSlot);
+
+            JIPipeGraphEdge oldEdge = otherGraph.graph.getEdge(edge.getKey(), edge.getValue());
+            JIPipeGraphEdge newEdge = graph.getEdge(copySourceSlot, copyTargetSlot);
+
+            if(oldEdge != null && newEdge != null) {
+                newEdge.setMetadataFrom(oldEdge);
+            }
         }
         return oldToNewMapping;
     }
@@ -1177,7 +1186,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @return graph that only contains the selected algorithms, UUIDs are the same between the original and copies
      */
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
-        JIPipeGraph graph = new JIPipeGraph();
+        JIPipeGraph copyGraph = new JIPipeGraph();
         for (JIPipeGraphNode node : nodes) {
             if (!withInternal && !node.getCategory().canExtract())
                 continue;
@@ -1190,16 +1199,31 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             if (point != null) {
                 copy.setNodeUILocationWithin("", point);
             }
-            graph.insertNode(node.getUUIDInParentGraph(), copy, null);
+            copyGraph.insertNode(node.getUUIDInParentGraph(), copy, null);
         }
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
-            JIPipeDataSlot source = edge.getKey();
-            JIPipeDataSlot target = edge.getValue();
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> sourceEdgeEntry : getSlotEdges()) {
+            JIPipeDataSlot source = sourceEdgeEntry.getKey();
+            JIPipeDataSlot target = sourceEdgeEntry.getValue();
             if (nodes.contains(source.getNode()) && nodes.contains(target.getNode())) {
-                graph.connect(graph.getEquivalentSlot(source), graph.getEquivalentSlot(target));
+                JIPipeDataSlot copySource = copyGraph.getEquivalentSlot(source);
+                JIPipeDataSlot copyTarget = copyGraph.getEquivalentSlot(target);
+                copyGraph.connect(copySource, copyTarget);
+                JIPipeGraphEdge copyEdge = copyGraph.graph.getEdge(copySource, copyTarget);
+                if(copyEdge != null) {
+                    JIPipeGraphEdge originalEdge = this.graph.getEdge(source, target);
+                    copyEdge.setMetadataFrom(originalEdge);
+                    Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints = copyEdge.getControlPoints();
+
+                    // We don't have the compartments, so use the largest list
+                    if(!controlPoints.isEmpty()) {
+                        List<JIPipeGraphEdgeControlPoint> newControlPoints = controlPoints.values().stream().max(Comparator.comparing(List::size)).get();
+                        controlPoints.clear();
+                        controlPoints.put("", newControlPoints);
+                    }
+                }
             }
         }
-        return graph;
+        return copyGraph;
     }
 
     /**

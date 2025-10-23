@@ -25,8 +25,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.CopyEdgeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.DeleteCompartmentNodesAndEdgesContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add.AddNewCompartmentUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.AddBookmarkNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.bookmarks.RemoveBookmarkNodeUIContextAction;
@@ -96,6 +95,10 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         getCanvasUI().setDragAndDropBehavior(new JIPipeCreateCompartmentNodesFromDraggedDataDragAndDropBehavior());
         List<GraphInteractiveObjectUIContextAction> actions = Arrays.asList(
                 new AddNewCompartmentUIContextAction(),
+                GraphInteractiveObjectUIContextAction.SEPARATOR,
+                new AddEdgeControlPointUIContextAction(),
+                new RemoveEdgeControlPointUIContextAction(),
+                new ClearEdgeControlsPointUIContextAction(),
                 GraphInteractiveObjectUIContextAction.SEPARATOR,
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
