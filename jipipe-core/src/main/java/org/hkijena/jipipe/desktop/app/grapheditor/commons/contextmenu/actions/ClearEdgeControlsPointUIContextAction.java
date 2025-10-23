@@ -15,9 +15,11 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 
 import javax.swing.*;
@@ -25,7 +27,30 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class ClearEdgeControlsPointUIContextAction implements EdgesOnlyUIContextAction {
+public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveObjectUIContextAction {
+
+    @Override
+    public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        return selection.stream().anyMatch(ui -> {
+            if(ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
+                return !edgeUI.getControlPoints().isEmpty();
+            }
+            return false;
+        });
+    }
+
+    @Override
+    public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
+        JIPipeDesktopGraphCanvasEdgeManager edgeManager = canvasUI.getEdgeManager();
+        for (JIPipeDesktopGraphInteractiveObjectUI ui : selection) {
+            if(ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
+                edgeManager.clearControlPoints(edgeUI);
+            }
+        }
+        canvasUI.getNotificationsManager().addNotification("Control points cleared",
+                JIPipe.RESOURCES.getIcon16("actions/format-remove-node.png"),
+                JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Success);
+    }
 
     @Override
     public String getName() {
@@ -42,24 +67,9 @@ public class ClearEdgeControlsPointUIContextAction implements EdgesOnlyUIContext
         return JIPipe.RESOURCES.getIcon16("actions/format-remove-node.png");
     }
 
-    @Override
-    public boolean matchesEdges(Set<JIPipeDesktopGraphEdgeUI> selection) {
-        return selection.stream().anyMatch(ui -> !ui.getControlPoints().isEmpty());
-    }
 
      @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK, true);
-    }
-
-    @Override
-    public void runEdges(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphEdgeUI> selection) {
-        JIPipeDesktopGraphCanvasEdgeManager edgeManager = canvasUI.getEdgeManager();
-        for (JIPipeDesktopGraphEdgeUI edgeUI : selection) {
-            edgeManager.clearControlPoints(edgeUI);
-        }
-        canvasUI.getNotificationsManager().addNotification("Control points cleared",
-                JIPipe.RESOURCES.getIcon16("actions/format-remove-node.png"),
-                JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Success);
     }
 }

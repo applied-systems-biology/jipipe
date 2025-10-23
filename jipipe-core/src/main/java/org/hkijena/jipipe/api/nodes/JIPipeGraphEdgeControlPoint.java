@@ -20,6 +20,11 @@ public class JIPipeGraphEdgeControlPoint {
     public JIPipeGraphEdgeControlPoint() {
     }
 
+    public JIPipeGraphEdgeControlPoint(JIPipeGraphEdgeControlPoint other) {
+        this.x = other.x;
+        this.y = other.y;
+    }
+
     public JIPipeGraphEdgeControlPoint(int x, int y) {
         this.x = x;
         this.y = y;

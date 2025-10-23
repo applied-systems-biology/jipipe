@@ -68,6 +68,9 @@ public class JIPipeGraphEdge extends DefaultEdge implements JIPipeProjectUpgrada
 
     public void setMetadataFrom(JIPipeGraphEdge other) {
         this.uiShape = other.uiShape;
+        for (Map.Entry<String, List<JIPipeGraphEdgeControlPoint>> entry : other.controlPoints.entrySet()) {
+            this.controlPoints.put(entry.getKey(), new ArrayList<>(entry.getValue().stream().map(JIPipeGraphEdgeControlPoint::new).toList()));
+        }
     }
 
     @JsonGetter("uuid")
