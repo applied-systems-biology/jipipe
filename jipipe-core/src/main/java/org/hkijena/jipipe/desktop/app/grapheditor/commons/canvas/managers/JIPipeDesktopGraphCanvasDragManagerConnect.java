@@ -201,7 +201,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                 // Draw arrow
                 if (currentConnectionDragSource instanceof JIPipeDesktopGraphNodeUISlotActiveArea) {
                     if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragSource).getSlot().isOutput()) {
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 currentConnectionDragSource.getNodeUI().getBounds(),
                                 targetPoint.center,
@@ -211,7 +211,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 0,
                                 JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     } else {
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 targetPoint.center,
                                 currentConnectionDragSource.getNodeUI().getBounds(),
                                 sourcePoint.center,
@@ -223,7 +223,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                     }
                 } else if (currentConnectionDragTarget instanceof JIPipeDesktopGraphNodeUISlotActiveArea) {
                     if (((JIPipeDesktopGraphNodeUISlotActiveArea) currentConnectionDragTarget).getSlot().isInput()) {
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 sourcePoint.center,
                                 currentConnectionDragSource.getNodeUI().getBounds(),
                                 targetPoint.center,
@@ -233,7 +233,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 0,
                                 JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     } else {
-                        canvasUI.getPaintManager().paintEdge(g,
+                        canvasUI.getPaintManager().paintCustomEdge(g,
                                 targetPoint.center,
                                 currentConnectionDragSource.getNodeUI().getBounds(),
                                 sourcePoint.center,
@@ -244,7 +244,7 @@ public class JIPipeDesktopGraphCanvasDragManagerConnect {
                                 JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
                     }
                 } else {
-                    canvasUI.getPaintManager().paintEdge(g,
+                    canvasUI.getPaintManager().paintCustomEdge(g,
                             targetPoint.center,
                             currentConnectionDragSource.getNodeUI().getBounds(),
                             sourcePoint.center,

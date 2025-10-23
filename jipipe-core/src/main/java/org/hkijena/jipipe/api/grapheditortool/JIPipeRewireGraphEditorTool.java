@@ -154,7 +154,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
 
         // Draw arrow
         if (currentRewireDragSource.isInput()) {
-            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+            graphEditorUI.getCanvasUI().getPaintManager().paintCustomEdge(g,
                     sourcePoint.center,
                     currentRewireDragSource.getNodeUI().getBounds(),
                     targetPoint.center,
@@ -164,7 +164,7 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
                     0,
                     JIPipeDesktopGraphCanvasPaintManager.ArrowHeadMode.Filled);
         } else {
-            graphEditorUI.getCanvasUI().getPaintManager().paintEdge(g,
+            graphEditorUI.getCanvasUI().getPaintManager().paintCustomEdge(g,
                     targetPoint.center,
                     currentRewireDragSource.getNodeUI().getBounds(),
                     sourcePoint.center,

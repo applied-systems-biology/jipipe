@@ -10,6 +10,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
 import java.awt.*;
+import java.util.List;
 
 public class JIPipeDesktopGraphCanvasPaintManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -30,7 +31,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
     }
 
 
-    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+    private void paintCustomElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
 
         TIntArrayList xCoords = new TIntArrayList(8);
         TIntArrayList yCoords = new TIntArrayList(8);
@@ -112,6 +113,7 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         yCoords.add(y2);
     }
 
+
     /**
      * Draws an edge between source point and the target point
      *
@@ -125,10 +127,51 @@ public class JIPipeDesktopGraphCanvasPaintManager {
      * @param viewY         the view y
      * @param arrowHeadMode How arrow heads should be displayed
      */
-    public void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+    public void paintCustomEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, List<Point> controlPoints, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
+        Point nextSource = sourcePoint;
+        Point nextTarget;
+        Rectangle nextSourceBounds = sourceBounds;
+
+        if (controlPoints.isEmpty()) {
+            nextTarget = targetPoint;
+        } else {
+            for (Point gridLocation : controlPoints) {
+                nextTarget = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+                paintCustomEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, ArrowHeadMode.None);
+
+                nextSource = nextTarget;
+                nextSourceBounds = new Rectangle(nextSource.x, nextSource.y, 1, 1);
+            }
+
+            nextTarget = targetPoint;
+        }
+
+        paintCustomEdge(g, nextSource, nextSourceBounds, nextTarget, shape, scale, viewX, viewY, arrowHeadMode);
+
+        g.setPaint(Color.RED);
+        for (Point gridLocation : controlPoints) {
+            Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(gridLocation, 1);
+            g.fillOval(point.x, point.y, 5, 5);
+        }
+    }
+
+    /**
+     * Draws an edge between source point and the target point
+     *
+     * @param g             the graphics
+     * @param sourcePoint   the source point
+     * @param sourceBounds  bounds of the source
+     * @param targetPoint   the target point
+     * @param shape         the line shape
+     * @param scale         the scale
+     * @param viewX         the view x
+     * @param viewY         the view y
+     * @param arrowHeadMode How arrow heads should be displayed
+     */
+    public void paintCustomEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, ArrowHeadMode arrowHeadMode) {
         switch (shape) {
             case Elbow:
-                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode);
+                paintCustomElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, arrowHeadMode);
                 break;
             case Line: {
                 int arrowHeadShift = arrowHeadMode != ArrowHeadMode.None ? canvasUI.getResources().getArrowHeadShift() : 0;
@@ -185,6 +228,24 @@ public class JIPipeDesktopGraphCanvasPaintManager {
                     viewX,
                     viewY,
                     false, false, 0, 0);
+        }
+    }
+
+    public void paintEdge(Graphics2D g, JIPipeDesktopGraphEdgeUI.SegmentedLines segmentedLines, ArrowHeadMode arrowHeadMode) {
+        if (segmentedLines.size() < 2) {
+            return;
+        }
+        int[] xPoints = segmentedLines.getXPoints();
+        int[] yPoints = segmentedLines.getYPoints();
+        if(arrowHeadMode == ArrowHeadMode.Filled) {
+            yPoints[yPoints.length - 1] += canvasUI.getResources().getArrowHeadShift();
+        }
+        g.drawPolyline(xPoints, yPoints, xPoints.length);
+        if (arrowHeadMode  == ArrowHeadMode.Filled) {
+            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1] - canvasUI.getResources().getArrowHeadShift(), arrowHeadMode);
+        }
+        else if(arrowHeadMode == ArrowHeadMode.Thin) {
+            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1], arrowHeadMode);
         }
     }
 
