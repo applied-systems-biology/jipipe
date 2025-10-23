@@ -43,34 +43,45 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
         return (int) (JIPipeDesktopGraphCanvasResources.CONTROL_POINT_SIZE * canvasUI.getZoom());
     }
 
-    public void paint(Graphics2D graphics2D) {
+    public Point getRenderedLocation() {
+        Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(controlPoint.toPoint(), canvasUI.getZoom());
+        int size = getRenderedSize();
+        point.x -= size / 2 + 1;
+        point.y -= size / 2 + 1;
+        return point;
+    }
+
+    public void paint(Graphics2D graphics2D, JIPipeDesktopGraphEdgeUI edgeUI, boolean multiColor, int multiColorIndex, int multiColorMax) {
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         int size = getRenderedSize();
-        Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(controlPoint.toPoint(), canvasUI.getZoom());
+        Point location = getRenderedLocation();
 
-        graphics2D.setPaint(canvasUI.getResources().getImprovedStrokeBackgroundColor());
-        graphics2D.fillOval(point.x - size / 2, point.y - size / 2, size, size);
+
+        graphics2D.setPaint(canvasUI.getResources().getEdgeBackgroundPaint(source,
+                target,
+                null,
+                null,
+                canvasUI.getResources().getImprovedStrokeBackgroundColor()));
+        graphics2D.fillOval(location.x, location.y, size, size);
 
         if(canvasUI.getSelectionManager().getSelection().contains(this)) {
             graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_THICK);
             graphics2D.setPaint(ThemeUtils.getCurrentStyle().getNodeHighlightBorder());
-            graphics2D.drawOval(point.x - size / 2, point.y - size / 2, size, size);
+            graphics2D.drawOval(location.x, location.y, size, size);
         }
         else {
             graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-            graphics2D.setColor(canvasUI.getResources().getEdgeColor(source, target, false, 0, 0));
-            graphics2D.drawOval(point.x - size / 2, point.y - size / 2, size, size);
+            graphics2D.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
+            graphics2D.drawOval(location.x, location.y, size, size);
         }
 
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
     }
 
     public boolean doesContainPoint(int mouseX, int mouseY) {
-        Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(controlPoint.toPoint(), canvasUI.getZoom());
+        Point location = getRenderedLocation();
         int size = getRenderedSize();
-        int centerX = point.x - size / 2;
-        int centerY = point.y - size / 2;
-        return (Math.pow(mouseX -  centerX, 2) + Math.pow(mouseY - centerY, 2))  <= Math.pow(size, 2);
+        return (Math.pow(mouseX -  location.x, 2) + Math.pow(mouseY - location.y, 2))  <= Math.pow(size, 2);
     }
 
     public Point getGridLocation() {

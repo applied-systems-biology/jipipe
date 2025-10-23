@@ -132,37 +132,37 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
 
             if (edgeUI.isCommentEdge()) {
                 paintCommentEdge(g, edgeUI, edgeHasMultiColor, multiColorIndex, multiColorMax);
-                paintEdgeControlPoints(g, edgeUI);
+                paintEdgeControlPoints(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
             } else if (selection.contains(edgeUI)) {
                 if (edgeHasMultiColor) {
                     paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                     ++multiColorIndex;
-                    paintEdgeControlPoints(g, edgeUI);
+                    paintEdgeControlPoints(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
                 } else {
                     paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
-                    paintEdgeControlPoints(g, edgeUI);
+                    paintEdgeControlPoints(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
                 }
             } else {
                 if (multiColor) {
                     if (edgeHasMultiColor) {
                         paintMultiColorEdge(g, edgeUI, strokeInside, strokeBorder, multiColorIndex, multiColorMax);
                         ++multiColorIndex;
-                        paintEdgeControlPoints(g, edgeUI);
+                        paintEdgeControlPoints(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
                     } else {
                         // Mute the edge
                         paintMutedEdge(g, edgeUI, strokeMuted);
                     }
                 } else {
                     paintRegularEdge(g, edgeUI, strokeInside, strokeBorder);
-                    paintEdgeControlPoints(g, edgeUI);
+                    paintEdgeControlPoints(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
                 }
             }
         }
     }
 
-    private void paintEdgeControlPoints(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI) {
+    private void paintEdgeControlPoints(Graphics2D g, JIPipeDesktopGraphEdgeUI edgeUI, boolean multiColor, int multiColorIndex, int multiColorMax) {
         for (JIPipeDesktopGraphEdgeControlPointUI controlPoint : edgeUI.getControlPoints()) {
-            controlPoint.paint(g);
+            controlPoint.paint(g, edgeUI, multiColor, multiColorIndex, multiColorMax);
         }
     }
 }

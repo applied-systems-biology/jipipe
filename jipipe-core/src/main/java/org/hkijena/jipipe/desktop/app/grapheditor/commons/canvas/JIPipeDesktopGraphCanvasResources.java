@@ -50,7 +50,7 @@ public class JIPipeDesktopGraphCanvasResources {
     public static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
     public static final Color COLOR_EDGE_DEFAULT = ThemeUtils.isUsingDarkTheme() ? new Color(0x3E3E3E) : new Color(0x737880);
     public static final Color COLOR_EDGE_CONVERT = new Color(0x2957C2);
-    public static final int CONTROL_POINT_SIZE = 13;
+    public static final int CONTROL_POINT_SIZE = 7;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
 
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
@@ -93,7 +93,7 @@ public class JIPipeDesktopGraphCanvasResources {
     public Paint getEdgeBackgroundPaint(JIPipeDataSlot source, JIPipeDataSlot target, PointRange sourcePoint, PointRange targetPoint, Color defaultPaint) {
         Paint strokePaint = defaultPaint;
 
-        if (canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+        if ( sourcePoint != null && targetPoint != null && canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             if (source.getNode() instanceof JIPipeAlgorithm sourceAlgorithm && target.getNode() instanceof JIPipeAlgorithm targetAlgorithm) {
                 JIPipeRuntimePartitionConfiguration runtimePartitions = canvasUI.getDesktopWorkbench().getProject().getRuntimePartitions();
                 JIPipeRuntimePartition sourcePartition = runtimePartitions.get(sourceAlgorithm.getRuntimePartition().getIndex());

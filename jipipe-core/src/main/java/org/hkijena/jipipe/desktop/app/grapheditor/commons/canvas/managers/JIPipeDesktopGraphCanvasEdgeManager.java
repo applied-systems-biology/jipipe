@@ -33,7 +33,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
         
         // Get the rendered line segments from the edge UI
-        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), canvasUI.getZoom(), 0, 0);
+        JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(1, canvasUI.getZoom(), 0, 0);
         
         if (lineSegments.isEmpty()) {
             return false;
