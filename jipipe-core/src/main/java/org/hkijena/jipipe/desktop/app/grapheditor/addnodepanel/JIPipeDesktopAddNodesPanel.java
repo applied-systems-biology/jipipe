@@ -618,7 +618,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 0,
                 0));
 
-        searchField = new JIPipeDesktopSearchTextField();
+        searchField = new JIPipeDesktopSearchTextField(queue);
         searchField.addActionListener(e -> reloadAlgorithmList());
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
