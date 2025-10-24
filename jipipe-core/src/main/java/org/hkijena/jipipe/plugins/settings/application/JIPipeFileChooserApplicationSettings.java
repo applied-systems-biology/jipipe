@@ -38,6 +38,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     public static String ID = "org.hkijena.jipipe:file-chooser";
     private FileChooserType fileChooserType = FileChooserType.ModernNative;
     private FileChooserType fallbackFileChooserType = FileChooserType.Advanced;
+    private boolean askOnNativePathSelect = true;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
     private Path lastDataDirectory;
@@ -48,6 +49,18 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     public static JIPipeFileChooserApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeFileChooserApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "OS dialogs: ask on path select", description = "If the 'Prefer OS dialogs' option is selected and a path (i.e. file or directory) is opened/saved," +
+            " ask about the path type instead of falling back to the non-native file dialog.")
+    @JIPipeParameter("ask-on-native-path-select")
+    public boolean isAskOnNativePathSelect() {
+        return askOnNativePathSelect;
+    }
+
+    @JIPipeParameter("ask-on-native-path-select")
+    public void setAskOnNativePathSelect(boolean askOnNativePathSelect) {
+        this.askOnNativePathSelect = askOnNativePathSelect;
     }
 
     @SetJIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")
