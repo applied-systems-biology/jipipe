@@ -337,6 +337,24 @@ public class JIPipeDesktop {
     public static Path openPath(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
+
+        // No OS has native Path selection dialogs, so let the user choose
+        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option =  JOptionPane.showOptionDialog(parent,
+                    "Do you want to open a file or a directory?",
+                    title,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Open file", "Open directory", "Cancel"},
+                    "Open file");
+            return switch (option) {
+                case JOptionPane.YES_OPTION -> openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.NO_OPTION -> openDirectory(parent, workbench, key, title, description);
+                default -> null;
+            };
+        }
+
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
             fileChooser.setDialogTitle(title);
@@ -406,6 +424,24 @@ public class JIPipeDesktop {
      */
     public static Path savePath(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+
+        // No OS has native Path selection dialogs, so let the user choose
+        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option =  JOptionPane.showOptionDialog(parent,
+                    "Do you want to save a file or a directory?",
+                    title,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Save file", "Select directory", "Cancel"},
+                    "Save file");
+            return switch (option) {
+                case JOptionPane.YES_OPTION -> saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.NO_OPTION -> saveDirectory(parent, workbench, key, title, description);
+                default -> null;
+            };
+        }
+
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
@@ -891,6 +927,24 @@ public class JIPipeDesktop {
      */
     public static List<Path> openPaths(Component parent, JIPipeWorkbench workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey key, String title, HTMLText description, JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType, FileNameExtensionFilter... extensionFilters) {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
+
+        // No OS has native Path selection dialogs, so let the user choose
+        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option =  JOptionPane.showOptionDialog(parent,
+                    "Do you want to open a file or a directory?",
+                    title,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Open file", "Open directory", "Cancel"},
+                    "Open file");
+            return switch (option) {
+                case JOptionPane.YES_OPTION -> openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.NO_OPTION -> openDirectories(parent, workbench, key, title, description);
+                default -> null;
+            };
+        }
+
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
         if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.Standard) {
             JFileChooser fileChooser = new JFileChooser(currentPath.toFile());
