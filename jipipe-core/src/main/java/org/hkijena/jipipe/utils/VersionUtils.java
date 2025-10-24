@@ -78,8 +78,41 @@ public class VersionUtils {
         return result;
     }
 
-    public static boolean isUpgradingFrom(String version) {
+    /**
+     * Returns true if the current JIPipe version is newer than the specified version
+     * @param version the specified version
+     * @return if the current JIPipe version is newer than the specified version
+     */
+    public static boolean isOlderThanCurrent(String version) {
         return compareVersions(version, JIPipe.getJIPipeVersion()) < 0;
+    }
+
+    public static boolean isOlderOrEqualThanCurrent(String version) {
+        return compareVersions(version, JIPipe.getJIPipeVersion()) <= 0;
+    }
+
+    public static boolean isWithinVersionRangeInclusive(String version, String from, String to) {
+        return compareVersions(version, from) >= 0 && compareVersions(version, to) <= 0;
+    }
+
+    public static boolean isWithinVersionRangeExclusive(String version, String from, String to) {
+        return compareVersions(version, from) > 0 && compareVersions(version, to) < 0;
+    }
+
+    public static boolean isNewerThan(String version, String otherVersion) {
+        return compareVersions(version, otherVersion) > 0;
+    }
+
+    public static boolean isNewerThanOrEqual(String version, String otherVersion) {
+        return compareVersions(version, otherVersion) >= 0;
+    }
+
+    public static boolean isOlderThan(String version, String otherVersion) {
+        return compareVersions(version, otherVersion) < 0;
+    }
+
+    public static boolean isOlderThanOrEqual(String version, String otherVersion) {
+        return compareVersions(version, otherVersion) <= 0;
     }
 
     public List<int[]> equalizeVersionComponents(int[]... versions) {

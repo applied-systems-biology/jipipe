@@ -69,7 +69,7 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
     public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         super.applyProjectUpgrade(fromVersion, context, report);
 
-        if(VersionUtils.isUpgradingFrom("5.3.0")) {
+        if (VersionUtils.isOlderThanOrEqual(fromVersion, "5.3.0")) {
             solverPreference = JIPipeIterationStepSolverPreference.Legacy;
         }
     }
