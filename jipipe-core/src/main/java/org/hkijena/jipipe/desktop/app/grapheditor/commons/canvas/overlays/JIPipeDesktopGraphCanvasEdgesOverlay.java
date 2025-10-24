@@ -83,6 +83,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
         // We enable multicolor display depending on whether nodes are selected
         int multiColorIndex = 0;
         int multiColorMax = 0;
+        boolean hasEdgeSelection = false;
 
         if (!selection.isEmpty()) {
             for (JIPipeDesktopGraphEdgeUI edgeUI : canvasUI.getEdgeUIs().values()) {
@@ -94,6 +95,10 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 }
 
                 if (selection.contains(sourceNodeUI) || selection.contains(targetNodeUI)) {
+                    ++multiColorMax;
+                }
+                if(selection.contains(edgeUI)) {
+                    hasEdgeSelection = true;
                     ++multiColorMax;
                 }
             }
@@ -120,7 +125,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 continue;
             }
 
-            boolean edgeHasMultiColor = multiColorMax > 0 && (selection.contains(sourceUI) || selection.contains(targetUI));
+            boolean edgeHasMultiColor = multiColorMax > 0 && (selection.contains(edgeUI) || selection.contains(sourceUI) || selection.contains(targetUI));
 
             Stroke strokeBorder = strokeBorderDefault;
             if (selection.contains(edgeUI)) {
