@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -62,6 +63,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -69,6 +71,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -97,6 +100,7 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30, false);
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("\"Label\"");
     private boolean suppressLogs = false;
+    private boolean clearLabelDataAnnotation = true;
 
     public Cellpose3DenoiseTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -122,10 +126,33 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
+        this.clearLabelDataAnnotation = other.clearLabelDataAnnotation;
 
         registerSubParameter(gpuSettings);
         registerSubParameter(tweaksSettings);
         registerSubParameter(noiseSettings);
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+
+        // Coming from older JIPipe versions we will disable label clearing to ensure the same behavior
+        if (VersionUtils.isOlderThanOrEqual(fromVersion, "5.3.0")) {
+            clearLabelDataAnnotation = false;
+        }
+    }
+
+    @SetJIPipeDocumentation(name = "Remove label data annotation from outputs", description = "If enabled, outputs will not have the label data annotation, " +
+            "which is often not needed anymore at this stage. Other data annotations will be left alone.")
+    @JIPipeParameter("clear-label-data-annotation")
+    public boolean isClearLabelDataAnnotation() {
+        return clearLabelDataAnnotation;
+    }
+
+    @JIPipeParameter("clear-label-data-annotation")
+    public void setClearLabelDataAnnotation(boolean clearLabelDataAnnotation) {
+        this.clearLabelDataAnnotation = clearLabelDataAnnotation;
     }
 
     @SetJIPipeDocumentation(name = "Suppress logs", description = "If enabled, the node will not log the status of the Cellpose operation. " +
@@ -230,6 +257,15 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
             // Save the model out
             CellposeModelInfo modelInfo = CellposeUtils.createModelInfo(modelSlot.getTextAnnotations(modelRow), modelData, workDirectory, modelProgress);
             modelInfos.add(modelInfo);
+        }
+
+        if(clearLabelDataAnnotation) {
+            progressInfo.warn("Clearing label data annotation '" + labelDataAnnotation.getExpression() + "' as requested.");
+            Map<String, JIPipeDataAnnotation> mergedDataAnnotations = iterationStep.getMergedDataAnnotations();
+            JIPipeDataAnnotation queried = labelDataAnnotation.queryFirst(mergedDataAnnotations.values());
+            if(queried != null) {
+                mergedDataAnnotations.remove(queried.getName());
+            }
         }
 
         for (int i = 0; i < modelInfos.size(); i++) {
