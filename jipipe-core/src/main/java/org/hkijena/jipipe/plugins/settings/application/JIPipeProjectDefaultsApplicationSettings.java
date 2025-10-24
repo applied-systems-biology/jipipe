@@ -20,9 +20,14 @@ import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.PathIOMode;
+import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import javax.swing.*;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 /**
@@ -35,6 +40,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
     private StringList projectTemplateDownloadRepositories = new StringList();
     private boolean restoreTabs = true;
+    private Path defaultProjectsDirectory = Path.of("JIPipeProjects");
 
     public JIPipeProjectDefaultsApplicationSettings() {
         projectTemplate.setValue(JIPipeProjectTemplate.getFallbackTemplateId());
@@ -101,6 +107,32 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
     @Override
     public String getDescription() {
         return "Project-related settings, including the default template and list of recent projects";
+    }
+
+    @SetJIPipeDocumentation(name = "Default projects directory", description = "Directory where JIPipe will place projects by default. " +
+            "If the given path is relative, the user home directory is used as base.")
+    @JIPipeParameter("default-projects-directory")
+    @PathParameterSettings(key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
+    public Path getDefaultProjectsDirectory() {
+        if(PathUtils.isNullOrEmpty(defaultProjectsDirectory)) {
+            return Path.of("JIPipeProjects");
+        }
+        return defaultProjectsDirectory;
+    }
+
+    @JIPipeParameter("default-projects-directory")
+    public void setDefaultProjectsDirectory(Path defaultProjectsDirectory) {
+        this.defaultProjectsDirectory = defaultProjectsDirectory;
+    }
+
+    public Path getAbsoluteDefaultProjectsDirectory() {
+        Path path = getDefaultProjectsDirectory();
+        if(!path.isAbsolute()) {
+            return PathUtils.getHomeDirectory().resolve(path);
+        }
+        else {
+            return path;
+        }
     }
 
     /**

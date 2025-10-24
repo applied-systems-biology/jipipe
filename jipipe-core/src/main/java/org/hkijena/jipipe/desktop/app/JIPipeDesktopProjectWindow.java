@@ -696,17 +696,51 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     public void importROCrate() {
-        var window = this;
         Path projectPath = JIPipeDesktop.openFile(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Import JIPipe Workflow RO-Crate",
                 new HTMLText("Please select a *.crate.zip file that was generated using JIPipe."),
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
         if (projectPath != null) {
-            String fileName = projectPath.getFileName().toString();
-            Path extractPath;
+            importROCrate(projectPath, false);
+        }
+    }
 
-            // Ask for a non-existing extract path
+    private void importROCrate(Path projectPath, boolean forceFallbackProjectDir) {
+        var window = this;
+        String fileName = projectPath.getFileName().toString();
+        String fileNameNoExt = fileName.substring(0, fileName.length() - 4);
+        Path extractPath;
+
+        // Determine an automated directory
+        Path baseExtractPath;
+        if(forceFallbackProjectDir) {
+            Path defaultProjectsDirectory = JIPipeProjectDefaultsApplicationSettings.getInstance().getDefaultProjectsDirectory();
+            PathUtils.createDirectories(defaultProjectsDirectory);
+            baseExtractPath = defaultProjectsDirectory;
+        }
+        else {
+            baseExtractPath = projectPath.getParent();
+        }
+
+        String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(baseExtractPath.resolve(str)));
+        extractPath = baseExtractPath.resolve(uniqueFileNameNoExt);
+
+        int option = JOptionPane.showOptionDialog(this,
+                "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
+                "Import RO-Crate",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"Continue", "Select custom path", "Cancel"},
+                "Continue");
+
+        if(option == JOptionPane.CANCEL_OPTION) {
+            return;
+        }
+
+        // Ask for a non-existing extract path
+        if(option == JOptionPane.NO_OPTION) {
             while (true) {
-                extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileName.substring(0, fileName.length() - 4)), "Import JIPipe Workflow RO-Crate - Target directory",
+                extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileNameNoExt), "Import JIPipe Workflow RO-Crate - Target directory",
                         new HTMLText("Please confirm where the RO-Crate contents will be extracted."));
                 if (extractPath != null) {
                     if (!PathUtils.isEmptyOrNonExistingDirectory(extractPath)) {
@@ -721,44 +755,44 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     break;
                 }
             }
+        }
 
-            if (extractPath != null) {
-                Path finalExtractPath = extractPath;
-                JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
-                var run = new DefaultJIPipeRunnable() {
-                    @Override
-                    public void run() {
-                        getProgressInfo().log("Extracting to " + finalExtractPath);
-                        PathUtils.createDirectories(finalExtractPath);
-                        try {
-                            ArchiveUtils.decompressZipFile(projectPath, finalExtractPath, getProgressInfo().resolve("Extract archive"));
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-
-                        Path projectFile = finalExtractPath.resolve("project.jip");
-                        if (!Files.isRegularFile(projectFile)) {
-                            SwingUtilities.invokeLater(() -> {
-                                JOptionPane.showMessageDialog(window,
-                                        "Unable to find project.jip file inside the extracted files!",
-                                        "Import JIPipe Workflow RO-Crate",
-                                        JOptionPane.ERROR_MESSAGE);
-                            });
-                        } else {
-                            SwingUtilities.invokeLater(() -> {
-                                openProject(projectFile, false);
-                            });
-                        }
+        if (extractPath != null) {
+            Path finalExtractPath = extractPath;
+            JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+            var run = new DefaultJIPipeRunnable() {
+                @Override
+                public void run() {
+                    getProgressInfo().log("Extracting to " + finalExtractPath);
+                    PathUtils.createDirectories(finalExtractPath);
+                    try {
+                        ArchiveUtils.decompressZipFile(projectPath, finalExtractPath, getProgressInfo().resolve("Extract archive"));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
                     }
 
-                    @Override
-                    public String getTaskLabel() {
-                        return "Extract RO-Crate";
+                    Path projectFile = finalExtractPath.resolve("project.jip");
+                    if (!Files.isRegularFile(projectFile)) {
+                        SwingUtilities.invokeLater(() -> {
+                            JOptionPane.showMessageDialog(window,
+                                    "Unable to find project.jip file inside the extracted files!",
+                                    "Import JIPipe Workflow RO-Crate",
+                                    JOptionPane.ERROR_MESSAGE);
+                        });
+                    } else {
+                        SwingUtilities.invokeLater(() -> {
+                            openProject(projectFile, false);
+                        });
                     }
-                };
+                }
 
-                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
-            }
+                @Override
+                public String getTaskLabel() {
+                    return "Extract RO-Crate";
+                }
+            };
+
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
         }
     }
 

@@ -83,6 +83,7 @@ import org.hkijena.jipipe.plugins.parameters.tools.FileChooserTesterJIPipeDeskto
 import org.hkijena.jipipe.plugins.parameters.tools.ParameterTesterJIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.plugins.parameters.ui.api.*;
 import org.hkijena.jipipe.plugins.parameters.ui.library.*;
+import org.hkijena.jipipe.utils.PathForm;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.SizeFitMode;
@@ -816,6 +817,10 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 PathType.class,
                 "Path type",
                 "Type of filesystem path.");
+        registerEnumParameterType("path-form",
+                PathForm.class,
+                "Path form",
+                "Whether a path is absolute, relative, or can by anything.");
     }
 
     private void registerPrimitives() {

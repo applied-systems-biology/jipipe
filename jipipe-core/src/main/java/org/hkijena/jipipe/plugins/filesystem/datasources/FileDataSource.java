@@ -57,11 +57,6 @@ public class FileDataSource extends AbstractPathDataSource {
         this.fileName = other.fileName;
     }
 
-    @Override
-    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(new FileData(fileName), JIPipeDataContext.create(this), progressInfo);
-    }
-
     /**
      * @return The file name
      */

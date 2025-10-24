@@ -69,13 +69,6 @@ public class FileListDataSource extends AbstractPathDataSource {
         this.files.addAll(other.files);
     }
 
-    @Override
-    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        for (Path path : files) {
-            getFirstOutputSlot().addData(new FileData(path), JIPipeDataContext.create(this), progressInfo);
-        }
-    }
-
     /**
      * @return The file names
      */
