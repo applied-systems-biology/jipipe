@@ -108,6 +108,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     public static final String DOCK_NODE_CONTEXT_RESULTS = "_RESULTS";
     public static final String DOCK_QUICK_GUIDE = "QUICK_GUIDE";
 
+
     /**
      * Creates a project graph compartment editor
      *

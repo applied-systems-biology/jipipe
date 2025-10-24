@@ -37,6 +37,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultN
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.DefaultNodeUIActionRequestedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventListener;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -80,6 +81,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public static final String DOCK_MAP = "MAP";
     public static final String DOCK_ERRORS = "ERRORS";
     public static final String DOCK_CALCULATOR = "CALCULATOR";
+    public static final String DOCK_CONTEXT_PANEL = "CONTEXT_PANEL";
 
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
@@ -111,6 +113,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
     private JIPipeToggleableGraphEditorTool currentTool;
     private int contextToolbarInsertLocation;
+    private final JIPipeDesktopGraphEditorContextPanel contextPanel = new JIPipeDesktopGraphEditorContextPanel(this);
 
     /**
      * @param workbenchUI    the workbench
@@ -226,6 +229,15 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 }
             }
         });
+        dockPanel.addDockPanel(DOCK_CONTEXT_PANEL,
+                "Tasks",
+                JIPipe.RESOURCES.getIcon24("actions/tools-wizard.png"),
+                JIPipeDesktopDockPanel.PanelLocation.TopRight,
+                false,
+                -100,
+                contextPanel);
+        dockPanel.setFallbackRight(DOCK_CONTEXT_PANEL);
+        dockPanel.setFallbackLeft(DOCK_CONTEXT_PANEL);
 
         add(dockPanel, BorderLayout.CENTER);
 
@@ -787,10 +799,12 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @param ui the algorithm
      */
     public void scrollToAlgorithm(JIPipeDesktopGraphNodeUI ui) {
-        if (scrollPane == null)
+        if (scrollPane == null) {
             return;
-        if (ui == null)
+        }
+        if (ui == null) {
             return;
+        }
         int minViewX = scrollPane.getHorizontalScrollBar().getValue();
         int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
         int minViewY = scrollPane.getVerticalScrollBar().getValue();
@@ -996,6 +1010,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
      * @param mouseEvent the mouse event
      */
     public abstract void onCanvasEmptyDoubleClick(MouseEvent mouseEvent);
+
+    public JIPipeDesktopGraphEditorContextPanel getContextPanel() {
+        return contextPanel;
+    }
 
 
 //    @Override

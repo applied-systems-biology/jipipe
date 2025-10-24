@@ -64,6 +64,8 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
     private boolean alwaysShowLeftPanel = false;
     private boolean alwaysShowRightPanel = false;
     private JComponent mainComponent;
+    private String fallbackRight;
+    private String fallbackLeft;
 
     public JIPipeDesktopDockPanel() {
         super(new BorderLayout());
@@ -323,6 +325,19 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
                     rightContent.add(panel.getComponent());
                     break;
                 }
+            }
+        }
+
+        if(rightContent.isEmpty() && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
+            Panel panel = getPanels().get(fallbackRight);
+            if(panel.location ==PanelLocation.TopRight || panel.location ==PanelLocation.BottomRight) {
+                rightContent.add(panel.getComponent());
+            }
+        }
+        if(leftContent.isEmpty() && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
+            Panel panel = getPanels().get(fallbackLeft);
+            if(panel.location ==PanelLocation.TopLeft || panel.location ==PanelLocation.BottomLeft) {
+                rightContent.add(panel.getComponent());
             }
         }
 
@@ -884,6 +899,32 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     public void setAlwaysShowRightPanel(boolean alwaysShowRightPanel) {
         this.alwaysShowRightPanel = alwaysShowRightPanel;
+        updateAll();
+    }
+
+    /**
+     * ID shown if empty space is left when alwaysShowRightPanel is true
+     * @param fallbackRight the right fallback panel
+     */
+    public void setFallbackRight(String fallbackRight) {
+        this.fallbackRight = fallbackRight;
+        updateAll();
+    }
+
+    public String getFallbackRight() {
+        return fallbackRight;
+    }
+
+    public String getFallbackLeft() {
+        return fallbackLeft;
+    }
+
+    /**
+     * ID shown if empty space is left when alwaysShowLeftPanel is true
+     * @param fallbackLeft the left fallback panel
+     */
+    public void setFallbackLeft(String fallbackLeft) {
+        this.fallbackLeft = fallbackLeft;
         updateAll();
     }
 
