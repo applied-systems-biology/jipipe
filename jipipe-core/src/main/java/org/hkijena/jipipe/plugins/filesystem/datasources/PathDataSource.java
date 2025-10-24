@@ -68,11 +68,6 @@ public class PathDataSource extends AbstractPathDataSource {
         this.path = other.path;
     }
 
-    @Override
-    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(new PathData(path), JIPipeDataContext.create(this), progressInfo);
-    }
-
     /**
      * @return The file name
      */

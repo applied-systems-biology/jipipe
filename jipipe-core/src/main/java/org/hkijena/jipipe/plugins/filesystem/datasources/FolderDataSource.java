@@ -70,11 +70,6 @@ public class FolderDataSource extends AbstractPathDataSource {
         this.folderPath = other.folderPath;
     }
 
-    @Override
-    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(new FolderData(folderPath), JIPipeDataContext.create(this), progressInfo);
-    }
-
     /**
      * @return The folder path
      */

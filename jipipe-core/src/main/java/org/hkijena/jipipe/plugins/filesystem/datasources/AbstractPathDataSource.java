@@ -13,12 +13,13 @@
 
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
-import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.PathForm;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
+import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
@@ -26,10 +27,9 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
-import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -42,6 +42,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     private Path currentWorkingDirectory;
     private boolean autoRelativizePaths = true;
     private boolean autoUpdateOutputSlotLabel = true;
+    private PathForm outputPathForm = PathForm.Absolute;
 
     public AbstractPathDataSource(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         super(info, slotConfiguration);
@@ -58,6 +59,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         this.currentWorkingDirectory = other.currentWorkingDirectory;
         this.autoRelativizePaths = other.autoRelativizePaths;
         this.autoUpdateOutputSlotLabel = other.autoUpdateOutputSlotLabel;
+        this.outputPathForm = other.outputPathForm;
     }
 
     private void initializeDefaults() {
@@ -69,7 +71,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     public void updateOutputSlotIfEnabled() {
         if (autoUpdateOutputSlotLabel) {
-            List<Path> paths = getPathsAs(PathLinkageType.Any);
+            List<Path> paths = getPathsAs(PathForm.Any);
             String name = paths.size() == 1 ? paths.getFirst().getFileName().toString() : "";
             if (!Objects.equals(getFirstOutputSlot().getInfo().getCustomName(), name)) {
                 getFirstOutputSlot().getInfo().setCustomName(name);
@@ -84,8 +86,8 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     @Override
     public void archiveReportValidation(JIPipeValidationReportContext context, JIPipeValidationReport report, Path originalBaseDirectory) {
-        List<Path> absoluteFileNames = getPathsAs(PathLinkageType.Absolute);
-        List<Path> paths = getPathsAs(PathLinkageType.Any);
+        List<Path> absoluteFileNames = getPathsAs(PathForm.Absolute);
+        List<Path> paths = getPathsAs(PathForm.Any);
 
         for (int i = 0; i < absoluteFileNames.size(); i++) {
             Path source = absoluteFileNames.get(i);
@@ -101,7 +103,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        for (Path path : getPathsAs(PathLinkageType.Absolute)) {
+        for (Path path : getPathsAs(PathForm.Absolute)) {
             if (PathUtils.isNullOrEmpty(path)) {
                 reportContext.warning().title("Input path not set!").explanation("One of the paths is not set.").solution("Please provide a valid input path.").report(report);
             } else if (!Files.exists(path)) {
@@ -147,14 +149,14 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     @SetJIPipeDocumentation(name = "To absolute", description = "Converts the stored paths to absolute paths.")
     @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
     public void convertPathsToAbsolute() {
-        setPaths_(getPathsAs(PathLinkageType.Absolute));
+        setPaths_(getPathsAs(PathForm.Absolute));
         emitParameterUIChangedEvent();
     }
 
     @SetJIPipeDocumentation(name = "To relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
     @RegisterJIPipeParameterCollectionContextAction(icon = "data-types/path.png")
     public void convertPathsToRelative() {
-        setPaths_(getPathsAs(PathLinkageType.Relative));
+        setPaths_(getPathsAs(PathForm.Relative));
         emitParameterUIChangedEvent();
     }
 
@@ -181,15 +183,26 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         updateOutputSlotIfEnabled();
     }
 
+    @SetJIPipeDocumentation(name = "Output path form", description = "Whether the generated paths are absolute, relative, or a mixture (kep as-is)")
+    @JIPipeParameter("output-path-form")
+    public PathForm getOutputPathForm() {
+        return outputPathForm;
+    }
+
+    @JIPipeParameter("output-path-form")
+    public void setOutputPathForm(PathForm outputPathForm) {
+        this.outputPathForm = outputPathForm;
+    }
+
     @Override
     public Set<Path> archiveDiscoverExternalPaths(JIPipeProgressInfo progressInfo) {
-        return new HashSet<>(getPathsAs(PathLinkageType.Absolute));
+        return new HashSet<>(getPathsAs(PathForm.Absolute));
     }
 
     @Override
     public void archiveUpdateExternalPaths(Map<Path, Path> updateMap, JIPipeProgressInfo progressInfo) {
         List<Path> updatedPaths = new  ArrayList<>();
-        for (Path src : getPathsAs(PathLinkageType.Absolute)) {
+        for (Path src : getPathsAs(PathForm.Absolute)) {
             Path dst = updateMap.get(src);
             if(dst != null) {
                 updatedPaths.add(dst);
@@ -201,13 +214,25 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         setPaths_(updatedPaths);
     }
 
-    public List<Path> getPathsAs(PathLinkageType type) {
-        if(type == PathLinkageType.Relative) {
+    public Path getCurrentWorkingOrProjectDirectory() {
+        if(!PathUtils.isNullOrEmpty(currentWorkingDirectory) && Files.isDirectory(currentWorkingDirectory)) {
+            return currentWorkingDirectory;
+        }
+        else {
+            return getProjectDirectory();
+        }
+    }
+
+    public List<Path> getPathsAs(PathForm type) {
+
+        Path baseDir = getCurrentWorkingOrProjectDirectory();
+
+        if(type == PathForm.Relative) {
             List<Path> result = new ArrayList<>();
             for (Path path : getPaths_()) {
                 if(path.isAbsolute()) {
-                    if(!PathUtils.isNullOrEmpty(currentWorkingDirectory) && path.startsWith(currentWorkingDirectory)) {
-                        result.add(currentWorkingDirectory.relativize(path).normalize());
+                    if(!PathUtils.isNullOrEmpty(baseDir) && path.startsWith(baseDir)) {
+                        result.add(baseDir.relativize(path).normalize());
                     }
                     else {
                         // Use user home
@@ -220,12 +245,12 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
             }
             return result;
         }
-        else if(type == PathLinkageType.Absolute) {
+        else if(type == PathForm.Absolute) {
             List<Path> result = new ArrayList<>();
             for (Path path : getPaths_()) {
                 if(!path.isAbsolute()) {
-                    if(!PathUtils.isNullOrEmpty(currentWorkingDirectory)) {
-                        result.add(currentWorkingDirectory.resolve(path).normalize());
+                    if(!PathUtils.isNullOrEmpty(baseDir)) {
+                        result.add(baseDir.resolve(path).normalize());
                     }
                     else {
                         // Use user home
@@ -243,6 +268,13 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         }
     }
 
+    @Override
+    public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        for (Path path : getPathsAs(outputPathForm)) {
+            getFirstOutputSlot().addData(new PathData(path), JIPipeDataContext.create(this), progressInfo);
+        }
+    }
+
     /**
      * Internal method that gets the list of paths that are contained within this node's parameters
      * @return the list of paths
@@ -255,9 +287,4 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
      */
     protected abstract void setPaths_(List<Path> paths);
 
-    public enum PathLinkageType {
-        Any,
-        Relative,
-        Absolute
-    }
 }
