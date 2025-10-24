@@ -134,6 +134,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             selectDefaultTool();
         });
 
+        // Always show right panel
+        dockPanel.setAlwaysShowRightPanel(true);
+
         restoreDockStateFromSettings();
 
         dockPanel.getPanelSideVisibilityChangedEventEmitter().subscribe(this);

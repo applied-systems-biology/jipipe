@@ -929,12 +929,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             this.alwaysShowLeftPanel = alwaysShowLeftPanel;
         }
 
-        @JsonGetter("always-show-right-panel")
+        @JsonGetter("always-show-right-panel-v2")
         public boolean isAlwaysShowRightPanel() {
             return alwaysShowRightPanel;
         }
 
-        @JsonSetter("always-show-right-panel")
+        @JsonSetter("always-show-right-panel-v2")
         public void setAlwaysShowRightPanel(boolean alwaysShowRightPanel) {
             this.alwaysShowRightPanel = alwaysShowRightPanel;
         }
