@@ -49,7 +49,8 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     private boolean layoutAfterConnect = false;
     private int autoHideEdgeDistanceThreshold = 512;
     private boolean autoMuteEdgesEnabled = true;
-    private boolean drawLabelsOnHover = true;
+    private boolean highlightIOOnHover = true;
+    private boolean highlightIOOnEdgeSelect = true;
     private boolean autoMuteBySelection = true;
     private double autoHideEdgeOverlapThreshold = 0.5;
 
@@ -100,15 +101,26 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         this.toolInfoDistance = toolInfoDistance;
     }
 
-    @SetJIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")
-    @JIPipeParameter("draw-labels-on-hover")
-    public boolean isDrawLabelsOnHover() {
-        return drawLabelsOnHover;
+    @SetJIPipeDocumentation(name = "Draw IO annotations on hovering nodes", description = "If enabled, display a highlight for node inputs if it is hovered by the mouse cursor")
+    @JIPipeParameter("highlight-io-on-hover")
+    public boolean isHighlightIOOnHover() {
+        return highlightIOOnHover;
     }
 
-    @JIPipeParameter("draw-labels-on-hover")
-    public void setDrawLabelsOnHover(boolean drawLabelsOnHover) {
-        this.drawLabelsOnHover = drawLabelsOnHover;
+    @JIPipeParameter("highlight-io-on-hover")
+    public void setHighlightIOOnHover(boolean highlightIOOnHover) {
+        this.highlightIOOnHover = highlightIOOnHover;
+    }
+
+    @SetJIPipeDocumentation(name = "Draw IO annotations on selecting edges", description = "If enabled, highlight the input and output slots while edges are selected")
+    @JIPipeParameter("highlight-io-on-edge-select")
+    public boolean isHighlightIOOnEdgeSelect() {
+        return highlightIOOnEdgeSelect;
+    }
+
+    @JIPipeParameter("highlight-io-on-edge-select")
+    public void setHighlightIOOnEdgeSelect(boolean highlightIOOnEdgeSelect) {
+        this.highlightIOOnEdgeSelect = highlightIOOnEdgeSelect;
     }
 
     @SetJIPipeDocumentation(name = "Auto-mute edges", description = "Enabled/disables the automated muting of edges (drawing them as dashed lines)")

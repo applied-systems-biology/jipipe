@@ -14,12 +14,12 @@ import java.awt.*;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-public class JIPipeDesktopGraphCanvasIOOverlay implements JIPipeDesktopGraphCanvasOverlay {
+public class JIPipeDesktopGraphCanvasSlotIOOverlay implements JIPipeDesktopGraphCanvasOverlay {
 
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeGraphEditorUIApplicationSettings settings;
 
-    public JIPipeDesktopGraphCanvasIOOverlay(JIPipeDesktopGraphCanvasUI canvasUI) {
+    public JIPipeDesktopGraphCanvasSlotIOOverlay(JIPipeDesktopGraphCanvasUI canvasUI) {
         this.canvasUI = canvasUI;
         this.settings = canvasUI.getSettings();
     }
@@ -31,7 +31,7 @@ public class JIPipeDesktopGraphCanvasIOOverlay implements JIPipeDesktopGraphCanv
 
     @Override
     public void paint(Graphics2D g) {
-        if (!settings.isDrawLabelsOnHover()) {
+        if (!settings.isHighlightIOOnHover()) {
             return;
         }
 
@@ -40,7 +40,7 @@ public class JIPipeDesktopGraphCanvasIOOverlay implements JIPipeDesktopGraphCanv
         Multimap<JIPipeDataSlot, JIPipeDesktopGraphEdgeUI> highlightedEdges = HashMultimap.create();
 
         // Find edges of interest
-        if (settings.isDrawLabelsOnHover() && !canvasUI.getDragManagerMove().isCurrentlyDraggingNode() && !canvasUI.getDragManagerConnect().isCurrentlyDraggingConnection() && canvasUI.getLastMousePosition() != null) {
+        if (settings.isHighlightIOOnHover() && !canvasUI.getDragManagerMove().isCurrentlyDraggingNode() && !canvasUI.getDragManagerConnect().isCurrentlyDraggingConnection() && canvasUI.getLastMousePosition() != null) {
             if (canvasUI.getCurrentlyMouseEnteredNode() != null && canvasUI.getCurrentlyMouseEnteredNodeActiveArea() instanceof JIPipeDesktopGraphNodeUISlotActiveArea slot) {
                 for (JIPipeDesktopGraphEdgeUI displayedSlotEdge : canvasUI.getEdgeUIs().values()) {
                     if (slot.getSlot() == displayedSlotEdge.getTarget() || slot.getSlot() == displayedSlotEdge.getSource()) {

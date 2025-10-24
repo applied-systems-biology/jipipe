@@ -203,7 +203,8 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         overlays.add(new JIPipeDesktopGraphCanvasConnectionHighlightsOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasObjectSelectionOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasTunnelIOOverlay(this));
-        overlays.add(new JIPipeDesktopGraphCanvasIOOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasEdgeIOOverlay(this));
+        overlays.add(new JIPipeDesktopGraphCanvasSlotIOOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasCursorOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasResizeHandlesOverlay(this));
         overlays.add(new JIPipeDesktopGraphCanvasSelectionBoxOverlay(this));
@@ -822,7 +823,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         if (toolManager.getCurrentTool() != null && settings.isShowToolInfo() && !(toolManager.getCurrentTool() instanceof JIPipeDefaultGraphEditorTool)) {
             changed = true;
         }
-        if (changed && settings.isDrawLabelsOnHover()) {
+        if (changed && settings.isHighlightIOOnHover()) {
             repaintLowLag();
         }
     }

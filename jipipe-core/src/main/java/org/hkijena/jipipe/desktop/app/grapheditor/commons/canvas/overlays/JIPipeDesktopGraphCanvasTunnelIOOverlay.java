@@ -1,13 +1,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnel;
@@ -17,8 +12,6 @@ import org.hkijena.jipipe.utils.ThemeUtils;
 
 import java.awt.*;
 import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGraphCanvasOverlay {
@@ -38,7 +31,7 @@ public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGra
 
     @Override
     public void paint(Graphics2D g) {
-        if (!settings.isDrawLabelsOnHover()) {
+        if (!settings.isHighlightIOOnHover()) {
             return;
         }
 
@@ -46,7 +39,7 @@ public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGra
         Set<JIPipeDataFlowTunnel> fullyLinkedTunnelNodes = new HashSet<>();
 
         // Find tunnel nodes that are hovered/selected
-        if (settings.isDrawLabelsOnHover() && !canvasUI.getDragManagerMove().isCurrentlyDraggingNode() && !canvasUI.getDragManagerConnect().isCurrentlyDraggingConnection() && canvasUI.getLastMousePosition() != null) {
+        if (settings.isHighlightIOOnHover() && !canvasUI.getDragManagerMove().isCurrentlyDraggingNode() && !canvasUI.getDragManagerConnect().isCurrentlyDraggingConnection() && canvasUI.getLastMousePosition() != null) {
             if (canvasUI.getCurrentlyMouseEnteredNode() != null && canvasUI.getCurrentlyMouseEnteredNode().getNode() instanceof JIPipeDataFlowTunnel tunnel) {
                hoveredTunnelNodes.add(tunnel);
             }
