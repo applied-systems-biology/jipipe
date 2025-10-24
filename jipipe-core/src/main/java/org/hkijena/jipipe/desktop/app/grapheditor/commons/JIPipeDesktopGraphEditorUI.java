@@ -230,7 +230,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             }
         });
         dockPanel.addDockPanel(DOCK_CONTEXT_PANEL,
-                "Tasks",
+                "Tools",
                 JIPipe.RESOURCES.getIcon24("actions/tools-wizard.png"),
                 JIPipeDesktopDockPanel.PanelLocation.TopRight,
                 false,
