@@ -638,6 +638,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     }
 
     public void selectTool(JIPipeDesktopGraphEditorTool tool) {
+        if(tool == null) {
+            tool = getDefaultTool();
+        }
         if (tool instanceof JIPipeDesktopToggleableGraphEditorTool toggleableTool) {
 
             if (tool == currentTool) {

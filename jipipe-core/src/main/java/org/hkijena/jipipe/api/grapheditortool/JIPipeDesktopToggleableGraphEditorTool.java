@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
-import javax.swing.*;
 import java.awt.*;
 
 public interface JIPipeDesktopToggleableGraphEditorTool extends JIPipeDesktopGraphEditorTool {
@@ -86,7 +86,8 @@ public interface JIPipeDesktopToggleableGraphEditorTool extends JIPipeDesktopGra
 
     /**
      * A panel that is shown within the 'Tools' panel
+     *
      * @return the properties panel
      */
-    JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI);
+    JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI);
 }

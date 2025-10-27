@@ -13,10 +13,11 @@
 
 package org.hkijena.jipipe.api.grapheditortool.tools;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolPanel;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
-public class DefaultGraphEditorToolPanel extends JIPipeDesktopToggleableGraphEditorToolPanel<DefaultGraphEditorTool> {
+public class DefaultGraphEditorToolPanel extends JIPipeDesktopFormGraphEditorToolPanel<DefaultGraphEditorTool> {
     public DefaultGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, DefaultGraphEditorTool tool) {
         super(graphEditorUI, tool);
     }

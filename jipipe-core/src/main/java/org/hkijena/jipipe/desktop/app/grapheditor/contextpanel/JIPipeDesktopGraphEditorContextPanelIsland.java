@@ -11,42 +11,44 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool;
+package org.hkijena.jipipe.desktop.app.grapheditor.contextpanel;
 
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeDesktopToggleableGraphEditorToolPanel<T extends JIPipeDesktopToggleableGraphEditorTool> extends JIPipeDesktopWorkbenchPanel {
+public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
-    private final T tool;
     private final JPanel contentPanel = new JPanel(new BorderLayout());
 
-    public JIPipeDesktopToggleableGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, T tool) {
+    public JIPipeDesktopGraphEditorContextPanelIsland(JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getDesktopWorkbench());
         this.graphEditorUI = graphEditorUI;
-        this.tool = tool;
-        initialize();
     }
 
-    private void initialize() {
+    public void initializeContent() {
         setLayout(new BorderLayout(8,8));
         setOpaque(false);
 
-        JLabel titleLabel = new JLabel(tool.getName());
+        JLabel titleLabel = new JLabel(getTitle());
         titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
-        titleLabel.setIcon(tool.getIcon());
+        titleLabel.setIcon(getTitleIcon());
         add(titleLabel, BorderLayout.NORTH);
 
         add(contentPanel, BorderLayout.CENTER);
     }
 
-    public T getTool() {
-        return tool;
+    public void postInitializeContent() {
+        UIUtils.makeNonOpaque(getContentPanel(), true);
     }
+
+    protected abstract Icon getTitleIcon();
+
+    protected abstract String getTitle();
 
     public JPanel getContentPanel() {
         return contentPanel;

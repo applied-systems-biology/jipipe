@@ -13,11 +13,22 @@
 
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolPanel;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
-public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopToggleableGraphEditorToolPanel<TextBoxAnnotationGraphNodeTool> {
+public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxAnnotationGraphNodeTool> {
     public TextBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
+    }
+
+    @Override
+    public void initializeContent() {
+        super.initializeContent();
+        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
+            getGraphEditorUI().selectTool(null);
+        }));
     }
 }

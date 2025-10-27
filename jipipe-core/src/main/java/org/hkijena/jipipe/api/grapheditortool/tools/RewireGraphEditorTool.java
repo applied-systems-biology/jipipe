@@ -26,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.utils.PointRange;
 
 import javax.swing.*;
@@ -104,7 +105,7 @@ public class RewireGraphEditorTool implements JIPipeDesktopToggleableGraphEditor
     }
 
     @Override
-    public JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
         return new RewireGraphEditorToolPanel(graphEditorUI, this);
     }
 

@@ -11,24 +11,29 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool.tools;
+package org.hkijena.jipipe.api.grapheditortool;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 
-public class RewireGraphEditorToolPanel extends JIPipeDesktopFormGraphEditorToolPanel<RewireGraphEditorTool> {
-    public RewireGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, RewireGraphEditorTool tool) {
+import java.awt.*;
+
+public class JIPipeDesktopFormGraphEditorToolPanel<T extends JIPipeDesktopToggleableGraphEditorTool> extends JIPipeDesktopGraphEditorToolPanel<T> {
+
+    private final JIPipeDesktopFormPanel formPanel;
+
+    public JIPipeDesktopFormGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, T tool) {
         super(graphEditorUI, tool);
+        this.formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
     }
 
     @Override
     public void initializeContent() {
         super.initializeContent();
-        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
-            getGraphEditorUI().selectTool(null);
-        }));
+        getContentPanel().add(formPanel, BorderLayout.CENTER);
+    }
+
+    public JIPipeDesktopFormPanel getFormPanel() {
+        return formPanel;
     }
 }

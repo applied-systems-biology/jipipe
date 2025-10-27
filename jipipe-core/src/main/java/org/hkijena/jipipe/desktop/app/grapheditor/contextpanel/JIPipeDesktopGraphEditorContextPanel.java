@@ -7,6 +7,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.awt.*;
 
 public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbenchPanel {
@@ -38,6 +39,17 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
         if(currentTool == null) {
             currentTool = new DefaultGraphEditorTool();
         }
-        formPanel.addWideToForm(UIUtils.wrapInBackgroundIslandPanelIfNeeded(currentTool.createPropertiesPanel(graphEditorUI)));
+        addIsland( currentTool.createPropertiesPanel(graphEditorUI));
+
+        // Add selection panel
+        if(!graphEditorUI.getSelectionManager().getSelection().isEmpty()) {
+            addIsland(new SelectionPanel(graphEditorUI));
+        }
+    }
+
+    private void addIsland(JIPipeDesktopGraphEditorContextPanelIsland island) {
+        island.initializeContent();
+        island.postInitializeContent();
+        formPanel.addWideToForm(UIUtils.wrapInBackgroundIslandPanelIfNeeded(island));
     }
 }

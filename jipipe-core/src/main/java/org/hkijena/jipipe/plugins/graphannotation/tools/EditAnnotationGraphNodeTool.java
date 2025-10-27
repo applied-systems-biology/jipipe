@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
@@ -23,7 +24,7 @@ public class EditAnnotationGraphNodeTool implements JIPipeDesktopToggleableGraph
     }
 
     @Override
-    public JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
         return new EditAnnotationGraphNodeToolProperties(graphEditorUI, this);
     }
 
