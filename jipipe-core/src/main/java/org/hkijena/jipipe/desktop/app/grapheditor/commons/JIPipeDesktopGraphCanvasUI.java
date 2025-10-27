@@ -22,8 +22,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
@@ -820,7 +820,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 changed = true;
             }
         }
-        if (toolManager.getCurrentTool() != null && settings.isShowToolInfo() && !(toolManager.getCurrentTool() instanceof JIPipeDefaultGraphEditorTool)) {
+        if (toolManager.getCurrentTool() != null && settings.isShowToolInfo() && !(toolManager.getCurrentTool() instanceof DefaultGraphEditorTool)) {
             changed = true;
         }
         if (changed && settings.isHighlightIOOnHover()) {
@@ -1108,11 +1108,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
     }
 
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getToolLayerMask() {
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getToolLayerMask() {
         if (toolManager.getCurrentTool() != null) {
             return toolManager.getCurrentTool().getNodeLayerMask();
         } else {
-            return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+            return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
         }
     }
 

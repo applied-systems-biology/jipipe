@@ -7,7 +7,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAn
  * Used by the {@link org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI} to filter out events
  * sent to interactable objects
  */
-public enum JIPipeToggleableGraphEditorToolNodeLayerMask {
+public enum JIPipeDesktopToggleableGraphEditorToolNodeLayerMask {
     WorkflowOnly,
     AnnotationsOnly,
     None;

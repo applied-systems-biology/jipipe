@@ -15,8 +15,8 @@ package org.hkijena.jipipe.api.nodes.annotation;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -28,7 +28,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
+public abstract class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeDesktopToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
     private final Class<T> nodeClass;
     private final JIPipeAnnotationGraphNode nodeInstance;
     private JIPipeDesktopGraphEditorUI graphEditorUI;
@@ -92,8 +92,8 @@ public class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> 
     }
 
     @Override
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
     }
 
     @Override

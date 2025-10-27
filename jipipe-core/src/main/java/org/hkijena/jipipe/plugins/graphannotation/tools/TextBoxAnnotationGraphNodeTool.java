@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -44,5 +45,10 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
     @Override
     public int getPriority() {
         return -5000;
+    }
+
+    @Override
+    public JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new TextBoxAnnotationGraphNodeToolProperties(graphEditorUI, this);
     }
 }

@@ -11,16 +11,18 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool;
+package org.hkijena.jipipe.api.grapheditortool.tools;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditorTool {
+public class DefaultGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
 
     private JIPipeDesktopGraphEditorUI graphEditorUI;
 
@@ -60,8 +62,13 @@ public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditor
     }
 
     @Override
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
+    public JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new DefaultGraphEditorToolPanel(graphEditorUI, this);
     }
 
     @Override

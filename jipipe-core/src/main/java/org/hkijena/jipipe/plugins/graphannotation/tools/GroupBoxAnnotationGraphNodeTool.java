@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.GroupBoxAnnotationGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -46,5 +47,10 @@ public class GroupBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     @Override
     public int getPriority() {
         return -4900;
+    }
+
+    @Override
+    public JComponent createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new GroupBoxAnnotationGraphNodeToolProperties(graphEditorUI, this);
     }
 }

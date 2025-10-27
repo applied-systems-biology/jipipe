@@ -15,14 +15,20 @@ public class JIPipeDesktopIslandPanel extends JPanel {
 
     private final int cornerRadius;
     private final JIPipeDesktopModernThemeStyle style;
+    private final Color panelColor;
 
     public JIPipeDesktopIslandPanel(JComponent content) {
+        this(content, ThemeUtils.getCurrentStyle().getWindowBackground(), ThemeUtils.getCurrentStyle().getPanelBackground());
+    }
+
+    public JIPipeDesktopIslandPanel(JComponent content, Color backgroundColor, Color panelColor) {
+        this.panelColor = panelColor;
         this.style = ThemeUtils.getCurrentStyle();
         this.cornerRadius = style.getIslandsCornerRadius();
         setLayout(new BorderLayout());
         setOpaque(true);
         setBorder(UIUtils.createEmptyBorder(5));
-        setBackground(style.getWindowBackground());
+        setBackground(backgroundColor);
         add(content, BorderLayout.CENTER);
     }
 
@@ -34,7 +40,7 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         int arc = cornerRadius;
-        g2.setColor(style.getPanelBackground());
+        g2.setColor(panelColor);
         g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 
         if(style.isIslandsDrawBorder()) {

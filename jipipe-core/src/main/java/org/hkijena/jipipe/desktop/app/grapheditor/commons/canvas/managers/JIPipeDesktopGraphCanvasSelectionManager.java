@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import com.google.common.collect.ImmutableSet;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
@@ -222,14 +222,14 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         }
     }
 
-    public void enforceToolMasking(JIPipeToggleableGraphEditorTool currentTool) {
-        JIPipeToggleableGraphEditorToolNodeLayerMask mask;
+    public void enforceToolMasking(JIPipeDesktopToggleableGraphEditorTool currentTool) {
+        JIPipeDesktopToggleableGraphEditorToolNodeLayerMask mask;
         if (currentTool != null) {
             mask = currentTool.getNodeLayerMask();
         } else {
-            mask = JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+            mask = JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
         }
-        if (mask != JIPipeToggleableGraphEditorToolNodeLayerMask.None) {
+        if (mask != JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.None) {
             if (selection.removeIf(ui -> !mask.test(ui))) {
                 updateSelection();
             }

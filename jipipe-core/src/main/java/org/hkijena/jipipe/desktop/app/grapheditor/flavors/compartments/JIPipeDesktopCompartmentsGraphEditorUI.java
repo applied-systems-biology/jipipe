@@ -361,7 +361,9 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     protected void restoreDockStateFromSettings() {
         try {
             JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
-            JIPipeDesktopDockPanel.State state = JsonUtils.readFromString(settings.getCompartmentsEditorDockLayout(), JIPipeDesktopDockPanel.State.class);
+            JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
+            state.setAlwaysShowRightPanel(true);
+            JsonUtils.getObjectMapper().readerForUpdating(state).readValue(settings.getCompartmentsEditorDockLayout());
             getDockPanel().restoreState(state);
         } catch (Throwable ignored) {
         }

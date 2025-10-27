@@ -2399,6 +2399,26 @@ public class UIUtils {
     }
 
     /**
+     * If a modern theme is running, wrap the panel in a {@link org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel}.
+     * Otherwise, return the panel.
+     * Will check if the panel is already an island panel.
+     *
+     * @param panel the panel
+     * @return the wrapped panel
+     */
+    public static JComponent wrapInBackgroundIslandPanelIfNeeded(JComponent panel) {
+        if (ThemeUtils.isUsingModernTheme()) {
+            if (panel instanceof JIPipeDesktopIslandPanel) {
+                return panel;
+            } else {
+                return new JIPipeDesktopIslandPanel(panel, ThemeUtils.getCurrentStyle().getPanelBackground(), ThemeUtils.getCurrentStyle().getWindowBackground());
+            }
+        } else {
+            return panel;
+        }
+    }
+
+    /**
      * Returns the effective UI scale factor currently applied by Swing for the given component's screen.
      * <p>
      * Works with:

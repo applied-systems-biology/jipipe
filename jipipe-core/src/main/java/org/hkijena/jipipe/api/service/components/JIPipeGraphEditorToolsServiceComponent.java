@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 
@@ -22,17 +22,17 @@ import java.util.Collections;
 import java.util.List;
 
 public final class JIPipeGraphEditorToolsServiceComponent extends JIPipeServiceComponent {
-    private final List<Class<? extends JIPipeGraphEditorTool>> registeredTools = new ArrayList<>();
+    private final List<Class<? extends JIPipeDesktopGraphEditorTool>> registeredTools = new ArrayList<>();
 
     public JIPipeGraphEditorToolsServiceComponent(JIPipeService service) {
         super(service);
     }
 
-    public List<Class<? extends JIPipeGraphEditorTool>> getRegisteredTools() {
+    public List<Class<? extends JIPipeDesktopGraphEditorTool>> getRegisteredTools() {
         return Collections.unmodifiableList(registeredTools);
     }
 
-    public void register(Class<? extends JIPipeGraphEditorTool> klass) {
+    public void register(Class<? extends JIPipeDesktopGraphEditorTool> klass) {
         registeredTools.add(klass);
     }
 }
