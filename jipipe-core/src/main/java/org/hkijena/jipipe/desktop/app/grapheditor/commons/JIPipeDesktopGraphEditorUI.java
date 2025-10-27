@@ -678,7 +678,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         rebuildContextPanel();
     }
 
-    private void rebuildContextPanel() {
+    public void rebuildContextPanel() {
         contextPanel.rebuild();
     }
 

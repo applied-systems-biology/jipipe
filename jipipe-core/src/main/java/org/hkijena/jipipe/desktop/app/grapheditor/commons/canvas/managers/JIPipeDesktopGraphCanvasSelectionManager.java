@@ -25,10 +25,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public class JIPipeDesktopGraphCanvasSelectionManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -243,6 +240,13 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         } else {
 //            System.out.println("added " + ui);
             selection.add(ui);
+        }
+        updateSelection();
+    }
+
+    public void removeFromSelection(Collection<JIPipeDesktopGraphInteractiveObjectUI> uiList) {
+        for (JIPipeDesktopGraphInteractiveObjectUI ui : uiList) {
+            removeFromSelection(ui, false);
         }
         updateSelection();
     }

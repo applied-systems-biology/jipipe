@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
+import javax.swing.*;
 import java.util.Set;
 
 /**
@@ -34,4 +35,22 @@ public interface JIPipeDesktopGraphInteractiveObjectUI {
      * @param command the command
      */
     void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command);
+
+    /**
+     * Display name used for object manager
+     * @return the display name
+     */
+    String getDisplayName();
+
+    /**
+     * Description for object manager
+     * @return the description
+     */
+    String getDescription();
+
+    /**
+     * Icon for object manager
+     * @return the icon
+     */
+    Icon getIcon();
 }

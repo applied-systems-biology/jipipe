@@ -32,6 +32,8 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
     }
 
     public void rebuild() {
+        JScrollPane scrollPane = formPanel.getScrollPane();
+        int oldValue = scrollPane.getVerticalScrollBar().getValue();
         formPanel.clear();
 
         // Add tool settings panel
@@ -45,6 +47,10 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
         if(!graphEditorUI.getSelectionManager().getSelection().isEmpty()) {
             addIsland(new SelectionPanel(graphEditorUI));
         }
+
+        SwingUtilities.invokeLater(() -> {
+           scrollPane.getVerticalScrollBar().setValue(oldValue);
+        });
     }
 
     private void addIsland(JIPipeDesktopGraphEditorContextPanelIsland island) {

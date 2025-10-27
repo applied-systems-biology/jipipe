@@ -1598,6 +1598,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         }
     }
 
+    @Override
+    public String getDisplayName() {
+        return node.getDisplayName();
+    }
+
+    @Override
+    public String getDescription() {
+        return node.getInfo().getDescription().toPlainText();
+    }
+
+    @Override
+    public Icon getIcon() {
+        return node.getInfo().getIcon();
+    }
+
     public JIPipeDesktopGraphNodeUISlotContextMenu getSlotContextMenu() {
         return slotContextMenu;
     }

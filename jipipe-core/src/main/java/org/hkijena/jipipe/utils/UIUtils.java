@@ -2231,13 +2231,13 @@ public class UIUtils {
         return String.join("+", keyNames);
     }
 
-    public static JButton createStandardButton(String text, ImageIcon icon, Runnable action) {
+    public static JButton createStandardButton(String text, Icon icon, Runnable action) {
         JButton button = createButton(text, icon, action);
         setStandardButtonBorder(button);
         return button;
     }
 
-    public static JButton createLeftAlignedButton(String text, ImageIcon icon, Runnable action) {
+    public static JButton createLeftAlignedButton(String text, Icon icon, Runnable action) {
         JButton button = createButton(text, icon, action);
         button.setHorizontalAlignment(SwingConstants.LEFT);
         return button;

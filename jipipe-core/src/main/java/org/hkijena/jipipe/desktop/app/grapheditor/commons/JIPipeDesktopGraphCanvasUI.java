@@ -62,6 +62,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
+import org.jetbrains.annotations.NotNull;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 import org.scijava.Disposable;
 
@@ -920,6 +921,12 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
      */
     public void openContextMenu(Point point) {
         setGraphEditCursor(new Point(point.x, point.y));
+        JPopupMenu menu = createContextMenu();
+
+        menu.show(this, point.x, point.y);
+    }
+
+    public @NotNull JPopupMenu createContextMenu() {
         JPopupMenu menu = new JPopupMenu();
         boolean scheduleSeparator = false;
         for (GraphInteractiveObjectUIContextAction action : contextActions) {
@@ -943,8 +950,9 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 if (action.getKeyboardShortcut() != null) {
                     item.setAccelerator(action.getKeyboardShortcut());
                 }
-            } else
+            } else {
                 item.setEnabled(false);
+            }
             menu.add(item);
         }
 
@@ -997,8 +1005,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                 menu.add(partitionMenu);
             }
         }
-
-        menu.show(this, point.x, point.y);
+        return menu;
     }
 
     private void partitionSelectedAlgorithms(JIPipeRuntimePartition runtimePartition) {
