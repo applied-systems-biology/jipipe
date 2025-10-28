@@ -659,6 +659,7 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 try {
                     Object o = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), editorUI.getParameterAccess().getFieldClass());
                     editorUI.getParameterAccess().set(o);
+                    SwingUtilities.invokeLater(this::refreshForm);
                     desktopWorkbench.sendStatusBarText("Pasted value into parameter '" + editorUI.getParameterAccess().getName() + "'.");
                 } catch (Throwable ex) {
                     ex.printStackTrace();
