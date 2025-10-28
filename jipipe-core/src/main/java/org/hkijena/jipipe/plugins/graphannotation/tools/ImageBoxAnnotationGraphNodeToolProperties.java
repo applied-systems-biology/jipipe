@@ -19,16 +19,8 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxAnnotationGraphNodeTool> {
+public class ImageBoxAnnotationGraphNodeToolProperties extends BaseTextBoxAnnotationGraphNodeToolProperties<ImageBoxAnnotationGraphNodeTool> {
     public ImageBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
-    }
-
-    @Override
-    public void initializeContent() {
-        super.initializeContent();
-        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
-            getGraphEditorUI().selectTool(null);
-        }));
     }
 }

@@ -34,7 +34,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ImageBoxAnnotationGraphNode> {
+public class ImageBoxAnnotationGraphNodeTool extends BaseTextBoxAnnotationGraphNodeTool<ImageBoxAnnotationGraphNode> {
     public ImageBoxAnnotationGraphNodeTool() {
         super(ImageBoxAnnotationGraphNode.class);
     }

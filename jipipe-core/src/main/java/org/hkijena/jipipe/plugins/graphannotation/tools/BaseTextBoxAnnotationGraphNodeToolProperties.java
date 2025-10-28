@@ -15,23 +15,35 @@ package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class EditAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<EditAnnotationGraphNodeTool> {
-    public EditAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, EditAnnotationGraphNodeTool tool) {
+/**
+ * Base properties usable by all tools that create {@link org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode}
+ */
+public class BaseTextBoxAnnotationGraphNodeToolProperties<T extends JIPipeDesktopToggleableGraphEditorTool> extends JIPipeDesktopFormGraphEditorToolPanel<T> {
+    public BaseTextBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, T tool) {
         super(graphEditorUI, tool);
     }
 
     @Override
-    public void initializeContent() {
+    public final void initializeContent() {
         super.initializeContent();
-        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"), () -> {
-            getGraphEditorUI().getSelectionManager().selectAll();
-        }));
+
+        initializeColorPaletteContent();
+        initializeAdditionalContent();
+
         getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
             getGraphEditorUI().selectTool(null);
         }));
+    }
+
+    protected void initializeAdditionalContent() {
+
+    }
+
+    private void initializeColorPaletteContent() {
+
     }
 }

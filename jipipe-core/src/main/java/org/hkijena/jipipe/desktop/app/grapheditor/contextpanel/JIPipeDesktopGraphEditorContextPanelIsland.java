@@ -37,6 +37,7 @@ public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeD
         JLabel titleLabel = new JLabel(getTitle());
         titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         titleLabel.setIcon(getTitleIcon());
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(8,8,12,8));
         add(titleLabel, BorderLayout.NORTH);
 
         add(contentPanel, BorderLayout.CENTER);

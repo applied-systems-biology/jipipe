@@ -13,12 +13,23 @@
 
 package org.hkijena.jipipe.api.grapheditortool.tools;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.utils.UIUtils;
 
 public class DefaultGraphEditorToolPanel extends JIPipeDesktopFormGraphEditorToolPanel<DefaultGraphEditorTool> {
     public DefaultGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, DefaultGraphEditorTool tool) {
         super(graphEditorUI, tool);
+    }
+
+    @Override
+    public void initializeContent() {
+        super.initializeContent();
+
+        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"), () -> {
+            getGraphEditorUI().getSelectionManager().selectAll();
+        }));
     }
 }

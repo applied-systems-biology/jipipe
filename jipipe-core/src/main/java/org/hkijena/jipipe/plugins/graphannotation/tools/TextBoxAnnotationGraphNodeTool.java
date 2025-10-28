@@ -23,7 +23,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<TextBoxAnnotationGraphNode> {
+public class TextBoxAnnotationGraphNodeTool extends BaseTextBoxAnnotationGraphNodeTool<TextBoxAnnotationGraphNode> {
     public TextBoxAnnotationGraphNodeTool() {
         super(TextBoxAnnotationGraphNode.class);
     }

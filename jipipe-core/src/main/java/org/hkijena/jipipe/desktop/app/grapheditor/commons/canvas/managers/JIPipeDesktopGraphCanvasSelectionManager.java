@@ -16,12 +16,15 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -39,7 +42,26 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     }
 
     public void selectAll() {
-        selection.addAll(canvasUI.getNodeUIs().values());
+        JIPipeDesktopToggleableGraphEditorTool currentTool = canvasUI.getToolManager().getCurrentTool();
+        if (currentTool == null) {
+            currentTool = new DefaultGraphEditorTool();
+        }
+        for (var ui : canvasUI.getNodeUIs().values()) {
+            if(currentTool.getNodeLayerMask().test(ui)) {
+                selection.add(ui);
+            }
+        }
+        for (var ui : canvasUI.getEdgeUIs().values()) {
+            if(currentTool.getNodeLayerMask().test(ui)) {
+                selection.add(ui);
+            }
+            for (JIPipeDesktopGraphEdgeControlPointUI ui2 : ui.getControlPoints()) {
+                if(currentTool.getNodeLayerMask().test(ui2)) {
+                    selection.add(ui);
+                }
+            }
+        }
+
         updateSelection();
     }
 

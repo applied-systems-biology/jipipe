@@ -92,7 +92,7 @@ public class SelectionPanel extends JIPipeDesktopGraphEditorContextPanelIsland {
             }));
         }
         formPanel.addToForm(UIUtils.boxHorizontal(
-                UIUtils.createButton("Only", JIPipe.RESOURCES.getIcon16("actions/eye-dropper.png"), () -> {
+                UIUtils.createButton("Only", JIPipe.RESOURCES.getIcon16("actions/edit-select-same-stroke-style.png"), () -> {
                     getGraphEditorUI().getSelectionManager().setSelection(new HashSet<>(uiList));
                 }),
                 UIUtils.createButton("Deselect", JIPipe.RESOURCES.getIcon16("actions/edit-select-none.png"), () -> {
