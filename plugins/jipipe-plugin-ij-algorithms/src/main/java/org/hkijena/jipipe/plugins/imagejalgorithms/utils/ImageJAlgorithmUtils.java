@@ -426,6 +426,9 @@ public class ImageJAlgorithmUtils {
         for (int i = 0; i < roi1List.size(); i++) {
             Roi roi1 = roi1List.get(i);
             for (int j = 0; j < roi2List.size(); j++) {
+                if(progressInfo.isCancelled()) {
+                    return;
+                }
                 Roi roi2 = roi2List.get(j);
                 ++currentItems;
                 if (progressInfo.isCancelled()) {
