@@ -75,9 +75,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             new UpdateCacheShowIntermediateNodeUIContextAction(),
             new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
             GraphInteractiveObjectUIContextAction.SEPARATOR,
-            new RunAndShowResultsNodeUIContextAction(),
-            new RunAndShowIntermediateResultsNodeUIContextAction(),
-            GraphInteractiveObjectUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
     protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
