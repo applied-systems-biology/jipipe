@@ -171,8 +171,9 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Apply comparison
         for (int i = 0; i < first.size(); i++) {
-            if (i % 100 == 0)
+            if (i % 100 == 0) {
                 progressInfo.resolveAndLog("ROI", i, first.size());
+            }
             Roi roi = first.get(i);
             List<Roi> overlaps = new ArrayList<>();
             boolean overlapSuccess = false;
@@ -180,6 +181,10 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 Roi overlap = null;
                 Roi overlappingRoi = null;
                 for (Roi roi2 : second) {
+
+                    if(progressInfo.isCancelled()) {
+                        return;
+                    }
 
                     overlappingRoi = roi2;
                     overlap = calculateOverlap(temp, roi, roi2, settings.isFastMode(), settings.ignoreC, settings.ignoreT);

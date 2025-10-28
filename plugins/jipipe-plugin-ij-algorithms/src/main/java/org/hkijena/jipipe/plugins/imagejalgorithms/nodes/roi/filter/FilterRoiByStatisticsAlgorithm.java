@@ -130,6 +130,9 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ROI2DListData outputData = new ROI2DListData();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
+            if(progressInfo.isCancelled()) {
+                return;
+            }
             Roi roi = inputRois.get(row);
             Map<String, String> roiProperties = ImageJROIUtils.getRoiProperties(roi);
             variableSet.set("metadata", roiProperties);

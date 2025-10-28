@@ -162,6 +162,11 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         Multimap<Integer, Integer> roi1To2Overlaps = HashMultimap.create();
 
         for (int row = 0; row < measurements.getRowCount(); row++) {
+
+            if(progressInfo.isCancelled()) {
+                return null;
+            }
+
             int roi1Index = (int) measurements.getValueAsDouble(row, "Current.Index");
             int roi2Index = (int) measurements.getValueAsDouble(row, "Other.Index");
 
@@ -192,6 +197,11 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         TIntSet consumedRoi2 = new TIntHashSet();
         for (int i = 0; i < roi1List.size(); i++) {
+
+            if(progressInfo.isCancelled()) {
+                return null;
+            }
+
             TIntSet overlappingRoi2 = new TIntHashSet(roi1To2Overlaps.get(i));
             if (settings.consumeOnOverlap) {
                 overlappingRoi2.removeAll(consumedRoi2);
