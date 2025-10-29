@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDefaultEnumItemInfo;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -67,13 +68,13 @@ public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEd
             enumItemInfo = (JIPipeEnumParameterItemInfo) ReflectionUtils.newInstance(settings.itemInfo());
         }
 
-        Arrays.sort(values, Comparator.comparing(enumItemInfo::getLabel));
+        Arrays.sort(values, Comparator.comparing(value -> enumItemInfo.getLabel(value, JIPipeEnumItemInfoRenderTarget.ComboBox)));
         comboBox = new JComboBox<>(values);
         comboBox.setSelectedItem(getParameterAccess().get(Object.class));
         comboBox.addActionListener(e -> {
             setParameter(comboBox.getSelectedItem(), false);
         });
-        comboBox.setRenderer(new Renderer(enumItemInfo));
+        comboBox.setRenderer(new Renderer(enumItemInfo, JIPipeEnumItemInfoRenderTarget.ComboBox));
         add(comboBox, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/search.png"));
@@ -98,9 +99,11 @@ public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEd
     public static class Renderer extends JLabel implements ListCellRenderer<Object> {
 
         private final JIPipeEnumParameterItemInfo info;
+        private final JIPipeEnumItemInfoRenderTarget renderTarget;
 
-        public Renderer(JIPipeEnumParameterItemInfo info) {
+        public Renderer(JIPipeEnumParameterItemInfo info, JIPipeEnumItemInfoRenderTarget renderTarget) {
             this.info = info;
+            this.renderTarget = renderTarget;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setOpaque(true);
@@ -108,9 +111,9 @@ public class JIPipeDesktopEnumParameterEditorUI extends JIPipeDesktopParameterEd
 
         @Override
         public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-            setIcon(info.getIcon(value));
-            setText(info.getLabel(value));
-            setToolTipText(info.getTooltip(value));
+            setIcon(info.getIcon(value, renderTarget));
+            setText(info.getLabel(value, renderTarget));
+            setToolTipText(info.getTooltip(value, renderTarget));
             if (isSelected || cellHasFocus) {
                 setBackground(UIManager.getColor("List.selectionBackground"));
             } else {

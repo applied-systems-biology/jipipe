@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.parameters.library.colors;
 
 import org.apache.commons.text.WordUtils;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 
 import javax.swing.*;
@@ -37,17 +38,17 @@ public class ColorMapEnumItemInfo implements JIPipeEnumParameterItemInfo {
     }
 
     @Override
-    public Icon getIcon(Object value) {
+    public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return icons.getOrDefault(value, null);
     }
 
     @Override
-    public String getLabel(Object value) {
+    public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return WordUtils.capitalize("" + value);
     }
 
     @Override
-    public String getTooltip(Object value) {
+    public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 }

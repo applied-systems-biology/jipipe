@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.r.REnvironment;
 import org.hkijena.jipipe.plugins.r.RUtils;
@@ -202,17 +203,17 @@ public class ImportRDatasetAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static class DatasetEnumItemInfo implements JIPipeEnumParameterItemInfo {
         @Override
-        public Icon getIcon(Object value) {
+        public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             return null;
         }
 
         @Override
-        public String getLabel(Object value) {
+        public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             return StringUtils.nullToEmpty(value);
         }
 
         @Override
-        public String getTooltip(Object value) {
+        public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             if (value instanceof Dataset) {
                 return ((Dataset) value).getDescription();
             }

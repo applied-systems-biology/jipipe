@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.imagejalgorithms.parameters;
 
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OMEAccessorTemplate;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 
 public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
@@ -31,7 +32,7 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
     }
 
     @Override
-    public String renderLabel(String value) {
+    public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(value, null);
         if (template != null) {
             return template.getName();
@@ -41,7 +42,7 @@ public class OMEAccessorTypeEnumParameter extends DynamicStringEnumParameter {
     }
 
     @Override
-    public String renderTooltip(String value) {
+    public String renderTooltip(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         OMEAccessorTemplate template = ImageJAlgorithmsPlugin.OME_ACCESSOR_STORAGE.getTemplateMap().getOrDefault(value, null);
         if (template != null) {
             return template.getDescription();

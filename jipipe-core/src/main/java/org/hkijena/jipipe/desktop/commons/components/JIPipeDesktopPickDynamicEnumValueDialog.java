@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopDynamicEnumParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -77,7 +78,7 @@ public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
         initializeToolBar();
 
         itemJList = new JList<>();
-        itemJList.setCellRenderer(new JIPipeDesktopDynamicEnumParameterEditorUI.Renderer(dynamicEnumParameter));
+        itemJList.setCellRenderer(new JIPipeDesktopDynamicEnumParameterEditorUI.Renderer(dynamicEnumParameter, JIPipeEnumItemInfoRenderTarget.List));
         itemJList.addListSelectionListener(e -> {
             if (itemJList.getSelectedValue() != null) {
                 setSelectedItem((T) itemJList.getSelectedValue());
@@ -147,8 +148,8 @@ public class JIPipeDesktopPickDynamicEnumValueDialog<T> extends JDialog {
     }
 
     private List<T> getFilteredAndSortedInfos() {
-        Predicate<T> filterFunction = info -> searchField.test(dynamicEnumParameter.getSearchString(info));
-        return availableItems.stream().filter(filterFunction).sorted(Comparator.comparing(dynamicEnumParameter::renderLabel)).collect(Collectors.toList());
+        Predicate<T> filterFunction = info -> searchField.test(dynamicEnumParameter.getSearchString(info, JIPipeEnumItemInfoRenderTarget.List));
+        return availableItems.stream().filter(filterFunction).sorted(Comparator.comparing(value -> dynamicEnumParameter.renderLabel(value, JIPipeEnumItemInfoRenderTarget.List))).collect(Collectors.toList());
     }
 
     private void reloadItemList() {

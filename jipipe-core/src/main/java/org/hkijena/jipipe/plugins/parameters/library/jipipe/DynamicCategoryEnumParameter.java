@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 
 import javax.swing.*;
@@ -55,22 +56,22 @@ public class DynamicCategoryEnumParameter extends DynamicStringEnumParameter {
     }
 
     @Override
-    public String renderLabel(String value) {
+    public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         JIPipeNodeTypeCategory category = JIPipe.getNodes().getRegisteredCategories().getOrDefault("" + value, null);
         if (category != null) {
             return category.getName();
         } else {
-            return super.renderLabel(value);
+            return super.renderLabel(value, renderTarget);
         }
     }
 
     @Override
-    public Icon renderIcon(String value) {
+    public Icon renderIcon(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         JIPipeNodeTypeCategory category = JIPipe.getNodes().getRegisteredCategories().getOrDefault("" + value, null);
         if (category != null) {
             return category.getIcon();
         } else {
-            return super.renderIcon(value);
+            return super.renderIcon(value, renderTarget);
         }
     }
 

@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.forms.utils.SingleAnnotationIOSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
@@ -104,7 +105,7 @@ public class EnumFormData extends ParameterFormData {
         }
         DynamicStringEnumParameter instance = new DynamicStringEnumParameter() {
             @Override
-            public String renderLabel(String value) {
+            public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
                 return itemMap.getOrDefault(value, "<Not found: " + value + ">");
             }
         };

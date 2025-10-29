@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,12 +60,17 @@ public class FontFamilyParameter extends DynamicStringEnumParameter {
     }
 
     @Override
-    public String renderLabel(String value) {
-        return "<html><span style=\"font-family: " + value + ";\">" + value + "</span></html>";
+    public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
+        if(renderTarget == JIPipeEnumItemInfoRenderTarget.ComboBox) {
+            return value;
+        }
+        else {
+            return "<html><span style=\"font-family: " + value + ";\">" + value + "</span></html>";
+        }
     }
 
     @Override
-    public Icon renderIcon(String value) {
+    public Icon renderIcon(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return JIPipe.RESOURCES.getIcon16("actions/dialog-text-and-font.png");
     }
 
