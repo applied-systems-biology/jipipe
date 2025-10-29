@@ -21,7 +21,7 @@ import java.awt.*;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListener {
+public interface JIPipeDesktopGraphEditorTool extends MouseMotionListener, MouseListener {
 
     String getName();
 

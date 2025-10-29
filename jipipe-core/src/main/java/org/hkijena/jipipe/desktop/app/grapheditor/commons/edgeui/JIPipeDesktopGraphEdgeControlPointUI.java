@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -10,6 +11,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Set;
 
@@ -36,6 +38,21 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
     @Override
     public void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command) {
 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Control point: " + edgeUI.getDisplayName();
+    }
+
+    @Override
+    public String getDescription() {
+        return "An edge control point";
+    }
+
+    @Override
+    public Icon getIcon() {
+        return JIPipe.RESOURCES.getIcon16("actions/snap-nodes-cusp.png");
     }
 
     public int getRenderedSize() {

@@ -16,14 +16,13 @@ package org.hkijena.jipipe.api.service.components;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopAnchorParameterEditorUI;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -160,5 +159,17 @@ public final class JIPipeParameterTypesServiceComponent extends JIPipeServiceCom
      */
     public Set<JIPipeParameterGenerator> getGeneratorsFor(Class<?> parameterClass) {
         return parameterGeneratorUIs.getOrDefault(parameterClass, Collections.emptySet());
+    }
+
+    public <T> JIPipeDesktopParameterEditorUI<T> createEditorInstanceWithEmbeddedValue( JIPipeDesktopWorkbench workbench, Class<T> parameterClass) {
+        JIPipeDummyParameterCollection collection = new JIPipeDummyParameterCollection();
+        JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder()
+                .setFieldClass(parameterClass)
+                .setSource(collection)
+                .setGetter(collection::get)
+                .setSetter(collection::accept)
+                .setKey("value")
+                .build();
+        return createEditorInstance(access, workbench, new JIPipeParameterTree(collection), null);
     }
 }

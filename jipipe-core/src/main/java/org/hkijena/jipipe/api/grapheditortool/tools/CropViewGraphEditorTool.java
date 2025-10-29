@@ -11,16 +11,17 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool;
+package org.hkijena.jipipe.api.grapheditortool.tools;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopActionGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class JIPipeCropViewGraphEditorTool implements JIPipeActionGraphEditorTool {
+public class CropViewGraphEditorTool implements JIPipeDesktopActionGraphEditorTool {
 
     private JIPipeDesktopGraphEditorUI graphEditor;
 

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -254,7 +254,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
     }
 
     /**
-     * Registers a new annotation node type and associated {@link JIPipeGraphEditorTool}
+     * Registers a new annotation node type and associated {@link JIPipeDesktopGraphEditorTool}
      *
      * @param id             the ID of the node type (must be unique)
      * @param nodeClass      the node class
@@ -937,7 +937,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
         }
     }
 
-    public void registerGraphEditorTool(Class<? extends JIPipeGraphEditorTool> klass) {
+    public void registerGraphEditorTool(Class<? extends JIPipeDesktopGraphEditorTool> klass) {
         service.getGraphEditorTools().register(klass);
     }
 

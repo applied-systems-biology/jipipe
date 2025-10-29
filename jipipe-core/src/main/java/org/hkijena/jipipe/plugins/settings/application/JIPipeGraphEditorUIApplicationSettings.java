@@ -35,7 +35,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     public static String ID = "org.hkijena.jipipe:graph-editor-ui";
     private final NodeSearchSettings nodeSearchSettings = new NodeSearchSettings();
-    private final DockLayoutSettings dockLayoutSettings = new DockLayoutSettings();
     private JIPipepGraphAutoLayoutMethod autoLayout = JIPipepGraphAutoLayoutMethod.MST;
     private boolean switchPanningDirection = false;
     private boolean askOnDeleteNode = true;
@@ -62,11 +61,7 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         return JIPipe.getSettings().getById(ID, JIPipeGraphEditorUIApplicationSettings.class);
     }
 
-    @SetJIPipeDocumentation(name = "UI Layout", description = "Settings related to the UI layout")
-    @JIPipeParameter("dock-layout")
-    public DockLayoutSettings getDockLayoutSettings() {
-        return dockLayoutSettings;
-    }
+
 
     @SetJIPipeDocumentation(name = "Auto-mute edges by selection", description = "If enabled, all edges that are not part of the selected nodes are muted")
     @JIPipeParameter("auto-mute-by-selection")
@@ -318,24 +313,10 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         private boolean searchFindNewNodes = true;
         private boolean searchFindExistingNodes = true;
         private boolean showDescriptions = true;
-        private StringList pinnedNodes = new StringList();
+
         private boolean showHierarchySelection = true;
 
         public NodeSearchSettings() {
-            pinnedNodes.add("create-node-custom:jipipe:graph-compartment");
-        }
-
-        @SetJIPipeDocumentation(name = "Pinned nodes", description = "List of pinned node database Ids")
-        @JIPipeParameter("pinned-nodes")
-        @ListParameterSettings(withScrollBar = true)
-        @StringParameterSettings(monospace = true, visible = false)
-        public StringList getPinnedNodes() {
-            return pinnedNodes;
-        }
-
-        @JIPipeParameter("pinned-nodes")
-        public void setPinnedNodes(StringList pinnedNodes) {
-            this.pinnedNodes = pinnedNodes;
         }
 
         @SetJIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
@@ -383,70 +364,5 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
         }
     }
 
-    public static class DockLayoutSettings extends AbstractJIPipeParameterCollection {
-        private String pipelineEditorDockLayout = "";
-        private String compartmentsEditorDockLayout = "";
-        private StringAndStringPairParameterList pipelineEditorDockLayoutTemplates = new StringAndStringPairParameterList();
-        private StringAndStringPairParameterList compartmentsEditorDockLayoutTemplates = new StringAndStringPairParameterList();
-        private boolean showToolbarLabels = true;
 
-        @SetJIPipeDocumentation(name = "Show toolbar labels", description = "Shows labels for the dock items")
-        @JIPipeParameter("show-toolbar-labels")
-        public boolean isShowToolbarLabels() {
-            return showToolbarLabels;
-        }
-
-        @JIPipeParameter("show-toolbar-labels")
-        public void setShowToolbarLabels(boolean showToolbarLabels) {
-            this.showToolbarLabels = showToolbarLabels;
-        }
-
-        @SetJIPipeDocumentation(name = "UI layout (pipeline editor)", description = "Contains the current UI layout of the pipeline editor. Please do not edit this parameter manually.")
-        @JIPipeParameter("pipeline-editor-dock-layout")
-        @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public String getPipelineEditorDockLayout() {
-            return pipelineEditorDockLayout;
-        }
-
-        @JIPipeParameter("pipeline-editor-dock-layout")
-        public void setPipelineEditorDockLayout(String pipelineEditorDockLayout) {
-            this.pipelineEditorDockLayout = pipelineEditorDockLayout;
-        }
-
-        @SetJIPipeDocumentation(name = "UI layout (compartment editor)", description = "Contains the current UI layout of the compartments editor. Please do not edit this parameter manually.")
-        @JIPipeParameter("compartments-editor-dock-layout")
-        @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public String getCompartmentsEditorDockLayout() {
-            return compartmentsEditorDockLayout;
-        }
-
-        @JIPipeParameter("compartments-editor-dock-layout")
-        public void setCompartmentsEditorDockLayout(String compartmentsEditorDockLayout) {
-            this.compartmentsEditorDockLayout = compartmentsEditorDockLayout;
-        }
-
-        @SetJIPipeDocumentation(name = "UI layout templates (pipeline editor)", description = "Contains the layout templates for the pipeline editor. Please do not edit the values manually.")
-        @JIPipeParameter("pipeline-editor-dock-layout-templates")
-        @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public StringAndStringPairParameterList getPipelineEditorDockLayoutTemplates() {
-            return pipelineEditorDockLayoutTemplates;
-        }
-
-        @JIPipeParameter("pipeline-editor-dock-layout-templates")
-        public void setPipelineEditorDockLayoutTemplates(StringAndStringPairParameterList pipelineEditorDockLayoutTemplates) {
-            this.pipelineEditorDockLayoutTemplates = pipelineEditorDockLayoutTemplates;
-        }
-
-        @SetJIPipeDocumentation(name = "UI layout templates (compartment editor)", description = "Contains the layout templates for the compartments editor. Please do not edit the values manually.")
-        @JIPipeParameter("compartments-editor-dock-layout-templates")
-        @StringParameterSettings(monospace = true, multiline = true, visible = false)
-        public StringAndStringPairParameterList getCompartmentsEditorDockLayoutTemplates() {
-            return compartmentsEditorDockLayoutTemplates;
-        }
-
-        @JIPipeParameter("compartments-editor-dock-layout-templates")
-        public void setCompartmentsEditorDockLayoutTemplates(StringAndStringPairParameterList compartmentsEditorDockLayoutTemplates) {
-            this.compartmentsEditorDockLayoutTemplates = compartmentsEditorDockLayoutTemplates;
-        }
-    }
 }

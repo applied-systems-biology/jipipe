@@ -1,15 +1,16 @@
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class EditAnnotationGraphNodeTool implements JIPipeToggleableGraphEditorTool {
+public class EditAnnotationGraphNodeTool implements JIPipeDesktopToggleableGraphEditorTool {
     private JIPipeDesktopGraphEditorUI graphEditor;
 
     @Override
@@ -23,8 +24,13 @@ public class EditAnnotationGraphNodeTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new EditAnnotationGraphNodeToolProperties(graphEditorUI, this);
+    }
+
+    @Override
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.AnnotationsOnly;
     }
 
     @Override

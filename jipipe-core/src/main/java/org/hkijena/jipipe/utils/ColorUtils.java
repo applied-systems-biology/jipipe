@@ -313,6 +313,10 @@ public class ColorUtils {
         return new Color(newR, newG, newB);
     }
 
+    public static Color removeAlpha(Color color) {
+        return new Color(color.getRed(), color.getGreen(), color.getBlue());
+    }
+
     public static Color toGreyscale(Color color) {
         int v = (color.getRed() + color.getGreen() + color.getBlue()) / 3;
         return new Color(v, v, v);

@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -21,7 +21,7 @@ public class JIPipeDesktopGraphCanvasToolInfoOverlay implements JIPipeDesktopGra
         Rectangle visibleRect = canvasUI.getVisibleRect();
         if (visibleRect != null) {
 
-            if (!canvasUI.getToolManager().hasDefaultTool() && canvasUI.getSettings().isShowToolInfo() && !(canvasUI.getToolManager().getCurrentTool() instanceof JIPipeDefaultGraphEditorTool)) {
+            if (!canvasUI.getToolManager().hasDefaultTool() && canvasUI.getSettings().isShowToolInfo() && !(canvasUI.getToolManager().getCurrentTool() instanceof DefaultGraphEditorTool)) {
                 Color toolColor = ThemeUtils.getCurrentStyle().getPrimaryColor();
                 if (canvasUI.getGraphEditorUI() != null) {
                     int index = canvasUI.getGraphEditorUI().getTools().indexOf(canvasUI.getToolManager().getCurrentTool());
@@ -42,7 +42,7 @@ public class JIPipeDesktopGraphCanvasToolInfoOverlay implements JIPipeDesktopGra
             }
         } else {
             if (canvasUI.isMouseIsEntered() && canvasUI.getLastMousePosition() != null && !canvasUI.getToolManager().hasDefaultTool()
-                    && canvasUI.getSettings().isShowToolInfo() && !(canvasUI.getToolManager().getCurrentTool() instanceof JIPipeDefaultGraphEditorTool)) {
+                    && canvasUI.getSettings().isShowToolInfo() && !(canvasUI.getToolManager().getCurrentTool() instanceof DefaultGraphEditorTool)) {
                 canvasUI.getToolManager().getCurrentTool().paintTooltip(canvasUI, canvasUI.getLastMousePosition(), canvasUI.getSettings().getToolInfoDistance(), true, g);
             }
         }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui;
 
 import gnu.trove.list.array.TIntArrayList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jetbrains.annotations.NotNull;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -125,6 +127,21 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
     @Override
     public void updateView(JIPipeDesktopGraphInteractiveObjectUIUpdateViewCommand command) {
 
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Edge '" + source.getDisplayName() + "' >>> '"  + target.getDisplayName() + "'";
+    }
+
+    @Override
+    public String getDescription() {
+        return "A graph edge";
+    }
+
+    @Override
+    public Icon getIcon() {
+        return JIPipe.RESOURCES.getIcon16("actions/standard-connector.png");
     }
 
     public void paint(Graphics2D g,

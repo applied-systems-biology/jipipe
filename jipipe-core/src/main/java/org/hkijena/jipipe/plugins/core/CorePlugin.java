@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeGridThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
-import org.hkijena.jipipe.api.grapheditortool.*;
+import org.hkijena.jipipe.api.grapheditortool.tools.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
@@ -48,7 +48,6 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -178,11 +177,11 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 
         // Graph editors
-        registerGraphEditorTool(JIPipeDefaultGraphEditorTool.class);
-        registerGraphEditorTool(JIPipeConnectGraphEditorTool.class);
-        registerGraphEditorTool(JIPipeMoveNodesGraphEditorTool.class);
-        registerGraphEditorTool(JIPipeCropViewGraphEditorTool.class);
-        registerGraphEditorTool(JIPipeRewireGraphEditorTool.class);
+        registerGraphEditorTool(DefaultGraphEditorTool.class);
+        registerGraphEditorTool(ConnectGraphEditorTool.class);
+        registerGraphEditorTool(MoveNodesGraphEditorTool.class);
+        registerGraphEditorTool(CropViewGraphEditorTool.class);
+        registerGraphEditorTool(RewireGraphEditorTool.class);
 
         // Metadata objects
         registerMetadataObjectType(JIPipeStandardMetadata.class, "jipipe:standard-metadata");

@@ -14,10 +14,15 @@
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import ij.IJ;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
+import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -33,6 +38,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ImageBoxAnnotationGraphNode> {
+
+    private JIPipeDesktopColorPaletteColor color;
+
     public ImageBoxAnnotationGraphNodeTool() {
         super(ImageBoxAnnotationGraphNode.class);
     }
@@ -60,6 +68,11 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
                 IJ.handleException(e);
             }
         }
+
+          JIPipeDesktopColorPaletteColor color = getColor();
+        node.getImageParameters().setBorderColor(color.getForeground());
+        node.getImageParameters().setBackgroundColor(new OptionalColorParameter(color.getBackground(), true));
+
         return node;
     }
 
@@ -71,5 +84,18 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
     @Override
     public int getPriority() {
         return -4700;
+    }
+
+    @Override
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new ImageBoxAnnotationGraphNodeToolProperties(graphEditorUI, this);
+    }
+
+    public JIPipeDesktopColorPaletteColor getColor() {
+        return color;
+    }
+
+    public void setColor(JIPipeDesktopColorPaletteColor color) {
+        this.color = color;
     }
 }
