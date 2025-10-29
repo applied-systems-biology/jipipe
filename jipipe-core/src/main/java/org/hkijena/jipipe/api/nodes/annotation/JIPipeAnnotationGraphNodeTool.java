@@ -74,7 +74,7 @@ public abstract class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGr
 
     @Override
     public void activate() {
-
+        getGraphEditor().getDockPanel().activatePanel(JIPipeDesktopGraphEditorUI.DOCK_CONTEXT_PANEL, false);
     }
 
     public boolean isDrawWithAntialiasing() {
