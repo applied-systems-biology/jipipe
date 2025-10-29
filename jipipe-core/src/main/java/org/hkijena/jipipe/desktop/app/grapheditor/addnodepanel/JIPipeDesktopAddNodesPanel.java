@@ -35,6 +35,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -63,7 +64,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
-    private final JIPipeGraphEditorUIApplicationSettings settings;
+    private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
+    private final JIPipePresetsApplicationSettings presetsSettings;
     private final boolean isCompartmentsEditor;
     private final JPanel mainCategoriesPanel = new JPanel();
     private final JPanel subCategoryPathPanel = new JPanel();
@@ -83,7 +85,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         this.graphEditorUI = graphEditorUI;
-        this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
+        this.graphEditorSettings = JIPipeGraphEditorUIApplicationSettings.getInstance();
+        this.presetsSettings = JIPipePresetsApplicationSettings.getInstance();
         this.isCompartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
 
         initializeMainCategoryFilters();
@@ -287,7 +290,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes());
+        return new HashSet<>(presetsSettings.getPinnedNodes());
     }
 
     private void initializeMainCategoryFilters() {
@@ -350,7 +353,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private void initializeMenuForPinned(JPopupMenu popupMenu) {
         Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
         for (JIPipeNodeDatabaseEntry entry : database.query("", isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline,
-                false, true, new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes()))) {
+                false, true, new HashSet<>(presetsSettings.getPinnedNodes()))) {
             if (pinnedNodeDatabaseEntries.contains(entry.getId())) {
                 if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
                     popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo(), true),
@@ -571,18 +574,18 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void pinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
-            settings.getNodeSearchSettings().getPinnedNodes().add(entry.getId());
+            presetsSettings.getPinnedNodes().add(entry.getId());
         }
-        settings.getNodeSearchSettings().getPinnedNodes().makeUnique();
+        presetsSettings.getPinnedNodes().makeUnique();
         JIPipe.getSettings().save();
         reloadAlgorithmList();
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
-            settings.getNodeSearchSettings().getPinnedNodes().add(entry.getId());
+            presetsSettings.getPinnedNodes().add(entry.getId());
         }
-        settings.getNodeSearchSettings().getPinnedNodes().makeUnique();
+        presetsSettings.getPinnedNodes().makeUnique();
         JIPipe.getSettings().save();
         reloadAlgorithmList();
     }
@@ -656,19 +659,19 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void initializeToolbarMenu(JPopupMenu menu) {
         showHierarchySelectionToggle.setToolTipText("Show a panel where the node hierarchy can be browsed");
-        showHierarchySelectionToggle.setSelected(settings.getNodeSearchSettings().isShowHierarchySelection());
+        showHierarchySelectionToggle.setSelected(graphEditorSettings.getNodeSearchSettings().isShowHierarchySelection());
         showHierarchySelectionToggle.addActionListener(e -> {
             updateSubCategoryPanels();
-            settings.getNodeSearchSettings().setShowHierarchySelection(showHierarchySelectionToggle.isSelected());
+            graphEditorSettings.getNodeSearchSettings().setShowHierarchySelection(showHierarchySelectionToggle.isSelected());
             JIPipe.getSettings().save();
         });
         menu.add(showHierarchySelectionToggle);
 
         showNodeDescriptionToggle.setToolTipText("Show node descriptions in the search results, which will take up a bit more vertical space per item");
-        showNodeDescriptionToggle.setSelected(settings.getNodeSearchSettings().isShowDescriptions());
+        showNodeDescriptionToggle.setSelected(graphEditorSettings.getNodeSearchSettings().isShowDescriptions());
         showNodeDescriptionToggle.addActionListener(e -> {
             reloadAlgorithmList();
-            settings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
+            graphEditorSettings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
             JIPipe.getSettings().save();
         });
         menu.add(showNodeDescriptionToggle);

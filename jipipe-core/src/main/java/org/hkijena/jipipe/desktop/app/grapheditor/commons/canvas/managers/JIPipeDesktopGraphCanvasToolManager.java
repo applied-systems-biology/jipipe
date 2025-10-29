@@ -13,22 +13,22 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 
 public class JIPipeDesktopGraphCanvasToolManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
-    private JIPipeToggleableGraphEditorTool currentTool;
+    private JIPipeDesktopToggleableGraphEditorTool currentTool;
 
     public JIPipeDesktopGraphCanvasToolManager(JIPipeDesktopGraphCanvasUI canvasUI) {
         this.canvasUI = canvasUI;
     }
 
-    public JIPipeToggleableGraphEditorTool getCurrentTool() {
+    public JIPipeDesktopToggleableGraphEditorTool getCurrentTool() {
         return currentTool;
     }
 
-    public void setCurrentTool(JIPipeToggleableGraphEditorTool currentTool) {
+    public void setCurrentTool(JIPipeDesktopToggleableGraphEditorTool currentTool) {
         this.currentTool = currentTool;
         canvasUI.getSelectionManager().enforceToolMasking(currentTool);
         canvasUI.resetCursor();

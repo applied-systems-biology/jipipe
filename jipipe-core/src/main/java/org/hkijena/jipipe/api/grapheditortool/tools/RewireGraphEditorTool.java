@@ -11,12 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool;
+package org.hkijena.jipipe.api.grapheditortool.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -24,6 +26,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasPaintManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.utils.PointRange;
 
 import javax.swing.*;
@@ -34,7 +37,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
-public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorTool {
+public class RewireGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
 
     private JIPipeDesktopGraphEditorUI graphEditorUI;
     private JIPipeDesktopGraphNodeUISlotActiveArea currentRewireDragSource;
@@ -99,6 +102,11 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     @Override
     public void paintBelowNodesAfterEdges(Graphics2D graphics2D) {
         paintCurrentlyDraggedRewire(graphics2D);
+    }
+
+    @Override
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new RewireGraphEditorToolPanel(graphEditorUI, this);
     }
 
     private void paintCurrentlyDraggedRewire(Graphics2D g) {
@@ -194,8 +202,8 @@ public class JIPipeRewireGraphEditorTool implements JIPipeToggleableGraphEditorT
     }
 
     @Override
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
     }
 
     @Override

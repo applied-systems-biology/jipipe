@@ -11,42 +11,40 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grapheditortool;
+package org.hkijena.jipipe.api.grapheditortool.tools;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEditorTool {
+public class DefaultGraphEditorTool implements JIPipeDesktopToggleableGraphEditorTool {
 
     private JIPipeDesktopGraphEditorUI graphEditorUI;
 
     @Override
     public String getName() {
-        return "Move nodes";
+        return "No tool";
     }
 
     @Override
     public String getTooltip() {
-        return "Only moves nodes without modifying existing connections";
+        return "Allows to select and move nodes, as well as to drag connections";
     }
 
     @Override
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/transform-move.png");
+        return JIPipe.RESOURCES.getIcon16("actions/followmouse.png");
     }
 
     @Override
     public int getPriority() {
-        return -9900;
-    }
-
-    @Override
-    public JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+        return -10000;
     }
 
     @Override
@@ -65,8 +63,13 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
     }
 
     @Override
-    public KeyStroke getKeyBinding() {
-        return KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
+    public JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+    }
+
+    @Override
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new DefaultGraphEditorToolPanel(graphEditorUI, this);
     }
 
     @Override
@@ -80,18 +83,18 @@ public class JIPipeMoveNodesGraphEditorTool implements JIPipeToggleableGraphEdit
     }
 
     @Override
+    public KeyStroke getKeyBinding() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+    }
+
+    @Override
     public boolean allowsDragNodes() {
         return true;
     }
 
     @Override
     public boolean allowsDragConnections() {
-        return false;
-    }
-
-    @Override
-    public boolean allowsDragEdgeControlPoints() {
-        return false;
+        return true;
     }
 
     @Override

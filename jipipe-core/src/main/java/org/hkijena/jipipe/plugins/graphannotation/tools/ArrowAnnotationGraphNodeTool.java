@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.ArrowAnnotationGraphNode;
 
 import javax.swing.*;
@@ -61,5 +63,10 @@ public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<
     @Override
     public int getPriority() {
         return -4800;
+    }
+
+    @Override
+    public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
+        return new ArrowAnnotationGraphNodeToolProperties(graphEditorUI, this);
     }
 }

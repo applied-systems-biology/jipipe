@@ -14,21 +14,21 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
 import com.google.common.collect.ImmutableSet;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorToolNodeLayerMask;
+import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
 
 public class JIPipeDesktopGraphCanvasSelectionManager {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -42,7 +42,26 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
     }
 
     public void selectAll() {
-        selection.addAll(canvasUI.getNodeUIs().values());
+        JIPipeDesktopToggleableGraphEditorTool currentTool = canvasUI.getToolManager().getCurrentTool();
+        if (currentTool == null) {
+            currentTool = new DefaultGraphEditorTool();
+        }
+        for (var ui : canvasUI.getNodeUIs().values()) {
+            if(currentTool.getNodeLayerMask().test(ui)) {
+                selection.add(ui);
+            }
+        }
+        for (var ui : canvasUI.getEdgeUIs().values()) {
+            if(currentTool.getNodeLayerMask().test(ui)) {
+                selection.add(ui);
+            }
+            for (JIPipeDesktopGraphEdgeControlPointUI ui2 : ui.getControlPoints()) {
+                if(currentTool.getNodeLayerMask().test(ui2)) {
+                    selection.add(ui);
+                }
+            }
+        }
+
         updateSelection();
     }
 
@@ -222,14 +241,14 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         }
     }
 
-    public void enforceToolMasking(JIPipeToggleableGraphEditorTool currentTool) {
-        JIPipeToggleableGraphEditorToolNodeLayerMask mask;
+    public void enforceToolMasking(JIPipeDesktopToggleableGraphEditorTool currentTool) {
+        JIPipeDesktopToggleableGraphEditorToolNodeLayerMask mask;
         if (currentTool != null) {
             mask = currentTool.getNodeLayerMask();
         } else {
-            mask = JIPipeToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
+            mask = JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.WorkflowOnly;
         }
-        if (mask != JIPipeToggleableGraphEditorToolNodeLayerMask.None) {
+        if (mask != JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.None) {
             if (selection.removeIf(ui -> !mask.test(ui))) {
                 updateSelection();
             }
@@ -243,6 +262,13 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
         } else {
 //            System.out.println("added " + ui);
             selection.add(ui);
+        }
+        updateSelection();
+    }
+
+    public void removeFromSelection(Collection<JIPipeDesktopGraphInteractiveObjectUI> uiList) {
+        for (JIPipeDesktopGraphInteractiveObjectUI ui : uiList) {
+            removeFromSelection(ui, false);
         }
         updateSelection();
     }

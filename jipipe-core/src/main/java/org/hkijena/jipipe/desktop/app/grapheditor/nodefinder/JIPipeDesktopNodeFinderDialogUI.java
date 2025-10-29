@@ -30,6 +30,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -53,7 +54,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JToggleButton createNodesToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/add.png"));
     private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
-    private final JIPipeGraphEditorUIApplicationSettings settings;
+    private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
+    private final JIPipePresetsApplicationSettings presetSettings;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
 
@@ -62,7 +64,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         this.queryCompartment = canvasUI.getCompartmentUUID();
         this.querySlot = querySlot;
         this.queryGraph = canvasUI.getGraph();
-        this.settings = JIPipeGraphEditorUIApplicationSettings.getInstance();
+        this.graphEditorSettings = JIPipeGraphEditorUIApplicationSettings.getInstance();
+        this.presetSettings = JIPipePresetsApplicationSettings.getInstance();
         initialize();
         reloadList();
     }
@@ -105,7 +108,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(settings.getNodeSearchSettings().getPinnedNodes());
+        return new HashSet<>(presetSettings.getPinnedNodes());
     }
 
     public JIPipeDataSlot getQuerySlot() {

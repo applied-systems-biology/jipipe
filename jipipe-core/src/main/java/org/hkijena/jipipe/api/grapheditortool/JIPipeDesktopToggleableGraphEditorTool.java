@@ -16,11 +16,13 @@ package org.hkijena.jipipe.api.grapheditortool;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
+import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 
 import java.awt.*;
 
-public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
+public interface JIPipeDesktopToggleableGraphEditorTool extends JIPipeDesktopGraphEditorTool {
 
     void deactivate();
 
@@ -40,8 +42,8 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
         return true;
     }
 
-    default JIPipeToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
-        return JIPipeToggleableGraphEditorToolNodeLayerMask.None;
+    default JIPipeDesktopToggleableGraphEditorToolNodeLayerMask getNodeLayerMask() {
+        return JIPipeDesktopToggleableGraphEditorToolNodeLayerMask.None;
     }
 
     default void paintBelowNodesAfterEdges(Graphics2D g) {
@@ -81,4 +83,11 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
     default boolean isDeactivateOnRightClick() {
         return true;
     }
+
+    /**
+     * A panel that is shown within the 'Tools' panel
+     *
+     * @return the properties panel
+     */
+    JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI);
 }

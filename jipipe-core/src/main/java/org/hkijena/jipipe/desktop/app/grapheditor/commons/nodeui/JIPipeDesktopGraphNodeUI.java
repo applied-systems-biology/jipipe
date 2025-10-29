@@ -75,9 +75,6 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             new UpdateCacheShowIntermediateNodeUIContextAction(),
             new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
             GraphInteractiveObjectUIContextAction.SEPARATOR,
-            new RunAndShowResultsNodeUIContextAction(),
-            new RunAndShowIntermediateResultsNodeUIContextAction(),
-            GraphInteractiveObjectUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
     protected final List<JIPipeDesktopGraphNodeUIActiveArea> activeAreas = new ArrayList<>();
@@ -1596,6 +1593,21 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         } else {
             updateView(false, false, false);
         }
+    }
+
+    @Override
+    public String getDisplayName() {
+        return node.getDisplayName();
+    }
+
+    @Override
+    public String getDescription() {
+        return node.getInfo().getDescription().toPlainText();
+    }
+
+    @Override
+    public Icon getIcon() {
+        return node.getInfo().getIcon();
     }
 
     public JIPipeDesktopGraphNodeUISlotContextMenu getSlotContextMenu() {
