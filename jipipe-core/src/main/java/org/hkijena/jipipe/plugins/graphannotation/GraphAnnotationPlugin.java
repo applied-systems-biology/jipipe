@@ -49,7 +49,6 @@ public class GraphAnnotationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerAnnotationNodeType("graph-annotation-text-box", TextBoxAnnotationGraphNode.class, TextBoxAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-text-frame.png"));
-        registerAnnotationNodeType("graph-annotation-group-box", GroupBoxAnnotationGraphNode.class, GroupBoxAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/object-group.png"));
         registerAnnotationNodeType("graph-annotation-arrow", ArrowAnnotationGraphNode.class, ArrowAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-arrow.png"));
         registerAnnotationNodeType("graph-annotation-image", ImageBoxAnnotationGraphNode.class, ImageBoxAnnotationGraphNodeTool.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-image.png"));
         registerGraphEditorTool(EditAnnotationGraphNodeTool.class);

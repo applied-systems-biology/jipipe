@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.colorpalette;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.awt.*;
+import java.util.Objects;
 
 public class JIPipeDesktopColorPaletteColor {
     @JsonProperty("foreground")
@@ -55,5 +56,17 @@ public class JIPipeDesktopColorPaletteColor {
 
     public void setBackground(Color background) {
         this.background = background;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        JIPipeDesktopColorPaletteColor that = (JIPipeDesktopColorPaletteColor) o;
+        return Objects.equals(foreground, that.foreground) && Objects.equals(background, that.background);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(foreground, background);
     }
 }

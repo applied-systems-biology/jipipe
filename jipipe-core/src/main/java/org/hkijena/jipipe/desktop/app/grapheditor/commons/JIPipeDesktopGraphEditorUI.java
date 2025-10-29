@@ -40,6 +40,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
+import org.hkijena.jipipe.plugins.graphannotation.tools.EditAnnotationGraphNodeTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
@@ -1022,6 +1023,15 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
     public JIPipeDesktopGraphEditorContextPanel getContextPanel() {
         return contextPanel;
+    }
+
+    public void selectTool(Class<? extends JIPipeDesktopToggleableGraphEditorTool> toolClass) {
+        for (JIPipeDesktopGraphEditorTool tool : tools) {
+            if(toolClass.isInstance(tool)) {
+                selectTool(tool);
+                return;
+            }
+        }
     }
 
 

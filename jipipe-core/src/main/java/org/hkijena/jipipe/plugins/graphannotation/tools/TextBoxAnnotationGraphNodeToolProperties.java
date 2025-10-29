@@ -16,11 +16,63 @@ package org.hkijena.jipipe.plugins.graphannotation.tools;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPalette;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteColor;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteUI;
+import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopAnchorParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class TextBoxAnnotationGraphNodeToolProperties extends BaseTextBoxAnnotationGraphNodeToolProperties<TextBoxAnnotationGraphNodeTool> {
+import javax.swing.*;
+
+public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
+
+    private final JIPipeDesktopColorPaletteUI paletteUI;
+    private final JIPipeDesktopParameterEditorUI<Anchor> anchorParameterEditorUI;
+
+    private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
+    private static Anchor LAST_ANCHOR = Anchor.CenterCenter;
+
     public TextBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
+
+        // Initialize palette
+        this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
+        this.paletteUI.getSelectedEventEmitter().subscribe(this);
+        this.paletteUI.setSelectedColor(LAST_COLOR);
+
+        // Initialize anchor
+        anchorParameterEditorUI = JIPipe.getParameterTypes().createEditorInstanceWithEmbeddedValue(getDesktopWorkbench(), Anchor.class);
+        anchorParameterEditorUI.getParameterAccess().getSource().getParameterChangedEventEmitter().subscribe(this);
+        anchorParameterEditorUI.setParameter(LAST_ANCHOR, true);
+    }
+
+    @Override
+    public final void initializeContent() {
+        super.initializeContent();
+
+        paletteUI.setBorder(UIUtils.createControlBorder());
+        getFormPanel().addToForm(paletteUI, new JLabel("Color"));
+
+        getFormPanel().addToForm(anchorParameterEditorUI, new JLabel("Text location"));
+
+        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
+            getGraphEditorUI().selectTool(null);
+        }));
+    }
+
+    @Override
+    public void onColorPaletteSelected(JIPipeDesktopColorPaletteUI.SelectedEvent event) {
+        LAST_COLOR = event.getColor();
+        getTool().setColor(event.getColor());
+    }
+
+    @Override
+    public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        LAST_ANCHOR = anchorParameterEditorUI.getParameter();
+        getTool().setAnchor(LAST_ANCHOR);
     }
 }

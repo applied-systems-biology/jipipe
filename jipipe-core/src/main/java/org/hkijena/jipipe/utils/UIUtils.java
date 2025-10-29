@@ -77,7 +77,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -92,7 +91,7 @@ public class UIUtils {
 
 
     public static Window getWindowOrWindowAncestor(Component component) {
-        if(component instanceof Window) {
+        if (component instanceof Window) {
             return (Window) component;
         }
         return SwingUtilities.windowForComponent(component);
@@ -1923,8 +1922,9 @@ public class UIUtils {
         }
         return panel;
     }
+
     public static JPanel gridVertical(Component... components) {
-        JPanel panel = new JPanel(new GridLayout( components.length, 1));
+        JPanel panel = new JPanel(new GridLayout(components.length, 1));
         for (Component component : components) {
             if (component != null) {
                 panel.add(component);
@@ -2501,19 +2501,19 @@ public class UIUtils {
 
     public static JPanel borderNSEWC(Component north, Component south, Component east, Component west, Component center) {
         JPanel panel = new JPanel(new BorderLayout());
-        if(north != null) {
+        if (north != null) {
             panel.add(north, BorderLayout.NORTH);
         }
-        if(south != null) {
+        if (south != null) {
             panel.add(south, BorderLayout.SOUTH);
         }
-        if(east != null) {
+        if (east != null) {
             panel.add(east, BorderLayout.EAST);
         }
-        if(west != null) {
+        if (west != null) {
             panel.add(west, BorderLayout.WEST);
         }
-        if(center != null) {
+        if (center != null) {
             panel.add(center, BorderLayout.CENTER);
         }
         return panel;
@@ -2522,17 +2522,17 @@ public class UIUtils {
     public static boolean saveUIScaleToJaunch(float newScale, boolean alsoImageJ) {
         Path imageJDir = PathUtils.getImageJDir();
         boolean success = true;
-        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
+        if (!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("fiji.toml"))) {
             success = false;
         }
-        if(!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("jipipe.toml"))) {
+        if (!saveUIScaleToJaunch(newScale, imageJDir.resolve("config").resolve("jaunch").resolve("jipipe.toml"))) {
             success = false;
         }
         return success;
     }
 
     private static boolean saveUIScaleToJaunch(float newScale, Path jaunchConfigPath) {
-        if(Files.isRegularFile(jaunchConfigPath)) {
+        if (Files.isRegularFile(jaunchConfigPath)) {
             try {
                 Path backupFile = jaunchConfigPath.getParent().resolve(jaunchConfigPath.getFileName() + ".bak");
                 String config = Files.readString(jaunchConfigPath);
@@ -2546,13 +2546,15 @@ public class UIUtils {
                 JIPipe.getInstance().getLogService().error("Save UI scale - Error:" + e.getMessage());
                 JIPipe.getInstance().getLogService().error(e);
             }
-        }
-        else {
+        } else {
             JIPipe.getInstance().getLogService().error("Save UI scale: Unable to find " + jaunchConfigPath);
         }
         return false;
     }
 
+    public static Color selectColor(Component parent, String title, Color defaultValue, boolean withTransparency) {
+        return JColorChooser.showDialog(parent, title, defaultValue, withTransparency);
+    }
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

@@ -37,13 +37,17 @@ public class JIPipeDesktopColorPaletteColorIcon implements Icon {
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setColor(color.getBackground());
         g.fillOval(x + m,y + m,size - 2*m, size - 2*m);
-        g.setColor(color.getForeground());
-        g.fillArc(x + m,y + m,size - 2*m,size-2*m,45,180);
+        if(paletteUI == null || paletteUI.isEnableBackgroundColorSelection()) {
+            g.setColor(color.getForeground());
+            g.fillArc(x + m,y + m,size - 2*m,size-2*m,45,180);
+        }
         if(paletteUI != null && paletteUI.getSelectedColor() == color) {
             g.setColor(ThemeUtils.getCurrentStyle().getButtonToggled());
             g2d.setStroke(STROKE_SELECTED);
             int dotSize = 6;
             g.drawOval(x + m,y + m ,size - 2*m,size -2*m);
+//            g.setColor(ThemeUtils.getCurrentStyle().getTextForeground());
+            g.setColor(ThemeUtils.getCurrentStyle().getButtonToggled().darker());
             g.fillOval(x + size / 2 - (dotSize / 2),y + size / 2 - (dotSize / 2) ,dotSize,dotSize);
         }
     }

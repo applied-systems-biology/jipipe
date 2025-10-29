@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
+import org.hkijena.jipipe.plugins.graphannotation.tools.EditAnnotationGraphNodeTool;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class DefaultGraphEditorToolPanel extends JIPipeDesktopFormGraphEditorToolPanel<DefaultGraphEditorTool> {
@@ -30,6 +31,9 @@ public class DefaultGraphEditorToolPanel extends JIPipeDesktopFormGraphEditorToo
 
         getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"), () -> {
             getGraphEditorUI().getSelectionManager().selectAll();
+        }));
+        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Edit annotations", JIPipe.RESOURCES.getIcon16("actions/pencil.png"), () -> {
+            getGraphEditorUI().selectTool(EditAnnotationGraphNodeTool.class);
         }));
     }
 }
