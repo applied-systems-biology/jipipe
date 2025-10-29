@@ -22,6 +22,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteUI;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopAnchorParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -41,6 +42,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
 
         // Initialize palette
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
+        this.paletteUI.setUserColors(new JIPipeDesktopSettingsBackedColorPaletteUserColorStorage(paletteUI));
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
 

@@ -22,6 +22,7 @@ import javax.swing.*;
  */
 public enum JIPipeDefaultApplicationSettingsSheetCategory {
     General("General", JIPipe.RESOURCES.getIcon16("actions/wrench.png")),
+    Miscellaneous("Miscellaneous", JIPipe.RESOURCES.getIcon16("actions/sliders.png")),
     Environments("Connected services", JIPipe.RESOURCES.getIcon16("actions/environment.png")),
     Data("Data", JIPipe.RESOURCES.getIcon16("actions/update-cache.png")),
     Samples("Samples", JIPipe.RESOURCES.getIcon16("actions/template.png")),

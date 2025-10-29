@@ -55,7 +55,7 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     private final boolean enableBackgroundColorSelection;
     private final boolean enableAlphaColorSelection;
     private final List<JIPipeDesktopColorPaletteColor> defaultColors;
-    private JIPipeDesktopColorPaletteUserColorStorage userColors = new JIPipeDesktopColorPaletteUserColorStorage();
+    private JIPipeDesktopColorPaletteUserColorStorage userColors = new JIPipeDesktopSimpleColorPaletteUserColorStorage();
     private final JPanel defaultColorsPanel = new JPanel();
     private final JPanel userColorsPanel = new JPanel();
     private JIPipeDesktopColorPaletteColor selectedColor;

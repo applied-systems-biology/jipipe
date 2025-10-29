@@ -19,34 +19,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JIPipeDesktopColorPaletteUserColorStorage {
-    @JsonProperty("colors")
-    private List<JIPipeDesktopColorPaletteColor> colors = new ArrayList<>();
+public interface JIPipeDesktopColorPaletteUserColorStorage {
 
-    public JIPipeDesktopColorPaletteUserColorStorage() {
+    void addColor(JIPipeDesktopColorPaletteColor color);
 
-    }
+    List<JIPipeDesktopColorPaletteColor> getColors();
 
-    public void addColor(JIPipeDesktopColorPaletteColor color) {
-        colors.add(new JIPipeDesktopColorPaletteColor(color));
-    }
+    void setColors(List<JIPipeDesktopColorPaletteColor> colors);
 
-    public List<JIPipeDesktopColorPaletteColor> getColors() {
-        return Collections.unmodifiableList(colors);
-    }
+    void removeColor(JIPipeDesktopColorPaletteColor color);
 
-    public void setColors(List<JIPipeDesktopColorPaletteColor> colors) {
-        this.colors = new ArrayList<>(colors);
-    }
-
-    public void removeColor(JIPipeDesktopColorPaletteColor color) {
-        this.colors.remove(color);
-    }
-
-    public void replaceColor(JIPipeDesktopColorPaletteColor oldColor, JIPipeDesktopColorPaletteColor newColor) {
-        int i = this.colors.indexOf(oldColor);
-        if(i >= 0) {
-            this.colors.set(i, newColor);
-        }
-    }
+    void replaceColor(JIPipeDesktopColorPaletteColor oldColor, JIPipeDesktopColorPaletteColor newColor);
 }

@@ -35,6 +35,10 @@ public class JIPipePresetsApplicationSettings extends JIPipeDefaultApplicationsS
 
     public static String ID = "org.hkijena.jipipe:presets";
     private StringList pinnedNodes = new StringList();
+    private String userPaletteColorsForegroundBackgroundSolid = "";
+    private String userPaletteColorsForegroundBackgroundAlpha = "";
+    private String userPaletteColorsForegroundSolid = "";
+    private String userPaletteColorsForegroundAlpha = "";
     private final DockLayoutSettings dockLayoutSettings = new DockLayoutSettings();
 
     public JIPipePresetsApplicationSettings() {
@@ -60,33 +64,81 @@ public class JIPipePresetsApplicationSettings extends JIPipeDefaultApplicationsS
         this.pinnedNodes = pinnedNodes;
     }
 
+    @SetJIPipeDocumentation(name = "Custom colors (fg+alpha)", description = "Custom colors")
+    @JIPipeParameter("user-palette-colors-fg-a")
+    @StringParameterSettings(monospace = true, visible = false)
+    public String getUserPaletteColorsForegroundAlpha() {
+        return userPaletteColorsForegroundAlpha;
+    }
+
+    @JIPipeParameter("user-palette-colors-fg-a")
+    public void setUserPaletteColorsForegroundAlpha(String userPaletteColorsForegroundAlpha) {
+        this.userPaletteColorsForegroundAlpha = userPaletteColorsForegroundAlpha;
+    }
+
+    @SetJIPipeDocumentation(name = "Custom colors (fg)", description = "Custom colors")
+    @JIPipeParameter("user-palette-colors-fg")
+    @StringParameterSettings(monospace = true, visible = false)
+    public String getUserPaletteColorsForegroundSolid() {
+        return userPaletteColorsForegroundSolid;
+    }
+
+    @JIPipeParameter("user-palette-colors-fg")
+    public void setUserPaletteColorsForegroundSolid(String userPaletteColorsForegroundSolid) {
+        this.userPaletteColorsForegroundSolid = userPaletteColorsForegroundSolid;
+    }
+
+    @SetJIPipeDocumentation(name = "Custom colors (fg+bg+alpha)", description = "Custom colors")
+    @JIPipeParameter("user-palette-colors-fg-bg-a")
+    @StringParameterSettings(monospace = true, visible = false)
+    public String getUserPaletteColorsForegroundBackgroundAlpha() {
+        return userPaletteColorsForegroundBackgroundAlpha;
+    }
+
+    @JIPipeParameter("user-palette-colors-fg-bg-a")
+    public void setUserPaletteColorsForegroundBackgroundAlpha(String userPaletteColorsForegroundBackgroundAlpha) {
+        this.userPaletteColorsForegroundBackgroundAlpha = userPaletteColorsForegroundBackgroundAlpha;
+    }
+
+    @SetJIPipeDocumentation(name = "Custom colors (fg+bg)", description = "Custom colors")
+    @JIPipeParameter("user-palette-colors-fg-bg")
+    @StringParameterSettings(monospace = true, visible = false)
+    public String getUserPaletteColorsForegroundBackgroundSolid() {
+        return userPaletteColorsForegroundBackgroundSolid;
+    }
+
+    @JIPipeParameter("user-palette-colors-fg-bg")
+    public void setUserPaletteColorsForegroundBackgroundSolid(String userPaletteColorsForegroundBackgroundSolid) {
+        this.userPaletteColorsForegroundBackgroundSolid = userPaletteColorsForegroundBackgroundSolid;
+    }
+
     public static JIPipePresetsApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipePresetsApplicationSettings.class);
     }
 
     @Override
     public JIPipeDefaultApplicationSettingsSheetCategory getDefaultCategory() {
-        return null;
+        return JIPipeDefaultApplicationSettingsSheetCategory.Miscellaneous;
     }
 
     @Override
     public String getId() {
-        return "";
+        return ID;
     }
 
     @Override
     public Icon getIcon() {
-        return null;
+        return JIPipe.RESOURCES.getIcon16("actions/format-text-code.png");
     }
 
     @Override
     public String getName() {
-        return "";
+        return "Presets (internal)";
     }
 
     @Override
     public String getDescription() {
-        return "";
+        return "Internally stored values";
     }
 
     public static class DockLayoutSettings extends AbstractJIPipeParameterCollection {

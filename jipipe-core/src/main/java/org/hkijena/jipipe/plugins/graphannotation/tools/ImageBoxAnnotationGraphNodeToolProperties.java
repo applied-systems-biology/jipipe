@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteUI;
+import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener {
@@ -30,6 +31,7 @@ public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopForm
     public ImageBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
+        this.paletteUI.setUserColors(new JIPipeDesktopSettingsBackedColorPaletteUserColorStorage(paletteUI));
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
     }
