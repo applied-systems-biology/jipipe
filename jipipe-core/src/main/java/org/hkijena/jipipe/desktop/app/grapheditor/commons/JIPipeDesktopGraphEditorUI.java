@@ -40,12 +40,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopGenericListCellRenderer;
-import org.hkijena.jipipe.plugins.graphannotation.tools.EditAnnotationGraphNodeTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameter;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -95,6 +95,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
     public static final KeyStroke KEY_STROKE_MOVE_SELECTION_DOWN = KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0, false);
 
     private final JIPipeGraphEditorUIApplicationSettings graphUISettings;
+    private final JIPipePresetsApplicationSettings presetSettings;
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final JIPipeGraph graph;
     private final JIPipeHistoryJournal historyJournal;
@@ -128,6 +129,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         this.historyJournal = historyJournal;
         this.canvasUI = new JIPipeDesktopGraphCanvasUI(getDesktopWorkbench(), this, graph, compartment, historyJournal);
         this.graphUISettings = settings;
+        this.presetSettings = JIPipe.isInstantiated() ? JIPipePresetsApplicationSettings.getInstance() : new JIPipePresetsApplicationSettings();
 
         initialize();
         graph.getGraphChangedEventEmitter().subscribeWeak(this);
@@ -221,11 +223,11 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         dockPanel.setMainComponent(mainPanel);
         dockPanel.getStateSavedEventEmitter().subscribe(this);
-        dockPanel.setShowToolbarLabels(graphUISettings.getDockLayoutSettings().isShowToolbarLabels());
+        dockPanel.setShowToolbarLabels(presetSettings.getDockLayoutSettings().isShowToolbarLabels());
         dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
             if ("show-toolbar-labels".equals(event.getKey())) {
-                if (graphUISettings.getDockLayoutSettings().isShowToolbarLabels() != dockPanel.isShowToolbarLabels()) {
-                    graphUISettings.getDockLayoutSettings().setShowToolbarLabels(dockPanel.isShowToolbarLabels());
+                if (presetSettings.getDockLayoutSettings().isShowToolbarLabels() != dockPanel.isShowToolbarLabels()) {
+                    presetSettings.getDockLayoutSettings().setShowToolbarLabels(dockPanel.isShowToolbarLabels());
                     JIPipe.getSettings().saveLater();
                 }
             }
@@ -1025,7 +1027,7 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
         return contextPanel;
     }
 
-    public void selectTool(Class<? extends JIPipeDesktopToggleableGraphEditorTool> toolClass) {
+    public void selectToolByClass(Class<? extends JIPipeDesktopToggleableGraphEditorTool> toolClass) {
         for (JIPipeDesktopGraphEditorTool tool : tools) {
             if(toolClass.isInstance(tool)) {
                 selectTool(tool);

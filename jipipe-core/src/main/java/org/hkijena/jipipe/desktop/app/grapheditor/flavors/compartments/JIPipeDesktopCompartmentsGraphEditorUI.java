@@ -64,6 +64,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
@@ -360,7 +361,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     protected void restoreDockStateFromSettings() {
         try {
-            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
             JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
             state.setAlwaysShowRightPanel(true);
             JsonUtils.getObjectMapper().readerForUpdating(state).readValue(settings.getCompartmentsEditorDockLayout());
@@ -372,7 +373,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
-            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
             settings.setCompartmentsEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getCurrentState()));
             JIPipe.getSettings().saveLater();
         }
@@ -381,7 +382,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
-            JIPipeGraphEditorUIApplicationSettings.DockLayoutSettings settings = JIPipeGraphEditorUIApplicationSettings.getInstance().getDockLayoutSettings();
+            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
             return settings.getCompartmentsEditorDockLayoutTemplates();
         }
         return null;
