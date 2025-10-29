@@ -235,17 +235,12 @@ public class CustomAnalyzer implements Measurements {
         if (rimp == null)
             rimp = redirectImage;
         if (rimp == null) {
-            IJ.error("Analyzer", "Redirect image (\"" + redirectTitle + "\")\n"
+            throw new RuntimeException("Redirect image (\"" + redirectTitle + "\")\n"
                     + "not found.");
-            redirectTarget = 0;
-            Macro.abort();
-            return null;
         }
         if (rimp.getWidth() != cimp.getWidth() || rimp.getHeight() != cimp.getHeight()) {
-            IJ.error("Analyzer", "Redirect image (\"" + redirectTitle + "\") \n"
+            throw new RuntimeException("Redirect image (\"" + redirectTitle + "\") \n"
                     + "is not the same size as the current image.");
-            Macro.abort();
-            return null;
         }
         return rimp;
     }
@@ -707,26 +702,11 @@ public class CustomAnalyzer implements Measurements {
      * false if the user cancels the dialog.
      */
     public boolean resetCounter() {
-        TextPanel tp = null;
-        int counter = rt.size();
-        int lineCount = tp != null ? IJ.getTextPanel().getLineCount() : 0;
-        ImageJ ij = IJ.getInstance();
-        boolean macro = (IJ.macroRunning() && !switchingModes) || Interpreter.isBatchMode();
         switchingModes = false;
-        if (counter > 0 && lineCount > 0 && unsavedMeasurements && !macro && ij != null && !ij.quitting()) {
-            YesNoCancelDialog d = new YesNoCancelDialog(ij, "ImageJ", "Save " + counter + " measurements?");
-            if (d.cancelPressed())
-                return false;
-            else if (d.yesPressed()) {
-                if (!(new MeasurementsWriter()).save(""))
-                    return false;
-            }
-        }
         umeans = null;
         rt.reset();
         RoiManager.resetMultiMeasureResults();
         unsavedMeasurements = false;
-        if (tp != null) tp.clear();
         return true;
     }
 
