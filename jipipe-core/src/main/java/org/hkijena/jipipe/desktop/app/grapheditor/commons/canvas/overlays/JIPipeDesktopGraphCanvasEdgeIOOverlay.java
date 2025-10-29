@@ -51,6 +51,9 @@ public class JIPipeDesktopGraphCanvasEdgeIOOverlay implements JIPipeDesktopGraph
     }
 
     private void paintForSlot(Graphics2D g, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDataSlot dataSlot) {
+        if(nodeUI == null || dataSlot == null) {
+            return;
+        }
         final int thickness = 6;
         JIPipeDesktopGraphNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(dataSlot);
         int nodeX = nodeUI.getX();
