@@ -14,13 +14,14 @@
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 
 import javax.swing.*;
 
 public class OptionalBitDepthEnumItemInfo implements JIPipeEnumParameterItemInfo {
     @Override
-    public Icon getIcon(Object value) {
+    public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (value instanceof OptionalBitDepth) {
             switch ((OptionalBitDepth) value) {
                 case Grayscale32f:
@@ -39,12 +40,12 @@ public class OptionalBitDepthEnumItemInfo implements JIPipeEnumParameterItemInfo
     }
 
     @Override
-    public String getLabel(Object value) {
+    public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return value.toString();
     }
 
     @Override
-    public String getTooltip(Object value) {
+    public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 }

@@ -20,6 +20,7 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 
 import javax.swing.*;
@@ -54,7 +55,7 @@ public class TableColumnConversionParameter extends JIPipeDynamicEnumParameter<O
     }
 
     @Override
-    public String renderLabel(Object value) {
+    public String renderLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
             JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry entry = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value;
             return entry.getName();
@@ -100,7 +101,7 @@ public class TableColumnConversionParameter extends JIPipeDynamicEnumParameter<O
     }
 
     @Override
-    public String renderTooltip(Object value) {
+    public String renderTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (value instanceof JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) {
             JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry entry = (JIPipeExpressionFunctionsServiceComponent.ColumnOperationEntry) value;
             return "<html><strong>" + HtmlEscapers.htmlEscaper().escape(entry.getName()) + "</strong><br/>" + HtmlEscapers.htmlEscaper().escape(entry.getDescription()) + "</html>";
@@ -110,7 +111,7 @@ public class TableColumnConversionParameter extends JIPipeDynamicEnumParameter<O
     }
 
     @Override
-    public Icon renderIcon(Object value) {
+    public Icon renderIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return JIPipe.RESOURCES.getIcon16("actions/formula.png");
     }
 }

@@ -85,30 +85,33 @@ public abstract class JIPipeDynamicEnumParameter<T> implements JIPipeEnumParamet
     /**
      * Function that renders the label. This is used in UI.
      *
-     * @param value the value
+     * @param value        the value
+     * @param renderTarget the render target
      * @return the rendered text
      */
-    public String renderLabel(T value) {
+    public String renderLabel(T value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return "" + value;
     }
 
     /**
      * Function that renders the tooltip. This is used in UI.
      *
-     * @param value the tooltip
+     * @param value        the tooltip
+     * @param renderTarget the render target
      * @return the rendered tooltip
      */
-    public String renderTooltip(T value) {
+    public String renderTooltip(T value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 
     /**
      * Function that renders the icon. This is used in UI.
      *
-     * @param value the value
+     * @param value        the value
+     * @param renderTarget the render target
      * @return the rendered icon
      */
-    public Icon renderIcon(T value) {
+    public Icon renderIcon(T value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 
@@ -117,7 +120,7 @@ public abstract class JIPipeDynamicEnumParameter<T> implements JIPipeEnumParamet
      *
      * @return the search string
      */
-    public String getSearchString(T value) {
+    public String getSearchString(T value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return StringUtils.nullToEmpty(value);
     }
 

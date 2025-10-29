@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -21,7 +22,7 @@ import javax.swing.*;
 
 public class JIPipeColumnMatchingEnumInfo implements JIPipeEnumParameterItemInfo {
     @Override
-    public Icon getIcon(Object value) {
+    public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         JIPipeIterationStepTextAnnotationColumMatching columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;
         switch (columMatching) {
             case Custom:
@@ -36,12 +37,12 @@ public class JIPipeColumnMatchingEnumInfo implements JIPipeEnumParameterItemInfo
     }
 
     @Override
-    public String getLabel(Object value) {
+    public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return StringUtils.orElse(value, "<None selected>");
     }
 
     @Override
-    public String getTooltip(Object value) {
+    public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         JIPipeIterationStepTextAnnotationColumMatching columMatching = (JIPipeIterationStepTextAnnotationColumMatching) value;
         switch (columMatching) {
             case Custom:

@@ -20,12 +20,12 @@ import javax.swing.*;
  */
 public class JIPipeDefaultEnumItemInfo implements JIPipeEnumParameterItemInfo {
     @Override
-    public Icon getIcon(Object value) {
+    public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 
     @Override
-    public String getLabel(Object value) {
+    public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (value instanceof Enum) {
             return value.toString();
         } else {
@@ -34,7 +34,7 @@ public class JIPipeDefaultEnumItemInfo implements JIPipeEnumParameterItemInfo {
     }
 
     @Override
-    public String getTooltip(Object value) {
+    public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 }

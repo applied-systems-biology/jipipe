@@ -23,6 +23,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeLegacyDataImportOperation;
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -66,33 +67,33 @@ public class DynamicDataImportOperationIdEnumParameter extends JIPipeDynamicEnum
     }
 
     @Override
-    public String renderLabel(String value) {
+    public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeLegacyDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getName();
         }
-        return super.renderLabel(value);
+        return super.renderLabel(value, renderTarget);
     }
 
     @Override
-    public String renderTooltip(String value) {
+    public String renderTooltip(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeLegacyDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getDescription();
         }
-        return super.renderTooltip(value);
+        return super.renderTooltip(value, renderTarget);
     }
 
     @Override
-    public Icon renderIcon(String value) {
+    public Icon renderIcon(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         if (JIPipe.getInstance() != null && dataTypeId != null) {
             JIPipeLegacyDataImportOperation operation = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).getOrDefault(value, null);
             if (operation != null)
                 return operation.getIcon();
         }
-        return super.renderIcon(value);
+        return super.renderIcon(value, renderTarget);
     }
 
     public String getDataTypeId() {

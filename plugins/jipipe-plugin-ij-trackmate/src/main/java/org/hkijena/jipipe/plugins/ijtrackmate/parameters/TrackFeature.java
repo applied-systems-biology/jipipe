@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.DynamicStringEnumParameter;
 
 import java.io.IOException;
@@ -48,7 +49,7 @@ public class TrackFeature extends DynamicStringEnumParameter {
     }
 
     @Override
-    public String renderLabel(String value) {
+    public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return VALUE_LABELS.getOrDefault(value, value);
     }
 

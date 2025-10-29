@@ -42,6 +42,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
@@ -604,7 +605,7 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
     public static class IterationModeEnumInfo implements JIPipeEnumParameterItemInfo {
 
         @Override
-        public Icon getIcon(Object value) {
+        public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             switch ((IterationMode) value) {
                 case MergingDataBatch:
                     return JIPipe.RESOURCES.getIcon16("actions/rabbitvcs-merge.png");
@@ -618,12 +619,12 @@ public class JIPipeGraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPi
         }
 
         @Override
-        public String getLabel(Object value) {
+        public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             return value.toString();
         }
 
         @Override
-        public String getTooltip(Object value) {
+        public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             switch ((IterationMode) value) {
                 case PassThrough:
                     return "Passes data from the inputs through the I/O nodes of the wrapped graph. " +

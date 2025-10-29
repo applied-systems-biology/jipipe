@@ -25,24 +25,27 @@ public interface JIPipeEnumParameterItemInfo {
     /**
      * Extracts an icon for the enum value
      *
-     * @param value the enum value
+     * @param value        the enum value
+     * @param renderTarget the render target
      * @return the icon of the enum value
      */
-    Icon getIcon(Object value);
+    Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget);
 
     /**
      * Extracts a custom label for the enum value
      *
-     * @param value the enum value
+     * @param value        the enum value
+     * @param renderTarget the render target
      * @return custom label
      */
-    String getLabel(Object value);
+    String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget);
 
     /**
      * Extracts a custom tooltip for the enum value
      *
-     * @param value the enum value
+     * @param value        the enum value
+     * @param renderTarget the render target
      * @return custom tooltip
      */
-    String getTooltip(Object value);
+    String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget);
 }

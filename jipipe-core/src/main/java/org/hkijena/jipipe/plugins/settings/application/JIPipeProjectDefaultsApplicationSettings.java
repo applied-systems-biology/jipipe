@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -155,7 +156,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
         }
 
         @Override
-        public String renderLabel(String value) {
+        public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplates() != null) {
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplates().getRegisteredTemplates().getOrDefault(value, null);
                 if (template != null) {
@@ -169,7 +170,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
         }
 
         @Override
-        public Icon renderIcon(String value) {
+        public Icon renderIcon(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             return JIPipe.RESOURCES.getIcon16("mimetypes/application-jipipe.png");
         }
     }

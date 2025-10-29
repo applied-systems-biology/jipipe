@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.omnipose.parameters;
 
 import org.hkijena.jipipe.plugins.omnipose.OmniposePlugin;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -21,17 +22,17 @@ import javax.swing.*;
 
 public class PretrainedOmnipose0ModelEnumItemInfo implements JIPipeEnumParameterItemInfo {
     @Override
-    public Icon getIcon(Object value) {
+    public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return OmniposePlugin.RESOURCES.getIcon16("omnipose.png");
     }
 
     @Override
-    public String getLabel(Object value) {
+    public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return StringUtils.orElse(value, "<Null>");
     }
 
     @Override
-    public String getTooltip(Object value) {
+    public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
         return null;
     }
 }

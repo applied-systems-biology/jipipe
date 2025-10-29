@@ -19,6 +19,7 @@ import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickDynamicEnu
 import org.hkijena.jipipe.plugins.parameters.api.enums.DynamicEnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeDynamicEnumParameter;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -83,7 +84,7 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
             parameter.setValue(comboBox.getSelectedItem());
             setParameter(parameter, false);
         });
-        comboBox.setRenderer(new Renderer(parameter));
+        comboBox.setRenderer(new Renderer(parameter, JIPipeEnumItemInfoRenderTarget.ComboBox));
         add(comboBox, BorderLayout.CENTER);
 
         JButton selectButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/edit.png"));
@@ -108,9 +109,11 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
     public static class Renderer<T> extends JLabel implements ListCellRenderer<T> {
 
         private final JIPipeDynamicEnumParameter<Object> parameter;
+        private final JIPipeEnumItemInfoRenderTarget renderTarget;
 
-        public Renderer(JIPipeDynamicEnumParameter<Object> parameter) {
+        public Renderer(JIPipeDynamicEnumParameter<Object> parameter, JIPipeEnumItemInfoRenderTarget renderTarget) {
             this.parameter = parameter;
+            this.renderTarget = renderTarget;
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
             setOpaque(true);
@@ -118,9 +121,9 @@ public class JIPipeDesktopDynamicEnumParameterEditorUI extends JIPipeDesktopPara
 
         @Override
         public Component getListCellRendererComponent(JList<? extends T> list, T value, int index, boolean isSelected, boolean cellHasFocus) {
-            setIcon(parameter.renderIcon(value));
-            setText(parameter.renderLabel(value));
-            setToolTipText(parameter.renderTooltip(value));
+            setIcon(parameter.renderIcon(value, renderTarget));
+            setText(parameter.renderLabel(value, renderTarget));
+            setToolTipText(parameter.renderTooltip(value, renderTarget));
             if (isSelected || cellHasFocus) {
                 setBackground(UIManager.getColor("List.selectionBackground"));
             } else {

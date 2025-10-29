@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameterSettings;
@@ -97,12 +98,12 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
     public static class ArtifactEnumItemInfo implements JIPipeEnumParameterItemInfo {
 
         @Override
-        public Icon getIcon(Object value) {
+        public Icon getIcon(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             return JIPipe.RESOURCES.getIcon16("actions/run-install.png");
         }
 
         @Override
-        public String getLabel(Object value) {
+        public String getLabel(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             if (value instanceof JIPipeArtifact) {
                 return ((JIPipeArtifact) value).getFullId();
             }
@@ -110,7 +111,7 @@ public class JIPipeDesktopArtifactQueryParameterEditorUI extends JIPipeDesktopPa
         }
 
         @Override
-        public String getTooltip(Object value) {
+        public String getTooltip(Object value, JIPipeEnumItemInfoRenderTarget renderTarget) {
             if (value instanceof JIPipeArtifact) {
                 return "<html>Name: " + ((JIPipeArtifact) value).getArtifactId() + "<br/>"
                         + "Publisher: " + ((JIPipeArtifact) value).getGroupId() + "<br/>"
