@@ -56,7 +56,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
@@ -71,7 +71,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public FilterRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -80,7 +80,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
+    public FilterRoi2dByStatisticsAlgorithm(FilterRoi2dByStatisticsAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);

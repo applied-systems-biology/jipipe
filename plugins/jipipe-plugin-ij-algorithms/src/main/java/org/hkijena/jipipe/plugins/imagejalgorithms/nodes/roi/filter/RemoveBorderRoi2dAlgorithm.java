@@ -46,7 +46,7 @@ import java.awt.*;
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "The ROI to be processed", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
-public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
+public class RemoveBorderRoi2dAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
     private RoiOutline outline = RoiOutline.ClosedPolygon;
@@ -58,7 +58,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public RemoveBorderRoisAlgorithm(JIPipeNodeInfo info) {
+    public RemoveBorderRoi2dAlgorithm(JIPipeNodeInfo info) {
         super(info);
         borderDefinition.getLeft().setExactValue(1);
         borderDefinition.getTop().setExactValue(1);
@@ -72,7 +72,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RemoveBorderRoisAlgorithm(RemoveBorderRoisAlgorithm other) {
+    public RemoveBorderRoi2dAlgorithm(RemoveBorderRoi2dAlgorithm other) {
         super(other);
         this.borderDefinition = new Margin(other.borderDefinition);
         this.outline = other.outline;

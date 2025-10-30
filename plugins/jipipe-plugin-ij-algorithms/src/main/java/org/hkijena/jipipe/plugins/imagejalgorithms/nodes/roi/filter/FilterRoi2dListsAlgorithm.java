@@ -40,16 +40,16 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class FilterRoi2dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
     private boolean outputEmptyLists = true;
 
-    public FilterROIListsAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public FilterROIListsAlgorithm(FilterROIListsAlgorithm other) {
+    public FilterRoi2dListsAlgorithm(FilterRoi2dListsAlgorithm other) {
         super(other);
         this.filter = new JIPipeExpressionParameter(other.filter);
         this.outputEmptyLists = other.outputEmptyLists;

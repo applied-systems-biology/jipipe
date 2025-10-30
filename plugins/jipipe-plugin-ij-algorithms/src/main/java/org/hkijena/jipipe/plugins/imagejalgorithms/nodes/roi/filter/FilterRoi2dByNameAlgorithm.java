@@ -43,7 +43,7 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class FilterRoi2dByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private boolean outputEmptyLists = true;
@@ -53,7 +53,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the info
      */
-    public FilterRoiByNameAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dByNameAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -62,7 +62,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public FilterRoiByNameAlgorithm(FilterRoiByNameAlgorithm other) {
+    public FilterRoi2dByNameAlgorithm(FilterRoi2dByNameAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
         this.outputEmptyLists = other.outputEmptyLists;

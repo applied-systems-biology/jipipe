@@ -35,7 +35,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -46,28 +45,29 @@ import java.awt.*;
 import java.util.*;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Filter 2D ROI by overlap", description = "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
-        "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI.")
+@SetJIPipeDocumentation(name = "Filter 2D ROI by overlap (old)", description = "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
+        "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This node is deprecated and was replaced with 'Filter 2D ROI by overlap'.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 1", create = true)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, description = "An optional reference image", optional = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI 1", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI 2", create = true)
-public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
+@Deprecated
+public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
 
-    public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dByOverlapOldAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
     }
 
-    public FilterROIByOverlapAlgorithm(FilterROIByOverlapAlgorithm other) {
+    public FilterRoi2dByOverlapOldAlgorithm(FilterRoi2dByOverlapOldAlgorithm other) {
         super(other);
         this.roi1Settings = new ROIFilterSettings(other.roi1Settings);
         this.roi2Settings = new ROIFilterSettings(other.roi2Settings);
@@ -443,7 +443,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied.")
         @JIPipeParameter("overlap-filter")
-        @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariablesInfo.class, hint = "per overlapping ROI")
+        @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsOldVariablesInfo.class, hint = "per overlapping ROI")
         public OptionalJIPipeExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

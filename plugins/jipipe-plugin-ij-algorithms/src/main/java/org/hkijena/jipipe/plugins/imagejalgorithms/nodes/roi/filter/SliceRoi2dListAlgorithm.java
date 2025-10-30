@@ -41,7 +41,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class SliceRoi2dListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange selectedIndices = new IntegerRange();
 
@@ -52,7 +52,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the info
      */
-    public SliceROIListAlgorithm(JIPipeNodeInfo info) {
+    public SliceRoi2dListAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -61,7 +61,7 @@ public class SliceROIListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public SliceROIListAlgorithm(SliceROIListAlgorithm other) {
+    public SliceRoi2dListAlgorithm(SliceRoi2dListAlgorithm other) {
         super(other);
         this.selectedIndices = new IntegerRange(other.selectedIndices);
         this.autoClamp = other.autoClamp;
