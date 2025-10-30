@@ -32,7 +32,6 @@ import org.hkijena.jipipe.utils.collections.IdentityArrayList;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,8 +55,7 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     private final boolean enableAlphaColorSelection;
     private final List<JIPipeDesktopColorPaletteColor> defaultColors;
     private JIPipeDesktopColorPaletteUserColorStorage userColors = new JIPipeDesktopSimpleColorPaletteUserColorStorage();
-    private final JPanel defaultColorsPanel = new JPanel();
-    private final JPanel userColorsPanel = new JPanel();
+    private final JPanel colorsPanel = new JPanel();
     private JIPipeDesktopColorPaletteColor selectedColor;
     private final SelectedEventEmitter selectedEventEmitter = new SelectedEventEmitter();
 
@@ -79,20 +77,18 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void initialize() {
-        defaultColorsPanel.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
-        userColorsPanel.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
+        colorsPanel.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
         setLayout(new BorderLayout());
-        add(UIUtils.boxVertical(defaultColorsPanel, userColorsPanel), BorderLayout.CENTER);
+        add(colorsPanel, BorderLayout.CENTER);
     }
 
     public void rebuild() {
-        defaultColorsPanel.removeAll();
-        userColorsPanel.removeAll();
+        colorsPanel.removeAll();
         for (JIPipeDesktopColorPaletteColor color : defaultColors) {
-            addSelectableColor(defaultColorsPanel, color);
+            addSelectableColor(colorsPanel, color, false);
         }
         for (JIPipeDesktopColorPaletteColor color : userColors.getColors()) {
-            JButton button = addSelectableColor(userColorsPanel, color);
+            JButton button = addSelectableColor(colorsPanel, color, true);
             JPopupMenu popupMenu = UIUtils.addRightClickPopupMenuToButton(button);
             popupMenu.add(UIUtils.createMenuItem("Edit", "Edits the color", JIPipe.RESOURCES.getIcon16("actions/edit.png"), () -> {
                 editUserColor(color);
@@ -111,7 +107,7 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
         addUserColorButton.addActionListener(e -> {
             addUserColor();
         });
-        userColorsPanel.add(addUserColorButton);
+        colorsPanel.add(addUserColorButton);
 
         revalidate();
         repaint(50);
@@ -179,9 +175,9 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
         }
     }
 
-    private JButton addSelectableColor(JPanel target, JIPipeDesktopColorPaletteColor color) {
+    private JButton addSelectableColor(JPanel target, JIPipeDesktopColorPaletteColor color, boolean user) {
         JButton button = new JButton();
-        button.setIcon(new JIPipeDesktopColorPaletteColorIcon(32, color, this));
+        button.setIcon(new JIPipeDesktopColorPaletteColorIcon(32, color, user, this));
         button.setBorder(null);
         button.setOpaque(false);
         button.addActionListener(e -> {

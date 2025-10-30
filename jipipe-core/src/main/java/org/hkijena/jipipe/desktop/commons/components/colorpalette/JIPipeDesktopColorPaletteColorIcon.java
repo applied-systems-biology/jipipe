@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.commons.components.colorpalette;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -22,11 +23,14 @@ public class JIPipeDesktopColorPaletteColorIcon implements Icon {
     private static final Stroke STROKE_SELECTED = new BasicStroke(3);
     private final int size;
     private final JIPipeDesktopColorPaletteColor color;
+    private final boolean isUserColor;
     private final JIPipeDesktopColorPaletteUI paletteUI;
+    private final Icon userColorIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/user.png");
 
-    public JIPipeDesktopColorPaletteColorIcon(int size, JIPipeDesktopColorPaletteColor color, JIPipeDesktopColorPaletteUI paletteUI) {
+    public JIPipeDesktopColorPaletteColorIcon(int size, JIPipeDesktopColorPaletteColor color, boolean isUserColor, JIPipeDesktopColorPaletteUI paletteUI) {
         this.size = size;
         this.color = color;
+        this.isUserColor = isUserColor;
         this.paletteUI = paletteUI;
     }
 
@@ -49,6 +53,9 @@ public class JIPipeDesktopColorPaletteColorIcon implements Icon {
 //            g.setColor(ThemeUtils.getCurrentStyle().getTextForeground());
             g.setColor(ThemeUtils.getCurrentStyle().getButtonToggled().darker());
             g.fillOval(x + size / 2 - (dotSize / 2),y + size / 2 - (dotSize / 2) ,dotSize,dotSize);
+        }
+        if(isUserColor) {
+            userColorIcon.paintIcon(c, g2d, x + (size / 2) - userColorIcon.getIconWidth() / 2, y+ (size / 2) - userColorIcon.getIconWidth() / 2);
         }
     }
 
