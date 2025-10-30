@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterAccessTreeUI;
 
 import java.util.List;
 

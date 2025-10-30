@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.tableeditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.UIUtils;

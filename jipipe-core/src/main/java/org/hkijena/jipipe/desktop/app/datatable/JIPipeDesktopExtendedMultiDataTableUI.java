@@ -46,7 +46,7 @@ import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopNode
 import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopDataPreviewControlUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;

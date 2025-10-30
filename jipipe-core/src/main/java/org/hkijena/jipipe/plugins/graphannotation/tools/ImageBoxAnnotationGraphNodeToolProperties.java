@@ -15,12 +15,11 @@ package org.hkijena.jipipe.plugins.graphannotation.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
-import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPalette;
-import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteColor;
-import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopColorPaletteUI;
-import org.hkijena.jipipe.desktop.commons.components.colorpalette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener {

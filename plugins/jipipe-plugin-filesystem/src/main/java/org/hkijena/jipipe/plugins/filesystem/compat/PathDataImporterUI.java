@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.filesystem.compat;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 

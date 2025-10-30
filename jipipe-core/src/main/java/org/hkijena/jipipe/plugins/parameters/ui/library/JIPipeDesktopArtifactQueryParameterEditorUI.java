@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPickEnumValueDialog;
+import org.hkijena.jipipe.desktop.commons.components.pickers.JIPipeDesktopPickEnumValueDialog;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumItemInfoRenderTarget;
 import org.hkijena.jipipe.plugins.parameters.api.enums.JIPipeEnumParameterItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;

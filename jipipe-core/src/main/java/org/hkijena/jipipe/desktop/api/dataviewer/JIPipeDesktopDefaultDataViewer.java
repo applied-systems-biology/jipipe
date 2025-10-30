@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyReadOnlyTextArea;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyReadOnlyTextField;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextArea;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextField;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;

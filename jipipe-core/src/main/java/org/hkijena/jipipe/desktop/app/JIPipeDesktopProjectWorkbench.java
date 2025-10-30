@@ -67,10 +67,15 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNo
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
-import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecentProjectsMenu;
 import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryStatusUI;
+import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;

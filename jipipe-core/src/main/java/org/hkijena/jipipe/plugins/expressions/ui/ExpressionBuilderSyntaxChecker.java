@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.expressions.ui;
 
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 
 import javax.swing.*;

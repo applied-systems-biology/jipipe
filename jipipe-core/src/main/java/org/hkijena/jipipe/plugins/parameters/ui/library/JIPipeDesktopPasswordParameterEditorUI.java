@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyPasswordField;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyPasswordField;
 import org.hkijena.jipipe.plugins.parameters.library.auth.JIPipePasswordParameter;
 
 import javax.swing.*;

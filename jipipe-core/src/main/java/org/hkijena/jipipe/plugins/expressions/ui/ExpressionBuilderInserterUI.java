@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.expressions.ui;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeExpressionFunctionsServiceComponent;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.utils.StringUtils;
 

@@ -14,10 +14,10 @@
 package org.hkijena.jipipe.desktop;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopAdvancedFileChooser;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooser;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.ModernNativeFileChooserResponse;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcadvanced.JIPipeDesktopAdvancedFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooser;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooserResponse;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
