@@ -510,6 +510,15 @@ public class JIPipeProgressInfo implements Cancelable {
         warn("  " + "^".repeat(length));
     }
 
+    /**
+     * Throws an exception if the process is cancelled
+     */
+    public void cancellationCheck() {
+        if(isCancelled()) {
+            throw new RuntimeException(new InterruptedException("Cancellation was requested"));
+        }
+    }
+
     public interface StatusUpdatedEventListener {
         void onProgressStatusUpdated(StatusUpdatedEvent event);
     }

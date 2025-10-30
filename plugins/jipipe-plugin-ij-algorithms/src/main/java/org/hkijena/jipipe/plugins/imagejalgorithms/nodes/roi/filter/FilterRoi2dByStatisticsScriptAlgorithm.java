@@ -56,7 +56,7 @@ import java.util.List;
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorithm {
+public class FilterRoi2dByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private PythonInterpreter pythonInterpreter;
@@ -69,7 +69,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
      *
      * @param info the info
      */
-    public FilterRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(scriptParameters);
     }
@@ -79,7 +79,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
      *
      * @param other the other
      */
-    public FilterRoiByStatisticsScriptAlgorithm(FilterRoiByStatisticsScriptAlgorithm other) {
+    public FilterRoi2dByStatisticsScriptAlgorithm(FilterRoi2dByStatisticsScriptAlgorithm other) {
         super(other);
         this.code = new PythonScriptParameter(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);

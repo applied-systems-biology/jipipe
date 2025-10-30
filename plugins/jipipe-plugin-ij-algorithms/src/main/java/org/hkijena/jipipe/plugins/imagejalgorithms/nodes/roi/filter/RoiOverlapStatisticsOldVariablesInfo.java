@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -23,7 +23,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpres
 import java.util.HashSet;
 import java.util.Set;
 
-public class RoiOverlapStatisticsVariablesInfo implements JIPipeExpressionVariablesInfo {
+@Deprecated
+public class RoiOverlapStatisticsOldVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 

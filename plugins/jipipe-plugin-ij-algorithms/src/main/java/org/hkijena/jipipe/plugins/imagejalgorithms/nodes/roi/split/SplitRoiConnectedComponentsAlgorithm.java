@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.RoiOverlapStatisticsVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.RoiOverlapStatisticsOldVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -436,7 +436,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     @SetJIPipeDocumentation(name = "Overlap filter", description = "This filter is applied to any combination of ROIs that have an overlap. Please open the expression builder to see a list of all available variables. If the filter is empty, " +
             "no filtering is applied.")
     @JIPipeParameter("overlap-filter")
-    @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = RoiOverlapStatisticsOldVariablesInfo.class)
     public JIPipeExpressionParameter getOverlapFilter() {
         return overlapFilter;
     }

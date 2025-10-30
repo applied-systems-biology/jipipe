@@ -809,13 +809,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
-        registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
+        registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoi2dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
         registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
-        registerNodeType("ij1-roi-filter-statistics", FilterRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
-        registerNodeType("ij1-roi-filter-slice", SliceROIListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
-        registerNodeType("ij1-roi-filter-by-name", FilterRoiByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-statistics", FilterRoi2dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-slice", SliceRoi2dListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-by-name", FilterRoi2dByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
         registerNodeType("ij1-roi-color-by-name", ColorRoiByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
         registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
@@ -829,7 +829,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-set-properties-from-table", ChangeRoiPropertiesFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
         registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
         registerNodeType("ij1-roi-to-rgb", RoiToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));
-        registerNodeType("ij1-roi-filter-statistics-script", FilterRoiByStatisticsScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
+        registerNodeType("ij1-roi-filter-statistics-script", FilterRoi2dByStatisticsScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
         registerNodeType("ij1-roi-filter-and-merge-statistics-script", FilterAndMergeRoiByStatisticsScriptAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/python.png"));
         registerNodeType("ij1-roi-from-table-rectangular", TableToRectangularROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-table-circle", TableToCircularROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-circle.png"));
@@ -843,9 +843,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-extract-from-roi", ExtractFromROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
         registerNodeType("ij1-roi-assemble-from-roi", AssembleExtractedROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-image.png"));
         registerNodeType("ij1-roi-to-annotations", RoiPropertiesToAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
-        registerNodeType("ij1-roi-filter-by-overlap", FilterROIByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-by-overlap", FilterRoi2dByOverlapOldAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-by-overlap-v2", FilterRoi2dByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-generate-name", ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tag.png"));
-        registerNodeType("ij1-roi-filter-roi-lists", FilterROIListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-roi-lists", FilterRoi2dListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-dimension-reorder", ReorderRoiDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
         registerNodeType("ij1-roi-generate-missing", GenerateMissingRoiListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
         registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/editclear.png"));
@@ -874,7 +875,18 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
-        registerEnumParameterType("ij1-roi-draw-line:roi-type", DrawLineOvalRectangleRoiAlgorithm.RoiType.class, "ROI type", "Available ROI types");
+        registerEnumParameterType("ij1-roi-filter-by-overlap-v2:overlap-type",
+                FilterRoi2dByOverlapAlgorithm.OverlapMode.class,
+                "ROI2D Overlap mode",
+                "Different modes for the overlap filtering node");
+        registerEnumParameterType("ij1-roi-filter-by-overlap-v2:reference-mode",
+                FilterRoi2dByOverlapAlgorithm.ReferenceMode.class,
+                "ROI2D overlap reference mode",
+                "Different image reference modes for the overlap filtering node");
+        registerEnumParameterType("ij1-roi-draw-line:roi-type",
+                DrawLineOvalRectangleRoiAlgorithm.RoiType.class,
+                "ROI type",
+                "Available ROI types");
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,
                 "Magic wand mode",
