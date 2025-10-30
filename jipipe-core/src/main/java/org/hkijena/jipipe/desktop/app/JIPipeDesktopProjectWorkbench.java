@@ -168,6 +168,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Install the run notifier
         JIPipeDesktopRunnableQueueNotifier.install();
+
+        // Start indexing
+        nodeDatabase.rebuildImmediately();
     }
 
 
@@ -502,6 +505,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         backgroundQueuesIndicator.addQueue(project.getSnapshotQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/clock-rotate-left.png"));
         backgroundQueuesIndicator.addQueue(backupQueue, JIPipe.RESOURCES.getIcon16Inverted("actions/document-save-all.png"));
         backgroundQueuesIndicator.addQueue(JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/document-preview.png"));
+        backgroundQueuesIndicator.addQueue(nodeDatabase.getQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
         statusBar.add(backgroundQueuesIndicator);
         statusBar.add(Box.createHorizontalStrut(16));
 

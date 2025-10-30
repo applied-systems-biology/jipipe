@@ -56,4 +56,9 @@ public interface JIPipeNodeDatabaseSearch {
      * @return ranked entries
      */
     List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType);
+
+    /**
+     * Applies indexing operations
+     */
+    void buildIndex();
 }

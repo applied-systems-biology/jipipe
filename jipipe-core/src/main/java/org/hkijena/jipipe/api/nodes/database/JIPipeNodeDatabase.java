@@ -120,4 +120,8 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
     }
+
+    public void buildIndex() {
+        getSearch().buildIndex();
+    }
 }
