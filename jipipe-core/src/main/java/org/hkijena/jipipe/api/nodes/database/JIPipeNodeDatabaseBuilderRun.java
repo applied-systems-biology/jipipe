@@ -117,10 +117,6 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
         }
 
         database.setEntries(newEntries);
-//        try {
-//            database.getLuceneSearch().rebuildDirectory();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
+        database.buildIndex();
     }
 }

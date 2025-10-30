@@ -212,4 +212,9 @@ public class JIPipeLegacyNodeDatabaseSearch implements JIPipeNodeDatabaseSearch 
 
         return result;
     }
+
+    @Override
+    public void buildIndex() {
+
+    }
 }

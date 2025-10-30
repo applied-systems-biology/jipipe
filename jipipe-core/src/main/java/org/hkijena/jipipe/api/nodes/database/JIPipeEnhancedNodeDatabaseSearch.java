@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.nodes.database;
 
+import com.google.common.collect.ImmutableList;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -118,7 +119,13 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
         return internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
     }
 
-    /* ------------------------------- Core Query ------------------------------- */
+    @Override
+    public void buildIndex() {
+        for (JIPipeNodeDatabaseEntry entry : ImmutableList.copyOf(nodeDatabase.getEntries())) {
+            // Create a candidate view which will attach the indexed info
+            CandidateView.from(entry);
+        }
+    }
 
     private List<JIPipeNodeDatabaseEntry> internalQuery(String rawText,
                                                         JIPipeNodeDatabasePipelineVisibility role,
