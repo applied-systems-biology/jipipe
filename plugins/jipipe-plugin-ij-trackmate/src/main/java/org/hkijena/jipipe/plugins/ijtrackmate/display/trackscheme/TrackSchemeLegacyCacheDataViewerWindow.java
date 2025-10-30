@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCachedDataViewerAnnotationInfoPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopLegacyCacheDataViewerWindow;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFlexContentPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFlexContentPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 

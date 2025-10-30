@@ -35,7 +35,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
+import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventEmitter;

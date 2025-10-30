@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;

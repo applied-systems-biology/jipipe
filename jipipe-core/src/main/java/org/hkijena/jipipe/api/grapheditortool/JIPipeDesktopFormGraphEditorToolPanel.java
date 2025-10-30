@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.grapheditortool;
 
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 
 import java.awt.*;
 

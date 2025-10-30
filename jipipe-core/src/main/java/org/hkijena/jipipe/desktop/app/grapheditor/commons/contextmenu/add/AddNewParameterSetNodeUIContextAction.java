@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterKeyPickerUI;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 

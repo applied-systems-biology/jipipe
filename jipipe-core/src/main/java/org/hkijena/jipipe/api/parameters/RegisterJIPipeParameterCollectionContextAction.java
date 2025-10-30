@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.parameters;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.utils.JIPipeDefaultResourceManagerSupplier;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 

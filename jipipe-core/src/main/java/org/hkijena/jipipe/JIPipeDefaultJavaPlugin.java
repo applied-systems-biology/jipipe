@@ -60,7 +60,7 @@ import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotPreview;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultDataSlotRowUI;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernext.JIPipeDesktopFileChooserNext;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.functions.ColumnOperationAdapterFunction;

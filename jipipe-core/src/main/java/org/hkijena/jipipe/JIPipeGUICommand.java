@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopSplashScreen;
+import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;

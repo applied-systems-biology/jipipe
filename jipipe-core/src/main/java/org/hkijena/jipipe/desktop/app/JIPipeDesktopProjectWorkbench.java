@@ -62,15 +62,21 @@ import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopLogViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsButton;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableBackgroundQueuesIndicator;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
-import org.hkijena.jipipe.desktop.commons.components.*;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecentProjectsMenu;
 import org.hkijena.jipipe.desktop.commons.components.support.JIPipeDesktopSupportAssistantWindow;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryOptionsControl;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopMemoryStatusUI;
+import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopReloadableValidityChecker;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopNotificationButton;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopWorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
@@ -490,6 +496,16 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private void initializeStatusBar() {
         JXStatusBar statusBar = new JXStatusBar();
         statusBar.putClientProperty(BasicStatusBarUI.AUTO_ADD_SEPARATOR, false);
+
+        // Background processes
+        JIPipeDesktopRunnableBackgroundQueuesIndicator backgroundQueuesIndicator = new JIPipeDesktopRunnableBackgroundQueuesIndicator();
+        backgroundQueuesIndicator.addQueue(project.getSnapshotQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/clock-rotate-left.png"));
+        backgroundQueuesIndicator.addQueue(backupQueue, JIPipe.RESOURCES.getIcon16Inverted("actions/document-save-all.png"));
+        backgroundQueuesIndicator.addQueue(JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/document-preview.png"));
+        statusBar.add(backgroundQueuesIndicator);
+        statusBar.add(Box.createHorizontalStrut(16));
+
+        // Status bar text
         statusText = new JLabel("Ready ...");
         statusBar.add(statusText);
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
@@ -513,18 +529,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Memory meter
         statusBar.add(new JIPipeDesktopMemoryStatusUI());
-
-        statusBar.add(UIUtils.createVerticalSeparator());
-
-        // Snapshot/History control
-        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, project.getSnapshotQueue(), "actions/clock-rotate-left.png"));
-
-        // Backup control
-        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, backupQueue, "actions/document-save-all.png"));
-
-        // Thumbnail generation control
-        statusBar.add(new JIPipeDesktopCompactRunnableQueueButton(this, JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), "actions/document-preview.png"));
-
 
         add(statusBar, BorderLayout.SOUTH);
     }

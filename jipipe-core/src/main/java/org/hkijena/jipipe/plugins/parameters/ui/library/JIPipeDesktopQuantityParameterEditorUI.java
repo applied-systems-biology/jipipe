@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.QuantityParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.datatable;
 
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopDataPreviewControlUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;

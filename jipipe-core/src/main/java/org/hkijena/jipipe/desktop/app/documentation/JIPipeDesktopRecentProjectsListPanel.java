@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeRecentProjectsRegistry;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopRecentProjectListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopRecentProjectListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 

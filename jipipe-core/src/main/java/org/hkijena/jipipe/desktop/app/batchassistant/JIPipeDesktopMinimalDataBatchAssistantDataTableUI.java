@@ -36,9 +36,9 @@ import org.hkijena.jipipe.desktop.app.cache.exporters.JIPipeDesktopDataTableToZI
 import org.hkijena.jipipe.desktop.app.resultanalysis.renderers.JIPipeDesktopAnnotationTableCellRenderer;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.tableeditor.JIPipeDesktopTableEditor;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDataPreviewControlUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopDataPreviewControlUI;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopComponentCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextFieldTableRowFilter;

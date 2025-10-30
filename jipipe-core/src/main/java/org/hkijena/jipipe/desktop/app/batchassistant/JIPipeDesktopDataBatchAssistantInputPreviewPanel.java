@@ -14,13 +14,11 @@
 package org.hkijena.jipipe.desktop.app.batchassistant;
 
 import com.google.common.collect.ImmutableList;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 
 import javax.swing.*;
 import java.awt.*;

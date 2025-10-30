@@ -2,7 +2,7 @@ package org.hkijena.jipipe.desktop.app.codeeditor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
 import org.hkijena.jipipe.utils.CustomEditorPane;
 import org.hkijena.jipipe.utils.ThemeUtils;

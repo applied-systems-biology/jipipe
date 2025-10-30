@@ -43,9 +43,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.properties.JIPipeDeskt
 import org.hkijena.jipipe.desktop.app.parameterreference.JIPipeDesktopGraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopMergedProjectSettings;
 import org.hkijena.jipipe.desktop.app.settings.project.JIPipeDesktopProjectOverviewRunManager;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormHelpPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditor;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopHTMLEditorKit;

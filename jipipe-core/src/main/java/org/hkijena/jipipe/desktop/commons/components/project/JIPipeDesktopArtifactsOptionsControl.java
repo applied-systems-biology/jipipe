@@ -1,0 +1,181 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.desktop.commons.components.project;
+
+import net.java.balloontip.BalloonTip;
+import net.java.balloontip.styles.EdgedBalloonStyle;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
+import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
+import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+
+import javax.swing.*;
+import java.awt.*;
+import java.nio.file.Path;
+
+public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIPipeArtifactsServiceComponent.UpdatedEventListener {
+
+    private static boolean balloonTipDismissed;
+    private final JIPipeDesktopProjectWorkbench workbench;
+    private final JPopupMenu popupMenu = new JPopupMenu();
+    private final JIPipeArtifactApplicationSettings settings = JIPipeArtifactApplicationSettings.getInstance();
+    private BalloonTip balloonTip;
+
+    public JIPipeDesktopArtifactsOptionsControl(JIPipeDesktopProjectWorkbench workbench) {
+        this.workbench = workbench;
+        initialize();
+        initializeBalloon();
+        updateText();
+        JIPipe.getArtifacts().getUpdatedEventEmitter().subscribeWeak(this);
+
+        showBalloonIfNeeded();
+    }
+
+    private void initialize() {
+        UIUtils.makeButtonFlat(this);
+        setIcon(JIPipe.RESOURCES.getIcon16("actions/environment.png"));
+        UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadMenu);
+    }
+
+    private void initializeBalloon() {
+        EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ThemeUtils.getCurrentStyle().getPrimaryColor());
+        JPanel content = new JPanel(new BorderLayout(8, 8));
+        content.setOpaque(false);
+        content.add(UIUtils.createJLabel("No connection to artifacts repository", 16), BorderLayout.NORTH);
+        content.add(new JLabel("<html><strong>JIPipe was unable to query the list of available artifacts.</strong><br/>" +
+                "Pipelines that rely on artifacts (Cellpose, Python, R, ...) that are not installed may fail.<br/><br/>" +
+                "Please check your internet connection and try again by clicking <strong>Try again</strong>. <br/>" +
+                "If no internet is available, you can also connect JIPipe to a local repository.</html>"), BorderLayout.CENTER);
+        JPanel buttons = UIUtils.boxHorizontal(
+                UIUtils.createButton("Never show this again", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), this::disableWarning),
+                Box.createHorizontalStrut(16),
+                UIUtils.createButton("Try again", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts),
+                UIUtils.createButton("Add local repository", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository),
+                UIUtils.createButton("Dismiss", JIPipe.RESOURCES.getIcon16("actions/clock.png"), this::closeBalloon)
+        );
+        buttons.setOpaque(false);
+        content.add(buttons, BorderLayout.SOUTH);
+        balloonTip = new BalloonTip(
+                this,
+                content,
+                style,
+                BalloonTip.Orientation.LEFT_ABOVE,
+                BalloonTip.AttachLocation.ALIGNED,
+                30, 10,
+                true
+        );
+        balloonTip.setVisible(false);
+
+        JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
+        closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        closeButton.setOpaque(false);
+        balloonTip.setCloseButton(closeButton, false);
+        workbench.getProjectWindow().registerBalloon(balloonTip);
+    }
+
+    private void closeBalloon() {
+        balloonTipDismissed = true;
+        balloonTip.setVisible(false);
+    }
+
+    private void disableWarning() {
+        settings.setShowConnectionIssueBallon(false);
+        JIPipe.getSettings().saveLater();
+        closeBalloon();
+    }
+
+    private void reloadMenu() {
+        popupMenu.removeAll();
+
+        popupMenu.add(UIUtils.createMenuItem("Manage project-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentProjectSettings));
+        popupMenu.add(UIUtils.createMenuItem("Manage application-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentApplicationSettings));
+        popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Install/uninstall remote artifacts ...", "Manage installed artifacts", JIPipe.RESOURCES.getIcon16("actions/run-install.png"), this::manageArtifacts));
+        popupMenu.add(UIUtils.createMenuItem("Refresh remote artifacts", "Refreshes the list of installed and available artifacts", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"), this::refreshArtifacts));
+        popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Add remote artifacts local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
+        popupMenu.add(UIUtils.createMenuItem("Manage remote artifacts settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+    }
+
+    private void openEnvironmentApplicationSettings() {
+        workbench.openApplicationSettings("/Connected services/Defaults");
+    }
+
+    private void openEnvironmentProjectSettings() {
+        workbench.openProjectSettings("/General/Connected services");
+    }
+
+    private void addLocalRepository() {
+        closeBalloon();
+        Path selectedPath = JIPipeDesktop.openDirectory(workbench.getWindow(), workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Add local repository", new HTMLText("Please select the root directory of the local repository. It should contain directories like 'org', 'com', and 'sc'."));
+        settings.getRepositories().add(new JIPipeArtifactRepositoryReference("Local", selectedPath.toString(), "", JIPipeArtifactRepositoryType.LocalDirectory));
+        JIPipe.getSettings().saveLater();
+
+        JOptionPane.showMessageDialog(workbench.getWindow(),
+                "<html>The local directory " + selectedPath + " was added to the list of repositories.<br/>" +
+                        "If you want to remove/change the repositories, navigate to the application settings.</html>",
+                "Add local repository",
+                JOptionPane.INFORMATION_MESSAGE);
+
+        refreshArtifacts();
+    }
+
+    private void manageArtifacts() {
+        JIPipeDesktopArtifactManagerUI.show(workbench);
+    }
+
+    private void refreshArtifacts() {
+        JIPipe.getArtifacts().enqueueUpdateCachedArtifacts();
+    }
+
+    private void openApplicationSettings() {
+        workbench.openApplicationSettings("/Connected services/Artifacts");
+    }
+
+    private void updateText() {
+        setToolTipText("Artifacts (" + JIPipe.getArtifacts().getCachedRemoteArtifacts().size() + " available, " + JIPipe.getArtifacts().getCachedLocalArtifacts().size() + " installed)");
+        if (JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/gtk-disconnect.png"));
+            setText("No connection");
+        } else {
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/environment.png"));
+            setText("Connected services");
+        }
+    }
+
+    @Override
+    public void onArtifactsRegistryUpdated(JIPipeArtifactsServiceComponent.UpdatedEvent event) {
+        updateText();
+        showBalloonIfNeeded();
+
+        // Hide the balloon tip
+        if (!JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+            balloonTip.setVisible(false);
+        }
+    }
+
+    private void showBalloonIfNeeded() {
+        if (!balloonTipDismissed && settings.isShowConnectionIssueBallon() && JIPipe.getArtifacts().getCachedRemoteArtifacts().isEmpty()) {
+            UIUtils.invokeMuchLater(1000, () -> balloonTip.setVisible(true));
+        }
+    }
+}

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopFancyTextField;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyTextField;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;

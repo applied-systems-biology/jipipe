@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopParameterAccessTreeUI;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterAccessTreeUI;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameterCollection;

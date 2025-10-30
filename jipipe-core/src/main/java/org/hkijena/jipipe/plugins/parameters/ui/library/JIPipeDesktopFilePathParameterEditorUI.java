@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.ui.library;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopPathEditorComponent;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;

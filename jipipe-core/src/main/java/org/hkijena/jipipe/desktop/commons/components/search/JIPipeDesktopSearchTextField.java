@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.search;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopDocumentChangeListener;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
