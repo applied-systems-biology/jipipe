@@ -49,6 +49,10 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
         node.getShapeParameters().setBorderColor(color.getForeground());
         node.getShapeParameters().setFillColor(new OptionalColorParameter(color.getBackground(), true));
         node.getTextLocation().setAnchor(anchor);
+        node.getTextLocation().setMarginBottom(5);
+        node.getTextLocation().setMarginLeft(5);
+        node.getTextLocation().setMarginRight(5);
+        node.getTextLocation().setMarginTop(5);
 
         return node;
     }
