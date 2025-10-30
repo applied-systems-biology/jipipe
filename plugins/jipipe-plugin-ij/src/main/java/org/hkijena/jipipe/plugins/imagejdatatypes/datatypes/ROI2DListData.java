@@ -1558,26 +1558,13 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
             }
         }
 
-//        int currentSlice = imp.getCurrentSlice();
-//        for (int slice = 1; slice <= nSlices; slice++) {
-//            int sliceUse = slice;
-//            if (nSlices == 1) sliceUse = currentSlice;
-//            imp.setSliceWithoutUpdate(sliceUse);
-//            for (Roi roi0 : this) {
-//                imp.setRoi(roi0);
-//                aSys.measure();
-//                ResultsTableData forRoi = new ResultsTableData(rtSys);
-//                result.mergeWith(forRoi);
-//            }
-//        }
-
         // Ensure that the results table is closed
-        SwingUtilities.invokeLater(() -> {
-            if (ResultsTable.getResultsWindow() != null) {
-                ResultsTable.getResultsWindow().close();
-            }
-        });
-
+        // We should not open any windows?
+//        SwingUtilities.invokeLater(() -> {
+//            if (ResultsTable.getResultsWindow() != null) {
+//                ResultsTable.getResultsWindow().close();
+//            }
+//        });
 
         return result;
     }

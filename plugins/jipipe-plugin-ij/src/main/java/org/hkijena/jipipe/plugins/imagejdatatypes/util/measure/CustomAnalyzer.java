@@ -13,63 +13,47 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-import ij.*;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.Prefs;
+import ij.WindowManager;
 import ij.gui.*;
-import ij.macro.Interpreter;
 import ij.measure.Calibration;
 import ij.measure.Measurements;
 import ij.measure.ResultsTable;
-import ij.plugin.MeasurementsWriter;
-import ij.plugin.frame.RoiManager;
+import ij.plugin.filter.Analyzer;
 import ij.process.FloatPolygon;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import ij.text.TextPanel;
-
-import java.awt.*;
+import java.awt.Rectangle;
 
 /**
- * Copy of {@link ij.plugin.filter.Analyzer} that removes some of the GUI-dependent functions and also does not rely on static functions.
+ * Headless version of {@link ij.plugin.filter.Analyzer} that removes GUI-dependent functions 
+ * and static dependencies, optimized for batch processing in JIPipe.
  */
 public class CustomAnalyzer implements Measurements {
 
-    // Order must agree with order of checkboxes in Set Measurements dialog box
-    private static final int[] list = {AREA, MEAN, STD_DEV, MODE, MIN_MAX,
-            CENTROID, CENTER_OF_MASS, PERIMETER, RECT, ELLIPSE, SHAPE_DESCRIPTORS, FERET,
-            INTEGRATED_DENSITY, MEDIAN, SKEWNESS, KURTOSIS, AREA_FRACTION, STACK_POSITION,
-            LIMIT, LABELS, INVERT_Y, SCIENTIFIC_NOTATION, ADD_TO_OVERLAY, NaN_EMPTY_CELLS};
     private final String MEASUREMENTS = "measurements";
-    private final String MARK_WIDTH = "mark.width";
     private final String PRECISION = "precision";
-    public Color darkBlue = new Color(0, 0, 160);
-    public int markWidth;
-    public int precision = Prefs.getInt(PRECISION, 3);
-    private boolean drawLabels = true;
-    private String arg;
     private ImagePlus imp;
     private ResultsTable rt;
     private int measurements;
-    private StringBuffer min, max, mean, sd;
-    private boolean disableReset;
-    private boolean resultsUpdated;
     private boolean unsavedMeasurements;
     private int systemMeasurements = Prefs.getInt(MEASUREMENTS, AREA + MEAN + MIN_MAX);
     private float[] umeans = new float[MAX_STANDARDS];
     private int redirectTarget;
     private String redirectTitle = "";
     private ImagePlus redirectImage; // non-displayed images
-    private int firstParticle, lastParticle;
-    private boolean switchingModes;
     private boolean showMin = true;
     private boolean showAngle = true;
+    private int precision = Prefs.getInt(PRECISION, 3);
 
     public CustomAnalyzer() {
         rt = new ResultsTable();
         rt.setIsResultsTable(true);
         rt.showRowNumbers(true);
-        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
-        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
+        updateTablePrecision();
         measurements = systemMeasurements;
     }
 
@@ -86,7 +70,7 @@ public class CustomAnalyzer implements Measurements {
      * Construct a new Analyzer using an ImagePlus object and a ResultsTable.
      */
     public CustomAnalyzer(ImagePlus imp, ResultsTable rt) {
-        this(imp, ij.plugin.filter.Analyzer.getMeasurements(), rt);
+        this(imp, Analyzer.getMeasurements(), rt);
     }
 
     /**
@@ -96,41 +80,13 @@ public class CustomAnalyzer implements Measurements {
     public CustomAnalyzer(ImagePlus imp, int measurements, ResultsTable rt) {
         this.imp = imp;
         this.measurements = measurements;
-        if (rt == null)
+        if (rt == null) {
             rt = new ResultsTable();
-        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
-        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
-        this.rt = rt;
-    }
-
-    private void addRoiToOverlay() {
-        Roi roi = imp.getRoi();
-        if (roi == null)
-            return;
-        roi = (Roi) roi.clone();
-        if (imp.getStackSize() > 1) {
-            if (imp.isHyperStack() || imp.isComposite())
-                roi.setPosition(0, imp.getSlice(), imp.getFrame());
-            else
-                roi.setPosition(imp.getCurrentSlice());
+            updateTablePrecision();
+        } else {
+            this.rt = rt;
+            updateTablePrecision();
         }
-        if (roi.getName() == null)
-            roi.setName("" + rt.size());
-        //roi.setName(IJ.getString("Label:", "m"+rt.size()));
-        roi.setIgnoreClipRect(true);
-        Overlay overlay = imp.getOverlay();
-        if (overlay == null)
-            overlay = new Overlay();
-        if (drawLabels)
-            overlay.drawLabels(true);
-        if (!overlay.getDrawNames())
-            overlay.drawNames(true);
-        overlay.setLabelColor(Color.white);
-        overlay.drawBackgrounds(true);
-        overlay.add(roi);
-        imp.setOverlay(overlay);
-        if (roi.getType() == Roi.COMPOSITE && Toolbar.getToolId() == Toolbar.OVAL && Toolbar.getBrushSize() > 0)
-            imp.deleteRoi();  // delete ROIs created with the selection brush tool
     }
 
     /**
@@ -141,7 +97,6 @@ public class CustomAnalyzer implements Measurements {
         if (lastHdr == null || lastHdr.charAt(0) != 'M') {
             if (!reset()) return;
         }
-        firstParticle = lastParticle = 0;
         Roi roi = imp.getRoi();
         if (roi != null && roi.getType() == Roi.POINT) {
             measurePoint(roi);
@@ -161,28 +116,12 @@ public class CustomAnalyzer implements Measurements {
             if (stats == null) return;
         } else
             stats = imp.getStatistics(measurements);
-        if (!IJ.isResultsWindow() && IJ.getInstance() != null)
-            reset();
         saveResults(stats, roi);
     }
 
-	/*
-	void showHeadings() {
-		String[] headings = rt.getHeadings();
-		int columns = headings.length;
-		if (columns==0)
-			return;
-		IJ.log("Headings: "+headings.length+" "+rt.getColumnHeading(ResultsTable.LAST_HEADING));
-		for (int i=0; i<columns; i++) {
-			if (headings[i]!=null)
-				IJ.log("   "+i+" "+headings[i]+" "+rt.getColumnIndex(headings[i]));
-		}
-	}
-	*/
-
     public boolean reset() {
         boolean ok = true;
-        if (rt.size() > 0 && !disableReset)
+        if (rt.size() > 0)
             ok = resetCounter();
         if (ok && rt.getColumnHeading(ResultsTable.LAST_HEADING) == null)
             rt.setDefaultHeadings();
@@ -190,15 +129,14 @@ public class CustomAnalyzer implements Measurements {
     }
 
     /**
-     * Returns <code>true</code> if an image is selected in the "Redirect To:"
-     * popup menu of the Analyze/Set Measurements dialog box.
+     * Returns <code>true</code> if a redirect image is set.
      */
     public boolean isRedirectImage() {
         return redirectTarget != 0;
     }
 
     /**
-     * Set the "Redirect To" image. Pass 'null' as the
+     * Set the redirect image. Pass 'null' as the
      * argument to disable redirected sampling.
      */
     public void setRedirectImage(ImagePlus imp) {
@@ -225,27 +163,20 @@ public class CustomAnalyzer implements Measurements {
     }
 
     /**
-     * Returns the image selected in the "Redirect To:" popup
-     * menu of the Analyze/Set Measurements dialog, or null
-     * if "None" is selected, the image was not found or the
-     * image is not the same size as <code>currentImage</code>.
+     * Returns the redirect image, or null
+     * if not found or the image is not the same size as <code>currentImage</code>.
      */
     public ImagePlus getRedirectImage(ImagePlus cimp) {
         ImagePlus rimp = WindowManager.getImage(redirectTarget);
         if (rimp == null)
             rimp = redirectImage;
         if (rimp == null) {
-            IJ.error("Analyzer", "Redirect image (\"" + redirectTitle + "\")\n"
+            throw new RuntimeException("Redirect image (\"" + redirectTitle + "\")\n"
                     + "not found.");
-            redirectTarget = 0;
-            Macro.abort();
-            return null;
         }
         if (rimp.getWidth() != cimp.getWidth() || rimp.getHeight() != cimp.getHeight()) {
-            IJ.error("Analyzer", "Redirect image (\"" + redirectTitle + "\") \n"
+            throw new RuntimeException("Redirect image (\"" + redirectTitle + "\") \n"
                     + "is not the same size as the current image.");
-            Macro.abort();
-            return null;
         }
         return rimp;
     }
@@ -330,7 +261,7 @@ public class CustomAnalyzer implements Measurements {
         ImageProcessor ip2 = imp2.getProcessor();
         double minThreshold = ip2.getMinThreshold();
         double maxThreshold = ip2.getMaxThreshold();
-        int limit = (ij.plugin.filter.Analyzer.getMeasurements() & LIMIT) != 0 ? LIMIT : 0;
+        int limit = (Analyzer.getMeasurements() & LIMIT) != 0 ? LIMIT : 0;
         boolean calibrated = imp2.getCalibration().calibrated();
         Rectangle saveR = null;
         Calibration globalCal = calibrated ? imp2.getGlobalCalibration() : null;
@@ -391,10 +322,8 @@ public class CustomAnalyzer implements Measurements {
         return ip;
     }
 
-
     /**
-     * Saves the measurements specified in the "Set Measurements" dialog,
-     * or by calling setMeasurements(), in the default results table.
+     * Saves the measurements in the default results table.
      */
     public void saveResults(ImageStatistics stats, Roi roi) {
         if (rt.getColumnHeading(ResultsTable.LAST_HEADING) == null)
@@ -435,7 +364,7 @@ public class CustomAnalyzer implements Measurements {
                 double circularity = perimeter == 0.0 ? 0.0 : 4.0 * Math.PI * (stats.area / (perimeter * perimeter));
                 if (circularity > 1.0) circularity = 1.0;
                 rt.addValue(ResultsTable.CIRCULARITY, circularity);
-                Polygon ch = null;
+                java.awt.Polygon ch = null;
                 boolean isArea = roi == null || roi.isArea();
                 double convexArea = roi != null ? getArea(roi.getConvexHull()) : stats.pixelCount;
                 rt.addValue(ResultsTable.ASPECT_RATIO, isArea ? stats.major / stats.minor : 0.0);
@@ -447,7 +376,6 @@ public class CustomAnalyzer implements Measurements {
                     rt.setDecimalPlaces(ResultsTable.ROUNDNESS, precision);
                     rt.setDecimalPlaces(ResultsTable.SOLIDITY, precision);
                 }
-                //rt.addValue(ResultsTable.CONVEXITY, getConvexPerimeter(roi, ch)/perimeter);
             }
         }
         if ((measurements & RECT) != 0) {
@@ -574,7 +502,7 @@ public class CustomAnalyzer implements Measurements {
         }
     }
 
-    final double getArea(Polygon p) {
+    final double getArea(java.awt.Polygon p) {
         if (p == null) return Double.NaN;
         int carea = 0;
         int iminus1;
@@ -601,14 +529,6 @@ public class CustomAnalyzer implements Measurements {
         double y = p.ypoints[0];
         int ix = (int) x, iy = (int) y;
         double value = ip.getPixelValue(ix, iy);
-        if (markWidth > 0 && !Toolbar.getMultiPointMode()) {
-            ip.setColor(Toolbar.getForegroundColor());
-            ip.setLineWidth(markWidth);
-            ip.moveTo(ix, iy);
-            ip.lineTo(ix, iy);
-            imp.updateAndDraw();
-            ip.setLineWidth(Line.getWidth());
-        }
         rt.addValue("X", cal.getX(x));
         rt.addValue("Y", cal.getY(y, imp.getHeight()));
         int position = roi.getPosition();
@@ -660,9 +580,6 @@ public class CustomAnalyzer implements Measurements {
                 if (rImp != null) s = rImp.getTitle();
             } else
                 s = imp.getTitle();
-            //int len = s.length();
-            //if (len>4 && s.charAt(len-4)=='.' && !Character.isDigit(s.charAt(len-1)))
-            //	s = s.substring(0,len-4);
             Roi roi = imp.getRoi();
             String roiName = roi != null ? roi.getName() : null;
             if (roiName != null && !roiName.contains(".")) {
@@ -684,17 +601,6 @@ public class CustomAnalyzer implements Measurements {
         return s;
     }
 
-    /**
-     * Converts a number to a formatted string with a tab at the end.
-     */
-    public String n(double n) {
-        String s;
-        if (Math.round(n) == n)
-            s = ResultsTable.d2s(n, 0);
-        else
-            s = ResultsTable.d2s(n, precision);
-        return s + "\t";
-    }
 
     void incrementCounter() {
         rt.incrementCounter();
@@ -702,31 +608,12 @@ public class CustomAnalyzer implements Measurements {
     }
 
     /**
-     * Sets the measurement counter to zero. Displays a dialog that
-     * allows the user to save any existing measurements. Returns
-     * false if the user cancels the dialog.
+     * Sets the measurement counter to zero.
      */
     public boolean resetCounter() {
-        TextPanel tp = null;
-        int counter = rt.size();
-        int lineCount = tp != null ? IJ.getTextPanel().getLineCount() : 0;
-        ImageJ ij = IJ.getInstance();
-        boolean macro = (IJ.macroRunning() && !switchingModes) || Interpreter.isBatchMode();
-        switchingModes = false;
-        if (counter > 0 && lineCount > 0 && unsavedMeasurements && !macro && ij != null && !ij.quitting()) {
-            YesNoCancelDialog d = new YesNoCancelDialog(ij, "ImageJ", "Save " + counter + " measurements?");
-            if (d.cancelPressed())
-                return false;
-            else if (d.yesPressed()) {
-                if (!(new MeasurementsWriter()).save(""))
-                    return false;
-            }
-        }
         umeans = null;
         rt.reset();
-        RoiManager.resetMultiMeasureResults();
         unsavedMeasurements = false;
-        if (tp != null) tp.clear();
         return true;
     }
 
@@ -734,7 +621,9 @@ public class CustomAnalyzer implements Measurements {
         unsavedMeasurements = b;
     }
 
-    // Returns the measurement options defined in the Set Measurements dialog. */
+    /**
+     * Returns the measurement options defined in the Set Measurements dialog.
+     */
     public int getMeasurements() {
         return systemMeasurements;
     }
@@ -743,7 +632,8 @@ public class CustomAnalyzer implements Measurements {
      * Sets the system-wide measurement options.
      */
     public void setMeasurements(int measurements) {
-        systemMeasurements = measurements;
+        this.systemMeasurements = measurements;
+        updateTablePrecision();
     }
 
     /**
@@ -752,8 +642,6 @@ public class CustomAnalyzer implements Measurements {
     public void setMeasurement(int option, boolean state) {
         if (state) {
             systemMeasurements |= option;
-            if ((option & ADD_TO_OVERLAY) != 0)
-                drawLabels = true;
         } else
             systemMeasurements &= ~option;
     }
@@ -774,13 +662,8 @@ public class CustomAnalyzer implements Measurements {
     }
 
     public void setResultsTable(ResultsTable rt) {
-        TextPanel tp = IJ.isResultsWindow() ? IJ.getTextPanel() : null;
-        if (tp != null)
-            tp.clear();
-        if (rt == null)
-            rt = new ResultsTable();
-        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
-        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
+        this.rt = rt != null ? rt : new ResultsTable();
+        updateTablePrecision();
         umeans = null;
         unsavedMeasurements = false;
     }
@@ -796,9 +679,16 @@ public class CustomAnalyzer implements Measurements {
      * Sets the number of digits displayed to the right of decimal point.
      */
     public void setPrecision(int decimalPlaces) {
-        if (decimalPlaces < 0) decimalPlaces = 0;
-        if (decimalPlaces > 9) decimalPlaces = 9;
-        precision = decimalPlaces;
+        this.precision = Math.max(0, Math.min(9, decimalPlaces));
+        updateTablePrecision();
+    }
+
+    /**
+     * Updates the table precision settings based on current system measurements.
+     */
+    private void updateTablePrecision() {
+        rt.setPrecision((systemMeasurements & SCIENTIFIC_NOTATION) != 0 ? -precision : precision);
+        rt.setNaNEmptyCells((systemMeasurements & NaN_EMPTY_CELLS) != 0);
     }
 
     /**
@@ -828,20 +718,15 @@ public class CustomAnalyzer implements Measurements {
             showAngle = b;
     }
 
-    public boolean addToOverlay() {
-        return ((getMeasurements() & ADD_TO_OVERLAY) != 0);
-    }
-
-    public void drawLabels(boolean b) {
-        drawLabels = b;
-    }
 
     /**
-     * Used by RoiManager.multiMeasure() to suppress save as dialogs.
+     * Used to suppress save as dialogs.
+     */
+    /**
+     * Compatibility method - has no effect in headless mode.
      */
     public void disableReset(boolean b) {
-        disableReset = b;
+        // No operation in headless mode
     }
 
 }
-
