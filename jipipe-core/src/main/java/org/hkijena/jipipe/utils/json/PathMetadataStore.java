@@ -31,7 +31,29 @@ import java.util.stream.Collectors;
 /**
  * A JSON-serializable map-like class that stores Path keys with primitive values (String, Integer, Double, Boolean).
  * This class extends PrimitiveMetadataStore with Path-based keys and provides functionality to work with hierarchical paths
- * (like internal config paths).
+ * (like internal config paths). This class automatically handles cross-platform path separator normalization,
+ * ensuring consistent behavior across Windows (backslashes), macOS, and Linux (forward slashes).
+ *
+ * <h3>Cross-Platform Path Handling:</h3>
+ * <p>
+ * The PathMetadataStore automatically normalizes all paths to use forward slashes (/) for consistency:
+ * <ul>
+ *   <li>When saving/serializing: All paths are converted to use forward slashes</li>
+ *   <li>When loading/deserializing: Backslashes from Windows paths are automatically converted to forward slashes</li>
+ *   <li>When storing: Paths are stored internally with forward slashes regardless of the platform</li>
+ * </ul>
+ * This ensures that documents created on any platform can be read correctly on any other platform.
+ * </p>
+ *
+ * <h3>Migration Support:</h3>
+ * <p>
+ * For existing documents that contain backslash paths, the class provides migration methods:
+ * <ul>
+ *   <li>{@link #migrateBackslashPaths()}: Migrates existing backslash paths to forward slashes</li>
+ *   <li>{@link #hasBackslashPaths()}: Checks if any paths contain backslashes that need migration</li>
+ *   <li>{@link #getNormalizedCopy()}: Creates a copy with all paths normalized</li>
+ * </ul>
+ * </p>
  *
  * <h3>Usage Examples:</h3>
  * <pre>
@@ -68,6 +90,16 @@ import java.util.stream.Collectors;
  * // Clear entries with a path prefix
  * store.clearEntriesWithPathPrefix("settings");
  * // Result: removes all entries under "settings/" prefix
+ *
+ * // Cross-platform path handling
+ * store.put(Paths.get("windows\\path\\to\\file"), "value");  // Backslashes from Windows
+ * store.migrateBackslashPaths();  // Convert to forward slashes
+ * // Now accessible with: store.getString(Paths.get("windows/path/to/file"), "default")
+ *
+ * // Check for cross-platform compatibility
+ * if (store.hasBackslashPaths()) {
+ *     store.migrateBackslashPaths();
+ * }
  * </pre>
  */
 @JsonSerialize(using = PathMetadataStore.Serializer.class)
@@ -79,6 +111,64 @@ public class PathMetadataStore {
      * Creates an empty PathMetadataStore
      */
     public PathMetadataStore() {
+    }
+
+    /**
+     * Normalizes a path string to use forward slashes consistently across platforms.
+     * This method converts backslashes (\) to forward slashes (/) to ensure
+     * cross-platform compatibility.
+     *
+     * @param pathString the path string to normalize
+     * @return the normalized path string with forward slashes, or null if input is null
+     */
+    public static String normalizePathString(String pathString) {
+        if (pathString == null) {
+            return null;
+        }
+        return pathString.replace('\\', '/');
+    }
+
+    /**
+     * Normalizes a path to use forward slashes consistently across platforms.
+     * This method creates a new Path object with a normalized string representation.
+     *
+     * @param path the path to normalize
+     * @return a new Path object with normalized forward slashes, or null if input is null
+     */
+    public static Path normalizePath(Path path) {
+        if (path == null) {
+            return null;
+        }
+        return Paths.get(normalizePathString(path.toString()));
+    }
+
+    /**
+     * Migrates existing paths that contain backslashes to use forward slashes.
+     * This method should be called when loading existing documents that may have
+     * been created on Windows systems with backslash separators.
+     */
+    public void migrateBackslashPaths() {
+        Map<Path, Object> migratedData = new HashMap<>();
+        
+        for (Map.Entry<Path, Object> entry : data.entrySet()) {
+            Path originalKey = entry.getKey();
+            Object value = entry.getValue();
+            
+            // Normalize the path key to use forward slashes
+            Path normalizedKey = normalizePath(originalKey);
+            
+            // Only add if the normalized key is different (migration needed)
+            if (!originalKey.equals(normalizedKey)) {
+                migratedData.put(normalizedKey, value);
+            } else {
+                // Keep original if no migration needed
+                migratedData.put(originalKey, value);
+            }
+        }
+        
+        // Replace the data with migrated data
+        this.data.clear();
+        this.data.putAll(migratedData);
     }
 
     /**
@@ -374,7 +464,9 @@ public class PathMetadataStore {
             Path path = entry.getKey();
             Object value = entry.getValue();
 
-            String[] parts = path.toString().split("/");
+            // Use normalized path string to ensure consistent splitting
+            String normalizedPathStr = normalizePathString(path.toString());
+            String[] parts = normalizedPathStr.split("/");
             Map<String, Object> current = result;
 
             for (int i = 0; i < parts.length - 1; i++) {
@@ -394,6 +486,52 @@ public class PathMetadataStore {
         }
 
         return result;
+    }
+
+    /**
+     * Returns a string representation of all paths in this store using forward slashes.
+     * This is useful for debugging and ensuring consistent path display.
+     *
+     * @return a set of normalized path strings
+     */
+    public Set<String> getNormalizedPathStrings() {
+        Set<String> normalizedPaths = new HashSet<>();
+        for (Path path : data.keySet()) {
+            normalizedPaths.add(normalizePathString(path.toString()));
+        }
+        return Collections.unmodifiableSet(normalizedPaths);
+    }
+
+    /**
+     * Checks if the store contains any paths with backslashes that need migration.
+     *
+     * @return true if any paths contain backslashes, false otherwise
+     */
+    public boolean hasBackslashPaths() {
+        for (Path path : data.keySet()) {
+            if (path.toString().contains("\\")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a new PathMetadataStore with all paths normalized to use forward slashes.
+     * This method returns a new store with migrated paths, leaving the original unchanged.
+     *
+     * @return a new PathMetadataStore with normalized paths
+     */
+    public PathMetadataStore getNormalizedCopy() {
+        PathMetadataStore normalizedStore = new PathMetadataStore();
+        
+        for (Map.Entry<Path, Object> entry : data.entrySet()) {
+            Path normalizedKey = normalizePath(entry.getKey());
+            // Use direct access to the internal map to handle Object values
+            normalizedStore.data.put(normalizedKey, entry.getValue());
+        }
+        
+        return normalizedStore;
     }
 
     /**
@@ -617,10 +755,11 @@ public class PathMetadataStore {
     public static class Serializer extends JsonSerializer<PathMetadataStore> {
         @Override
         public void serialize(PathMetadataStore store, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            // Convert to string-based map for JSON serialization
+            // Convert to string-based map for JSON serialization with normalized paths
             Map<String, Object> stringMap = new LinkedHashMap<>();
             for (Map.Entry<Path, Object> entry : store.getData().entrySet()) {
-                stringMap.put(entry.getKey().toString(), entry.getValue());
+                // Use normalized path string to ensure forward slashes across platforms
+                stringMap.put(normalizePathString(entry.getKey().toString()), entry.getValue());
             }
             jsonGenerator.writeObject(stringMap);
         }
@@ -644,7 +783,9 @@ public class PathMetadataStore {
                     JsonNode valueNode = field.getValue();
 
                     if (keyStr != null && !keyStr.isEmpty() && valueNode != null && !valueNode.isNull()) {
-                        Path key = Paths.get(keyStr);
+                        // Normalize the key string to handle backslashes from Windows paths
+                        String normalizedKeyStr = normalizePathString(keyStr);
+                        Path key = Paths.get(normalizedKeyStr);
 
                         try {
                             if (valueNode.isTextual()) {
