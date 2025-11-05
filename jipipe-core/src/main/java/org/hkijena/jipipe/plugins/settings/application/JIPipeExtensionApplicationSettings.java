@@ -56,7 +56,7 @@ public class JIPipeExtensionApplicationSettings extends JIPipeDefaultApplication
     public static JIPipeExtensionApplicationSettings getInstanceFromRaw() {
         JIPipeExtensionApplicationSettings result = new JIPipeExtensionApplicationSettings();
         try {
-            JsonNode node = JIPipeApplicationSettingsServiceComponent.getRawNode();
+            JsonNode node = JIPipeApplicationSettingsServiceComponent.getRawSheetsNode();
             if (node != null && !node.isMissingNode()) {
                 JIPipeParameterTree tree = new JIPipeParameterTree(result);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {

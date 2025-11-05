@@ -61,7 +61,6 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunNextWindow;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopLogViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsButton;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableBackgroundQueuesIndicator;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNotifier;

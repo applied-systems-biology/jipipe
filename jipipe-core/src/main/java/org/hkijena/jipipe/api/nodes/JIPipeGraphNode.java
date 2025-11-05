@@ -539,8 +539,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void setNodeUILocationWithin(String compartment, Point location) {
         compartment = StringUtils.orElse(compartment, "_");
-        nodeMetadata.put(Path.of("location", compartment, "x"), location.x);
-        nodeMetadata.put(Path.of("location", compartment, "y"), location.y);
+        nodeMetadata.putPrimitive(Path.of("location", compartment, "x"), location.x);
+        nodeMetadata.putPrimitive(Path.of("location", compartment, "y"), location.y);
     }
 
     /**
