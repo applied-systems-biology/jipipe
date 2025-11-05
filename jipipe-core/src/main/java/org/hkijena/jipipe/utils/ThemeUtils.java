@@ -50,7 +50,7 @@ public class ThemeUtils {
         // Fix for macOS
         System.setProperty("apple.laf.useScreenMenuBar", "false");
 
-        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getPropertyFile(true);
+        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getSheetsFile(true);
         if (Files.exists(propertyFile)) {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readValue(propertyFile.toFile(), JsonNode.class);

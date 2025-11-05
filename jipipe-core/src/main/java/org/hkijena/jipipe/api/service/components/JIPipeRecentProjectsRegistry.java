@@ -121,7 +121,7 @@ public final class JIPipeRecentProjectsRegistry extends JIPipeServiceComponent {
     }
 
     public void migrateFromLegacy() {
-        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getPropertyFile(false);
+        Path propertyFile = JIPipeApplicationSettingsServiceComponent.getSheetsFile(false);
         boolean success = false;
         if (Files.exists(propertyFile)) {
             try {

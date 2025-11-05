@@ -473,7 +473,52 @@ public class PathMetadataStore {
         return getBoolean(pathString != null ? Paths.get(pathString) : null, defaultValue);
     }
 
-    // Get methods for JSON-serializable objects
+    /**
+     * Gets a list of the specified type
+     * @param pathString the key
+     * @param type the type
+     * @return the list
+     * @param <T> the type
+     */
+    public <T> List<T> getList(String pathString, Class<T> type) {
+        return getList(pathString != null ? Paths.get(pathString) : null, type);
+    }
+
+    /**
+     * Gets a list of the specified type
+     * @param key the key
+     * @param type the type
+     * @return the list
+     * @param <T> the type
+     */
+    public <T> List<T> getList(Path key, Class<T> type) {
+        if (key == null || type == null) {
+            return null;
+        }
+
+        Object storedValue = data.get(key);
+        if (storedValue != null) {
+            try {
+                List<T> deserialized;
+                if (storedValue instanceof JsonNode) {
+                    // Deserialize from JsonNode
+                    deserialized = JsonUtils.getObjectMapper().readerForListOf(type).readValue((JsonNode) storedValue);
+                } else  if (storedValue instanceof List) {
+                    deserialized = (List<T>)storedValue;
+                }
+                else {
+                    return null;
+                }
+                // Replace the original value with the deserialized object for caching
+                data.put(key, deserialized);
+                return deserialized;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
 
     /**
      * Retrieves a JSON-serializable object with type safety using a Path key.

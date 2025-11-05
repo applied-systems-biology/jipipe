@@ -39,7 +39,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.log.LogLevel;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
