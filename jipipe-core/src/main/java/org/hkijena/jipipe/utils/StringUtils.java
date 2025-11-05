@@ -688,16 +688,13 @@ public class StringUtils {
     }
 
     public static CharSequence getOSName() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return "Windows";
-        }
-        else if(SystemUtils.IS_OS_LINUX) {
+        } else if (SystemUtils.IS_OS_LINUX) {
             return "Linux";
-        }
-        else if(SystemUtils.IS_OS_MAC) {
+        } else if (SystemUtils.IS_OS_MAC) {
             return "macOS";
-        }
-        else {
+        } else {
             return "OS";
         }
     }

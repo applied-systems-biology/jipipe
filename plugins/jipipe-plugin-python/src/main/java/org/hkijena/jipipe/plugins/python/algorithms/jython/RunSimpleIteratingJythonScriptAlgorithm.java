@@ -17,11 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
@@ -56,7 +52,7 @@ import java.util.ArrayList;
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class RunSimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
-    
+
     private PythonScriptParameter code = new PythonScriptParameter();
     private boolean externalCode = false;
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -96,7 +92,7 @@ public class RunSimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIterati
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("code".equals(access.getKey()) && externalCode) {
+        if ("code".equals(access.getKey()) && externalCode) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -152,10 +148,9 @@ public class RunSimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIterati
     }
 
     private String getScriptCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
-        if(externalCode) {
+        if (externalCode) {
             return iterationStep.getInputData(SLOT_SCRIPT.getName(), PythonScriptData.class, progressInfo).getData();
-        }
-        else {
+        } else {
             return code.getCode();
         }
     }

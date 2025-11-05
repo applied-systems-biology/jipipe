@@ -15,10 +15,10 @@ package org.hkijena.jipipe.plugins.settings.application;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
-import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
 
@@ -39,7 +39,7 @@ public class JIPipeHardwareAccelerationApplicationSettings extends JIPipeDefault
      * Creates a new instance
      */
     public JIPipeHardwareAccelerationApplicationSettings() {
-            }
+    }
 
     public static JIPipeHardwareAccelerationApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeHardwareAccelerationApplicationSettings.class);
@@ -81,7 +81,7 @@ public class JIPipeHardwareAccelerationApplicationSettings extends JIPipeDefault
         this.autoConfigureAccelerationOnNextStartup = autoConfigureAccelerationOnNextStartup;
     }
 
-     @SetJIPipeDocumentation(name = "Acceleration mode", description = "Determines if JIPipe should prefer artifacts with a specific acceleration type. " +
+    @SetJIPipeDocumentation(name = "Acceleration mode", description = "Determines if JIPipe should prefer artifacts with a specific acceleration type. " +
             "For maximum compatibility, choose CPU (will run slowest). For Nvidia GPUs, select CUDA. For AMD GPUs select ROCm. " +
             "If no compatible artifact is found, CPU will be automatically selected.")
     @JIPipeParameter("acceleration-mode")

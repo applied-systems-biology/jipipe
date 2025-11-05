@@ -10,26 +10,9 @@ import java.util.Set;
 public interface JIPipeDataCrateMetadata {
 
     /**
-     * Returns a sorted list of entries
-     * @return the entries
-     */
-    List<JIPipeDataCrateMetadataEntry> getEntries();
-
-    /**
-     * Returns the entries
-     * @return the entries
-     */
-    Map<String, JIPipeDataCrateMetadataEntry> getEntriesMap();
-
-    /**
-     * Checks if the crate metadata is valid
-     * @return if the crate metadata is valid
-     */
-    boolean isValid();
-
-    /**
      * Creates the metadata entry by parsing The {@link ConfigureJIPipeDataCrate} annotation of the data class.
      * Also handles the inheritance. Ensures the same IDs are overwritten by ones higher up within the inheritance hierarchy.
+     *
      * @param dataClass the data class
      * @return the crate metadata
      */
@@ -43,7 +26,7 @@ public interface JIPipeDataCrateMetadata {
         Set<Class<? extends JIPipeData>> handledClasses = new HashSet<>();
         handledClasses.add(dataClass); // Prevent loop
         for (Class<? extends JIPipeData> inherited : rootConfig.inherits()) {
-            if(inherited == dataClass) {
+            if (inherited == dataClass) {
                 throw new IllegalArgumentException("Data crate definition for " + dataClass + " inherits from itself!");
             }
             createEntities(inherited, handledClasses, result);
@@ -56,12 +39,12 @@ public interface JIPipeDataCrateMetadata {
     }
 
     private static void createEntities(Class<? extends JIPipeData> dataClass, Set<Class<? extends JIPipeData>> handledClasses, JIPipeMutableDataCrateMetadata result) {
-        if(handledClasses.contains(dataClass)) {
+        if (handledClasses.contains(dataClass)) {
             return;
         }
         handledClasses.add(dataClass);
         final ConfigureJIPipeDataCrate config = dataClass.getAnnotation(ConfigureJIPipeDataCrate.class);
-        if(config == null) {
+        if (config == null) {
             throw new IllegalStateException("Tried to inherit crate metadata from " + dataClass + ", but has no @ConfigureJIPipeDataCrate annotation!");
         }
         for (Class<? extends JIPipeData> inherited : config.inherits()) {
@@ -83,6 +66,27 @@ public interface JIPipeDataCrateMetadata {
             result.put(entry);
         }
     }
+
+    /**
+     * Returns a sorted list of entries
+     *
+     * @return the entries
+     */
+    List<JIPipeDataCrateMetadataEntry> getEntries();
+
+    /**
+     * Returns the entries
+     *
+     * @return the entries
+     */
+    Map<String, JIPipeDataCrateMetadataEntry> getEntriesMap();
+
+    /**
+     * Checks if the crate metadata is valid
+     *
+     * @return if the crate metadata is valid
+     */
+    boolean isValid();
 
     boolean isEmpty();
 }

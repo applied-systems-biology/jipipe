@@ -43,7 +43,7 @@ public class JIPipeDesktopIslandPanel extends JPanel {
         g2.setColor(panelColor);
         g2.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
 
-        if(style.isIslandsDrawBorder()) {
+        if (style.isIslandsDrawBorder()) {
             g2.setColor(style.getIslandsBorderColor());
             g2.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, arc, arc);
         }

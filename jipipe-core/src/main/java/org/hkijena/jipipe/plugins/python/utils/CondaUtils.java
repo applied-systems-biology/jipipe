@@ -12,114 +12,114 @@ import java.util.List;
 public class CondaUtils {
     public static String[] getCommonCondaPathsLinux() {
         return new String[]{
-            // User home directory installations
-            PathUtils.getHomeDirectory().resolve("anaconda3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniconda3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniforge3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("anaconda2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniconda2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniforge2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("Anaconda3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniconda3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniforge3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Anaconda2/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniconda2/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniforge2/bin/conda").toString(),  // uppercase
+                // User home directory installations
+                PathUtils.getHomeDirectory().resolve("anaconda3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniconda3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniforge3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("anaconda2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniconda2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniforge2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("Anaconda3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniconda3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniforge3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Anaconda2/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniconda2/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniforge2/bin/conda").toString(),  // uppercase
 
-            // System-wide installations - common locations
-            "/opt/anaconda3/bin/conda",
-            "/opt/miniconda3/bin/conda",
-            "/opt/miniforge3/bin/conda",
-            "/opt/anaconda2/bin/conda",
-            "/opt/miniconda2/bin/conda",
-            "/opt/miniforge2/bin/conda",
+                // System-wide installations - common locations
+                "/opt/anaconda3/bin/conda",
+                "/opt/miniconda3/bin/conda",
+                "/opt/miniforge3/bin/conda",
+                "/opt/anaconda2/bin/conda",
+                "/opt/miniconda2/bin/conda",
+                "/opt/miniforge2/bin/conda",
 
-            "/usr/local/anaconda3/bin/conda",
-            "/usr/local/miniconda3/bin/conda",
-            "/usr/local/miniforge3/bin/conda",
-            "/usr/local/anaconda2/bin/conda",
-            "/usr/local/miniconda2/bin/conda",
-            "/usr/local/miniforge2/bin/conda",
+                "/usr/local/anaconda3/bin/conda",
+                "/usr/local/miniconda3/bin/conda",
+                "/usr/local/miniforge3/bin/conda",
+                "/usr/local/anaconda2/bin/conda",
+                "/usr/local/miniconda2/bin/conda",
+                "/usr/local/miniforge2/bin/conda",
 
-            // Additional system locations
-            "/opt/conda/bin/conda",
-            "/usr/bin/conda",
-            "/usr/local/bin/conda",
-            "/opt/miniforge/bin/conda",  // Generic miniforge
-            "/opt/anaconda/bin/conda",   // Generic anaconda
-            "/opt/miniconda/bin/conda",  // Generic miniconda
+                // Additional system locations
+                "/opt/conda/bin/conda",
+                "/usr/bin/conda",
+                "/usr/local/bin/conda",
+                "/opt/miniforge/bin/conda",  // Generic miniforge
+                "/opt/anaconda/bin/conda",   // Generic anaconda
+                "/opt/miniconda/bin/conda",  // Generic miniconda
 
-            // Homebrew locations (if installed via Homebrew)
-            "/usr/local/anaconda/bin/conda",
-            "/usr/local/miniconda/bin/conda",
-            "/opt/homebrew/anaconda/bin/conda",  // Apple Silicon Mac
-            "/opt/homebrew/miniconda/bin/conda"  // Apple Silicon Mac
+                // Homebrew locations (if installed via Homebrew)
+                "/usr/local/anaconda/bin/conda",
+                "/usr/local/miniconda/bin/conda",
+                "/opt/homebrew/anaconda/bin/conda",  // Apple Silicon Mac
+                "/opt/homebrew/miniconda/bin/conda"  // Apple Silicon Mac
         };
     }
 
     public static String[] getCommonCondaPathsMacOS() {
         return new String[]{
-            // User home directory installations
-            PathUtils.getHomeDirectory().resolve("anaconda3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniconda3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniforge3/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("anaconda2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniconda2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("miniforge2/bin/conda").toString(),
-            PathUtils.getHomeDirectory().resolve("Anaconda3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniconda3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniforge3/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Anaconda2/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniconda2/bin/conda").toString(),  // uppercase
-            PathUtils.getHomeDirectory().resolve("Miniforge2/bin/conda").toString(),  // uppercase
+                // User home directory installations
+                PathUtils.getHomeDirectory().resolve("anaconda3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniconda3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniforge3/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("anaconda2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniconda2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("miniforge2/bin/conda").toString(),
+                PathUtils.getHomeDirectory().resolve("Anaconda3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniconda3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniforge3/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Anaconda2/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniconda2/bin/conda").toString(),  // uppercase
+                PathUtils.getHomeDirectory().resolve("Miniforge2/bin/conda").toString(),  // uppercase
 
-            // System-wide installations - common locations
-            "/opt/anaconda3/bin/conda",
-            "/opt/miniconda3/bin/conda",
-            "/opt/miniforge3/bin/conda",
-            "/opt/anaconda2/bin/conda",
-            "/opt/miniconda2/bin/conda",
-            "/opt/miniforge2/bin/conda",
+                // System-wide installations - common locations
+                "/opt/anaconda3/bin/conda",
+                "/opt/miniconda3/bin/conda",
+                "/opt/miniforge3/bin/conda",
+                "/opt/anaconda2/bin/conda",
+                "/opt/miniconda2/bin/conda",
+                "/opt/miniforge2/bin/conda",
 
-            "/usr/local/anaconda3/bin/conda",
-            "/usr/local/miniconda3/bin/conda",
-            "/usr/local/miniforge3/bin/conda",
-            "/usr/local/anaconda2/bin/conda",
-            "/usr/local/miniconda2/bin/conda",
-            "/usr/local/miniforge2/bin/conda",
+                "/usr/local/anaconda3/bin/conda",
+                "/usr/local/miniconda3/bin/conda",
+                "/usr/local/miniforge3/bin/conda",
+                "/usr/local/anaconda2/bin/conda",
+                "/usr/local/miniconda2/bin/conda",
+                "/usr/local/miniforge2/bin/conda",
 
-            // macOS-specific locations
-            "/Applications/anaconda3/bin/conda",
-            "/Applications/miniconda3/bin/conda",
-            "/Applications/miniforge3/bin/conda",
-            "/Applications/anaconda2/bin/conda",
-            "/Applications/miniconda2/bin/conda",
-            "/Applications/miniforge2/bin/conda",
+                // macOS-specific locations
+                "/Applications/anaconda3/bin/conda",
+                "/Applications/miniconda3/bin/conda",
+                "/Applications/miniforge3/bin/conda",
+                "/Applications/anaconda2/bin/conda",
+                "/Applications/miniconda2/bin/conda",
+                "/Applications/miniforge2/bin/conda",
 
-            // Additional system locations
-            "/opt/conda/bin/conda",
-            "/usr/bin/conda",
-            "/usr/local/bin/conda",
-            "/opt/miniforge/bin/conda",  // Generic miniforge
-            "/opt/anaconda/bin/conda",   // Generic anaconda
-            "/opt/miniconda/bin/conda",  // Generic miniconda
+                // Additional system locations
+                "/opt/conda/bin/conda",
+                "/usr/bin/conda",
+                "/usr/local/bin/conda",
+                "/opt/miniforge/bin/conda",  // Generic miniforge
+                "/opt/anaconda/bin/conda",   // Generic anaconda
+                "/opt/miniconda/bin/conda",  // Generic miniconda
 
-            // Homebrew locations (if installed via Homebrew)
-            "/usr/local/anaconda/bin/conda",
-            "/usr/local/miniconda/bin/conda",
-            "/opt/homebrew/anaconda/bin/conda",  // Apple Silicon Mac
-            "/opt/homebrew/miniconda/bin/conda",  // Apple Silicon Mac
-            "/opt/homebrew/Caskroom/miniconda/base/bin/conda",  // Homebrew Cask
-            "/opt/homebrew/Caskroom/miniforge/base/bin/conda"   // Homebrew Cask
+                // Homebrew locations (if installed via Homebrew)
+                "/usr/local/anaconda/bin/conda",
+                "/usr/local/miniconda/bin/conda",
+                "/opt/homebrew/anaconda/bin/conda",  // Apple Silicon Mac
+                "/opt/homebrew/miniconda/bin/conda",  // Apple Silicon Mac
+                "/opt/homebrew/Caskroom/miniconda/base/bin/conda",  // Homebrew Cask
+                "/opt/homebrew/Caskroom/miniforge/base/bin/conda"   // Homebrew Cask
         };
     }
 
     public static void getCommonCondaPathsWindows(List<Path> result) {
         // Windows: Check common installation paths
         String[] programFilesPaths = {
-            System.getenv("ProgramFiles"),
-            System.getenv("ProgramFiles(x86)"),
-            System.getenv("ProgramFilesW6432")  // Additional Program Files directory
+                System.getenv("ProgramFiles"),
+                System.getenv("ProgramFiles(x86)"),
+                System.getenv("ProgramFilesW6432")  // Additional Program Files directory
         };
 
         for (String programFiles : programFilesPaths) {
@@ -164,19 +164,19 @@ public class CondaUtils {
         if (userProfile != null) {
             // Comprehensive user home directory installations
             String[] userHomePaths = {
-                userProfile,  // %USERPROFILE%
-                userProfile + "\\anaconda3",  // %USERPROFILE%\anaconda3
-                userProfile + "\\miniconda3",  // %USERPROFILE%\miniconda3
-                userProfile + "\\miniforge3",  // %USERPROFILE%\miniforge3
-                userProfile + "\\anaconda2",  // %USERPROFILE%\anaconda2
-                userProfile + "\\miniconda2",  // %USERPROFILE%\miniconda2
-                userProfile + "\\miniforge2",  // %USERPROFILE%\miniforge2
-                userProfile + "\\Anaconda3",  // %USERPROFILE%\Anaconda3 (uppercase)
-                userProfile + "\\Miniconda3",  // %USERPROFILE%\Miniconda3 (uppercase)
-                userProfile + "\\Miniforge3",  // %USERPROFILE%\Miniforge3 (uppercase)
-                userProfile + "\\Anaconda2",  // %USERPROFILE%\Anaconda2 (uppercase)
-                userProfile + "\\Miniconda2",  // %USERPROFILE%\Miniconda2 (uppercase)
-                userProfile + "\\Miniforge2"   // %USERPROFILE%\Miniforge2 (uppercase)
+                    userProfile,  // %USERPROFILE%
+                    userProfile + "\\anaconda3",  // %USERPROFILE%\anaconda3
+                    userProfile + "\\miniconda3",  // %USERPROFILE%\miniconda3
+                    userProfile + "\\miniforge3",  // %USERPROFILE%\miniforge3
+                    userProfile + "\\anaconda2",  // %USERPROFILE%\anaconda2
+                    userProfile + "\\miniconda2",  // %USERPROFILE%\miniconda2
+                    userProfile + "\\miniforge2",  // %USERPROFILE%\miniforge2
+                    userProfile + "\\Anaconda3",  // %USERPROFILE%\Anaconda3 (uppercase)
+                    userProfile + "\\Miniconda3",  // %USERPROFILE%\Miniconda3 (uppercase)
+                    userProfile + "\\Miniforge3",  // %USERPROFILE%\Miniforge3 (uppercase)
+                    userProfile + "\\Anaconda2",  // %USERPROFILE%\Anaconda2 (uppercase)
+                    userProfile + "\\Miniconda2",  // %USERPROFILE%\Miniconda2 (uppercase)
+                    userProfile + "\\Miniforge2"   // %USERPROFILE%\Miniforge2 (uppercase)
             };
 
             for (String userPath : userHomePaths) {
@@ -267,6 +267,7 @@ public class CondaUtils {
      * Detects conda executables on the system based on the operating system.
      * On Windows, checks both system-wide installations (Program Files) and user home directory installations.
      * On Linux and macOS, checks common installation paths and PATH environment variable.
+     *
      * @return List of detected conda executable paths
      */
     public static List<Path> detectCondaExecutablesFromCommonLocations() {

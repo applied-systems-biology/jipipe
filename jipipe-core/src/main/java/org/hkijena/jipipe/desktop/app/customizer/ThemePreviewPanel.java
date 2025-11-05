@@ -14,47 +14,39 @@ import javax.swing.*;
 import java.awt.*;
 
 public class ThemePreviewPanel extends JPanel {
-    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
-    private JIPipeDesktopModernThemeStyle themeStyle = new JIPipeDesktopModernThemeStyle();
-    private float scale = 1;
-
     private final PreviewComponent previewTabBar = new PreviewComponent();
     private final PreviewComponent previewSplitLeft = new PreviewComponent();
     private final PreviewComponent previewSplitRight = new PreviewComponent();
     private final PreviewComponent previewTabActive = new PreviewComponent("Active tab");
     private final PreviewComponent previewTabInactive1 = new PreviewComponent("Inactive tab");
     private final PreviewComponent previewTabInactive2 = new PreviewComponent("Inactive tab");
-
     private final PreviewComponent previewDockActive = new PreviewComponent("Active");
     private final PreviewComponent previewDockInactive = new PreviewComponent("Inactive");
-
     private final JLabel previewLabelTiny = new JLabel("Tiny text");
     private final JLabel previewLabelSmall = new JLabel("Small text");
     private final JLabel previewLabelNormal = new JLabel("Normal text");
     private final JLabel previewLabelLarge = new JLabel("Large text");
     private final JLabel previewLabelHuge = new JLabel("Huge text");
-
     private final JLabel previewLabelColorForeground = new JLabel("Text color foreground");
     private final JLabel previewLabelColorMuted = new JLabel("Text color muted");
     private final JLabel previewLabelColorInverted = new JLabel("Text color inverted");
     private final JLabel previewLabelColorMutedInverted = new JLabel("Text color muted inverted");
     private final JLabel previewLabelColorLink = new JLabel("Text color link");
-
     private final JLabel previewLabelColorPrimary = new JLabel("Primary color");
     private final JLabel previewLabelColorSecondary = new JLabel("Secondary color");
     private final JLabel previewLabelColorSuccess = new JLabel("Success color");
     private final JLabel previewLabelColorDanger = new JLabel("Danger color");
     private final JLabel previewLabelColorWarning = new JLabel("Warning color");
-
     private final PreviewComponent previewHeaderPanelActive = new PreviewComponent("Header active");
     private final PreviewComponent previewHeaderPanelInactive = new PreviewComponent("Header inactive");
     private final PreviewComponent previewButton = new PreviewComponent("Button");
     private final PreviewComponent previewTextField = new PreviewComponent("Text field / form");
     private final PreviewComponent previewTextFieldDisabled = new PreviewComponent("Text field / form (disabled)");
-
     private final NodeViewportComponent previewViewport = new NodeViewportComponent(this);
-
     private final JPanel previewDockPanel = new JPanel();
+    private JIPipeDesktopUITheme theme = JIPipeDesktopUITheme.Modern;
+    private JIPipeDesktopModernThemeStyle themeStyle = new JIPipeDesktopModernThemeStyle();
+    private float scale = 1;
 
     public ThemePreviewPanel() {
         initialize();
@@ -374,52 +366,6 @@ public class ThemePreviewPanel extends JPanel {
             this.themePreviewPanel = themePreviewPanel;
         }
 
-        @Override
-        public void paint(Graphics g) {
-            final JIPipeDesktopModernThemeStyle style = themePreviewPanel.themeStyle;
-            final float scale = themePreviewPanel.scale;
-            Graphics2D g2d = (Graphics2D) g;
-
-            // Viewport
-            g2d.setPaint(style.getViewportBackground());
-            g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-
-
-            // Grid
-            int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
-
-            // Edge
-            paintEdge(g2d, scale, nodeCellHeight * 2, 0, nodeCellHeight * 2, nodeCellHeight * 3, style.getEdgeBorderColorConvert());
-            paintEdge(g2d, scale, nodeCellHeight * 4, nodeCellHeight * 3, nodeCellHeight * 4, nodeCellHeight * 8, style.getEdgeBorderColorDefault());
-            g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
-
-            // Nodes
-            paintNode(scale, style, g2d, 25, nodeCellHeight, (int) (150 * scale), 186.0f / 360.0f, false);
-            paintNode(scale, style, g2d, 50, nodeCellHeight + nodeCellHeight * 3 + nodeCellHeight * 3, (int) (150 * scale), 0, true);
-
-            // Scrollbar
-            int scrollBarSize = (int) (12 * scale);
-            int verticalScrollBarStart = getHeight() / 6;
-            int verticalScrollBarEnd = Math.max(verticalScrollBarStart, getHeight() - 2 * verticalScrollBarStart);
-            g2d.setPaint(style.getScrollBarThumb());
-
-            g2d.fillRect(getWidth() - scrollBarSize - 1, verticalScrollBarStart, scrollBarSize, verticalScrollBarEnd - verticalScrollBarStart);
-        }
-
-        private void paintEdge(Graphics2D g2d, float scale, int x1, int y1, int x2, int y2, Color borderColor) {
-            final JIPipeDesktopModernThemeStyle style = themePreviewPanel.themeStyle;
-            BasicStroke strokeBorder = new BasicStroke((int) Math.max(1, scale * 4) + 2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
-            BasicStroke strokeFill = new BasicStroke((int) Math.max(1, scale * 4), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
-
-            g2d.setPaint(borderColor);
-            g2d.setStroke(strokeBorder);
-            g2d.drawLine(x1, y1, x2, y2);
-
-            g2d.setPaint(style.getPanelBackground());
-            g2d.setStroke(strokeFill);
-            g2d.drawLine(x1, y1, x2, y2);
-        }
-
         private static void paintNode(float scale, JIPipeDesktopModernThemeStyle style, Graphics2D g2d, int nodeX, int nodeY, int nodeWidth, float hue, boolean selected) {
             int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
             int nodeHeight = 3 * nodeCellHeight;
@@ -473,6 +419,52 @@ public class ThemePreviewPanel extends JPanel {
                 g2d.setColor(style.getNodeHighlightBorder());
                 g2d.drawRect(nodeX - 4, nodeY - 4, nodeWidth + 8, nodeHeight + 8);
             }
+        }
+
+        @Override
+        public void paint(Graphics g) {
+            final JIPipeDesktopModernThemeStyle style = themePreviewPanel.themeStyle;
+            final float scale = themePreviewPanel.scale;
+            Graphics2D g2d = (Graphics2D) g;
+
+            // Viewport
+            g2d.setPaint(style.getViewportBackground());
+            g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+
+            // Grid
+            int nodeCellHeight = (int) (JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT * scale);
+
+            // Edge
+            paintEdge(g2d, scale, nodeCellHeight * 2, 0, nodeCellHeight * 2, nodeCellHeight * 3, style.getEdgeBorderColorConvert());
+            paintEdge(g2d, scale, nodeCellHeight * 4, nodeCellHeight * 3, nodeCellHeight * 4, nodeCellHeight * 8, style.getEdgeBorderColorDefault());
+            g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
+
+            // Nodes
+            paintNode(scale, style, g2d, 25, nodeCellHeight, (int) (150 * scale), 186.0f / 360.0f, false);
+            paintNode(scale, style, g2d, 50, nodeCellHeight + nodeCellHeight * 3 + nodeCellHeight * 3, (int) (150 * scale), 0, true);
+
+            // Scrollbar
+            int scrollBarSize = (int) (12 * scale);
+            int verticalScrollBarStart = getHeight() / 6;
+            int verticalScrollBarEnd = Math.max(verticalScrollBarStart, getHeight() - 2 * verticalScrollBarStart);
+            g2d.setPaint(style.getScrollBarThumb());
+
+            g2d.fillRect(getWidth() - scrollBarSize - 1, verticalScrollBarStart, scrollBarSize, verticalScrollBarEnd - verticalScrollBarStart);
+        }
+
+        private void paintEdge(Graphics2D g2d, float scale, int x1, int y1, int x2, int y2, Color borderColor) {
+            final JIPipeDesktopModernThemeStyle style = themePreviewPanel.themeStyle;
+            BasicStroke strokeBorder = new BasicStroke((int) Math.max(1, scale * 4) + 2, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+            BasicStroke strokeFill = new BasicStroke((int) Math.max(1, scale * 4), BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER);
+
+            g2d.setPaint(borderColor);
+            g2d.setStroke(strokeBorder);
+            g2d.drawLine(x1, y1, x2, y2);
+
+            g2d.setPaint(style.getPanelBackground());
+            g2d.setStroke(strokeFill);
+            g2d.drawLine(x1, y1, x2, y2);
         }
     }
 

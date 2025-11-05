@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 import org.hkijena.jipipe.plugins.strings.RScriptData;
 
 import java.io.IOException;

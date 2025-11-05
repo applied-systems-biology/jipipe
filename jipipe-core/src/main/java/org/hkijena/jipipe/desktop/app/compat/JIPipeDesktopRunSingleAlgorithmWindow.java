@@ -61,13 +61,13 @@ public class JIPipeDesktopRunSingleAlgorithmWindow extends JFrame implements JIP
     private final Context context;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final JCheckBox keepWindowToggle = new JCheckBox("Keep window open", true);
+    private final JIPipeCefClientService cefClientService;
     private JList<JIPipeNodeInfo> algorithmList;
     private JIPipeDesktopSearchTextField searchField;
     private JPanel settingsPanel;
     private JIPipeDesktopRunSingleAlgorithmSettingsPanel currentRunSettingsPanel;
     private int numThreads = JIPipeRuntimeApplicationSettings.getInstance().getDefaultRunThreads();
     private JIPipeDesktopTabPane tabPane;
-    private final JIPipeCefClientService cefClientService;
 
     /**
      * @param context SciJava context

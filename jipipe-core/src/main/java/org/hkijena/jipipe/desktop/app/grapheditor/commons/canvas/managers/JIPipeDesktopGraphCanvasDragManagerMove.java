@@ -53,9 +53,8 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                     offset.x = nodeUI.getX() - mouseEvent.getX();
                     offset.y = nodeUI.getY() - mouseEvent.getY();
                     currentlyDraggedOffsets.put(nodeUI, offset);
-                }
-                else if(interactiveObjectUI instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
-                    if(!canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
+                } else if (interactiveObjectUI instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                    if (!canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
                         continue;
                     }
                     Point offset = new Point();
@@ -94,8 +93,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                         gridDy = dy;
                         break;
                     }
-                }
-                else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                } else if (entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
                     int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
                     int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
 
@@ -128,8 +126,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                             negativeDy = Math.min(negativeDy, newGridLocation.y - 1);
                             lastTimeExpandedNegative = currentTimeMillis;
                         }
-                    }
-                    else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                    } else if (entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
                         Point gridLocation = edgeControlPointUI.getGridLocation();
                         Point newGridLocation = new Point(gridLocation.x + gridDx, gridLocation.y + gridDy);
 
@@ -175,8 +172,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                     }
 
                     currentlyDragged.moveToGridLocation(newGridLocation, true, true);
-                }
-                else if(entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+                } else if (entry.getKey() instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
                     Point gridLocation = edgeControlPointUI.getGridLocation();
                     Point newGridLocation = new Point(gridLocation.x + gridDx, gridLocation.y + gridDy);
 

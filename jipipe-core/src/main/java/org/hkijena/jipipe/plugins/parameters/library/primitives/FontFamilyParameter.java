@@ -61,10 +61,9 @@ public class FontFamilyParameter extends DynamicStringEnumParameter {
 
     @Override
     public String renderLabel(String value, JIPipeEnumItemInfoRenderTarget renderTarget) {
-        if(renderTarget == JIPipeEnumItemInfoRenderTarget.ComboBox) {
+        if (renderTarget == JIPipeEnumItemInfoRenderTarget.ComboBox) {
             return value;
-        }
-        else {
+        } else {
             return "<html><span style=\"font-family: " + value + ";\">" + value + "</span></html>";
         }
     }

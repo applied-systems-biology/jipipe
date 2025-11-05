@@ -39,6 +39,11 @@ public class JIPipeMultiIterationStepGenerator {
     private static final Set<String> REFERENCE_COLUMN_SPLIT_ALL = Sets.newHashSet("{{}}SPLIT_ALL");
     private final List<JIPipeDataSlot> slotList = new ArrayList<>();
     private final Map<String, JIPipeDataSlot> slotMap = new HashMap<>();
+    private final CompositeDictionarySolver compositeDictionarySolver = new CompositeDictionarySolver();
+    private final SingleKeyDictionarySolver singleKeyDictionarySolver = new SingleKeyDictionarySolver();
+    private final FlowGraphSolver flowGraphSolver = new FlowGraphSolver();
+    private final MergeAllSolver mergeAllSolver = new MergeAllSolver();
+    private final SplitAllSolver splitAllSolver = new SplitAllSolver();
     private JIPipeGraphNode node;
     private Set<String> referenceColumns = new HashSet<>();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -48,12 +53,6 @@ public class JIPipeMultiIterationStepGenerator {
     private JIPipeExpressionParameter customAnnotationMatching = new JIPipeExpressionParameter("exact_match_results");
     private JIPipeIterationStepSolverPreference solverPreference = JIPipeIterationStepSolverPreference.Auto;
     private boolean forceNAIsAny = false;
-
-    private final CompositeDictionarySolver compositeDictionarySolver = new CompositeDictionarySolver();
-    private final SingleKeyDictionarySolver singleKeyDictionarySolver = new SingleKeyDictionarySolver();
-    private final FlowGraphSolver flowGraphSolver = new FlowGraphSolver();
-    private final MergeAllSolver  mergeAllSolver = new MergeAllSolver();
-    private final SplitAllSolver splitAllSolver = new SplitAllSolver();
 
     public JIPipeMultiIterationStepGenerator() {
 
@@ -176,7 +175,7 @@ public class JIPipeMultiIterationStepGenerator {
 
     public List<JIPipeMultiIterationStep> build(JIPipeProgressInfo progressInfo) {
 
-        if(slotList.isEmpty()) {
+        if (slotList.isEmpty()) {
             return new ArrayList<>();
         }
 
@@ -199,7 +198,6 @@ public class JIPipeMultiIterationStepGenerator {
         // No easy solution: Use flow graph solver
         return flowGraphSolver.solve(this, progressInfo.resolveAndLog("Flow graph solver"));
     }
-
 
 
     public boolean isApplyMerging() {

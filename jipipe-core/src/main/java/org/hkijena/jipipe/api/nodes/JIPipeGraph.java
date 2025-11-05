@@ -1155,7 +1155,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             JIPipeGraphEdge oldEdge = otherGraph.graph.getEdge(edge.getKey(), edge.getValue());
             JIPipeGraphEdge newEdge = graph.getEdge(copySourceSlot, copyTargetSlot);
 
-            if(oldEdge != null && newEdge != null) {
+            if (oldEdge != null && newEdge != null) {
                 newEdge.setMetadataFrom(oldEdge);
             }
         }
@@ -1209,13 +1209,13 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                 JIPipeDataSlot copyTarget = copyGraph.getEquivalentSlot(target);
                 copyGraph.connect(copySource, copyTarget);
                 JIPipeGraphEdge copyEdge = copyGraph.graph.getEdge(copySource, copyTarget);
-                if(copyEdge != null) {
+                if (copyEdge != null) {
                     JIPipeGraphEdge originalEdge = this.graph.getEdge(source, target);
                     copyEdge.setMetadataFrom(originalEdge);
                     Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints = copyEdge.getControlPoints();
 
                     // We don't have the compartments, so use the largest list
-                    if(!controlPoints.isEmpty()) {
+                    if (!controlPoints.isEmpty()) {
                         List<JIPipeGraphEdgeControlPoint> newControlPoints = controlPoints.values().stream().max(Comparator.comparing(List::size)).get();
                         controlPoints.clear();
                         controlPoints.put("", newControlPoints);

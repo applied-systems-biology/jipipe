@@ -99,8 +99,8 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
     private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private int importDelay = 1000;
     private int exportDelay = 250;
-     private ImageJMacroParameter code = new ImageJMacroParameter();
-     private boolean externalCode = false;
+    private ImageJMacroParameter code = new ImageJMacroParameter();
+    private boolean externalCode = false;
 
     /**
      * @param info the info
@@ -155,7 +155,7 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("code".equals(access.getKey()) && externalCode) {
+        if ("code".equals(access.getKey()) && externalCode) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -343,10 +343,9 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
     }
 
     private String getMacroCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
-        if(externalCode) {
+        if (externalCode) {
             return iterationStep.getInputData(SLOT_SCRIPT.getName(), ImageJMacroData.class, progressInfo).getData();
-        }
-        else {
+        } else {
             return code.getCode();
         }
     }
@@ -471,7 +470,6 @@ public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements
             }
         }
     }
-
 
 
     @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterSerializationMode.Object)

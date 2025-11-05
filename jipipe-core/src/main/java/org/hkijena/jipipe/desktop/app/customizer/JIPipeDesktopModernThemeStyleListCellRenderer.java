@@ -72,7 +72,7 @@ public class JIPipeDesktopModernThemeStyleListCellRenderer extends JPanel implem
         if (value != null) {
             nameLabel.setText(value.getName());
             boolean isCurrentTheme = ThemeUtils.getCurrentStyle().getId().equals(value.getId());
-            infoLabel.setText((value.isBuiltIn() ? "Built-in" : "User-defined") +  (isCurrentTheme ? " - current theme" : ""));
+            infoLabel.setText((value.isBuiltIn() ? "Built-in" : "User-defined") + (isCurrentTheme ? " - current theme" : ""));
             iconLabel.setIcon(new JIPipeDesktopModernThemeStyleIcon(value));
         } else {
             nameLabel.setText("Null");

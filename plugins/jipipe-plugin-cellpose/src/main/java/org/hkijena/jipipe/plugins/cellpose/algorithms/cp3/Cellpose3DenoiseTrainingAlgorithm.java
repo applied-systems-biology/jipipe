@@ -259,11 +259,11 @@ public class Cellpose3DenoiseTrainingAlgorithm extends JIPipeSingleIterationAlgo
             modelInfos.add(modelInfo);
         }
 
-        if(clearLabelDataAnnotation) {
+        if (clearLabelDataAnnotation) {
             progressInfo.warn("Clearing label data annotation '" + labelDataAnnotation.getExpression() + "' as requested.");
             Map<String, JIPipeDataAnnotation> mergedDataAnnotations = iterationStep.getMergedDataAnnotations();
             JIPipeDataAnnotation queried = labelDataAnnotation.queryFirst(mergedDataAnnotations.values());
-            if(queried != null) {
+            if (queried != null) {
                 mergedDataAnnotations.remove(queried.getName());
             }
         }

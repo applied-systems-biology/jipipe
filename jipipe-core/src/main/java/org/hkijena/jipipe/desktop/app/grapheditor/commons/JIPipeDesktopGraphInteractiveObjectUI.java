@@ -38,18 +38,21 @@ public interface JIPipeDesktopGraphInteractiveObjectUI {
 
     /**
      * Display name used for object manager
+     *
      * @return the display name
      */
     String getDisplayName();
 
     /**
      * Description for object manager
+     *
      * @return the description
      */
     String getDescription();
 
     /**
      * Icon for object manager
+     *
      * @return the icon
      */
     Icon getIcon();

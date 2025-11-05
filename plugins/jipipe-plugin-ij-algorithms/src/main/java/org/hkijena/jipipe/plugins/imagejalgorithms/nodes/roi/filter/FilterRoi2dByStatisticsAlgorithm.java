@@ -130,7 +130,7 @@ public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ROI2DListData outputData = new ROI2DListData();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
             Roi roi = inputRois.get(row);

@@ -70,11 +70,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private static final Set<JIPipeDesktopProjectWindow> OPEN_WINDOWS = new HashSet<>();
     private final Context context;
     private final List<BalloonTip> registeredBalloons = new ArrayList<>();
+    private final JIPipeCefClientService cefClientService;
     private JIPipeProject project;
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
-    private final JIPipeCefClientService cefClientService;
 
     /**
      * @param context          context
@@ -712,12 +712,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
         // Determine an automated directory
         Path baseExtractPath;
-        if(forceFallbackProjectDir) {
+        if (forceFallbackProjectDir) {
             Path defaultProjectsDirectory = JIPipeProjectDefaultsApplicationSettings.getInstance().getDefaultProjectsDirectory();
             PathUtils.createDirectories(defaultProjectsDirectory);
             baseExtractPath = defaultProjectsDirectory;
-        }
-        else {
+        } else {
             baseExtractPath = projectPath.getParent();
         }
 
@@ -733,12 +732,12 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 new Object[]{"Continue", "Select custom path", "Cancel"},
                 "Continue");
 
-        if(option == JOptionPane.CANCEL_OPTION) {
+        if (option == JOptionPane.CANCEL_OPTION) {
             return;
         }
 
         // Ask for a non-existing extract path
-        if(option == JOptionPane.NO_OPTION) {
+        if (option == JOptionPane.NO_OPTION) {
             while (true) {
                 extractPath = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), projectPath.getParent().resolve(fileNameNoExt), "Import JIPipe Workflow RO-Crate - Target directory",
                         new HTMLText("Please confirm where the RO-Crate contents will be extracted."));

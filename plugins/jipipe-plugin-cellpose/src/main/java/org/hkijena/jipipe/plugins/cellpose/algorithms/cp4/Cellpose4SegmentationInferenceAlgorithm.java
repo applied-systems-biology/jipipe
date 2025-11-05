@@ -40,7 +40,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp4.Cellpose4Environment;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2ChannelSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationOutputSettings;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationThresholdSettings;

@@ -34,7 +34,6 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.artifacts.oras.OrasEnvironment;
-import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.*;

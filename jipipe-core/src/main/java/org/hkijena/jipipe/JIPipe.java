@@ -436,7 +436,7 @@ public final class JIPipe {
         if (instance != null && instance.isAutosaveSettings()) {
             instance.getApplicationSettings().save();
         }
-        if(instance != null) {
+        if (instance != null) {
             instance.dispose();
         }
 

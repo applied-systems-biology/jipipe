@@ -160,19 +160,19 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipeGraphRunPartitionInheritedBoolean.class,
                 "Graph run partition boolean (inheritable)",
                 "A boolean where the value can be inherited from the partition");
-         registerEnumParameterType("hardware-acceleration",
+        registerEnumParameterType("hardware-acceleration",
                 JIPipeHardwareAccelerationMode.class,
                 "Hardware acceleration modes",
                 "A library or method used for allowing processes to be accelerated");
-         registerEnumParameterType("jipipe:iteration-step-solver-preference",
-                 JIPipeIterationStepSolverPreference.class,
-                 "Iteration step solver preference",
-                 "The solver is responsible for generating the iteration steps. " +
-                         "There are three main solvers: " +
-                         "(1) Single dictionary - fast, but only works if there is exactly one reference column. " +
-                         "(2) Multi dictionary - fast and can handle multiple reference columns. Introduced with JIPipe 6.0.0 and behaves like the more expensive flow graph solver. " +
-                         "(3) Flow graph - slow and can handle multiple reference columns. " +
-                         "The legacy setting is automatically used for older JIPipe projects. Otherwise, Auto selects the fastest option.");
+        registerEnumParameterType("jipipe:iteration-step-solver-preference",
+                JIPipeIterationStepSolverPreference.class,
+                "Iteration step solver preference",
+                "The solver is responsible for generating the iteration steps. " +
+                        "There are three main solvers: " +
+                        "(1) Single dictionary - fast, but only works if there is exactly one reference column. " +
+                        "(2) Multi dictionary - fast and can handle multiple reference columns. Introduced with JIPipe 6.0.0 and behaves like the more expensive flow graph solver. " +
+                        "(3) Flow graph - slow and can handle multiple reference columns. " +
+                        "The legacy setting is automatically used for older JIPipe projects. Otherwise, Auto selects the fastest option.");
 
         registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
 

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -104,10 +103,9 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
     @Override
     public String getName() {
         String result = StringUtils.orElse(alias.getAlternativeName(), nodeInfo.getName());
-        if(nodeInfo.isUnstable()) {
+        if (nodeInfo.isUnstable()) {
             result += " (unstable!)";
-        }
-        else if(nodeInfo.isDeprecated()) {
+        } else if (nodeInfo.isDeprecated()) {
             result += " (deprecated)";
         }
         return result;

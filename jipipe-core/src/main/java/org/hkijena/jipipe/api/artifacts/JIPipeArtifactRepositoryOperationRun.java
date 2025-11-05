@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.artifacts;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.utils.FileLocker;
 
 import java.io.IOException;
 

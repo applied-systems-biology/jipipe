@@ -17,7 +17,10 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -33,13 +36,10 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
-import org.hkijena.jipipe.utils.scripting.JythonUtils;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.strings.PythonScriptData;
+import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
 import java.nio.file.Path;
 import java.util.Collections;
@@ -54,9 +54,9 @@ import java.util.Map;
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
 public class RunIteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
-    
+
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
-    
+
     private PythonScriptParameter code = new PythonScriptParameter();
     private boolean externalCode = false;
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -100,7 +100,7 @@ public class RunIteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm 
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("code".equals(access.getKey()) && externalCode) {
+        if ("code".equals(access.getKey()) && externalCode) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -151,10 +151,9 @@ public class RunIteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm 
     }
 
     private String getScriptCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
-        if(externalCode) {
+        if (externalCode) {
             return iterationStep.getInputData(SLOT_SCRIPT.getName(), PythonScriptData.class, progressInfo).getData();
-        }
-        else {
+        } else {
             return code.getCode();
         }
     }

@@ -93,7 +93,7 @@ public class JIPipeDesktopGraphCanvasResources {
     public Paint getEdgeBackgroundPaint(JIPipeDataSlot source, JIPipeDataSlot target, PointRange sourcePoint, PointRange targetPoint, Color defaultPaint) {
         Paint strokePaint = defaultPaint;
 
-        if ( sourcePoint != null && targetPoint != null && canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
+        if (sourcePoint != null && targetPoint != null && canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
             if (source.getNode() instanceof JIPipeAlgorithm sourceAlgorithm && target.getNode() instanceof JIPipeAlgorithm targetAlgorithm) {
                 JIPipeRuntimePartitionConfiguration runtimePartitions = canvasUI.getDesktopWorkbench().getProject().getRuntimePartitions();
                 JIPipeRuntimePartition sourcePartition = runtimePartitions.get(sourceAlgorithm.getRuntimePartition().getIndex());

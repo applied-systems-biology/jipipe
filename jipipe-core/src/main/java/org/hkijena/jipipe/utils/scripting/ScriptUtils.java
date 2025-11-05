@@ -69,20 +69,20 @@ public class ScriptUtils {
     /**
      * Ensures that an input slot 'Script' is present in the node and has the provided script class. Should only be run within the constructor.
      * Not effective if the slot configuration is not of the type {@link org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration}.
+     *
      * @param scriptClass the script class
      */
     public static void ensureScriptSlot(JIPipeGraphNode node, Class<? extends StringData> scriptClass) {
-        if(node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration slotConfiguration) {
+        if (node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration slotConfiguration) {
             JIPipeDataSlotInfo existingSlot = slotConfiguration.getInputSlots().get(SLOT_SCRIPT_NAME);
-            if(existingSlot != null) {
-                if(existingSlot.getDataClass() != scriptClass) {
+            if (existingSlot != null) {
+                if (existingSlot.getDataClass() != scriptClass) {
                     existingSlot.setDataClass(scriptClass);
                     existingSlot.setUserModifiable(false);
                     existingSlot.setOptional(false);
                     existingSlot.setRole(JIPipeDataSlotRole.Parameters);
                 }
-            }
-            else {
+            } else {
                 slotConfiguration.addSlot(JIPipeDataSlotInfo.builder().dataClass(scriptClass).slotType(JIPipeSlotType.Input).name(SLOT_SCRIPT_NAME).userModifiable(false).build(),
                         false);
             }

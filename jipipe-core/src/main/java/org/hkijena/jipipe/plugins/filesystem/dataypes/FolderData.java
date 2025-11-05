@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeFastThumbnail;
-import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 
 import java.nio.file.Path;
 

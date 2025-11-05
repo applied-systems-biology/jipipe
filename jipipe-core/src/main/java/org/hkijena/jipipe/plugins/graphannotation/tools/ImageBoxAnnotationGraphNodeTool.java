@@ -68,7 +68,7 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
             }
         }
 
-          JIPipeDesktopColorPaletteColor color = getColor();
+        JIPipeDesktopColorPaletteColor color = getColor();
         node.getImageParameters().setBorderColor(color.getForeground());
         node.getImageParameters().setBackgroundColor(new OptionalColorParameter(color.getBackground(), true));
 

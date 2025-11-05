@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.plugins.settings.application;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -21,11 +20,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.FileChooserBookmarkList;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,6 +47,14 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     public static JIPipeFileChooserApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeFileChooserApplicationSettings.class);
+    }
+
+    public static String getID() {
+        return ID;
+    }
+
+    public static void setID(String ID) {
+        JIPipeFileChooserApplicationSettings.ID = ID;
     }
 
     @SetJIPipeDocumentation(name = "OS dialogs: ask on path select", description = "If the 'Prefer OS dialogs' option is selected and a path (i.e. file or directory) is opened/saved," +
@@ -89,16 +95,6 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     @JIPipeParameter("file-chooser-type-v2")
     public void setFileChooserType(FileChooserType fileChooserType) {
         this.fileChooserType = fileChooserType;
-    }
-
-
-
-    public static String getID() {
-        return ID;
-    }
-
-    public static void setID(String ID) {
-        JIPipeFileChooserApplicationSettings.ID = ID;
     }
 
     /**

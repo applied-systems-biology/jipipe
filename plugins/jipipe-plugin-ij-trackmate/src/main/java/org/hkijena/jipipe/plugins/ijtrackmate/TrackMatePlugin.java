@@ -48,8 +48,6 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginService;
 
-import javax.swing.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

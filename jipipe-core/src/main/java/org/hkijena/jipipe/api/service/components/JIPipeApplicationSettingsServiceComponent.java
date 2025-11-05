@@ -32,7 +32,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.json.PathMetadataStore;
 
-import javax.swing.*;
 import javax.swing.Timer;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -82,6 +81,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * Return the global settings sheets file
+     *
      * @param loadFromOldProfile if the settings can be loaded from an old profile
      * @return the path
      */
@@ -91,15 +91,16 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * Return the registry settings file for the specific key
-     * @param databaseKey the database key
+     *
+     * @param databaseKey        the database key
      * @param loadFromOldProfile if the settings can be loaded from an old profile
      * @return the path
      */
     public static Path getRegistryFile(String databaseKey, boolean loadFromOldProfile) {
-        if(isValidRegistryDatabaseKey(databaseKey)) {
+        if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        return JIPipe.getJIPipeUserDir(loadFromOldProfile).resolve("settings-db-" +  databaseKey + ".json");
+        return JIPipe.getJIPipeUserDir(loadFromOldProfile).resolve("settings-db-" + databaseKey + ".json");
     }
 
     public static boolean isValidRegistryDatabaseKey(String databaseKey) {
@@ -240,16 +241,17 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * Puts an object into the registry
+     *
      * @param databaseKey the database key
      * @param registryKey the registry key
-     * @param value the value
+     * @param value       the value
      */
     public void putIntoRegistry(String databaseKey, Path registryKey, Object value) {
-        if(!isValidRegistryDatabaseKey(databaseKey)) {
+        if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
         PathMetadataStore store = registryDatabases.get(databaseKey);
-        if(store == null) {
+        if (store == null) {
             store = new PathMetadataStore();
             registryDatabases.put(databaseKey, store);
         }
@@ -261,36 +263,48 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * Gets an object from the registry
-     * @param databaseKey the database key
-     * @param registryKey the registry key
-     * @param type the type
+     *
+     * @param databaseKey  the database key
+     * @param registryKey  the registry key
+     * @param type         the type
      * @param defaultValue the default value
-     * @param destructive if true and the current value is null, always replace it with the default value
-     * @param <T> the type
+     * @param destructive  if true and the current value is null, always replace it with the default value
+     * @param <T>          the type
      */
     public <T> T getFromRegistry(String databaseKey, Path registryKey, Class<T> type, T defaultValue, boolean destructive) {
-        if(!isValidRegistryDatabaseKey(databaseKey)) {
+        if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        boolean changed =false;
+        boolean changed = false;
         PathMetadataStore store = registryDatabases.get(databaseKey);
-        if(store == null) {
+        if (store == null) {
             store = new PathMetadataStore();
+
+            // Try to load from file
+            try {
+                Path registryFile = getRegistryFile(databaseKey, false);
+                if (Files.isRegularFile(registryFile)) {
+                    store = JsonUtils.readFromFile(registryFile, PathMetadataStore.class);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             registryDatabases.put(databaseKey, store);
             changed = true;
         }
 
         T object = store.getObject(registryKey, type);
-        if(object == null) {
+        if (object == null) {
             object = defaultValue;
 
-            if(destructive || !store.containsKey(registryKey)) {
+            if (destructive || !store.containsKey(registryKey)) {
                 store.putObject(registryKey, object);
                 changed = true;
             }
         }
 
-        if(changed) {
+        if (changed) {
             saveLater();
         }
 
@@ -299,35 +313,47 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     /**
      * Gets a list object from the registry
+     *
      * @param databaseKey the database key
      * @param registryKey the registry key
-     * @param type the type
+     * @param type        the type
      * @param destructive if true and the current value is null, always replace it with the default value
-     * @param <T> the type
+     * @param <T>         the type
      */
     public <T> List<T> getListFromRegistry(String databaseKey, Path registryKey, Class<T> type, boolean destructive) {
-        if(!isValidRegistryDatabaseKey(databaseKey)) {
+        if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        boolean changed =false;
+        boolean changed = false;
         PathMetadataStore store = registryDatabases.get(databaseKey);
-        if(store == null) {
+        if (store == null) {
             store = new PathMetadataStore();
+
+            // Try to load from file
+            try {
+                Path registryFile = getRegistryFile(databaseKey, false);
+                if (Files.isRegularFile(registryFile)) {
+                    store = JsonUtils.readFromFile(registryFile, PathMetadataStore.class);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
             registryDatabases.put(databaseKey, store);
             changed = true;
         }
 
         List<T> object = store.getList(registryKey, type);
-        if(object == null) {
+        if (object == null) {
             object = new ArrayList<>();
 
-            if(destructive || !store.containsKey(registryKey)) {
+            if (destructive || !store.containsKey(registryKey)) {
                 store.putObject(registryKey, object);
                 changed = true;
             }
         }
 
-        if(changed) {
+        if (changed) {
             saveLater();
         }
 

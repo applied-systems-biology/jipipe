@@ -287,8 +287,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
             } catch (Throwable e) {
                 state = JIPipeServiceState.Error;
                 e.printStackTrace();
-            }
-            finally {
+            } finally {
                 initializer.runPostprocessing();
             }
         }

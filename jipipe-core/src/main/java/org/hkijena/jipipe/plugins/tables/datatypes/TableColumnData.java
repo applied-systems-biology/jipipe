@@ -28,7 +28,7 @@ import java.util.List;
  * This type allows data to be provided
  */
 @SetJIPipeDocumentation(name = "Table column", description = "A table column")
-@ConfigureJIPipeDataCrate(entities = { })
+@ConfigureJIPipeDataCrate(entities = {})
 public interface TableColumnData extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.

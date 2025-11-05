@@ -94,10 +94,10 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         createDiagram(tmpPath, builder);
 
         // Ensure that the input directory exists
-        if(!Files.isDirectory(tmpPath.resolve("inputs"))) {
+        if (!Files.isDirectory(tmpPath.resolve("inputs"))) {
             PathUtils.createDirectories(tmpPath.resolve("inputs"));
             // Create something in there
-           PathUtils.createKeepFile(tmpPath.resolve("inputs").resolve(".keep"));
+            PathUtils.createKeepFile(tmpPath.resolve("inputs").resolve(".keep"));
         }
 
         // Compress the container

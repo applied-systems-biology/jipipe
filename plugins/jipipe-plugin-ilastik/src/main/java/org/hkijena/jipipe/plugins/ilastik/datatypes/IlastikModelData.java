@@ -29,7 +29,7 @@ import java.nio.file.*;
 
 @SetJIPipeDocumentation(name = "Ilastik project", description = "An Ilastik project")
 @ConfigureJIPipeDataCrate(entities = {
-        @DefineJIPipeDataCrateEntity(id ="glob:./*.ilp", type = JIPipeDataCrateEntityType.File, name = "Ilastik project", description = "The Ilastik project")
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.ilp", type = JIPipeDataCrateEntityType.File, name = "Ilastik project", description = "The Ilastik project")
 })
 public class IlastikModelData implements JIPipeData {
 

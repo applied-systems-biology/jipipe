@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.utils.PathForm;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
@@ -28,6 +27,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.utils.PathForm;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Files;
@@ -77,8 +77,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
                 getFirstOutputSlot().getInfo().setCustomName(name);
                 getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
             }
-        }
-        else {
+        } else {
             getFirstOutputSlot().getInfo().setCustomName("");
             getNodeSlotsChangedEventEmitter().emit(new NodeSlotsChangedEvent(this));
         }
@@ -115,7 +114,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     @Override
     public void setBaseDirectory(Path baseDirectory) {
         super.setBaseDirectory(baseDirectory);
-        if(autoRelativizePaths) {
+        if (autoRelativizePaths) {
             autoRelativizePaths(baseDirectory);
         }
         currentWorkingDirectory = baseDirectory;
@@ -201,13 +200,12 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     @Override
     public void archiveUpdateExternalPaths(Map<Path, Path> updateMap, JIPipeProgressInfo progressInfo) {
-        List<Path> updatedPaths = new  ArrayList<>();
+        List<Path> updatedPaths = new ArrayList<>();
         for (Path src : getPathsAs(PathForm.Absolute)) {
             Path dst = updateMap.get(src);
-            if(dst != null) {
+            if (dst != null) {
                 updatedPaths.add(dst);
-            }
-            else {
+            } else {
                 progressInfo.aggressive("MISSING MAPPING", src.toString(), "to", "?");
             }
         }
@@ -215,10 +213,9 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
     }
 
     public Path getCurrentWorkingOrProjectDirectory() {
-        if(!PathUtils.isNullOrEmpty(currentWorkingDirectory) && Files.isDirectory(currentWorkingDirectory)) {
+        if (!PathUtils.isNullOrEmpty(currentWorkingDirectory) && Files.isDirectory(currentWorkingDirectory)) {
             return currentWorkingDirectory;
-        }
-        else {
+        } else {
             return getProjectDirectory();
         }
     }
@@ -227,43 +224,37 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
         Path baseDir = getCurrentWorkingOrProjectDirectory();
 
-        if(type == PathForm.Relative) {
+        if (type == PathForm.Relative) {
             List<Path> result = new ArrayList<>();
             for (Path path : getPaths_()) {
-                if(path.isAbsolute()) {
-                    if(!PathUtils.isNullOrEmpty(baseDir) && path.startsWith(baseDir)) {
+                if (path.isAbsolute()) {
+                    if (!PathUtils.isNullOrEmpty(baseDir) && path.startsWith(baseDir)) {
                         result.add(baseDir.relativize(path).normalize());
-                    }
-                    else {
+                    } else {
                         // Use user home
                         result.add(PathUtils.getHomeDirectory().relativize(path).normalize());
                     }
-                }
-                else {
+                } else {
                     result.add(path.normalize());
                 }
             }
             return result;
-        }
-        else if(type == PathForm.Absolute) {
+        } else if (type == PathForm.Absolute) {
             List<Path> result = new ArrayList<>();
             for (Path path : getPaths_()) {
-                if(!path.isAbsolute()) {
-                    if(!PathUtils.isNullOrEmpty(baseDir)) {
+                if (!path.isAbsolute()) {
+                    if (!PathUtils.isNullOrEmpty(baseDir)) {
                         result.add(baseDir.resolve(path).normalize());
-                    }
-                    else {
+                    } else {
                         // Use user home
                         result.add(PathUtils.getHomeDirectory().resolve(path).normalize());
                     }
-                }
-                else {
+                } else {
                     result.add(path.normalize());
                 }
             }
             return result;
-        }
-        else {
+        } else {
             return getPaths_();
         }
     }
@@ -277,12 +268,14 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
 
     /**
      * Internal method that gets the list of paths that are contained within this node's parameters
+     *
      * @return the list of paths
      */
     protected abstract List<Path> getPaths_();
 
     /**
      * Internal method that sets the path parameter(s) to the given paths
+     *
      * @param paths the paths
      */
     protected abstract void setPaths_(List<Path> paths);

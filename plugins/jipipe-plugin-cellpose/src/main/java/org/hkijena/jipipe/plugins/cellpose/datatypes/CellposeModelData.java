@@ -34,10 +34,10 @@ import java.nio.file.Path;
  */
 @SetJIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
 @ConfigureJIPipeDataCrate(entities = {
-        @DefineJIPipeDataCrateEntity(id="glob:./*.json", type = JIPipeDataCrateEntityType.File, encodingFormat = EncodingFormats.JSON,
-        name = "Metadata file", description = "Contains the name of the model file (name) and has a boolean is-pretrained to determine if the name refers to a pretrained model"),
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, encodingFormat = EncodingFormats.JSON,
+                name = "Metadata file", description = "Contains the name of the model file (name) and has a boolean is-pretrained to determine if the name refers to a pretrained model"),
         @DefineJIPipeDataCrateEntity(id = "glob:./*", type = JIPipeDataCrateEntityType.File, presence = JIPipeDataCrateEntityPresence.Optional, encodingFormat = EncodingFormats.BINARY,
-        name = "Model file (binary)", description = "The Cellpose model file")
+                name = "Model file (binary)", description = "The Cellpose model file")
 })
 public class CellposeModelData implements JIPipeData {
 

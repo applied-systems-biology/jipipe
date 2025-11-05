@@ -76,20 +76,19 @@ public class CellposeUtils {
                     suppressLogs,
                     false,
                     progressInfo);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Search for the hallmarks of CUDA issues
             String logAsString = progressInfo.getLog().toString();
-            if(logAsString.contains("is not compatible with the current PyTorch installation") && logAsString.contains("The current PyTorch install supports CUDA capabilities")) {
+            if (logAsString.contains("is not compatible with the current PyTorch installation") && logAsString.contains("The current PyTorch install supports CUDA capabilities")) {
                 progressInfo.aggressive("GPU not compatible to Cellpose!", "Try disabling GPU support in the node's settings or globally");
                 throw new JIPipeValidationRuntimeException(e,
                         "GPU not compatible to current Cellpose version",
                         "You GPU is not capable of running the provided Cellpose version. The GPU is either too old or too new.",
                         "If you are using Nvidia (CUDA), try limiting the CUDA version to a maximum of 126 which may work with older GPUs (see bottom right corner of the window). " +
-                        "You can also try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally. " +
+                                "You can also try disabling the GPU support to run Cellpose on CPU (slower) for the Cellpose node (Category 'GPU') or globally. " +
                                 "If you absolutely require GPU support, you can setup a custom Cellpose environment and point JIPipe at it using project or node connected services.");
             }
-            if(logAsString.contains("torch.OutOfMemoryError: CUDA out of memory")) {
+            if (logAsString.contains("torch.OutOfMemoryError: CUDA out of memory")) {
                 progressInfo.aggressive("Ran out of GPU memory! Consider running on CPU");
                 throw new JIPipeValidationRuntimeException(e,
                         "Cellpose ran out of memory",

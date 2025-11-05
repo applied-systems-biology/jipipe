@@ -33,6 +33,10 @@ public class JIPipeJavaPluginSplashIcon {
         this.icon = other.icon;
     }
 
+    public static JIPipeJavaPluginSplashIconBuilder builder() {
+        return new JIPipeJavaPluginSplashIconBuilder();
+    }
+
     public String getId() {
         return id;
     }
@@ -65,10 +69,6 @@ public class JIPipeJavaPluginSplashIcon {
         this.icon = icon;
     }
 
-    public static JIPipeJavaPluginSplashIconBuilder builder() {
-        return new JIPipeJavaPluginSplashIconBuilder();
-    }
-
     public static final class JIPipeJavaPluginSplashIconBuilder {
         private final JIPipeJavaPluginSplashIcon result;
 
@@ -97,8 +97,8 @@ public class JIPipeJavaPluginSplashIcon {
         }
 
         public JIPipeJavaPluginSplashIcon build() {
-            if(StringUtils.isNullOrEmpty(result.getId())) {
-                throw new  IllegalArgumentException("ID cannot be null or empty");
+            if (StringUtils.isNullOrEmpty(result.getId())) {
+                throw new IllegalArgumentException("ID cannot be null or empty");
             }
             return new JIPipeJavaPluginSplashIcon(result);
         }

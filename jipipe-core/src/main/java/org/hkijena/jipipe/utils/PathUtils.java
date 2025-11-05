@@ -822,11 +822,11 @@ public class PathUtils {
 
         // Convert to absolute path if not already
         Path absolutePath = path.isAbsolute() ? path : path.toAbsolutePath();
-        
+
         // Get the total path length
         String pathString = absolutePath.toString();
         int pathLength = pathString.length();
-        
+
         // Conservative estimates for maximum path lengths on different operating systems
         // Windows: ~260 characters (MAX_PATH)
         // Linux: typically 4096 characters
@@ -839,18 +839,18 @@ public class PathUtils {
         } else { // Linux and other Unix-like systems
             conservativeMaxLength = 3000; // Leave room for file names
         }
-        
+
         // If the path itself is already too long, it's not suitable
         if (pathLength >= conservativeMaxLength) {
             return false;
         }
-        
+
         // Check if the path is very deep (many nested directories)
         int nameCount = absolutePath.getNameCount();
         if (nameCount > 10) { // More than 10 nested directories might be problematic
             return false;
         }
-        
+
         // Additional heuristic: check if the path contains many long directory names
         int totalNameLength = 0;
         for (int i = 0; i < nameCount; i++) {
@@ -860,7 +860,7 @@ public class PathUtils {
         if (averageNameLength > 30) { // Directory names are very long on average
             return false;
         }
-        
+
         // If we get here, the path seems reasonably suitable
         return true;
     }
@@ -872,10 +872,9 @@ public class PathUtils {
     public static Set<Path> ensureAbsoluteNormalized(Set<Path> paths) {
         Set<Path> result = new HashSet<>();
         for (Path path : paths) {
-            if(!path.isAbsolute()) {
+            if (!path.isAbsolute()) {
                 result.add(getHomeDirectory().resolve(path).normalize());
-            }
-            else {
+            } else {
                 result.add(path.normalize());
             }
         }
@@ -883,7 +882,7 @@ public class PathUtils {
     }
 
     public static void createKeepFile(Path path) {
-        if(!Files.exists(path)) {
+        if (!Files.exists(path)) {
             try {
                 Files.createFile(path);
             } catch (IOException e) {

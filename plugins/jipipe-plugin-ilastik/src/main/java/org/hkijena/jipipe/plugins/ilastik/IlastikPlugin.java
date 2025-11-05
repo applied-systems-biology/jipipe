@@ -44,7 +44,6 @@ import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.*;
 
 @Plugin(type = JIPipeJavaPlugin.class)

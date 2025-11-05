@@ -46,7 +46,6 @@ import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;

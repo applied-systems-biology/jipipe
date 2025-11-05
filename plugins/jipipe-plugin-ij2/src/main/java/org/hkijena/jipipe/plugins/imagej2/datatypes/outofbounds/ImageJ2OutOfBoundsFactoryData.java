@@ -16,7 +16,6 @@ package org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
-import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.utils.JIPipeSerializedParameterCollectionData;
 
 @SetJIPipeDocumentation(name = "IJ2 Out Of Bounds factory", description = "An ImageJ2 generator for values outside the image bounds")

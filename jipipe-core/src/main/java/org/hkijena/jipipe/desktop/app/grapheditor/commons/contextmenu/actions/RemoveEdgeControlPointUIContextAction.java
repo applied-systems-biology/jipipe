@@ -16,14 +16,10 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.actions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
@@ -49,7 +45,7 @@ public class RemoveEdgeControlPointUIContextAction implements GraphInteractiveOb
         return selection.stream().anyMatch(ui -> ui instanceof JIPipeDesktopGraphEdgeControlPointUI);
     }
 
-     @Override
+    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0, true);
     }
@@ -57,7 +53,7 @@ public class RemoveEdgeControlPointUIContextAction implements GraphInteractiveOb
     @Override
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         for (JIPipeDesktopGraphInteractiveObjectUI ui : selection) {
-            if(ui instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
+            if (ui instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
                 edgeControlPointUI.getEdgeUI().removeControlPoint(edgeControlPointUI);
             }
         }

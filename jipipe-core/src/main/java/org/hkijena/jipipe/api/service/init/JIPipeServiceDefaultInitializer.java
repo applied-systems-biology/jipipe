@@ -5,6 +5,7 @@ import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
@@ -32,7 +33,6 @@ import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportCon
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewer;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDefaultDataViewer;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
-import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeExtensionApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
@@ -421,8 +421,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                     getService().getLogService().warn("Data type '" + dataType + "' has invalid data crate metadata.");
                     issues.getErroneousDataTypes().add(dataType);
                 }
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 getService().getLogService().warn("Data type '" + dataType + "' has invalid data crate metadata. (error during construction!)");
                 issues.getErroneousDataTypes().add(dataType);
                 issues.getErrors().add(e);

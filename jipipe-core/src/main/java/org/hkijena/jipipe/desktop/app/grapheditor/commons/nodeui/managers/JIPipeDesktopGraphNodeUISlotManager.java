@@ -9,9 +9,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopRewireConnectionsToolUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopEditAlgorithmSlotPanel;
-import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterKeyPickerUI;
 import org.hkijena.jipipe.plugins.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
 

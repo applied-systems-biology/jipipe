@@ -19,18 +19,18 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
-import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.utils.UIUtils;
 
 public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener {
 
-    private final JIPipeDesktopColorPaletteUI paletteUI;
     private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
+    private final JIPipeDesktopColorPaletteUI paletteUI;
 
     public ImageBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
-        this.paletteUI.setUserColors(new JIPipeDesktopSettingsBackedColorPaletteUserColorStorage(paletteUI));
+        this.paletteUI.setUserColors(new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI));
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
     }

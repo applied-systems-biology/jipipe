@@ -333,7 +333,7 @@ class PathMetadataStorePathPrefixTest {
         assertEquals("path/to/file", PathMetadataStore.normalizePathString("path\\to\\file"));
         assertEquals("path/to/file", PathMetadataStore.normalizePathString("path/to/file"));
         assertEquals(null, PathMetadataStore.normalizePathString(null));
-        
+
         Path originalPath = Paths.get("settings\\general\\name");
         Path normalizedPath = PathMetadataStore.normalizePath(originalPath);
         assertEquals("settings/general/name", normalizedPath.toString());
@@ -342,23 +342,23 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testBackslashMigration() {
         PathMetadataStore store = new PathMetadataStore();
-        
+
         // Add paths with backslashes (simulating Windows paths)
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
         store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
         store.putPrimitive(Paths.get("ui\\theme"), "dark");
-        
+
         // Verify that backslash paths exist
         assertTrue(store.hasBackslashPaths());
         assertEquals(3, store.size());
-        
+
         // Migrate backslash paths
         store.migrateBackslashPaths();
-        
+
         // Verify that no backslash paths remain
         assertFalse(store.hasBackslashPaths());
         assertEquals(3, store.size());
-        
+
         // Verify that values are preserved with normalized paths
         assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
         assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
@@ -368,29 +368,29 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testGetNormalizedCopy() {
         PathMetadataStore original = new PathMetadataStore();
-        
+
         // Add paths with mixed separators
         original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
         original.putPrimitive(Paths.get("settings/general/version"), 1.0);
         original.putPrimitive(Paths.get("ui\\theme"), "dark");
-        
+
         // Create normalized copy
         PathMetadataStore normalized = original.getNormalizedCopy();
-        
+
         // Verify original is unchanged
         assertEquals(3, original.size());
         assertTrue(original.hasBackslashPaths());
-        
+
         // Verify normalized copy has no backslashes
         assertEquals(3, normalized.size());
         assertFalse(normalized.hasBackslashPaths());
-        
+
         // Verify all paths use forward slashes
         Set<String> normalizedPaths = normalized.getNormalizedPathStrings();
         assertTrue(normalizedPaths.contains("settings/general/name"));
         assertTrue(normalizedPaths.contains("settings/general/version"));
         assertTrue(normalizedPaths.contains("ui/theme"));
-        
+
         // Verify values are preserved
         assertEquals("Application", normalized.getString(Paths.get("settings/general/name"), "Default"));
         assertEquals(1.0, normalized.getDouble(Paths.get("settings/general/version"), 0.0));
@@ -401,22 +401,22 @@ class PathMetadataStorePathPrefixTest {
     void testJsonSerializationWithBackslashes() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         PathMetadataStore original = new PathMetadataStore();
-        
+
         // Add paths with backslashes
         original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
         original.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
-        
+
         // Serialize to JSON
         String json = mapper.writeValueAsString(original);
-        
+
         // Verify JSON contains normalized paths (forward slashes)
         assertTrue(json.contains("\"settings/general/name\""));
         assertTrue(json.contains("\"settings/general/version\""));
         assertFalse(json.contains("\\\\"));
-        
+
         // Deserialize back to store
         PathMetadataStore deserialized = mapper.readValue(json, PathMetadataStore.class);
-        
+
         // Verify deserialized data
         assertEquals(2, deserialized.size());
         assertEquals("Application", deserialized.getString(Paths.get("settings/general/name"), "Default"));
@@ -427,13 +427,13 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testJsonDeserializationWithBackslashes() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        
+
         // Create JSON with backslash paths (simulating old Windows format)
         String jsonWithBackslashes = "{\"settings\\\\general\\\\name\":\"Application\",\"settings\\\\general\\\\version\":1.0}";
-        
+
         // Deserialize - should handle backslashes gracefully
         PathMetadataStore store = mapper.readValue(jsonWithBackslashes, PathMetadataStore.class);
-        
+
         // Verify store has normalized paths
         assertEquals(2, store.size());
         assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
@@ -444,28 +444,28 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testToNestedMapWithBackslashes() {
         PathMetadataStore store = new PathMetadataStore();
-        
+
         // Add paths with backslashes
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
         store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
         store.putPrimitive(Paths.get("ui\\theme"), "dark");
-        
+
         // Convert to nested map
         Map<String, Object> nested = store.toNestedMap();
-        
+
         // Verify structure is correct with forward slashes
         assertTrue(nested.containsKey("settings"));
         assertTrue(nested.containsKey("ui"));
-        
+
         @SuppressWarnings("unchecked")
         Map<String, Object> settings = (Map<String, Object>) nested.get("settings");
         assertTrue(settings.containsKey("general"));
-        
+
         @SuppressWarnings("unchecked")
         Map<String, Object> general = (Map<String, Object>) settings.get("general");
         assertEquals("Application", general.get("name"));
         assertEquals(1.0, general.get("version"));
-        
+
         @SuppressWarnings("unchecked")
         Map<String, Object> ui = (Map<String, Object>) nested.get("ui");
         assertEquals("dark", ui.get("theme"));
@@ -474,24 +474,24 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testMixedPathSeparatorsInStore() {
         PathMetadataStore store = new PathMetadataStore();
-        
+
         // Add paths with mixed separators
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");  // Backslashes
         store.putPrimitive(Paths.get("settings/general/version"), 1.0);          // Forward slashes
         store.putPrimitive(Paths.get("ui\\theme"), "dark");                     // Backslashes
-        
+
         // Before migration, backslash paths should not be found with forward slash paths
         assertEquals("Default", store.getString(Paths.get("settings/general/name"), "Default"));
         assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
         assertEquals("light", store.getString(Paths.get("ui/theme"), "light"));
-        
+
         // Verify backslash paths exist before migration
         assertTrue(store.hasBackslashPaths());
-        
+
         // After migration, all should be normalized and accessible
         store.migrateBackslashPaths();
         assertFalse(store.hasBackslashPaths());
-        
+
         // Now all paths should work with forward slashes
         assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
         assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));

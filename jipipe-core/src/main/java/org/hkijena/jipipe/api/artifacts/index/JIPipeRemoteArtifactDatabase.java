@@ -26,18 +26,20 @@ public interface JIPipeRemoteArtifactDatabase {
     /**
      * Instructs the indexer to rebuild its internal cache.
      * Should be automatically called if there is currently none
+     *
      * @param progressInfo the progress info
      */
     void rebuild(JIPipeArtifactRepositoryReference repositoryReference, JIPipeProgressInfo progressInfo);
 
     /**
      * Queries the indexer
-     * @param groupId the group id
-     * @param artifactId the artifact id
-     * @param version the version
-     * @param progressInfo the progress info
+     *
+     * @param groupId             the group id
+     * @param artifactId          the artifact id
+     * @param version             the version
+     * @param progressInfo        the progress info
      * @param repositoryReference the reference to the repository
-     * @param downloadMap the map where the remote artifacts will be placed (by their unique ID)
+     * @param downloadMap         the map where the remote artifacts will be placed (by their unique ID)
      */
     void query(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo, JIPipeArtifactRepositoryReference repositoryReference, Map<String, JIPipeRemoteArtifact> downloadMap);
 }

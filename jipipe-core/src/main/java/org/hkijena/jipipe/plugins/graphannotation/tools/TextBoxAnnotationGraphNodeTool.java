@@ -80,11 +80,11 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
         this.color = color;
     }
 
-    public void setAnchor(Anchor anchor) {
-        this.anchor = anchor;
-    }
-
     public Anchor getAnchor() {
         return anchor;
+    }
+
+    public void setAnchor(Anchor anchor) {
+        this.anchor = anchor;
     }
 }

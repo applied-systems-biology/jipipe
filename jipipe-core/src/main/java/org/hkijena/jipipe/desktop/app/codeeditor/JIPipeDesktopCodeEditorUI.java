@@ -26,12 +26,12 @@ import java.awt.*;
  * Cental panel for code editing
  */
 public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
+    private final JToolBar toolBar = new JToolBar();
+    private final JPopupMenu currentDocumentInfoPopupMenu = new JPopupMenu();
     private JIPipeDesktopCodeEditorDocument document;
     private JIPipeDesktopCodeEditorRSyntaxTextEditorUI rSyntaxTextEditorUI;
     private JLabel noDocumentMessage;
     private JButton currentDocumentInfoButton;
-    private final JToolBar toolBar = new JToolBar();
-    private final JPopupMenu currentDocumentInfoPopupMenu = new JPopupMenu();
 
     public JIPipeDesktopCodeEditorUI(JIPipeDesktopWorkbench desktopWorkbench, JIPipeDesktopCodeEditorDocument document) {
         super(desktopWorkbench);
@@ -48,7 +48,7 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         rSyntaxTextEditorUI = new JIPipeDesktopCodeEditorRSyntaxTextEditorUI(this);
         noDocumentMessage = UIUtils.createInfoLabel("No document to edit",
                 "The code editor currently has no script to edit",
@@ -56,8 +56,8 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
 
         toolBar.setFloatable(false);
         toolBar.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(1, 0,0,0, ThemeUtils.getCurrentStyle().getBorderColor()),
-                BorderFactory.createEmptyBorder(3,0,3,0)));
+                BorderFactory.createMatteBorder(1, 0, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()),
+                BorderFactory.createEmptyBorder(3, 0, 3, 0)));
         currentDocumentInfoButton = new JButton();
         currentDocumentInfoButton.setBorder(null);
         UIUtils.addReloadablePopupMenuToButton(currentDocumentInfoButton, currentDocumentInfoPopupMenu, this::reloadPopupMenu);
@@ -65,7 +65,7 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void reloadPopupMenu() {
-        if(document != null) {
+        if (document != null) {
             currentDocumentInfoPopupMenu.removeAll();
             document.createActionsMenu(this, currentDocumentInfoPopupMenu);
         }
@@ -73,7 +73,7 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
 
     private void onDocumentUpdated() {
         removeAll();
-        if(document != null) {
+        if (document != null) {
             // Update the button
             currentDocumentInfoButton.setText(document.getTitle());
             currentDocumentInfoButton.setIcon(document.getIcon());
@@ -83,8 +83,7 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
             add(rSyntaxTextEditorUI, BorderLayout.CENTER);
             add(toolBar, BorderLayout.SOUTH);
             rSyntaxTextEditorUI.onDocumentUpdated();
-        }
-        else {
+        } else {
             add(noDocumentMessage, BorderLayout.CENTER);
         }
 
@@ -92,12 +91,12 @@ public class JIPipeDesktopCodeEditorUI extends JIPipeDesktopWorkbenchPanel {
         repaint(50);
     }
 
+    public JIPipeDesktopCodeEditorDocument getDocument() {
+        return document;
+    }
+
     public void setDocument(JIPipeDesktopCodeEditorDocument document) {
         this.document = document;
         onDocumentUpdated();
-    }
-
-    public JIPipeDesktopCodeEditorDocument getDocument() {
-        return document;
     }
 }

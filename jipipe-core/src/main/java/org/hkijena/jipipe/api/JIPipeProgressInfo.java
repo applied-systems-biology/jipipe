@@ -498,7 +498,7 @@ public class JIPipeProgressInfo implements Cancelable {
     }
 
     public void aggressive(String... text) {
-        if(text.length==0) {
+        if (text.length == 0) {
             return;
         }
         int length = Arrays.stream(text).map(String::length).reduce(0, Integer::max);
@@ -514,7 +514,7 @@ public class JIPipeProgressInfo implements Cancelable {
      * Throws an exception if the process is cancelled
      */
     public void cancellationCheck() {
-        if(isCancelled()) {
+        if (isCancelled()) {
             throw new RuntimeException(new InterruptedException("Cancellation was requested"));
         }
     }

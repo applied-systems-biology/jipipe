@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.python.setup.PythonEnvironmentFromVirtualEnvSe
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 

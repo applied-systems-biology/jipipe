@@ -13,20 +13,17 @@
 
 package org.hkijena.jipipe.api.grapheditortool;
 
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
-import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class JIPipeDesktopGraphEditorToolPanel<T extends JIPipeDesktopToggleableGraphEditorTool> extends JIPipeDesktopGraphEditorContextPanelIsland {
 
     private final T tool;
 
     public JIPipeDesktopGraphEditorToolPanel(JIPipeDesktopGraphEditorUI graphEditorUI, T tool) {
-       super(graphEditorUI);
+        super(graphEditorUI);
         this.tool = tool;
     }
 

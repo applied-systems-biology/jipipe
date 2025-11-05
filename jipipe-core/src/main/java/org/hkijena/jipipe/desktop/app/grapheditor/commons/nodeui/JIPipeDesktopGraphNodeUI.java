@@ -43,7 +43,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.cache.ClearCacheNodeUIContextAction;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.*;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.UpdateCacheNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.UpdateCacheOnlyPredecessorsNodeUIContextAction;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.UpdateCacheShowIntermediateNodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
@@ -194,13 +196,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         this.highlightedNodeBorderColor = ThemeUtils.getCurrentStyle().getNodeHighlightBorder();
         this.slotFillColor = ThemeUtils.getCurrentStyle().getNodeSlotBackground();
         this.slotParametersFillColor = ColorUtils.mix(getSlotFillColor(), getNodeFillColor(), 0.5);
-        if(node.getInfo().isUnstable()) {
+        if (node.getInfo().isUnstable()) {
             this.mainTextColor = ThemeUtils.getCurrentStyle().getDangerColor();
-        }
-        else if(node.getInfo().isDeprecated()) {
+        } else if (node.getInfo().isDeprecated()) {
             this.mainTextColor = ThemeUtils.getCurrentStyle().getWarningColor();
-        }
-        else {
+        } else {
             this.mainTextColor = UIManager.getColor("Label.foreground");
         }
         this.nodeDisabledPaint = new LinearGradientPaint(
@@ -633,10 +633,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     }
 
     protected String getDisplayedNodeName() {
-        if(node.getInfo().isUnstable()) {
+        if (node.getInfo().isUnstable()) {
             return getNode().getName() + " (unstable!)";
         }
-        if(node.getInfo().isDeprecated()) {
+        if (node.getInfo().isDeprecated()) {
             return getNode().getName() + " (deprecated)";
         }
         return getNode().getName();

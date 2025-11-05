@@ -54,13 +54,13 @@ public class FileChooserTesterJIPipeDesktopMenuExtension extends JIPipeDesktopMe
     public void actionPerformed(ActionEvent e) {
         JFrame frame = new JFrame();
         frame.setTitle("Test file choosers");
-        JPanel buttonPanel = new JPanel(new GridLayout(3,3));
+        JPanel buttonPanel = new JPanel(new GridLayout(3, 3));
         frame.getContentPane().setLayout(new BorderLayout());
         frame.getContentPane().add(buttonPanel, BorderLayout.NORTH);
 
         JTextPane textPane = new JTextPane();
         textPane.setEditable(false);
-        textPane.setFont(new  Font(Font.MONOSPACED, Font.PLAIN, 12));
+        textPane.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         JScrollPane scrollPane = new JScrollPane(textPane);
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
 
@@ -170,7 +170,7 @@ public class FileChooserTesterJIPipeDesktopMenuExtension extends JIPipeDesktopMe
         }));
 
         frame.pack();
-        frame.setSize(1027,768);
+        frame.setSize(1027, 768);
         frame.setLocationRelativeTo(getDesktopProjectWorkbench().getWindow());
         frame.setVisible(true);
     }

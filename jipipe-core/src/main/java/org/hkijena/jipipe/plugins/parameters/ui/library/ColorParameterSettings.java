@@ -20,6 +20,7 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ColorParameterSettings {
     /**
      * Determines whether the transparency selection is enabled
+     *
      * @return if the transparency selection is enabled
      */
     boolean withTransparency() default false;

@@ -286,12 +286,12 @@ class JIPipeMultiIterationStepGeneratorTest {
                 step(
                         slot("Input 1", 0),
                         slot("Input 2", 0),
-                        slot("Input 3",0)
+                        slot("Input 3", 0)
                 ),
                 step(
                         slot("Input 1", 1),
                         slot("Input 2", 1),
-                        slot("Input 3", 1 )
+                        slot("Input 3", 1)
                 ),
                 step(
                         slot("Input 1", 2),

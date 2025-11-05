@@ -25,9 +25,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacroParameter;
-import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.strings.ImageJMacroData;
-import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 
 @SetJIPipeDocumentation(name = "Define ImageJ macro", description = "Defines an ImageJ macro")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

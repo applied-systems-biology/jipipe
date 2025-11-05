@@ -21,7 +21,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
-import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopSettingsBackedColorPaletteUserColorStorage;
+import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -29,18 +29,17 @@ import javax.swing.*;
 
 public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
-    private final JIPipeDesktopColorPaletteUI paletteUI;
-    private final JIPipeDesktopParameterEditorUI<Anchor> anchorParameterEditorUI;
-
     private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
     private static Anchor LAST_ANCHOR = Anchor.CenterCenter;
+    private final JIPipeDesktopColorPaletteUI paletteUI;
+    private final JIPipeDesktopParameterEditorUI<Anchor> anchorParameterEditorUI;
 
     public TextBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxAnnotationGraphNodeTool tool) {
         super(graphEditorUI, tool);
 
         // Initialize palette
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
-        this.paletteUI.setUserColors(new JIPipeDesktopSettingsBackedColorPaletteUserColorStorage(paletteUI));
+        this.paletteUI.setUserColors(new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI));
         this.paletteUI.getSelectedEventEmitter().subscribe(this);
         this.paletteUI.setSelectedColor(LAST_COLOR);
 

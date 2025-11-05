@@ -63,12 +63,11 @@ import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
-import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -360,29 +359,32 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     protected void restoreDockStateFromSettings() {
         try {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
-            state.setAlwaysShowRightPanel(true);
-            JsonUtils.getObjectMapper().readerForUpdating(state).readValue(settings.getCompartmentsEditorDockLayout());
+            JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
+            defaultState.setAlwaysShowRightPanel(true);
+            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("graph-editor",
+                    Path.of("compartments", "dock-state"),
+                    JIPipeDesktopDockPanel.State.class,
+                    defaultState,
+                    true);
             getDockPanel().restoreState(state);
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            settings.setCompartmentsEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getCurrentState()));
-            JIPipe.getSettings().saveLater();
+            JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
+                    Path.of("compartments", "dock-state"),
+                    getDockPanel().getCurrentState());
         }
     }
 
     @Override
     protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            return settings.getCompartmentsEditorDockLayoutTemplates();
+            return JIPipe.getSettings().getFromRegistry("ui-dock", Path.of("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
         }
         return null;
     }

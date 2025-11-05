@@ -23,7 +23,7 @@ public class TarGzExtractor {
      * - Regular files are written normally
      * - Hard links are materialized as full file copies (never hard links)
      * - Symlinks are created with the archived link text (no path rewriting);
-     *   if symlinks aren’t supported, we fallback to copying the target when safe/available
+     * if symlinks aren’t supported, we fallback to copying the target when safe/available
      */
     public static void decompressTarGZ(Path tarGzFile, Path targetDir, JIPipeProgressInfo progressInfo) throws IOException {
         List<Map.Entry<String, Path>> pendingSymlinks = new ArrayList<>(); // (linkText, linkPathOnDisk)

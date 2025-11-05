@@ -7,10 +7,6 @@ package org.hkijena.jipipe.api.data.documentation;
  */
 public final class EncodingFormats {
 
-    private EncodingFormats() {
-        // Prevent instantiation
-    }
-
     // ==== DATA & TEXT FORMATS ====
     public static final String JSON = "application/json";
     public static final String XML = "application/xml";
@@ -22,7 +18,6 @@ public final class EncodingFormats {
     public static final String PDF = "application/pdf";
     public static final String RTF = "application/rtf";
     public static final String MARKDOWN = "text/markdown";
-
     // ==== IMAGE FORMATS ====
     public static final String JPEG = "image/jpeg";
     public static final String PNG = "image/png";
@@ -33,7 +28,6 @@ public final class EncodingFormats {
     public static final String SVG = "image/svg+xml";
     public static final String HEIF = "image/heif";
     public static final String ICO = "image/x-icon";
-
     // ==== AUDIO / VIDEO FORMATS ====
     public static final String MP3 = "audio/mpeg";
     public static final String WAV = "audio/wav";
@@ -43,7 +37,6 @@ public final class EncodingFormats {
     public static final String WEBM = "video/webm";
     public static final String AVI = "video/x-msvideo";
     public static final String MOV = "video/quicktime";
-
     // ==== 3D FORMATS ====
     public static final String OBJ = "model/obj";               // unofficial
     public static final String STL = "model/stl";               // unofficial
@@ -53,20 +46,17 @@ public final class EncodingFormats {
     public static final String COLLADA = "model/vnd.collada+xml";
     public static final String THREE_DS = "model/3ds";          // unofficial
     public static final String PLY = "model/ply";               // unofficial
-
     // ==== ARCHIVES & BINARY CONTAINERS ====
     public static final String ZIP = "application/zip";
     public static final String TAR = "application/x-tar";
     public static final String GZIP = "application/gzip";
     public static final String SEVEN_ZIP = "application/x-7z-compressed";
     public static final String RAR = "application/vnd.rar";
-
     // ==== MISC / GENERAL ====
     public static final String BINARY = "application/octet-stream";
     public static final String UNKNOWN = "application/octet-stream";
     public static final String EXE = "application/vnd.microsoft.portable-executable";
     public static final String WASM = "application/wasm";
-
     // ==== OFFICE & DOCUMENT FORMATS ====
     public static final String DOC = "application/msword";
     public static final String DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -74,7 +64,6 @@ public final class EncodingFormats {
     public static final String XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
     public static final String PPT = "application/vnd.ms-powerpoint";
     public static final String PPTX = "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-
     // ==== SCRIPT FORMATS ====
     public static final String PYTHON = "text/x-python";
     public static final String R_SCRIPT = "text/x-r-source";
@@ -87,4 +76,7 @@ public final class EncodingFormats {
     public static final String MATLAB = "text/x-matlab";
     public static final String PHP = "application/x-httpd-php";
     public static final String SQL = "application/sql";
+    private EncodingFormats() {
+        // Prevent instantiation
+    }
 }

@@ -44,8 +44,6 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 

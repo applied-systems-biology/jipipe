@@ -25,22 +25,52 @@ public class OciManifest {
     @JsonProperty("annotations")
     private Map<String, String> annotations;
 
-    public int getSchemaVersion() { return schemaVersion; }
-    public void setSchemaVersion(int schemaVersion) { this.schemaVersion = schemaVersion; }
+    public int getSchemaVersion() {
+        return schemaVersion;
+    }
 
-    public String getMediaType() { return mediaType; }
-    public void setMediaType(String mediaType) { this.mediaType = mediaType; }
+    public void setSchemaVersion(int schemaVersion) {
+        this.schemaVersion = schemaVersion;
+    }
 
-    public String getArtifactType() { return artifactType; }
-    public void setArtifactType(String artifactType) { this.artifactType = artifactType; }
+    public String getMediaType() {
+        return mediaType;
+    }
 
-    public OciManifestConfig getConfig() { return config; }
-    public void setConfig(OciManifestConfig config) { this.config = config; }
+    public void setMediaType(String mediaType) {
+        this.mediaType = mediaType;
+    }
 
-    public List<OciManifestLayer> getLayers() { return layers; }
-    public void setLayers(List<OciManifestLayer> layers) { this.layers = layers; }
+    public String getArtifactType() {
+        return artifactType;
+    }
 
-    public Map<String, String> getAnnotations() { return annotations; }
-    public void setAnnotations(Map<String, String> annotations) { this.annotations = annotations; }
+    public void setArtifactType(String artifactType) {
+        this.artifactType = artifactType;
+    }
+
+    public OciManifestConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(OciManifestConfig config) {
+        this.config = config;
+    }
+
+    public List<OciManifestLayer> getLayers() {
+        return layers;
+    }
+
+    public void setLayers(List<OciManifestLayer> layers) {
+        this.layers = layers;
+    }
+
+    public Map<String, String> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Map<String, String> annotations) {
+        this.annotations = annotations;
+    }
 }
 

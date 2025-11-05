@@ -14,13 +14,11 @@
 package org.hkijena.jipipe.desktop.commons.components.color.palette;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.nio.file.Path;
 import java.util.*;
 
-public class JIPipeDesktopSettingsBackedColorPaletteUserColorStorage implements  JIPipeDesktopColorPaletteUserColorStorage {
+public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements JIPipeDesktopColorPaletteUserColorStorage {
 
     /**
      * Deserialized lists that we are working on.
@@ -29,51 +27,43 @@ public class JIPipeDesktopSettingsBackedColorPaletteUserColorStorage implements 
     private static final Map<String, List<JIPipeDesktopColorPaletteColor>> LISTS = new HashMap<>();
 
     private final JIPipeDesktopColorPaletteUI paletteUI;
-    private final String parameterKey;
+    private final Path registryStoragePath;
     private final List<JIPipeDesktopColorPaletteColor> paletteColors;
 
-    public JIPipeDesktopSettingsBackedColorPaletteUserColorStorage(JIPipeDesktopColorPaletteUI paletteUI) {
+    public JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(JIPipeDesktopColorPaletteUI paletteUI) {
         this.paletteUI = paletteUI;
-        this.parameterKey = findParameterKey(paletteUI);
-        this.paletteColors = deserializeParameterKey(parameterKey);
+        this.registryStoragePath = getRegistryStoragePath(paletteUI);
+        this.paletteColors = loadFromRegistry("ui-palette", registryStoragePath);
     }
 
-    private List<JIPipeDesktopColorPaletteColor> deserializeParameterKey(String parameterKey) {
-        List<JIPipeDesktopColorPaletteColor> result = LISTS.get(parameterKey);
-        if(result == null) {
+    private List<JIPipeDesktopColorPaletteColor> loadFromRegistry(String databaseId, Path registryStoragePath) {
+        List<JIPipeDesktopColorPaletteColor> result = LISTS.get(databaseId + "-" + registryStoragePath);
+        if (result == null) {
             try {
-                JIPipePresetsApplicationSettings settings = JIPipePresetsApplicationSettings.getInstance();
-                String json = settings.getParameter(parameterKey, String.class);
-                if(!StringUtils.isNullOrEmpty(json)) {
-                    result = JsonUtils.getObjectMapper().readerForListOf(JIPipeDesktopColorPaletteColor.class).readValue(json);
-                    LISTS.put(parameterKey, result);
-                }
-            }
-            catch (Exception ignored) {
+                result = JIPipe.getSettings().getListFromRegistry(databaseId, registryStoragePath, JIPipeDesktopColorPaletteColor.class, true);
+                LISTS.put(databaseId + "-" + registryStoragePath, result);
+            } catch (Exception ignored) {
             }
         }
-        if(result == null) {
+        if (result == null) {
             result = new ArrayList<>();
-            LISTS.put(parameterKey, result);
+            LISTS.put(databaseId + "-" + registryStoragePath, result);
         }
         return result;
     }
 
-    private String findParameterKey(JIPipeDesktopColorPaletteUI paletteUI) {
-        if(paletteUI.isEnableBackgroundColorSelection()) {
-            if(paletteUI.isEnableAlphaColorSelection()) {
-                return "user-palette-colors-fg-bg-a";
+    private Path getRegistryStoragePath(JIPipeDesktopColorPaletteUI paletteUI) {
+        if (paletteUI.isEnableBackgroundColorSelection()) {
+            if (paletteUI.isEnableAlphaColorSelection()) {
+                return Path.of("user-palette-colors", "fg-bg-a");
+            } else {
+                return Path.of("user-palette-colors", "fg-bg");
             }
-            else {
-                return "user-palette-colors-fg-bg";
-            }
-        }
-        else {
-            if(paletteUI.isEnableAlphaColorSelection()) {
-                return "user-palette-colors-fg-a";
-            }
-            else {
-                return "user-palette-colors-fg";
+        } else {
+            if (paletteUI.isEnableAlphaColorSelection()) {
+                return Path.of("user-palette-colors", "fg-a");
+            } else {
+                return Path.of("user-palette-colors", "fg");
             }
         }
     }
@@ -85,9 +75,7 @@ public class JIPipeDesktopSettingsBackedColorPaletteUserColorStorage implements 
     }
 
     private void serializeParameter() {
-        JIPipePresetsApplicationSettings settings = JIPipePresetsApplicationSettings.getInstance();
-        settings.setParameter(parameterKey, JsonUtils.toJsonString(paletteColors));
-        JIPipe.getSettings().saveLater();
+        JIPipe.getSettings().putIntoRegistry("ui-palette", registryStoragePath, paletteColors);
     }
 
     @Override
@@ -111,7 +99,7 @@ public class JIPipeDesktopSettingsBackedColorPaletteUserColorStorage implements 
     @Override
     public void replaceColor(JIPipeDesktopColorPaletteColor oldColor, JIPipeDesktopColorPaletteColor newColor) {
         int i = this.paletteColors.indexOf(oldColor);
-        if(i >= 0) {
+        if (i >= 0) {
             this.paletteColors.set(i, newColor);
             serializeParameter();
         }

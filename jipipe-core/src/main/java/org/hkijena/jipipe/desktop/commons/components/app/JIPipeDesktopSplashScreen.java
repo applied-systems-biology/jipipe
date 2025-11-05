@@ -48,11 +48,11 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
     private static volatile JIPipeDesktopSplashScreen instance;
     private final SpinnerIcon spinnerIcon;
     private final JLabel statusLabel;
+    private final JLabel poweredByIconLabel = new JLabel();
+    private final List<JIPipeJavaPluginSplashIcon> icons = new ArrayList<>();
     private Context context;
     private JPanel poweredByContainer;
-    private final JLabel poweredByIconLabel = new JLabel();
     private JIPipeService service;
-    private final List<JIPipeJavaPluginSplashIcon> icons = new ArrayList<>();
     private JIPipeJavaPluginSplashIcon currentlyShowcasedIcon;
 
 
@@ -116,7 +116,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
         JPanel separatorPanel = new JPanel();
         separatorPanel.setOpaque(false);
-        separatorPanel.setBorder(BorderFactory.createMatteBorder(0,2,0,0, ThemeUtils.getCurrentStyle().getBorderColor()));
+        separatorPanel.setBorder(BorderFactory.createMatteBorder(0, 2, 0, 0, ThemeUtils.getCurrentStyle().getBorderColor()));
         poweredByContent.add(separatorPanel);
 
         poweredByIconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
@@ -172,7 +172,7 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
             return;
         }
 
-        if(icons.stream().noneMatch(i -> i.getId().equals(icon.getId()))) {
+        if (icons.stream().noneMatch(i -> i.getId().equals(icon.getId()))) {
 
             ImageIcon imageIcon = icon.getIcon();
             if (imageIcon.getIconWidth() != 32 && imageIcon.getIconHeight() != 32) {
@@ -192,18 +192,17 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
     private void updateIconShowcase() {
 
-        if(!icons.isEmpty()) {
+        if (!icons.isEmpty()) {
             int nextIndex;
-            if(currentlyShowcasedIcon != null) {
+            if (currentlyShowcasedIcon != null) {
                 nextIndex = Math.max(0, icons.indexOf(currentlyShowcasedIcon) + 1) % icons.size();
-            }
-            else {
+            } else {
                 nextIndex = 0;
             }
             currentlyShowcasedIcon = icons.get(nextIndex);
         }
 
-        if(currentlyShowcasedIcon != null) {
+        if (currentlyShowcasedIcon != null) {
             poweredByIconLabel.setIcon(currentlyShowcasedIcon.getIcon());
             poweredByIconLabel.setText("<html><strong>" + currentlyShowcasedIcon.getName() + "</strong><br/>" + currentlyShowcasedIcon.getUrl() + "</html>");
         }

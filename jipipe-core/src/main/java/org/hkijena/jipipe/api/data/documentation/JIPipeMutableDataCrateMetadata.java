@@ -22,6 +22,10 @@ public class JIPipeMutableDataCrateMetadata implements JIPipeDataCrateMetadata {
         return entries.values().stream().sorted(Comparator.comparing(JIPipeDataCrateMetadataEntry::getId)).toList();
     }
 
+    public void setEntries(Map<String, JIPipeDataCrateMetadataEntry> entries) {
+        this.entries = entries;
+    }
+
     @Override
     public boolean isValid() {
         for (JIPipeDataCrateMetadataEntry value : entries.values()) {
@@ -35,10 +39,6 @@ public class JIPipeMutableDataCrateMetadata implements JIPipeDataCrateMetadata {
     @Override
     public boolean isEmpty() {
         return entries.isEmpty();
-    }
-
-    public void setEntries(Map<String, JIPipeDataCrateMetadataEntry> entries) {
-        this.entries = entries;
     }
 
     public void put(JIPipeDataCrateMetadataEntry entry) {

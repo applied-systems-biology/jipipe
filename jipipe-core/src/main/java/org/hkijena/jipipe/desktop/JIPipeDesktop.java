@@ -339,8 +339,8 @@ public class JIPipeDesktop {
         Path currentPath = instance.getLastDirectoryBy(workbench, key);
 
         // No OS has native Path selection dialogs, so let the user choose
-        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option =  JOptionPane.showOptionDialog(parent,
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option = JOptionPane.showOptionDialog(parent,
                     "Do you want to open a file or a directory?",
                     title,
                     JOptionPane.YES_NO_CANCEL_OPTION,
@@ -349,7 +349,8 @@ public class JIPipeDesktop {
                     new Object[]{"Open file", "Open directory", "Cancel"},
                     "Open file");
             return switch (option) {
-                case JOptionPane.YES_OPTION -> openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.YES_OPTION ->
+                        openFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
                 case JOptionPane.NO_OPTION -> openDirectory(parent, workbench, key, title, description);
                 default -> null;
             };
@@ -426,8 +427,8 @@ public class JIPipeDesktop {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
 
         // No OS has native Path selection dialogs, so let the user choose
-        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option =  JOptionPane.showOptionDialog(parent,
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option = JOptionPane.showOptionDialog(parent,
                     "Do you want to save a file or a directory?",
                     title,
                     JOptionPane.YES_NO_CANCEL_OPTION,
@@ -436,7 +437,8 @@ public class JIPipeDesktop {
                     new Object[]{"Save file", "Select directory", "Cancel"},
                     "Save file");
             return switch (option) {
-                case JOptionPane.YES_OPTION -> saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.YES_OPTION ->
+                        saveFile(parent, workbench, key, title, description, fileChooserType, extensionFilters);
                 case JOptionPane.NO_OPTION -> saveDirectory(parent, workbench, key, title, description);
                 default -> null;
             };
@@ -929,8 +931,8 @@ public class JIPipeDesktop {
         JIPipeFileChooserApplicationSettings instance = JIPipeFileChooserApplicationSettings.getInstance();
 
         // No OS has native Path selection dialogs, so let the user choose
-        if(fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
-            int option =  JOptionPane.showOptionDialog(parent,
+        if (fileChooserType == JIPipeFileChooserApplicationSettings.FileChooserType.ModernNative && instance.isAskOnNativePathSelect()) {
+            int option = JOptionPane.showOptionDialog(parent,
                     "Do you want to open a file or a directory?",
                     title,
                     JOptionPane.YES_NO_CANCEL_OPTION,
@@ -939,7 +941,8 @@ public class JIPipeDesktop {
                     new Object[]{"Open file", "Open directory", "Cancel"},
                     "Open file");
             return switch (option) {
-                case JOptionPane.YES_OPTION -> openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);
+                case JOptionPane.YES_OPTION ->
+                        openFiles(parent, workbench, key, title, description, fileChooserType, extensionFilters);
                 case JOptionPane.NO_OPTION -> openDirectories(parent, workbench, key, title, description);
                 default -> null;
             };

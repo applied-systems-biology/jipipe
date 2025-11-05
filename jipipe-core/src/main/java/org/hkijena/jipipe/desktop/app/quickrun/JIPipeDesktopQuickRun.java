@@ -43,8 +43,8 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
     private final JIPipeProject project;
     private final List<JIPipeGraphNode> targetNodes;
     private final JIPipeDesktopQuickRunSettings settings;
-    private JIPipeGraphRun run;
     private final List<JIPipeGraphNode> targetNodeCopies = new ArrayList<>();
+    private JIPipeGraphRun run;
 
     public JIPipeDesktopQuickRun(JIPipeProject project, List<JIPipeGraphNode> targetNodes, JIPipeDesktopQuickRunSettings settings) {
         this.project = project;

@@ -19,28 +19,24 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.python.PythonEnvironment;
-import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.python.adapter.JIPipePythonAdapterLibraryEnvironment;
+import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
 
@@ -222,7 +218,7 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("code".equals(access.getKey()) && externalCode) {
+        if ("code".equals(access.getKey()) && externalCode) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -241,13 +237,12 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
     }
 
     private String getScriptCode(JIPipeProgressInfo progressInfo) {
-        if(externalCode) {
-            if( getInputSlot(SLOT_SCRIPT.getName()).getRowCount() > 1) {
+        if (externalCode) {
+            if (getInputSlot(SLOT_SCRIPT.getName()).getRowCount() > 1) {
                 progressInfo.warn("Multiple external scripts were provided. Running only the first one!");
             }
             return getInputSlot(SLOT_SCRIPT.getName()).getData(0, PythonScriptData.class, progressInfo).getData();
-        }
-        else {
+        } else {
             return code.getCode();
         }
     }

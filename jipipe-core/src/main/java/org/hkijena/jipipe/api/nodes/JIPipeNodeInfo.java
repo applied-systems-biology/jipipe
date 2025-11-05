@@ -213,6 +213,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * Returns true if the node is marked as unstable
+     *
      * @return if the node is considered unstable
      */
     default boolean isUnstable() {

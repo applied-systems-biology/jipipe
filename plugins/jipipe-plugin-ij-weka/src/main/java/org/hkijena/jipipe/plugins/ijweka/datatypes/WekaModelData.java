@@ -35,9 +35,9 @@ import java.nio.file.Path;
  */
 @SetJIPipeDocumentation(name = "Weka model", description = "A model for the Trainable Weka Filter")
 @ConfigureJIPipeDataCrate(entities = {
-        @DefineJIPipeDataCrateEntity(id="glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Metadata JSON", description = "Metadata for the Weka model", encodingFormat = EncodingFormats.JSON),
-        @DefineJIPipeDataCrateEntity(id="glob:./*.model", type = JIPipeDataCrateEntityType.File, name = "Weka model", description = "The Weka model", encodingFormat = EncodingFormats.BINARY),
-        @DefineJIPipeDataCrateEntity(id="glob:./*.arff", type = JIPipeDataCrateEntityType.File, name = "Training data", description = "The training data",
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.json", type = JIPipeDataCrateEntityType.File, name = "Metadata JSON", description = "Metadata for the Weka model", encodingFormat = EncodingFormats.JSON),
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.model", type = JIPipeDataCrateEntityType.File, name = "Weka model", description = "The Weka model", encodingFormat = EncodingFormats.BINARY),
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.arff", type = JIPipeDataCrateEntityType.File, name = "Training data", description = "The training data",
                 presence = JIPipeDataCrateEntityPresence.Recommended, encodingFormat = EncodingFormats.BINARY)
 })
 public class WekaModelData implements JIPipeData {

@@ -243,16 +243,16 @@ public class JIPipeMultiIterationStepGeneratorSolverEquivalenceTest {
         generator.setApplyMerging(false);
 
         // Expect the following layout
-        var expected  = expectedResult(
+        var expected = expectedResult(
                 step(
                         slot("Input 1", 0),
                         slot("Input 2", 0),
-                        slot("Input 3",0)
+                        slot("Input 3", 0)
                 ),
                 step(
                         slot("Input 1", 1),
                         slot("Input 2", 1),
-                        slot("Input 3", 1 )
+                        slot("Input 3", 1)
                 ),
                 step(
                         slot("Input 1", 2),

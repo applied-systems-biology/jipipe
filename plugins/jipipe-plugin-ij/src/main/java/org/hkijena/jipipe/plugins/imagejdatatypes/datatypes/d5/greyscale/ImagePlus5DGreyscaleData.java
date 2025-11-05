@@ -27,7 +27,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.ImagePlus5DData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.color.ImagePlus5DColorData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
 /**

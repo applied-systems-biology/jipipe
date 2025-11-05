@@ -55,7 +55,7 @@ public class JIPipeDesktopColorParameterEditorUI extends JIPipeDesktopParameterE
         Color value = getParameter();
         ColorParameterSettings settings = getParameterAccess().getAnnotationOfType(ColorParameterSettings.class);
         boolean withTransparency = false;
-        if(settings != null) {
+        if (settings != null) {
             withTransparency = settings.withTransparency();
         }
         value = UIUtils.selectColor(this, "Select color", value, withTransparency);

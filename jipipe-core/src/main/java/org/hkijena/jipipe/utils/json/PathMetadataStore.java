@@ -141,6 +141,30 @@ public class PathMetadataStore {
     }
 
     /**
+     * Creates a copy of an existing PathMetadataStore
+     *
+     * @param other the store to copy
+     */
+    public PathMetadataStore(PathMetadataStore other) {
+        this.data.putAll(other.data);
+    }
+
+    /**
+     * Creates a PathMetadataStore from a PrimitiveMetadataStore by converting string keys to paths
+     *
+     * @param primitiveStore the store to convert
+     */
+    public PathMetadataStore(PrimitiveMetadataStore primitiveStore) {
+        for (String key : primitiveStore.keySet()) {
+            Path path = Paths.get(key);
+            Object value = primitiveStore.getData().get(key);
+            if (value != null) {
+                this.data.put(path, value);
+            }
+        }
+    }
+
+    /**
      * Normalizes a path string to use forward slashes consistently across platforms.
      * This method converts backslashes (\) to forward slashes (/) to ensure
      * cross-platform compatibility.
@@ -196,30 +220,6 @@ public class PathMetadataStore {
         // Replace the data with migrated data
         this.data.clear();
         this.data.putAll(migratedData);
-    }
-
-    /**
-     * Creates a copy of an existing PathMetadataStore
-     *
-     * @param other the store to copy
-     */
-    public PathMetadataStore(PathMetadataStore other) {
-        this.data.putAll(other.data);
-    }
-
-    /**
-     * Creates a PathMetadataStore from a PrimitiveMetadataStore by converting string keys to paths
-     *
-     * @param primitiveStore the store to convert
-     */
-    public PathMetadataStore(PrimitiveMetadataStore primitiveStore) {
-        for (String key : primitiveStore.keySet()) {
-            Path path = Paths.get(key);
-            Object value = primitiveStore.getData().get(key);
-            if (value != null) {
-                this.data.put(path, value);
-            }
-        }
     }
 
     /**
@@ -475,10 +475,11 @@ public class PathMetadataStore {
 
     /**
      * Gets a list of the specified type
+     *
      * @param pathString the key
-     * @param type the type
+     * @param type       the type
+     * @param <T>        the type
      * @return the list
-     * @param <T> the type
      */
     public <T> List<T> getList(String pathString, Class<T> type) {
         return getList(pathString != null ? Paths.get(pathString) : null, type);
@@ -486,10 +487,11 @@ public class PathMetadataStore {
 
     /**
      * Gets a list of the specified type
-     * @param key the key
+     *
+     * @param key  the key
      * @param type the type
+     * @param <T>  the type
      * @return the list
-     * @param <T> the type
      */
     public <T> List<T> getList(Path key, Class<T> type) {
         if (key == null || type == null) {
@@ -503,10 +505,9 @@ public class PathMetadataStore {
                 if (storedValue instanceof JsonNode) {
                     // Deserialize from JsonNode
                     deserialized = JsonUtils.getObjectMapper().readerForListOf(type).readValue((JsonNode) storedValue);
-                } else  if (storedValue instanceof List) {
-                    deserialized = (List<T>)storedValue;
-                }
-                else {
+                } else if (storedValue instanceof List) {
+                    deserialized = (List<T>) storedValue;
+                } else {
                     return null;
                 }
                 // Replace the original value with the deserialized object for caching
@@ -547,15 +548,12 @@ public class PathMetadataStore {
                     // Direct type match
                     if (type.isInstance(storedValue)) {
                         deserialized = type.cast(storedValue);
-                    }
-                    else if (type == JsonNode.class) {
+                    } else if (type == JsonNode.class) {
                         // Special case: serialize back into JSON
-                        return (T)JsonUtils.getObjectMapper().convertValue(storedValue, JsonNode.class);
-                    }
-                    else if(type == String.class) {
-                        return (T)JsonUtils.toJsonString(storedValue);
-                    }
-                    else {
+                        return (T) JsonUtils.getObjectMapper().convertValue(storedValue, JsonNode.class);
+                    } else if (type == String.class) {
+                        return (T) JsonUtils.toJsonString(storedValue);
+                    } else {
                         return null;
                     }
                 }

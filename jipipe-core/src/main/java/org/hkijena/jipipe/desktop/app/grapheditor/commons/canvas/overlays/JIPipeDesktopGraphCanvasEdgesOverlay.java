@@ -97,7 +97,7 @@ public class JIPipeDesktopGraphCanvasEdgesOverlay implements JIPipeDesktopGraphC
                 if (selection.contains(sourceNodeUI) || selection.contains(targetNodeUI)) {
                     ++multiColorMax;
                 }
-                if(selection.contains(edgeUI)) {
+                if (selection.contains(edgeUI)) {
                     hasEdgeSelection = true;
                     ++multiColorMax;
                 }

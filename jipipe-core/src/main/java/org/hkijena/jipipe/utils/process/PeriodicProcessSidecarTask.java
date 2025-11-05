@@ -21,7 +21,7 @@ public abstract class PeriodicProcessSidecarTask implements ProcessSidecarTask {
             throw new IllegalStateException("Timer has already been started");
         }
         timer = new Timer(true);
-        timer.schedule(new  TimerTask() {
+        timer.schedule(new TimerTask() {
             @Override
             public void run() {
                 tick(executor);
@@ -33,7 +33,7 @@ public abstract class PeriodicProcessSidecarTask implements ProcessSidecarTask {
 
     @Override
     public void stop() {
-        if(timer != null) {
+        if (timer != null) {
             timer.cancel();
             timer.purge();
             timer = null;

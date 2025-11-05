@@ -1,43 +1,58 @@
-
 package org.hkijena.jipipe.contrib.libstemmer;
-import java.lang.reflect.UndeclaredThrowableException;
+
 import java.io.Serializable;
+import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Arrays;
 
 /**
  * Base class for a snowball stemmer
  */
 public class SnowballProgram implements Serializable {
-    protected SnowballProgram()
-    {
+    static final long serialVersionUID = 2016072500L;
+    protected int cursor;
+    protected int length;
+    protected int limit;
+    protected int limit_backward;
+    protected int bra;
+    protected int ket;
+    // current string
+    private char[] current;
+
+    protected SnowballProgram() {
         cursor = 0;
         length = limit = 0;
         limit_backward = 0;
         bra = cursor;
         ket = limit;
     }
-
-    static final long serialVersionUID = 2016072500L;
-
-    /**
-     * Set the current string.
-     */
-    public void setCurrent(String value)
-    {
-        setCurrent(value.toCharArray(), value.length());
+    public SnowballProgram(SnowballProgram other) {
+        current = other.current;
+        cursor = other.cursor;
+        length = other.length;
+        limit = other.limit;
+        limit_backward = other.limit_backward;
+        bra = other.bra;
+        ket = other.ket;
     }
 
     /**
      * Get the current string.
      */
-    public String getCurrent()
-    {
+    public String getCurrent() {
         return new String(current, 0, length);
     }
 
     /**
      * Set the current string.
-     * @param text character array containing input
+     */
+    public void setCurrent(String value) {
+        setCurrent(value.toCharArray(), value.length());
+    }
+
+    /**
+     * Set the current string.
+     *
+     * @param text   character array containing input
      * @param length valid length of text.
      */
     public void setCurrent(char[] text, int length) {
@@ -61,6 +76,7 @@ public class SnowballProgram implements Serializable {
      * the valid length of the returned buffer. For example, many words are
      * stemmed simply by subtracting from the length to remove suffixes.
      * </p>
+     *
      * @see #getCurrentBufferLength()
      */
     public char[] getCurrentBuffer() {
@@ -70,45 +86,24 @@ public class SnowballProgram implements Serializable {
     /**
      * Get the valid length of the character array in
      * {@link #getCurrentBuffer()}.
+     *
      * @return valid length of the array.
      */
     public int getCurrentBufferLength() {
         return length;
     }
 
-    // current string
-    private char[] current;
-
-    protected int cursor;
-    protected int length;
-    protected int limit;
-    protected int limit_backward;
-    protected int bra;
-    protected int ket;
-
-    public SnowballProgram(SnowballProgram other) {
-        current          = other.current;
-        cursor           = other.cursor;
-        length           = other.length;
-        limit            = other.limit;
-        limit_backward   = other.limit_backward;
-        bra              = other.bra;
-        ket              = other.ket;
+    protected void copy_from(SnowballProgram other) {
+        current = other.current;
+        cursor = other.cursor;
+        length = other.length;
+        limit = other.limit;
+        limit_backward = other.limit_backward;
+        bra = other.bra;
+        ket = other.ket;
     }
 
-    protected void copy_from(SnowballProgram other)
-    {
-        current          = other.current;
-        cursor           = other.cursor;
-        length           = other.length;
-        limit            = other.limit;
-        limit_backward   = other.limit_backward;
-        bra              = other.bra;
-        ket              = other.ket;
-    }
-
-    protected boolean in_grouping(char[] s, int min, int max)
-    {
+    protected boolean in_grouping(char[] s, int min, int max) {
         if (cursor >= limit) return false;
         int ch = current[cursor];
         if (ch > max || ch < min) return false;
@@ -118,8 +113,7 @@ public class SnowballProgram implements Serializable {
         return true;
     }
 
-    protected boolean go_in_grouping(char[] s, int min, int max)
-    {
+    protected boolean go_in_grouping(char[] s, int min, int max) {
         while (cursor < limit) {
             int ch = current[cursor];
             if (ch > max || ch < min)
@@ -131,8 +125,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean in_grouping_b(char[] s, int min, int max)
-    {
+    protected boolean in_grouping_b(char[] s, int min, int max) {
         if (cursor <= limit_backward) return false;
         int ch = current[cursor - 1];
         if (ch > max || ch < min) return false;
@@ -142,8 +135,7 @@ public class SnowballProgram implements Serializable {
         return true;
     }
 
-    protected boolean go_in_grouping_b(char[] s, int min, int max)
-    {
+    protected boolean go_in_grouping_b(char[] s, int min, int max) {
         while (cursor > limit_backward) {
             int ch = current[cursor - 1];
             if (ch > max || ch < min) return true;
@@ -154,8 +146,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean out_grouping(char[] s, int min, int max)
-    {
+    protected boolean out_grouping(char[] s, int min, int max) {
         if (cursor >= limit) return false;
         int ch = current[cursor];
         if (ch > max || ch < min) {
@@ -170,8 +161,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean go_out_grouping(char[] s, int min, int max)
-    {
+    protected boolean go_out_grouping(char[] s, int min, int max) {
         while (cursor < limit) {
             int ch = current[cursor];
             if (ch <= max && ch >= min) {
@@ -185,8 +175,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean out_grouping_b(char[] s, int min, int max)
-    {
+    protected boolean out_grouping_b(char[] s, int min, int max) {
         if (cursor <= limit_backward) return false;
         int ch = current[cursor - 1];
         if (ch > max || ch < min) {
@@ -201,8 +190,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean go_out_grouping_b(char[] s, int min, int max)
-    {
+    protected boolean go_out_grouping_b(char[] s, int min, int max) {
         while (cursor > limit_backward) {
             int ch = current[cursor - 1];
             if (ch <= max && ch >= min) {
@@ -216,8 +204,7 @@ public class SnowballProgram implements Serializable {
         return false;
     }
 
-    protected boolean eq_s(CharSequence s)
-    {
+    protected boolean eq_s(CharSequence s) {
         if (limit - cursor < s.length()) return false;
         int i;
         for (i = 0; i != s.length(); i++) {
@@ -227,8 +214,7 @@ public class SnowballProgram implements Serializable {
         return true;
     }
 
-    protected boolean eq_s_b(CharSequence s)
-    {
+    protected boolean eq_s_b(CharSequence s) {
         if (cursor - limit_backward < s.length()) return false;
         int i;
         for (i = 0; i != s.length(); i++) {
@@ -238,8 +224,7 @@ public class SnowballProgram implements Serializable {
         return true;
     }
 
-    protected int find_among(Among[] v)
-    {
+    protected int find_among(Among[] v) {
         int i = 0;
         int j = v.length;
 
@@ -307,8 +292,7 @@ public class SnowballProgram implements Serializable {
     }
 
     // find_among_b is for backwards processing. Same comments apply
-    protected int find_among_b(Among[] v)
-    {
+    protected int find_among_b(Among[] v) {
         int i = 0;
         int j = v.length;
 
@@ -374,8 +358,7 @@ public class SnowballProgram implements Serializable {
     /* to replace chars between c_bra and c_ket in current by the
      * chars in s.
      */
-    protected int replace_s(int c_bra, int c_ket, CharSequence s)
-    {
+    protected int replace_s(int c_bra, int c_ket, CharSequence s) {
         final int adjustment = s.length() - (c_ket - c_bra);
         final int newLength = length + adjustment;
         //resize if necessary
@@ -386,7 +369,7 @@ public class SnowballProgram implements Serializable {
         // replacement, need to shift things around
         if (adjustment != 0 && c_ket < length) {
             System.arraycopy(current, c_ket, current, c_bra + s.length(),
-                length - c_ket);
+                    length - c_ket);
         }
         // insert the replacement text
         // Note, faster is s.getChars(0, s.length(), current, c_bra);
@@ -401,43 +384,37 @@ public class SnowballProgram implements Serializable {
         return adjustment;
     }
 
-    protected void slice_check()
-    {
+    protected void slice_check() {
         assert bra >= 0 : "bra=" + bra;
         assert bra <= ket : "bra=" + bra + ",ket=" + ket;
         assert limit <= length : "limit=" + limit + ",length=" + length;
         assert ket <= limit : "ket=" + ket + ",limit=" + limit;
     }
 
-    protected void slice_from(CharSequence s)
-    {
+    protected void slice_from(CharSequence s) {
         slice_check();
         replace_s(bra, ket, s);
     }
 
-    protected void slice_del()
-    {
+    protected void slice_del() {
         slice_from("");
     }
 
-    protected void insert(int c_bra, int c_ket, CharSequence s)
-    {
+    protected void insert(int c_bra, int c_ket, CharSequence s) {
         int adjustment = replace_s(c_bra, c_ket, s);
         if (c_bra <= bra) bra += adjustment;
         if (c_bra <= ket) ket += adjustment;
     }
 
     /* Copy the slice into the supplied StringBuilder */
-    protected void slice_to(StringBuilder s)
-    {
+    protected void slice_to(StringBuilder s) {
         slice_check();
         int len = ket - bra;
         s.setLength(0);
         s.append(current, bra, len);
     }
 
-    protected void assign_to(StringBuilder s)
-    {
+    protected void assign_to(StringBuilder s) {
         s.setLength(0);
         s.append(current, 0, limit);
     }

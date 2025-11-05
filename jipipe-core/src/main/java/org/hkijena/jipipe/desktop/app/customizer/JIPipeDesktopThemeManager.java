@@ -62,7 +62,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
         getContentPane().setLayout(new BorderLayout(8, 8));
         getContentPane().setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
-        JPanel settingsPanel = new JPanel(new BorderLayout(8,8));
+        JPanel settingsPanel = new JPanel(new BorderLayout(8, 8));
 
         // Create split-pane
         setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
@@ -85,7 +85,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
         settingsPanel.add(new JScrollPane(styleJList), BorderLayout.CENTER);
         styleJList.setCellRenderer(new JIPipeDesktopModernThemeStyleListCellRenderer());
         styleJList.addListSelectionListener(e -> {
-            if(styleJList.getSelectedValue() != null) {
+            if (styleJList.getSelectedValue() != null) {
                 themePreviewPanel.setThemeStyle(styleJList.getSelectedValue());
             }
         });
@@ -119,17 +119,17 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                 List<String> availableStyleIds = ThemeUtils.getAvailableStyleIds();
                 JIPipeDesktopModernThemeStyle style = JsonUtils.readFromFile(path, JIPipeDesktopModernThemeStyle.class);
                 String id = StringUtils.makeFilesystemCompatible(StringUtils.nullToEmpty(style.getName()));
-                if(StringUtils.isNullOrEmpty(id) || availableStyleIds.contains(id)) {
+                if (StringUtils.isNullOrEmpty(id) || availableStyleIds.contains(id)) {
                     id = path.getFileName().toString();
                     id = id.substring(0, id.length() - 5);
                 }
-                if(StringUtils.isNullOrEmpty(id)) {
+                if (StringUtils.isNullOrEmpty(id)) {
                     JOptionPane.showMessageDialog(this,
                             "Unable to  determine style id",
                             progress + "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
-                if(availableStyleIds.contains(id)) {
+                if (availableStyleIds.contains(id)) {
                     JOptionPane.showMessageDialog(this, "Unable to find a unique ID for the style you want to import!\n" +
                             "Consider renaming the file.", progress + "Error", JOptionPane.ERROR_MESSAGE);
                 }
@@ -138,8 +138,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                         "Successfully imported " + path + " as " + id,
                         progress + "Success",
                         JOptionPane.INFORMATION_MESSAGE);
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 JOptionPane.showMessageDialog(this,
                         "Unable to read " + path.toString(),
                         progress + "Error",
@@ -151,7 +150,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
 
     private void exportSelectedTheme() {
         JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
-        if(style == null || StringUtils.isNullOrEmpty(style.getId())) {
+        if (style == null || StringUtils.isNullOrEmpty(style.getId())) {
             return;
         }
 
@@ -161,7 +160,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                 "Export JIPipe theme style",
                 HTMLText.EMPTY,
                 PathUtils.EXTENSION_FILTER_JSON);
-        if(path != null) {
+        if (path != null) {
             JsonUtils.saveToFile(style, path);
         }
     }
@@ -169,7 +168,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
     private void applySelectedTheme() {
 
         JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
-        if(style == null || StringUtils.isNullOrEmpty(style.getId())) {
+        if (style == null || StringUtils.isNullOrEmpty(style.getId())) {
             return;
         }
 
@@ -188,16 +187,16 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
 
     private void deleteSelectedTheme() {
         JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
-        if(style == null) {
+        if (style == null) {
             return;
         }
-        if(style.isBuiltIn()) {
+        if (style.isBuiltIn()) {
             JOptionPane.showMessageDialog(themePreviewPanel, "You cannot delete built-in styles", "Delete style", JOptionPane.ERROR_MESSAGE);
             return;
         }
         boolean isCurrentStyle = ThemeUtils.getCurrentStyle().getId().equals(style.getId());
-        if(isCurrentStyle) {
-            if(JOptionPane.showConfirmDialog(this, "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
+        if (isCurrentStyle) {
+            if (JOptionPane.showConfirmDialog(this, "The selected style is currently in use. If you delete it, JIPipe will reset its style to the default.\n" +
                     "Do you want to delete it anyway?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
@@ -210,9 +209,8 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
                     "Please restart ImageJ/JIPipe to apply the settings",
                     "Customize JIPipe",
                     JOptionPane.INFORMATION_MESSAGE);
-        }
-        else {
-            if(JOptionPane.showConfirmDialog(this, "Do you want to delete the selected style?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        } else {
+            if (JOptionPane.showConfirmDialog(this, "Do you want to delete the selected style?", "Delete style", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
         }
@@ -222,10 +220,10 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
 
     private void editSelectedTheme() {
         JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
-        if(style == null) {
+        if (style == null) {
             return;
         }
-        if(style.isBuiltIn()) {
+        if (style.isBuiltIn()) {
             JOptionPane.showMessageDialog(themePreviewPanel, "You cannot edit built-in styles. But you can create your own style based on a copy.", "Edit style", JOptionPane.INFORMATION_MESSAGE);
             style = new JIPipeDesktopModernThemeStyle(style);
             style.setId(null);
@@ -237,7 +235,7 @@ public class JIPipeDesktopThemeManager extends JFrame implements ThemeUtils.Avai
 
     private void createNewTheme() {
         JIPipeDesktopModernThemeStyle style = styleJList.getSelectedValue();
-        if(style == null) {
+        if (style == null) {
             style = new JIPipeDesktopModernThemeStyle();
         }
         style = new JIPipeDesktopModernThemeStyle(style);

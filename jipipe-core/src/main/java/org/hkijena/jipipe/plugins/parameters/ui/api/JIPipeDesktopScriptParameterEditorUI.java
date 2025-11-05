@@ -224,7 +224,7 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 
     @Override
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(!withDock) {
+        if (!withDock) {
             // If we are with a dock, we don't want to keep reloading
             super.onParameterChanged(event);
         }

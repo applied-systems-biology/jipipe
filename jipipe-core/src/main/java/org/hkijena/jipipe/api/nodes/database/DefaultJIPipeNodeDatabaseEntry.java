@@ -13,8 +13,7 @@ public abstract class DefaultJIPipeNodeDatabaseEntry implements JIPipeNodeDataba
         final long stamp = attachmentsLock.readLock();
         try {
             return (T) attachments.get(attachmentClass);
-        }
-        finally {
+        } finally {
             attachmentsLock.unlock(stamp);
         }
     }
@@ -24,8 +23,7 @@ public abstract class DefaultJIPipeNodeDatabaseEntry implements JIPipeNodeDataba
         final long stamp = attachmentsLock.writeLock();
         try {
             attachments.put(attachment.getClass(), attachment);
-        }
-        finally {
+        } finally {
             attachmentsLock.unlock(stamp);
         }
     }

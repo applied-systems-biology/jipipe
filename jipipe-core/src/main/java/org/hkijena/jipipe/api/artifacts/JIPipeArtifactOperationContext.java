@@ -27,9 +27,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 public class JIPipeArtifactOperationContext implements Closeable, AutoCloseable {
 
     private final JIPipeProgressInfo progressInfo;
-    private LockState currentLockState = LockState.None;
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final FileLocker fileLocker;
+    private LockState currentLockState = LockState.None;
 
     public JIPipeArtifactOperationContext(JIPipeProgressInfo progressInfo) {
         this.progressInfo = progressInfo;
@@ -41,8 +41,7 @@ public class JIPipeArtifactOperationContext implements Closeable, AutoCloseable 
         try {
             readLock.lock();
             return currentLockState == LockState.Read || currentLockState == LockState.ReadWrite;
-        }
-        finally {
+        } finally {
             readLock.unlock();
         }
     }
@@ -52,44 +51,41 @@ public class JIPipeArtifactOperationContext implements Closeable, AutoCloseable 
         try {
             readLock.lock();
             return currentLockState == LockState.ReadWrite;
-        }
-        finally {
+        } finally {
             readLock.unlock();
         }
     }
 
     public void waitUntilRead() {
-        if(canRead()) {
+        if (canRead()) {
             return;
         }
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         try {
             writeLock.lock();
             fileLocker.releaseLock();
-            if(!fileLocker.acquireReadLock()) {
+            if (!fileLocker.acquireReadLock()) {
                 throw new IllegalStateException("Could not acquire read lock on artifact repository!");
             }
             currentLockState = LockState.Read;
-        }
-        finally {
+        } finally {
             writeLock.unlock();
         }
     }
 
     public void waitUntilWrite() {
-        if(canWrite()) {
+        if (canWrite()) {
             return;
         }
         ReentrantReadWriteLock.WriteLock writeLock = lock.writeLock();
         try {
             writeLock.lock();
             fileLocker.releaseLock();
-            if(!fileLocker.acquireWriteLock()) {
+            if (!fileLocker.acquireWriteLock()) {
                 throw new IllegalStateException("Could not acquire read lock on artifact repository!");
             }
             currentLockState = LockState.ReadWrite;
-        }
-        finally {
+        } finally {
             writeLock.unlock();
         }
     }
@@ -99,11 +95,10 @@ public class JIPipeArtifactOperationContext implements Closeable, AutoCloseable 
         ReentrantReadWriteLock.ReadLock readLock = lock.readLock();
         try {
             readLock.lock();
-            if(currentLockState == LockState.None) {
+            if (currentLockState == LockState.None) {
                 return;
             }
-        }
-        finally {
+        } finally {
             readLock.unlock();
         }
 
@@ -113,8 +108,7 @@ public class JIPipeArtifactOperationContext implements Closeable, AutoCloseable 
             writeLock.lock();
             fileLocker.releaseLock();
             currentLockState = LockState.None;
-        }
-        finally {
+        } finally {
             writeLock.unlock();
         }
     }

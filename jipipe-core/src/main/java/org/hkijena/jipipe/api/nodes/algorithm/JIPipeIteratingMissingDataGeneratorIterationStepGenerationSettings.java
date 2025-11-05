@@ -62,7 +62,7 @@ public class JIPipeIteratingMissingDataGeneratorIterationStepGenerationSettings 
         this.annotationMatchingMethod = other.annotationMatchingMethod;
         this.customAnnotationMatching = new JIPipeExpressionParameter(other.customAnnotationMatching);
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.solverPreference =  other.solverPreference;
+        this.solverPreference = other.solverPreference;
     }
 
     @Override

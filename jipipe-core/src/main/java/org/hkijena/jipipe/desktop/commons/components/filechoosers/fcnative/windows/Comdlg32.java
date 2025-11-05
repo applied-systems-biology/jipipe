@@ -95,6 +95,7 @@ public class Comdlg32 {
         public Pointer lCustData;
         public Pointer lpfnHook;
         public Pointer lpTemplateName;
+
         public OpenFileName() {
             super();
             lStructSize = size();

@@ -19,7 +19,9 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.database.*;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -29,13 +31,12 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
-import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -52,6 +53,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -65,7 +67,6 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
     private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
-    private final JIPipePresetsApplicationSettings presetsSettings;
     private final boolean isCompartmentsEditor;
     private final JPanel mainCategoriesPanel = new JPanel();
     private final JPanel subCategoryPathPanel = new JPanel();
@@ -86,7 +87,6 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         this.graphEditorUI = graphEditorUI;
         this.graphEditorSettings = JIPipeGraphEditorUIApplicationSettings.getInstance();
-        this.presetsSettings = JIPipePresetsApplicationSettings.getInstance();
         this.isCompartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
 
         initializeMainCategoryFilters();
@@ -290,7 +290,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(presetsSettings.getPinnedNodes());
+        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true));
     }
 
     private void initializeMainCategoryFilters() {
@@ -353,7 +353,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private void initializeMenuForPinned(JPopupMenu popupMenu) {
         Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
         for (JIPipeNodeDatabaseEntry entry : database.query("", isCompartmentsEditor ? JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline,
-                false, true, new HashSet<>(presetsSettings.getPinnedNodes()))) {
+                false, true, new HashSet<>(pinnedNodeDatabaseEntries))) {
             if (pinnedNodeDatabaseEntries.contains(entry.getId())) {
                 if (entry instanceof CreateNewNodeByInfoDatabaseEntry) {
                     popupMenu.add(UIUtils.createMenuItem(entry.getName(), TooltipUtils.getAlgorithmTooltip(((CreateNewNodeByInfoDatabaseEntry) entry).getNodeInfo(), true),
@@ -573,19 +573,21 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void pinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
+        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true);
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
-            presetsSettings.getPinnedNodes().add(entry.getId());
+            if (!ids.contains(entry.getId())) {
+                ids.add(entry.getId());
+            }
         }
-        presetsSettings.getPinnedNodes().makeUnique();
         JIPipe.getSettings().save();
         reloadAlgorithmList();
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
+        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true);
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
-            presetsSettings.getPinnedNodes().add(entry.getId());
+            ids.remove(entry.getId());
         }
-        presetsSettings.getPinnedNodes().makeUnique();
         JIPipe.getSettings().save();
         reloadAlgorithmList();
     }
@@ -641,7 +643,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     });
                 }
             }
-            
+
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);
@@ -736,7 +738,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     }
                 }
             }
-            
+
             @Override
             public void keyReleased(KeyEvent e) {
                 super.keyReleased(e);

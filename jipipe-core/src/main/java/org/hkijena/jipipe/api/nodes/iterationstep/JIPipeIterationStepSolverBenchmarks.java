@@ -62,7 +62,7 @@ public final class JIPipeIterationStepSolverBenchmarks {
         System.out.println("Composite time:    " + (t3 - t2) + " ms, steps=" + comp.size());
         System.out.println("Steps equal?       " + (flow.size() == comp.size()));
 
-        if(flow.size() != comp.size()) {
+        if (flow.size() != comp.size()) {
             System.out.println("Flow graph: " + JsonUtils.toJsonString(JIPipeMultiIterationStepGeneratorTestUtils.stepsToMap(flow)));
             System.out.println("Composite: " + JsonUtils.toJsonString(JIPipeMultiIterationStepGeneratorTestUtils.stepsToMap(comp)));
         }

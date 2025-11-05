@@ -275,7 +275,7 @@ public class RUtils {
         }
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             String existing = systemEnv.get(entry.getKey());
-            if(existing == null || !existing.equals(entry.getValue())) {
+            if (existing == null || !existing.equals(entry.getValue())) {
                 progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
             }
         }

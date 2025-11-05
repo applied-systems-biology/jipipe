@@ -19,21 +19,15 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 public class GtkDesktopEnvironmentDetector {
-    public enum Verdict { YES, NO, UNKNOWN }
-
-    public record Result(Verdict verdict, String reason) {}
-
     // Desktop environments commonly regarded as GTK-based
     private static final Set<String> GTK_DESKTOPS = Set.of(
             "gnome", "cinnamon", "mate", "xfce", "xfce4",
             "lxde", "budgie", "pantheon", "unity"
     );
-
     // Not GTK-based (mostly Qt)
     private static final Set<String> NON_GTK_DESKTOPS = Set.of(
             "kde", "plasma", "lxqt", "deepin", "cutefish", "trinity"
     );
-
     private static final List<String> DESKTOP_ENV_VARS = List.of(
             "XDG_CURRENT_DESKTOP", "XDG_SESSION_DESKTOP", "DESKTOP_SESSION",
             "GDMSESSION", "GNOME_DESKTOP_SESSION_ID"
@@ -100,5 +94,10 @@ public class GtkDesktopEnvironmentDetector {
         // If you just need a boolean:
         boolean isGtk = (r.verdict() == Verdict.YES);
         // Use isGtk as needed…
+    }
+
+    public enum Verdict {YES, NO, UNKNOWN}
+
+    public record Result(Verdict verdict, String reason) {
     }
 }
