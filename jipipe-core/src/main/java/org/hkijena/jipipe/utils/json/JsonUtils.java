@@ -146,6 +146,10 @@ public class JsonUtils {
         }
     }
 
+    public static JsonNode toJsonNode(Object data) {
+        return getObjectMapper().convertValue(data, JsonNode.class);
+    }
+
     private static class DimensionSerializer extends JsonSerializer<Dimension> {
         @Override
         public void serialize(Dimension dimension, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {

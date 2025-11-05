@@ -29,10 +29,21 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * A JSON-serializable map-like class that stores Path keys with primitive values (String, Integer, Double, Boolean).
- * This class extends PrimitiveMetadataStore with Path-based keys and provides functionality to work with hierarchical paths
- * (like internal config paths). This class automatically handles cross-platform path separator normalization,
- * ensuring consistent behavior across Windows (backslashes), macOS, and Linux (forward slashes).
+ * A JSON-serializable map-like class that stores Path keys with both primitive values (String, Integer, Double, Boolean)
+ * and complex JSON-serializable objects. This class extends PrimitiveMetadataStore with Path-based keys and provides
+ * functionality to work with hierarchical paths (like internal config paths). This class automatically handles
+ * cross-platform path separator normalization, ensuring consistent behavior across Windows (backslashes), macOS, and Linux (forward slashes).
+ *
+ * <h3>JSON-Serializable Object Support:</h3>
+ * <p>
+ * The PathMetadataStore now supports storing and retrieving complex JSON-serializable objects:
+ * <ul>
+ *   <li>Use {@link #putObject(Path, Object)} and {@link #putObject(String, Object)} to store JSON-serializable objects</li>
+ *   <li>Use {@link #getObject(Path, Class)} and {@link #getObject(String, Class)} to retrieve objects with type safety</li>
+ *   <li>Objects are cached after successful deserialization for performance</li>
+ *   <li>Cache is cleared when underlying data changes to ensure consistency</li>
+ * </ul>
+ * </p>
  *
  * <h3>Cross-Platform Path Handling:</h3>
  * <p>
@@ -64,12 +75,28 @@ import java.util.stream.Collectors;
  * store.put(Paths.get("ui/colors/theme"), "dark");
  * store.put(Paths.get("features/enhanced-mode"), true);
  *
+ * // JSON-serializable object support
+ * Map<String, Object> config = new HashMap<>();
+ * config.put("database", "localhost");
+ * config.put("port", 5432);
+ * config.put("ssl", true);
+ * store.putObject(Paths.get("database/config"), config);
+ *
+ * // Retrieve complex objects with type safety
+ * Map<String, Object> retrievedConfig = store.getObject(Paths.get("database/config"), Map.class);
+ * // Result: {database="localhost", port=5432, ssl=true}
+ *
+ * // Using string paths for JSON objects (convenience overloads)
+ * List<String> features = Arrays.asList("feature1", "feature2", "feature3");
+ * store.putObject("app/features", features);
+ * List<String> retrievedFeatures = store.getObject("app/features", List.class);
+ *
  * // Retrieve values with defaults
  * String name = store.getString(Paths.get("settings/general/name"), "Default App");
  * int version = store.getInteger(Paths.get("settings/general/version"), 1);
  *
  * // Using string paths (convenience overloads)
- * store.putString("settings/icon", "icon.png");
+ * store.put("settings/icon", "icon.png");
  * String icon = store.getString("settings/icon", "default-icon.png");
  *
  * // Get all entries under a path segment
@@ -78,7 +105,7 @@ import java.util.stream.Collectors;
  *
  * // Convert to a nested map structure
  * Map<String, Object> nested = store.toNestedMap();
- * // Result: {settings={general={name="Application", version=1.0}}, ui={colors={theme="dark"}}, features={enhanced-mode=true}}
+ * // Result: {settings={general={name="Application", version=1.0}}, ui={colors={theme="dark"}}, features={enhanced-mode=true}, database={config={database="localhost", port=5432, ssl=true}}}
  *
  * // Merge/override entries from another store
  * PathMetadataStore other = new PathMetadataStore();
@@ -149,14 +176,14 @@ public class PathMetadataStore {
      */
     public void migrateBackslashPaths() {
         Map<Path, Object> migratedData = new HashMap<>();
-        
+
         for (Map.Entry<Path, Object> entry : data.entrySet()) {
             Path originalKey = entry.getKey();
             Object value = entry.getValue();
-            
+
             // Normalize the path key to use forward slashes
             Path normalizedKey = normalizePath(originalKey);
-            
+
             // Only add if the normalized key is different (migration needed)
             if (!originalKey.equals(normalizedKey)) {
                 migratedData.put(normalizedKey, value);
@@ -165,7 +192,7 @@ public class PathMetadataStore {
                 migratedData.put(originalKey, value);
             }
         }
-        
+
         // Replace the data with migrated data
         this.data.clear();
         this.data.putAll(migratedData);
@@ -215,7 +242,7 @@ public class PathMetadataStore {
      * @param key   the path key (must not be null)
      * @param value the string value
      */
-    public void put(Path key, String value) {
+    public void putPrimitive(Path key, String value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -227,7 +254,7 @@ public class PathMetadataStore {
      * @param key   the path key (must not be null)
      * @param value the integer value
      */
-    public void put(Path key, Integer value) {
+    public void putPrimitive(Path key, Integer value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -239,7 +266,7 @@ public class PathMetadataStore {
      * @param key   the path key (must not be null)
      * @param value the double value
      */
-    public void put(Path key, Double value) {
+    public void putPrimitive(Path key, Double value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -251,7 +278,7 @@ public class PathMetadataStore {
      * @param key   the path key (must not be null)
      * @param value the boolean value
      */
-    public void put(Path key, Boolean value) {
+    public void putPrimitive(Path key, Boolean value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -265,9 +292,9 @@ public class PathMetadataStore {
      * @param pathString the path string (must not be null)
      * @param value      the string value
      */
-    public void putString(String pathString, String value) {
+    public void putPrimitive(String pathString, String value) {
         if (pathString != null && value != null) {
-            put(Paths.get(pathString), value);
+            putPrimitive(Paths.get(pathString), value);
         }
     }
 
@@ -277,9 +304,9 @@ public class PathMetadataStore {
      * @param pathString the path string (must not be null)
      * @param value      the integer value
      */
-    public void putString(String pathString, Integer value) {
+    public void putPrimitive(String pathString, Integer value) {
         if (pathString != null && value != null) {
-            put(Paths.get(pathString), value);
+            putPrimitive(Paths.get(pathString), value);
         }
     }
 
@@ -289,9 +316,9 @@ public class PathMetadataStore {
      * @param pathString the path string (must not be null)
      * @param value      the double value
      */
-    public void putString(String pathString, Double value) {
+    public void putPrimitive(String pathString, Double value) {
         if (pathString != null && value != null) {
-            put(Paths.get(pathString), value);
+            putPrimitive(Paths.get(pathString), value);
         }
     }
 
@@ -301,9 +328,38 @@ public class PathMetadataStore {
      * @param pathString the path string (must not be null)
      * @param value      the boolean value
      */
-    public void putString(String pathString, Boolean value) {
+    public void putPrimitive(String pathString, Boolean value) {
         if (pathString != null && value != null) {
-            put(Paths.get(pathString), value);
+            putPrimitive(Paths.get(pathString), value);
+        }
+    }
+
+    // Put methods for JSON-serializable objects
+
+    /**
+     * Adds or updates a JSON-serializable object using a Path key.
+     * The object will be stored directly in the data map and serialized when needed.
+     *
+     * @param key   the path key (must not be null)
+     * @param value the JSON-serializable object (must not be null)
+     */
+    public void putObject(Path key, Object value) {
+        if (key != null && value != null) {
+            // Store the object directly in data
+            data.put(key, value);
+        }
+    }
+
+    /**
+     * Adds or updates a JSON-serializable object using a string path (converted to Path internally).
+     * The object will be stored directly in the data map and serialized when needed.
+     *
+     * @param pathString the path string (must not be null)
+     * @param value      the JSON-serializable object (must not be null)
+     */
+    public void putObject(String pathString, Object value) {
+        if (pathString != null && value != null) {
+            putObject(Paths.get(pathString), value);
         }
     }
 
@@ -417,6 +473,73 @@ public class PathMetadataStore {
         return getBoolean(pathString != null ? Paths.get(pathString) : null, defaultValue);
     }
 
+    // Get methods for JSON-serializable objects
+
+    /**
+     * Retrieves a JSON-serializable object with type safety using a Path key.
+     * If the object is already deserialized and stored in data, it's returned directly.
+     * Otherwise, it attempts to deserialize from stored JSON string or JsonNode and
+     * replaces the original value with the deserialized object in data.
+     *
+     * @param <T>  the type of the object to retrieve. Special cases are String and JsonNode that serialize any object independent of the type
+     * @param key  the path key to look up
+     * @param type the class of the object to retrieve
+     * @return the deserialized object or null if not found or deserialization fails
+     */
+    public <T> T getObject(Path key, Class<T> type) {
+        if (key == null || type == null) {
+            return null;
+        }
+
+        Object storedValue = data.get(key);
+        if (storedValue != null) {
+            try {
+                T deserialized;
+                if (storedValue instanceof JsonNode) {
+                    // Deserialize from JsonNode
+                    deserialized = JsonUtils.getObjectMapper().treeToValue((JsonNode) storedValue, type);
+                } else {
+                    // Direct type match
+                    if (type.isInstance(storedValue)) {
+                        deserialized = type.cast(storedValue);
+                    }
+                    else if (type == JsonNode.class) {
+                        // Special case: serialize back into JSON
+                        return (T)JsonUtils.getObjectMapper().convertValue(storedValue, JsonNode.class);
+                    }
+                    else if(type == String.class) {
+                        return (T)JsonUtils.toJsonString(storedValue);
+                    }
+                    else {
+                        return null;
+                    }
+                }
+                // Replace the original value with the deserialized object for caching
+                data.put(key, deserialized);
+                return deserialized;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * Retrieves a JSON-serializable object with type safety using a string path.
+     * If the object is already deserialized and stored in data, it's returned directly.
+     * Otherwise, it attempts to deserialize from stored JSON string or JsonNode and
+     * replaces the original value with the deserialized object in data.
+     *
+     * @param <T>        the type of the object to retrieve
+     * @param pathString the path string to look up
+     * @param type       the class of the object to retrieve
+     * @return the deserialized object or null if not found or deserialization fails
+     */
+    public <T> T getObject(String pathString, Class<T> type) {
+        return getObject(pathString != null ? Paths.get(pathString) : null, type);
+    }
+
     // Path-based collection methods
 
     /**
@@ -524,13 +647,13 @@ public class PathMetadataStore {
      */
     public PathMetadataStore getNormalizedCopy() {
         PathMetadataStore normalizedStore = new PathMetadataStore();
-        
+
         for (Map.Entry<Path, Object> entry : data.entrySet()) {
             Path normalizedKey = normalizePath(entry.getKey());
             // Use direct access to the internal map to handle Object values
             normalizedStore.data.put(normalizedKey, entry.getValue());
         }
-        
+
         return normalizedStore;
     }
 
@@ -789,13 +912,16 @@ public class PathMetadataStore {
 
                         try {
                             if (valueNode.isTextual()) {
-                                store.put(key, valueNode.asText());
+                                store.putPrimitive(key, valueNode.asText());
                             } else if (valueNode.isInt()) {
-                                store.put(key, valueNode.asInt());
+                                store.putPrimitive(key, valueNode.asInt());
                             } else if (valueNode.isDouble()) {
-                                store.put(key, valueNode.asDouble());
+                                store.putPrimitive(key, valueNode.asDouble());
                             } else if (valueNode.isBoolean()) {
-                                store.put(key, valueNode.asBoolean());
+                                store.putPrimitive(key, valueNode.asBoolean());
+                            } else {
+                                // Store complex JSON objects as JsonNode for later deserialization
+                                store.data.put(key, valueNode);
                             }
                         } catch (Exception e) {
                             // Skip invalid values

@@ -30,11 +30,11 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
-        store.put(Paths.get("settings/ui/theme"), "dark");
-        store.put(Paths.get("features/enhanced"), true);
-        store.put(Paths.get("other/setting"), "value");
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("settings/ui/theme"), "dark");
+        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("other/setting"), "value");
 
         // Verify initial state
         assertEquals(5, store.size());
@@ -61,9 +61,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Clear with trailing slash
         store.clearEntriesWithPathPrefix("settings/");
@@ -82,8 +82,8 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Try to clear non-existent prefix
         store.clearEntriesWithPathPrefix("nonexistent");
@@ -99,7 +99,7 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
 
         // Try to clear with null prefix (string version)
         store.clearEntriesWithPathPrefix((String) null);
@@ -114,7 +114,7 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
 
         // Try to clear with empty prefix
         store.clearEntriesWithPathPrefix("");
@@ -129,9 +129,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings"), "root");
-        store.put(Paths.get("settings/general"), "general");
-        store.put(Paths.get("settings/name"), "name");
+        store.putPrimitive(Paths.get("settings"), "root");
+        store.putPrimitive(Paths.get("settings/general"), "general");
+        store.putPrimitive(Paths.get("settings/name"), "name");
 
         // Clear exact match
         store.clearEntriesWithPathPrefix("settings");
@@ -148,11 +148,11 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data with deep hierarchy
-        store.put(Paths.get("a/b/c/d"), "deep");
-        store.put(Paths.get("a/b/c/e"), "deep2");
-        store.put(Paths.get("a/b/f"), "shallow");
-        store.put(Paths.get("a/g"), "other");
-        store.put(Paths.get("h"), "top");
+        store.putPrimitive(Paths.get("a/b/c/d"), "deep");
+        store.putPrimitive(Paths.get("a/b/c/e"), "deep2");
+        store.putPrimitive(Paths.get("a/b/f"), "shallow");
+        store.putPrimitive(Paths.get("a/g"), "other");
+        store.putPrimitive(Paths.get("h"), "top");
 
         // Clear intermediate level
         store.clearEntriesWithPathPrefix("a/b");
@@ -173,8 +173,8 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("Settings/general/name"), "Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("Settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
 
         // Clear lowercase settings - should only remove lowercase entries
         store.clearEntriesWithPathPrefix("settings");
@@ -190,10 +190,10 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
-        store.put(Paths.get("settings/ui/theme"), "dark");
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("settings/ui/theme"), "dark");
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Verify initial state
         assertEquals(4, store.size());
@@ -218,9 +218,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Clear with trailing slash using Path object
         store.clearEntriesWithPathPrefix(Paths.get("settings/"));
@@ -239,8 +239,8 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Try to clear non-existent prefix using Path object
         store.clearEntriesWithPathPrefix(Paths.get("nonexistent"));
@@ -256,7 +256,7 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up test data
-        store.put(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(Paths.get("settings/general/name"), "Application");
 
         // Try to clear with null prefix using Path object
         store.clearEntriesWithPathPrefix((Path) null);
@@ -267,19 +267,19 @@ class PathMetadataStorePathPrefixTest {
     }
 
     @Test
-    void testPutAll() {
+    void testPutPrimitiveAll() {
         PathMetadataStore store = new PathMetadataStore();
 
         // Set up initial data
-        store.put(Paths.get("settings/general/name"), "Original Application");
-        store.put(Paths.get("settings/general/version"), 1.0);
-        store.put(Paths.get("features/enhanced"), true);
+        store.putPrimitive(Paths.get("settings/general/name"), "Original Application");
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Create another store with some overlapping and new data
         PathMetadataStore other = new PathMetadataStore();
-        other.put(Paths.get("settings/general/name"), "New Application"); // Override existing
-        other.put(Paths.get("settings/general/debug"), true); // New entry
-        other.put(Paths.get("new/feature"), "added"); // New entry
+        other.putPrimitive(Paths.get("settings/general/name"), "New Application"); // Override existing
+        other.putPrimitive(Paths.get("settings/general/debug"), true); // New entry
+        other.putPrimitive(Paths.get("new/feature"), "added"); // New entry
 
         // Put all entries from other store
         store.putAll(other);
@@ -300,9 +300,9 @@ class PathMetadataStorePathPrefixTest {
     }
 
     @Test
-    void testPutAllNull() {
+    void testPutPrimitiveAllNull() {
         PathMetadataStore store = new PathMetadataStore();
-        store.put(Paths.get("test/key"), "value");
+        store.putPrimitive(Paths.get("test/key"), "value");
 
         // Put with null should not change anything
         store.putAll(null);
@@ -313,9 +313,9 @@ class PathMetadataStorePathPrefixTest {
     }
 
     @Test
-    void testPutAllEmpty() {
+    void testPutPrimitiveAllEmpty() {
         PathMetadataStore store = new PathMetadataStore();
-        store.put(Paths.get("test/key"), "value");
+        store.putPrimitive(Paths.get("test/key"), "value");
 
         PathMetadataStore empty = new PathMetadataStore();
 
@@ -344,9 +344,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
         
         // Add paths with backslashes (simulating Windows paths)
-        store.put(Paths.get("settings\\general\\name"), "Application");
-        store.put(Paths.get("settings\\general\\version"), 1.0);
-        store.put(Paths.get("ui\\theme"), "dark");
+        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
+        store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
+        store.putPrimitive(Paths.get("ui\\theme"), "dark");
         
         // Verify that backslash paths exist
         assertTrue(store.hasBackslashPaths());
@@ -370,9 +370,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore original = new PathMetadataStore();
         
         // Add paths with mixed separators
-        original.put(Paths.get("settings\\general\\name"), "Application");
-        original.put(Paths.get("settings/general/version"), 1.0);
-        original.put(Paths.get("ui\\theme"), "dark");
+        original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
+        original.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        original.putPrimitive(Paths.get("ui\\theme"), "dark");
         
         // Create normalized copy
         PathMetadataStore normalized = original.getNormalizedCopy();
@@ -403,8 +403,8 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore original = new PathMetadataStore();
         
         // Add paths with backslashes
-        original.put(Paths.get("settings\\general\\name"), "Application");
-        original.put(Paths.get("settings\\general\\version"), 1.0);
+        original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
+        original.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
         
         // Serialize to JSON
         String json = mapper.writeValueAsString(original);
@@ -446,9 +446,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
         
         // Add paths with backslashes
-        store.put(Paths.get("settings\\general\\name"), "Application");
-        store.put(Paths.get("settings\\general\\version"), 1.0);
-        store.put(Paths.get("ui\\theme"), "dark");
+        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
+        store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
+        store.putPrimitive(Paths.get("ui\\theme"), "dark");
         
         // Convert to nested map
         Map<String, Object> nested = store.toNestedMap();
@@ -476,9 +476,9 @@ class PathMetadataStorePathPrefixTest {
         PathMetadataStore store = new PathMetadataStore();
         
         // Add paths with mixed separators
-        store.put(Paths.get("settings\\general\\name"), "Application");  // Backslashes
-        store.put(Paths.get("settings/general/version"), 1.0);          // Forward slashes
-        store.put(Paths.get("ui\\theme"), "dark");                     // Backslashes
+        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");  // Backslashes
+        store.putPrimitive(Paths.get("settings/general/version"), 1.0);          // Forward slashes
+        store.putPrimitive(Paths.get("ui\\theme"), "dark");                     // Backslashes
         
         // Before migration, backslash paths should not be found with forward slash paths
         assertEquals("Default", store.getString(Paths.get("settings/general/name"), "Default"));
