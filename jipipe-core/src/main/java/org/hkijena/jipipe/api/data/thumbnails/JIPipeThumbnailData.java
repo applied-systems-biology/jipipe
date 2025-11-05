@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Thumbnail", description = "Thumbnail data (used internally)")
-@ConfigureJIPipeDataCrate(entities = { })
+@ConfigureJIPipeDataCrate(entities = {})
 @LabelAsJIPipeHidden
 public interface JIPipeThumbnailData extends JIPipeData {
 

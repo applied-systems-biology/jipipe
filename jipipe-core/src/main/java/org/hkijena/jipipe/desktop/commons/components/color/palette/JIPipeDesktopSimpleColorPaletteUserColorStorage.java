@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JIPipeDesktopSimpleColorPaletteUserColorStorage implements JIPipeDesktopColorPaletteUserColorStorage{
+public class JIPipeDesktopSimpleColorPaletteUserColorStorage implements JIPipeDesktopColorPaletteUserColorStorage {
     @JsonProperty("colors")
     private List<JIPipeDesktopColorPaletteColor> colors = new ArrayList<>();
 
@@ -46,7 +46,7 @@ public class JIPipeDesktopSimpleColorPaletteUserColorStorage implements JIPipeDe
     @Override
     public void replaceColor(JIPipeDesktopColorPaletteColor oldColor, JIPipeDesktopColorPaletteColor newColor) {
         int i = this.colors.indexOf(oldColor);
-        if(i >= 0) {
+        if (i >= 0) {
             this.colors.set(i, newColor);
         }
     }

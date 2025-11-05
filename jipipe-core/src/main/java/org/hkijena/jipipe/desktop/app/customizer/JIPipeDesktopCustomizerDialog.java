@@ -21,7 +21,7 @@ import java.awt.*;
 public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeDesktopWorkbench workbench;
-    private final ThemePreviewPanel  themePreviewPanel = new ThemePreviewPanel();
+    private final ThemePreviewPanel themePreviewPanel = new ThemePreviewPanel();
     private final JIPipeDesktopFormPanel settingsPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
 
     private final JComboBox<JIPipeDesktopUITheme> themeJComboBox = new JComboBox<>(JIPipeDesktopUITheme.values());
@@ -40,6 +40,10 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         loadDefaults();
         registerEvents();
         updatePreview();
+    }
+
+    private static int getRoundedScale(int scale) {
+        return Math.round(scale / 25f) * 25;
     }
 
     private void loadDefaults() {
@@ -67,16 +71,16 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
     }
 
     private JIPipeDesktopUITheme getCurrentlySelectedTheme() {
-        if(themeJComboBox.getSelectedItem() instanceof JIPipeDesktopUITheme theme) {
+        if (themeJComboBox.getSelectedItem() instanceof JIPipeDesktopUITheme theme) {
             return theme;
         }
         return JIPipeDesktopUITheme.Modern;
     }
 
     private String getCurrentlySelectedThemeStyleId() {
-        if(!StringUtils.isNullOrEmpty(themeStyleJComboBox.getSelectedItem())) {
+        if (!StringUtils.isNullOrEmpty(themeStyleJComboBox.getSelectedItem())) {
             String id = themeStyleJComboBox.getSelectedItem().toString();
-            if(ThemeUtils.getAvailableStyleIds().contains(id)) {
+            if (ThemeUtils.getAvailableStyleIds().contains(id)) {
                 return id;
             }
         }
@@ -85,10 +89,6 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
 
     private JIPipeDesktopModernThemeStyle getCurrentlySelectedThemeStyle() {
         return ThemeUtils.getStyleFromId(getCurrentlySelectedThemeStyleId());
-    }
-
-    private static int getRoundedScale(int scale) {
-        return Math.round(scale / 25f) * 25;
     }
 
     private void updatePreview() {
@@ -108,7 +108,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         setIconImage(UIUtils.getJIPipeIcon128());
         setModal(true);
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        getContentPane().setLayout(new BorderLayout(8,8));
+        getContentPane().setLayout(new BorderLayout(8, 8));
         getContentPane().setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
 
         // Create split-pane
@@ -134,7 +134,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
 
         // Final preparation
         pack();
-        setSize(1024,768);
+        setSize(1024, 768);
         setLocationRelativeTo(workbench.getWindow());
     }
 
@@ -155,7 +155,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         settingsPanel.addWideToForm(UIUtils.borderNSEWC(null, null, scaleLabel, null, scaleSlider));
         settingsPanel.addWideToForm(UIUtils.createJLabel("The preview might be slightly inaccurate", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
         settingsPanel.addWideToForm(UIUtils.createJLabel("Non-integral scales may not correctly work", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
-        if(SystemUtils.IS_OS_MAC_OSX) {
+        if (SystemUtils.IS_OS_MAC_OSX) {
             settingsPanel.addWideToForm(UIUtils.createJLabel("May not work on macOS", JIPipe.RESOURCES.getIcon16("emblems/emblem-information.png")));
         }
 
@@ -173,10 +173,10 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         uiSettings.setTheme(getCurrentlySelectedTheme());
         uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(getCurrentlySelectedThemeStyleId()));
 
-        if(fileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+        if (fileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
             fileChooserSettings.setFileChooserType(fileChooserType);
         }
-        if(fallbackFileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
+        if (fallbackFileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
             fileChooserSettings.setFallbackFileChooserType(fileChooserType);
         }
 
@@ -185,11 +185,11 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         // Apply the scaling configuration
         int newRoundedScale = getRoundedScale(scaleSlider.getValue());
         int originalRoundedScale = getRoundedScale((int) (systemScale * 100));
-        if(newRoundedScale != originalRoundedScale) {
+        if (newRoundedScale != originalRoundedScale) {
             boolean alsoImageJ = JOptionPane.showConfirmDialog(this, "Do you want to apply your scale settings also to Fiji/ImageJ?", "Apply", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION;
-            if(!UIUtils.saveUIScaleToJaunch(newRoundedScale / 100f, alsoImageJ)) {
+            if (!UIUtils.saveUIScaleToJaunch(newRoundedScale / 100f, alsoImageJ)) {
                 JOptionPane.showMessageDialog(workbench.getWindow(),
-                        "Your UI scale setting of " +  newRoundedScale + "% could not be saved.",
+                        "Your UI scale setting of " + newRoundedScale + "% could not be saved.",
                         "Customize JIPipe",
                         JOptionPane.ERROR_MESSAGE);
             }

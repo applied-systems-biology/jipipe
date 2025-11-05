@@ -11,8 +11,8 @@ public interface JIPipeProjectUpgradable {
      * Applies a project upgrade from the given JIPipe version to the current one
      *
      * @param fromVersion the previous version
-     * @param context the validation report context
-     * @param report the report for issues
+     * @param context     the validation report context
+     * @param report      the report for issues
      */
     void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report);
 }

@@ -42,7 +42,6 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.net.URL;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 

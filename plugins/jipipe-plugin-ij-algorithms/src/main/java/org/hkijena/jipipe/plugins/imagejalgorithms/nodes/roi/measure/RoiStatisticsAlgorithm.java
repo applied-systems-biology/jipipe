@@ -97,7 +97,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         Map<ImageSliceIndex, List<Roi>> grouped = roi.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
         for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return;
             }
             ROI2DListData data = new ROI2DListData(entry.getValue());

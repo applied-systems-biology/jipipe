@@ -105,7 +105,7 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     public void dispose() {
         super.dispose();
 
-        if(app != null) {
+        if (app != null) {
             app.dispose();
             app = null;
         }

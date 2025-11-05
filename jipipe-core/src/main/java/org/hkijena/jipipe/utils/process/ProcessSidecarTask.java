@@ -5,5 +5,6 @@ package org.hkijena.jipipe.utils.process;
  */
 public interface ProcessSidecarTask {
     void start(ExtendedExecutor executor) throws Exception;
+
     void stop();
 }

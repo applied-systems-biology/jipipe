@@ -80,12 +80,11 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
                 canvasUI.getResources().getImprovedStrokeBackgroundColor()));
         graphics2D.fillOval(location.x, location.y, size, size);
 
-        if(canvasUI.getSelectionManager().getSelection().contains(this)) {
+        if (canvasUI.getSelectionManager().getSelection().contains(this)) {
             graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_THICK);
             graphics2D.setPaint(ThemeUtils.getCurrentStyle().getNodeHighlightBorder());
             graphics2D.drawOval(location.x, location.y, size, size);
-        }
-        else {
+        } else {
             graphics2D.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
             graphics2D.setColor(canvasUI.getResources().getEdgeColor(source, target, multiColor, multiColorIndex, multiColorMax));
             graphics2D.drawOval(location.x, location.y, size, size);
@@ -97,7 +96,7 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
     public boolean doesContainPoint(int mouseX, int mouseY) {
         Point location = getRenderedLocation();
         int size = getRenderedSize();
-        return (Math.pow(mouseX -  location.x, 2) + Math.pow(mouseY - location.y, 2))  <= Math.pow(size, 2);
+        return (Math.pow(mouseX - location.x, 2) + Math.pow(mouseY - location.y, 2)) <= Math.pow(size, 2);
     }
 
     public Point getGridLocation() {
@@ -111,7 +110,7 @@ public class JIPipeDesktopGraphEdgeControlPointUI implements JIPipeDesktopGraphI
     public boolean doesEdgeIntersectRectangle(Rectangle selectionRectangle) {
         Point point = JIPipeDesktopGraphCanvasGrid.gridToRealLocation(controlPoint.toPoint(), canvasUI.getZoom());
         int size = getRenderedSize();
-        Rectangle copy = new  Rectangle(selectionRectangle);
+        Rectangle copy = new Rectangle(selectionRectangle);
         copy.grow(size / 2, size / 2);
         int centerX = point.x - size / 2;
         int centerY = point.y - size / 2;

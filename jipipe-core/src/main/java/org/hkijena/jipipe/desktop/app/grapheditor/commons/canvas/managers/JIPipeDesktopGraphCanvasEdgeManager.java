@@ -31,26 +31,26 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      */
     public boolean isMouseOverEdge(int mouseX, int mouseY, JIPipeDesktopGraphEdgeUI edgeUI) {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
-        
+
         // Get the rendered line segments from the edge UI
         JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(1, canvasUI.getZoom(), 0, 0);
-        
+
         if (lineSegments.isEmpty()) {
             return false;
         }
-        
+
         // Check each segment for mouse intersection
         for (int i = 0; i < lineSegments.size() - 1; i++) {
             int x1 = lineSegments.getX(i);
             int y1 = lineSegments.getY(i);
             int x2 = lineSegments.getX(i + 1);
             int y2 = lineSegments.getY(i + 1);
-            
+
             if (isMouseOverLineEdge(mouseX, mouseY, new Point(x1, y1), new Point(x2, y2), hitThreshold)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -200,26 +200,26 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
      */
     public boolean doesEdgeIntersectRectangle(JIPipeDesktopGraphEdgeUI edgeUI, Rectangle rectangle) {
         int hitThreshold = (int) Math.max(1, canvasUI.getZoom() * 4) + 4;
-        
+
         // Get the rendered line segments from the edge UI
         JIPipeDesktopGraphEdgeUI.SegmentedLines lineSegments = edgeUI.getRenderedLineSegments(canvasUI.getZoom(), canvasUI.getZoom(), 0, 0);
-        
+
         if (lineSegments.isEmpty()) {
             return false;
         }
-        
+
         // Check each segment for rectangle intersection
         for (int i = 0; i < lineSegments.size() - 1; i++) {
             int x1 = lineSegments.getX(i);
             int y1 = lineSegments.getY(i);
             int x2 = lineSegments.getX(i + 1);
             int y2 = lineSegments.getY(i + 1);
-            
+
             if (isLineIntersectingRectangle(new Point(x1, y1), new Point(x2, y2), rectangle, hitThreshold)) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -344,7 +344,7 @@ public class JIPipeDesktopGraphCanvasEdgeManager {
     public boolean addControlPointToEdge(JIPipeDesktopGraphEdgeUI edgeUI, Point realLocation) {
         Point toGrid = JIPipeDesktopGraphCanvasGrid.realLocationToGrid(realLocation, canvasUI.getZoom());
         for (Point existingControlPoint : edgeUI.getControlPointsInGridCoordinates()) {
-            if(existingControlPoint.equals(toGrid)) {
+            if (existingControlPoint.equals(toGrid)) {
                 canvasUI.getNotificationsManager().addNotification("Edge control point already exists at this location",
                         JIPipe.RESOURCES.getIcon16("actions/node-add.png"),
                         JIPipeDesktopGraphCanvasNotificationsManager.NotificationType.Error);

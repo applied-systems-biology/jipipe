@@ -35,7 +35,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     private final JIPipeNodeDatabaseUpdater updater;
     //    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
     private final JIPipeLegacyNodeDatabaseSearch legacySearch;
-    private final JIPipeEnhancedNodeDatabaseSearch  enhancedSearch;
+    private final JIPipeEnhancedNodeDatabaseSearch enhancedSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
 
 
@@ -95,7 +95,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         if (getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Legacy) {
             return legacySearch;
         }
-        if(getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Enhanced) {
+        if (getSearchImplementation() == JIPipeNodeDatabaseSearchImplementation.Enhanced) {
             return enhancedSearch;
         }
         return legacySearch;

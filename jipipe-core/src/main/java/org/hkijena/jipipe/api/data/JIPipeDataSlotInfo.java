@@ -91,7 +91,6 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
     }
 
 
-
     /**
      * @param dataClass   slot data class
      * @param slotType    slot type
@@ -154,6 +153,10 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
      */
     public static boolean isValidName(String slotName) {
         return slotName.matches("[\\w.\\-,# ]+");
+    }
+
+    public static JIPipeDataSlotInfoBuilder builder() {
+        return new JIPipeDataSlotInfoBuilder();
     }
 
     /**
@@ -480,10 +483,6 @@ public class JIPipeDataSlotInfo extends AbstractJIPipeParameterCollection {
                 return result;
             }
         }
-    }
-
-    public static JIPipeDataSlotInfoBuilder builder() {
-        return new JIPipeDataSlotInfoBuilder();
     }
 
     public static final class JIPipeDataSlotInfoBuilder {

@@ -21,9 +21,9 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.ui.library.ColorParameterSettings;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -54,10 +54,10 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     private final boolean enableBackgroundColorSelection;
     private final boolean enableAlphaColorSelection;
     private final List<JIPipeDesktopColorPaletteColor> defaultColors;
-    private JIPipeDesktopColorPaletteUserColorStorage userColors = new JIPipeDesktopSimpleColorPaletteUserColorStorage();
     private final JPanel colorsPanel = new JPanel();
-    private JIPipeDesktopColorPaletteColor selectedColor;
     private final SelectedEventEmitter selectedEventEmitter = new SelectedEventEmitter();
+    private JIPipeDesktopColorPaletteUserColorStorage userColors = new JIPipeDesktopSimpleColorPaletteUserColorStorage();
+    private JIPipeDesktopColorPaletteColor selectedColor;
 
     public JIPipeDesktopColorPaletteUI(JIPipeDesktopWorkbench workbench) {
         this(workbench, NONE, JIPipeDesktopColorPalette.PASTEL);
@@ -145,10 +145,9 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void resetSelectedColor() {
-        if(!this.defaultColors.isEmpty()) {
+        if (!this.defaultColors.isEmpty()) {
             setSelectedColor(this.defaultColors.getFirst());
-        }
-        else if(!this.userColors.getColors().isEmpty()) {
+        } else if (!this.userColors.getColors().isEmpty()) {
             setSelectedColor(this.userColors.getColors().getFirst());
         }
     }
@@ -209,19 +208,19 @@ public class JIPipeDesktopColorPaletteUI extends JIPipeDesktopWorkbenchPanel {
     }
 
     public void setSelectedColor(JIPipeDesktopColorPaletteColor selectedColor) {
-        if(selectedColor == null) {
+        if (selectedColor == null) {
             resetSelectedColor();
             return;
         }
-        if(!defaultColors.contains(selectedColor) && !userColors.getColors().contains(selectedColor)) {
+        if (!defaultColors.contains(selectedColor) && !userColors.getColors().contains(selectedColor)) {
             for (JIPipeDesktopColorPaletteColor color : userColors.getColors()) {
-                if(selectedColor.equals(color)) {
+                if (selectedColor.equals(color)) {
                     selectedColor = color;
                     break;
                 }
             }
             for (JIPipeDesktopColorPaletteColor color : defaultColors) {
-                if(selectedColor.equals(color)) {
+                if (selectedColor.equals(color)) {
                     selectedColor = color;
                     break;
                 }

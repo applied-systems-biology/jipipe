@@ -78,7 +78,8 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_FILTERS = JIPipeDataSlotInfo.builder().name("Filters").description("The remaining filter ROIs. Will be different if 'Consume on overlap' is enabled.")
             .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
-
+    private final OutputParameters outputParameters;
+    private final MeasurementParameters measurementParameters;
     private OverlapMode overlapMode = OverlapMode.BoundingBoxPrefilter;
     private boolean consumeOnOverlap = false;
     private boolean ignoreChannel = false;
@@ -87,8 +88,6 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean verbose = false;
     private OptionalJIPipeExpressionParameter overlapCondition = new OptionalJIPipeExpressionParameter(false, "Overlap.Area > 10");
     private OptionalJIPipeExpressionParameter matchCondition = new OptionalJIPipeExpressionParameter(false, "numMatches >= 5");
-    private final OutputParameters outputParameters;
-    private final MeasurementParameters measurementParameters;
 
     public FilterRoi2dByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -190,10 +189,9 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             Map<String, Object> measurementDict = new HashMap<>();
             for (MeasurementColumn column : MeasurementColumn.values()) {
                 int columnIndex = measurements.getColumnIndex(column.getColumnName());
-                if(columnIndex >= 0) {
+                if (columnIndex >= 0) {
                     measurementDict.put(column.getColumnName(), measurements.getValueAt(i, columnIndex));
-                }
-                else {
+                } else {
                     measurementDict.put(column.getColumnName(), Double.NaN);
                 }
             }
@@ -242,11 +240,10 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 tmp.logicalAnd();
                 tmp.removeIf(this::isEmptyIntersection);
 
-                if(tmp.isEmpty()) {
+                if (tmp.isEmpty()) {
                     logCandidateFilterVerbose(candidate, filter, "Exact overlap check failed", progressInfo);
                     overlapSuccess = false;
-                }
-                else {
+                } else {
                     // Merge into one intersection ROI
                     if (tmp.size() > 1) {
                         logCandidateFilterVerbose(candidate, filter, "Found split intersection with " + tmp.size() + " parts - merging with OR", progressInfo);
@@ -268,8 +265,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 logCandidateFilterVerbose(candidate, filter, "Final overlap check SUCCESS", progressInfo);
                 matchingFilters.add(filter);
                 matchingIntersections.addAll(tempIntersections);
-            }
-            else {
+            } else {
                 logCandidateFilterVerbose(candidate, filter, "Final overlap check FAIL", progressInfo);
             }
         }
@@ -278,22 +274,21 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Match filtering
         final boolean matchSuccess;
-        if(matchCondition.isEnabled()) {
+        if (matchCondition.isEnabled()) {
             putMeasurementsIntoVariable(candidate, "Candidate", variablesMap);
             putMeasurementListsIntoVariable(matchingFilters, "all.Filter", variablesMap);
-            variablesMap.put("numMatches",  matchingFilters.size());
+            variablesMap.put("numMatches", matchingFilters.size());
             matchSuccess = matchCondition.getContent().evaluateToBoolean(variablesMap);
-        }
-        else {
+        } else {
             // Simple check: at least one match
             matchSuccess = !matchingFilters.isEmpty();
         }
 
-        if(matchSuccess) {
+        if (matchSuccess) {
             logCandidateVerbose(candidate, "Match SUCCESS", progressInfo);
 
             // Consume on overlap
-            if(consumeOnOverlap) {
+            if (consumeOnOverlap) {
                 logCandidateVerbose(candidate, "Consuming overlaps after success as requested", progressInfo);
                 filters.removeAll(matchingFilters);
             }
@@ -301,8 +296,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             // Output all data
             matched.add(candidate.roi);
             intersections.addAll(matchingIntersections);
-        }
-        else {
+        } else {
             logCandidateVerbose(candidate, "Match FAIL", progressInfo);
 
             // Output rejection
@@ -311,13 +305,13 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void logCandidateFilterVerbose(MeasuredRoi candidate, MeasuredRoi filter, String text, JIPipePercentageProgressInfo progressInfo) {
-        if(verbose) {
+        if (verbose) {
             progressInfo.log("candidate=" + candidate.roi + " & filter=" + filter.roi + " --> " + text);
         }
     }
 
     private void logCandidateVerbose(MeasuredRoi candidate, String text, JIPipePercentageProgressInfo progressInfo) {
-        if(verbose) {
+        if (verbose) {
             progressInfo.log("candidate=" + candidate.roi + " --> " + text);
         }
     }
@@ -326,7 +320,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         variablesMap.put(prefix + ".z", measuredRoi.stream().map(roi -> roi.roi.getZPosition()).toList());
         variablesMap.put(prefix + ".c", measuredRoi.stream().map(roi -> roi.roi.getCPosition()).toList());
         variablesMap.put(prefix + ".t", measuredRoi.stream().map(roi -> roi.roi.getTPosition()).toList());
-        Set<String> keys = new  HashSet<>();
+        Set<String> keys = new HashSet<>();
         for (MeasuredRoi roi : measuredRoi) {
             keys.addAll(roi.measurements.keySet());
         }
@@ -576,6 +570,42 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return super.isParameterUIVisible(tree, access);
     }
 
+    public enum OverlapMode {
+        ExactOnly("Only exact (slower)"),
+        BoundingBoxOnly("Only bounding box (fast, inaccurate)"),
+        BoundingBoxPrefilter("Bounding box + exact (default)");
+
+        private final String label;
+
+        OverlapMode(String label) {
+            this.label = label;
+        }
+
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
+    public enum ReferenceMode {
+        None("No reference image (black)"),
+        SameForAll("Same for all cases"),
+        PerRoiSet("Different per case");
+
+        private final String label;
+
+        ReferenceMode(String label) {
+            this.label = label;
+        }
+
+
+        @Override
+        public String toString() {
+            return label;
+        }
+    }
+
     public record MeasuredRoi(Roi roi, Map<String, Object> measurements) {
 
     }
@@ -686,43 +716,6 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         @JIPipeParameter("output-filters")
         public void setOutputFilters(boolean outputFilters) {
             this.outputFilters = outputFilters;
-        }
-    }
-
-    public enum OverlapMode {
-        ExactOnly("Only exact (slower)"),
-        BoundingBoxOnly("Only bounding box (fast, inaccurate)"),
-        BoundingBoxPrefilter("Bounding box + exact (default)");
-
-        private final String label;
-
-        OverlapMode(String label) {
-            this.label = label;
-        }
-
-
-        @Override
-        public String toString() {
-            return label;
-        }
-    }
-
-
-    public enum ReferenceMode {
-        None("No reference image (black)"),
-        SameForAll("Same for all cases"),
-        PerRoiSet("Different per case");
-
-        private final String label;
-
-        ReferenceMode(String label) {
-            this.label = label;
-        }
-
-
-        @Override
-        public String toString() {
-            return label;
         }
     }
 }

@@ -34,20 +34,19 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
 
     @Override
     public ModernNativeFileChooserResponse showFileChooser(Window parent, PathIOMode action) {
-         int mode = action == PathIOMode.Open ? FileDialog.LOAD : FileDialog.SAVE;
+        int mode = action == PathIOMode.Open ? FileDialog.LOAD : FileDialog.SAVE;
         String title = StringUtils.orElse(fileChooser.getDialogTitle(), action == PathIOMode.Open ? "Open" : "Save");
-        FileDialog fd = new FileDialog((Frame)parent, title, mode);
+        FileDialog fd = new FileDialog((Frame) parent, title, mode);
         fd.setMultipleMode(fileChooser.isMultiSelectionEnabled());
 
-        if(!StringUtils.isNullOrEmpty(fileChooser.getDefaultFile())) {
+        if (!StringUtils.isNullOrEmpty(fileChooser.getDefaultFile())) {
             fd.setFile(fileChooser.getDefaultFile());
         }
 
-        if(fileChooser.getCurrentDirectory() != null) {
-            if(fileChooser.getCurrentDirectory().isDirectory()) {
+        if (fileChooser.getCurrentDirectory() != null) {
+            if (fileChooser.getCurrentDirectory().isDirectory()) {
                 fd.setDirectory(fileChooser.getCurrentDirectory().getAbsolutePath());
-            }
-            else {
+            } else {
                 fd.setDirectory(fileChooser.getCurrentDirectory().getParent());
             }
         }
@@ -59,7 +58,7 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
 
             for (FileNameExtensionFilter filter : fileChooser.getFilters()) {
                 for (String extension : filter.getExtensions()) {
-                    if (filename.toLowerCase(Locale.ROOT).endsWith("."  + extension.toLowerCase(Locale.ROOT))) {
+                    if (filename.toLowerCase(Locale.ROOT).endsWith("." + extension.toLowerCase(Locale.ROOT))) {
                         return true;
                     }
                 }
@@ -81,7 +80,7 @@ public class ModernNativeFileChooserMacOS implements ModernNativeFileChooserImpl
     @Override
     public ModernNativeFileChooserResponse showFolderBrowser(Window parent) {
         String title = StringUtils.orElse(fileChooser.getDialogTitle(), "Open");
-        FileDialog fd = new FileDialog((Frame)parent, title, FileDialog.LOAD);
+        FileDialog fd = new FileDialog((Frame) parent, title, FileDialog.LOAD);
 
         try {
             System.setProperty("apple.awt.fileDialogForDirectories", "true");

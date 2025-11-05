@@ -1,14 +1,8 @@
 package org.hkijena.jipipe.api.nodes;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.PathMetadataStore;
 
 import java.awt.*;
-import java.nio.file.Path;
-import java.util.UUID;
 
 public class JIPipeGraphEdgeControlPoint {
 

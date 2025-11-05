@@ -20,17 +20,18 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.database.*;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -39,6 +40,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -55,7 +57,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
     private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
-    private final JIPipePresetsApplicationSettings presetSettings;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
 
@@ -65,7 +66,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         this.querySlot = querySlot;
         this.queryGraph = canvasUI.getGraph();
         this.graphEditorSettings = JIPipeGraphEditorUIApplicationSettings.getInstance();
-        this.presetSettings = JIPipePresetsApplicationSettings.getInstance();
         initialize();
         reloadList();
     }
@@ -108,7 +108,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(presetSettings.getPinnedNodes());
+        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true));
     }
 
     public JIPipeDataSlot getQuerySlot() {

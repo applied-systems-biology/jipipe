@@ -74,22 +74,21 @@ import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.properties.JI
 import org.hkijena.jipipe.desktop.app.grapheditor.nodefinder.JIPipeDesktopNodeFinderDialogUI;
 import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
-import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplateBox;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopScriptParameterEditorUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipePresetsApplicationSettings;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -499,20 +498,23 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     protected void restoreDockStateFromSettings() {
         try {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            JIPipeDesktopDockPanel.State state = new JIPipeDesktopDockPanel.State();
-            state.setAlwaysShowRightPanel(true);
-            JsonUtils.getObjectMapper().readerForUpdating(state).readValue(settings.getPipelineEditorDockLayout());
+            JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
+            defaultState.setAlwaysShowRightPanel(true);
+            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
+                    Path.of("pipeline", "dock-state"),
+                    JIPipeDesktopDockPanel.State.class,
+                    defaultState,
+                    true);
             getDockPanel().restoreState(state);
-        } catch (Throwable ignored) {
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 
     @Override
     protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            return settings.getPipelineEditorDockLayoutTemplates();
+            return JIPipe.getSettings().getFromRegistry("ui-dock", Path.of("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
         }
         return null;
     }
@@ -520,9 +522,9 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
-            JIPipePresetsApplicationSettings.DockLayoutSettings settings = JIPipePresetsApplicationSettings.getInstance().getDockLayoutSettings();
-            settings.setPipelineEditorDockLayout(JsonUtils.toJsonString(getDockPanel().getSavedState()));
-            JIPipe.getSettings().saveLater();
+            JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
+                    Path.of("pipeline", "dock-state"),
+                    getDockPanel().getCurrentState());
         }
     }
 

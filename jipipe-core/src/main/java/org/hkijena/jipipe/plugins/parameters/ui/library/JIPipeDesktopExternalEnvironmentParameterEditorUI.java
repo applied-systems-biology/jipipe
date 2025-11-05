@@ -131,12 +131,12 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         }
 
         List<JIPipeEnvironmentSetupTool> compatibleSetupTools = JIPipe.getInstance().getEnvironments().getCompatibleSetupTools(fieldClass);
-        if(!compatibleSetupTools.isEmpty()) {
+        if (!compatibleSetupTools.isEmpty()) {
             menuItems.add(UIUtils.MENU_ITEM_SEPARATOR);
         }
         for (JIPipeEnvironmentSetupTool setupTool : compatibleSetupTools) {
             menuItems.add(UIUtils.createMenuItem(setupTool.getName(), setupTool.getDescription(), setupTool.getIcon(), () -> {
-               runSetupTool(setupTool);
+                runSetupTool(setupTool);
             }));
         }
 
@@ -145,7 +145,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
 
     private void runSetupTool(JIPipeEnvironmentSetupTool setupTool) {
         JIPipeEnvironment environmentCopy = JIPipe.duplicateParameter(getParameter());
-        if(setupTool.configure(getDesktopWorkbench(), this, environmentCopy)) {
+        if (setupTool.configure(getDesktopWorkbench(), this, environmentCopy)) {
             setParameter(environmentCopy, true);
         }
     }

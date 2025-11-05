@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.customizer;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopColorIcon;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
@@ -63,14 +62,14 @@ public class JIPipeDesktopModernThemeStyleIcon implements JIPipeDesktopColorIcon
     @Override
     public void paintIcon(Component c, Graphics g, int x, int y) {
         Graphics2D g2d = (Graphics2D) g.create();
-        
+
         // Enable antialiasing for better rendering quality
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        
+
         // Create mosaic pattern
         createMosaicPattern(g2d, x, y, iconWidth, iconHeight);
-        
+
         g2d.dispose();
     }
 
@@ -86,23 +85,23 @@ public class JIPipeDesktopModernThemeStyleIcon implements JIPipeDesktopColorIcon
     private void createMosaicPattern(Graphics2D g2d, int x, int y, int width, int height) {
         // Define the colors to use in the mosaic
         Color[] mosaicColors = {
-            themeStyle.getPrimaryColor(),
-            themeStyle.getSuccessColor(),
-            themeStyle.getWindowBackground(),
-            themeStyle.getPanelBackground(),
-            themeStyle.getTabSelectedHighlight(),
-            themeStyle.getTabSelectedBackground(),
-            themeStyle.getTextForeground(),
-            themeStyle.getTextMuted(),
-            themeStyle.getFormBackground()
+                themeStyle.getPrimaryColor(),
+                themeStyle.getSuccessColor(),
+                themeStyle.getWindowBackground(),
+                themeStyle.getPanelBackground(),
+                themeStyle.getTabSelectedHighlight(),
+                themeStyle.getTabSelectedBackground(),
+                themeStyle.getTextForeground(),
+                themeStyle.getTextMuted(),
+                themeStyle.getFormBackground()
         };
 
         // Calculate mosaic piece size based on icon size
         int pieceSize = Math.max(4, Math.min(width, height) / 6);
-        
+
         // Create a random number generator with a fixed seed for consistent appearance
         Random random = new Random(42); // Fixed seed for consistent mosaic pattern
-        
+
         // Draw mosaic pieces
         for (int row = 0; row < height / pieceSize + 1; row++) {
             for (int col = 0; col < width / pieceSize + 1; col++) {
@@ -110,23 +109,23 @@ public class JIPipeDesktopModernThemeStyleIcon implements JIPipeDesktopColorIcon
                 int pieceY = y + row * pieceSize;
                 int pieceWidth = Math.min(pieceSize, width - pieceX + x);
                 int pieceHeight = Math.min(pieceSize, height - pieceY + y);
-                
+
                 if (pieceWidth > 0 && pieceHeight > 0) {
                     // Select color based on position and some randomness
                     int colorIndex = (row * 3 + col + random.nextInt(3)) % mosaicColors.length;
                     Color color = mosaicColors[colorIndex];
-                    
+
                     // Draw the mosaic piece
                     g2d.setColor(color);
                     g2d.fill(new Rectangle2D.Double(pieceX, pieceY, pieceWidth, pieceHeight));
-                    
+
                     // Add a subtle border to separate pieces
                     g2d.setColor(themeStyle.getTextMuted());
                     g2d.draw(new Rectangle2D.Double(pieceX, pieceY, pieceWidth, pieceHeight));
                 }
             }
         }
-        
+
         // Draw a border around the entire icon
         g2d.setColor(borderColor);
         g2d.drawRect(x, y, width - 1, height - 1);

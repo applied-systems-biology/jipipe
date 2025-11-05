@@ -75,6 +75,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private final JToggleButton toggleFocusView = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/view-fullscreen.png"));
     private final JIPipeDesktopSmallToggleButtonRibbonAction toggleAutoRefreshFromCache;
     private final StaticDebouncer refreshFromCacheDebouncer;
+    private final JIPipeCefClientService cefClientService;
     private JIPipeDataBrowser dataBrowser;
     private String displayName;
     private JIPipeLocalDataTableBrowser dataTableBrowser;
@@ -83,7 +84,6 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
     private int currentDataRow = -1;
     private int currentDataAnnotationColumn = -1;
     private JIPipeDesktopDataViewer currentDataViewer;
-    private final JIPipeCefClientService cefClientService;
 
     public JIPipeDesktopDataViewerWindow(JIPipeDesktopWorkbench workbench) {
         this.workbench = workbench;

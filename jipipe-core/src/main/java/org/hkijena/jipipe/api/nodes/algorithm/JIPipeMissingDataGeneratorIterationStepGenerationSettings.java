@@ -54,7 +54,7 @@ public class JIPipeMissingDataGeneratorIterationStepGenerationSettings extends A
         this.allowMerging = other.allowMerging;
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.dataAnnotationMergeStrategy = other.dataAnnotationMergeStrategy;
-        this.solverPreference =  other.solverPreference;
+        this.solverPreference = other.solverPreference;
 
     }
 

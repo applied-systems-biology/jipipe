@@ -38,6 +38,7 @@ public final class JIPipeMultiIterationStepGeneratorTestUtils {
 
     /**
      * Builds a representation of the generated iteration steps
+     *
      * @param generator the generator
      * @return the steps
      */
@@ -81,10 +82,9 @@ public final class JIPipeMultiIterationStepGeneratorTestUtils {
     public static int getNumRows(DummyColumn[] columns) {
         int count = -1;
         for (DummyColumn column : columns) {
-            if(count == -1) {
+            if (count == -1) {
                 count = column.numRows();
-            }
-            else if(count != column.numRows()) {
+            } else if (count != column.numRows()) {
                 throw new IllegalArgumentException("Wrong number of rows for column " + column.numRows());
             }
         }

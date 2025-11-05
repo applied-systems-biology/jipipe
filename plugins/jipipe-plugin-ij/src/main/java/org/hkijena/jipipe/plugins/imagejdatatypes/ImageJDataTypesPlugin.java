@@ -112,8 +112,6 @@ import org.hkijena.jipipe.plugins.tables.display.OpenResultsTableInJIPipeTabData
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

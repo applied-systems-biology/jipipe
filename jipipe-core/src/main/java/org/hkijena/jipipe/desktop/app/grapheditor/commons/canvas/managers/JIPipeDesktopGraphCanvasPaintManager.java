@@ -237,15 +237,14 @@ public class JIPipeDesktopGraphCanvasPaintManager {
         }
         int[] xPoints = segmentedLines.getXPoints();
         int[] yPoints = segmentedLines.getYPoints();
-        if(arrowHeadMode == ArrowHeadMode.Filled) {
+        if (arrowHeadMode == ArrowHeadMode.Filled) {
             yPoints[yPoints.length - 1] += canvasUI.getResources().getArrowHeadShift();
         }
         g.drawPolyline(xPoints, yPoints, xPoints.length);
-        if (arrowHeadMode  == ArrowHeadMode.Filled) {
-            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1] - canvasUI.getResources().getArrowHeadShift(), arrowHeadMode);
-        }
-        else if(arrowHeadMode == ArrowHeadMode.Thin) {
-            paintArrowHead(g, xPoints[xPoints.length-1], yPoints[yPoints.length-1], arrowHeadMode);
+        if (arrowHeadMode == ArrowHeadMode.Filled) {
+            paintArrowHead(g, xPoints[xPoints.length - 1], yPoints[yPoints.length - 1] - canvasUI.getResources().getArrowHeadShift(), arrowHeadMode);
+        } else if (arrowHeadMode == ArrowHeadMode.Thin) {
+            paintArrowHead(g, xPoints[xPoints.length - 1], yPoints[yPoints.length - 1], arrowHeadMode);
         }
     }
 

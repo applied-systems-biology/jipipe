@@ -187,7 +187,7 @@ public class JIPipeDesktopModernThemeStyle {
 
 
     /*
-    * Islands/panels
+     * Islands/panels
      */
 
     @JsonProperty("corner-radius")
@@ -251,7 +251,7 @@ public class JIPipeDesktopModernThemeStyle {
         this.nodeFillBrightness = other.nodeFillBrightness;
         this.nodeBorderSaturation = other.nodeBorderSaturation;
         this.nodeBorderBrightness = other.nodeBorderBrightness;
-        this.edgeBorderColorDefault  = other.edgeBorderColorDefault;
+        this.edgeBorderColorDefault = other.edgeBorderColorDefault;
         this.edgeBorderColorConvert = other.edgeBorderColorConvert;
         this.islandsCornerRadius = other.islandsCornerRadius;
         this.islandsDrawBorder = other.islandsDrawBorder;

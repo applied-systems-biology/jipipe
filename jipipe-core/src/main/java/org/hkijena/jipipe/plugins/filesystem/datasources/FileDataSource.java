@@ -14,29 +14,19 @@
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.validation.*;
-import org.hkijena.jipipe.plugins.filesystem.JIPipeFilesystemPluginApplicationSettings;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Provides an input file
@@ -80,20 +70,18 @@ public class FileDataSource extends AbstractPathDataSource {
 
     @Override
     protected List<Path> getPaths_() {
-        if(fileName != null) {
+        if (fileName != null) {
             return List.of(fileName);
-        }
-        else {
+        } else {
             return List.of();
         }
     }
 
     @Override
     protected void setPaths_(List<Path> paths) {
-        if(paths.isEmpty()) {
+        if (paths.isEmpty()) {
             setFileName(null);
-        }
-        else {
+        } else {
             setFileName(paths.getFirst());
         }
     }

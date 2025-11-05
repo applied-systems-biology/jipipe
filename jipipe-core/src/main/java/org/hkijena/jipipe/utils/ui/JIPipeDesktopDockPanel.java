@@ -328,15 +328,15 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
             }
         }
 
-        if(rightContent.isEmpty() && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
+        if (rightContent.isEmpty() && alwaysShowRightPanel && fallbackRight != null && getPanels().containsKey(fallbackRight)) {
             Panel panel = getPanels().get(fallbackRight);
-            if(panel.location ==PanelLocation.TopRight || panel.location ==PanelLocation.BottomRight) {
+            if (panel.location == PanelLocation.TopRight || panel.location == PanelLocation.BottomRight) {
                 rightContent.add(panel.getComponent());
             }
         }
-        if(leftContent.isEmpty() && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
+        if (leftContent.isEmpty() && alwaysShowLeftPanel && fallbackLeft != null && getPanels().containsKey(fallbackLeft)) {
             Panel panel = getPanels().get(fallbackLeft);
-            if(panel.location ==PanelLocation.TopLeft || panel.location ==PanelLocation.BottomLeft) {
+            if (panel.location == PanelLocation.TopLeft || panel.location == PanelLocation.BottomLeft) {
                 rightContent.add(panel.getComponent());
             }
         }
@@ -902,17 +902,18 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         updateAll();
     }
 
+    public String getFallbackRight() {
+        return fallbackRight;
+    }
+
     /**
      * ID shown if empty space is left when alwaysShowRightPanel is true
+     *
      * @param fallbackRight the right fallback panel
      */
     public void setFallbackRight(String fallbackRight) {
         this.fallbackRight = fallbackRight;
         updateAll();
-    }
-
-    public String getFallbackRight() {
-        return fallbackRight;
     }
 
     public String getFallbackLeft() {
@@ -921,6 +922,7 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
 
     /**
      * ID shown if empty space is left when alwaysShowLeftPanel is true
+     *
      * @param fallbackLeft the left fallback panel
      */
     public void setFallbackLeft(String fallbackLeft) {
@@ -953,12 +955,12 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         private double mainSplitPaneRatio;
         private Map<String, Boolean> visibilities = new HashMap<>();
         private Map<String, PanelLocation> locations = new HashMap<>();
-        private int leftPanelWidth;
-        private int rightPanelWidth;
-        private double leftSplitPaneRatio;
-        private double rightSplitPaneRatio;
-        private boolean alwaysShowLeftPanel;
-        private boolean alwaysShowRightPanel;
+        private int leftPanelWidth = 350;
+        private int rightPanelWidth = 500;
+        private double leftSplitPaneRatio = 0.33;
+        private double rightSplitPaneRatio = 0.66;
+        private boolean alwaysShowLeftPanel = false;
+        private boolean alwaysShowRightPanel = false;
 
         @JsonGetter("always-show-left-panel")
         public boolean isAlwaysShowLeftPanel() {

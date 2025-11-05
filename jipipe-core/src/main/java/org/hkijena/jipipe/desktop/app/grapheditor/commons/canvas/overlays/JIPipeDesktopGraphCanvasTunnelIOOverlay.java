@@ -41,12 +41,12 @@ public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGra
         // Find tunnel nodes that are hovered/selected
         if (settings.isHighlightIOOnHover() && !canvasUI.getDragManagerMove().isCurrentlyDraggingNode() && !canvasUI.getDragManagerConnect().isCurrentlyDraggingConnection() && canvasUI.getLastMousePosition() != null) {
             if (canvasUI.getCurrentlyMouseEnteredNode() != null && canvasUI.getCurrentlyMouseEnteredNode().getNode() instanceof JIPipeDataFlowTunnel tunnel) {
-               hoveredTunnelNodes.add(tunnel);
+                hoveredTunnelNodes.add(tunnel);
             }
 
             // Add also selected tunnels
             for (JIPipeDesktopGraphInteractiveObjectUI ui : canvasUI.getSelectionManager().getSelection()) {
-                if(ui instanceof JIPipeDesktopGraphNodeUI nodeUI && nodeUI.getNode() instanceof JIPipeDataFlowTunnel tunnel) {
+                if (ui instanceof JIPipeDesktopGraphNodeUI nodeUI && nodeUI.getNode() instanceof JIPipeDataFlowTunnel tunnel) {
                     hoveredTunnelNodes.add(tunnel);
                 }
             }
@@ -54,11 +54,10 @@ public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGra
 
         // Find all linked tunnel entrances/exits and only cover those
         for (JIPipeDataFlowTunnel tunnelNode : hoveredTunnelNodes) {
-            if(tunnelNode.hasValidTunnelKey()) {
-                if(tunnelNode instanceof JIPipeDataFlowTunnelEntrance entrance) {
+            if (tunnelNode.hasValidTunnelKey()) {
+                if (tunnelNode instanceof JIPipeDataFlowTunnelEntrance entrance) {
                     fullyLinkedTunnelNodes.addAll(JIPipeDataFlowTunnelUtils.findTunnelExits(canvasUI.getGraph(), canvasUI.getCompartmentUUID(), entrance.getTunnelKeyGroup(), entrance.getTunnelKey()));
-                }
-                else if(tunnelNode instanceof JIPipeDataFlowTunnelExit exit) {
+                } else if (tunnelNode instanceof JIPipeDataFlowTunnelExit exit) {
                     fullyLinkedTunnelNodes.addAll(JIPipeDataFlowTunnelUtils.findTunnelEntrances(canvasUI.getGraph(), canvasUI.getCompartmentUUID(), exit.getTunnelKeyGroup(), exit.getTunnelKey()));
                 }
             }
@@ -78,7 +77,7 @@ public class JIPipeDesktopGraphCanvasTunnelIOOverlay implements JIPipeDesktopGra
             float colorHue = JIPipeDataFlowTunnelUtils.getTunnelColorHue(canvasUI, tunnelNode.getTunnelKeyGroup(), tunnelNode.getTunnelKey());
             g.setPaint(Color.getHSBColor(colorHue, ThemeUtils.getCurrentStyle().getNodeBorderSaturation(), ThemeUtils.getCurrentStyle().getNodeBorderBrightness()));
             JIPipeDesktopGraphNodeUI nodeUI = canvasUI.getNodeUI(tunnelNode);
-            if(nodeUI != null) {
+            if (nodeUI != null) {
                 int nodeX = nodeUI.getX();
                 int nodeY = nodeUI.getY();
                 int nodeWidth = nodeUI.getWidth();

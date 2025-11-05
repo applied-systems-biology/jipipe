@@ -28,10 +28,10 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopCompactRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopCheckBoxRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopPathEditorComponent;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJ3DViewerDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.OpenInImageJDataDisplayOperation;
@@ -236,7 +236,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
 
     public boolean isComposite() {
         return composite;
-    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    }
 
     public void setComposite(boolean composite) {
         this.composite = composite;
@@ -245,7 +245,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
         refreshSliders();
         uploadSliceToCanvas();
-    }
+    }    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
 
     private void initializeAnimationControls() {
         animationTimer.setRepeats(true);
@@ -421,17 +421,6 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         zoomMenu.add(changeZoomToItem);
     }
 
-
-//    public void setRotationEnabled(boolean enabled) {
-//        rotateLeftButton.setVisible(enabled);
-//        rotateRightButton.setVisible(enabled);
-//        if (!enabled) {
-//            rotation = 0;
-//            refreshImageInfo();
-//            refreshSlice();
-//        }
-//    }
-
     private void buildExportRibbon(JIPipeDesktopRibbon ribbon) {
         JIPipeDesktopRibbon.Task exportTask = ribbon.getOrCreateTask("Export");
         JIPipeDesktopRibbon.Band imageBand = exportTask.getOrCreateBand("Image");
@@ -456,6 +445,17 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         snapshotBand.addSmallButton("To movie", "Exports the all slices as image file", JIPipe.RESOURCES.getIcon16("actions/filmgrain.png"), this::exportVideo);
         snapshotBand.add(exportDisplayedScaleToggle);
     }
+
+
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     private void exportRenderedImageToNapari() {
         viewerRunnerQueue.runInDialog(getDesktopWorkbench(), this, new Stack2DRendererRun(getImageViewer(), "Export rendered image to Napari", 1, (renderedImage) -> {

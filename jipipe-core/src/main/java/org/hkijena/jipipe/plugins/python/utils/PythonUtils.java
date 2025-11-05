@@ -342,7 +342,7 @@ public class PythonUtils {
         installLibraryPaths(environmentVariables, libraryPaths);
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
             String existing = systemEnv.get(entry.getKey());
-            if(existing == null || !existing.equals(entry.getValue())) {
+            if (existing == null || !existing.equals(entry.getValue())) {
                 progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
             }
         }
@@ -419,7 +419,7 @@ public class PythonUtils {
 
 
         for (Map.Entry<String, String> entry : environmentVariables.entrySet()) {
-            if(!systemVariables.containsKey(entry.getKey()) || !Objects.equals(systemVariables.get(entry.getKey()), entry.getValue())) {
+            if (!systemVariables.containsKey(entry.getKey()) || !Objects.equals(systemVariables.get(entry.getKey()), entry.getValue())) {
                 progressInfo.log("Setting environment variable " + entry.getKey() + "=" + entry.getValue());
             }
         }

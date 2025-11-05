@@ -168,11 +168,12 @@ public final class JIPipeEnvironmentsServiceComponent extends JIPipeServiceCompo
 
     /**
      * Returns a sorted list of all compatible setup tools
+     *
      * @param environmentClass the environment class
      * @return the list of compatible tools, sorted
      */
     public List<JIPipeEnvironmentSetupTool> getCompatibleSetupTools(Class<?> environmentClass) {
-        if(JIPipeEnvironment.class.isAssignableFrom(environmentClass)) {
+        if (JIPipeEnvironment.class.isAssignableFrom(environmentClass)) {
             return setupTools.stream().filter(tool -> tool.accepts((Class<? extends JIPipeEnvironment>) environmentClass))
                     .sorted(Comparator.comparing(JIPipeEnvironmentSetupTool::getName))
                     .toList();

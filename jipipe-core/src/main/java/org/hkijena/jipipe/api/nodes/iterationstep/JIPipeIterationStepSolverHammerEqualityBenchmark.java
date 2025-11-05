@@ -25,7 +25,7 @@ public final class JIPipeIterationStepSolverHammerEqualityBenchmark {
         int groups = 200; // cardinality for #Group
         int idsPerGroup = 10; // cardinality for #ID
         int iteration = 0;
-        while(true) {
+        while (true) {
 
             ++iteration;
 
@@ -60,7 +60,6 @@ public final class JIPipeIterationStepSolverHammerEqualityBenchmark {
             long t2 = System.currentTimeMillis();
             List<JIPipeMultiIterationStep> comp = baseline.build(JIPipeProgressInfo.SILENT);
             long t3 = System.currentTimeMillis();
-
 
 
             if (flow.size() != comp.size()) {

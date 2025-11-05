@@ -182,7 +182,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
                 Roi overlappingRoi = null;
                 for (Roi roi2 : second) {
 
-                    if(progressInfo.isCancelled()) {
+                    if (progressInfo.isCancelled()) {
                         return;
                     }
 

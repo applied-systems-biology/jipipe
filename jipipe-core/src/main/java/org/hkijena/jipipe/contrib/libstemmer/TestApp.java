@@ -1,22 +1,11 @@
-
 package org.hkijena.jipipe.contrib.libstemmer;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 public class TestApp {
-    private static void usage()
-    {
+    private static void usage() {
         System.err.println("Usage: TestApp <algorithm> [<input file>] [-o <output file>]");
     }
 
@@ -80,7 +69,7 @@ public class TestApp {
                 length = 0;
             } else {
                 if (length == input.length) {
-                        input = Arrays.copyOf(input, length + 1);
+                    input = Arrays.copyOf(input, length + 1);
                 }
                 input[length++] = ch < 127 ? Character.toLowerCase(ch) : ch;
             }

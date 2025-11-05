@@ -163,7 +163,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         for (int row = 0; row < measurements.getRowCount(); row++) {
 
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return null;
             }
 
@@ -198,7 +198,7 @@ public class FilterRoi3DByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         TIntSet consumedRoi2 = new TIntHashSet();
         for (int i = 0; i < roi1List.size(); i++) {
 
-            if(progressInfo.isCancelled()) {
+            if (progressInfo.isCancelled()) {
                 return null;
             }
 

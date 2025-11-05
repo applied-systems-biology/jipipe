@@ -1,11 +1,7 @@
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.plugins.strings.StringData;
 
 import java.util.ArrayList;
 import java.util.Collection;

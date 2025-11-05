@@ -5,7 +5,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.utils.ProcessUtils;
 
 /**
  * A watchdog that monitors a sub-process of a {@link JIPipeRunnable}

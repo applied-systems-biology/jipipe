@@ -50,7 +50,6 @@ import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
-import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;

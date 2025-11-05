@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeArtifactOperationContext;
 
 import java.nio.file.Path;
 
-public class JIPipeLocalRemoteArtifactSource extends JIPipeRemoteArtifactSource{
+public class JIPipeLocalRemoteArtifactSource extends JIPipeRemoteArtifactSource {
 
     @JsonProperty("file-path")
     private Path filePath;

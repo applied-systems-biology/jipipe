@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
-import org.hkijena.jipipe.plugins.imagej2.datatypes.shapes.ImageJ2ShapeData;
 
 @SetJIPipeDocumentation(name = "IJ2 Constant Long Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImageJ2OutOfBoundsFactoryData.class)

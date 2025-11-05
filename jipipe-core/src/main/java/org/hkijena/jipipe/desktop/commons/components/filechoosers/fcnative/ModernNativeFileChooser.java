@@ -45,7 +45,6 @@ import java.util.List;
  * @see JFileChooser, WindowsFileChooser, WindowsFileBrowser
  */
 public class ModernNativeFileChooser {
-    private File[] selectedFiles = new File[] {null};
     protected File currentDirectory;
     protected List<FileNameExtensionFilter> filters = new ArrayList<>();
     protected boolean multiSelectionEnabled = false;
@@ -54,6 +53,7 @@ public class ModernNativeFileChooser {
     protected String dialogTitle = "";
     protected String openButtonText = "";
     protected String saveButtonText = "";
+    private File[] selectedFiles = new File[]{null};
 
     /**
      * creates a new file chooser with multiselection disabled and mode set
@@ -61,6 +61,7 @@ public class ModernNativeFileChooser {
      */
     public ModernNativeFileChooser() {
     }
+
     /**
      * creates a new file chooser with the specified initial directory
      *
@@ -104,8 +105,28 @@ public class ModernNativeFileChooser {
         return openButtonText;
     }
 
+    /**
+     * set an open button name
+     *
+     * @param buttonText button text
+     *
+     */
+    public void setOpenButtonText(String buttonText) {
+        this.openButtonText = buttonText;
+    }
+
     public String getSaveButtonText() {
         return saveButtonText;
+    }
+
+    /**
+     * set a save button name
+     *
+     * @param buttonText button text
+     *
+     */
+    public void setSaveButtonText(String buttonText) {
+        this.saveButtonText = buttonText;
     }
 
     public List<FileNameExtensionFilter> getFilters() {
@@ -124,30 +145,25 @@ public class ModernNativeFileChooser {
     private ModernNativeFileChooserResponse showDialog(Window parent, PathIOMode action) {
         try {
             if (Platform.isWindows()) {
-                if(mode == PathType.FilesOnly) {
+                if (mode == PathType.FilesOnly) {
                     return new ModernNativeFileChooserWindows(this).showFileChooser(parent, action);
-                }
-                else if(mode == PathType.DirectoriesOnly) {
+                } else if (mode == PathType.DirectoriesOnly) {
                     return new ModernNativeFileChooserWindows(this).showFolderBrowser(parent);
                 }
             } else if (Platform.isMac()) {
-                if(mode == PathType.FilesOnly) {
+                if (mode == PathType.FilesOnly) {
                     return new ModernNativeFileChooserMacOS(this).showFileChooser(parent, action);
-                }
-                else if(mode == PathType.DirectoriesOnly) {
+                } else if (mode == PathType.DirectoriesOnly) {
                     return new ModernNativeFileChooserMacOS(this).showFolderBrowser(parent);
                 }
-            }
-            else if(Platform.isLinux()) {
-                if(mode == PathType.FilesOnly) {
+            } else if (Platform.isLinux()) {
+                if (mode == PathType.FilesOnly) {
                     return new ModernNativeFileChooserLinux(this).showFileChooser(parent, action);
-                }
-                else if(mode == PathType.DirectoriesOnly) {
+                } else if (mode == PathType.DirectoriesOnly) {
                     return new ModernNativeFileChooserLinux(this).showFolderBrowser(parent);
                 }
             }
-        }
-        catch (Throwable t) {
+        } catch (Throwable t) {
             t.printStackTrace();
         }
 
@@ -210,28 +226,12 @@ public class ModernNativeFileChooser {
         this.dialogTitle = title;
     }
 
-    /**
-     * set an open button name
-     *
-     * @param buttonText button text
-     *
-     */
-    public void setOpenButtonText(String buttonText) {
-        this.openButtonText = buttonText;
-    }
-
-    /**
-     * set a save button name
-     *
-     * @param buttonText button text
-     *
-     */
-    public void setSaveButtonText(String buttonText) {
-        this.saveButtonText = buttonText;
-    }
-
     public File[] getSelectedFiles() {
         return selectedFiles;
+    }
+
+    public void setSelectedFiles(File[] files) {
+        this.selectedFiles = files;
     }
 
     public File getSelectedFile() {
@@ -244,9 +244,5 @@ public class ModernNativeFileChooser {
 
     public void setCurrentDirectory(File currentDirectoryPath) {
         this.currentDirectory = currentDirectoryPath;
-    }
-
-    public void setSelectedFiles(File[] files) {
-        this.selectedFiles = files;
     }
 }

@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.contextpanel;
 
-import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
@@ -23,7 +23,7 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
     }
 
     private void initialize() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         add(formPanel, BorderLayout.CENTER);
     }
 
@@ -38,18 +38,18 @@ public class JIPipeDesktopGraphEditorContextPanel extends JIPipeDesktopWorkbench
 
         // Add tool settings panel
         JIPipeDesktopToggleableGraphEditorTool currentTool = graphEditorUI.getCurrentTool();
-        if(currentTool == null) {
+        if (currentTool == null) {
             currentTool = new DefaultGraphEditorTool();
         }
-        addIsland( currentTool.createPropertiesPanel(graphEditorUI));
+        addIsland(currentTool.createPropertiesPanel(graphEditorUI));
 
         // Add selection panel
-        if(!graphEditorUI.getSelectionManager().getSelection().isEmpty()) {
+        if (!graphEditorUI.getSelectionManager().getSelection().isEmpty()) {
             addIsland(new SelectionPanel(graphEditorUI));
         }
 
         SwingUtilities.invokeLater(() -> {
-           scrollPane.getVerticalScrollBar().setValue(oldValue);
+            scrollPane.getVerticalScrollBar().setValue(oldValue);
         });
     }
 

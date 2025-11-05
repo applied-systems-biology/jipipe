@@ -7,15 +7,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.JIPipeDesktopGraphNodeUISlotActiveArea;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
-import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnel;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
-import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import java.awt.*;
-import java.util.HashSet;
-import java.util.Set;
 
 public class JIPipeDesktopGraphCanvasEdgeIOOverlay implements JIPipeDesktopGraphCanvasOverlay {
 
@@ -43,7 +37,7 @@ public class JIPipeDesktopGraphCanvasEdgeIOOverlay implements JIPipeDesktopGraph
         g.setStroke(new BasicStroke((int) Math.round(thickness * canvasUI.getZoom()), BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
 
         for (JIPipeDesktopGraphInteractiveObjectUI ui : canvasUI.getSelectionManager().getSelection()) {
-            if(ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
+            if (ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
                 paintForSlot(g, edgeUI.getSourceNodeUI(), edgeUI.getSource());
                 paintForSlot(g, edgeUI.getTargetNodeUI(), edgeUI.getTarget());
             }
@@ -51,7 +45,7 @@ public class JIPipeDesktopGraphCanvasEdgeIOOverlay implements JIPipeDesktopGraph
     }
 
     private void paintForSlot(Graphics2D g, JIPipeDesktopGraphNodeUI nodeUI, JIPipeDataSlot dataSlot) {
-        if(nodeUI == null || dataSlot == null) {
+        if (nodeUI == null || dataSlot == null) {
             return;
         }
         final int thickness = 6;

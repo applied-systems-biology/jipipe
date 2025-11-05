@@ -16,9 +16,9 @@ import java.awt.*;
 public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWorkbenchPanel {
 
     private final JIPipeDesktopCodeEditorUI editorUI;
+    private final StaticDebouncer pushDebouncer;
     private CustomEditorPane textArea;
     private boolean isReloading;
-    private final StaticDebouncer pushDebouncer;
 
     public JIPipeDesktopCodeEditorRSyntaxTextEditorUI(JIPipeDesktopCodeEditorUI editorUI) {
         super(editorUI.getDesktopWorkbench());
@@ -62,9 +62,9 @@ public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWor
     }
 
     private void pushDocument() {
-        if(!isReloading) {
+        if (!isReloading) {
             JIPipeDesktopCodeEditorDocument document = editorUI.getDocument();
-            if(document != null) {
+            if (document != null) {
                 JIPipeScriptParameter copy = JIPipe.duplicateParameter(document.pull());
                 copy.setCode(textArea.getText());
                 document.push(copy);
@@ -77,7 +77,7 @@ public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWor
         try {
             isReloading = true;
 
-            if(document != null) {
+            if (document != null) {
                 JIPipeScriptParameter script = document.pull();
                 if (script.getLanguage() != null) {
                     textArea.setLanguage(script.getLanguage());
@@ -85,8 +85,7 @@ public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWor
                 textArea.setText(script.getCode());
                 textArea.setSyntaxEditingStyle(script.getMimeType());
             }
-        }
-        finally {
+        } finally {
             isReloading = false;
         }
 

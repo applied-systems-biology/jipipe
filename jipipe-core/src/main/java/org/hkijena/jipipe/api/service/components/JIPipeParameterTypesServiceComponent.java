@@ -21,8 +21,6 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopAnchorParameterEditorUI;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -161,7 +159,7 @@ public final class JIPipeParameterTypesServiceComponent extends JIPipeServiceCom
         return parameterGeneratorUIs.getOrDefault(parameterClass, Collections.emptySet());
     }
 
-    public <T> JIPipeDesktopParameterEditorUI<T> createEditorInstanceWithEmbeddedValue( JIPipeDesktopWorkbench workbench, Class<T> parameterClass) {
+    public <T> JIPipeDesktopParameterEditorUI<T> createEditorInstanceWithEmbeddedValue(JIPipeDesktopWorkbench workbench, Class<T> parameterClass) {
         JIPipeDummyParameterCollection collection = new JIPipeDummyParameterCollection();
         JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder()
                 .setFieldClass(parameterClass)

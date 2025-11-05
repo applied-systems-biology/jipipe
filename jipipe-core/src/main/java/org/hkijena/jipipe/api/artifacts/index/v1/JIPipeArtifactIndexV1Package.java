@@ -17,7 +17,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class JIPipeArtifactIndexV1Package {
@@ -136,10 +135,11 @@ public class JIPipeArtifactIndexV1Package {
 
     /**
      * Returns a basic artifact from this package by parsing the query
+     *
      * @return the artifact
      */
     public JIPipeArtifact toArtifact() {
-       return new JIPipeArtifact(getQuery());
+        return new JIPipeArtifact(getQuery());
     }
 }
 

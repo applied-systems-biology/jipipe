@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.greyscale.ImagePlus5DGreyscaleData;
 
 /**
  * 2D image in frequency space

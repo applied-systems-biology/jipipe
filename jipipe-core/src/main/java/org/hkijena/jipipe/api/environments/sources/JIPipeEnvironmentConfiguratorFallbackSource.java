@@ -13,15 +13,12 @@
 
 package org.hkijena.jipipe.api.environments.sources;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 public class JIPipeEnvironmentConfiguratorFallbackSource<T extends JIPipeEnvironment> implements JIPipeEnvironmentConfiguratorSource<T> {

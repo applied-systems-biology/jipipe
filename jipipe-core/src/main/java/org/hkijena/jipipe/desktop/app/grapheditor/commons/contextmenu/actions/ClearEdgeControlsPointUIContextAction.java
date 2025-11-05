@@ -18,12 +18,10 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasEdgeManager;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers.JIPipeDesktopGraphCanvasNotificationsManager;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.EdgesOnlyUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
@@ -32,7 +30,7 @@ public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveOb
     @Override
     public boolean matches(Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         return selection.stream().anyMatch(ui -> {
-            if(ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
+            if (ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
                 return !edgeUI.getControlPoints().isEmpty();
             }
             return false;
@@ -43,7 +41,7 @@ public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveOb
     public void run(JIPipeDesktopGraphCanvasUI canvasUI, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
         JIPipeDesktopGraphCanvasEdgeManager edgeManager = canvasUI.getEdgeManager();
         for (JIPipeDesktopGraphInteractiveObjectUI ui : selection) {
-            if(ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
+            if (ui instanceof JIPipeDesktopGraphEdgeUI edgeUI) {
                 edgeManager.clearControlPoints(edgeUI);
             }
         }
@@ -68,7 +66,7 @@ public class ClearEdgeControlsPointUIContextAction implements GraphInteractiveOb
     }
 
 
-     @Override
+    @Override
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, KeyEvent.SHIFT_DOWN_MASK, true);
     }

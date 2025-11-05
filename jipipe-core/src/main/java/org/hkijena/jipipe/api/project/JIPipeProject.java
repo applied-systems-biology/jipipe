@@ -1062,14 +1062,13 @@ public class JIPipeProject implements JIPipeValidatable {
 
             // Load dependencies
             projectJIPipeVersion = "0.0.0";
-            if(jsonNode.has("jipipe:project-jipipe-version")) {
+            if (jsonNode.has("jipipe:project-jipipe-version")) {
                 projectJIPipeVersion = jsonNode.get("jipipe:project-jipipe-version").asText();
-            }
-            else if(jsonNode.has("dependencies")) {
+            } else if (jsonNode.has("dependencies")) {
                 // Search for the org.hkijena.jipipe:core dependency
                 List<JIPipeDependency> dependencies = JsonUtils.getObjectMapper().readerForListOf(JIPipeDependency.class).readValue(jsonNode.get("dependencies"));
                 for (JIPipeDependency dependency : dependencies) {
-                    if("org.hkijena.jipipe:core".equals(dependency.getDependencyId())) {
+                    if ("org.hkijena.jipipe:core".equals(dependency.getDependencyId())) {
                         projectJIPipeVersion = dependency.getDependencyVersion();
                         break;
                     }
@@ -1189,7 +1188,7 @@ public class JIPipeProject implements JIPipeValidatable {
             updateCompartmentVisibility();
 
             // Apply upgrades
-            if(VersionUtils.compareVersions(projectJIPipeVersion, JIPipe.getJIPipeVersion()) < 0) {
+            if (VersionUtils.compareVersions(projectJIPipeVersion, JIPipe.getJIPipeVersion()) < 0) {
                 applyProjectUpgrade(context, report, progressInfo);
             }
 
@@ -1429,6 +1428,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * The JIPipe version that this project was designed for.
      * Defaults to the current JIPipe version.
+     *
      * @return the project's JIPipe version
      */
     public String getProjectJIPipeVersion() {

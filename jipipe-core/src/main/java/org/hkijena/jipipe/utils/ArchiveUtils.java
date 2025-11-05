@@ -17,8 +17,6 @@ import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.commons.compress.archivers.ArchiveException;
 import org.apache.commons.compress.archivers.ArchiveInputStream;
 import org.apache.commons.compress.archivers.ArchiveStreamFactory;
-import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
-import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
@@ -26,10 +24,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -137,7 +133,7 @@ public class ArchiveUtils {
     }
 
     public static void decompressTarGZ(Path tarGzFile, Path targetDir, JIPipeProgressInfo progressInfo) throws IOException {
-       TarGzExtractor.decompressTarGZ(tarGzFile, targetDir, progressInfo);
+        TarGzExtractor.decompressTarGZ(tarGzFile, targetDir, progressInfo);
     }
 
     /**

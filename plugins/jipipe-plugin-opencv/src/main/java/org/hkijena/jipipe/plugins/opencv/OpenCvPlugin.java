@@ -40,7 +40,6 @@ import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;

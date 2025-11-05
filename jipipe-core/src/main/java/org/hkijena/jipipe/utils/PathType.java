@@ -41,6 +41,7 @@ public enum PathType {
 
     /**
      * Returns the native value that corresponds to {@link JFileChooser}
+     *
      * @return the native value
      */
     public int getNativeValue() {

@@ -5,7 +5,8 @@ public enum JIPipeIterationStepSolverPreference {
     PreferSingleCompositeDictionary("Prefer dictionary solvers (single/multi)", true, true),
     PreferCompositeDictionary("Prefer composite dictionary solver", false, true),
     ForceFlowGraph("Force flow graph", false, false),
-    Legacy("Legacy (JIPipe 5)", true, false),;
+    Legacy("Legacy (JIPipe 5)", true, false),
+    ;
 
     private final String label;
     private final boolean allowSingleDictionary;

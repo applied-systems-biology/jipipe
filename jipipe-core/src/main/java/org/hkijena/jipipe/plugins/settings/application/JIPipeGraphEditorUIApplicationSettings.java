@@ -21,10 +21,6 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.layout.JIPipepGraphAutoLayoutMethod;
-import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 
 import javax.swing.*;
 
@@ -60,7 +56,6 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
     public static JIPipeGraphEditorUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGraphEditorUIApplicationSettings.class);
     }
-
 
 
     @SetJIPipeDocumentation(name = "Auto-mute edges by selection", description = "If enabled, all edges that are not part of the selected nodes are muted")

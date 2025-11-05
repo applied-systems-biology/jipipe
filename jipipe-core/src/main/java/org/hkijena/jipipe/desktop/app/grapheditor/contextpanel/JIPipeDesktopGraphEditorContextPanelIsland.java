@@ -31,13 +31,13 @@ public abstract class JIPipeDesktopGraphEditorContextPanelIsland extends JIPipeD
     }
 
     public void initializeContent() {
-        setLayout(new BorderLayout(8,8));
+        setLayout(new BorderLayout(8, 8));
         setOpaque(false);
 
         JLabel titleLabel = new JLabel(getTitle());
         titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
         titleLabel.setIcon(getTitleIcon());
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(8,8,12,8));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 12, 8));
         add(titleLabel, BorderLayout.NORTH);
 
         add(contentPanel, BorderLayout.CENTER);

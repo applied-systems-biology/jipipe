@@ -80,6 +80,7 @@ public class VersionUtils {
 
     /**
      * Returns true if the current JIPipe version is newer than the specified version
+     *
      * @param version the specified version
      * @return if the current JIPipe version is newer than the specified version
      */

@@ -115,7 +115,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
     @JIPipeParameter("default-projects-directory")
     @PathParameterSettings(key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
     public Path getDefaultProjectsDirectory() {
-        if(PathUtils.isNullOrEmpty(defaultProjectsDirectory)) {
+        if (PathUtils.isNullOrEmpty(defaultProjectsDirectory)) {
             return Path.of("JIPipeProjects");
         }
         return defaultProjectsDirectory;
@@ -128,10 +128,9 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
     public Path getAbsoluteDefaultProjectsDirectory() {
         Path path = getDefaultProjectsDirectory();
-        if(!path.isAbsolute()) {
+        if (!path.isAbsolute()) {
             return PathUtils.getHomeDirectory().resolve(path);
-        }
-        else {
+        } else {
             return path;
         }
     }

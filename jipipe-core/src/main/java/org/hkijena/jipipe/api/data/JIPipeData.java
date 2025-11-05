@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
 import org.hkijena.jipipe.api.data.documentation.JIPipeDataCrateEntityType;
-import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
-import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -48,7 +47,7 @@ import java.util.stream.Collectors;
  */
 @SetJIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
 @ConfigureJIPipeDataCrate(
-        entities = @DefineJIPipeDataCrateEntity(id="./", type = JIPipeDataCrateEntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
+        entities = @DefineJIPipeDataCrateEntity(id = "./", type = JIPipeDataCrateEntityType.Dataset, name = "Generic data", description = "Contains unspecified data")
 )
 @LabelAsJIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {

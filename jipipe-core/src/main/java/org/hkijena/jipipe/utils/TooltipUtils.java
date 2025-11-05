@@ -95,7 +95,7 @@ public class TooltipUtils {
             builder.append("**This node is deprecated. There are likely replacement nodes with enhanced functionality.**\n\n");
         }
 
-        if(info.isUnstable()) {
+        if (info.isUnstable()) {
             builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 
@@ -174,7 +174,7 @@ public class TooltipUtils {
             builder.append("**This node is deprecated. There are likely replacement nodes with enhanced functionality.**\n\n");
         }
 
-        if(node.getInfo().isUnstable()) {
+        if (node.getInfo().isUnstable()) {
             builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 

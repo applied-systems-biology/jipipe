@@ -272,7 +272,7 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
     @Override
     public void hierarchyChanged(HierarchyEvent e) {
         if ((e.getChangeFlags() & HierarchyEvent.SHOWING_CHANGED) != 0) {
-            if(isShowing()) {
+            if (isShowing()) {
                 onShownFirstTime();
                 removeHierarchyListener(this);
             }
@@ -280,7 +280,7 @@ public abstract class JIPipeDesktopParameterEditorUI<T> extends JIPipeDesktopWor
     }
 
     public void onShownFirstTime() {
-        if(reloadOnShownFirstTime()) {
+        if (reloadOnShownFirstTime()) {
             reload();
         }
     }

@@ -34,7 +34,7 @@ import java.nio.file.Path;
  */
 @SetJIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
 @ConfigureJIPipeDataCrate(entities = {
-        @DefineJIPipeDataCrateEntity(id="glob:./*.npy", type = JIPipeDataCrateEntityType.File, name = "Size model", description = "The size model", encodingFormat = EncodingFormats.BINARY)
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.npy", type = JIPipeDataCrateEntityType.File, name = "Size model", description = "The size model", encodingFormat = EncodingFormats.BINARY)
 })
 @Deprecated
 @LabelAsJIPipeHidden

@@ -13,11 +13,8 @@
 
 package org.hkijena.jipipe.api.artifacts;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeRemoteArtifactSource;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 public class JIPipeRemoteArtifact extends JIPipeArtifact {
     @JsonProperty("size")

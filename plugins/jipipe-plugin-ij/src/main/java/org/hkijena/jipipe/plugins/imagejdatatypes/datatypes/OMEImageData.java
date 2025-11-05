@@ -81,7 +81,7 @@ import java.util.List;
         "It can be converted into an image, a ROI list, or an XML text.")
 @LabelAsJIPipeHeavyData
 @ConfigureJIPipeDataCrate(entities = {
-        @DefineJIPipeDataCrateEntity(id="glob:./*.tif", type = JIPipeDataCrateEntityType.File, name = "OME-TIFF file", description = "The OME-TIFF file (TIFF is also supported)", encodingFormat = EncodingFormats.TIFF)
+        @DefineJIPipeDataCrateEntity(id = "glob:./*.tif", type = JIPipeDataCrateEntityType.File, name = "OME-TIFF file", description = "The OME-TIFF file (TIFF is also supported)", encodingFormat = EncodingFormats.TIFF)
 })
 public class OMEImageData implements JIPipeData {
 

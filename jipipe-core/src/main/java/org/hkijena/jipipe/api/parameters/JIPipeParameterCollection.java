@@ -243,13 +243,13 @@ public interface JIPipeParameterCollection extends JIPipeProjectUpgradable {
     default void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         JIPipeParameterTree tree = new JIPipeParameterTree(this);
         for (JIPipeParameterCollection source : tree.getRegisteredSources()) {
-            if(source != this) {
+            if (source != this) {
                 source.applyProjectUpgrade(fromVersion, context, report);
             }
         }
         for (JIPipeParameterAccess access : tree.getParameters().values()) {
             Object object = access.get(Object.class);
-            if(object instanceof JIPipeProjectUpgradable upgradable) {
+            if (object instanceof JIPipeProjectUpgradable upgradable) {
                 upgradable.applyProjectUpgrade(fromVersion, context, report);
             }
         }

@@ -69,8 +69,7 @@ public class JIPipeArtifactRepositoryInstallArtifactRun extends JIPipeArtifactRe
                 PathUtils.deleteDirectoryRecursively(targetPath, progressInfo.resolve("Delete broken artifact directory"));
                 throw new RuntimeException(e);
             }
-        }
-        finally {
+        } finally {
             PathUtils.deleteDirectoryRecursively(tmpPath, progressInfo.resolve("Delete temporary directory"));
         }
     }

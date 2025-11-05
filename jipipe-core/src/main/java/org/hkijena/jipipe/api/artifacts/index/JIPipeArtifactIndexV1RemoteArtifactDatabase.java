@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.artifacts.index;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
-import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.artifacts.index.v1.*;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
@@ -27,14 +26,13 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.StampedLock;
 
 public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemoteArtifactDatabase {
 
-    private JIPipeArtifactIndexV1 index;
     private final StampedLock lock = new StampedLock();
+    private JIPipeArtifactIndexV1 index;
 
     @Override
     public void rebuild(JIPipeArtifactRepositoryReference repositoryReference, JIPipeProgressInfo progressInfo) {
@@ -50,8 +48,7 @@ public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemote
             index = JsonUtils.readFromString(json, JIPipeArtifactIndexV1.class);
         } catch (Exception ex) {
             progressInfo.log(ex);
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }
@@ -89,10 +86,9 @@ public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemote
                         remoteArtifact.setClassifier(classifier);
 
                         if (source instanceof JIPipeArtifactIndexV1HttpPackageSource httpPackageSource) {
-                            String url =httpPackageSource.getUrls().get(tag);
+                            String url = httpPackageSource.getUrls().get(tag);
                             remoteArtifact.setSource(new JIPipeHttpRemoteArtifactSource(url));
-                        }
-                        else if (source instanceof JIPipeArtifactIndexV1OrasPackageSource orasPackageSource) {
+                        } else if (source instanceof JIPipeArtifactIndexV1OrasPackageSource orasPackageSource) {
                             String ociRef = orasPackageSource.getOciRef() + ":" + tag;
                             remoteArtifact.setSource(new JIPipeOrasRemoteArtifactSource(ociRef));
                         } else {
@@ -106,8 +102,7 @@ public class JIPipeArtifactIndexV1RemoteArtifactDatabase implements JIPipeRemote
                 }
 
             }
-        }
-        finally {
+        } finally {
             lock.unlock(stamp);
         }
     }

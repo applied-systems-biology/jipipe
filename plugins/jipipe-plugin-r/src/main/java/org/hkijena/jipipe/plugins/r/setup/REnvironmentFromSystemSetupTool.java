@@ -6,9 +6,8 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.plugins.python.PythonEnvironment;
 import org.hkijena.jipipe.plugins.r.REnvironment;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -27,7 +26,7 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
 
         // Try to auto-detect R executables
         List<Path> detectedRPaths = detectRExecutables();
-        
+
         if (detectedRPaths.isEmpty()) {
             // No R found, let user select manually
             Path selectedRPath = JIPipeDesktop.openFile(parent, workbench,
@@ -35,20 +34,20 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                     "Select R executable",
                     null,
                     new FileNameExtensionFilter("R executable", "R", "exe"));
-            
+
             if (selectedRPath == null) {
                 return false; // User cancelled
             }
-            
+
             // Set both R and RScript to the selected path (user will need to configure RScript separately if needed)
             rEnvironment.setRExecutablePath(selectedRPath);
             rEnvironment.setRScriptExecutablePath(selectedRPath);
-            
+
             JOptionPane.showMessageDialog(parent,
                     "R executable set to: " + selectedRPath + "\n" +
-                    "Note: You may need to manually configure the RScript executable path if it differs from the R executable.",
+                            "Note: You may need to manually configure the RScript executable path if it differs from the R executable.",
                     "R Configuration", JOptionPane.INFORMATION_MESSAGE);
-            
+
             return true;
         } else {
             // Found R executables, offer selection to user
@@ -57,20 +56,20 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                 options[i] = detectedRPaths.get(i).toString();
             }
             options[detectedRPaths.size()] = "Select manually...";
-            
+
             String selection = (String) JOptionPane.showInputDialog(parent,
                     "The following R executables were found on your system:\n\n" +
-                    "Please select which one to use, or choose 'Select manually...' to pick a different location.",
+                            "Please select which one to use, or choose 'Select manually...' to pick a different location.",
                     "Select R executable",
                     JOptionPane.QUESTION_MESSAGE,
                     null,
                     options,
                     options[0]);
-            
+
             if (selection == null) {
                 return false; // User cancelled
             }
-            
+
             if (selection.equals("Select manually...")) {
                 // Manual selection
                 Path selectedRPath = JIPipeDesktop.openFile(parent, workbench,
@@ -78,18 +77,18 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                         "Select R executable",
                         null,
                         new FileNameExtensionFilter("R executable", "R", "exe"));
-                
+
                 if (selectedRPath == null) {
                     return false; // User cancelled
                 }
-                
+
                 rEnvironment.setRExecutablePath(selectedRPath);
                 rEnvironment.setRScriptExecutablePath(selectedRPath);
             } else {
                 // Use detected path
                 Path selectedPath = Paths.get(selection);
                 rEnvironment.setRExecutablePath(selectedPath);
-                
+
                 // Try to find RScript in the same directory
                 Path rScriptPath = findRScriptInSameDirectory(selectedPath);
                 if (rScriptPath != null) {
@@ -100,31 +99,32 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
             }
 
             rEnvironment.setLoadFromArtifact(false);
-            
+
             JOptionPane.showMessageDialog(parent,
                     "R environment configured successfully!\n" +
-                    "R executable: " + rEnvironment.getRExecutablePath() + "\n" +
-                    "RScript executable: " + rEnvironment.getRScriptExecutablePath(),
+                            "R executable: " + rEnvironment.getRExecutablePath() + "\n" +
+                            "RScript executable: " + rEnvironment.getRScriptExecutablePath(),
                     "R Configuration", JOptionPane.INFORMATION_MESSAGE);
-            
+
             return true;
         }
     }
 
     /**
      * Detects R executables on the system based on the operating system
+     *
      * @return List of detected R executable paths
      */
     private List<Path> detectRExecutables() {
         List<Path> result = new ArrayList<>();
-        
+
         if (SystemUtils.IS_OS_WINDOWS) {
             // Windows: Check common installation paths
             String[] programFilesPaths = {
-                System.getenv("ProgramFiles"),
-                System.getenv("ProgramFiles(x86)")
+                    System.getenv("ProgramFiles"),
+                    System.getenv("ProgramFiles(x86)")
             };
-            
+
             for (String programFiles : programFilesPaths) {
                 if (programFiles != null) {
                     Path rPath = Paths.get(programFiles, "R", "R.exe");
@@ -133,7 +133,7 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                     }
                 }
             }
-            
+
             // Also check PATH environment variable
             String pathEnv = System.getenv("PATH");
             if (pathEnv != null) {
@@ -147,21 +147,21 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
         } else if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
             // Linux/macOS: Check common installation paths and PATH
             String[] commonPaths = {
-                "/usr/local/bin/R",
-                "/usr/bin/R",
-                "/opt/R/bin/R",
-                "/usr/local/bin/Rscript",
-                "/usr/bin/Rscript",
-                "/opt/R/bin/Rscript"
+                    "/usr/local/bin/R",
+                    "/usr/bin/R",
+                    "/opt/R/bin/R",
+                    "/usr/local/bin/Rscript",
+                    "/usr/bin/Rscript",
+                    "/opt/R/bin/Rscript"
             };
-            
+
             for (String path : commonPaths) {
                 Path rPath = Paths.get(path);
                 if (Files.isRegularFile(rPath) && Files.isExecutable(rPath)) {
                     result.add(rPath);
                 }
             }
-            
+
             // Also check PATH environment variable
             String pathEnv = System.getenv("PATH");
             if (pathEnv != null) {
@@ -177,7 +177,7 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                 }
             }
         }
-        
+
         // Remove duplicates
         List<Path> uniqueResult = new ArrayList<>();
         for (Path path : result) {
@@ -185,12 +185,13 @@ public class REnvironmentFromSystemSetupTool implements JIPipeEnvironmentSetupTo
                 uniqueResult.add(path);
             }
         }
-        
+
         return uniqueResult;
     }
 
     /**
      * Attempts to find RScript in the same directory as the R executable
+     *
      * @param rPath Path to R executable
      * @return Path to RScript executable or null if not found
      */

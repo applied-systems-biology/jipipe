@@ -323,14 +323,14 @@ public class JIPipeDesktopWelcomePanel extends JIPipeDesktopProjectWorkbenchPane
         JPanel iconsPanel = UIUtils.boxHorizontal();
         iconsPanel.setOpaque(false);
         for (JIPipePlugin plugin : JIPipe.getInstance().getPlugins().getKnownPluginsList()) {
-            if(plugin instanceof JIPipeJavaPlugin javaPlugin) {
+            if (plugin instanceof JIPipeJavaPlugin javaPlugin) {
                 for (JIPipeJavaPluginSplashIcon icon : javaPlugin.getSplashIcons()) {
                     ImageIcon imageIcon = BufferedImageUtils.scaleImageIconToFit(icon.getIcon(), 16, 16);
                     JButton button = new JButton(imageIcon);
                     UIUtils.makeButtonFlat25x25(button);
                     button.setOpaque(false);
                     button.setToolTipText(icon.getName());
-                    if(!StringUtils.isNullOrEmpty(icon.getUrl())) {
+                    if (!StringUtils.isNullOrEmpty(icon.getUrl())) {
                         button.addActionListener(e -> {
                             UIUtils.desktopOpenURL(icon.getUrl(), true);
                         });

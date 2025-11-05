@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.artifacts.*;
 import org.hkijena.jipipe.api.environments.sources.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -34,9 +33,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -58,7 +54,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     private SourceType sourceType;
     private Object source;
     private JIPipeArtifactOperationContext artifactOperationContext;
-    private List<JIPipeEnvironmentConfiguratorSource<T>>  configuratorSources = new ArrayList<>();
+    private List<JIPipeEnvironmentConfiguratorSource<T>> configuratorSources = new ArrayList<>();
 
     /**
      * Initializes a new configurator using the standard set of sources (node, project, applicatio, fallback)
@@ -71,10 +67,10 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     public JIPipeEnvironmentConfigurator(Class<T> environmentClass, JIPipeEnvironmentConfigurationCache configurationCache, JIPipeGraphNode graphNode, JIPipeProject project) {
         this.environmentClass = environmentClass;
         this.environmentInfo = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentClass);
-        if(graphNode != null) {
+        if (graphNode != null) {
             configuratorSources.add(new JIPipeEnvironmentConfiguratorNodeSource<>(graphNode));
         }
-        if(project != null) {
+        if (project != null) {
             configuratorSources.add(new JIPipeEnvironmentConfiguratorProjectSource<>(project));
         }
         configuratorSources.add(new JIPipeEnvironmentConfiguratorApplicationSource<>());
@@ -311,7 +307,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
         for (JIPipeEnvironmentConfiguratorSource<T> configuratorSource : configuratorSources) {
             progressInfo.log("Trying " + configuratorSource + " [" + configuratorSource.getSourceType() + "] ...");
             JIPipeOptionalParameter<T> resolved = configuratorSource.resolve(environmentClass, environmentInfo);
-            if(resolved != null && resolved.isEnabled()) {
+            if (resolved != null && resolved.isEnabled()) {
                 sourceType = SourceType.Node;
                 source = configuratorSource.getSource();
                 baseEnvironment = (T) resolved.getContent();

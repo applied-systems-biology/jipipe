@@ -26,9 +26,6 @@ import java.nio.file.Path;
 
 public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCollection {
 
-    private String id;
-    private Path savePath;
-
     private final CategoryBasics categoryBasics = new CategoryBasics();
     private final CategoryColors categoryColors = new CategoryColors();
     private final CategoryTypography categoryTypography = new CategoryTypography();
@@ -36,6 +33,8 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
     private final CategoryInteractiveElements categoryInteractiveElements = new CategoryInteractiveElements();
     private final CategorySpecializedUI categorySpecializedUI = new CategorySpecializedUI();
     private final CategoryGraphEditor categoryGraphEditor = new CategoryGraphEditor();
+    private String id;
+    private Path savePath;
 
     public JIPipeDesktopThemeEditorDocument() {
         this(new JIPipeDesktopModernThemeStyle());
@@ -73,7 +72,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryColors.success = style.getSuccessColor();
         categoryColors.danger = style.getDangerColor();
         categoryColors.warning = style.getWarningColor();
-        
+
         categoryTypography.fontSizeHuge = style.getFontSizeHuge();
         categoryTypography.fontSizeLarge = style.getFontSizeLarge();
         categoryTypography.fontSizeNormal = style.getFontSizeNormal();
@@ -85,7 +84,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryTypography.textForegroundSecondaryInverted = style.getTextMutedInverted();
         categoryTypography.textForegroundLink = style.getTextLink();
         categoryTypography.textCaret = style.getTextCaret();
-        
+
         categoryLayout.windowBackground = style.getWindowBackground();
         categoryLayout.panelBackground = style.getPanelBackground();
         categoryLayout.menuBackground = style.getMenuBackground();
@@ -93,7 +92,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryLayout.islandsCornerRadius = style.getIslandsCornerRadius();
         categoryLayout.islandsDrawBorder = style.isIslandsDrawBorder();
         categoryLayout.islandsBorderColor = style.getIslandsBorderColor();
-        
+
         categoryInteractiveElements.buttonBackground = style.getButtonBackground();
         categoryInteractiveElements.buttonDisabledBackground = style.getButtonDisabledBackground();
         categoryInteractiveElements.buttonToggled = style.getButtonToggled();
@@ -107,20 +106,20 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryInteractiveElements.tabSelectedHighlight = style.getTabSelectedHighlight();
         categoryInteractiveElements.listAlternateBackground = style.getListAlternateBackground();
         categoryInteractiveElements.viewportBackground = style.getViewportBackground();
-        
+
         categorySpecializedUI.scrollbarThumb = style.getScrollBarThumb();
         categorySpecializedUI.tooltipBackground = style.getTooltipBackground();
         categorySpecializedUI.tooltipForeground = style.getTooltipForeground();
         categorySpecializedUI.categoryBackground = style.getCategoryBackground();
         categorySpecializedUI.categoryBorder = style.getCategoryBorder();
-        
+
         categoryGraphEditor.nodeHighlightBorder = style.getNodeHighlightBorder();
         categoryGraphEditor.nodeSlotBackground = style.getNodeSlotBackground();
         categoryGraphEditor.nodeFillSaturation = style.getNodeFillSaturation();
         categoryGraphEditor.nodeFillBrightness = style.getNodeFillBrightness();
         categoryGraphEditor.nodeBorderSaturation = style.getNodeBorderSaturation();
         categoryGraphEditor.nodeBorderBrightness = style.getNodeBorderBrightness();
-        categoryGraphEditor.edgeBorderColorDefault  = style.getEdgeBorderColorDefault();
+        categoryGraphEditor.edgeBorderColorDefault = style.getEdgeBorderColorDefault();
         categoryGraphEditor.edgeBorderColorConvert = style.getEdgeBorderColorConvert();
     }
 
@@ -135,7 +134,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setSuccessColor(categoryColors.getSuccess());
         result.setDangerColor(categoryColors.getDanger());
         result.setWarningColor(categoryColors.getWarning());
-        
+
         result.setFontSizeHuge(categoryTypography.getFontSizeHuge());
         result.setFontSizeLarge(categoryTypography.getFontSizeLarge());
         result.setFontSizeNormal(categoryTypography.getFontSizeNormal());
@@ -147,7 +146,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setTextMutedInverted(categoryTypography.getTextForegroundSecondaryInverted());
         result.setTextLink(categoryTypography.getTextForegroundLink());
         result.setTextCaret(categoryTypography.getTextCaret());
-        
+
         result.setWindowBackground(categoryLayout.getWindowBackground());
         result.setPanelBackground(categoryLayout.getPanelBackground());
         result.setMenuBackground(categoryLayout.getMenuBackground());
@@ -155,7 +154,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setIslandsCornerRadius(categoryLayout.getIslandsCornerRadius());
         result.setIslandsDrawBorder(categoryLayout.isIslandsDrawBorder());
         result.setIslandsBorderColor(categoryLayout.getIslandsBorderColor());
-        
+
         result.setButtonBackground(categoryInteractiveElements.getButtonBackground());
         result.setButtonDisabledBackground(categoryInteractiveElements.getButtonDisabledBackground());
         result.setButtonToggled(categoryInteractiveElements.getButtonToggled());
@@ -169,13 +168,13 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setTabSelectedHighlight(categoryInteractiveElements.getTabSelectedHighlight());
         result.setListAlternateBackground(categoryInteractiveElements.getListAlternateBackground());
         result.setViewportBackground(categoryInteractiveElements.getViewportBackground());
-        
+
         result.setScrollBarThumb(categorySpecializedUI.getScrollbarThumb());
         result.setTooltipBackground(categorySpecializedUI.getTooltipBackground());
         result.setTooltipForeground(categorySpecializedUI.getTooltipForeground());
         result.setCategoryBackground(categorySpecializedUI.getCategoryBackground());
         result.setCategoryBorder(categorySpecializedUI.getCategoryBorder());
-        
+
         result.setNodeHighlightBorder(categoryGraphEditor.getNodeHighlightBorder());
         result.setNodeSlotBackground(categoryGraphEditor.getNodeSlotBackground());
         result.setNodeFillSaturation(categoryGraphEditor.getNodeFillSaturation());
@@ -769,7 +768,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         public void setViewportBackground(Color viewportBackground) {
             this.viewportBackground = viewportBackground;
         }
-    
+
     }
 
     public static class CategoryGraphEditor extends AbstractJIPipeParameterCollection {
@@ -779,7 +778,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private float nodeFillBrightness = 0.9f;
         private float nodeBorderSaturation = 0.1f;
         private float nodeBorderBrightness = 0.5f;
-        private Color edgeBorderColorDefault = new  Color(0x737880);
+        private Color edgeBorderColorDefault = new Color(0x737880);
         private Color edgeBorderColorConvert = new Color(0x2957C2);
 
         @SetJIPipeDocumentation(name = "Edge border color (default)", description = "The standard edge border color")

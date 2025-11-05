@@ -24,7 +24,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 
@@ -47,16 +46,16 @@ public class JIPipeDesktopGraphCanvasSelectionManager {
             currentTool = new DefaultGraphEditorTool();
         }
         for (var ui : canvasUI.getNodeUIs().values()) {
-            if(currentTool.getNodeLayerMask().test(ui)) {
+            if (currentTool.getNodeLayerMask().test(ui)) {
                 selection.add(ui);
             }
         }
         for (var ui : canvasUI.getEdgeUIs().values()) {
-            if(currentTool.getNodeLayerMask().test(ui)) {
+            if (currentTool.getNodeLayerMask().test(ui)) {
                 selection.add(ui);
             }
             for (JIPipeDesktopGraphEdgeControlPointUI ui2 : ui.getControlPoints()) {
-                if(currentTool.getNodeLayerMask().test(ui2)) {
+                if (currentTool.getNodeLayerMask().test(ui2)) {
                     selection.add(ui);
                 }
             }

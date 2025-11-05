@@ -32,6 +32,14 @@ public class JIPipeDesktopSupportAssistantWindow extends JFrame {
         initialize();
     }
 
+    public static void show(Component parent) {
+        JIPipeDesktopSupportAssistantWindow window = new JIPipeDesktopSupportAssistantWindow();
+        window.pack();
+        window.setSize(1027, 768);
+        window.setLocationRelativeTo(parent);
+        window.setVisible(true);
+    }
+
     private void initialize() {
         setTitle("JIPipe - Support");
         setIconImage(UIUtils.getJIPipeIcon128());
@@ -196,7 +204,7 @@ public class JIPipeDesktopSupportAssistantWindow extends JFrame {
 
     private void addQuestionHeader(String title, String description, JIPipeDesktopFormPanel target) {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(16,8,8,8));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 8, 8));
         JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("status/dialog-question.png"));
         iconLabel.setBorder(UIUtils.createEmptyBorder(8));
         headerPanel.add(iconLabel, BorderLayout.WEST);
@@ -214,7 +222,7 @@ public class JIPipeDesktopSupportAssistantWindow extends JFrame {
 
     private void addAnswerHeader(String title, String description, JIPipeDesktopFormPanel target) {
         JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(16,8,8,8));
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 8, 8));
         JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32("status/dialog-information.png"));
         iconLabel.setBorder(UIUtils.createEmptyBorder(8));
         headerPanel.add(iconLabel, BorderLayout.WEST);
@@ -228,13 +236,5 @@ public class JIPipeDesktopSupportAssistantWindow extends JFrame {
                     BorderLayout.CENTER);
         }
         target.addWideToForm(headerPanel);
-    }
-
-    public static void show(Component parent) {
-        JIPipeDesktopSupportAssistantWindow window = new JIPipeDesktopSupportAssistantWindow();
-        window.pack();
-        window.setSize(1027, 768);
-        window.setLocationRelativeTo(parent);
-        window.setVisible(true);
     }
 }

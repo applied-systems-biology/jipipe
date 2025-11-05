@@ -26,6 +26,7 @@ public interface JIPipeDesktopWorkbench extends JIPipeWorkbench {
 
     /**
      * Returns a {@link JIPipeCefClientService} for creating CEF browsers
+     *
      * @return the CEF client service
      */
     JIPipeCefClientService getCefClientService();

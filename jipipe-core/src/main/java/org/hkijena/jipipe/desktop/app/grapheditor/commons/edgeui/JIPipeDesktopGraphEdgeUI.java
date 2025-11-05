@@ -131,7 +131,7 @@ public class JIPipeDesktopGraphEdgeUI implements JIPipeDesktopGraphInteractiveOb
 
     @Override
     public String getDisplayName() {
-        return "Edge '" + source.getDisplayName() + "' >>> '"  + target.getDisplayName() + "'";
+        return "Edge '" + source.getDisplayName() + "' >>> '" + target.getDisplayName() + "'";
     }
 
     @Override

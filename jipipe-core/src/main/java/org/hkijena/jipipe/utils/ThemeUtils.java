@@ -28,6 +28,7 @@ import java.util.List;
 
 public class ThemeUtils {
     public static final String DEFAULT_STYLE_ID = "JIPipe Light";
+    private static final AvailableThemesChangedEventEmitter CHANGED_EVENT_EMITTER = new AvailableThemesChangedEventEmitter();
     public static Theme RSYNTAX_THEME_LIGHT;
     public static Theme RSYNTAX_THEME_DARK;
     private static boolean INSTALLED_LISTENER;
@@ -35,7 +36,6 @@ public class ThemeUtils {
     private static JIPipeDesktopUITheme CURRENT_THEME = JIPipeDesktopUITheme.Modern;
     private static JIPipeDesktopModernThemeStyle CURRENT_STYLE = new JIPipeDesktopModernThemeStyle();
     private static List<String> AVAILABLE_STYLE_IDS;
-    private static final AvailableThemesChangedEventEmitter CHANGED_EVENT_EMITTER = new AvailableThemesChangedEventEmitter();
 
     public static boolean isUsingDarkTheme() {
         return CURRENT_THEME == JIPipeDesktopUITheme.Modern && CURRENT_STYLE.getBrightness() == JIPipeDesktopUIThemeBrightness.Dark;
@@ -127,7 +127,7 @@ public class ThemeUtils {
 
         JsonUtils.saveToFile(style, path);
 
-        if(!AVAILABLE_STYLE_IDS.contains(id)) {
+        if (!AVAILABLE_STYLE_IDS.contains(id)) {
             AVAILABLE_STYLE_IDS.add(id);
         }
 
@@ -332,19 +332,22 @@ public class ThemeUtils {
 
     public static void deleteStyle(String id) {
         JIPipeDesktopModernThemeStyle style = getStyleFromId(id);
-        if(style.isBuiltIn()) {
+        if (style.isBuiltIn()) {
             return;
         }
 
         try {
             Files.delete(style.getSavePath());
             AVAILABLE_STYLE_IDS.remove(style.getId());
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
         CHANGED_EVENT_EMITTER.emit(new AvailableThemesChangedEvent(null));
+    }
+
+    public interface AvailableThemesChangedEventListener {
+        void onAvailableThemesChanged(AvailableThemesChangedEvent event);
     }
 
     public static class AvailableThemesChangedEvent extends AbstractJIPipeEvent {
@@ -352,10 +355,6 @@ public class ThemeUtils {
         public AvailableThemesChangedEvent(Object source) {
             super(source);
         }
-    }
-
-    public interface AvailableThemesChangedEventListener {
-        void onAvailableThemesChanged(AvailableThemesChangedEvent event);
     }
 
     public static class AvailableThemesChangedEventEmitter extends JIPipeEventEmitter<AvailableThemesChangedEvent, AvailableThemesChangedEventListener> {

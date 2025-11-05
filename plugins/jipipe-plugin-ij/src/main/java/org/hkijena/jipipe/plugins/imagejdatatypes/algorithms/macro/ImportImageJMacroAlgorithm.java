@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.strings.ImageJMacroData;
-import org.hkijena.jipipe.plugins.strings.PythonScriptData;
 
 import java.io.IOException;
 import java.nio.file.Files;

@@ -33,7 +33,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 
-public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
+public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource {
 
     @JsonProperty("oci-reference")
     private String ociReference;
@@ -57,7 +57,7 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
 
     @Override
     public JIPipeRemoteArtifactSource duplicate() {
-        return new  JIPipeOrasRemoteArtifactSource(this);
+        return new JIPipeOrasRemoteArtifactSource(this);
     }
 
     @Override
@@ -98,22 +98,20 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
     }
 
     public static class DownloadProgressSidecarTask extends PeriodicProcessSidecarTask {
+        // Animation fields
+        private static final String[] ANIMATION_PATTERNS = {
+                ">----", "->---", "-->--", "--->-", "---->"
+        };
         private final Path tmpPath;
         private final long totalSize;
         private long lastSize = 0;
         private int lastPercentage = 0;
         private boolean firstTick = true;
         private boolean downloadComplete = false;
-        
         // Time tracking fields
         private long startTime = System.currentTimeMillis();
         private long currentSpeed = 0;
         private long finalSpeed = 0;
-        
-        // Animation fields
-        private static final String[] ANIMATION_PATTERNS = {
-            ">----", "->---", "-->--", "--->-", "---->"
-        };
         private int animationIndex = 0;
 
         public DownloadProgressSidecarTask(Path tmpPath, long totalSize) {
@@ -127,35 +125,35 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
             try {
                 long currentSize = FileUtils.sizeOfDirectory(tmpPath.toFile());
                 long currentTime = System.currentTimeMillis();
-                
+
                 // Check if download is complete
                 if (currentSize >= totalSize && !downloadComplete) {
                     downloadComplete = true;
                     onDownloadComplete(executor, currentSize, currentTime);
                     return;
                 }
-                
+
                 // Show initial information on first tick
                 if (firstTick) {
                     showInitialInfo(executor);
                     firstTick = false;
                 }
-                
-                if(currentSize > lastSize) {
+
+                if (currentSize > lastSize) {
                     lastSize = currentSize;
-                    
+
                     // Calculate speed (bytes per second)
                     long timeDiff = currentTime - startTime;
                     if (timeDiff > 0) {
                         currentSpeed = (currentSize * 1000) / timeDiff;
                     }
-                    
-                    int percentage = Math.max(0, Math.min(100, (int)(currentSize * 100.0 / totalSize)));
-                    if(percentage != lastPercentage) {
+
+                    int percentage = Math.max(0, Math.min(100, (int) (currentSize * 100.0 / totalSize)));
+                    if (percentage != lastPercentage) {
                         // Calculate elapsed time
                         long elapsedMillis = currentTime - startTime;
                         String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
-                        
+
                         // Calculate estimated remaining time with better edge case handling
                         String estimatedDuration = "N/A";
                         if (currentSpeed > 0) {
@@ -174,11 +172,11 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                         } else if (currentSize < totalSize) {
                             estimatedDuration = "Calculating...";
                         }
-                        
+
                         // Get animated arrow pattern
                         String animatedArrow = ANIMATION_PATTERNS[animationIndex];
                         animationIndex = (animationIndex + 1) % ANIMATION_PATTERNS.length;
-                        
+
                         // Format speed in MB/s
                         String speedText;
                         if (currentSpeed > 0) {
@@ -187,7 +185,7 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                         } else {
                             speedText = "? MB/s";
                         }
-                        
+
                         // Format progress message
                         String progressMessage = String.format("O R A S [%s] [%d%%] Elapsed: %s | Estimated: %s | Downloaded: %s / %s | Speed: %s",
                                 animatedArrow,
@@ -197,30 +195,29 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                                 StringUtils.formatSize(Math.min(currentSize, totalSize)),
                                 StringUtils.formatSize(totalSize),
                                 speedText);
-                        
+
                         executor.getProgressInfo().log(progressMessage);
                         lastPercentage = percentage;
                     }
                 }
-            }
-            catch (Throwable ignored) {
+            } catch (Throwable ignored) {
             }
         }
-        
+
         private void showInitialInfo(ExtendedExecutor executor) {
             String initialMessage = String.format("O R A S [>----] [0%%] Elapsed: 0s | Estimated: Calculating... | Downloaded: %s / %s | Speed: ? MB/s",
                     StringUtils.formatSize(0),
                     StringUtils.formatSize(totalSize));
             executor.getProgressInfo().log(initialMessage);
         }
-        
+
         private void onDownloadComplete(ExtendedExecutor executor, long finalSize, long completionTime) {
             // Calculate final speed
             long totalTimeDiff = completionTime - startTime;
             if (totalTimeDiff > 0) {
                 finalSpeed = (finalSize * 1000) / totalTimeDiff;
             }
-            
+
             // Format speed in MB/s
             String speedText;
             if (finalSpeed > 0) {
@@ -229,14 +226,14 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
             } else {
                 speedText = "? MB/s";
             }
-            
+
             // Calculate final statistics
             long elapsedMillis = completionTime - startTime;
             String elapsedDuration = StringUtils.formatDuration(elapsedMillis);
-            
+
             // Get final animation state
             String animatedArrow = ANIMATION_PATTERNS[animationIndex];
-            
+
             // Format completion message
             String completionMessage = String.format("O R A S [%s] [100%%] Elapsed: %s | Downloaded: %s / %s | Speed: %s",
                     animatedArrow,
@@ -244,7 +241,7 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource{
                     StringUtils.formatSize(finalSize),
                     StringUtils.formatSize(totalSize),
                     speedText);
-            
+
             executor.getProgressInfo().log(completionMessage);
         }
     }

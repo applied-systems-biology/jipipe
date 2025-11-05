@@ -26,10 +26,11 @@ import ij.process.FloatPolygon;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import java.awt.Rectangle;
+
+import java.awt.*;
 
 /**
- * Headless version of {@link ij.plugin.filter.Analyzer} that removes GUI-dependent functions 
+ * Headless version of {@link ij.plugin.filter.Analyzer} that removes GUI-dependent functions
  * and static dependencies, optimized for batch processing in JIPipe.
  */
 public class CustomAnalyzer implements Measurements {

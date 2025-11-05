@@ -16,8 +16,8 @@ package org.hkijena.jipipe.desktop.commons.components.search;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
-import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
+import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -40,13 +40,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     private final JTextField textField = new JTextField();
     private final JPanel buttonPanel = new JPanel();
     private final Timer attentionAnimationTimer;
-    private String[] searchStrings = new String[0];
-    private double attentionAnimationStatus = 1;
-    private boolean isProgrammaticFocusChange = false;
     private final JButton searchButton = new JButton();
     private final JIPipeRunnableQueue queue;
     private final Icon readyIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/search.png");
     private final SpinnerIcon busyIcon = new SpinnerIcon(searchButton);
+    private String[] searchStrings = new String[0];
+    private double attentionAnimationStatus = 1;
+    private boolean isProgrammaticFocusChange = false;
 
     public JIPipeDesktopSearchTextField() {
         this(null);
@@ -68,11 +68,10 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     }
 
     private void updateIcon() {
-        if(queue == null || queue.isEmpty()) {
+        if (queue == null || queue.isEmpty()) {
             busyIcon.stop();
             searchButton.setIcon(readyIcon);
-        }
-        else {
+        } else {
             busyIcon.start();
             searchButton.setIcon(busyIcon);
         }

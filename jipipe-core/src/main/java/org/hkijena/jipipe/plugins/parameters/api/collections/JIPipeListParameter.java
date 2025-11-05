@@ -119,7 +119,7 @@ public abstract class JIPipeListParameter<T> extends ArrayList<T> implements JIP
     @Override
     public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
         for (T t : this) {
-            if(t instanceof JIPipeProjectUpgradable upgradable) {
+            if (t instanceof JIPipeProjectUpgradable upgradable) {
                 upgradable.applyProjectUpgrade(fromVersion, context, report);
             }
         }

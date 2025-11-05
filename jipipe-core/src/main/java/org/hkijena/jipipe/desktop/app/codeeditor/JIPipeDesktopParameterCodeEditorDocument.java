@@ -38,9 +38,9 @@ public class JIPipeDesktopParameterCodeEditorDocument implements JIPipeDesktopCo
                     JIPipe.RESOURCES.getIcon16("actions/go-jump.png"),
                     () -> {
                         Container container = SwingUtilities.getAncestorOfClass(JIPipeDesktopGraphEditorUI.class, editorUI);
-                        if(container instanceof JIPipeDesktopGraphEditorUI graphEditorUI) {
+                        if (container instanceof JIPipeDesktopGraphEditorUI graphEditorUI) {
                             JIPipeDesktopGraphNodeUI nodeUI = graphEditorUI.getCanvasUI().getNodeUIs().get(node);
-                            if(nodeUI != null) {
+                            if (nodeUI != null) {
                                 graphEditorUI.getSelectionManager().selectOnly(nodeUI);
                             }
                         }

@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -113,10 +112,9 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     @Override
     public String getName() {
         String result = example.getNodeInfo().getName() + ": " + example.getNodeTemplate().getName();
-        if(example.getNodeInfo().isUnstable()) {
+        if (example.getNodeInfo().isUnstable()) {
             result += " (unstable!)";
-        }
-        else if(example.getNodeInfo().isDeprecated()) {
+        } else if (example.getNodeInfo().isDeprecated()) {
             result += " (deprecated)";
         }
         return result;

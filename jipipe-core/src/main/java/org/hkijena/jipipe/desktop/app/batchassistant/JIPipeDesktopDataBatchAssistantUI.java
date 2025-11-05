@@ -43,9 +43,9 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
+import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.plugins.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.plugins.strings.StringData;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
@@ -68,7 +68,7 @@ import java.util.List;
 public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeCache.ModifiedEventListener, JIPipeGraphNode.NodeSlotsChangedEventListener, JIPipeGraph.NodeDisconnectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     private static boolean SHOW_ADVANCED_SETTINGS = false;
-
+    private static String LAST_SELECTED_ITEM;
     private final JIPipeAlgorithm algorithm;
     private final Runnable runUpdatePredecessorCache;
     private final JIPipeParameterCollection batchSettings;
@@ -81,7 +81,6 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
-    private static String LAST_SELECTED_ITEM;
 
 
     /**
@@ -296,11 +295,11 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
                 JIPipeDesktopTabPane.SingletonTabMode.Present);
         tabPane.getTabbedPane().addChangeListener(e -> {
             String id = tabPane.getCurrentlySelectedSingletonTabId();
-            if(!StringUtils.isNullOrEmpty(id)) {
+            if (!StringUtils.isNullOrEmpty(id)) {
                 LAST_SELECTED_ITEM = id;
             }
         });
-        if(!StringUtils.isNullOrEmpty(LAST_SELECTED_ITEM)) {
+        if (!StringUtils.isNullOrEmpty(LAST_SELECTED_ITEM)) {
             tabPane.selectSingletonTab(LAST_SELECTED_ITEM);
         }
 

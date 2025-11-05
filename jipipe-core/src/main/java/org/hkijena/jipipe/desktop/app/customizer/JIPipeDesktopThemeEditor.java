@@ -35,8 +35,8 @@ public class JIPipeDesktopThemeEditor extends JFrame implements JIPipeParameterC
     private final JIPipeDesktopWorkbench workbench;
     private final ThemePreviewPanel themePreviewPanel = new ThemePreviewPanel();
     private final JIPipeDesktopParameterFormPanel settingsPanel;
-    private JIPipeDesktopThemeEditorDocument document = new JIPipeDesktopThemeEditorDocument();
     private final StaticDebouncer updatePreviewDebouncer;
+    private JIPipeDesktopThemeEditorDocument document = new JIPipeDesktopThemeEditorDocument();
     private boolean modified = false;
 
     public JIPipeDesktopThemeEditor(JIPipeDesktopWorkbench workbench) {

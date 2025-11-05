@@ -19,7 +19,6 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.Context;
 import org.scijava.plugin.SciJavaPlugin;
 
-import javax.swing.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;

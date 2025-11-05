@@ -28,7 +28,7 @@ public class JIPipeCefClientService implements WindowListener {
     }
 
     public CefClient getClient() {
-        if(!isCefAvailable() || closed) {
+        if (!isCefAvailable() || closed) {
             return null;
         }
         if (client == null) {
@@ -59,11 +59,11 @@ public class JIPipeCefClientService implements WindowListener {
     public void windowClosed(WindowEvent e) {
         try {
             closed = true;
-            if(client != null) {
+            if (client != null) {
                 client.dispose();
             }
             client = null;
-        }catch(Exception ex) {
+        } catch (Exception ex) {
             logger.severe(ex.getMessage());
         }
     }

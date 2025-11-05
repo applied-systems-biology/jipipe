@@ -28,11 +28,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -83,7 +79,7 @@ import java.util.Map;
 public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(RScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
-    
+
     private RScriptParameter script = new RScriptParameter();
     private boolean externalCode = false;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
@@ -125,7 +121,7 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("script".equals(access.getKey()) && externalCode) {
+        if ("script".equals(access.getKey()) && externalCode) {
             return false;
         }
         return super.isParameterUIVisible(tree, access);
@@ -261,14 +257,13 @@ public class RunMergingRScriptAlgorithm extends JIPipeMergingAlgorithm implement
     }
 
     private String getScriptCode(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
-        if(externalCode) {
-             List<RScriptData> inputData = iterationStep.getInputData(SLOT_SCRIPT.getName(), RScriptData.class, progressInfo);
-            if(inputData.size() > 1) {
+        if (externalCode) {
+            List<RScriptData> inputData = iterationStep.getInputData(SLOT_SCRIPT.getName(), RScriptData.class, progressInfo);
+            if (inputData.size() > 1) {
                 progressInfo.warn("Multiple external scripts were provided. Running only the first one!");
             }
             return inputData.getFirst().getData();
-        }
-        else {
+        } else {
             return script.getCode();
         }
     }

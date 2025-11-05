@@ -246,14 +246,14 @@ public class JIPipeDesktopGraphCanvasNodeManager {
         for (JIPipeGraphEdge edge : graph.getGraph().edgeSet()) {
             Map<String, List<JIPipeGraphEdgeControlPoint>> controlPoints = edge.getControlPoints();
             List<JIPipeGraphEdgeControlPoint> sourcePoints = controlPoints.get("");
-            if(sourcePoints != null && !sourcePoints.isEmpty()) {
+            if (sourcePoints != null && !sourcePoints.isEmpty()) {
                 List<JIPipeGraphEdgeControlPoint> newControlPoints = new ArrayList<>();
                 for (JIPipeGraphEdgeControlPoint sourcePoint : sourcePoints) {
                     Point original = sourcePoint.toPoint();
                     newControlPoints.add(new JIPipeGraphEdgeControlPoint((int) ((original.x - minX) + shiftX), (int) ((original.y - minY) + shiftY)));
                 }
                 controlPoints.clear();
-                controlPoints.put(StringUtils.nullToEmpty(compartment),  newControlPoints);
+                controlPoints.put(StringUtils.nullToEmpty(compartment), newControlPoints);
             }
         }
 

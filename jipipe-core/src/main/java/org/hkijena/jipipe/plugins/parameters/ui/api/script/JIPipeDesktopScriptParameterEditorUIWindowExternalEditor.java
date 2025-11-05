@@ -7,7 +7,6 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.codeeditor.JIPipeDesktopCodeEditorUI;
 import org.hkijena.jipipe.desktop.app.codeeditor.JIPipeDesktopParameterCodeEditorDocument;
 import org.hkijena.jipipe.plugins.parameters.api.scripts.JIPipeScriptParameter;
-import org.hkijena.jipipe.plugins.parameters.ui.api.JIPipeDesktopScriptParameterEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

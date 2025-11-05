@@ -46,7 +46,7 @@ public class JIPipeEnvironmentConfiguratorCustomSource<T extends JIPipeEnvironme
 
     @Override
     public JIPipeOptionalParameter<T> resolve(Class<T> environmentClass, JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo) {
-        if(parameter != null && parameter.isEnabled() && environmentClass.isAssignableFrom(parameter.getContentClass())) {
+        if (parameter != null && parameter.isEnabled() && environmentClass.isAssignableFrom(parameter.getContentClass())) {
             return parameter;
         }
         return null;
@@ -54,10 +54,10 @@ public class JIPipeEnvironmentConfiguratorCustomSource<T extends JIPipeEnvironme
 
     @Override
     public JIPipeEnvironmentConfigurator.SourceType getSourceType() {
-        if(source instanceof JIPipeGraphNode) {
+        if (source instanceof JIPipeGraphNode) {
             return JIPipeEnvironmentConfigurator.SourceType.Node;
         }
-        if(source instanceof JIPipeProject) {
+        if (source instanceof JIPipeProject) {
             return JIPipeEnvironmentConfigurator.SourceType.Project;
         }
         return JIPipeEnvironmentConfigurator.SourceType.Custom;

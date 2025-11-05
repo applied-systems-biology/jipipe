@@ -31,9 +31,9 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.validation.JIPipeDesktopMessagePanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -174,13 +174,11 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.getGroupId()), new JLabel("Publisher"));
             propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(artifact.isCompatible() ? "Yes" : "No"), new JLabel("Compatible"));
             if (artifact instanceof JIPipeRemoteArtifact remoteArtifact) {
-                if(remoteArtifact.getSource() instanceof JIPipeHttpRemoteArtifactSource httpRemoteArtifactSource) {
+                if (remoteArtifact.getSource() instanceof JIPipeHttpRemoteArtifactSource httpRemoteArtifactSource) {
                     propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(httpRemoteArtifactSource.getUrl()), new JLabel("URL"));
-                }
-                else if(remoteArtifact.getSource() instanceof JIPipeLocalRemoteArtifactSource localRemoteArtifactSource) {
+                } else if (remoteArtifact.getSource() instanceof JIPipeLocalRemoteArtifactSource localRemoteArtifactSource) {
                     propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(localRemoteArtifactSource.getFilePath().toString()), new JLabel("File"));
-                }
-                else if(remoteArtifact.getSource() instanceof JIPipeOrasRemoteArtifactSource oraRemoteArtifactSource) {
+                } else if (remoteArtifact.getSource() instanceof JIPipeOrasRemoteArtifactSource oraRemoteArtifactSource) {
                     propertyPanel.addToForm(UIUtils.createReadonlyBorderlessTextField(oraRemoteArtifactSource.getOciReference()), new JLabel("OCI Ref"));
                 }
             }

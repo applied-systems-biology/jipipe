@@ -104,7 +104,7 @@ public class FileLocker {
                     releaseLock();
                     return true;
                 }
-                
+
                 fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.READ);
                 fileLock = fileChannel.tryLock(0L, Long.MAX_VALUE, true);
                 if (fileLock != null) {
