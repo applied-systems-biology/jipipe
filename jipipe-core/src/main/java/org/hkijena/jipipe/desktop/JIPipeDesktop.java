@@ -14,20 +14,21 @@
 package org.hkijena.jipipe.desktop;
 
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcadvanced.JIPipeDesktopAdvancedFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooserResponse;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnext.JIPipeDesktopFileChooserNext;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.io.File;
+import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
@@ -40,6 +41,15 @@ import java.util.stream.Collectors;
  * Utility class for desktop-related JIPipe functions
  */
 public class JIPipeDesktop {
+    /**
+     * *.jip or *.crate.zip file that is loaded when the JIPipe window is ready
+     */
+    private static Path OPEN_ON_LOAD_FILE;
+    /**
+     * URL that will be downloaded and opened when the JIPipe window is ready
+     */
+    private static URL OPEN_ON_LOAD_URL;
+
     private JIPipeDesktop() {
 
     }
@@ -1073,6 +1083,61 @@ public class JIPipeDesktop {
             return new FileDialog((Dialog) parent, title, mode);
         } else {
             throw new UnsupportedOperationException("Unknown window type: " + windowAncestor);
+        }
+    }
+
+    /**
+     * Registers a path or URL to a *.jip *.crate.zip or https:// URL as next operation to open when the project window is opened the first time
+     * @param pathOrUrl path to an existing *.jip or *.crate.zip file or a URL
+     */
+    public static void tryAddOpenProjectOnLoad(String pathOrUrl) {
+        if(StringUtils.isNullOrEmpty(pathOrUrl)) {
+            return;
+        }
+        try {
+            Path path = Paths.get(pathOrUrl);
+            String fileName = path.getFileName().toString();
+            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || fileName.endsWith(".crate.zip"))) {
+                OPEN_ON_LOAD_FILE = path;
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            URL url = new URL(pathOrUrl);
+            OPEN_ON_LOAD_URL = url;
+        }
+        catch (Exception ignored) {
+        }
+    }
+
+    public static void doOpenProjectOnLoad(JIPipeDesktopProjectWindow window) {
+        if(OPEN_ON_LOAD_URL != null) {
+            URL url = OPEN_ON_LOAD_URL;
+            OPEN_ON_LOAD_URL = null;
+            OPEN_ON_LOAD_FILE = null;
+            window.importURL(url.toString(), true);
+        }
+        else if(OPEN_ON_LOAD_FILE != null) {
+            Path file = OPEN_ON_LOAD_FILE;
+            OPEN_ON_LOAD_FILE = null;
+            OPEN_ON_LOAD_URL = null;
+            if(Files.isRegularFile(file)) {
+                String fileName = file.getFileName().toString();
+                if(fileName.endsWith(".jip")) {
+                    window.openProject(file, true);
+                }
+                else if(fileName.endsWith(".crate.zip")) {
+                    window.importROCrate(file, true, true, true);
+                }
+                else if(ArchiveUtils.isZipFile(file)) {
+                    // Magic bytes check for zip
+                    window.importROCrate(file, true, true, true);
+                }
+                else {
+                    // If not a ZIP, try to open as JSON
+                    window.openProject(file, true);
+                }
+            }
         }
     }
 }

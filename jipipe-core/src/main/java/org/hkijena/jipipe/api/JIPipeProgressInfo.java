@@ -497,7 +497,20 @@ public class JIPipeProgressInfo implements Cancelable {
         log("[WARNING] " + message);
     }
 
-    public void aggressive(String... text) {
+    public void aggressiveError(String... text) {
+        if (text.length == 0) {
+            return;
+        }
+        int length = Arrays.stream(text).map(String::length).reduce(0, Integer::max);
+
+        error("  " + "v".repeat(length));
+        for (String s : text) {
+            error("| " + s);
+        }
+        error("  " + "^".repeat(length));
+    }
+
+    public void aggressiveWarn(String... text) {
         if (text.length == 0) {
             return;
         }
@@ -505,7 +518,7 @@ public class JIPipeProgressInfo implements Cancelable {
 
         warn("  " + "v".repeat(length));
         for (String s : text) {
-            error("| " + s);
+            warn("| " + s);
         }
         warn("  " + "^".repeat(length));
     }

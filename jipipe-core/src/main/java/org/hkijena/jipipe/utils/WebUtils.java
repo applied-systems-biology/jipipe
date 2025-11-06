@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import kotlin.random.URandomKt;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -27,16 +28,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.RoundingMode;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.net.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public class WebUtils {
     private static boolean isRedirected(Map<String, List<String>> header) {
@@ -154,6 +151,43 @@ public class WebUtils {
                     "Error while downloading!",
                     "At " + label + ": there was an error downloading URL '" + url + "' to " + outputFile,
                     "Please check if the URL is valid, an internet connection is available, and the target device has enough space.");
+        }
+    }
+
+    /**
+     * Attempts to extract a file name from the given URL string.
+     * Falls back to the provided default if none can be determined.
+     *
+     * @param urlString   the URL string to analyze
+     * @param defaultName the fallback file name if extraction fails
+     * @return the extracted file name or the fallback
+     */
+    public static String extractFileName(String urlString, String defaultName) {
+        return Optional.ofNullable(urlString)
+                .flatMap(WebUtils::tryExtractFileName)
+                .filter(name -> !name.isBlank())
+                .orElse(defaultName);
+    }
+
+    private static Optional<String> tryExtractFileName(String urlString) {
+        try {
+            URI uri = new URI(urlString);
+            String path = uri.getPath();
+            if (path == null || path.isBlank()) {
+                return Optional.empty();
+            }
+            return Optional.ofNullable(Path.of(path).getFileName())
+                    .map(Path::toString);
+        } catch (URISyntaxException | IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
+    public static URL toURL(String url) {
+        try {
+            return URI.create(url).toURL();
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
     }
 }

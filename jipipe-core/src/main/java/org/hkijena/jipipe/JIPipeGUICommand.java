@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
@@ -121,6 +122,9 @@ public class JIPipeGUICommand implements Command {
                     JIPipeDesktopProjectWindow.getDefaultTemplateProject(),
                     true,
                     true);
+
+            // Open any projects that were scheduled to be opened
+            JIPipeDesktop.doOpenProjectOnLoad(window);
 
             // Show notifications
             if (JIPipeNotificationUIApplicationSettings.getInstance().isShowNotificationsAfterFirstStart()) {

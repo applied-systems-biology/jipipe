@@ -80,7 +80,7 @@ public class CellposeUtils {
             // Search for the hallmarks of CUDA issues
             String logAsString = progressInfo.getLog().toString();
             if (logAsString.contains("is not compatible with the current PyTorch installation") && logAsString.contains("The current PyTorch install supports CUDA capabilities")) {
-                progressInfo.aggressive("GPU not compatible to Cellpose!", "Try disabling GPU support in the node's settings or globally");
+                progressInfo.aggressiveError("GPU not compatible to Cellpose!", "Try disabling GPU support in the node's settings or globally");
                 throw new JIPipeValidationRuntimeException(e,
                         "GPU not compatible to current Cellpose version",
                         "You GPU is not capable of running the provided Cellpose version. The GPU is either too old or too new.",
@@ -89,7 +89,7 @@ public class CellposeUtils {
                                 "If you absolutely require GPU support, you can setup a custom Cellpose environment and point JIPipe at it using project or node connected services.");
             }
             if (logAsString.contains("torch.OutOfMemoryError: CUDA out of memory")) {
-                progressInfo.aggressive("Ran out of GPU memory! Consider running on CPU");
+                progressInfo.aggressiveError("Ran out of GPU memory! Consider running on CPU");
                 throw new JIPipeValidationRuntimeException(e,
                         "Cellpose ran out of memory",
                         "Cellpose cannot run this process on GPU, as your GPU does not have enough memory.",

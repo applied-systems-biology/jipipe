@@ -187,6 +187,37 @@ public class ArchiveUtils {
         return null;
     }
 
+    /**
+     * Checks whether the given file appears to be a ZIP archive by inspecting its magic bytes.
+     *
+     * @param path the path to the file
+     * @return true if the file starts with one of the ZIP magic signatures, false otherwise
+     */
+    public static boolean isZipFile(Path path) {
+        if (Files.notExists(path) || Files.isDirectory(path)) {
+            return false;
+        }
+
+        byte[] signature = new byte[4];
+        try (InputStream is = Files.newInputStream(path)) {
+            if (is.read(signature) != 4) {
+                return false;
+            }
+        } catch (IOException ignored) {
+            return false;
+        }
+
+        return isZipSignature(signature);
+    }
+
+    private static boolean isZipSignature(byte[] sig) {
+        return (sig[0] == 0x50 && sig[1] == 0x4B && (
+                (sig[2] == 0x03 && sig[3] == 0x04) ||  // regular
+                        (sig[2] == 0x05 && sig[3] == 0x06) ||  // empty
+                        (sig[2] == 0x07 && sig[3] == 0x08)     // spanned
+        ));
+    }
+
     public static void main(String[] args) throws IOException {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);

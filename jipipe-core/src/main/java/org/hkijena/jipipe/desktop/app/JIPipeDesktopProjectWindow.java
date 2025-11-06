@@ -46,10 +46,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
-import org.hkijena.jipipe.utils.ArchiveUtils;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
@@ -100,8 +97,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public static JIPipeDesktopProjectWindow getWindowFor(JIPipeProject project) {
         for (JIPipeDesktopProjectWindow window : OPEN_WINDOWS) {
-            if (window.project == project)
+            if (window.project == project) {
                 return window;
+            }
         }
         return null;
     }
@@ -210,8 +208,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     public void newProject() {
         JIPipeProject project = getDefaultTemplateProject();
         JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-        if (window == null)
+        if (window == null) {
             return;
+        }
         window.projectSavePath = null;
         window.updateTitle();
         window.getProjectWorkbench().sendStatusBarText("Created new project");
@@ -287,8 +286,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
                 JIPipeProject project = template.loadAsProject(report, notifications, JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-                if (window == null)
+                if (window == null) {
                     return;
+                }
                 window.projectSavePath = null;
                 window.updateTitle();
                 window.getProjectWorkbench().sendStatusBarText("Created new project");
@@ -354,8 +354,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 //                }
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
-                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
+                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
                         return;
+                    }
                 }
 
                 JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
@@ -392,8 +393,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                                 } else {
                                     window = openProjectInThisOrNewWindow("Open project", project, false, false);
                                 }
-                                if (window == null)
+                                if (window == null) {
                                     return;
+                                }
                                 window.projectSavePath = path;
                                 window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                                 window.updateTitle();
@@ -433,8 +435,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies))
+                    if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
                         return;
+                    }
                 }
 
                 JIPipeProject newProject = JIPipeProject.loadProject(projectPath,
@@ -443,8 +446,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         notifications,
                         JIPipeProgressInfo.STDOUT);
                 JIPipeDesktopProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", newProject, false, false);
-                if (window == null)
+                if (window == null) {
                     return;
+                }
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
 
@@ -531,16 +535,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void saveProjectAs(boolean avoidDialog, boolean updateSavePath) {
         Path savePath = null;
-        if (avoidDialog && projectSavePath != null)
+        if (avoidDialog && projectSavePath != null) {
             savePath = projectSavePath;
+        }
         if (savePath == null) {
             savePath = JIPipeDesktop.saveFile(this,
                     getProjectWorkbench(),
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
                     "Save JIPipe project (*.jip)",
                     HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
-            if (savePath == null)
+            if (savePath == null) {
                 return;
+            }
         }
 
         try {
@@ -557,8 +563,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     JIPipeProgressInfo.STDOUT);
 
             // Overwrite the target file
-            if (Files.exists(savePath))
+            if (Files.exists(savePath)) {
                 Files.delete(savePath);
+            }
             Files.copy(tempFile, savePath);
 
             // Everything OK, now set the title
@@ -640,18 +647,21 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
         Path directory = JIPipeDesktop.saveDirectory(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY);
-        if (directory == null)
+        if (directory == null) {
             return;
+        }
         try {
             if (Files.exists(directory) && Files.list(directory).count() > 0) {
                 if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                     return;
+                }
             }
             if (Files.exists(directory) && Files.list(directory).count() > 0 && !Files.exists(directory.resolve("project.jip"))) {
                 if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " does not look like an old output. Please note that the directory will be deleted!" +
-                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        "Continue anyway?", "Save project and cache", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                     return;
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -665,8 +675,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void saveProjectAndCacheToZIP(String title) {
         Path file = JIPipeDesktop.saveFile(this, getProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, title, HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
-        if (file == null)
+        if (file == null) {
             return;
+        }
         if (Files.exists(file)) {
             try {
                 Files.delete(file);
@@ -700,11 +711,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 new HTMLText("Please select a *.crate.zip file that was generated using JIPipe."),
                 PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
         if (projectPath != null) {
-            importROCrate(projectPath, false);
+            importROCrate(projectPath, false, false, false);
         }
     }
 
-    private void importROCrate(Path projectPath, boolean forceFallbackProjectDir) {
+    public void importROCrate(Path projectPath, boolean forceFallbackProjectDir, boolean nonInteractive, boolean forceCurrentWindow) {
         var window = this;
         String fileName = projectPath.getFileName().toString();
         String fileNameNoExt = fileName.substring(0, fileName.length() - 4);
@@ -713,7 +724,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // Determine an automated directory
         Path baseExtractPath;
         if (forceFallbackProjectDir) {
-            Path defaultProjectsDirectory = JIPipeProjectDefaultsApplicationSettings.getInstance().getDefaultProjectsDirectory();
+            Path defaultProjectsDirectory = JIPipeProjectDefaultsApplicationSettings.getInstance().getAbsoluteDefaultProjectsDirectory();
             PathUtils.createDirectories(defaultProjectsDirectory);
             baseExtractPath = defaultProjectsDirectory;
         } else {
@@ -723,14 +734,20 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(baseExtractPath.resolve(str)));
         extractPath = baseExtractPath.resolve(uniqueFileNameNoExt);
 
-        int option = JOptionPane.showOptionDialog(this,
-                "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
-                "Import RO-Crate",
-                JOptionPane.YES_NO_CANCEL_OPTION,
-                JOptionPane.QUESTION_MESSAGE,
-                null,
-                new Object[]{"Continue", "Select custom path", "Cancel"},
-                "Continue");
+        int option;
+
+        if (nonInteractive) {
+            option = JOptionPane.YES_OPTION;
+        } else {
+            option = JOptionPane.showOptionDialog(this,
+                    "The RO-Crate will be extracted to:\n\n" + extractPath + "\n\nDo you want to continue or customize the path?",
+                    "Import RO-Crate",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Continue", "Select custom path", "Cancel"},
+                    "Continue");
+        }
 
         if (option == JOptionPane.CANCEL_OPTION) {
             return;
@@ -780,7 +797,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         });
                     } else {
                         SwingUtilities.invokeLater(() -> {
-                            openProject(projectFile, false);
+                            openProject(projectFile, forceCurrentWindow);
                         });
                     }
                 }
@@ -797,5 +814,84 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
     public JIPipeCefClientService getCefClientService() {
         return cefClientService;
+    }
+
+    public void importURL(String url, boolean forceCurrentWindow) {
+        // as default explicity no file name to leave it to ZIP detection
+        String fileName = WebUtils.extractFileName(url, "project");
+        JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+        var run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Import project from URL";
+            }
+
+            @Override
+            public void run() {
+                getProgressInfo().aggressiveWarn("You are about to download and open the following project:",
+                        url,
+                        "",
+                        "Cancel the operation if you do not trust this source.");
+                for (int i = 5; i >= 0; i--) {
+                    if (getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                    getProgressInfo().warn("About to download URL in " + i + "s ...");
+                }
+                if (getProgressInfo().isCancelled()) {
+                    return;
+                }
+
+                Path tmpDir = JIPipe.getTemporaryDirectory("import-project-from-url");
+                Path outputFile = tmpDir.resolve(fileName);
+                WebUtils.download(WebUtils.toURL(url), outputFile, "Download project", getProgressInfo().resolve("Download"));
+
+                if (getProgressInfo().isCancelled()) {
+                    return;
+                }
+
+                // Analyze the output file
+                boolean isRoCrate;
+                if (fileName.endsWith(".jip")) {
+                    isRoCrate = false;
+                } else if (fileName.endsWith(".crate.zip")) {
+                    isRoCrate = true;
+                } else if (ArchiveUtils.isZipFile(outputFile)) {
+                    isRoCrate = true;
+                } else {
+                    isRoCrate = false;
+                }
+
+                // Depending on the status of the project, it will be copied into the standard folder or be imported directy
+                if (isRoCrate) {
+                    SwingUtilities.invokeLater(() -> {
+                        importROCrate(outputFile, true, true, forceCurrentWindow);
+                    });
+                } else {
+                    Path basePath = JIPipeProjectDefaultsApplicationSettings.getInstance().getAbsoluteDefaultProjectsDirectory();
+
+                    // Copy into unique file within the fallback dir
+                    String fileNameNoExt;
+                    if (fileName.endsWith(".jip")) {
+                        fileNameNoExt = fileName.substring(0, fileName.length() - 4);
+                    } else {
+                        fileNameNoExt = fileName;
+                    }
+
+                    String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(basePath.resolve(str)));
+                    Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + ".jip");
+                    PathUtils.copyFile(outputFile, finalProjectFile);
+
+                    SwingUtilities.invokeLater(() -> { openProject(finalProjectFile, forceCurrentWindow); });
+                }
+            }
+        };
+
+        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
     }
 }
