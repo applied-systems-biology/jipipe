@@ -1,3 +1,3 @@
-# Project user directories
+# Project user paths
 
-This interface contains a list of all user directories associated with the project. 
+This interface contains a list of all user paths associated with the project. 

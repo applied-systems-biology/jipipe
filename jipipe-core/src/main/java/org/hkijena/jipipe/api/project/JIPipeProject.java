@@ -205,7 +205,7 @@ public class JIPipeProject implements JIPipeValidatable {
         JIPipeProject project = new JIPipeProject();
         project.fromJson(jsonData, context, report, notifications, progressInfo);
         project.setWorkDirectory(fileName.getParent());
-        project.validateUserDirectories(notifications);
+        project.validateUserPaths(notifications);
         project.projectFile = fileName;
         return project;
     }
@@ -254,20 +254,20 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
-     * Checks if the project metadata user directories are properly set up.
+     * Checks if the project metadata user paths are properly set up.
      * Otherwise, generates a notification
      *
      * @param notifications the notifications
      */
-    public void validateUserDirectories(JIPipeNotificationInbox notifications) {
+    public void validateUserPaths(JIPipeNotificationInbox notifications) {
         if (workDirectory != null) {
-            Map<String, Path> directoryMap = metadata.getDirectories().getMandatoryDirectoriesMap(workDirectory);
+            Map<String, Path> directoryMap = metadata.getUserPaths().getMandatoryUserPathsMap(workDirectory);
             for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
-                if (entry.getValue() == null || !Files.isDirectory(entry.getValue())) {
+                if (entry.getValue() == null || !Files.exists(entry.getValue())) {
                     JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:invalid-project-user-directory");
-                    notification.setHeading("Invalid project user directory!");
-                    notification.setDescription("This project defines a user-defined directory '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
-                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User directories // Project > Project overview > User directories) " +
+                    notification.setHeading("Invalid project user path!");
+                    notification.setDescription("This project defines a project user path '" + entry.getKey() + "' pointing at '" + entry.getValue() + "', but the " +
+                            "referenced path does not exist.\n\nPlease open the project settings (Project > Project settings > User paths // Project > Project overview > User paths) " +
                             "and ensure that the directory is correctly configured.");
                     notifications.push(notification);
                 }
@@ -1347,8 +1347,8 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Gets a map of user-defined directories
      */
-    public Map<String, Path> getDirectoryMap() {
-        return metadata.getDirectories().getDirectoryMap(getWorkDirectory());
+    public Map<String, Path> getUserPathMap() {
+        return metadata.getUserPaths().getDirectoryMap(getWorkDirectory());
     }
 
     /**

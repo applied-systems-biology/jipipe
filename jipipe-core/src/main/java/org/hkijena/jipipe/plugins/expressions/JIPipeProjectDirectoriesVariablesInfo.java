@@ -49,7 +49,7 @@ public class JIPipeProjectDirectoriesVariablesInfo implements JIPipeExpressionVa
     public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         HashSet<JIPipeExpressionParameterVariableInfo> result = new HashSet<>(VARIABLES);
         if (workbench.getProject() != null) {
-            for (Map.Entry<String, Path> entry : workbench.getProject().getDirectoryMap().entrySet()) {
+            for (Map.Entry<String, Path> entry : workbench.getProject().getUserPathMap().entrySet()) {
                 if (JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
                     VARIABLES.add(new JIPipeExpressionParameterVariableInfo("project_data_dir." + entry.getKey(), "Project user path '" + entry.getKey() + "'", "The user-configured project user path '" + entry.getKey() + "'"));
                     VARIABLES.add(new JIPipeExpressionParameterVariableInfo("project_user_path." + entry.getKey(), "Project user path '" + entry.getKey() + "'", "The user-configured project user path '" + entry.getKey() + "'"));

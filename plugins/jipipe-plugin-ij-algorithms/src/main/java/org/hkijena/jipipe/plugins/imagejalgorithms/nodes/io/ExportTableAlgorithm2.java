@@ -62,7 +62,7 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
-            projectDataDirs = getRuntimeProject().getDirectoryMap();
+            projectDataDirs = getRuntimeProject().getUserPathMap();
         } else {
             projectDataDirs = Collections.emptyMap();
         }

@@ -890,4 +890,15 @@ public class PathUtils {
             }
         }
     }
+
+    public static void copyFile(Path src, Path dst) {
+        if(!Files.isDirectory(dst.getParent())) {
+            createDirectories(dst.getParent());
+        }
+        try {
+            Files.copy(src, dst);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

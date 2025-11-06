@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -84,12 +84,12 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
         if (crateFile != null) {
 
             // Collect settings for project directories
-            Map<String, JIPipeProjectDirectories.Role> projectDirectorySettings = new HashMap<>();
-            for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : getProject().getMetadata().getDirectories().getDirectoriesAsInstance()) {
-                if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
-                    JIPipeParameterAccess access = settings.userDirectories.get("project-directory-" + directoryEntry.getKey());
+            Map<String, JIPipeProjectUserPaths.Role> projectDirectorySettings = new HashMap<>();
+            for (JIPipeProjectUserPaths.UserPathEntry userPathEntry : getProject().getMetadata().getUserPaths().getUserPathsAsInstance()) {
+                if (!StringUtils.isNullOrEmpty(userPathEntry.getKey())) {
+                    JIPipeParameterAccess access = settings.userDirectories.get("project-directory-" + userPathEntry.getKey());
                     if (access != null) {
-                        projectDirectorySettings.put(directoryEntry.getKey(), access.get(JIPipeProjectDirectories.Role.class));
+                        projectDirectorySettings.put(userPathEntry.getKey(), access.get(JIPipeProjectUserPaths.Role.class));
                     }
                 }
             }
@@ -123,14 +123,14 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
     }
 
     private void updateUserDirectoryParameters() {
-        List<JIPipeProjectDirectories.DirectoryEntry> directoryEntries = getProject().getMetadata().getDirectories().getDirectoriesAsInstance();
-        for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directoryEntries) {
-            if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
-                String parameterKey = "project-directory-" + directoryEntry.getKey();
+        List<JIPipeProjectUserPaths.UserPathEntry> directoryEntries = getProject().getMetadata().getUserPaths().getUserPathsAsInstance();
+        for (JIPipeProjectUserPaths.UserPathEntry userPathEntry : directoryEntries) {
+            if (!StringUtils.isNullOrEmpty(userPathEntry.getKey())) {
+                String parameterKey = "project-directory-" + userPathEntry.getKey();
                 if (!settings.userDirectories.containsKey(parameterKey)) {
-                    JIPipeMutableParameterAccess access = settings.userDirectories.addParameter(parameterKey, JIPipeProjectDirectories.Role.class, StringUtils.orElse(directoryEntry.getName(), directoryEntry.getKey()),
-                            "If enabled, the directory " + directoryEntry.getPath() + " and all its content will be added into the RO-Crate.");
-                    access.set(directoryEntry.getRole());
+                    JIPipeMutableParameterAccess access = settings.userDirectories.addParameter(parameterKey, JIPipeProjectUserPaths.Role.class, StringUtils.orElse(userPathEntry.getName(), userPathEntry.getKey()),
+                            "If enabled, the path " + userPathEntry.getPath() + " and all its contents will be added into the RO-Crate.");
+                    access.set(userPathEntry.getRole());
                 }
             }
         }
@@ -147,7 +147,7 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
     public static class Settings extends AbstractJIPipeParameterCollection {
         private final JIPipeDynamicParameterCollection userDirectories = new JIPipeDynamicParameterCollection();
 
-        @SetJIPipeDocumentation(name = "Project directories", description = "Each directory must be either an input or an output.")
+        @SetJIPipeDocumentation(name = "Project user paths", description = "Each path must be either an input or an output.")
         @JIPipeParameter("user-directories")
         public JIPipeDynamicParameterCollection getUserDirectories() {
             return userDirectories;

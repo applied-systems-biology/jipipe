@@ -132,7 +132,7 @@ public class FilesystemPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("folder-temporary", TemporaryFolderDataSource.class);
         registerNodeType("folder-run-output", OutputFolderDataSource.class);
         registerNodeType("select-path-interactive", PathFromUserDataSource.class);
-        registerNodeType("project-user-directory", ProjectUserFolderDataSource.class);
+        registerNodeType("project-user-directory", ProjectUserPathDataSource.class);
 
         registerNodeType("path-extract-filename", ExtractFileName.class, JIPipe.RESOURCES.getIcon16URL("data-types/files.png"));
         registerNodeType("path-extract-parent", ExtractParent.class, JIPipe.RESOURCES.getIcon16URL("actions/go-parent-folder.png"));

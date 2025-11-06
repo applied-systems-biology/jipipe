@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
@@ -180,7 +180,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
                 renderDependencyCitations();
             }
             if (reportSettings.isAddUserDirectories()) {
-                renderUserDirectories();
+                renderUserPaths();
             }
             if (reportSettings.isAddGlobalParameters()) {
                 renderGlobalParameters();
@@ -208,19 +208,19 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
         }
 
-        private void renderUserDirectories() {
-            List<JIPipeProjectDirectories.DirectoryEntry> directories = project.getMetadata().getDirectories().getDirectoriesAsInstance();
+        private void renderUserPaths() {
+            List<JIPipeProjectUserPaths.UserPathEntry> directories = project.getMetadata().getUserPaths().getUserPathsAsInstance();
             if (!directories.isEmpty()) {
-                stringBuilder.append("<h2>Project-wide directories</h2>");
+                stringBuilder.append("<h2>Project user paths</h2>");
                 stringBuilder.append("<table>");
                 stringBuilder.append("<tr><th>Key</th><th>Name</th><th>Description</th><th>Path</th><th>Role</th></tr>");
-                for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : directories) {
+                for (JIPipeProjectUserPaths.UserPathEntry userPathEntry : directories) {
                     stringBuilder.append("<tr>");
-                    stringBuilder.append("<td>").append(directoryEntry.getKey()).append("</td>");
-                    stringBuilder.append("<td>").append(directoryEntry.getName()).append("</td>");
-                    stringBuilder.append("<td>").append(directoryEntry.getDescription()).append("</td>");
-                    stringBuilder.append("<td>").append(directoryEntry.getPath()).append("</td>");
-                    stringBuilder.append("<td>").append(directoryEntry.getRole().toString()).append("</td>");
+                    stringBuilder.append("<td>").append(userPathEntry.getKey()).append("</td>");
+                    stringBuilder.append("<td>").append(userPathEntry.getName()).append("</td>");
+                    stringBuilder.append("<td>").append(userPathEntry.getDescription()).append("</td>");
+                    stringBuilder.append("<td>").append(userPathEntry.getPath()).append("</td>");
+                    stringBuilder.append("<td>").append(userPathEntry.getRole().toString()).append("</td>");
                     stringBuilder.append("</tr>");
                 }
                 stringBuilder.append("</table>");
@@ -424,7 +424,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
             this.addGlobalParameters = addGlobalParameters;
         }
 
-        @SetJIPipeDocumentation(name = "User directories", description = "If enabled, add the user directories")
+        @SetJIPipeDocumentation(name = "User paths", description = "If enabled, add the user paths")
         @JIPipeParameter("add-user-directories")
         public boolean isAddUserDirectories() {
             return addUserDirectories;

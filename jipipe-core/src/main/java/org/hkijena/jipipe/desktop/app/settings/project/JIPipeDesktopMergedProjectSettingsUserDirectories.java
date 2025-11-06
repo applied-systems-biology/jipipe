@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.settings.project;
 
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -38,20 +38,20 @@ public class JIPipeDesktopMergedProjectSettingsUserDirectories extends AbstractJ
     @Override
     public Map<String, JIPipeParameterAccess> getParameters() {
         Map<String, JIPipeParameterAccess> result = new HashMap<>();
-        List<JIPipeProjectDirectories.DirectoryEntry> directoriesAsInstance = project.getMetadata().getDirectories().getDirectoriesAsInstance();
+        List<JIPipeProjectUserPaths.UserPathEntry> directoriesAsInstance = project.getMetadata().getUserPaths().getUserPathsAsInstance();
         for (int i = 0; i < directoriesAsInstance.size(); i++) {
-            JIPipeProjectDirectories.DirectoryEntry directoryEntry = directoriesAsInstance.get(i);
+            JIPipeProjectUserPaths.UserPathEntry userPathEntry = directoriesAsInstance.get(i);
             int finalI = i;
             result.put("jipipe:project:directory/" + i, JIPipeManualParameterAccess.builder()
                     .setFieldClass(Path.class)
-                    .setGetter(directoryEntry::getPath)
+                    .setGetter(userPathEntry::getPath)
                     .setSetter((newValue) -> {
                         // Write it into the original entry
-                        JIPipeDynamicParameterCollection target = project.getMetadata().getDirectories().getDirectories().get(finalI);
+                        JIPipeDynamicParameterCollection target = project.getMetadata().getUserPaths().getPaths().get(finalI);
                         target.get("path").set(newValue);
                     })
-                    .setName(StringUtils.orElse(directoryEntry.getName(), StringUtils.orElse(directoryEntry.getKey(), "Unnamed (index " + i + ")")))
-                    .setDescription(directoryEntry.getDescription())
+                    .setName(StringUtils.orElse(userPathEntry.getName(), StringUtils.orElse(userPathEntry.getKey(), "Unnamed (index " + i + ")")))
+                    .setDescription(userPathEntry.getDescription())
                     .setKey("jipipe:project:directory/" + i)
                     .addAnnotation(new PathParameterSettings() {
 
@@ -81,7 +81,7 @@ public class JIPipeDesktopMergedProjectSettingsUserDirectories extends AbstractJ
                         }
                     })
                     .setSource(this)
-                    .setImportant(directoryEntry.getRole() == JIPipeProjectDirectories.Role.Input)
+                    .setImportant(userPathEntry.getRole() == JIPipeProjectUserPaths.Role.Input)
                     .build());
         }
         return result;

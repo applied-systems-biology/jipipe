@@ -66,7 +66,8 @@ public abstract class JIPipeArchiveProjectRun extends DefaultJIPipeRunnable {
         Set<Path> toArchive = new HashSet<>();
         for (int i = 0; i < graphNodes.size(); i++) {
             JIPipeGraphNode graphNode = graphNodes.get(i);
-            toArchive.addAll(graphNode.archiveDiscoverExternalPaths(discoveryProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size())));
+            Set<Path> paths = graphNode.archiveDiscoverExternalPaths(discoveryProgress.resolveAndLog(graphNode.getDisplayName(), i, graphNodes.size()));
+            toArchive.addAll(paths);
         }
         discoveryProgress.log("-> Discovered " + toArchive.size() + " paths");
 

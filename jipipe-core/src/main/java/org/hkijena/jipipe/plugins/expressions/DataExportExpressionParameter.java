@@ -109,7 +109,7 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
 
                 // Auto-replace data directory
                 if (projectPath != null) {
-                    for (Map.Entry<String, Path> entry : project.getMetadata().getDirectories().getDirectoryMap(projectPath).entrySet()) {
+                    for (Map.Entry<String, Path> entry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
                         Path userPath = entry.getValue();
                         if (path.startsWith(userPath)) {
                             if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the project user path '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
