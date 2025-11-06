@@ -23,12 +23,22 @@ import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventListener;
 
 import javax.swing.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class JIPipeDesktopMain {
     /**
      * @param args ignored
      */
     public static void main(final String... args) {
+
+        // Check if the user wants to open a URL/RO-Crate/*.jip file
+        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+        if(!argsList.isEmpty()) {
+            JIPipeDesktop.tryAddOpenProjectOnLoad(argsList.getLast());
+        }
+
         final ImageJ ij = new ImageJ();
         final WindowWatcher windowWatcher = new WindowWatcher(); //JIPipeGUICommand
         SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));

@@ -206,7 +206,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
             if (dst != null) {
                 updatedPaths.add(dst);
             } else {
-                progressInfo.aggressive("MISSING MAPPING", src.toString(), "to", "?");
+                progressInfo.aggressiveError("MISSING MAPPING", src.toString(), "to", "?");
             }
         }
         setPaths_(updatedPaths);
