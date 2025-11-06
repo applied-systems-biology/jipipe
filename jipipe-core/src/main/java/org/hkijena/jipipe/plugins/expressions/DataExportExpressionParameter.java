@@ -52,10 +52,10 @@ import java.util.stream.Collectors;
         "<pre>" +
         "\"C:/MyData/Outputs/Output_file\"" +
         "</pre>\n\n" +
-        "Using path combination: You can combine combine variables provided from annotations and expression variables to, for example, save create a path relative to the project directory or to a project user directory" +
+        "Using path combination: You can combine combine variables provided from annotations and expression variables to, for example, save create a path relative to the project directory or to a project user path" +
         "<pre>PATH_COMBINE(project_dir, \"Outputs\", \"Output_file\")</pre>" +
-        "<pre>PATH_COMBINE(project_data_dirs [\"outputs\"], \"Outputs\", \"Output_file\")</pre>" +
-        "Alternative: <pre>PATH_COMBINE(project_data_dir.outputs, \"Outputs\", \"Output_file\")</pre>\n\n" +
+        "<pre>PATH_COMBINE(project_user_paths [\"outputs\"], \"Outputs\", \"Output_file\")</pre>" +
+        "Alternative: <pre>PATH_COMBINE(project_user_path.outputs, \"Outputs\", \"Output_file\")</pre>\n\n" +
         "Using expression functions: You can also use the standard string concatenation function to generate paths" +
         "<pre>project_dir + \"/Outputs/Output_file\"</pre>")
 public class DataExportExpressionParameter extends JIPipeExpressionParameter {
@@ -109,18 +109,18 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
 
                 // Auto-replace data directory
                 if (projectPath != null) {
-                    for (Map.Entry<String, Path> entry : project.getMetadata().getDirectories().getDirectoryMap(projectPath).entrySet()) {
+                    for (Map.Entry<String, Path> entry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
                         Path userPath = entry.getValue();
                         if (path.startsWith(userPath)) {
-                            if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the user-defined directory '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
+                            if (JOptionPane.showConfirmDialog(parent, "The selected path '" + path + "' is located in the project user path '" + entry.getKey() + "'=" + entry.getValue() + ".\n" +
                                             "Do you want to make the selected path portable for easier reproducibility?",
                                     "Relative path detected",
                                     JOptionPane.YES_NO_OPTION,
                                     JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
                                 if (JIPipeExpressionParameter.isValidVariableName(entry.getKey())) {
-                                    return new DataExportExpressionParameter("PATH_COMBINE(project_data_dir." + entry.getKey() + ", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
+                                    return new DataExportExpressionParameter("PATH_COMBINE(project_user_path." + entry.getKey() + ", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
                                 } else {
-                                    return new DataExportExpressionParameter("PATH_COMBINE(project_data_dirs @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
+                                    return new DataExportExpressionParameter("PATH_COMBINE(project_user_paths @ \"" + JIPipeExpressionEvaluator.escapeString(entry.getKey()) +
                                             "\", \"" + JIPipeExpressionEvaluator.escapeString(userPath.relativize(path).toString().replace('\\', '/')) + "\")");
                                 }
                             }
@@ -160,10 +160,12 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
                 }
 
                 variables.set("project_data_dir." + entry.getKey(), value);
+                variables.set("project_user_path." + entry.getKey(), value);
                 projectDataDirs_.put(entry.getKey(), value);
             }
         }
         variables.set("project_data_dirs", projectDataDirs_);
+        variables.set("project_user_paths", projectDataDirs_);
         String autoName = StringUtils.makeFilesystemCompatible(annotationList.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName))
                 .map(JIPipeTextAnnotation::getValue).collect(Collectors.joining("_")));
         variables.set("auto_file_name", autoName);

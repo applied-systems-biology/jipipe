@@ -23,8 +23,9 @@ public class JIPipeCLIHelp {
         System.out.println("    --overwrite-parameters <JSON file>                                             Overrides parameters (global and node) from a JSON file (key to value pairing)");
         System.out.println("    --P<Node ID>/<Parameter ID> <Parameter Value (JSON)>                           Overrides one parameter from the specified JSON data");
         System.out.println("    --P/<Global Parameter ID> <Parameter Value (JSON)>                             Overrides a global parameter from the specified JSON data");
-        System.out.println("    --overwrite-user-directories <JSON file>                                       Read user directory overrides from a JSON file (object with key to value pairing)");
-        System.out.println("    --U<User directory key> <User directory value>                                 Overrides one user directory key with the specified directory");
+        System.out.println("    --overwrite-user-paths <JSON file>                                             Read user path overrides from a JSON file (object with key to value pairing)");
+        System.out.println("    --overwrite-user-directories <JSON file>                                       Read user path overrides from a JSON file (object with key to value pairing). Deprecated.");
+        System.out.println("    --U<User path key> <User path value>                                           Overrides one user path key with the specified path");
         System.out.println("    --output-results <all/none/only-compartment-outputs>                           Determines which standard JIPipe outputs are written (default: all)");
         System.out.println();
         System.out.println("render <options>");

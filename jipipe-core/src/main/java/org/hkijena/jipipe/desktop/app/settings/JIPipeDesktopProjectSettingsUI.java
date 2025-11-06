@@ -239,7 +239,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
         private final JIPipeProject project;
 
         public ProjectDirectoriesSettingsSheetWrapper(JIPipeProject project) {
-            super(project.getMetadata().getDirectories());
+            super(project.getMetadata().getUserPaths());
             this.project = project;
         }
 
@@ -260,12 +260,12 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
 
         @Override
         public String getName() {
-            return "Project-wide directories";
+            return "Project user paths";
         }
 
         @Override
         public String getDescription() {
-            return "Allows to setup project-wide paths and directories";
+            return "Allows to setup project user paths";
         }
 
         @Override
@@ -312,7 +312,7 @@ public class JIPipeDesktopProjectSettingsUI extends JPanel {
             if (subParameter == project.getMetadata().getPermissions()) {
                 return false;
             }
-            if (subParameter == project.getMetadata().getDirectories()) {
+            if (subParameter == project.getMetadata().getUserPaths()) {
                 return false;
             }
             if (subParameter == project.getMetadata().getGlobalParameters()) {

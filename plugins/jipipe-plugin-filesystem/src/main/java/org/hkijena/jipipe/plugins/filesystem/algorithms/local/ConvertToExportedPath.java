@@ -57,7 +57,7 @@ public class ConvertToExportedPath extends JIPipeSimpleIteratingAlgorithm {
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
-            projectDataDirs = getRuntimeProject().getDirectoryMap();
+            projectDataDirs = getRuntimeProject().getUserPathMap();
         } else {
             projectDataDirs = Collections.emptyMap();
         }

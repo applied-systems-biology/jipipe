@@ -245,7 +245,7 @@ public class JIPipeDesktopFileChooserNext extends JPanel {
             if (project.getWorkDirectory() != null && Files.isDirectory(project.getWorkDirectory())) {
                 projectPaths.add(new ImmutablePair<>("Project directory", project.getWorkDirectory()));
             }
-            for (Map.Entry<String, Path> entry : project.getDirectoryMap().entrySet()) {
+            for (Map.Entry<String, Path> entry : project.getUserPathMap().entrySet()) {
                 if (Files.isDirectory(entry.getValue())) {
                     projectPaths.add(new ImmutablePair<>(entry.getKey(), entry.getValue()));
                 }

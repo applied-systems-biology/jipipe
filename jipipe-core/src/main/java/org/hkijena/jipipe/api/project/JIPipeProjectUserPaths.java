@@ -32,27 +32,27 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection {
+public class JIPipeProjectUserPaths extends AbstractJIPipeParameterCollection {
 
-    private JIPipeParameterCollectionList directories = JIPipeParameterCollectionList.containingCollection(DirectoryEntry.class);
+    private JIPipeParameterCollectionList paths = JIPipeParameterCollectionList.containingCollection(UserPathEntry.class);
 
-    @SetJIPipeDocumentation(name = "User directories", description = "A list of directories that can be used in various nodes")
+    @SetJIPipeDocumentation(name = "User paths", description = "A list of paths that can be used in various nodes")
     @JIPipeParameter("user-directories")
     @JsonGetter("user-directories")
     @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
-    @ParameterCollectionListTemplate(DirectoryEntry.class)
-    public JIPipeParameterCollectionList getDirectories() {
-        return directories;
+    @ParameterCollectionListTemplate(UserPathEntry.class)
+    public JIPipeParameterCollectionList getPaths() {
+        return paths;
     }
 
     @JIPipeParameter("user-directories")
     @JsonSetter("user-directories")
-    public void setDirectories(JIPipeParameterCollectionList directories) {
-        this.directories = directories;
+    public void setPaths(JIPipeParameterCollectionList paths) {
+        this.paths = paths;
     }
 
-    public List<DirectoryEntry> getDirectoriesAsInstance() {
-        return directories.mapToCollection(DirectoryEntry.class);
+    public List<UserPathEntry> getUserPathsAsInstance() {
+        return paths.mapToCollection(UserPathEntry.class);
     }
 
     /**
@@ -62,15 +62,15 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
      */
     public Map<String, Path> getDirectoryMap(Path projectDir) {
         Map<String, Path> result = new HashMap<>();
-        for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
-            if (!StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
-                Path path = directoryEntry.path;
+        for (UserPathEntry userPathEntry : paths.mapToCollection(UserPathEntry.class)) {
+            if (!StringUtils.isNullOrEmpty(userPathEntry.getKey())) {
+                Path path = userPathEntry.path;
                 if (path != null && !StringUtils.isNullOrEmpty(path.toString())) {
                     if (projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
                         path = projectDir.resolve(path);
                     }
                 }
-                result.put(directoryEntry.key, path);
+                result.put(userPathEntry.key, path);
             }
         }
         return result;
@@ -81,24 +81,24 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
      *
      * @return the directories
      */
-    public Map<String, Path> getMandatoryDirectoriesMap(Path projectDir) {
+    public Map<String, Path> getMandatoryUserPathsMap(Path projectDir) {
         Map<String, Path> result = new HashMap<>();
-        for (DirectoryEntry directoryEntry : directories.mapToCollection(DirectoryEntry.class)) {
-            if (directoryEntry.getRole() == Role.Input && !StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
-                Path path = directoryEntry.path;
+        for (UserPathEntry userPathEntry : paths.mapToCollection(UserPathEntry.class)) {
+            if (userPathEntry.getRole() == Role.Input && !StringUtils.isNullOrEmpty(userPathEntry.getKey())) {
+                Path path = userPathEntry.path;
                 if (path != null && !StringUtils.isNullOrEmpty(path.toString())) {
                     if (projectDir != null && projectDir.isAbsolute() && !path.isAbsolute()) {
                         path = projectDir.resolve(path);
                     }
                 }
-                result.put(directoryEntry.key, path);
+                result.put(userPathEntry.key, path);
             }
         }
         return result;
     }
 
-    public void setUserDirectory(String key, Path value) {
-        for (JIPipeDynamicParameterCollection parameterCollection : directories) {
+    public void setUserPath(String key, Path value) {
+        for (JIPipeDynamicParameterCollection parameterCollection : paths) {
             String currentKey = parameterCollection.get("key").get(String.class);
             if (Objects.equals(key, currentKey)) {
                 parameterCollection.setParameter("path", value);
@@ -106,7 +106,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             }
         }
 
-        JIPipeDynamicParameterCollection parameterCollection = directories.addNewInstance();
+        JIPipeDynamicParameterCollection parameterCollection = paths.addNewInstance();
         parameterCollection.setParameter("key", key);
         parameterCollection.setParameter("path", value);
     }
@@ -118,17 +118,17 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
         Ignored
     }
 
-    public static class DirectoryEntry extends AbstractJIPipeParameterCollection {
+    public static class UserPathEntry extends AbstractJIPipeParameterCollection {
         private String name;
         private String description;
         private String key;
         private Path path;
         private Role role = Role.Unspecified;
 
-        public DirectoryEntry() {
+        public UserPathEntry() {
         }
 
-        public DirectoryEntry(DirectoryEntry other) {
+        public UserPathEntry(UserPathEntry other) {
             this.key = other.key;
             this.path = other.path;
             this.role = other.role;
@@ -158,7 +158,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.description = description;
         }
 
-        @SetJIPipeDocumentation(name = "Key", description = "The key that will be used to access the directory. Cannot be empty.")
+        @SetJIPipeDocumentation(name = "Key", description = "The key that will be used to access the path. Cannot be empty.")
         @JIPipeParameter(value = "key", uiOrder = -100)
         public String getKey() {
             return key;
@@ -171,7 +171,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
 
         @SetJIPipeDocumentation(name = "Path", description = "The path that will be referenced")
         @JIPipeParameter(value = "path", uiOrder = -90)
-        @PathParameterSettings(pathMode = PathType.DirectoriesOnly, ioMode = PathIOMode.Open)
+        @PathParameterSettings(pathMode = PathType.FilesAndDirectories, ioMode = PathIOMode.Open)
         public Path getPath() {
             return path;
         }
@@ -181,7 +181,7 @@ public class JIPipeProjectDirectories extends AbstractJIPipeParameterCollection 
             this.path = path;
         }
 
-        @SetJIPipeDocumentation(name = "Role", description = "The role of this directory (input/output/unspecified). If the role is set to 'Input', JIPipe will check if the directory exists.")
+        @SetJIPipeDocumentation(name = "Role", description = "The role of this path (input/output/unspecified). If the role is set to 'Input', JIPipe will check if the path exists.")
         @JIPipeParameter("role")
         public Role getRole() {
             return role;

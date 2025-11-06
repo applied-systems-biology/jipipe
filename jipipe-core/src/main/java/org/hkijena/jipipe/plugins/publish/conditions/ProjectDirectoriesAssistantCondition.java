@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.publish.conditions;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistantCondition;
@@ -44,17 +44,17 @@ public class ProjectDirectoriesAssistantCondition extends JIPipeDesktopPublisher
     public JIPipeDesktopPublisherAssistantConditionStatus getStatus() {
         Set<String> knownKeys = new HashSet<>();
         JIPipeDesktopPublisherAssistantConditionStatus result = JIPipeDesktopPublisherAssistantConditionStatus.Valid;
-        for (JIPipeProjectDirectories.DirectoryEntry directoryEntry : getProject().getMetadata().getDirectories().getDirectoriesAsInstance()) {
-            if (StringUtils.isNullOrEmpty(directoryEntry.getKey())) {
+        for (JIPipeProjectUserPaths.UserPathEntry userPathEntry : getProject().getMetadata().getUserPaths().getUserPathsAsInstance()) {
+            if (StringUtils.isNullOrEmpty(userPathEntry.getKey())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
-            } else if (knownKeys.contains(directoryEntry.getKey())) {
+            } else if (knownKeys.contains(userPathEntry.getKey())) {
                 return JIPipeDesktopPublisherAssistantConditionStatus.Invalid;
             } else {
-                knownKeys.add(directoryEntry.getKey());
+                knownKeys.add(userPathEntry.getKey());
             }
 
             // We want well-defined roles!
-            if (directoryEntry.getRole() != JIPipeProjectDirectories.Role.Input && directoryEntry.getRole() != JIPipeProjectDirectories.Role.Output) {
+            if (userPathEntry.getRole() != JIPipeProjectUserPaths.Role.Input && userPathEntry.getRole() != JIPipeProjectUserPaths.Role.Output) {
                 result = JIPipeDesktopPublisherAssistantConditionStatus.Warning;
             }
         }

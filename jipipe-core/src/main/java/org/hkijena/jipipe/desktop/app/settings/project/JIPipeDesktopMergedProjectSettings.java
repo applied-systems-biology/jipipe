@@ -44,7 +44,7 @@ public class JIPipeDesktopMergedProjectSettings extends AbstractJIPipeParameterC
         return true;
     }
 
-    @SetJIPipeDocumentation(name = "Project-wide directories", description = "Project-wide directories that can be access through a variety of nodes. " +
+    @SetJIPipeDocumentation(name = "Project user paths", description = "Project-wide paths that can be access through a variety of nodes. " +
             "The set of directories can be modified in the project settings.")
     @JIPipeParameter(value = "user-directories", icon = "places/folder-blue.png")
     public JIPipeDesktopMergedProjectSettingsUserDirectories getUserDirectoriesSettings() {

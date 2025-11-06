@@ -52,7 +52,7 @@ public class JIPipeCLIPipelineRun {
         Path overrideProfileDir = null;
 
         Map<String, String> parameterOverrides = new HashMap<>();
-        Map<String, Path> userDirectoryOverrides = new HashMap<>();
+        Map<String, Path> userPathOverrides = new HashMap<>();
 
         // Parse flags
         for (int i = 0; i < argsList.size(); i++) {
@@ -92,11 +92,11 @@ public class JIPipeCLIPipelineRun {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-            } else if (arg.equals("--overwrite-user-directories")) {
+            } else if (arg.equals("--overwrite-user-directories") || arg.equals("--overwrite-user-paths")) {
                 try {
                     JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new File(value));
                     for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
-                        userDirectoryOverrides.put(entry.getKey(), Paths.get(entry.getValue().textValue()));
+                        userPathOverrides.put(entry.getKey(), Paths.get(entry.getValue().textValue()));
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
@@ -123,7 +123,7 @@ public class JIPipeCLIPipelineRun {
             } else if (arg.startsWith("--P")) {
                 parameterOverrides.put(arg.substring(3), value);
             } else if (arg.startsWith("--U")) {
-                userDirectoryOverrides.put(arg.substring(3), Paths.get(value));
+                userPathOverrides.put(arg.substring(3), Paths.get(value));
             } else if (arg.equals("--profile-dir")) {
                 overrideProfileDir = Paths.get(value);
             } else {
@@ -210,10 +210,10 @@ public class JIPipeCLIPipelineRun {
             access.set(value);
         }
 
-        // Overwrite user directories
-        for (Map.Entry<String, Path> entry : userDirectoryOverrides.entrySet()) {
-            System.out.println("Setting user directory " + entry.getKey() + "=" + entry.getValue());
-            project.getMetadata().getDirectories().setUserDirectory(entry.getKey(), entry.getValue());
+        // Overwrite user paths
+        for (Map.Entry<String, Path> entry : userPathOverrides.entrySet()) {
+            System.out.println("Setting user path " + entry.getKey() + "=" + entry.getValue());
+            project.getMetadata().getUserPaths().setUserPath(entry.getKey(), entry.getValue());
         }
 
         project.reportValidity(new UnspecifiedValidationReportContext(), JIPipeValidationReportSettings.DEFAULT, projectIssues, JIPipeProgressInfo.STDOUT.resolve("Project validation"));

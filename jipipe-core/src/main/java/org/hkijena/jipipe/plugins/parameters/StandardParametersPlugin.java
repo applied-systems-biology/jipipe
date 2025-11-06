@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseSearchImplementat
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollectionVisibilities;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceDesktopParameterEditorUI;
 import org.hkijena.jipipe.api.runtimepartitioning.RuntimePartitionReferenceParameter;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -699,7 +699,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                         "Should be formatted as GroupId.ArtifactId:Version-Classifier",
                 JIPipeDesktopArtifactQueryParameterEditorUI.class);
         registerEnumParameterType("project-directory-role",
-                JIPipeProjectDirectories.Role.class,
+                JIPipeProjectUserPaths.Role.class,
                 "Project directory role",
                 "Determines the role of a project directory (input/output/unspecified)");
 

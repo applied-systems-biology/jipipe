@@ -417,10 +417,10 @@ public final class JIPipe {
 
 
     /**
-     * Gets the JIPipe user-writable directory.
+     * Gets the JIPipe user-writable path.
      * Can be overwritten by setting the JIPIPE_USER_DIR environment variable to deploy JIPipe into a read-only environment
      *
-     * @return the JIPipe user directory
+     * @return the JIPipe user path
      */
     public static Path getJIPipeUserDir(boolean allowOldProfile) {
         return PathUtils.getJIPipeUserDir(allowOldProfile);

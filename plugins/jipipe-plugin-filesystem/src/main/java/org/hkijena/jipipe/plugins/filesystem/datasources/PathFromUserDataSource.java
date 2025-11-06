@@ -43,7 +43,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run. Currently not recommended. Use user directories instead.")
+@SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run. Currently not recommended. Use project user paths instead.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Path", create = true)
 @MarkNodeAsUnstable

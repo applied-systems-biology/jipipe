@@ -1243,7 +1243,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     public Map<String, Path> getProjectDataDirs() {
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
-            projectDataDirs = getRuntimeProject().getDirectoryMap();
+            projectDataDirs = getRuntimeProject().getUserPathMap();
         } else {
             projectDataDirs = Collections.emptyMap();
         }
@@ -1448,7 +1448,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * @return the external file paths
      */
     public Set<Path> archiveDiscoverExternalPaths(JIPipeProgressInfo progressInfo) {
-        return null;
+        return Collections.emptySet();
     }
 
     /**

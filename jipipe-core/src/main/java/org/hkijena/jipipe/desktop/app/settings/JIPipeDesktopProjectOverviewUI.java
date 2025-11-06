@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
@@ -874,8 +874,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         JIPipeDesktopRibbon.Band modifyParametersBand = parametersTask.getOrCreateBand("Modify");
         modifyParametersBand.addLargeButton("Global", "Add/edit custom global parameters", JIPipe.RESOURCES.getIcon32("actions/configure3.png"), this::editGlobalParameters);
         modifyParametersBand.addLargeButton("References", "Reference parameters from the pipeline", JIPipe.RESOURCES.getIcon32("actions/edit-link.png"), this::editReferencedParameters);
-        modifyParametersBand.addLargeMenuButton("Directories", "Modify global directories", JIPipe.RESOURCES.getIcon32("actions/document-open-folder.png"),
-                UIUtils.createMenuItem("Add new directory ...", "Adds an existing path/directory as new entry into the directory list", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addDirectoryParameter),
+        modifyParametersBand.addLargeMenuButton("User paths", "Modify project-wide files and directories", JIPipe.RESOURCES.getIcon32("actions/document-open-folder.png"),
+                UIUtils.createMenuItem("Add new file/directory ...", "Adds an existing path/directory as new entry into the directory list", JIPipe.RESOURCES.getIcon16("actions/add.png"), this::addDirectoryParameter),
                 UIUtils.createMenuItem("Configure ...", "Opens the relevant page in the project settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::editDirectoryParameters));
         JIPipeDesktopRibbon.Band viewBand = parametersTask.getOrCreateBand("View");
         viewBand.addLargeButton("Refresh", "Refreshes the parameters", JIPipe.RESOURCES.getIcon32("actions/stock_refresh.png"), this::refreshAll);
@@ -885,7 +885,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     private void addDirectoryParameter() {
         Path path = JIPipeDesktop.openPath(this, getDesktopProjectWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Add new project-wide path/directory", HTMLText.EMPTY);
         if (path != null) {
-            JIPipeProjectDirectories.DirectoryEntry entry = new JIPipeProjectDirectories.DirectoryEntry();
+            JIPipeProjectUserPaths.UserPathEntry entry = new JIPipeProjectUserPaths.UserPathEntry();
             entry.setPath(path);
             entry.setName(path.getFileName().toString());
             while (true) {
@@ -896,11 +896,11 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
                         JOptionPane.showMessageDialog(this, "No key was provided", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
                         continue;
                     }
-                    if (getProject().getMetadata().getDirectories().getDirectoriesAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
+                    if (getProject().getMetadata().getUserPaths().getUserPathsAsInstance().stream().anyMatch(e -> Objects.equals(e.getKey(), entry.getKey()))) {
                         JOptionPane.showMessageDialog(this, "The key already exists", "Add new project-wide path/directory", JOptionPane.ERROR_MESSAGE);
                         continue;
                     }
-                    getProject().getMetadata().getDirectories().getDirectories().addFromTemplate(entry);
+                    getProject().getMetadata().getUserPaths().getPaths().addFromTemplate(entry);
                     refreshParameters();
                     break;
                 } else {
@@ -911,7 +911,7 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
     }
 
     private void editDirectoryParameters() {
-        getDesktopProjectWorkbench().openProjectSettings("/General/Project-wide directories");
+        getDesktopProjectWorkbench().openProjectSettings("/General/Project user paths");
         refreshParameters();
     }
 

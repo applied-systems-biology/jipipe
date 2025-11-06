@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.project.JIPipeProjectDirectories;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
@@ -55,13 +55,13 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     private final JIPipeProject project;
     private final Path projectFile;
     private final Path roCrateFile;
-    private final Map<String, JIPipeProjectDirectories.Role> archivedProjectDirectories;
+    private final Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths;
 
-    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile, Map<String, JIPipeProjectDirectories.Role> archivedProjectDirectories) {
+    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile, Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths) {
         this.project = project;
         this.projectFile = projectFile;
         this.roCrateFile = roCrateFile;
-        this.archivedProjectDirectories = archivedProjectDirectories;
+        this.archivedProjectUserPaths = archivedProjectUserPaths;
     }
 
     @Override
@@ -79,7 +79,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Create the project archive
         createProjectArchive(tmpPath);
-        Map<String, String> projectDirectories = copyProjectDirectories(builder, tmpPath);
+        Map<String, String> projectDirectories = copyProjectUserPaths(builder, tmpPath);
         addProjectToROCrate(builder, tmpPath, projectDirectories);
 
         // Create CWL file
@@ -113,7 +113,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         PathUtils.deleteDirectoryRecursively(tmpPath, getProgressInfo().resolve("Cleanup"));
     }
 
-    private void addProjectToROCrate(RoCrate.RoCrateBuilder builder, Path tmpPath, Map<String, String> projectDirectories) {
+    private void addProjectToROCrate(RoCrate.RoCrateBuilder builder, Path tmpPath, Map<String, String> projectUserPaths) {
         try {
             JIPipeProject copyProject = new JIPipeProject();
             copyProject.fromJson(JsonUtils.readFromFile(tmpPath.resolve("project.jip"), JsonNode.class),
@@ -121,10 +121,10 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                     new JIPipeValidationReport(),
                     new JIPipeNotificationInbox(), getProgressInfo().resolve("Load project copy"));
 
-            // Modify user directories
-            for (JIPipeDynamicParameterCollection parameterCollection : copyProject.getMetadata().getDirectories().getDirectories()) {
+            // Modify user paths
+            for (JIPipeDynamicParameterCollection parameterCollection : copyProject.getMetadata().getUserPaths().getPaths()) {
                 String key = StringUtils.nullToEmpty(parameterCollection.get("key").get(String.class));
-                String newValue = projectDirectories.getOrDefault(key, null);
+                String newValue = projectUserPaths.getOrDefault(key, null);
                 if (newValue != null) {
                     parameterCollection.setParameter("path", Path.of(newValue));
                 }
@@ -142,62 +142,90 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         }
     }
 
-    private Map<String, String> copyProjectDirectories(RoCrate.RoCrateBuilder builder, Path tmpPath) {
-        // Map that will be saved into project-directories.json
-        Map<String, String> projectDirectoriesRedirect = new HashMap<>();
+    private Map<String, String> copyProjectUserPaths(RoCrate.RoCrateBuilder builder, Path tmpPath) {
+        // Map that will be saved into project-user-paths.json
+        Map<String, String> projectUserPathsRedirect = new HashMap<>();
 
         // Archive project directories
-        Map<String, Path> directoryMap = getProject().getMetadata().getDirectories().getDirectoryMap(getProject().getWorkDirectory());
+        Map<String, Path> directoryMap = getProject().getMetadata().getUserPaths().getDirectoryMap(getProject().getWorkDirectory());
         for (Map.Entry<String, Path> entry : directoryMap.entrySet()) {
-            JIPipeProjectDirectories.Role role = archivedProjectDirectories.getOrDefault(entry.getKey(), JIPipeProjectDirectories.Role.Ignored);
-            if (role == JIPipeProjectDirectories.Role.Unspecified) {
+            JIPipeProjectUserPaths.Role role = archivedProjectUserPaths.getOrDefault(entry.getKey(), JIPipeProjectUserPaths.Role.Ignored);
+            if (role == JIPipeProjectUserPaths.Role.Unspecified) {
                 // Auto-detect
-                getProgressInfo().log("WARNING: Project directory " + entry.getKey() + " (" + entry.getValue() + ") is unspecified. Guessing type based on directory properties.");
+                getProgressInfo().log("WARNING: Project user path " + entry.getKey() + " (" + entry.getValue() + ") is unspecified. Guessing type based on path properties.");
 
-                if (Files.isDirectory(entry.getValue())) {
-                    getProgressInfo().log("INFO: directory exists. guessing type is 'Input'");
-                    role = JIPipeProjectDirectories.Role.Input;
+                if (Files.exists(entry.getValue())) {
+                    getProgressInfo().log("INFO: path exists. guessing type is 'Input'");
+                    role = JIPipeProjectUserPaths.Role.Input;
                 } else {
-                    getProgressInfo().log("INFO: directory does not exist. guessing type is 'Output'");
-                    role = JIPipeProjectDirectories.Role.Output;
+                    getProgressInfo().log("INFO: path does not exist. guessing type is 'Output'");
+                    role = JIPipeProjectUserPaths.Role.Output;
                 }
             }
             switch (role) {
                 case Ignored: {
-                    getProgressInfo().log("WARNING: Project directory " + entry.getKey() + " is ignored by Ro-Crate!!!");
+                    getProgressInfo().log("WARNING: Project user path " + entry.getKey() + " is ignored by Ro-Crate!!!");
                 }
                 break;
                 case Input: {
-                    getProgressInfo().log("Archiving project directory " + entry.getKey() + " (" + entry.getValue() + ")");
+                    getProgressInfo().log("Archiving project user path " + entry.getKey() + " (" + entry.getValue() + ")");
                     if (Files.isDirectory(entry.getValue())) {
                         String newKey = StringUtils.makeFilesystemCompatible(entry.getKey());
                         Path relativeArchiveDirectory = Path.of("inputs", newKey);
                         PathUtils.createDirectories(tmpPath.resolve(relativeArchiveDirectory));
                         PathUtils.copyDirectory(entry.getValue(), tmpPath.resolve(relativeArchiveDirectory), getProgressInfo().resolve("Project directory " + entry.getKey()));
-                        projectDirectoriesRedirect.put(entry.getKey(), relativeArchiveDirectory.toString());
-                    } else {
-                        getProgressInfo().log(new FileNotFoundException("Unable to archive project directory " + entry.getKey() + ": directory " + entry.getValue() + " does not exist"));
+                        projectUserPathsRedirect.put(entry.getKey(), relativeArchiveDirectory.toString());
+                    }
+                    else if(Files.isRegularFile(entry.getValue())) {
+                        // We will make a subdirectory based on the key and copy the file into that one
+                        // Then apply the redirect accordingly
+                        // This preserves the file name which may contain metadata
+                        String newKey = StringUtils.makeFilesystemCompatible(entry.getKey());
+                        Path relativeArchiveDirectory = Path.of("inputs", newKey);
+
+                        getProgressInfo().log("Relocating input project user path " + entry.getKey() + " (" + entry.getValue() + ") into key-based storage " + relativeArchiveDirectory);
+                        getProgressInfo().log("-> File will be " + relativeArchiveDirectory.resolve(entry.getValue().getFileName()));
+
+                        PathUtils.createDirectories(tmpPath.resolve(relativeArchiveDirectory));
+                        PathUtils.copyFile(entry.getValue(), tmpPath.resolve(relativeArchiveDirectory).resolve(entry.getValue().getFileName()));
+                        projectUserPathsRedirect.put(entry.getKey(), relativeArchiveDirectory.resolve(entry.getValue().getFileName()).toString());
+                    }
+                    else {
+                        getProgressInfo().log(new FileNotFoundException("Unable to archive project user path " + entry.getKey() + ": directory " + entry.getValue() + " does not exist"));
                     }
                 }
                 break;
                 case Output: {
-                    getProgressInfo().log("Project directory " + entry.getKey() + " (" + entry.getValue() + ") will be redirected into the output directory");
+                    getProgressInfo().log("Project user path " + entry.getKey() + " (" + entry.getValue() + ") will be redirected into the output directory");
 
-                    // Outputs are stored into the outputs directory
-                    projectDirectoriesRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
+                    if(Files.isDirectory(entry.getValue())) {
+                        // Outputs are stored into the outputs directory
+                        projectUserPathsRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
+                    }
+                    else if(Files.isRegularFile(entry.getValue())) {
+                        // Preserve the file name
+                        Path finalOutputPath = Path.of("outputs", entry.getKey(), entry.getValue().getFileName().toString());
+                        getProgressInfo().log("Relocating output project user path " + entry.getKey() + " (" + entry.getValue() + ") into key-based storage " + finalOutputPath);
+                        projectUserPathsRedirect.put(entry.getKey(), finalOutputPath.toString());
+                    }
+                    else {
+                        getProgressInfo().warn("Unable to guess if the output is a file or directory (does not exist, so assuming a directory)");
+                        // Outputs are stored into the outputs directory
+                        projectUserPathsRedirect.put(entry.getKey(), Path.of("outputs", entry.getKey()).toString());
+                    }
                 }
                 break;
             }
         }
 
-        // Create and add the project-directories.json
-        JsonUtils.saveToFile(projectDirectoriesRedirect, tmpPath.resolve("project-directories.json"));
+        // Create and add the project-user-paths.json
+        JsonUtils.saveToFile(projectUserPathsRedirect, tmpPath.resolve("project-user-paths.json"));
         builder.addDataEntity(new FileEntity.FileEntityBuilder()
-                .setId("project-directories.json")
-                .setLocation(tmpPath.resolve("project-directories.json"))
+                .setId("project-user-paths.json")
+                .setLocation(tmpPath.resolve("project-user-paths.json"))
                 .build());
 
-        return projectDirectoriesRedirect;
+        return projectUserPathsRedirect;
     }
 
     private void addROCrateMainEntity(RoCrate crate) {
@@ -307,11 +335,11 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         inputs.put("user_directories_config", new LinkedHashMap<String, Object>() {{
             put("type", "string");
-            put("default", "project-directories.json");
+            put("default", "project-user-paths.json");
             put("inputBinding", new LinkedHashMap<String, Object>() {{
-                put("prefix", "--overwrite-user-directories");
+                put("prefix", "--overwrite-user-paths");
             }});
-            put("doc", "Configuration to override user directories");
+            put("doc", "Configuration to override user paths");
         }});
 
         // TODO: Parameters
