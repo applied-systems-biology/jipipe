@@ -100,20 +100,20 @@ public class VersionUtils {
         return compareVersions(version, from) > 0 && compareVersions(version, to) < 0;
     }
 
-    public static boolean isNewerThan(String version, String otherVersion) {
-        return compareVersions(version, otherVersion) > 0;
+    public static boolean isNewerThan(String currentVersion, String otherVersion) {
+        return compareVersions(currentVersion, otherVersion) > 0;
     }
 
-    public static boolean isNewerThanOrEqual(String version, String otherVersion) {
-        return compareVersions(version, otherVersion) >= 0;
+    public static boolean isNewerThanOrEqual(String currentVersion, String otherVersion) {
+        return compareVersions(currentVersion, otherVersion) >= 0;
     }
 
-    public static boolean isOlderThan(String version, String otherVersion) {
-        return compareVersions(version, otherVersion) < 0;
+    public static boolean isOlderThan(String currentVersion, String otherVersion) {
+        return compareVersions(currentVersion, otherVersion) < 0;
     }
 
-    public static boolean isOlderThanOrEqual(String version, String otherVersion) {
-        return compareVersions(version, otherVersion) <= 0;
+    public static boolean isOlderThanOrEqual(String currentVersion, String otherVersion) {
+        return compareVersions(currentVersion, otherVersion) <= 0;
     }
 
     public List<int[]> equalizeVersionComponents(int[]... versions) {

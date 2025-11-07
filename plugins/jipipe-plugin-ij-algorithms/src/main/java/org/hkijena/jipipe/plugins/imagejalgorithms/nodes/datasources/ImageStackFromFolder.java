@@ -45,9 +45,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Loads an image data from a file via IJ.openFile()
- */
 @SetJIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
         "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
