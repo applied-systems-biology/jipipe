@@ -20,6 +20,7 @@ import java.nio.file.Path;
 
 public class JIPipeLocalArtifact extends JIPipeArtifact {
     private Path localPath;
+    private boolean readOnly;
 
     public JIPipeLocalArtifact() {
     }
@@ -37,5 +38,13 @@ public class JIPipeLocalArtifact extends JIPipeArtifact {
     @JsonSetter("local-path")
     public void setLocalPath(Path localPath) {
         this.localPath = localPath;
+    }
+
+    public void setReadOnly(boolean readOnly) {
+        this.readOnly = readOnly;
+    }
+
+    public boolean isReadOnly() {
+        return readOnly;
     }
 }

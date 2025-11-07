@@ -200,7 +200,11 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
                         artifactEntryJList.repaint(50);
                     }), new JLabel("Status"));
                 }
-            } else {
+            }
+            else if(artifact instanceof JIPipeLocalArtifact localArtifact && localArtifact.isReadOnly()) {
+                propertyPanel.addToForm(UIUtils.createJLabel("Read-only", JIPipe.RESOURCES.getIcon16("actions/system-lock-screen.png")), new JLabel("Status"));
+            }
+            else {
                 if (selectedValue.isToggleInstallationStatus()) {
                     propertyPanel.addToForm(UIUtils.createLeftAlignedButton("Keep installed", JIPipe.RESOURCES.getIcon16("emblems/checkbox-unchecked.png"), () -> {
                         selectedValue.setToggleInstallationStatus(false);

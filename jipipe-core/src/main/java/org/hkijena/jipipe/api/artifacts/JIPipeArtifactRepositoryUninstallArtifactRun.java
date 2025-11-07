@@ -30,6 +30,9 @@ public class JIPipeArtifactRepositoryUninstallArtifactRun extends JIPipeArtifact
 
     @Override
     protected void doOperation(JIPipeArtifactOperationContext context, JIPipeProgressInfo progressInfo) {
+        if(artifact.isReadOnly()) {
+            progressInfo.aggressiveError("Artifact is read-only", "Refusing to delete " + artifact.getLocalPath());
+        }
         Path localPath = artifact.getLocalPath();
         progressInfo.log("Uninstalling: " + localPath);
         if (Files.isDirectory(localPath)) {
