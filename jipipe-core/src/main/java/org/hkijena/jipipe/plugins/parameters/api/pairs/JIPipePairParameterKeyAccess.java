@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.api.pairs;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.List;
 public class JIPipePairParameterKeyAccess<K, V> implements JIPipeParameterAccess {
     private final JIPipeParameterAccess parent;
     private final JIPipePairParameter<K, V> pair;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     /**
      * Creates a new instance
@@ -120,5 +122,14 @@ public class JIPipePairParameterKeyAccess<K, V> implements JIPipeParameterAccess
 
     public JIPipeParameterAccess getParent() {
         return parent;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

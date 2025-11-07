@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.api.functions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -31,6 +32,7 @@ public class JIPipeFunctionParameterParameterAccess<I, P, O> implements JIPipePa
 
     private final JIPipeParameterAccess parent;
     private final JIPipeFunctionParameter<I, P, O> functionParameter;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     public JIPipeFunctionParameterParameterAccess(JIPipeParameterAccess parent) {
         this.parent = parent;
@@ -119,5 +121,14 @@ public class JIPipeFunctionParameterParameterAccess<I, P, O> implements JIPipePa
 
     public JIPipeParameterAccess getParent() {
         return parent;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

@@ -54,7 +54,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.utils.json.PathMetadataStore;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
@@ -86,7 +86,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     private final JIPipeGraphNodeEnvironmentOverridesParameter environmentOverrides;
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
-    private PathMetadataStore nodeMetadata = new PathMetadataStore();
+    private JIPipePathMetadataStore nodeMetadata = new JIPipePathMetadataStore();
     private Path internalStoragePath;
     private Path storagePath;
     private String customName;
@@ -141,7 +141,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         this.info = other.info;
         this.bookmarked = other.bookmarked;
         this.slotConfiguration = copySlotConfiguration(other);
-        this.nodeMetadata = new PathMetadataStore(other.nodeMetadata);
+        this.nodeMetadata = new JIPipePathMetadataStore(other.nodeMetadata);
         this.customName = other.customName;
         this.customDescription = other.customDescription;
         this.baseDirectory = other.baseDirectory;
@@ -506,11 +506,11 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         return JIPipeDesktopGraphNodeUI.class;
     }
 
-    public PathMetadataStore getNodeMetadata() {
+    public JIPipePathMetadataStore getNodeMetadata() {
         return nodeMetadata;
     }
 
-    public void setNodeMetadata(PathMetadataStore nodeMetadata) {
+    public void setNodeMetadata(JIPipePathMetadataStore nodeMetadata) {
         this.nodeMetadata = nodeMetadata;
     }
 
@@ -588,7 +588,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
         }
         if (node.has("jipipe:metadata-v1")) {
             try {
-                nodeMetadata = JsonUtils.getObjectMapper().readerFor(PathMetadataStore.class).readValue(node.get("jipipe:metadata-v1"));
+                nodeMetadata = JsonUtils.getObjectMapper().readerFor(JIPipePathMetadataStore.class).readValue(node.get("jipipe:metadata-v1"));
             } catch (IOException e) {
                 context.error().title("Unable to load metadata").details(e.toString()).report(issues);
             }

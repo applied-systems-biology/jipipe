@@ -129,15 +129,15 @@ import java.util.stream.Collectors;
  * }
  * </pre>
  */
-@JsonSerialize(using = PathMetadataStore.Serializer.class)
-@JsonDeserialize(using = PathMetadataStore.Deserializer.class)
-public class PathMetadataStore {
+@JsonSerialize(using = JIPipePathMetadataStore.Serializer.class)
+@JsonDeserialize(using = JIPipePathMetadataStore.Deserializer.class)
+public class JIPipePathMetadataStore {
     private final Map<Path, Object> data = new HashMap<>();
 
     /**
      * Creates an empty PathMetadataStore
      */
-    public PathMetadataStore() {
+    public JIPipePathMetadataStore() {
     }
 
     /**
@@ -145,7 +145,7 @@ public class PathMetadataStore {
      *
      * @param other the store to copy
      */
-    public PathMetadataStore(PathMetadataStore other) {
+    public JIPipePathMetadataStore(JIPipePathMetadataStore other) {
         this.data.putAll(other.data);
     }
 
@@ -154,7 +154,7 @@ public class PathMetadataStore {
      *
      * @param primitiveStore the store to convert
      */
-    public PathMetadataStore(PrimitiveMetadataStore primitiveStore) {
+    public JIPipePathMetadataStore(PrimitiveMetadataStore primitiveStore) {
         for (String key : primitiveStore.keySet()) {
             Path path = Paths.get(key);
             Object value = primitiveStore.getData().get(key);
@@ -228,7 +228,7 @@ public class PathMetadataStore {
      *
      * @param other the store to put all entries from
      */
-    public void putAll(PathMetadataStore other) {
+    public void putAll(JIPipePathMetadataStore other) {
         if (other != null) {
             this.data.putAll(other.data);
         }
@@ -688,8 +688,8 @@ public class PathMetadataStore {
      *
      * @return a new PathMetadataStore with normalized paths
      */
-    public PathMetadataStore getNormalizedCopy() {
-        PathMetadataStore normalizedStore = new PathMetadataStore();
+    public JIPipePathMetadataStore getNormalizedCopy() {
+        JIPipePathMetadataStore normalizedStore = new JIPipePathMetadataStore();
 
         for (Map.Entry<Path, Object> entry : data.entrySet()) {
             Path normalizedKey = normalizePath(entry.getKey());
@@ -899,7 +899,7 @@ public class PathMetadataStore {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        PathMetadataStore that = (PathMetadataStore) o;
+        JIPipePathMetadataStore that = (JIPipePathMetadataStore) o;
         return Objects.equals(data, that.data);
     }
 
@@ -918,9 +918,9 @@ public class PathMetadataStore {
     /**
      * Jackson serializer for PathMetadataStore
      */
-    public static class Serializer extends JsonSerializer<PathMetadataStore> {
+    public static class Serializer extends JsonSerializer<JIPipePathMetadataStore> {
         @Override
-        public void serialize(PathMetadataStore store, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(JIPipePathMetadataStore store, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             // Convert to string-based map for JSON serialization with normalized paths
             Map<String, Object> stringMap = new LinkedHashMap<>();
             for (Map.Entry<Path, Object> entry : store.getData().entrySet()) {
@@ -934,10 +934,10 @@ public class PathMetadataStore {
     /**
      * Jackson deserializer for PathMetadataStore
      */
-    public static class Deserializer extends JsonDeserializer<PathMetadataStore> {
+    public static class Deserializer extends JsonDeserializer<JIPipePathMetadataStore> {
         @Override
-        public PathMetadataStore deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
-            PathMetadataStore store = new PathMetadataStore();
+        public JIPipePathMetadataStore deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
             if (jsonParser.isExpectedStartObjectToken()) {
                 ObjectNode node = jsonParser.readValueAsTree();

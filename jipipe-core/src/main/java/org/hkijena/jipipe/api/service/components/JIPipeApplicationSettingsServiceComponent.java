@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.settings.JIPipeApplicationSettingsSheet;
 import org.hkijena.jipipe.api.settings.JIPipeSettingsSheet;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.hkijena.jipipe.utils.json.PathMetadataStore;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.Timer;
 import java.io.BufferedWriter;
@@ -48,7 +48,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
 
     private final BiMap<String, JIPipeApplicationSettingsSheet> registeredSheets = HashBiMap.create();
     private final Map<Class<? extends JIPipeApplicationSettingsSheet>, JIPipeApplicationSettingsSheet> registeredSheetsByType = new HashMap<>();
-    private final Map<String, PathMetadataStore> registryDatabases = new HashMap<>();
+    private final Map<String, JIPipePathMetadataStore> registryDatabases = new HashMap<>();
     private final Timer saveLaterTimer;
     private final ChangedEventEmitter changedEventEmitter = new ChangedEventEmitter();
 
@@ -200,7 +200,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
     }
 
     private void saveRegistries() {
-        for (Map.Entry<String, PathMetadataStore> entry : registryDatabases.entrySet()) {
+        for (Map.Entry<String, JIPipePathMetadataStore> entry : registryDatabases.entrySet()) {
             try {
                 Path path = getRegistryFile(entry.getKey(), false);
                 JsonUtils.saveToFile(entry.getValue(), path);
@@ -250,9 +250,9 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
-        PathMetadataStore store = registryDatabases.get(databaseKey);
+        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
         if (store == null) {
-            store = new PathMetadataStore();
+            store = new JIPipePathMetadataStore();
             registryDatabases.put(databaseKey, store);
         }
 
@@ -276,15 +276,15 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
         boolean changed = false;
-        PathMetadataStore store = registryDatabases.get(databaseKey);
+        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
         if (store == null) {
-            store = new PathMetadataStore();
+            store = new JIPipePathMetadataStore();
 
             // Try to load from file
             try {
                 Path registryFile = getRegistryFile(databaseKey, false);
                 if (Files.isRegularFile(registryFile)) {
-                    store = JsonUtils.readFromFile(registryFile, PathMetadataStore.class);
+                    store = JsonUtils.readFromFile(registryFile, JIPipePathMetadataStore.class);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
@@ -325,15 +325,15 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
         boolean changed = false;
-        PathMetadataStore store = registryDatabases.get(databaseKey);
+        JIPipePathMetadataStore store = registryDatabases.get(databaseKey);
         if (store == null) {
-            store = new PathMetadataStore();
+            store = new JIPipePathMetadataStore();
 
             // Try to load from file
             try {
                 Path registryFile = getRegistryFile(databaseKey, false);
                 if (Files.isRegularFile(registryFile)) {
-                    store = JsonUtils.readFromFile(registryFile, PathMetadataStore.class);
+                    store = JsonUtils.readFromFile(registryFile, JIPipePathMetadataStore.class);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

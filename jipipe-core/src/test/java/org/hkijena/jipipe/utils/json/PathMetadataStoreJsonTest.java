@@ -28,7 +28,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutAndGetObjectWithPathKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with a simple map
         Map<String, Object> config = new HashMap<>();
@@ -55,7 +55,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutAndGetObjectWithStringKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with a list
         List<String> features = Arrays.asList("feature1", "feature2", "feature3");
@@ -78,7 +78,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testJsonSerializationAndDeserialization() {
-        PathMetadataStore originalStore = new PathMetadataStore();
+        JIPipePathMetadataStore originalStore = new JIPipePathMetadataStore();
 
         // Add various types of data including JSON objects
         originalStore.putPrimitive("settings/app/name", "TestApp");
@@ -99,7 +99,7 @@ public class PathMetadataStoreJsonTest {
         assertNotNull(jsonString);
 
         // Deserialize from JSON string
-        PathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, PathMetadataStore.class);
+        JIPipePathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, JIPipePathMetadataStore.class);
 
         // Verify primitive values
         assertEquals("TestApp", deserializedStore.getString("settings/app/name", null));
@@ -123,7 +123,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testBackwardCompatibility() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that existing primitive methods still work
         store.putPrimitive("test/string", "hello");
@@ -146,7 +146,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testCacheReplacement() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store an object (map)
         store.putObject("test/data", JsonUtils.toJsonNode(Map.of("key", "value")));
@@ -168,7 +168,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutObjectWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key doesn't throw exception and doesn't store the value
         store.putObject((String) null, "test-value");
@@ -180,7 +180,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutObjectWithNullValue() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null value doesn't throw exception and doesn't store the value
         store.putObject("test/key", null);
@@ -192,7 +192,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutObjectWithCustomPOJO() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with a custom POJO object
         TestPOJO pojo = new TestPOJO("test-name", 42, true);
@@ -212,7 +212,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testPutObjectWithNestedComplexObjects() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Create a nested complex object structure
         Map<String, Object> nestedConfig = new HashMap<>();
@@ -259,7 +259,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testGetObjectWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key - should return null
         String result = store.getObject("nonexistent/key", String.class);
@@ -272,7 +272,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testGetObjectWithTypeMismatch() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a string value
         store.putPrimitive("test/value", "42");
@@ -288,7 +288,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testGetObjectWithDifferentCollectionTypes() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with Set
         Set<String> features = new HashSet<>(Arrays.asList("feature1", "feature2", "feature3"));
@@ -331,7 +331,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testCacheClearingOnPutObjectOperations() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a JSON string
         store.putObject("test/data", Map.of("key", "value"));
@@ -359,7 +359,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testCacheBehaviorWithMixedPrimitiveObjectOperations() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a primitive value
         store.putPrimitive("test/primitive", "primitive-value");
@@ -391,7 +391,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testCacheInvalidationEdgeCases() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a JSON string
         store.putObject("test/data", Map.of("key", "value"));
@@ -426,7 +426,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testIntegrationWithToNestedMap() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store various types of data
         store.putPrimitive("settings/app/name", "TestApp");
@@ -476,7 +476,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testHierarchicalPathOperationsWithComplexObjects() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Create a hierarchical structure with complex objects
         Map<String, Object> level1 = new HashMap<>();
@@ -529,7 +529,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testCrossPlatformPathHandlingWithComplexObjects() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store complex objects with Windows-style paths
         Map<String, Object> config = new HashMap<>();
@@ -558,7 +558,7 @@ public class PathMetadataStoreJsonTest {
         assertEquals(5432, retrievedConfig.get("port"));
 
         // Test normalized copy
-        PathMetadataStore normalizedCopy = store.getNormalizedCopy();
+        JIPipePathMetadataStore normalizedCopy = store.getNormalizedCopy();
         assertEquals(store.size(), normalizedCopy.size());
         assertFalse(normalizedCopy.hasBackslashPaths());
     }
@@ -567,7 +567,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testMalformedJsonHandling() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store malformed JSON string
         store.putPrimitive("malformed/data", "{\"invalid\": json}");
@@ -594,7 +594,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testConcurrentAccessScenarios() throws InterruptedException {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Pre-populate with some data
         store.putPrimitive("shared/value", "initial");
@@ -656,7 +656,7 @@ public class PathMetadataStoreJsonTest {
 
     @Test
     public void testBoundaryConditions() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty string paths
         store.putObject("", "empty-path-value");

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
@@ -176,4 +177,6 @@ public interface JIPipeParameterAccess {
     default JIPipeParameterSerializationMode getPersistence() {
         return JIPipeParameterSerializationMode.Default;
     }
+
+    JIPipePathMetadataStore getMetadata();
 }

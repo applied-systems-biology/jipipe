@@ -17,10 +17,12 @@ import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Consumer;
@@ -47,6 +49,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     private String shortKey;
     private int uiOrder;
     private boolean important;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     private JIPipeManualParameterAccess() {
 
@@ -149,6 +152,15 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
     @Override
     public boolean isImportant() {
         return important;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 
     /**
@@ -365,6 +377,16 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+
+        public Builder addMetadata(String key, Object value) {
+            access.metadata.putObject(key, value);
+            return this;
+        }
+
+        public Builder addMetadata(Path key, Object value) {
+            access.metadata.putObject(key, value);
+            return this;
         }
 
         /**

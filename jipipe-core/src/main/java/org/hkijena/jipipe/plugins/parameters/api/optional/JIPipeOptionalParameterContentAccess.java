@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.parameters.api.optional;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.plugins.parameters.api.pairs.JIPipePairParameter;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -27,7 +28,7 @@ import java.util.List;
 public class JIPipeOptionalParameterContentAccess<T> implements JIPipeParameterAccess {
     private final JIPipeParameterAccess parent;
     private final JIPipeOptionalParameter<T> optionalParameter;
-
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
     private final JIPipeParameterCollection.ParameterChangedEventEmitter parameterChangedEventEmitter = new JIPipeParameterCollection.ParameterChangedEventEmitter();
 
     /**
@@ -129,5 +130,14 @@ public class JIPipeOptionalParameterContentAccess<T> implements JIPipeParameterA
 
     public JIPipeParameterAccess getParent() {
         return parent;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

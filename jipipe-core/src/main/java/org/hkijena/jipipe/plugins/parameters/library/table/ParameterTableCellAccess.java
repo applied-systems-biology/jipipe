@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.library.table;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -26,6 +27,7 @@ import java.util.List;
  */
 public class ParameterTableCellAccess implements JIPipeParameterAccess {
 
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
     private final JIPipeParameterAccess parent;
     private final ParameterTable table;
     private final int row;
@@ -120,5 +122,14 @@ public class ParameterTableCellAccess implements JIPipeParameterAccess {
     @Override
     public int getUIOrder() {
         return 0;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

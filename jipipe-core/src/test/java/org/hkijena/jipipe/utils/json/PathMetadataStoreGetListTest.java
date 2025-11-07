@@ -31,7 +31,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithStringKeyAndListValue() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list directly
         List<String> features = Arrays.asList("feature1", "feature2", "feature3");
@@ -53,7 +53,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithPathKeyAndListValue() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list directly
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
@@ -77,7 +77,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithJsonNodeValue() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list as JsonNode
         store.putObject("app/features", JsonUtils.toJsonNode(Arrays.asList("feature1", "feature2", "feature3")));
@@ -98,7 +98,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithDifferentTypes() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with Integer list
         List<Integer> integers = Arrays.asList(1, 2, 3);
@@ -139,7 +139,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key - should return null
         List<String> result = store.getList("nonexistent/key", String.class);
@@ -152,7 +152,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with null string key - should return null
         List<String> result = store.getList((String) null, String.class);
@@ -165,7 +165,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithNullType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list
         List<String> features = Arrays.asList("feature1", "feature2");
@@ -178,7 +178,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithWrongType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a string value
         store.putPrimitive("test/value", "not-a-list");
@@ -198,7 +198,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithEmptyList() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store an empty list
         List<String> emptyList = Arrays.asList();
@@ -214,7 +214,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithSingleElement() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a single-element list
         List<String> singleElement = Arrays.asList("single");
@@ -231,7 +231,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListCacheReplacement() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list as JsonNode
         store.putObject("test/data", JsonUtils.toJsonNode(Arrays.asList("original")));
@@ -259,7 +259,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListCacheInvalidation() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a list
         List<String> originalList = Arrays.asList("original");
@@ -296,7 +296,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListIntegrationWithOtherMethods() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store various types of data
         store.putPrimitive("settings/app/name", "TestApp");
@@ -338,7 +338,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListJsonSerializationDeserialization() {
-        PathMetadataStore originalStore = new PathMetadataStore();
+        JIPipePathMetadataStore originalStore = new JIPipePathMetadataStore();
 
         // Add various types of data including lists
         originalStore.putPrimitive("settings/app/name", "TestApp");
@@ -355,7 +355,7 @@ public class PathMetadataStoreGetListTest {
         assertNotNull(jsonString);
 
         // Deserialize from JSON string
-        PathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, PathMetadataStore.class);
+        JIPipePathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, JIPipePathMetadataStore.class);
 
         // Verify primitive values
         assertEquals("TestApp", deserializedStore.getString("settings/app/name", null));
@@ -381,7 +381,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithCrossPlatformPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store lists with Windows-style paths
         List<String> windowsFeatures = Arrays.asList("feature1", "feature2");
@@ -422,7 +422,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithEmptyStore() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty store
         List<String> result = store.getList("any/path", String.class);
@@ -437,7 +437,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithComplexNestedLists() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Create a complex nested structure with lists
         List<Object> complexList = Arrays.asList(
@@ -479,7 +479,7 @@ public class PathMetadataStoreGetListTest {
 
     @Test
     public void testGetListWithLargeLists() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with large list
         List<String> largeList = new ArrayList<String>();

@@ -26,6 +26,7 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.scijava.Priority;
 
 import java.io.IOException;
@@ -56,6 +57,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private String shortKey;
     private int uiOrder;
     private JIPipeParameterSerializationMode persistence = JIPipeParameterSerializationMode.Default;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     private boolean pinned;
 
@@ -122,6 +124,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.pinned = other.pinned;
         this.important = other.important;
         this.shortKey = other.shortKey;
+        this.metadata = new  JIPipePathMetadataStore(other.metadata);
         for (Annotation annotation : other.getAnnotations()) {
             annotationMap.put(annotation.annotationType(), annotation);
         }
@@ -336,6 +339,15 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
     public void setPersistence(JIPipeParameterSerializationMode persistence) {
         this.persistence = persistence;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 
     /**

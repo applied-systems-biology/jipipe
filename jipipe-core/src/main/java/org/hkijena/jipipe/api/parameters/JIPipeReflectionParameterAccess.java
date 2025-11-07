@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -39,7 +40,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private int uiOrder;
     private boolean important;
     private JIPipeParameterSerializationMode persistence;
-
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
     private boolean pinned;
 
     @Override
@@ -233,5 +234,14 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
 
     public void setImportant(boolean important) {
         this.important = important;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

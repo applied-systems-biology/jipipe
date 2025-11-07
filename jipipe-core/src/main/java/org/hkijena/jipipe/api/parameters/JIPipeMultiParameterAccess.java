@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
+
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.List;
 public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
 
     private final List<JIPipeParameterAccess> accessList;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     public JIPipeMultiParameterAccess(List<JIPipeParameterAccess> accessList) {
         this.accessList = accessList;
@@ -114,5 +117,14 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
 
     public List<JIPipeParameterAccess> getAccessList() {
         return accessList;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

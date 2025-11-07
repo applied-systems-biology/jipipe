@@ -30,7 +30,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithPathKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
         Path key = Paths.get("test/boolean");
@@ -47,7 +47,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithStringKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject using string key
         store.putObject("test/boolean", false);
@@ -63,7 +63,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithPathKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
         Path key = Paths.get("test/integer");
@@ -80,7 +80,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithStringKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject using string key
         store.putObject("test/integer", 123);
@@ -96,7 +96,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithPathKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
         Path key = Paths.get("test/double");
@@ -113,7 +113,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithStringKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject using string key
         store.putObject("test/double", 2.718);
@@ -129,7 +129,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithPathKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
         Path key = Paths.get("test/string");
@@ -146,7 +146,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithStringKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject using string key
         store.putObject("test/string", "hello-world");
@@ -162,7 +162,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithDifferentValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test various boolean values
         store.putObject("test/true", true);
@@ -178,7 +178,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithDifferentValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test various integer values
         store.putObject("test/zero", 0);
@@ -203,7 +203,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithDifferentValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test various double values
         store.putObject("test/zero", 0.0);
@@ -234,7 +234,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithDifferentValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test various string values
         store.putObject("test/empty", "");
@@ -265,7 +265,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithNullValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null values are not stored
         store.putObject("test/boolean", null);
@@ -277,7 +277,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithNullValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null values are not stored
         store.putObject("test/integer", null);
@@ -289,7 +289,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithNullValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null values are not stored
         store.putObject("test/double", null);
@@ -301,7 +301,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithNullValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null values are not stored
         store.putObject("test/string", null);
@@ -313,7 +313,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
         store.putObject((Path) null, true);
@@ -324,7 +324,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
         store.putObject((Path) null, 42);
@@ -335,7 +335,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
         store.putObject((Path) null, 3.14);
@@ -346,7 +346,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithNullKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
         store.putObject((Path) null, "test");
@@ -357,7 +357,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithNullType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         store.putObject("test/boolean", true);
 
@@ -367,7 +367,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithNullType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         store.putObject("test/integer", 42);
 
@@ -377,7 +377,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithNullType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         store.putObject("test/double", 3.14);
 
@@ -387,7 +387,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithNullType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         store.putObject("test/string", "test");
 
@@ -397,7 +397,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key
         assertNull(store.getObject("nonexistent/boolean", Boolean.class));
@@ -408,7 +408,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key
         assertNull(store.getObject("nonexistent/integer", Integer.class));
@@ -419,7 +419,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key
         assertNull(store.getObject("nonexistent/double", Double.class));
@@ -430,7 +430,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithNonExistentKey() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with non-existent key
         assertNull(store.getObject("nonexistent/string", String.class));
@@ -441,7 +441,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithWrongType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a string value
         store.putObject("test/wrong", "true");
@@ -455,7 +455,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithWrongType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a string value
         store.putObject("test/wrong", "42");
@@ -469,7 +469,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithWrongType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a string value
         store.putObject("test/wrong", "3.14");
@@ -483,7 +483,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithWrongType() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store an integer value
         store.putObject("test/wrong", 123);
@@ -498,7 +498,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithMixedPrimitiveAndObjectOperations() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store some values using primitive methods
         store.putPrimitive("primitive/boolean", true);
@@ -537,7 +537,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithJsonSerialization() {
-        PathMetadataStore originalStore = new PathMetadataStore();
+        JIPipePathMetadataStore originalStore = new JIPipePathMetadataStore();
 
         // Store primitive values using putObject
         originalStore.putObject("test/boolean", true);
@@ -550,7 +550,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         assertNotNull(jsonString);
 
         // Deserialize from JSON string
-        PathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, PathMetadataStore.class);
+        JIPipePathMetadataStore deserializedStore = JsonUtils.readFromString(jsonString, JIPipePathMetadataStore.class);
 
         // Verify values can be retrieved using getObject
         assertEquals(true, deserializedStore.getObject("test/boolean", Boolean.class));
@@ -567,7 +567,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithCacheBehavior() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a primitive value using putObject
         store.putObject("test/boolean", true);
@@ -599,7 +599,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithEmptyPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty path
         store.putObject("", true);
@@ -619,7 +619,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetIntegerWithEmptyPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty path
         store.putObject("", 0);
@@ -639,7 +639,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetDoubleWithEmptyPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty path
         store.putObject("", 0.0);
@@ -659,7 +659,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectGetStringWithEmptyPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with empty path
         store.putObject("", "empty");
@@ -679,7 +679,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithCrossPlatformPaths() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store values with Windows-style paths
         store.putObject("windows\\path\\to\\boolean", true);
@@ -711,7 +711,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithComplexHierarchy() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Create a complex hierarchy with primitive values
         store.putObject("app/settings/enabled", true);
@@ -779,7 +779,7 @@ public class PathMetadataStorePrimitiveObjectTest {
 
     @Test
     public void testPutObjectAndGetBooleanWithLargeNumberOfValues() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Store a large number of primitive values
         for (int i = 0; i < 1000; i++) {
