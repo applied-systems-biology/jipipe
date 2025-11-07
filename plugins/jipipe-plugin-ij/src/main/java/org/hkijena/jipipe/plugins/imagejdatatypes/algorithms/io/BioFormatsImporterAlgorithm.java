@@ -54,6 +54,7 @@ import java.util.List;
  * BioFormats importer wrapper
  */
 @SetJIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
+@AddJIPipeNodeAlias(nodeTypeCategory = DataSourceNodeTypeCategory.class, aliasName = "Import image (Bio-Formats)")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "The image file(s)", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", description = "The imported data", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

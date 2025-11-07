@@ -320,6 +320,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerExpressionFunction(new RoundToEvenFunction());
         registerExpressionFunction(new RoundToOddFunction());
         registerExpressionFunction(new NaNToNumFunction());
+        registerExpressionFunction(new PathMatchesFileExtensionFunction());
     }
 
     @Override

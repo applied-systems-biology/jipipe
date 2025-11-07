@@ -29,7 +29,15 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.backends.BioFormatsImageImageBackend;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.backends.ImageJImportImageBackend;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.backends.ImportImageBackend;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.io.backends.JavaImportImageBackend;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -38,15 +46,15 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataInfoRe
 import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Stream;
 
-/**
- * Loads an image data from a file via IJ.openFile()
- */
-@SetJIPipeDocumentation(name = "Import image", description = "Loads an image via the native ImageJ functions.")
+@SetJIPipeDocumentation(name = "Import image", description = "Loads an image using the best-matching method.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", description = "The image file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", description = "Imported image", create = true)
@@ -60,21 +68,29 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter titleAnnotation = new OptionalTextAnnotationNameParameter();
     private boolean removeLut = false;
     private boolean removeOverlay = false;
+    private boolean continueWithNextBackendOnFailure = true;
+    @Deprecated
     private boolean forceNativeImport = false;
 
-    /**
-     * @param info algorithm info
-     */
+    private final ImageJImportImageBackend imageJBackendSettings;
+    private final BioFormatsImageImageBackend bioFormatsBackendSettings;
+    private final JavaImportImageBackend javaBackendSettings;
+
     public ImportImagePlusAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.imageJBackendSettings = new ImageJImportImageBackend();
+        this.bioFormatsBackendSettings = new BioFormatsImageImageBackend();
+        this.javaBackendSettings = new JavaImportImageBackend();
         titleAnnotation.setContent("Image title");
+
+        // Backend defaults
+        javaBackendSettings.setPriority(0);
+        imageJBackendSettings.setPriority(10);
+        bioFormatsBackendSettings.setPriority(20);
+
+        registerSubParameters(imageJBackendSettings, bioFormatsBackendSettings, javaBackendSettings);
     }
 
-    /**
-     * Copies the algorithm
-     *
-     * @param other the original
-     */
     public ImportImagePlusAlgorithm(ImportImagePlusAlgorithm other) {
         super(other);
         setGeneratedImageType(new JIPipeDataInfoRef(other.generatedImageType));
@@ -82,6 +98,47 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.removeLut = other.removeLut;
         this.removeOverlay = other.removeOverlay;
         this.forceNativeImport = other.forceNativeImport;
+        this.continueWithNextBackendOnFailure = other.continueWithNextBackendOnFailure;
+        this.imageJBackendSettings = new ImageJImportImageBackend(other.imageJBackendSettings);
+        this.bioFormatsBackendSettings = new BioFormatsImageImageBackend(other.bioFormatsBackendSettings);
+        this.javaBackendSettings = new JavaImportImageBackend(other.javaBackendSettings);
+
+        registerSubParameters(imageJBackendSettings, bioFormatsBackendSettings, javaBackendSettings);
+
+    }
+
+    public static ImagePlus readImageFrom(Path fileName, List<ImportImageBackend> backends, boolean continueWithNextBackendOnFailure, JIPipeGraphNodeRunContext runContext, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
+        ImagePlus image = null;
+        for (ImportImageBackend backend : backends) {
+            JIPipeProgressInfo backendProgress = progressInfo.resolveAndLog("Backend " + backend.getClass().getSimpleName());
+            if (backendProgress.isCancelled()) {
+                return null;
+            }
+            if(backend.canImport(fileName, variablesMap)) {
+                backendProgress.log("canImport() returned TRUE");
+                backendProgress.log("Loading " + fileName);
+                try {
+                    image = backend.doImport(fileName, runContext, backendProgress);
+                    if(image != null) {
+                        return image;
+                    }
+                } catch (Throwable ex) {
+                    backendProgress.error("Error while loading from backend!");
+                    backendProgress.log(ex);
+                    if (!continueWithNextBackendOnFailure) {
+                        throw ex;
+                    }
+                }
+            }
+            else {
+                backendProgress.log("canImport() returned false, trying next backend");
+            }
+        }
+        if (image == null) {
+            throw new JIPipeValidationRuntimeException(new NullPointerException("Image could not be loaded!"), "The image could not be loaded", "The image '" + fileName + "' could not be loaded.",
+                    "Check if the file exists and is supported by ImageJ/Java/Bio-Formats. Check import backend settings if they are available and use the log to determine if a backend refused to load an image.");
+        }
+        return image;
     }
 
     /**
@@ -122,13 +179,15 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return image;
     }
 
-    @SetJIPipeDocumentation(name = "Force native ImageJ importer", description = "If enabled, always use the native ImageJ file importer, even if the file looks like it can only be read by Bio-Formats")
-    @JIPipeParameter("force-native-import")
+    @SetJIPipeDocumentation(name = "Force native ImageJ importer (DEPRECATED)", description = "DEPRECATED. ONLY KEPT FOR BACKWARDS COMPATIBILITY")
+    @JIPipeParameter(value = "force-native-import", hidden = true)
+    @Deprecated
     public boolean isForceNativeImport() {
         return forceNativeImport;
     }
 
     @JIPipeParameter("force-native-import")
+    @Deprecated
     public void setForceNativeImport(boolean forceNativeImport) {
         this.forceNativeImport = forceNativeImport;
     }
@@ -159,7 +218,11 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         ImagePlusData outputData;
-        ImagePlus image = readImageFrom(fileData.toPath(), forceNativeImport, runContext, progressInfo);
+        ImagePlus image = readImageFrom(fileData.toPath(), Stream.of(javaBackendSettings, imageJBackendSettings, bioFormatsBackendSettings).sorted(Comparator.naturalOrder()).toList(),
+                continueWithNextBackendOnFailure,
+                runContext,
+                new JIPipeExpressionVariablesMap(iterationStep),
+                progressInfo);
         if (removeLut) {
             ImageJUtils.removeLUT(image, null);
         }
@@ -198,4 +261,34 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         getFirstOutputSlot().setAcceptedDataType(generatedImageType.getInfo().getDataClass());
         emitNodeSlotsChangedEvent();
     }
+
+    @SetJIPipeDocumentation(name = "Import with ImageJ", description = "Allows to control which images are imported with the native ImageJ importer")
+    @JIPipeParameter(value = "image-backend", collapsed = true)
+    public ImageJImportImageBackend getImageJBackendSettings() {
+        return imageJBackendSettings;
+    }
+
+    @SetJIPipeDocumentation(name = "Import with Bio-Formats", description = "Allows to control which images are imported with Bio-Formats")
+    @JIPipeParameter(value = "bio-formats-backend", collapsed = true)
+    public BioFormatsImageImageBackend getBioFormatsBackendSettings() {
+        return bioFormatsBackendSettings;
+    }
+
+    @SetJIPipeDocumentation(name = "Import with Java", description = "Allows to control which images are imported with native Java functions")
+    @JIPipeParameter(value = "java-backend", collapsed = true)
+    public JavaImportImageBackend getJavaBackendSettings() {
+        return javaBackendSettings;
+    }
+
+    @Override
+    public void applyProjectUpgrade(String fromVersion, JIPipeValidationReportContext context, JIPipeValidationReport report) {
+        super.applyProjectUpgrade(fromVersion, context, report);
+        if (VersionUtils.isOlderThanOrEqual("5.3.0", fromVersion)) {
+            if (forceNativeImport) {
+                bioFormatsBackendSettings.setEnabled(false);
+                javaBackendSettings.setEnabled(false);
+            }
+        }
+    }
+
 }

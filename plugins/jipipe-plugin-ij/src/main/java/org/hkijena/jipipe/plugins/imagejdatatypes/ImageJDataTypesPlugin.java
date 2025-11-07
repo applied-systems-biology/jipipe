@@ -511,6 +511,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerEnumParameterType("import-imagej-results-table-from-file:file-format", ImportResultsTableAlgorithm.FileFormat.class, "File format", "A file format");
         registerNodeType("import-imagej-results-table-from-file", ImportResultsTableAlgorithm.class);
         registerNodeType("import-imagej-imgplus-from-file", ImportImagePlusAlgorithm.class);
+        registerNodeType("import-imagej-native-importer", NativeImageJImporterAlgorithm.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/bioformats.png"));
         registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFileAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/lut.png"));
         registerNodeType("import-ome-zarr-from-zip-directory-as-imgplus", ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zarr.png"));

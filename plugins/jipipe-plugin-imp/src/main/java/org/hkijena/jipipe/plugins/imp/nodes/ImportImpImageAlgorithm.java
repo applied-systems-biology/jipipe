@@ -16,10 +16,7 @@ package org.hkijena.jipipe.plugins.imp.nodes;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
@@ -34,6 +31,7 @@ import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import image (with transparency)", description = "Imports an image via the Image Manipulation Pipeline.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@AddJIPipeNodeAlias(nodeTypeCategory = DataSourceNodeTypeCategory.class, aliasName = "Import image (Java)")
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Image", create = true, description = "The image")
 public class ImportImpImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

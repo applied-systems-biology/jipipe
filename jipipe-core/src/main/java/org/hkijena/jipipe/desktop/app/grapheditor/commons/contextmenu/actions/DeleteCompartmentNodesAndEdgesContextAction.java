@@ -86,6 +86,7 @@ public class DeleteCompartmentNodesAndEdgesContextAction implements NodeAndEdges
                     }
                 }
             }
+            canvasUI.repaintLowLag();
         }
     }
 
