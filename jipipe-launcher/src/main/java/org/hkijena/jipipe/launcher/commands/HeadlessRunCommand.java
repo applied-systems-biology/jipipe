@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.cli;
+package org.hkijena.jipipe.launcher.commands;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class JIPipeCLIPipelineRun {
+public class HeadlessRunCommand {
     public static void doRunPipeline(List<String> argsList) {
         JIPipeServiceInitializationSettings initializationSettings = new JIPipeServiceInitializationSettings();
         initializationSettings.setMode(JIPipeServiceMode.Headless);
@@ -117,7 +117,7 @@ public class JIPipeCLIPipelineRun {
                         break;
                     default:
                         System.err.println("Unknown disk saving setting: " + value);
-                        JIPipeCLIHelp.showHelp();
+                        HelpCommand.showHelp();
                         return;
                 }
             } else if (arg.startsWith("--P")) {
@@ -128,19 +128,19 @@ public class JIPipeCLIPipelineRun {
                 overrideProfileDir = Paths.get(value);
             } else {
                 System.err.println("Unknown argument: " + arg);
-                JIPipeCLIHelp.showHelp();
+                HelpCommand.showHelp();
                 return;
             }
         }
 
         if (projectFile == null || !Files.exists(projectFile)) {
             System.err.println("Project file does not exist!");
-            JIPipeCLIHelp.showHelp();
+            HelpCommand.showHelp();
             return;
         }
         if (numThreads < 1) {
             System.err.println("Invalid number of threads!");
-            JIPipeCLIHelp.showHelp();
+            HelpCommand.showHelp();
             return;
         }
         if (overrideProfileDir != null) {

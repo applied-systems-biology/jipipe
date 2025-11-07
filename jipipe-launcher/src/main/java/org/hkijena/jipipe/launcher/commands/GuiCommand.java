@@ -1,21 +1,9 @@
-/*
- * Copyright by Zoltán Cseresnyés, Ruman Gerst
- *
- * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
- * https://www.leibniz-hki.de/en/applied-systems-biology.html
- * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
- * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
- *
- * The project code is licensed under MIT.
- * See the LICENSE file provided with the code for the full license.
- */
-
-package org.hkijena.jipipe.desktop;
+package org.hkijena.jipipe.launcher.commands;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
+import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEventListener;
@@ -23,18 +11,10 @@ import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEventListener;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-public class JIPipeDesktopMain {
-    /**
-     * @param args ignored
-     */
-    public static void main(final String... args) {
-
-        // Check if the user wants to open a URL/RO-Crate/*.jip file
-        List<String> argsList = new ArrayList<>(Arrays.asList(args));
+public class GuiCommand {
+    public static void startGui(List<String> argsList) {
         if(!argsList.isEmpty()) {
             JIPipeDesktop.tryAddOpenProjectOnLoad(argsList.getLast());
         }
