@@ -255,9 +255,16 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
 
     public List<JIPipeLocalArtifact> queryLocalRepositories(String groupId, String artifactId, String version, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeLocalArtifact> artifacts = new HashMap<>();
+        final Path localSystemRepositoryPath = getLocalSystemRepositoryPath();
+        final Path localUserRepositoryPath = getLocalUserRepositoryPath();
         try {
-            for (Path repositoryPath : Arrays.asList(getLocalSystemRepositoryPath(), getLocalUserRepositoryPath())) {
+            for (Path repositoryPath : Arrays.asList(localSystemRepositoryPath, localUserRepositoryPath)) {
                 progressInfo.log("Checking local repository @ " + repositoryPath);
+                if(!Files.isDirectory(repositoryPath)) {
+                    progressInfo.warn("Local repository at " + repositoryPath + " is not a directory. Skipping.");
+                    continue;
+                }
+                boolean locked = repositoryPath == localSystemRepositoryPath;
                 Files.walkFileTree(repositoryPath, new FileVisitor<Path>() {
 
                     @Override
@@ -276,6 +283,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
                                 return FileVisitResult.SKIP_SUBTREE;
                             }
                             artifact.setLocalPath(dir);
+                            artifact.setReadOnly(locked);
                             artifacts.put(artifact.getFullId(), artifact);
                             return FileVisitResult.SKIP_SUBTREE;
                         }
@@ -326,18 +334,19 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
         return downloadMap.values().stream().sorted((o1, o2) -> VersionUtils.compareVersions(o1.getVersion(), o2.getVersion())).collect(Collectors.toList());
     }
 
+
     /**
      * JIPipe's system repository path, which is usually located in IMAGEJ_DIR/jipipe/artifacts
      * This repository is intended for distributors of JIPipe to provide artifacts with JIPipe
-     * Can be overwritten by setting the JIPIPE_SYSTEM_REPOSITORY_PATH
+     * Can be overwritten by setting the JIPIPE_OVERRIDE_SYSTEM_ARTIFACTS_DIR
      *
      * @return the system repository path
      */
     public Path getLocalSystemRepositoryPath() {
-        if (System.getenv("JIPIPE_LOCAL_REPOSITORY") != null) {
-            return Paths.get(System.getenv("JIPIPE_LOCAL_REPOSITORY"));
+        if (System.getenv("JIPIPE_OVERRIDE_SYSTEM_ARTIFACTS_DIR") != null) {
+            return Paths.get(System.getenv("JIPIPE_OVERRIDE_SYSTEM_ARTIFACTS_DIR"));
         } else {
-            return PathUtils.getJIPipeUserDir().resolve("artifacts");
+            return PathUtils.getImageJDir().resolve("jipipe").resolve("artifacts");
         }
     }
 
@@ -348,8 +357,8 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
      * @return the user's repository path
      */
     public Path getLocalUserRepositoryPath() {
-        if (System.getenv().containsKey("JIPIPE_OVERRIDE_ARTIFACTS_DIR")) {
-            return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_ARTIFACTS_DIR"));
+        if (System.getenv().containsKey("JIPIPE_OVERRIDE_USER_ARTIFACTS_DIR")) {
+            return Paths.get(System.getenv().get("JIPIPE_OVERRIDE_USER_ARTIFACTS_DIR"));
         }
         if (getService().getInitializationSettings().getOverrideArtifactsDir() != null) {
             return getService().getInitializationSettings().getOverrideArtifactsDir();
