@@ -27,7 +27,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefix() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -58,7 +58,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixWithTrailingSlash() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -79,7 +79,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixNoMatch() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -96,7 +96,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixNullString() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -111,7 +111,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixEmpty() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -126,7 +126,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixExactMatch() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings"), "root");
@@ -145,7 +145,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixDeepHierarchy() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data with deep hierarchy
         store.putPrimitive(Paths.get("a/b/c/d"), "deep");
@@ -170,7 +170,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixCaseSensitive() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("Settings/general/name"), "Application");
@@ -187,7 +187,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixPathObject() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -215,7 +215,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixPathWithTrailingSlash() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -236,7 +236,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixPathNoMatch() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -253,7 +253,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testClearEntriesWithPathPrefixPathNull() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
         store.putPrimitive(Paths.get("settings/general/name"), "Application");
@@ -268,7 +268,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testPutPrimitiveAll() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up initial data
         store.putPrimitive(Paths.get("settings/general/name"), "Original Application");
@@ -276,7 +276,7 @@ class PathMetadataStorePathPrefixTest {
         store.putPrimitive(Paths.get("features/enhanced"), true);
 
         // Create another store with some overlapping and new data
-        PathMetadataStore other = new PathMetadataStore();
+        JIPipePathMetadataStore other = new JIPipePathMetadataStore();
         other.putPrimitive(Paths.get("settings/general/name"), "New Application"); // Override existing
         other.putPrimitive(Paths.get("settings/general/debug"), true); // New entry
         other.putPrimitive(Paths.get("new/feature"), "added"); // New entry
@@ -301,7 +301,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testPutPrimitiveAllNull() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
         store.putPrimitive(Paths.get("test/key"), "value");
 
         // Put with null should not change anything
@@ -314,10 +314,10 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testPutPrimitiveAllEmpty() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
         store.putPrimitive(Paths.get("test/key"), "value");
 
-        PathMetadataStore empty = new PathMetadataStore();
+        JIPipePathMetadataStore empty = new JIPipePathMetadataStore();
 
         // Put with empty store should not change anything
         store.putAll(empty);
@@ -330,18 +330,18 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testPathNormalization() {
         // Test path normalization utility methods
-        assertEquals("path/to/file", PathMetadataStore.normalizePathString("path\\to\\file"));
-        assertEquals("path/to/file", PathMetadataStore.normalizePathString("path/to/file"));
-        assertEquals(null, PathMetadataStore.normalizePathString(null));
+        assertEquals("path/to/file", JIPipePathMetadataStore.normalizePathString("path\\to\\file"));
+        assertEquals("path/to/file", JIPipePathMetadataStore.normalizePathString("path/to/file"));
+        assertEquals(null, JIPipePathMetadataStore.normalizePathString(null));
 
         Path originalPath = Paths.get("settings\\general\\name");
-        Path normalizedPath = PathMetadataStore.normalizePath(originalPath);
+        Path normalizedPath = JIPipePathMetadataStore.normalizePath(originalPath);
         assertEquals("settings/general/name", normalizedPath.toString());
     }
 
     @Test
     void testBackslashMigration() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Add paths with backslashes (simulating Windows paths)
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
@@ -367,7 +367,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testGetNormalizedCopy() {
-        PathMetadataStore original = new PathMetadataStore();
+        JIPipePathMetadataStore original = new JIPipePathMetadataStore();
 
         // Add paths with mixed separators
         original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
@@ -375,7 +375,7 @@ class PathMetadataStorePathPrefixTest {
         original.putPrimitive(Paths.get("ui\\theme"), "dark");
 
         // Create normalized copy
-        PathMetadataStore normalized = original.getNormalizedCopy();
+        JIPipePathMetadataStore normalized = original.getNormalizedCopy();
 
         // Verify original is unchanged
         assertEquals(3, original.size());
@@ -400,7 +400,7 @@ class PathMetadataStorePathPrefixTest {
     @Test
     void testJsonSerializationWithBackslashes() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        PathMetadataStore original = new PathMetadataStore();
+        JIPipePathMetadataStore original = new JIPipePathMetadataStore();
 
         // Add paths with backslashes
         original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
@@ -415,7 +415,7 @@ class PathMetadataStorePathPrefixTest {
         assertFalse(json.contains("\\\\"));
 
         // Deserialize back to store
-        PathMetadataStore deserialized = mapper.readValue(json, PathMetadataStore.class);
+        JIPipePathMetadataStore deserialized = mapper.readValue(json, JIPipePathMetadataStore.class);
 
         // Verify deserialized data
         assertEquals(2, deserialized.size());
@@ -432,7 +432,7 @@ class PathMetadataStorePathPrefixTest {
         String jsonWithBackslashes = "{\"settings\\\\general\\\\name\":\"Application\",\"settings\\\\general\\\\version\":1.0}";
 
         // Deserialize - should handle backslashes gracefully
-        PathMetadataStore store = mapper.readValue(jsonWithBackslashes, PathMetadataStore.class);
+        JIPipePathMetadataStore store = mapper.readValue(jsonWithBackslashes, JIPipePathMetadataStore.class);
 
         // Verify store has normalized paths
         assertEquals(2, store.size());
@@ -443,7 +443,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testToNestedMapWithBackslashes() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Add paths with backslashes
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
@@ -473,7 +473,7 @@ class PathMetadataStorePathPrefixTest {
 
     @Test
     void testMixedPathSeparatorsInStore() {
-        PathMetadataStore store = new PathMetadataStore();
+        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Add paths with mixed separators
         store.putPrimitive(Paths.get("settings\\general\\name"), "Application");  // Backslashes

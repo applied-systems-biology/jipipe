@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.parameters.api.collections;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
@@ -30,6 +31,7 @@ public class JIPipeListParameterItemParameterAccess<T> implements JIPipeParamete
     private final Class<T> entryType;
     private final int index;
     private final JIPipeParameterAccess parent;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
     /**
      * Creates a new instance
@@ -120,5 +122,14 @@ public class JIPipeListParameterItemParameterAccess<T> implements JIPipeParamete
     @Override
     public int getUIOrder() {
         return 0;
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }

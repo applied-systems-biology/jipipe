@@ -54,6 +54,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final Set<String> ioInputSlots = new HashSet<>();
     private final Set<OutputTableColumnInfo> outputTableColumnInfos = new HashSet<>();
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection(false);
+    private final Map<String, Boolean> nodeParametersByRef = new HashMap<>();
     private final HTMLText nodeDescription;
     private int numArgs = 0;
     private String menuPath = "CLIJ";
@@ -114,7 +115,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
             default_values = ((AbstractCLIJPlugin) instance).getDefaultValues();
         }
         this.numArgs = parameters.length;
-        if (parameters.length > 0 && parameters[0].length() > 0) {
+        if (parameters.length > 0 && !parameters[0].isEmpty()) {
             for (int i = 0; i < parameters.length; i++) {
                 String[] parameterParts = parameters[i].trim().split(" ");
                 String parameterType = parameterParts[0];
@@ -150,6 +151,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         }
                         // String parameter
                         JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, String.class);
+                        nodeParametersByRef.put(parameterName, byRef);
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
@@ -168,6 +170,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         }
                         // Boolean parameter
                         JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Boolean.class);
+                        nodeParametersByRef.put(parameterName, byRef);
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
@@ -185,6 +188,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         }
                         // Double parameter
                         JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Double.class);
+                        nodeParametersByRef.put(parameterName, byRef);
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
@@ -316,6 +320,10 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public boolean isHidden() {
         return false;
+    }
+
+    public Map<String, Boolean> getNodeParametersByRef() {
+        return nodeParametersByRef;
     }
 
     public static class OutputTableColumnInfo {

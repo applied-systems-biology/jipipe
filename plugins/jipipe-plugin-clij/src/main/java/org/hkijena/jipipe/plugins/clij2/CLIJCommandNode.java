@@ -212,7 +212,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
         for (String key : info.getNodeParameters().getParameters().keySet()) {
             int argIndex = info.getParameterIdToArgIndexMap().get(key);
-            args[argIndex] = clijParameters.getParameter(key).get(Object.class);
+            args[argIndex] = parameterToArgs(clijParameters.getParameterAccess(key));
         }
 
         // Handle the case where there are no image inputs
@@ -328,7 +328,13 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
                     // Extract image outputs and store them into the global storage
                     for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+                        if(outputSlot.getAcceptedDataType() == ResultsTableData.class) {
+                            continue;
+                        }
                         ClearCLBuffer buffer = outputs.get(outputSlot.getName());
+                        if(buffer == null) {
+                            continue;
+                        }
                         CLIJImageData imageData = new CLIJImageData(buffer);
                         ImagePlus img = imageData.pull().getImage();
                         Map<ImageSliceIndex, ImageProcessor> outputSlices = outputImages.getOrDefault(outputSlot.getName(), null);
@@ -350,6 +356,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                         outputTable.addRow();
                         for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
                             Object value = args[columnInfo.getArgIndex()];
+                            value = unpackArrayIfNeeded(value);
                             outputTable.setValueAt(value, 0, columnInfo.getName());
                         }
                     }
@@ -452,7 +459,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
                 }
                 resultsTableData.addRow();
                 for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
-                    Object value = args[columnInfo.getArgIndex()];
+                    Object value = unpackArrayIfNeeded(args[columnInfo.getArgIndex()]);
                     resultsTableData.setValueAt(value, 0, columnInfo.getName());
                 }
                 iterationStep.addOutputData(RESULTS_TABLE_SLOT_NAME, resultsTableData, progressInfo);
@@ -460,5 +467,55 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
 
 
+    }
+
+    private Object unpackArrayIfNeeded(Object o) {
+        if (o instanceof Double[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof Float[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof String[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof Short[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof Long[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof Boolean[] arr && arr.length == 1) {
+            return arr[0];
+        } else if (o instanceof Byte[] arr && arr.length == 1) {
+            return arr[0];
+        }
+        return o;
+    }
+
+    /**
+     * Maps the parameter to the correct type - handles ByRef for primitives
+     *
+     * @param parameterAccess the access
+     * @return the value to pass to CLIJ
+     */
+    private Object parameterToArgs(JIPipeParameterAccess parameterAccess) {
+        boolean byRef = ((CLIJCommandNodeInfo)getInfo()).getNodeParametersByRef().getOrDefault(parameterAccess.getKey(), false);
+        Object result = parameterAccess.get(Object.class);
+        if (byRef) {
+            if (result instanceof Boolean b) {
+                result = new Boolean[]{b};
+            } else if (result instanceof Double d) {
+                result = new Double[]{d};
+            } else if (result instanceof Float f) {
+                result = new Float[]{f};
+            } else if (result instanceof String s) {
+                result = new String[]{s};
+            } else if (result instanceof Integer i) {
+                result = new Integer[]{i};
+            } else if (result instanceof Long l) {
+                result = new Long[]{l};
+            } else if (result instanceof Short s) {
+                result = new Short[]{s};
+            } else if (result instanceof Byte s) {
+                result = new Byte[]{s};
+            }
+        }
+        return result;
     }
 }

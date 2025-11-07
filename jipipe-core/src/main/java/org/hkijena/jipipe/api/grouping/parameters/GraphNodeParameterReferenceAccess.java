@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
@@ -33,6 +34,7 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess,
     private final JIPipeParameterCollection alternativeSource;
     private final JIPipeParameterAccess target;
     private final JIPipeParameterSerializationMode persistence;
+    private JIPipePathMetadataStore metadata = new JIPipePathMetadataStore();
 
 
     /**
@@ -137,5 +139,14 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess,
         if (Objects.equals(target.getKey(), event.getKey())) {
             alternativeSource.getParameterChangedEventEmitter().emit(new JIPipeParameterCollection.ParameterChangedEvent(alternativeSource, getKey()));
         }
+    }
+
+    @Override
+    public JIPipePathMetadataStore getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(JIPipePathMetadataStore metadata) {
+        this.metadata = metadata;
     }
 }
