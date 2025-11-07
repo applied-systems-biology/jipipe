@@ -7,12 +7,12 @@
         <version>6.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-cli</artifactId>
+    <artifactId>jipipe-launcher</artifactId>
     <version>6.0.0-SNAPSHOT</version>
 
-    <name>jipipe-cli</name>
-    <description>JIPipe Command Line Interface</description>
-    <inceptionYear>2024</inceptionYear>
+    <name>jipipe-launcher</name>
+    <description>JIPipe Launcher</description>
+    <inceptionYear>2025</inceptionYear>
     <url>https://www.jipipe.org/</url>
 
     <organization>
@@ -69,6 +69,7 @@
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </ciManagement>
 
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -110,6 +111,21 @@
                 <groupId>org.jogamp.jogl</groupId>
                 <artifactId>jogl-all</artifactId>
                 <version>2.5.0</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bytedeco.javacpp-presets</groupId>
+                <artifactId>opencv</artifactId>
+                <version>3.4.2-1.4.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>javacv-platform</artifactId>
+                <version>1.4.2</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.Biomedical-Imaging-Group</groupId>
+                <artifactId>OrientationJ</artifactId>
+                <version>ce968334bcd09ce70f54df74e9f7a2fbe5c79cca</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -234,11 +250,21 @@
             <artifactId>jipipe-plugin-imp</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <!--        <dependency>-->
-        <!--            <groupId>org.hkijena</groupId>-->
-        <!--            <artifactId>jipipe-ilastik</artifactId>-->
-        <!--            <scope>runtime</scope>-->
-        <!--        </dependency>-->
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-plugin-opencv</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-plugin-ilastik</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-plugin-ij-ocr</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>net.haesleinhuepf</groupId>
             <artifactId>clij2_</artifactId>
@@ -267,6 +293,20 @@
         <dependency>
             <groupId>org.jogamp.jogl</groupId>
             <artifactId>jogl-all</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco.javacpp-presets</groupId>
+            <artifactId>opencv</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.Biomedical-Imaging-Group</groupId>
+            <artifactId>OrientationJ</artifactId>
             <scope>runtime</scope>
         </dependency>
     </dependencies>
@@ -276,7 +316,7 @@
         <maven.compiler.target>21</maven.compiler.target>
         <license.licenseName>mit</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>JIPipe-CLI</license.projectName>
+        <license.projectName>JIPipe-Desktop</license.projectName>
     </properties>
 
     <build>

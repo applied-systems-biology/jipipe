@@ -34,7 +34,6 @@ target
 /lib-dltoolkit/
 /lib-jipipe-py/
 /r/
-/jipipe/
 /dist/zip/*
 /db.xml.gz
 /dist/*.zip

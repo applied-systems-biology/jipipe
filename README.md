@@ -50,9 +50,9 @@ The project consists of following parts:
 * **JIPipe-IMP** in-development library for Photoshop-like image manipulation.
 * **JIPipe-OpenCV** integrates OpenCV (in-development).
 * **JIPipe-Scene-3D** creation and export of 3D scenes.
-* **JIPipe-Desktop** provides a JAR file that launches JIPipe from outside of ImageJ
+* **JIPipe-Launcher** provides a JAR file that launches the JIPipe GUI and CLI from outside of ImageJ
 
-You can use the **JIPipe-Launcher** project to setup a development environment, as this project depends on all
+You can use the **JIPipe** project to setup a development environment, as this project depends on all
 libraries.
 Due to internal dependencies, some data types are present in the **JIPipe-Core** library, but not registered into 
 the JIPipe runtime.
@@ -94,11 +94,17 @@ cd dist/zip
 
 ## Running JIPipe in an IDE
 
-This repository comes with a project `jipipe-desktop` that allows you to run and debug JIPipe inside your IDE.
-You just have to run the `main()` function inside `JIPipeDesktopMain`.
+This repository comes with a project `jipipe` that allows you to run and debug JIPipe inside your IDE.
+You just have to run the `main()` function inside `JIPipeLauncher`.
 
-You might need to add `--add-opens=java.base/java.lang=ALL-UNNAMED` as a VM option, due to known issues with ImageJ's class patching
-mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10). Apply this fix if JIPipe-Desktop refuses to start.
+You probably will need to add the following option into the Java VM options: 
+
+```
+--add-opens=java.base/java.lang=ALL-UNNAMED
+```
+
+This is due to known issues with ImageJ's class patching
+mechanism (see https://forum.image.sc/t/imagej-legacy-error/23013/10).
 
 ## Generate JavaDocs (Optional)
 

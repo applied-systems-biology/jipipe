@@ -1,18 +1,32 @@
-package org.hkijena.jipipe.cli;
+package org.hkijena.jipipe.launcher.commands;
 
-public class JIPipeCLIHelp {
+public class HelpCommand {
     public static void showHelp() {
         System.out.println("\n" +
-                "                                         \n" +
-                "     ,--.,--.,------. ,--.               \n" +
-                "     |  ||  ||  .--. '`--' ,---.  ,---.  \n" +
-                ",--. |  ||  ||  '--' |,--.| .-. || .-. : \n" +
-                "|  '-'  /|  ||  | --' |  || '-' '\\   --. \n" +
-                " `-----' `--'`--'     `--'|  |-'  `----' \n" +
-                "                          `--'           \n\n");
+                "\n" +
+                "                                                                                                    \n" +
+                "  -----        ------   ------                                                                      \n" +
+                "  ------------ ------ ----  ----                                                                    \n" +
+                "  -----    --- ---------     ---             ##  ##   ######      ##                                \n" +
+                "           ---       ---     ---             ##  ##   ##    ####  ##                                \n" +
+                "           ---  ---  ---  ------             ##  ##   ##      ##          ###         ##            \n" +
+                "           --- ----- --- -----               ##  ##   ##      ##  ##  ####   ##    ###  ###         \n" +
+                "           ---  ---  ---                     ##  ##   ##     ###  ##  ##      ##  ##      ##        \n" +
+                "    -      ---  ---  ---                     ##  ##   ########    ##  ##       ## ##########        \n" +
+                "   ---     ---  ---  ---                     ##  ##   ##          ##  ##      ##  ##                \n" +
+                "   ---     ---  ---  ---              ##    ##   ##   ##          ##  ###    ###  ###    ###        \n" +
+                "   ---     ---  --- ------              #####    ##   ##          ##  ## #####      ######          \n" +
+                "    ---------   --- ------                                            ##                            \n" +
+                "       ----      -- ------                                            ##                            \n" +
+                "                                                                                                    \n" +
+                "\n\n");
         System.out.println("JIPipe CLI https://www.jipipe.org/");
         System.out.println("Developed by Applied Systems Biology, HKI Jena, Germany");
         System.out.println();
+        System.out.println("<no arguments>");
+        System.out.println("    Runs the JIPipe GUI");
+        System.out.println("gui");
+        System.out.println("    Runs the JIPipe GUI");
         System.out.println("run <options>");
         System.out.println("    Runs a project file and writes outputs to the specified directory.");
         System.out.println("    --project <Project file>                                                       Sets the project file to run");
@@ -40,10 +54,10 @@ public class JIPipeCLIHelp {
         System.out.println("--fast-init                                                                        Skips the validation steps to make the JIPipe initialization faster");
         System.out.println();
         System.out.println("To run this tool using the Fiji CLI, execute following command:");
-        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.cli.JIPipeCLIMain");
+        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLIMain");
         System.out.println();
         System.out.println("To run this tool using the JIPipe CLI, execute following command:");
-        System.out.println("<JIPipe executable> --main-class org.hkijena.jipipe.cli.JIPipeCLIMain");
+        System.out.println("<JIPipe executable> --main-class org.hkijena.jipipe.JIPipeCLIMain");
         System.out.println();
         System.out.println("Environment variables:");
         System.out.println("JIPIPE_OVERRIDE_USER_DIR_BASE                                                      Overrides the base directory where JIPipe looks for profiles (the directory itself will contain sub-directories for the JIPipe version)");

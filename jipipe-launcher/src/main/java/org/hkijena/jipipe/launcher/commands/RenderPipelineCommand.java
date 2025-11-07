@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.cli;
+package org.hkijena.jipipe.launcher.commands;
 
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public class JIPipeCLIPipelineRender {
-    static void doRenderPipeline(List<String> argsList) {
+public class RenderPipelineCommand {
+    public static void doRenderPipeline(List<String> argsList) {
         Path projectFile = null;
         Path outputFile = null;
         String compartmentNameOrUUID = null;
@@ -66,14 +66,14 @@ public class JIPipeCLIPipelineRender {
                 compartmentNameOrUUID = value;
             } else {
                 System.err.println("Unknown argument: " + arg);
-                JIPipeCLIHelp.showHelp();
+                HelpCommand.showHelp();
                 return;
             }
         }
 
         if (projectFile == null || !Files.exists(projectFile)) {
             System.err.println("Project file does not exist!");
-            JIPipeCLIHelp.showHelp();
+            HelpCommand.showHelp();
             return;
         }
         if (outputFile == null) {
@@ -115,7 +115,7 @@ public class JIPipeCLIPipelineRender {
         }
         if (targetCompartment == null) {
             System.err.println("Compartment " + compartmentNameOrUUID + " not found!");
-            JIPipeCLIHelp.showHelp();
+            HelpCommand.showHelp();
             return;
         }
 

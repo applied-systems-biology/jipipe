@@ -61,8 +61,7 @@
   ],
   "jipipe-modules": [
     "jipipe-core",
-    "jipipe-desktop",
-    "jipipe-cli",
+    "jipipe-launcher",
     "jipipe-plugin-clij",
     "jipipe-plugin-filesystem",
     "jipipe-plugin-ij",

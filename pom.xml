@@ -207,12 +207,7 @@ See the LICENSE file provided with this code for the full license.
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-desktop</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-cli</artifactId>
+                <artifactId>jipipe-launcher</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -424,8 +419,7 @@ See the LICENSE file provided with this code for the full license.
     <modules>
         <module>contrib/jipipe-ro-crate-java-2.1.0</module>
         <module>jipipe-core</module>
-        <module>jipipe-desktop</module>
-        <module>jipipe-cli</module>
+        <module>jipipe-launcher</module>
         <module>plugins/jipipe-plugin-plots</module>
         <module>plugins/jipipe-plugin-python</module>
         <module>plugins/jipipe-plugin-ij</module>
