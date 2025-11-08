@@ -111,6 +111,10 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus image = null;
         for (ImportImageBackend backend : backends) {
             JIPipeProgressInfo backendProgress = progressInfo.resolveAndLog("Backend " + backend.getClass().getSimpleName());
+            if(!backend.isEnabled()) {
+                backendProgress.log("Is disabled, skipping");
+                continue;
+            }
             if (backendProgress.isCancelled()) {
                 return null;
             }
@@ -286,8 +290,8 @@ public class ImportImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (VersionUtils.isOlderThanOrEqual("5.3.0", fromVersion)) {
             if (forceNativeImport) {
                 bioFormatsBackendSettings.setEnabled(false);
-                javaBackendSettings.setEnabled(false);
             }
+            javaBackendSettings.setEnabled(false);
         }
     }
 
