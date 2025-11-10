@@ -901,4 +901,28 @@ public class PathUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static void tryMakeUnixExecutable(Path path, JIPipeProgressInfo progressInfo) {
+        try {
+            makeUnixExecutable(path);
+        }
+        catch (Exception ignored) {
+            progressInfo.warn("Unable to make " + path + " executable");
+        }
+    }
+
+    public static void tryMakeAllUnixExecutable(Path dir, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Postprocess: Marking all files in " + dir + " as executable");
+        for (Path path : PathUtils.findFilesByExtensionIn(dir)) {
+            if (Files.isRegularFile(path)) {
+                try {
+                    progressInfo.log(" - chmod +x " + path);
+                    PathUtils.makeUnixExecutable(path);
+                }
+                catch (Exception ignored) {
+                    progressInfo.warn("Unable to make " + path + " executable");
+                }
+            }
+        }
+    }
 }

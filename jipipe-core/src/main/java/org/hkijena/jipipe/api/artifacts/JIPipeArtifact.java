@@ -391,6 +391,20 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
     }
 
     /**
+     * Returns true if a query matches the artifact. Only works for fully resolved artifacts.
+     * @param query the query
+     * @return if it matches
+     * @throws IllegalStateException if the artifact's ID is not fully resolved
+     */
+    public boolean matchesQuery(String query) {
+        if(getResolutionStatus() != ResolutionStatus.Full) {
+            throw new IllegalStateException("Cannot match query for non-fully resolved artifacts!");
+        }
+        String regex = StringUtils.convertGlobToRegex(query);
+        return getFullId().matches(regex);
+    }
+
+    /**
      * The current resolution status of this artifact
      */
     public enum ResolutionStatus {

@@ -46,15 +46,20 @@ public class TSOAXEnvironment extends JIPipeProcessArtifactEnvironment {
         } else if (SystemUtils.IS_OS_LINUX) {
             setExecutablePath(tsoaxDir.resolve("tsoax"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(tsoaxDir.resolve("bin"), progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(tsoaxDir.resolve("bin"), progressInfo);
         } else {
             setExecutablePath(tsoaxDir.resolve("tsoax"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(tsoaxDir.resolve("bin"), progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(tsoaxDir.resolve("bin"), progressInfo);
         }
 
+    }
+
+    @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
     }
 
     @Override

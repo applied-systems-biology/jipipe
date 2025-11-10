@@ -48,6 +48,11 @@ public class JIPipeDataDirectoryEnvironment extends JIPipeArtifactEnvironment {
         this.directory = other.directory;
     }
 
+    @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
+    }
+
     @SetJIPipeDocumentation(name = "Directory", description = "The directory that contains the data")
     @JIPipeParameter("directory")
     @JsonGetter("directory")

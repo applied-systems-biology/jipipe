@@ -32,12 +32,17 @@ public class OrasEnvironment extends JIPipeProcessArtifactEnvironment {
     }
 
     @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
+    }
+
+    @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         if (SystemUtils.IS_OS_WINDOWS) {
             setExecutablePath(artifact.getLocalPath().resolve("oras.exe"));
         } else {
             setExecutablePath(artifact.getLocalPath().resolve("oras"));
-            PathUtils.makeUnixExecutable(artifact.getLocalPath().resolve("oras"));
+            PathUtils.tryMakeUnixExecutable(artifact.getLocalPath().resolve("oras"), progressInfo);
         }
         setArguments(new JIPipeExpressionParameter("cli_parameters"));
     }

@@ -38,6 +38,11 @@ public class IlastikEnvironment extends JIPipeProcessArtifactEnvironment {
     }
 
     @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
+    }
+
+    @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         Path ilastikDir = artifact.getLocalPath().resolve("ilastik");
         Path binaryDir = artifact.getLocalPath().resolve("ilastik").resolve("bin");
@@ -48,14 +53,14 @@ public class IlastikEnvironment extends JIPipeProcessArtifactEnvironment {
             setExecutablePath(ilastikDir.resolve("run_ilastik.sh"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
 
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(binaryDir, progressInfo);
         } else {
             setExecutablePath(ilastikDir.resolve("run_ilastik.sh"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
 
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(binaryDir, progressInfo);
         }
 
     }

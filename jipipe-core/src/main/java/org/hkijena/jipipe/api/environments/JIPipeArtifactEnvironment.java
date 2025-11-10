@@ -98,8 +98,15 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     }
 
     /**
+     * Returns true if the artifact environment can be deployed to a read-only repository
+     * @return if read-only deployment is allowed
+     */
+    public abstract boolean isAllowReadOnlyDeployment();
+
+    /**
      * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
-     * Also sets the last loaded artifact
+     * Also sets the last loaded artifact.
+     * Should assume that the artifact is read-only if possible.
      *
      * @param artifact     the artifact
      * @param progressInfo the progress info
@@ -110,7 +117,8 @@ public abstract class JIPipeArtifactEnvironment extends JIPipeEnvironment {
     }
 
     /**
-     * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true
+     * Applies the artifact configuration to the current environment if isLoadFromArtifact() is true.
+     * Should assume that the artifact is read-only if possible.
      */
     public abstract void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo);
 

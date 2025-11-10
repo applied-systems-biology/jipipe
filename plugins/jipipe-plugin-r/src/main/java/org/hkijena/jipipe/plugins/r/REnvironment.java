@@ -67,6 +67,11 @@ public class REnvironment extends JIPipeArtifactEnvironment {
     }
 
     @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return false;
+    }
+
+    @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
         if (!isLoadFromArtifact()) {
@@ -112,7 +117,7 @@ public class REnvironment extends JIPipeArtifactEnvironment {
             setRScriptExecutablePath(binaryDir.resolve("r"));
 
             // Do chmod +x for all executables
-            PathUtils.makeAllUnixExecutable(binaryDir, progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(binaryDir, progressInfo);
         }
 
     }

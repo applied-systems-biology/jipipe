@@ -47,15 +47,19 @@ public class TesseractOCREnvironment extends JIPipeProcessArtifactEnvironment {
         } else if (SystemUtils.IS_OS_LINUX) {
             setExecutablePath(appDir.resolve("tesseract-ocr"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(appDir.resolve("bin"), progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(appDir.resolve("bin"), progressInfo);
         } else {
             setExecutablePath(appDir.resolve("tesseract-ocr"));
             setArguments(new JIPipeExpressionParameter("cli_parameters"));
-            PathUtils.makeUnixExecutable(getExecutablePath());
-            PathUtils.makeAllUnixExecutable(appDir.resolve("bin"), progressInfo);
+            PathUtils.tryMakeUnixExecutable(getExecutablePath(), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(appDir.resolve("bin"), progressInfo);
         }
+    }
 
+    @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
     }
 
     @Override
