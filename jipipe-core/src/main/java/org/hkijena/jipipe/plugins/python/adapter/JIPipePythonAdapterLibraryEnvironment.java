@@ -36,6 +36,11 @@ public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryE
     }
 
     @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
+    }
+
+    @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         setProvidedByEnvironment(false);
         setLibraryDirectory(artifact.getLocalPath().resolve("jipipe-python-main"));

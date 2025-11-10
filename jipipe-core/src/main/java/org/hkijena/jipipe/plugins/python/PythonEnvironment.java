@@ -75,6 +75,11 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
         this.environmentVariables = new StringQueryExpressionAndStringPairParameterList(other.environmentVariables);
     }
 
+    @Override
+    public boolean isAllowReadOnlyDeployment() {
+        return true;
+    }
+
     @SetJIPipeDocumentation(name = "Environment type", description = "The kind of environment that should be executed. " +
             "Depending on the environment, you need to set the executable path to the Python executable, " +
             "to the Conda executable, or the environment directory (venv).")
@@ -169,7 +174,7 @@ public class PythonEnvironment extends JIPipeArtifactEnvironment {
             setExecutablePath(artifact.getLocalPath().resolve("python").resolve("bin").resolve("python3"));
 
             // Do chmod +x for all executables
-            PathUtils.makeAllUnixExecutable(artifact.getLocalPath().resolve("python").resolve("bin"), progressInfo);
+            PathUtils.tryMakeAllUnixExecutable(artifact.getLocalPath().resolve("python").resolve("bin"), progressInfo);
         }
     }
 

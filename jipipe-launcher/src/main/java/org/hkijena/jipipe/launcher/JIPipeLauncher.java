@@ -14,10 +14,7 @@
 package org.hkijena.jipipe.launcher;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.hkijena.jipipe.launcher.commands.GuiCommand;
-import org.hkijena.jipipe.launcher.commands.HeadlessRunCommand;
-import org.hkijena.jipipe.launcher.commands.HelpCommand;
-import org.hkijena.jipipe.launcher.commands.RenderPipelineCommand;
+import org.hkijena.jipipe.launcher.commands.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,6 +37,10 @@ public class JIPipeLauncher {
             } else if (argsList.contains("render")) {
                 preprocessArgsListForSubCommand(argsList, "render");
                 RenderPipelineCommand.doRenderPipeline(argsList);
+            }
+            else if(argsList.contains("install-artifacts")) {
+                preprocessArgsListForSubCommand(argsList, "install-artifacts");
+                DeployArtifactsCommand.doInstallArtifacts(argsList);
             } else if (argsList.contains("gui")) {
                 preprocessArgsListForSubCommand(argsList, "gui");
                 keepRunning = true;
