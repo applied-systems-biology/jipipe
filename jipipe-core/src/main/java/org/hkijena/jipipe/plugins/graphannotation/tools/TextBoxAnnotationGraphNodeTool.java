@@ -18,6 +18,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
+import org.hkijena.jipipe.plugins.graphannotation.nodes.DefaultTextBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -31,6 +32,7 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
 
     private JIPipeDesktopColorPaletteColor color = JIPipeDesktopColorPalette.PASTEL[0];
     private Anchor anchor = Anchor.CenterCenter;
+    private TextBoxAnnotationGraphNode preset;
 
 
     public TextBoxAnnotationGraphNodeTool() {
@@ -40,6 +42,11 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
     @Override
     protected TextBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
         TextBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
+
+        if(preset != null) {
+            applyPreset(node, preset);
+        }
+
         String title = JOptionPane.showInputDialog(getDesktopWorkbench().getWindow(), "Please input the title:", "Create text box", JOptionPane.PLAIN_MESSAGE);
         if (!StringUtils.isNullOrEmpty(title)) {
             node.setTextTitle(title);
@@ -55,6 +62,12 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
         node.getTextLocation().setMarginTop(5);
 
         return node;
+    }
+
+    private void applyPreset(TextBoxAnnotationGraphNode target, TextBoxAnnotationGraphNode source) {
+        target.getShapeParameters().setTo(source.getShapeParameters());
+        target.getTitleStyle().setTo(source.getTitleStyle());
+        target.getContentStyle().setTo(source.getContentStyle());
     }
 
     @Override
@@ -86,5 +99,13 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
 
     public void setAnchor(Anchor anchor) {
         this.anchor = anchor;
+    }
+
+    public void setPreset(TextBoxAnnotationGraphNode preset) {
+        this.preset = preset;
+    }
+
+    public TextBoxAnnotationGraphNode getPreset() {
+        return preset;
     }
 }

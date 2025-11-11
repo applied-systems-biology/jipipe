@@ -371,6 +371,10 @@ public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotation
         }
 
         public TextLocationParameters(TextLocationParameters other) {
+            setTo(other);
+        }
+
+        public void setTo(TextLocationParameters other) {
             this.anchor = other.anchor;
             this.marginLeft = other.marginLeft;
             this.marginRight = other.marginRight;
@@ -445,6 +449,10 @@ public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotation
         }
 
         public TextRenderParameters(TextRenderParameters other) {
+            setTo(other);
+        }
+
+        public void setTo(TextRenderParameters other) {
             this.fontFamily = new FontFamilyParameter(other.fontFamily);
             this.fontStyle = other.fontStyle;
             this.fontSize = other.fontSize;

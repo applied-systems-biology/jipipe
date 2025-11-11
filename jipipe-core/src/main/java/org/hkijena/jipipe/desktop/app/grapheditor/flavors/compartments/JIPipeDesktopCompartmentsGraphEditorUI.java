@@ -361,7 +361,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
         try {
             JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
             defaultState.setAlwaysShowRightPanel(true);
-            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("graph-editor",
+            JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
                     Path.of("compartments", "dock-state"),
                     JIPipeDesktopDockPanel.State.class,
                     defaultState,
