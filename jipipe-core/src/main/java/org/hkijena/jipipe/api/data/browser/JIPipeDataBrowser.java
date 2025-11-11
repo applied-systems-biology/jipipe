@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.data.browser;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 
@@ -46,6 +47,15 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
     }
 
     /**
+     * Gets the data as more detailed information container
+     *
+     * @return the string
+     */
+    default Future<JIPipeDataInstanceInfo> getDataInfo() {
+        return getDataInfo(new JIPipeProgressInfo());
+    }
+
+    /**
      * Gets the string representation of the data
      *
      * @param progressInfo the progress info
@@ -54,21 +64,11 @@ public interface JIPipeDataBrowser extends Closeable, AutoCloseable {
     Future<String> getDataAsString(JIPipeProgressInfo progressInfo);
 
     /**
-     * Gets the detailed string representation of the data
-     *
-     * @return the string
-     */
-    default Future<String> getDataAsDetailedString() {
-        return getDataAsDetailedString(new JIPipeProgressInfo());
-    }
-
-    /**
-     * Gets the detailed string representation of the data
-     *
+     * Gets the data as more detailed information container
      * @param progressInfo the progress info
-     * @return the string
+     * @return the information
      */
-    Future<String> getDataAsDetailedString(JIPipeProgressInfo progressInfo);
+    Future<JIPipeDataInstanceInfo> getDataInfo(JIPipeProgressInfo progressInfo);
 
     /**
      * The data class

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -124,7 +125,12 @@ public class SpotTrackerData implements JIPipeData {
     }
 
     @Override
-    public String toDetailedString() {
-        return trackerFactory.getName() + ": " + settings.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue()).collect(Collectors.joining(", "));
+    public JIPipeDataInstanceInfo toInfo() {
+        JIPipeDataInstanceInfo.Builder builder = JIPipeDataInstanceInfo.builder();
+        builder.add(JIPipeDataInstanceInfo.DetailLevel.Brief, "Spot tracker", trackerFactory.getName());
+        for (Map.Entry<String, Object> entry : settings.entrySet()) {
+            builder.add(JIPipeDataInstanceInfo.DetailLevel.Detailed,  entry.getKey(), entry.getValue().toString());
+        }
+        return builder.build();
     }
 }

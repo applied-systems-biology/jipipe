@@ -213,7 +213,7 @@ public class JIPipeDesktopExtendedDataTableModel implements TableModel {
                 return preview;
             } else if (columnIndex == 3)
                 try {
-                    return "" + dataTable.getDataItemStore(rowIndex).getStringRepresentation();
+                    return dataTable.getDataItemStore(rowIndex).getHTMLRepresentation().getHtml();
                 } catch (IndexOutOfBoundsException e) {
                     return "<Invalid>";
                 }

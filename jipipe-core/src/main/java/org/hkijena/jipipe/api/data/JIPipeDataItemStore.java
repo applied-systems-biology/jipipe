@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.data.Store;
 
 import java.io.Closeable;
@@ -30,8 +31,10 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
 
     private final StampedLock stampedLock = new StampedLock();
     private final Class<? extends JIPipeData> dataClass;
-    private final String stringRepresentation;
     private final WeakHashMap<Object, Boolean> users = new WeakHashMap<>();
+    private final JIPipeDataInstanceInfo dataInstanceInfo;
+    private final String dataInstanceInfoPlainText;
+    private final HTMLText dataInstanceInfoHTML;
     private JIPipeData data;
     private JIPipeThumbnailData thumbnail;
     private boolean closed = false;
@@ -44,7 +47,9 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
     public JIPipeDataItemStore(JIPipeData data) {
         this.dataClass = data.getClass();
         this.data = data;
-        this.stringRepresentation = data.toString();
+        this.dataInstanceInfo = data.toInfo();
+        this.dataInstanceInfoPlainText = data.toInfo().toPlainText(true, true);
+        this.dataInstanceInfoHTML = data.toInfo().toHtml(true, true);
     }
 
     /**
@@ -155,9 +160,16 @@ public class JIPipeDataItemStore implements AutoCloseable, Closeable, Store<JIPi
 
     public String getStringRepresentation() {
         if (data != null) {
-            return "" + data;
+            return data.toInfo().toPlainText(true, true);
         }
-        return stringRepresentation;
+        return dataInstanceInfoPlainText;
+    }
+
+    public HTMLText getHTMLRepresentation() {
+        if (data != null) {
+            return data.toInfo().toHtml(true, true);
+        }
+        return dataInstanceInfoHTML;
     }
 
     public Class<? extends JIPipeData> getDataClass() {

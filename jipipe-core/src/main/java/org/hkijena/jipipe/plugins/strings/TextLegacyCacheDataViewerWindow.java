@@ -99,7 +99,7 @@ public class TextLegacyCacheDataViewerWindow extends JIPipeDesktopLegacyCacheDat
             textArea.setText(((StringData) data).getData());
             textArea.setSyntaxEditingStyle(((StringData) data).getMimeType());
         } else {
-            textArea.setText(data.toDetailedString());
+            textArea.setText(data.toInfo().toPlainText(true, true));
         }
     }
 }

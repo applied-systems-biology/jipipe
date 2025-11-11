@@ -70,7 +70,7 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             JIPipeData inputData = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-            iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, detailedDataString ? inputData.toDetailedString() : inputData.toString()), annotationMergeStrategy);
+            iterationStep.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, detailedDataString ? inputData.toInfo().toPlainText(true, true) : inputData.toString()), annotationMergeStrategy);
             iterationStep.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

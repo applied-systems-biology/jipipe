@@ -296,9 +296,4 @@ public class TrackCollectionData extends SpotsCollectionData {
     public String toString() {
         return getModel().getTrackModel().nTracks(true) + " tracks, " + super.toString();
     }
-
-    @Override
-    public String toDetailedString() {
-        return toString();
-    }
 }
