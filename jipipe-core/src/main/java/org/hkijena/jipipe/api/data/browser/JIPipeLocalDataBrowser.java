@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.data.browser;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.utils.InstantFuture;
 
@@ -39,8 +40,8 @@ public class JIPipeLocalDataBrowser implements JIPipeDataBrowser, Closeable, Aut
     }
 
     @Override
-    public Future<String> getDataAsDetailedString(JIPipeProgressInfo progressInfo) {
-        return new InstantFuture<>(dataItemStore.get().toDetailedString());
+    public Future<JIPipeDataInstanceInfo> getDataInfo(JIPipeProgressInfo progressInfo) {
+        return new InstantFuture<>(dataItemStore.get().toInfo());
     }
 
     @Override

@@ -18,6 +18,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Overlay;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHeavyData;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.documentation.DefineJIPipeDataCrateEntity;
@@ -43,6 +45,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.io.FileNotFoundException;
@@ -189,23 +192,45 @@ public class ImagePlusData implements JIPipeData {
     }
 
     public int getWidth() {
+        if(getImage() == null) {
+            return 0;
+        }
         return getImage().getWidth();
     }
 
     public int getHeight() {
+        if(getImage() == null) {
+            return 0;
+        }
         return getImage().getHeight();
     }
 
     public int getNChannels() {
+        if(getImage() == null) {
+            return 0;
+        }
         return getImage().getNChannels();
     }
 
     public int getNSlices() {
+        if(getImage() == null) {
+            return 0;
+        }
         return getImage().getNSlices();
     }
 
     public int getNFrames() {
+        if(getImage() == null) {
+            return 0;
+        }
         return getImage().getNFrames();
+    }
+
+    public int getBitDepth() {
+        if(getImage() == null) {
+            return 0;
+        }
+        return getImage().getBitDepth();
     }
 
     /**
@@ -405,6 +430,45 @@ public class ImagePlusData implements JIPipeData {
     @Override
     public String toString() {
         return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + image + ")";
+    }
+
+    @Override
+    public JIPipeDataInstanceInfo toInfo() {
+        JIPipeDataInstanceInfo.Builder builder = JIPipeDataInstanceInfo.builder();
+        builder.add(JIPipeDataInstanceInfo.DetailLevel.Brief,  JIPipeDataInfo.getInstance(getClass()).getName());
+        builder.add(JIPipeDataInstanceInfo.DetailLevel.Detailed, getBitDepth()+"-bit, W"+getWidth()+" H"+getHeight()+" C"+getNChannels()+" Z"+getNSlices()+" T"+getNFrames());
+        if(getImage() != null) {
+            Calibration cal = getImage().getCalibration();
+            if (cal != null) {
+                double physWidth = getWidth() * cal.pixelWidth;
+                double physHeight = getHeight() * cal.pixelHeight;
+                double physDepth = getNSlices() * cal.pixelDepth;
+                String xUnit = cal.getXUnit();
+                String yUnit = cal.getYUnit();
+                String zUnit = cal.getZUnit();
+                String timeUnit = cal.getTimeUnit();
+                String valueUnit = cal.getValueUnit();
+                if("pixel".equals(xUnit) || "pixels".equals(xUnit) || xUnit == null) {
+                    xUnit = "px";
+                }
+                if("pixel".equals(yUnit) || "pixels".equals(yUnit) || yUnit == null) {
+                    yUnit = "px";
+                }
+                if("pixel".equals(zUnit) || "pixels".equals(zUnit) || zUnit == null) {
+                    zUnit = "px";
+                }
+                if("sec".equals(timeUnit) || "secs".equals(timeUnit) || timeUnit == null) {
+                    timeUnit = "s";
+                }
+                if(valueUnit == null || Calibration.DEFAULT_VALUE_UNIT.equals(valueUnit)) {
+                    valueUnit = "I";
+                }
+                if(!xUnit.equals("px") || !yUnit.equals("px") || !zUnit.equals("px") || !timeUnit.equals("s") || !valueUnit.equals("I")) {
+                    builder.add(JIPipeDataInstanceInfo.DetailLevel.Detailed, valueUnit + ", " + physWidth + xUnit +" * "+physHeight + yUnit +" * "+getNChannels()+" * "+physDepth + zUnit +" * "+getNFrames() + timeUnit);
+                }
+            }
+        }
+        return builder.build();
     }
 
     public ColorSpace getColorSpace() {

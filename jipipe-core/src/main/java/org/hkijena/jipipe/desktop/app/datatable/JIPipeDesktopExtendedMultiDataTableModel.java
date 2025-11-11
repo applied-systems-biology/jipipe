@@ -300,7 +300,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
             } else if (columnIndex == 6) {
                 JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
                 if (dataTable != null) {
-                    return "" + dataTable.getDataItemStore(rowList.get(rowIndex)).getStringRepresentation();
+                    return dataTable.getDataItemStore(rowList.get(rowIndex)).getHTMLRepresentation().getHtml();
                 } else {
                     return "NA";
                 }
@@ -337,7 +337,7 @@ public class JIPipeDesktopExtendedMultiDataTableModel implements TableModel {
             } else if (columnIndex == 4) {
                 JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
                 if (dataTable != null) {
-                    return "" + dataTable.getDataItemStore(rowList.get(rowIndex)).getStringRepresentation();
+                    return dataTable.getDataItemStore(rowList.get(rowIndex)).getHTMLRepresentation().getHtml();
                 } else {
                     return "NA";
                 }

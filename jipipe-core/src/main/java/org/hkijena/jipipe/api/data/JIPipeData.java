@@ -189,16 +189,6 @@ public interface JIPipeData extends Closeable, AutoCloseable {
         return null;
     }
 
-    /**
-     * This method returns a detailed string description (with multi-line, etc.) of the data.
-     * It can be used if toString() would yield too much information.
-     * Defaults to toString()
-     *
-     * @return detailed description string
-     */
-    default String toDetailedString() {
-        return toString();
-    }
 
     @Override
     default void close() {
@@ -248,4 +238,8 @@ public interface JIPipeData extends Closeable, AutoCloseable {
             storage.writeJSON(Paths.get("thumbnails.json"), metadata);
         }
     }
+
+   default JIPipeDataInstanceInfo toInfo() {
+        return JIPipeDataInstanceInfo.builder().add(JIPipeDataInstanceInfo.DetailLevel.Brief, toString()).build();
+   }
 }

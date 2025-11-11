@@ -24,6 +24,7 @@ import ij.process.ImageProcessor;
 import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.api.data.documentation.ConfigureJIPipeDataCrate;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
@@ -68,8 +69,10 @@ public class SpotsCollectionData extends ModelData {
     }
 
     @Override
-    public String toDetailedString() {
-        return getModel().getSpots().toString();
+    public JIPipeDataInstanceInfo toInfo() {
+        return JIPipeDataInstanceInfo.builder()
+                .add(JIPipeDataInstanceInfo.DetailLevel.Brief, getModel().getSpots().getNSpots(true) + " spots")
+                .add(JIPipeDataInstanceInfo.DetailLevel.Verbose, "Spots", getModel().getSpots().toString()).build();
     }
 
     public SpotCollection getSpots() {

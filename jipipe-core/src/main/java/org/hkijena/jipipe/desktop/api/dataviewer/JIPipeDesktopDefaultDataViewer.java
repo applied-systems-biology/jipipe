@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.desktop.api.dataviewer;
 
+import org.hkijena.jipipe.api.data.JIPipeDataInstanceInfo;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextArea;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopFancyReadOnlyTextField;
@@ -33,7 +34,7 @@ public class JIPipeDesktopDefaultDataViewer extends JIPipeDesktopDataViewer {
         } else {
             showError(dockPanel, "Unable to display data", "The viewer does not know how to display this data");
             awaitToSwing(getDataBrowser().getDataAsString(), stringField::setText);
-            awaitToSwing(getDataBrowser().getDataAsDetailedString(), detailedStringField::setText);
+            awaitToSwing(getDataBrowser().getDataInfo(), info -> detailedStringField.setText(info.toPlainText(true, true)));
         }
     }
 }

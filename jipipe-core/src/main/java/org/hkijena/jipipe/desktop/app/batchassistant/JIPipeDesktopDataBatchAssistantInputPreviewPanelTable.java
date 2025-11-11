@@ -391,7 +391,7 @@ public class JIPipeDesktopDataBatchAssistantInputPreviewPanelTable extends JPane
                     JIPipeDataTable dataTable = dataSource.getDataTable();
                     if (dataTable != null && dataSource.getRow() < dataTable.getRowCount()) {
                         JIPipeDataItemStore dataItemStore = dataTable.getDataItemStore(dataSource.getRow());
-                        setText(dataItemStore.getStringRepresentation());
+                        setText(dataItemStore.getHTMLRepresentation().getHtml());
                         setIcon(JIPipe.getDataTypes().getIconFor(dataItemStore.getDataClass()));
                     } else {
                         setText("NA");
