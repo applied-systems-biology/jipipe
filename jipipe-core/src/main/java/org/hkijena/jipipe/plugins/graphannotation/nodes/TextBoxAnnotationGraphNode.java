@@ -77,6 +77,10 @@ public class TextBoxAnnotationGraphNode extends DefaultTextBoxAnnotationGraphNod
         }
 
         public ShapeParameters(ShapeParameters other) {
+            setTo(other);
+        }
+
+        public void setTo(ShapeParameters other) {
             this.fillColor = new OptionalColorParameter(other.fillColor);
             this.borderColor = other.borderColor;
             this.borderThickness = other.borderThickness;

@@ -219,6 +219,9 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     @JIPipeParameter(value = "data", uiOrder = 999)
     @StringParameterSettings(monospace = true, multiline = true, visible = false)
     public String getData() {
+        if(graph != null) {
+            data = JsonUtils.toPrettyJsonString(graph);
+        }
         return data;
     }
 
@@ -227,6 +230,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     public void setData(String data) {
         this.graph = null;
         this.data = data;
+    }
+
+    public void setGraph(JIPipeGraph graph) {
+        setData(JsonUtils.toPrettyJsonString(graph));
     }
 
     @SetJIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
