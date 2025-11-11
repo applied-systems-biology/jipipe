@@ -246,7 +246,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * @param registryKey the registry key
      * @param value       the value
      */
-    public void putIntoRegistry(String databaseKey, Path registryKey, Object value) {
+    public void putIntoRegistry(String databaseKey, JIPipePathMetadataStore.Key registryKey, Object value) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
@@ -271,7 +271,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * @param destructive  if true and the current value is null, always replace it with the default value
      * @param <T>          the type
      */
-    public <T> T getFromRegistry(String databaseKey, Path registryKey, Class<T> type, T defaultValue, boolean destructive) {
+    public <T> T getFromRegistry(String databaseKey, JIPipePathMetadataStore.Key registryKey, Class<T> type, T defaultValue, boolean destructive) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }
@@ -320,7 +320,7 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
      * @param destructive if true and the current value is null, always replace it with the default value
      * @param <T>         the type
      */
-    public <T> List<T> getListFromRegistry(String databaseKey, Path registryKey, Class<T> type, boolean destructive) {
+    public <T> List<T> getListFromRegistry(String databaseKey, JIPipePathMetadataStore.Key registryKey, Class<T> type, boolean destructive) {
         if (!isValidRegistryDatabaseKey(databaseKey)) {
             throw new IllegalArgumentException("Invalid database key: " + databaseKey);
         }

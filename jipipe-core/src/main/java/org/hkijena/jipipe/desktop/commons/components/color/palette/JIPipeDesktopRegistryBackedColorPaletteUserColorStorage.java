@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.color.palette;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import java.nio.file.Path;
 import java.util.*;
@@ -27,7 +28,7 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
     private static final Map<String, List<JIPipeDesktopColorPaletteColor>> LISTS = new HashMap<>();
 
     private final JIPipeDesktopColorPaletteUI paletteUI;
-    private final Path registryStoragePath;
+    private final JIPipePathMetadataStore.Key registryStoragePath;
     private final List<JIPipeDesktopColorPaletteColor> paletteColors;
 
     public JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(JIPipeDesktopColorPaletteUI paletteUI) {
@@ -36,7 +37,7 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
         this.paletteColors = loadFromRegistry("ui-palette", registryStoragePath);
     }
 
-    private List<JIPipeDesktopColorPaletteColor> loadFromRegistry(String databaseId, Path registryStoragePath) {
+    private List<JIPipeDesktopColorPaletteColor> loadFromRegistry(String databaseId, JIPipePathMetadataStore.Key registryStoragePath) {
         List<JIPipeDesktopColorPaletteColor> result = LISTS.get(databaseId + "-" + registryStoragePath);
         if (result == null) {
             try {
@@ -52,18 +53,18 @@ public class JIPipeDesktopRegistryBackedColorPaletteUserColorStorage implements 
         return result;
     }
 
-    private Path getRegistryStoragePath(JIPipeDesktopColorPaletteUI paletteUI) {
+    private JIPipePathMetadataStore.Key getRegistryStoragePath(JIPipeDesktopColorPaletteUI paletteUI) {
         if (paletteUI.isEnableBackgroundColorSelection()) {
             if (paletteUI.isEnableAlphaColorSelection()) {
-                return Path.of("user-palette-colors", "fg-bg-a");
+                return JIPipePathMetadataStore.key("user-palette-colors", "fg-bg-a");
             } else {
-                return Path.of("user-palette-colors", "fg-bg");
+                return JIPipePathMetadataStore.key("user-palette-colors", "fg-bg");
             }
         } else {
             if (paletteUI.isEnableAlphaColorSelection()) {
-                return Path.of("user-palette-colors", "fg-a");
+                return JIPipePathMetadataStore.key("user-palette-colors", "fg-a");
             } else {
-                return Path.of("user-palette-colors", "fg");
+                return JIPipePathMetadataStore.key("user-palette-colors", "fg");
             }
         }
     }

@@ -522,8 +522,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Point getNodeUILocationWithin(String compartment) {
         compartment = StringUtils.orElse(compartment, "_");
-        Integer x = nodeMetadata.getInteger(Path.of("location", compartment, "x"), null);
-        Integer y = nodeMetadata.getInteger(Path.of("location", compartment, "y"), null);
+        Integer x = nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartment, "x"), null);
+        Integer y = nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartment, "y"), null);
         if (x == null || y == null) {
             return null;
         } else {
@@ -539,8 +539,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void setNodeUILocationWithin(String compartment, Point location) {
         compartment = StringUtils.orElse(compartment, "_");
-        nodeMetadata.putPrimitive(Path.of("location", compartment, "x"), location.x);
-        nodeMetadata.putPrimitive(Path.of("location", compartment, "y"), location.y);
+        nodeMetadata.putPrimitive(JIPipePathMetadataStore.key("location", compartment, "x"), location.x);
+        nodeMetadata.putPrimitive(JIPipePathMetadataStore.key("location", compartment, "y"), location.y);
     }
 
     /**
@@ -854,7 +854,7 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      * Removes all location information added via setLocationWithin()
      */
     public void clearAllNodeUILocations() {
-        nodeMetadata.clearEntriesWithPathPrefix(Path.of("location"));
+        nodeMetadata.clearEntriesWithPathPrefix(JIPipePathMetadataStore.key("location"));
     }
 
     /**
@@ -1326,14 +1326,14 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Map<String, Point> getAllNodeUILocations() {
         Map<String, Point> result = new HashMap<>();
-        for (Map.Entry<Path, Object> entry : nodeMetadata.getEntriesUnderPath("location").entrySet()) {
+        for (Map.Entry<JIPipePathMetadataStore.Key, Object> entry : nodeMetadata.getEntriesUnderPath("location").entrySet()) {
             if (entry.getKey().getNameCount() == 3) {
-                String compartmentName = entry.getKey().getName(1).toString();
-                String locationName = entry.getKey().getName(2).toString();
+                String compartmentName = entry.getKey().getName(1);
+                String locationName = entry.getKey().getName(2);
                 String standardCompartmentName = "_".equals(compartmentName) ? "" : compartmentName;
                 if (locationName.equals("x")) {
-                    result.put(standardCompartmentName, new Point(nodeMetadata.getInteger(Path.of("location", compartmentName, "x"), 0),
-                            nodeMetadata.getInteger(Path.of("location", compartmentName, "y"), 0)));
+                    result.put(standardCompartmentName, new Point(nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartmentName, "x"), 0),
+                            nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartmentName, "y"), 0)));
                 }
             }
         }

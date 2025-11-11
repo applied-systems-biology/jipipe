@@ -33,7 +33,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
-        Path key = Paths.get("test/boolean");
+        JIPipePathMetadataStore.Key key = JIPipePathMetadataStore.key("test/boolean");
         store.putObject(key, true);
 
         Boolean result = store.getObject(key, Boolean.class);
@@ -66,7 +66,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
-        Path key = Paths.get("test/integer");
+        JIPipePathMetadataStore.Key key = JIPipePathMetadataStore.key("test/integer");
         store.putObject(key, 42);
 
         Integer result = store.getObject(key, Integer.class);
@@ -99,7 +99,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
-        Path key = Paths.get("test/double");
+        JIPipePathMetadataStore.Key key = JIPipePathMetadataStore.key("test/double");
         store.putObject(key, 3.14);
 
         Double result = store.getObject(key, Double.class);
@@ -132,7 +132,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test with putObject and getObject
-        Path key = Paths.get("test/string");
+        JIPipePathMetadataStore.Key key = JIPipePathMetadataStore.key("test/string");
         store.putObject(key, "test-value");
 
         String result = store.getObject(key, String.class);
@@ -271,7 +271,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         store.putObject("test/boolean", null);
 
         assertNull(store.getObject("test/boolean", Boolean.class));
-        assertFalse(store.containsKey(Paths.get("test/boolean")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/boolean")));
         assertEquals(0, store.size());
     }
 
@@ -283,7 +283,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         store.putObject("test/integer", null);
 
         assertNull(store.getObject("test/integer", Integer.class));
-        assertFalse(store.containsKey(Paths.get("test/integer")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/integer")));
         assertEquals(0, store.size());
     }
 
@@ -295,7 +295,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         store.putObject("test/double", null);
 
         assertNull(store.getObject("test/double", Double.class));
-        assertFalse(store.containsKey(Paths.get("test/double")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/double")));
         assertEquals(0, store.size());
     }
 
@@ -307,7 +307,7 @@ public class PathMetadataStorePrimitiveObjectTest {
         store.putObject("test/string", null);
 
         assertNull(store.getObject("test/string", String.class));
-        assertFalse(store.containsKey(Paths.get("test/string")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/string")));
         assertEquals(0, store.size());
     }
 
@@ -316,9 +316,9 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
-        store.putObject((Path) null, true);
+        store.putObject((JIPipePathMetadataStore.Key) null, true);
 
-        assertNull(store.getObject((Path) null, Boolean.class));
+        assertNull(store.getObject((JIPipePathMetadataStore.Key) null, Boolean.class));
         assertEquals(0, store.size());
     }
 
@@ -327,9 +327,9 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
-        store.putObject((Path) null, 42);
+        store.putObject((JIPipePathMetadataStore.Key) null, 42);
 
-        assertNull(store.getObject((Path) null, Integer.class));
+        assertNull(store.getObject((JIPipePathMetadataStore.Key) null, Integer.class));
         assertEquals(0, store.size());
     }
 
@@ -338,9 +338,9 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
-        store.putObject((Path) null, 3.14);
+        store.putObject((JIPipePathMetadataStore.Key) null, 3.14);
 
-        assertNull(store.getObject((Path) null, Double.class));
+        assertNull(store.getObject((JIPipePathMetadataStore.Key) null, Double.class));
         assertEquals(0, store.size());
     }
 
@@ -349,9 +349,9 @@ public class PathMetadataStorePrimitiveObjectTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Test that null key is not stored
-        store.putObject((Path) null, "test");
+        store.putObject((JIPipePathMetadataStore.Key) null, "test");
 
-        assertNull(store.getObject((Path) null, String.class));
+        assertNull(store.getObject((JIPipePathMetadataStore.Key) null, String.class));
         assertEquals(0, store.size());
     }
 
@@ -686,15 +686,6 @@ public class PathMetadataStorePrimitiveObjectTest {
         store.putObject("windows\\path\\to\\integer", 42);
         store.putObject("windows\\path\\to\\double", 3.14);
         store.putObject("windows\\path\\to\\string", "windows-value");
-
-        // Verify paths were stored with backslashes
-        assertTrue(store.hasBackslashPaths());
-
-        // Migrate paths to forward slashes
-        store.migrateBackslashPaths();
-
-        // Verify no more backslash paths
-        assertFalse(store.hasBackslashPaths());
 
         // Verify values can be retrieved using forward slash paths
         assertEquals(true, store.getObject("windows/path/to/boolean", Boolean.class));

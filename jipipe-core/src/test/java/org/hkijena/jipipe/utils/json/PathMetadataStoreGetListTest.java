@@ -57,10 +57,10 @@ public class PathMetadataStoreGetListTest {
 
         // Store a list directly
         List<Integer> numbers = Arrays.asList(1, 2, 3, 4, 5);
-        store.putObject(Paths.get("app/numbers"), numbers);
+        store.putObject(JIPipePathMetadataStore.key("app/numbers"), numbers);
 
         // Retrieve using getList method
-        List<Integer> retrievedNumbers = store.getList(Paths.get("app/numbers"), Integer.class);
+        List<Integer> retrievedNumbers = store.getList(JIPipePathMetadataStore.key("app/numbers"), Integer.class);
 
         assertNotNull(retrievedNumbers);
         assertEquals(5, retrievedNumbers.size());
@@ -71,7 +71,7 @@ public class PathMetadataStoreGetListTest {
         assertEquals(5, retrievedNumbers.get(4));
 
         // Test caching - second call should return the same cached object
-        List<Integer> cachedNumbers = store.getList(Paths.get("app/numbers"), Integer.class);
+        List<Integer> cachedNumbers = store.getList(JIPipePathMetadataStore.key("app/numbers"), Integer.class);
         assertSame(retrievedNumbers, cachedNumbers);
     }
 
@@ -92,7 +92,7 @@ public class PathMetadataStoreGetListTest {
         assertEquals("feature3", retrievedFeatures.get(2));
 
         // Test that the original JsonNode was replaced with deserialized list
-        Object storedValue = store.getData().get(Paths.get("app/features"));
+        Object storedValue = store.getData().get(JIPipePathMetadataStore.key("app/features"));
         assertSame(retrievedFeatures, storedValue);
     }
 
@@ -146,7 +146,7 @@ public class PathMetadataStoreGetListTest {
         assertNull(result);
 
         // Test with Path object that doesn't exist
-        List<Integer> pathResult = store.getList(Paths.get("nonexistent/path"), Integer.class);
+        List<Integer> pathResult = store.getList(JIPipePathMetadataStore.key("nonexistent/path"), Integer.class);
         assertNull(pathResult);
     }
 
@@ -159,7 +159,7 @@ public class PathMetadataStoreGetListTest {
         assertNull(result);
 
         // Test with null Path key - should return null
-        List<Integer> pathResult = store.getList((Path) null, Integer.class);
+        List<Integer> pathResult = store.getList((JIPipePathMetadataStore.Key) null, Integer.class);
         assertNull(pathResult);
     }
 
@@ -274,7 +274,7 @@ public class PathMetadataStoreGetListTest {
         store.clear();
 
         // Verify the key is gone
-        assertFalse(store.containsKey(Paths.get("test/data")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/data")));
 
         // Store a new value
         List<String> newList = Arrays.asList("new");
@@ -291,7 +291,7 @@ public class PathMetadataStoreGetListTest {
         store.clearEntriesWithPathPrefix("test");
 
         // Verify the key is gone
-        assertFalse(store.containsKey(Paths.get("test/data")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/data")));
     }
 
     @Test
@@ -327,13 +327,13 @@ public class PathMetadataStoreGetListTest {
         assertEquals("feature2", retrievedFeatures.get(1));
 
         // Verify getEntriesUnderPath works
-        Map<Path, Object> settingsEntries = store.getEntriesUnderPath("settings");
+        Map<JIPipePathMetadataStore.Key, Object> settingsEntries = store.getEntriesUnderPath("settings");
         assertEquals(5, settingsEntries.size());
-        assertTrue(settingsEntries.containsKey(Paths.get("settings/app/name")));
-        assertTrue(settingsEntries.containsKey(Paths.get("settings/app/version")));
-        assertTrue(settingsEntries.containsKey(Paths.get("settings/app/enabled")));
-        assertTrue(settingsEntries.containsKey(Paths.get("settings/features")));
-        assertTrue(settingsEntries.containsKey(Paths.get("settings/config")));
+        assertTrue(settingsEntries.containsKey(JIPipePathMetadataStore.key("settings/app/name")));
+        assertTrue(settingsEntries.containsKey(JIPipePathMetadataStore.key("settings/app/version")));
+        assertTrue(settingsEntries.containsKey(JIPipePathMetadataStore.key("settings/app/enabled")));
+        assertTrue(settingsEntries.containsKey(JIPipePathMetadataStore.key("settings/features")));
+        assertTrue(settingsEntries.containsKey(JIPipePathMetadataStore.key("settings/config")));
     }
 
     @Test
@@ -380,47 +380,6 @@ public class PathMetadataStoreGetListTest {
     }
 
     @Test
-    public void testGetListWithCrossPlatformPaths() {
-        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
-
-        // Store lists with Windows-style paths
-        List<String> windowsFeatures = Arrays.asList("feature1", "feature2");
-        store.putObject("windows\\path\\to\\features", windowsFeatures);
-
-        List<Integer> windowsNumbers = Arrays.asList(1, 2, 3);
-        store.putObject("windows\\path\\to\\numbers", windowsNumbers);
-
-        // Verify the paths were stored with backslashes
-        assertTrue(store.hasBackslashPaths());
-        assertTrue(store.containsKey(Paths.get("windows\\path\\to\\features")));
-        assertTrue(store.containsKey(Paths.get("windows\\path\\to\\numbers")));
-
-        // Migrate paths to forward slashes
-        store.migrateBackslashPaths();
-
-        // Verify no more backslash paths
-        assertFalse(store.hasBackslashPaths());
-        assertFalse(store.containsKey(Paths.get("windows\\path\\to\\features")));
-        assertFalse(store.containsKey(Paths.get("windows\\path\\to\\numbers")));
-        assertTrue(store.containsKey(Paths.get("windows/path/to/features")));
-        assertTrue(store.containsKey(Paths.get("windows/path/to/numbers")));
-
-        // Verify the lists are still accessible
-        List<String> retrievedFeatures = store.getList("windows/path/to/features", String.class);
-        assertNotNull(retrievedFeatures);
-        assertEquals(2, retrievedFeatures.size());
-        assertEquals("feature1", retrievedFeatures.get(0));
-        assertEquals("feature2", retrievedFeatures.get(1));
-
-        List<Integer> retrievedNumbers = store.getList("windows/path/to/numbers", Integer.class);
-        assertNotNull(retrievedNumbers);
-        assertEquals(3, retrievedNumbers.size());
-        assertEquals(1, retrievedNumbers.get(0));
-        assertEquals(2, retrievedNumbers.get(1));
-        assertEquals(3, retrievedNumbers.get(2));
-    }
-
-    @Test
     public void testGetListWithEmptyStore() {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
@@ -428,7 +387,7 @@ public class PathMetadataStoreGetListTest {
         List<String> result = store.getList("any/path", String.class);
         assertNull(result);
 
-        List<Integer> intResult = store.getList(Paths.get("any/path"), Integer.class);
+        List<Integer> intResult = store.getList(JIPipePathMetadataStore.key("any/path"), Integer.class);
         assertNull(intResult);
 
         // Verify store is still empty

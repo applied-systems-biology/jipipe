@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -163,7 +164,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
     private void initializePreset() {
         if(PRESETS == null) {
             PRESETS =  JIPipe.getSettings().getListFromRegistry("ui-graph-editor",
-                    Path.of("context-panel", "tools", "draw-text-box-annotation", "presets"),
+                    JIPipePathMetadataStore.key("context-panel", "tools", "draw-text-box-annotation", "presets"),
                     JIPipeNodeTemplate.class,
                     true);
             PRESETS.removeIf(this::isInvalidPreset);
@@ -185,7 +186,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
 
     private void savePresets() {
         JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
-                Path.of("context-panel", "tools", "draw-text-box-annotation", "presets"),
+                JIPipePathMetadataStore.key("context-panel", "tools", "draw-text-box-annotation", "presets"),
                 PRESETS);
     }
 

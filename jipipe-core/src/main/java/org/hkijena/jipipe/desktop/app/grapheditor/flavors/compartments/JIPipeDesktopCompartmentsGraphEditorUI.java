@@ -63,6 +63,7 @@ import org.hkijena.jipipe.desktop.app.history.JIPipeDesktopHistoryJournalUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopRunSetsListEditor;
 import org.hkijena.jipipe.desktop.commons.components.tools.JIPipeDesktopExpressionCalculatorUI;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -362,7 +363,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
             JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
             defaultState.setAlwaysShowRightPanel(true);
             JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
-                    Path.of("compartments", "dock-state"),
+                    JIPipePathMetadataStore.key("compartments", "dock-state"),
                     JIPipeDesktopDockPanel.State.class,
                     defaultState,
                     true);
@@ -376,7 +377,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
             JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
-                    Path.of("compartments", "dock-state"),
+                    JIPipePathMetadataStore.key("compartments", "dock-state"),
                     getDockPanel().getCurrentState());
         }
     }
@@ -384,7 +385,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
     @Override
     protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
-            return JIPipe.getSettings().getFromRegistry("ui-dock", Path.of("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
+            return JIPipe.getSettings().getFromRegistry("ui-dock", JIPipePathMetadataStore.key("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
         }
         return null;
     }

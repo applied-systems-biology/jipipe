@@ -34,6 +34,7 @@ import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgor
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,7 +109,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true));
+        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true));
     }
 
     public JIPipeDataSlot getQuerySlot() {

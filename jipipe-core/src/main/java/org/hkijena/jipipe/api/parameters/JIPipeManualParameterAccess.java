@@ -384,7 +384,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
             return this;
         }
 
-        public Builder addMetadata(Path key, Object value) {
+        public Builder addMetadata(JIPipePathMetadataStore.Key key, Object value) {
             access.metadata.putObject(key, value);
             return this;
         }

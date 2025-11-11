@@ -30,30 +30,30 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        store.putPrimitive(Paths.get("settings/ui/theme"), "dark");
-        store.putPrimitive(Paths.get("features/enhanced"), true);
-        store.putPrimitive(Paths.get("other/setting"), "value");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/ui/theme"), "dark");
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("other/setting"), "value");
 
         // Verify initial state
         assertEquals(5, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
-        assertTrue(store.containsKey(Paths.get("other/setting")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("other/setting")));
 
         // Clear all settings entries
         store.clearEntriesWithPathPrefix("settings");
 
         // Verify that settings entries are removed
         assertEquals(2, store.size());
-        assertFalse(store.containsKey(Paths.get("settings/general/name")));
-        assertFalse(store.containsKey(Paths.get("settings/general/version")));
-        assertFalse(store.containsKey(Paths.get("settings/ui/theme")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/version")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/ui/theme")));
 
         // Verify other entries remain
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
-        assertTrue(store.containsKey(Paths.get("other/setting")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("other/setting")));
     }
 
     @Test
@@ -61,20 +61,20 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Clear with trailing slash
         store.clearEntriesWithPathPrefix("settings/");
 
         // Verify that settings entries are removed
         assertEquals(1, store.size());
-        assertFalse(store.containsKey(Paths.get("settings/general/name")));
-        assertFalse(store.containsKey(Paths.get("settings/general/version")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/version")));
 
         // Verify other entries remain
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
     }
 
     @Test
@@ -82,16 +82,16 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Try to clear non-existent prefix
         store.clearEntriesWithPathPrefix("nonexistent");
 
         // Verify nothing changed
         assertEquals(2, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
     }
 
     @Test
@@ -99,14 +99,14 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
 
         // Try to clear with null prefix (string version)
         store.clearEntriesWithPathPrefix((String) null);
 
         // Verify nothing changed
         assertEquals(1, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
     }
 
     @Test
@@ -114,14 +114,14 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
 
         // Try to clear with empty prefix
         store.clearEntriesWithPathPrefix("");
 
         // Verify nothing changed
         assertEquals(1, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
     }
 
     @Test
@@ -129,18 +129,18 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings"), "root");
-        store.putPrimitive(Paths.get("settings/general"), "general");
-        store.putPrimitive(Paths.get("settings/name"), "name");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings"), "root");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general"), "general");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/name"), "name");
 
         // Clear exact match
         store.clearEntriesWithPathPrefix("settings");
 
         // Verify exact match and all children are removed
         assertEquals(0, store.size());
-        assertFalse(store.containsKey(Paths.get("settings")));
-        assertFalse(store.containsKey(Paths.get("settings/general")));
-        assertFalse(store.containsKey(Paths.get("settings/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/name")));
     }
 
     @Test
@@ -148,24 +148,24 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data with deep hierarchy
-        store.putPrimitive(Paths.get("a/b/c/d"), "deep");
-        store.putPrimitive(Paths.get("a/b/c/e"), "deep2");
-        store.putPrimitive(Paths.get("a/b/f"), "shallow");
-        store.putPrimitive(Paths.get("a/g"), "other");
-        store.putPrimitive(Paths.get("h"), "top");
+        store.putPrimitive(JIPipePathMetadataStore.key("a/b/c/d"), "deep");
+        store.putPrimitive(JIPipePathMetadataStore.key("a/b/c/e"), "deep2");
+        store.putPrimitive(JIPipePathMetadataStore.key("a/b/f"), "shallow");
+        store.putPrimitive(JIPipePathMetadataStore.key("a/g"), "other");
+        store.putPrimitive(JIPipePathMetadataStore.key("h"), "top");
 
         // Clear intermediate level
         store.clearEntriesWithPathPrefix("a/b");
 
         // Verify only cleared entries are removed
         assertEquals(2, store.size());
-        assertFalse(store.containsKey(Paths.get("a/b/c/d")));
-        assertFalse(store.containsKey(Paths.get("a/b/c/e")));
-        assertFalse(store.containsKey(Paths.get("a/b/f")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("a/b/c/d")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("a/b/c/e")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("a/b/f")));
 
         // Verify other entries remain
-        assertTrue(store.containsKey(Paths.get("a/g")));
-        assertTrue(store.containsKey(Paths.get("h")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("a/g")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("h")));
     }
 
     @Test
@@ -173,16 +173,16 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("Settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("Settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
 
         // Clear lowercase settings - should only remove lowercase entries
         store.clearEntriesWithPathPrefix("settings");
 
         // Verify only lowercase entries are removed
         assertEquals(1, store.size());
-        assertFalse(store.containsKey(Paths.get("settings/general/version")));
-        assertTrue(store.containsKey(Paths.get("Settings/general/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/version")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("Settings/general/name")));
     }
 
     @Test
@@ -190,27 +190,27 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        store.putPrimitive(Paths.get("settings/ui/theme"), "dark");
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/ui/theme"), "dark");
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Verify initial state
         assertEquals(4, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
 
         // Clear all settings entries using Path object
-        store.clearEntriesWithPathPrefix(Paths.get("settings"));
+        store.clearEntriesWithPathPrefix(JIPipePathMetadataStore.key("settings"));
 
         // Verify that settings entries are removed
         assertEquals(1, store.size());
-        assertFalse(store.containsKey(Paths.get("settings/general/name")));
-        assertFalse(store.containsKey(Paths.get("settings/general/version")));
-        assertFalse(store.containsKey(Paths.get("settings/ui/theme")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/version")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/ui/theme")));
 
         // Verify other entries remain
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
     }
 
     @Test
@@ -218,20 +218,20 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Clear with trailing slash using Path object
-        store.clearEntriesWithPathPrefix(Paths.get("settings/"));
+        store.clearEntriesWithPathPrefix(JIPipePathMetadataStore.key("settings/"));
 
         // Verify that settings entries are removed
         assertEquals(1, store.size());
-        assertFalse(store.containsKey(Paths.get("settings/general/name")));
-        assertFalse(store.containsKey(Paths.get("settings/general/version")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("settings/general/version")));
 
         // Verify other entries remain
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
     }
 
     @Test
@@ -239,16 +239,16 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Try to clear non-existent prefix using Path object
-        store.clearEntriesWithPathPrefix(Paths.get("nonexistent"));
+        store.clearEntriesWithPathPrefix(JIPipePathMetadataStore.key("nonexistent"));
 
         // Verify nothing changed
         assertEquals(2, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
-        assertTrue(store.containsKey(Paths.get("features/enhanced")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("features/enhanced")));
     }
 
     @Test
@@ -256,14 +256,14 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up test data
-        store.putPrimitive(Paths.get("settings/general/name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Application");
 
         // Try to clear with null prefix using Path object
-        store.clearEntriesWithPathPrefix((Path) null);
+        store.clearEntriesWithPathPrefix((JIPipePathMetadataStore.Key) null);
 
         // Verify nothing changed
         assertEquals(1, store.size());
-        assertTrue(store.containsKey(Paths.get("settings/general/name")));
+        assertTrue(store.containsKey(JIPipePathMetadataStore.key("settings/general/name")));
     }
 
     @Test
@@ -271,15 +271,15 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Set up initial data
-        store.putPrimitive(Paths.get("settings/general/name"), "Original Application");
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        store.putPrimitive(Paths.get("features/enhanced"), true);
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "Original Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("features/enhanced"), true);
 
         // Create another store with some overlapping and new data
         JIPipePathMetadataStore other = new JIPipePathMetadataStore();
-        other.putPrimitive(Paths.get("settings/general/name"), "New Application"); // Override existing
-        other.putPrimitive(Paths.get("settings/general/debug"), true); // New entry
-        other.putPrimitive(Paths.get("new/feature"), "added"); // New entry
+        other.putPrimitive(JIPipePathMetadataStore.key("settings/general/name"), "New Application"); // Override existing
+        other.putPrimitive(JIPipePathMetadataStore.key("settings/general/debug"), true); // New entry
+        other.putPrimitive(JIPipePathMetadataStore.key("new/feature"), "added"); // New entry
 
         // Put all entries from other store
         store.putAll(other);
@@ -288,34 +288,34 @@ class PathMetadataStorePathPrefixTest {
         assertEquals(5, store.size());
 
         // Verify overridden entry
-        assertEquals("New Application", store.getString(Paths.get("settings/general/name"), "Default"));
+        assertEquals("New Application", store.getString(JIPipePathMetadataStore.key("settings/general/name"), "Default"));
 
         // Verify existing entries that weren't overridden
-        assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertEquals(true, store.getBoolean(Paths.get("features/enhanced"), false));
+        assertEquals(1.0, store.getDouble(JIPipePathMetadataStore.key("settings/general/version"), 0.0));
+        assertEquals(true, store.getBoolean(JIPipePathMetadataStore.key("features/enhanced"), false));
 
         // Verify new entries from other store
-        assertEquals(true, store.getBoolean(Paths.get("settings/general/debug"), false));
-        assertEquals("added", store.getString(Paths.get("new/feature"), "default"));
+        assertEquals(true, store.getBoolean(JIPipePathMetadataStore.key("settings/general/debug"), false));
+        assertEquals("added", store.getString(JIPipePathMetadataStore.key("new/feature"), "default"));
     }
 
     @Test
     void testPutPrimitiveAllNull() {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
-        store.putPrimitive(Paths.get("test/key"), "value");
+        store.putPrimitive(JIPipePathMetadataStore.key("test/key"), "value");
 
         // Put with null should not change anything
         store.putAll(null);
 
         // Verify original data remains
         assertEquals(1, store.size());
-        assertEquals("value", store.getString(Paths.get("test/key"), "default"));
+        assertEquals("value", store.getString(JIPipePathMetadataStore.key("test/key"), "default"));
     }
 
     @Test
     void testPutPrimitiveAllEmpty() {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
-        store.putPrimitive(Paths.get("test/key"), "value");
+        store.putPrimitive(JIPipePathMetadataStore.key("test/key"), "value");
 
         JIPipePathMetadataStore empty = new JIPipePathMetadataStore();
 
@@ -324,77 +324,7 @@ class PathMetadataStorePathPrefixTest {
 
         // Verify original data remains
         assertEquals(1, store.size());
-        assertEquals("value", store.getString(Paths.get("test/key"), "default"));
-    }
-
-    @Test
-    void testPathNormalization() {
-        // Test path normalization utility methods
-        assertEquals("path/to/file", JIPipePathMetadataStore.normalizePathString("path\\to\\file"));
-        assertEquals("path/to/file", JIPipePathMetadataStore.normalizePathString("path/to/file"));
-        assertEquals(null, JIPipePathMetadataStore.normalizePathString(null));
-
-        Path originalPath = Paths.get("settings\\general\\name");
-        Path normalizedPath = JIPipePathMetadataStore.normalizePath(originalPath);
-        assertEquals("settings/general/name", normalizedPath.toString());
-    }
-
-    @Test
-    void testBackslashMigration() {
-        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
-
-        // Add paths with backslashes (simulating Windows paths)
-        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
-        store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
-        store.putPrimitive(Paths.get("ui\\theme"), "dark");
-
-        // Verify that backslash paths exist
-        assertTrue(store.hasBackslashPaths());
-        assertEquals(3, store.size());
-
-        // Migrate backslash paths
-        store.migrateBackslashPaths();
-
-        // Verify that no backslash paths remain
-        assertFalse(store.hasBackslashPaths());
-        assertEquals(3, store.size());
-
-        // Verify that values are preserved with normalized paths
-        assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertEquals("dark", store.getString(Paths.get("ui/theme"), "light"));
-    }
-
-    @Test
-    void testGetNormalizedCopy() {
-        JIPipePathMetadataStore original = new JIPipePathMetadataStore();
-
-        // Add paths with mixed separators
-        original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
-        original.putPrimitive(Paths.get("settings/general/version"), 1.0);
-        original.putPrimitive(Paths.get("ui\\theme"), "dark");
-
-        // Create normalized copy
-        JIPipePathMetadataStore normalized = original.getNormalizedCopy();
-
-        // Verify original is unchanged
-        assertEquals(3, original.size());
-        assertTrue(original.hasBackslashPaths());
-
-        // Verify normalized copy has no backslashes
-        assertEquals(3, normalized.size());
-        assertFalse(normalized.hasBackslashPaths());
-
-        // Verify all paths use forward slashes
-        Set<String> normalizedPaths = normalized.getNormalizedPathStrings();
-        assertTrue(normalizedPaths.contains("settings/general/name"));
-        assertTrue(normalizedPaths.contains("settings/general/version"));
-        assertTrue(normalizedPaths.contains("ui/theme"));
-
-        // Verify values are preserved
-        assertEquals("Application", normalized.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, normalized.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertEquals("dark", normalized.getString(Paths.get("ui/theme"), "light"));
+        assertEquals("value", store.getString(JIPipePathMetadataStore.key("test/key"), "default"));
     }
 
     @Test
@@ -403,8 +333,8 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore original = new JIPipePathMetadataStore();
 
         // Add paths with backslashes
-        original.putPrimitive(Paths.get("settings\\general\\name"), "Application");
-        original.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
+        original.putPrimitive(JIPipePathMetadataStore.key("settings\\general\\name"), "Application");
+        original.putPrimitive(JIPipePathMetadataStore.key("settings\\general\\version"), 1.0);
 
         // Serialize to JSON
         String json = mapper.writeValueAsString(original);
@@ -419,9 +349,8 @@ class PathMetadataStorePathPrefixTest {
 
         // Verify deserialized data
         assertEquals(2, deserialized.size());
-        assertEquals("Application", deserialized.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, deserialized.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertFalse(deserialized.hasBackslashPaths());
+        assertEquals("Application", deserialized.getString(JIPipePathMetadataStore.key("settings/general/name"), "Default"));
+        assertEquals(1.0, deserialized.getDouble(JIPipePathMetadataStore.key("settings/general/version"), 0.0));
     }
 
     @Test
@@ -436,9 +365,8 @@ class PathMetadataStorePathPrefixTest {
 
         // Verify store has normalized paths
         assertEquals(2, store.size());
-        assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertFalse(store.hasBackslashPaths());
+        assertEquals("Application", store.getString(JIPipePathMetadataStore.key("settings/general/name"), "Default"));
+        assertEquals(1.0, store.getDouble(JIPipePathMetadataStore.key("settings/general/version"), 0.0));
     }
 
     @Test
@@ -446,9 +374,9 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Add paths with backslashes
-        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");
-        store.putPrimitive(Paths.get("settings\\general\\version"), 1.0);
-        store.putPrimitive(Paths.get("ui\\theme"), "dark");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings\\general\\name"), "Application");
+        store.putPrimitive(JIPipePathMetadataStore.key("settings\\general\\version"), 1.0);
+        store.putPrimitive(JIPipePathMetadataStore.key("ui\\theme"), "dark");
 
         // Convert to nested map
         Map<String, Object> nested = store.toNestedMap();
@@ -476,25 +404,18 @@ class PathMetadataStorePathPrefixTest {
         JIPipePathMetadataStore store = new JIPipePathMetadataStore();
 
         // Add paths with mixed separators
-        store.putPrimitive(Paths.get("settings\\general\\name"), "Application");  // Backslashes
-        store.putPrimitive(Paths.get("settings/general/version"), 1.0);          // Forward slashes
-        store.putPrimitive(Paths.get("ui\\theme"), "dark");                     // Backslashes
+        store.putPrimitive(JIPipePathMetadataStore.key("settings\\general\\name"), "Application");  // Backslashes
+        store.putPrimitive(JIPipePathMetadataStore.key("settings/general/version"), 1.0);          // Forward slashes
+        store.putPrimitive(JIPipePathMetadataStore.key("ui\\theme"), "dark");                     // Backslashes
 
         // Before migration, backslash paths should not be found with forward slash paths
-        assertEquals("Default", store.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertEquals("light", store.getString(Paths.get("ui/theme"), "light"));
-
-        // Verify backslash paths exist before migration
-        assertTrue(store.hasBackslashPaths());
-
-        // After migration, all should be normalized and accessible
-        store.migrateBackslashPaths();
-        assertFalse(store.hasBackslashPaths());
+        assertEquals("Application", store.getString(JIPipePathMetadataStore.key("settings/general/name"), "Default"));
+        assertEquals(1.0, store.getDouble(JIPipePathMetadataStore.key("settings/general/version"), 0.0));
+        assertEquals("dark", store.getString(JIPipePathMetadataStore.key("ui/theme"), "light"));
 
         // Now all paths should work with forward slashes
-        assertEquals("Application", store.getString(Paths.get("settings/general/name"), "Default"));
-        assertEquals(1.0, store.getDouble(Paths.get("settings/general/version"), 0.0));
-        assertEquals("dark", store.getString(Paths.get("ui/theme"), "light"));
+        assertEquals("Application", store.getString(JIPipePathMetadataStore.key("settings/general/name"), "Default"));
+        assertEquals(1.0, store.getDouble(JIPipePathMetadataStore.key("settings/general/version"), 0.0));
+        assertEquals("dark", store.getString(JIPipePathMetadataStore.key("ui/theme"), "light"));
     }
 }
