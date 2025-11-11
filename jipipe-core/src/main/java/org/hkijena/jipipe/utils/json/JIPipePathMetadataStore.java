@@ -888,7 +888,16 @@ public class JIPipePathMetadataStore {
     }
 
     public static Key key(String... arr) {
-        return new Key(arr);
+        // Add additional processing
+        List<String> items = new  ArrayList<>();
+        for (String item : arr) {
+            for(String item2 : item.split("[/\\\\]")) {
+                if(!item2.isEmpty()) {
+                    items.add(item2);
+                }
+            }
+        }
+        return new Key(items.toArray(new String[0]));
     }
 
     public static final class Key {
@@ -910,6 +919,14 @@ public class JIPipePathMetadataStore {
         @Override
         public int hashCode() {
             return Arrays.hashCode(items);
+        }
+
+        public int getNameCount() {
+            return items.length;
+        }
+
+        public String getName(int i) {
+            return items[i];
         }
     }
 }

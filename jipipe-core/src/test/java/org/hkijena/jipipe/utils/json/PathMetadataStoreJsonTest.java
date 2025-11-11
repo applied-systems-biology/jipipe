@@ -36,7 +36,7 @@ public class PathMetadataStoreJsonTest {
         config.put("port", 5432);
         config.put("ssl", true);
 
-        Path configPath = Paths.get("database/config");
+        JIPipePathMetadataStore.Key configPath = JIPipePathMetadataStore.key("database/config");
         store.putObject(configPath, config);
 
         // Retrieve with type safety
@@ -161,7 +161,7 @@ public class PathMetadataStoreJsonTest {
         assertSame(firstRetrieval, secondRetrieval);
 
         // Verify the data map now contains the deserialized object
-        Object storedValue = store.getData().get(Paths.get("test/data"));
+        Object storedValue = store.getData().get(JIPipePathMetadataStore.key("test/data"));
         assertSame(firstRetrieval, storedValue);
     }
     // Enhanced putObject() Testing
@@ -175,7 +175,7 @@ public class PathMetadataStoreJsonTest {
 
         // Verify nothing was stored
         assertEquals(0, store.size());
-        assertFalse(store.containsKey(Paths.get("test")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test")));
     }
 
     @Test
@@ -187,7 +187,7 @@ public class PathMetadataStoreJsonTest {
 
         // Verify nothing was stored
         assertEquals(0, store.size());
-        assertFalse(store.containsKey(Paths.get("test/key")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/key")));
     }
 
     @Test
@@ -199,7 +199,7 @@ public class PathMetadataStoreJsonTest {
         store.putObject("test/pojo", pojo);
 
         // Verify the object was stored directly
-        Object storedValue = store.getData().get(Paths.get("test/pojo"));
+        Object storedValue = store.getData().get(JIPipePathMetadataStore.key("test/pojo"));
         assertSame(pojo, storedValue);
 
         // Test retrieval
@@ -231,7 +231,7 @@ public class PathMetadataStoreJsonTest {
         store.putObject("app/config", nestedConfig);
 
         // Verify the complex object was stored
-        Object storedValue = store.getData().get(Paths.get("app/config"));
+        Object storedValue = store.getData().get(JIPipePathMetadataStore.key("app/config"));
         assertSame(nestedConfig, storedValue);
 
         // Test retrieval of nested objects
@@ -379,8 +379,8 @@ public class PathMetadataStoreJsonTest {
         assertEquals("complex-value", retrievedComplex.get("key"));
 
         // Verify they are stored as different types
-        Object storedPrimitive = store.getData().get(Paths.get("test/primitive"));
-        Object storedComplex = store.getData().get(Paths.get("test/complex"));
+        Object storedPrimitive = store.getData().get(JIPipePathMetadataStore.key("test/primitive"));
+        Object storedComplex = store.getData().get(JIPipePathMetadataStore.key("test/complex"));
         assertSame(String.class, storedPrimitive.getClass());
         assertSame(HashMap.class, storedComplex.getClass());
 
@@ -404,7 +404,7 @@ public class PathMetadataStoreJsonTest {
         store.clear();
 
         // Verify the key is gone
-        assertFalse(store.containsKey(Paths.get("test/data")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/data")));
 
         // Store a new value
         store.putObject("test/data", Map.of("new", "value"));
@@ -419,7 +419,7 @@ public class PathMetadataStoreJsonTest {
         store.clearEntriesWithPathPrefix("test");
 
         // Verify the key is gone
-        assertFalse(store.containsKey(Paths.get("test/data")));
+        assertFalse(store.containsKey(JIPipePathMetadataStore.key("test/data")));
     }
 
     // Enhanced Integration Testing
@@ -522,48 +522,10 @@ public class PathMetadataStoreJsonTest {
         assertEquals(true, retrievedPOJO.isActive());
 
         // Test getEntriesUnderPath
-        Map<Path, Object> hierarchyEntries = store.getEntriesUnderPath("hierarchy");
+        Map<JIPipePathMetadataStore.Key, Object> hierarchyEntries = store.getEntriesUnderPath("hierarchy");
         assertEquals(1, hierarchyEntries.size());
-        assertTrue(hierarchyEntries.containsKey(Paths.get("hierarchy/level1")));
+        assertTrue(hierarchyEntries.containsKey(JIPipePathMetadataStore.key("hierarchy/level1")));
     }
-
-    @Test
-    public void testCrossPlatformPathHandlingWithComplexObjects() {
-        JIPipePathMetadataStore store = new JIPipePathMetadataStore();
-
-        // Store complex objects with Windows-style paths
-        Map<String, Object> config = new HashMap<>();
-        config.put("database", "localhost");
-        config.put("port", 5432);
-
-        store.putObject("windows\\path\\to\\config", config);
-
-        // Verify the path was stored with backslashes
-        assertTrue(store.hasBackslashPaths());
-        assertTrue(store.containsKey(Paths.get("windows\\path\\to\\config")));
-
-        // Migrate paths to forward slashes
-        store.migrateBackslashPaths();
-
-        // Verify no more backslash paths
-        assertFalse(store.hasBackslashPaths());
-        assertFalse(store.containsKey(Paths.get("windows\\path\\to\\config")));
-        assertTrue(store.containsKey(Paths.get("windows/path/to/config")));
-
-        // Verify the object is still accessible
-        @SuppressWarnings("unchecked")
-        Map<String, Object> retrievedConfig = store.getObject("windows/path/to/config", Map.class);
-        assertNotNull(retrievedConfig);
-        assertEquals("localhost", retrievedConfig.get("database"));
-        assertEquals(5432, retrievedConfig.get("port"));
-
-        // Test normalized copy
-        JIPipePathMetadataStore normalizedCopy = store.getNormalizedCopy();
-        assertEquals(store.size(), normalizedCopy.size());
-        assertFalse(normalizedCopy.hasBackslashPaths());
-    }
-
-    // Edge Cases and Error Conditions
 
     @Test
     public void testMalformedJsonHandling() {
@@ -577,7 +539,7 @@ public class PathMetadataStoreJsonTest {
         assertNull(result);
 
         // Verify the malformed JSON is still stored as string
-        Object storedValue = store.getData().get(Paths.get("malformed/data"));
+        Object storedValue = store.getData().get(JIPipePathMetadataStore.key("malformed/data"));
         assertEquals("{\"invalid\": json}", storedValue);
 
         // Store another valid object

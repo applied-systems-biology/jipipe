@@ -83,6 +83,7 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicatio
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
@@ -501,7 +502,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
             JIPipeDesktopDockPanel.State defaultState = new JIPipeDesktopDockPanel.State();
             defaultState.setAlwaysShowRightPanel(true);
             JIPipeDesktopDockPanel.State state = JIPipe.getSettings().getFromRegistry("ui-graph-editor",
-                    Path.of("pipeline", "dock-state"),
+                    JIPipePathMetadataStore.key("pipeline", "dock-state"),
                     JIPipeDesktopDockPanel.State.class,
                     defaultState,
                     true);
@@ -514,7 +515,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     @Override
     protected StringAndStringPairParameterList getDockStateTemplates() {
         if (JIPipe.isInstantiated()) {
-            return JIPipe.getSettings().getFromRegistry("ui-dock", Path.of("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
+            return JIPipe.getSettings().getFromRegistry("ui-dock", JIPipePathMetadataStore.key("layouts"), StringAndStringPairParameterList.class, new StringAndStringPairParameterList(), true);
         }
         return null;
     }
@@ -523,7 +524,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
     protected void saveDockStateToSettings() {
         if (JIPipe.isInstantiated()) {
             JIPipe.getSettings().putIntoRegistry("ui-graph-editor",
-                    Path.of("pipeline", "dock-state"),
+                    JIPipePathMetadataStore.key("pipeline", "dock-state"),
                     getDockPanel().getCurrentState());
         }
     }

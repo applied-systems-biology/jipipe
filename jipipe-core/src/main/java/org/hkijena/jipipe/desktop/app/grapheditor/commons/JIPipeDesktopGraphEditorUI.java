@@ -46,6 +46,7 @@ import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairPa
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -220,10 +221,10 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
         dockPanel.setMainComponent(mainPanel);
         dockPanel.getStateSavedEventEmitter().subscribe(this);
-        dockPanel.setShowToolbarLabels(JIPipe.getSettings().getFromRegistry("ui-graph-editor", Path.of("any", "dock", "show-labels"), Boolean.class, true, true));
+        dockPanel.setShowToolbarLabels(JIPipe.getSettings().getFromRegistry("ui-graph-editor", JIPipePathMetadataStore.key("any", "dock", "show-labels"), Boolean.class, true, true));
         dockPanel.getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> {
             if ("show-toolbar-labels".equals(event.getKey())) {
-                JIPipe.getSettings().putIntoRegistry("ui-graph-editor", Path.of("any", "dock", "show-labels"), dockPanel.isShowToolbarLabels());
+                JIPipe.getSettings().putIntoRegistry("ui-graph-editor", JIPipePathMetadataStore.key("any", "dock", "show-labels"), dockPanel.isShowToolbarLabels());
             }
         });
         dockPanel.addDockPanel(DOCK_CONTEXT_PANEL,

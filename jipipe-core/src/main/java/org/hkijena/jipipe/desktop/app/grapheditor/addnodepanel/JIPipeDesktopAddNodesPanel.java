@@ -41,6 +41,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultDirectedGraph;
@@ -290,7 +291,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     public Set<String> getPinnedNodeDatabaseEntries() {
-        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true));
+        return new HashSet<>(JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true));
     }
 
     private void initializeMainCategoryFilters() {
@@ -573,7 +574,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void pinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
-        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true);
+        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true);
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
             if (!ids.contains(entry.getId())) {
                 ids.add(entry.getId());
@@ -584,7 +585,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
-        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", Path.of("pinned-node-ids"), String.class, true);
+        List<String> ids = JIPipe.getSettings().getListFromRegistry("node-db", JIPipePathMetadataStore.key("pinned-node-ids"), String.class, true);
         for (JIPipeNodeDatabaseEntry entry : selectedValues) {
             ids.remove(entry.getId());
         }
