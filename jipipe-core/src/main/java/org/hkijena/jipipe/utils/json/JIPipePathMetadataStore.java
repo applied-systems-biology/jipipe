@@ -31,59 +31,49 @@ import java.util.stream.Collectors;
 /**
  * A JSON-serializable map-like class that stores Path keys with both primitive values (String, Integer, Double, Boolean)
  * and complex JSON-serializable objects. This class extends PrimitiveMetadataStore with Path-based keys and provides
- * functionality to work with hierarchical paths (like internal config paths). This class automatically handles
- * cross-platform path separator normalization, ensuring consistent behavior across Windows (backslashes), macOS, and Linux (forward slashes).
+ * functionality to work with hierarchical paths (like internal config paths). This class uses the Key system for
+ * automatic path normalization, ensuring consistent behavior across platforms.
  *
  * <h3>JSON-Serializable Object Support:</h3>
  * <p>
- * The PathMetadataStore now supports storing and retrieving complex JSON-serializable objects:
+ * The PathMetadataStore supports storing and retrieving complex JSON-serializable objects:
  * <ul>
- *   <li>Use {@link #putObject(Path, Object)} and {@link #putObject(String, Object)} to store JSON-serializable objects</li>
- *   <li>Use {@link #getObject(Path, Class)} and {@link #getObject(String, Class)} to retrieve objects with type safety</li>
+ *   <li>Use {@link #putObject(Key, Object)} and {@link #putObject(String, Object)} to store JSON-serializable objects</li>
+ *   <li>Use {@link #getObject(Key, Class)} and {@link #getObject(String, Class)} to retrieve objects with type safety</li>
  *   <li>Objects are cached after successful deserialization for performance</li>
  *   <li>Cache is cleared when underlying data changes to ensure consistency</li>
  * </ul>
  * </p>
  *
- * <h3>Cross-Platform Path Handling:</h3>
+ * <h3>Path Handling:</h3>
  * <p>
- * The PathMetadataStore automatically normalizes all paths to use forward slashes (/) for consistency:
+ * The PathMetadataStore uses the Key system for automatic path normalization:
  * <ul>
  *   <li>When saving/serializing: All paths are converted to use forward slashes</li>
  *   <li>When loading/deserializing: Backslashes from Windows paths are automatically converted to forward slashes</li>
- *   <li>When storing: Paths are stored internally with forward slashes regardless of the platform</li>
+ *   <li>Paths are stored internally using the Key system for consistent comparison and handling</li>
  * </ul>
  * This ensures that documents created on any platform can be read correctly on any other platform.
- * </p>
- *
- * <h3>Migration Support:</h3>
- * <p>
- * For existing documents that contain backslash paths, the class provides migration methods:
- * <ul>
- *   <li>{@link #migrateBackslashPaths()}: Migrates existing backslash paths to forward slashes</li>
- *   <li>{@link #hasBackslashPaths()}: Checks if any paths contain backslashes that need migration</li>
- *   <li>{@link #getNormalizedCopy()}: Creates a copy with all paths normalized</li>
- * </ul>
  * </p>
  *
  * <h3>Usage Examples:</h3>
  * <pre>
  * // Create and populate a path store
  * PathMetadataStore store = new PathMetadataStore();
- * store.put(Paths.get("settings/general/name"), "Application");
- * store.put(Paths.get("settings/general/version"), 1.0);
- * store.put(Paths.get("ui/colors/theme"), "dark");
- * store.put(Paths.get("features/enhanced-mode"), true);
+ * store.putPrimitive("settings/general/name", "Application");
+ * store.putPrimitive("settings/general/version", 1.0);
+ * store.putPrimitive("ui/colors/theme", "dark");
+ * store.putPrimitive("features/enhanced-mode", true);
  *
  * // JSON-serializable object support
  * Map<String, Object> config = new HashMap<>();
  * config.put("database", "localhost");
  * config.put("port", 5432);
  * config.put("ssl", true);
- * store.putObject(Paths.get("database/config"), config);
+ * store.putObject("database/config", config);
  *
  * // Retrieve complex objects with type safety
- * Map<String, Object> retrievedConfig = store.getObject(Paths.get("database/config"), Map.class);
+ * Map<String, Object> retrievedConfig = store.getObject("database/config", Map.class);
  * // Result: {database="localhost", port=5432, ssl=true}
  *
  * // Using string paths for JSON objects (convenience overloads)
@@ -92,15 +82,11 @@ import java.util.stream.Collectors;
  * List<String> retrievedFeatures = store.getObject("app/features", List.class);
  *
  * // Retrieve values with defaults
- * String name = store.getString(Paths.get("settings/general/name"), "Default App");
- * int version = store.getInteger(Paths.get("settings/general/version"), 1);
- *
- * // Using string paths (convenience overloads)
- * store.put("settings/icon", "icon.png");
- * String icon = store.getString("settings/icon", "default-icon.png");
+ * String name = store.getString("settings/general/name", "Default App");
+ * int version = store.getInteger("settings/general/version", 1);
  *
  * // Get all entries under a path segment
- * Map<Path, Object> generalSettings = store.getEntriesUnderPath(Paths.get("settings/general"));
+ * Map<Key, Object> generalSettings = store.getEntriesUnderPath("settings/general");
  * // Result: {settings/general/name: "Application", settings/general/version: 1.0}
  *
  * // Convert to a nested map structure
@@ -109,30 +95,20 @@ import java.util.stream.Collectors;
  *
  * // Merge/override entries from another store
  * PathMetadataStore other = new PathMetadataStore();
- * other.put(Paths.get("settings/general/name"), "New Application");
- * other.put(Paths.get("new/feature"), true);
+ * other.putPrimitive("settings/general/name", "New Application");
+ * other.putPrimitive("new/feature", true);
  * store.putAll(other);
  * // Result: store now has "New Application" and "new/feature: true" added
  *
  * // Clear entries with a path prefix
  * store.clearEntriesWithPathPrefix("settings");
  * // Result: removes all entries under "settings/" prefix
- *
- * // Cross-platform path handling
- * store.put(Paths.get("windows\\path\\to\\file"), "value");  // Backslashes from Windows
- * store.migrateBackslashPaths();  // Convert to forward slashes
- * // Now accessible with: store.getString(Paths.get("windows/path/to/file"), "default")
- *
- * // Check for cross-platform compatibility
- * if (store.hasBackslashPaths()) {
- *     store.migrateBackslashPaths();
- * }
  * </pre>
  */
 @JsonSerialize(using = JIPipePathMetadataStore.Serializer.class)
 @JsonDeserialize(using = JIPipePathMetadataStore.Deserializer.class)
 public class JIPipePathMetadataStore {
-    private final Map<Path, Object> data = new HashMap<>();
+    private final Map<Key, Object> data = new HashMap<>();
 
     /**
      * Creates an empty PathMetadataStore
@@ -156,70 +132,12 @@ public class JIPipePathMetadataStore {
      */
     public JIPipePathMetadataStore(PrimitiveMetadataStore primitiveStore) {
         for (String key : primitiveStore.keySet()) {
-            Path path = Paths.get(key);
+            Key pathKey = key(key.split("/"));
             Object value = primitiveStore.getData().get(key);
             if (value != null) {
-                this.data.put(path, value);
+                this.data.put(pathKey, value);
             }
         }
-    }
-
-    /**
-     * Normalizes a path string to use forward slashes consistently across platforms.
-     * This method converts backslashes (\) to forward slashes (/) to ensure
-     * cross-platform compatibility.
-     *
-     * @param pathString the path string to normalize
-     * @return the normalized path string with forward slashes, or null if input is null
-     */
-    public static String normalizePathString(String pathString) {
-        if (pathString == null) {
-            return null;
-        }
-        return pathString.replace('\\', '/');
-    }
-
-    /**
-     * Normalizes a path to use forward slashes consistently across platforms.
-     * This method creates a new Path object with a normalized string representation.
-     *
-     * @param path the path to normalize
-     * @return a new Path object with normalized forward slashes, or null if input is null
-     */
-    public static Path normalizePath(Path path) {
-        if (path == null) {
-            return null;
-        }
-        return Paths.get(normalizePathString(path.toString()));
-    }
-
-    /**
-     * Migrates existing paths that contain backslashes to use forward slashes.
-     * This method should be called when loading existing documents that may have
-     * been created on Windows systems with backslash separators.
-     */
-    public void migrateBackslashPaths() {
-        Map<Path, Object> migratedData = new HashMap<>();
-
-        for (Map.Entry<Path, Object> entry : data.entrySet()) {
-            Path originalKey = entry.getKey();
-            Object value = entry.getValue();
-
-            // Normalize the path key to use forward slashes
-            Path normalizedKey = normalizePath(originalKey);
-
-            // Only add if the normalized key is different (migration needed)
-            if (!originalKey.equals(normalizedKey)) {
-                migratedData.put(normalizedKey, value);
-            } else {
-                // Keep original if no migration needed
-                migratedData.put(originalKey, value);
-            }
-        }
-
-        // Replace the data with migrated data
-        this.data.clear();
-        this.data.putAll(migratedData);
     }
 
     /**
@@ -234,51 +152,51 @@ public class JIPipePathMetadataStore {
         }
     }
 
-    // Put methods with Path keys
+    // Put methods with Key keys
 
     /**
-     * Adds or updates a string value using a Path key.
+     * Adds or updates a string value using a Key key.
      *
      * @param key   the path key (must not be null)
      * @param value the string value
      */
-    public void putPrimitive(Path key, String value) {
+    public void putPrimitive(Key key, String value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
     }
 
     /**
-     * Adds or updates an integer value using a Path key.
+     * Adds or updates an integer value using a Key key.
      *
      * @param key   the path key (must not be null)
      * @param value the integer value
      */
-    public void putPrimitive(Path key, Integer value) {
+    public void putPrimitive(Key key, Integer value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
     }
 
     /**
-     * Adds or updates a double value using a Path key.
+     * Adds or updates a double value using a Key key.
      *
      * @param key   the path key (must not be null)
      * @param value the double value
      */
-    public void putPrimitive(Path key, Double value) {
+    public void putPrimitive(Key key, Double value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
     }
 
     /**
-     * Adds or updates a boolean value using a Path key.
+     * Adds or updates a boolean value using a Key key.
      *
      * @param key   the path key (must not be null)
      * @param value the boolean value
      */
-    public void putPrimitive(Path key, Boolean value) {
+    public void putPrimitive(Key key, Boolean value) {
         if (key != null && value != null) {
             data.put(key, value);
         }
@@ -287,63 +205,63 @@ public class JIPipePathMetadataStore {
     // String overloads for convenience
 
     /**
-     * Adds or updates a string value using a string path (converted to Path internally).
+     * Adds or updates a string value using a string path (converted to Key internally).
      *
      * @param pathString the path string (must not be null)
      * @param value      the string value
      */
     public void putPrimitive(String pathString, String value) {
         if (pathString != null && value != null) {
-            putPrimitive(Paths.get(pathString), value);
+            putPrimitive(key(pathString.split("/")), value);
         }
     }
 
     /**
-     * Adds or updates an integer value using a string path (converted to Path internally).
+     * Adds or updates an integer value using a string path (converted to Key internally).
      *
      * @param pathString the path string (must not be null)
      * @param value      the integer value
      */
     public void putPrimitive(String pathString, Integer value) {
         if (pathString != null && value != null) {
-            putPrimitive(Paths.get(pathString), value);
+            putPrimitive(key(pathString.split("/")), value);
         }
     }
 
     /**
-     * Adds or updates a double value using a string path (converted to Path internally).
+     * Adds or updates a double value using a string path (converted to Key internally).
      *
      * @param pathString the path string (must not be null)
      * @param value      the double value
      */
     public void putPrimitive(String pathString, Double value) {
         if (pathString != null && value != null) {
-            putPrimitive(Paths.get(pathString), value);
+            putPrimitive(key(pathString.split("/")), value);
         }
     }
 
     /**
-     * Adds or updates a boolean value using a string path (converted to Path internally).
+     * Adds or updates a boolean value using a string path (converted to Key internally).
      *
      * @param pathString the path string (must not be null)
      * @param value      the boolean value
      */
     public void putPrimitive(String pathString, Boolean value) {
         if (pathString != null && value != null) {
-            putPrimitive(Paths.get(pathString), value);
+            putPrimitive(key(pathString.split("/")), value);
         }
     }
 
     // Put methods for JSON-serializable objects
 
     /**
-     * Adds or updates a JSON-serializable object using a Path key.
+     * Adds or updates a JSON-serializable object using a Key key.
      * The object will be stored directly in the data map and serialized when needed.
      *
      * @param key   the path key (must not be null)
      * @param value the JSON-serializable object (must not be null)
      */
-    public void putObject(Path key, Object value) {
+    public void putObject(Key key, Object value) {
         if (key != null && value != null) {
             // Store the object directly in data
             data.put(key, value);
@@ -351,7 +269,7 @@ public class JIPipePathMetadataStore {
     }
 
     /**
-     * Adds or updates a JSON-serializable object using a string path (converted to Path internally).
+     * Adds or updates a JSON-serializable object using a string path (converted to Key internally).
      * The object will be stored directly in the data map and serialized when needed.
      *
      * @param pathString the path string (must not be null)
@@ -359,7 +277,7 @@ public class JIPipePathMetadataStore {
      */
     public void putObject(String pathString, Object value) {
         if (pathString != null && value != null) {
-            putObject(Paths.get(pathString), value);
+            putObject(key(pathString.split("/")), value);
         }
     }
 
@@ -371,7 +289,7 @@ public class JIPipePathMetadataStore {
      * @param key the path key to check
      * @return true if the key exists, false otherwise
      */
-    public boolean containsKey(Path key) {
+    public boolean containsKey(Key key) {
         return key != null && data.containsKey(key);
     }
 
@@ -382,7 +300,7 @@ public class JIPipePathMetadataStore {
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the string value or default
      */
-    public String getString(Path key, String defaultValue) {
+    public String getString(Key key, String defaultValue) {
         return getTypedValue(key, defaultValue, String.class, String::valueOf);
     }
 
@@ -393,7 +311,7 @@ public class JIPipePathMetadataStore {
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the integer value or default
      */
-    public Integer getInteger(Path key, Integer defaultValue) {
+    public Integer getInteger(Key key, Integer defaultValue) {
         return getTypedValue(key, defaultValue, Integer.class, input -> Integer.valueOf(input.toString()));
     }
 
@@ -404,7 +322,7 @@ public class JIPipePathMetadataStore {
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the double value or default
      */
-    public Double getDouble(Path key, Double defaultValue) {
+    public Double getDouble(Key key, Double defaultValue) {
         return getTypedValue(key, defaultValue, Double.class, input -> Double.valueOf(input.toString()));
     }
 
@@ -415,7 +333,7 @@ public class JIPipePathMetadataStore {
      * @param defaultValue the default value to return if key doesn't exist or type differs
      * @return the boolean value or default
      */
-    public Boolean getBoolean(Path key, Boolean defaultValue) {
+    public Boolean getBoolean(Key key, Boolean defaultValue) {
         return getTypedValue(key, defaultValue, Boolean.class, input -> {
             if (input instanceof Boolean) {
                 return (Boolean) input;
@@ -437,7 +355,7 @@ public class JIPipePathMetadataStore {
      * @return the string value or default
      */
     public String getString(String pathString, String defaultValue) {
-        return getString(pathString != null ? Paths.get(pathString) : null, defaultValue);
+        return getString(pathString != null ? key(pathString.split("/")) : null, defaultValue);
     }
 
     /**
@@ -448,7 +366,7 @@ public class JIPipePathMetadataStore {
      * @return the integer value or default
      */
     public Integer getInteger(String pathString, Integer defaultValue) {
-        return getInteger(pathString != null ? Paths.get(pathString) : null, defaultValue);
+        return getInteger(pathString != null ? key(pathString.split("/")) : null, defaultValue);
     }
 
     /**
@@ -459,7 +377,7 @@ public class JIPipePathMetadataStore {
      * @return the double value or default
      */
     public Double getDouble(String pathString, Double defaultValue) {
-        return getDouble(pathString != null ? Paths.get(pathString) : null, defaultValue);
+        return getDouble(pathString != null ? key(pathString.split("/")) : null, defaultValue);
     }
 
     /**
@@ -470,7 +388,7 @@ public class JIPipePathMetadataStore {
      * @return the boolean value or default
      */
     public Boolean getBoolean(String pathString, Boolean defaultValue) {
-        return getBoolean(pathString != null ? Paths.get(pathString) : null, defaultValue);
+        return getBoolean(pathString != null ? key(pathString.split("/")) : null, defaultValue);
     }
 
     /**
@@ -482,7 +400,7 @@ public class JIPipePathMetadataStore {
      * @return the list
      */
     public <T> List<T> getList(String pathString, Class<T> type) {
-        return getList(pathString != null ? Paths.get(pathString) : null, type);
+        return getList(pathString != null ? key(pathString.split("/")) : null, type);
     }
 
     /**
@@ -493,7 +411,7 @@ public class JIPipePathMetadataStore {
      * @param <T>  the type
      * @return the list
      */
-    public <T> List<T> getList(Path key, Class<T> type) {
+    public <T> List<T> getList(Key key, Class<T> type) {
         if (key == null || type == null) {
             return null;
         }
@@ -522,7 +440,7 @@ public class JIPipePathMetadataStore {
     }
 
     /**
-     * Retrieves a JSON-serializable object with type safety using a Path key.
+     * Retrieves a JSON-serializable object with type safety using a Key key.
      * If the object is already deserialized and stored in data, it's returned directly.
      * Otherwise, it attempts to deserialize from stored JSON string or JsonNode and
      * replaces the original value with the deserialized object in data.
@@ -532,7 +450,7 @@ public class JIPipePathMetadataStore {
      * @param type the class of the object to retrieve
      * @return the deserialized object or null if not found or deserialization fails
      */
-    public <T> T getObject(Path key, Class<T> type) {
+    public <T> T getObject(Key key, Class<T> type) {
         if (key == null || type == null) {
             return null;
         }
@@ -580,7 +498,7 @@ public class JIPipePathMetadataStore {
      * @return the deserialized object or null if not found or deserialization fails
      */
     public <T> T getObject(String pathString, Class<T> type) {
-        return getObject(pathString != null ? Paths.get(pathString) : null, type);
+        return getObject(pathString != null ? key(pathString.split("/")) : null, type);
     }
 
     // Path-based collection methods
@@ -591,7 +509,7 @@ public class JIPipePathMetadataStore {
      * @param prefixPath the path prefix to filter by
      * @return an unmodifiable map of entries matching the prefix
      */
-    public Map<Path, Object> getEntriesUnderPath(Path prefixPath) {
+    public Map<Key, Object> getEntriesUnderPath(Key prefixPath) {
         if (prefixPath == null) {
             return Collections.emptyMap();
         }
@@ -612,8 +530,8 @@ public class JIPipePathMetadataStore {
      * @param prefixString the path prefix string to filter by
      * @return an unmodifiable map of entries matching the prefix
      */
-    public Map<Path, Object> getEntriesUnderPath(String prefixString) {
-        Path prefixPath = prefixString != null ? Paths.get(prefixString) : null;
+    public Map<Key, Object> getEntriesUnderPath(String prefixString) {
+        Key prefixPath = prefixString != null ? key(prefixString.split("/")) : null;
         return getEntriesUnderPath(prefixPath);
     }
 
@@ -626,13 +544,12 @@ public class JIPipePathMetadataStore {
     public Map<String, Object> toNestedMap() {
         Map<String, Object> result = new LinkedHashMap<>();
 
-        for (Map.Entry<Path, Object> entry : data.entrySet()) {
-            Path path = entry.getKey();
+        for (Map.Entry<Key, Object> entry : data.entrySet()) {
+            Key key = entry.getKey();
             Object value = entry.getValue();
 
-            // Use normalized path string to ensure consistent splitting
-            String normalizedPathStr = normalizePathString(path.toString());
-            String[] parts = normalizedPathStr.split("/");
+            // Use the key items to build the nested structure
+            String[] parts = key.items;
             Map<String, Object> current = result;
 
             for (int i = 0; i < parts.length - 1; i++) {
@@ -655,57 +572,11 @@ public class JIPipePathMetadataStore {
     }
 
     /**
-     * Returns a string representation of all paths in this store using forward slashes.
-     * This is useful for debugging and ensuring consistent path display.
-     *
-     * @return a set of normalized path strings
-     */
-    public Set<String> getNormalizedPathStrings() {
-        Set<String> normalizedPaths = new HashSet<>();
-        for (Path path : data.keySet()) {
-            normalizedPaths.add(normalizePathString(path.toString()));
-        }
-        return Collections.unmodifiableSet(normalizedPaths);
-    }
-
-    /**
-     * Checks if the store contains any paths with backslashes that need migration.
-     *
-     * @return true if any paths contain backslashes, false otherwise
-     */
-    public boolean hasBackslashPaths() {
-        for (Path path : data.keySet()) {
-            if (path.toString().contains("\\")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Creates a new PathMetadataStore with all paths normalized to use forward slashes.
-     * This method returns a new store with migrated paths, leaving the original unchanged.
-     *
-     * @return a new PathMetadataStore with normalized paths
-     */
-    public JIPipePathMetadataStore getNormalizedCopy() {
-        JIPipePathMetadataStore normalizedStore = new JIPipePathMetadataStore();
-
-        for (Map.Entry<Path, Object> entry : data.entrySet()) {
-            Path normalizedKey = normalizePath(entry.getKey());
-            // Use direct access to the internal map to handle Object values
-            normalizedStore.data.put(normalizedKey, entry.getValue());
-        }
-
-        return normalizedStore;
-    }
-
-    /**
      * Returns the set of all keys in the store.
      *
      * @return an unmodifiable set of path keys
      */
-    public Set<Path> keySet() {
+    public Set<Key> keySet() {
         return Collections.unmodifiableSet(data.keySet());
     }
 
@@ -753,32 +624,60 @@ public class JIPipePathMetadataStore {
      *
      * @param pathPrefix the path prefix to remove entries for (must not be null or empty)
      */
+    /**
+     * Removes all entries where the path starts with the given prefix.
+     * This method handles pathPrefix with or without trailing separator (e.g., "path" and "path/" will both match "path/subkey").
+     * If pathPrefix is null or empty, this method does nothing.
+     *
+     * <h3>Examples:</h3>
+     * <pre>
+     * PathMetadataStore store = new PathMetadataStore();
+     * store.put("settings/general/name", "Application");
+     * store.put("settings/general/version", 1.0);
+     * store.put("settings/ui/theme", "dark");
+     * store.put("features/enhanced", true);
+     *
+     * // Clear all settings entries
+     * store.clearEntriesWithPathPrefix("settings");
+     * // Result: {"features/enhanced": true} remains
+     *
+     * // Clear with trailing slash
+     * store.clearEntriesWithPathPrefix("features/");
+     * // Result: store is now empty
+     *
+     * // No matching prefix - nothing happens
+     * store.clearEntriesWithPathPrefix("nonexistent");
+     * // Result: store remains unchanged
+     * </pre>
+     *
+     * @param pathPrefix the path prefix to remove entries for (must not be null or empty)
+     */
     public void clearEntriesWithPathPrefix(String pathPrefix) {
         if (pathPrefix == null || pathPrefix.isEmpty()) {
             return;
         }
 
-        // Convert string prefixes to Path objects
-        Path prefixPath = Paths.get(pathPrefix);
+        // Convert string prefixes to Key objects
+        Key prefixKey = key(pathPrefix.split("/"));
 
         // Handle trailing separator normalization by creating both versions
-        Path normalizedPrefixPath = Paths.get(pathPrefix);
+        Key normalizedPrefixKey = prefixKey;
         if (!pathPrefix.endsWith("/")) {
-            normalizedPrefixPath = Paths.get(pathPrefix + "/");
+            normalizedPrefixKey = key((pathPrefix + "/").split("/"));
         }
 
         // Collect all keys to remove to avoid concurrent modification
-        List<Path> keysToRemove = new ArrayList<>();
-        for (Path key : data.keySet()) {
+        List<Key> keysToRemove = new ArrayList<>();
+        for (Key key : data.keySet()) {
             if (key != null) {
-                if (isUnderPath(key, prefixPath) || isUnderPath(key, normalizedPrefixPath)) {
+                if (isUnderPath(key, prefixKey) || isUnderPath(key, normalizedPrefixKey)) {
                     keysToRemove.add(key);
                 }
             }
         }
 
         // Remove all collected keys
-        for (Path key : keysToRemove) {
+        for (Key key : keysToRemove) {
             data.remove(key);
         }
     }
@@ -791,49 +690,51 @@ public class JIPipePathMetadataStore {
      * <h3>Examples:</h3>
      * <pre>
      * PathMetadataStore store = new PathMetadataStore();
-     * store.put(Paths.get("settings/general/name"), "Application");
-     * store.put(Paths.get("settings/general/version"), 1.0);
-     * store.put(Paths.get("settings/ui/theme"), "dark");
-     * store.put(Paths.get("features/enhanced"), true);
+     * store.put("settings/general/name", "Application");
+     * store.put("settings/general/version", 1.0);
+     * store.put("settings/ui/theme", "dark");
+     * store.put("features/enhanced", true);
      *
      * // Clear all settings entries
-     * store.clearEntriesWithPathPrefix(Paths.get("settings"));
+     * store.clearEntriesWithPathPrefix(key("settings".split("/")));
      * // Result: {"features/enhanced": true} remains
      *
      * // Clear with trailing slash
-     * store.clearEntriesWithPathPrefix(Paths.get("features/"));
+     * store.clearEntriesWithPathPrefix(key("features/".split("/")));
      * // Result: store is now empty
      *
      * // No matching prefix - nothing happens
-     * store.clearEntriesWithPathPrefix(Paths.get("nonexistent"));
+     * store.clearEntriesWithPathPrefix(key("nonexistent".split("/")));
      * // Result: store remains unchanged
      * </pre>
      *
      * @param pathPrefix the path prefix to remove entries for (must not be null)
      */
-    public void clearEntriesWithPathPrefix(Path pathPrefix) {
+    public void clearEntriesWithPathPrefix(Key pathPrefix) {
         if (pathPrefix == null) {
             return;
         }
 
         // Handle trailing separator normalization by creating both versions
-        Path normalizedPrefixPath = pathPrefix;
-        if (!pathPrefix.toString().endsWith("/")) {
-            normalizedPrefixPath = Paths.get(pathPrefix.toString() + "/");
+        Key normalizedPrefixKey = pathPrefix;
+        if (!pathPrefix.items[pathPrefix.items.length - 1].isEmpty()) {
+            String[] newItems = Arrays.copyOf(pathPrefix.items, pathPrefix.items.length + 1);
+            newItems[pathPrefix.items.length] = "";
+            normalizedPrefixKey = key(newItems);
         }
 
         // Collect all keys to remove to avoid concurrent modification
-        List<Path> keysToRemove = new ArrayList<>();
-        for (Path key : data.keySet()) {
+        List<Key> keysToRemove = new ArrayList<>();
+        for (Key key : data.keySet()) {
             if (key != null) {
-                if (isUnderPath(key, pathPrefix) || isUnderPath(key, normalizedPrefixPath)) {
+                if (isUnderPath(key, pathPrefix) || isUnderPath(key, normalizedPrefixKey)) {
                     keysToRemove.add(key);
                 }
             }
         }
 
         // Remove all collected keys
-        for (Path key : keysToRemove) {
+        for (Key key : keysToRemove) {
             data.remove(key);
         }
     }
@@ -843,38 +744,35 @@ public class JIPipePathMetadataStore {
      *
      * @return the data map
      */
-    public Map<Path, Object> getData() {
+    public Map<Key, Object> getData() {
         return Collections.unmodifiableMap(data);
     }
 
     // Helper methods
 
-    private boolean isUnderPath(Path path, Path prefix) {
+    private boolean isUnderPath(Key path, Key prefix) {
         if (path == null || prefix == null) {
             return false;
         }
 
-        String pathStr = path.toString();
-        String prefixStr = prefix.toString();
+        String[] pathItems = path.items;
+        String[] prefixItems = prefix.items;
 
-        if (pathStr.length() < prefixStr.length()) {
+        if (pathItems.length < prefixItems.length) {
             return false;
         }
 
-        if (pathStr.startsWith(prefixStr)) {
-            // Check if the next character is either end of string or a path separator
-            if (pathStr.length() == prefixStr.length()) {
-                return true;
+        for (int i = 0; i < prefixItems.length; i++) {
+            if (!pathItems[i].equals(prefixItems[i])) {
+                return false;
             }
-            char nextChar = pathStr.charAt(prefixStr.length());
-            return nextChar == '/';
         }
 
-        return false;
+        return true;
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getTypedValue(Path key, T defaultValue, Class<T> expectedType, Function<Object, T> converter) {
+    private <T> T getTypedValue(Key key, T defaultValue, Class<T> expectedType, Function<Object, T> converter) {
         if (key == null || !data.containsKey(key)) {
             return defaultValue;
         }
@@ -923,9 +821,9 @@ public class JIPipePathMetadataStore {
         public void serialize(JIPipePathMetadataStore store, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             // Convert to string-based map for JSON serialization with normalized paths
             Map<String, Object> stringMap = new LinkedHashMap<>();
-            for (Map.Entry<Path, Object> entry : store.getData().entrySet()) {
+            for (Map.Entry<Key, Object> entry : store.getData().entrySet()) {
                 // Use normalized path string to ensure forward slashes across platforms
-                stringMap.put(normalizePathString(entry.getKey().toString()), entry.getValue());
+                stringMap.put(String.join("/", entry.getKey().items), entry.getValue());
             }
             jsonGenerator.writeObject(stringMap);
         }
@@ -950,8 +848,20 @@ public class JIPipePathMetadataStore {
 
                     if (keyStr != null && !keyStr.isEmpty() && valueNode != null && !valueNode.isNull()) {
                         // Normalize the key string to handle backslashes from Windows paths
-                        String normalizedKeyStr = normalizePathString(keyStr);
-                        Path key = Paths.get(normalizedKeyStr);
+                        String normalizedKeyStr = keyStr.replace('\\', '/');
+                        
+                        // Split by both forward and backward slashes to handle cross-platform paths
+                        String[] pathItems = normalizedKeyStr.split("[/\\\\]");
+                        
+                        // Trim away empty components (e.g., "/a//b" turns into ["a", "b"])
+                        List<String> filteredItems = new ArrayList<>();
+                        for (String item : pathItems) {
+                            if (!item.isEmpty()) {
+                                filteredItems.add(item);
+                            }
+                        }
+                        
+                        Key key = key(filteredItems.toArray(new String[0]));
 
                         try {
                             if (valueNode.isTextual()) {
@@ -974,6 +884,32 @@ public class JIPipePathMetadataStore {
             }
 
             return store;
+        }
+    }
+
+    public static Key key(String... arr) {
+        return new Key(arr);
+    }
+
+    public static final class Key {
+        private final String[] items;
+
+        public Key(String[] items) {
+            this.items = items;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            Key key = (Key) o;
+            return Objects.deepEquals(items, key.items);
+        }
+
+        @Override
+        public int hashCode() {
+            return Arrays.hashCode(items);
         }
     }
 }

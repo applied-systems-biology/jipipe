@@ -522,8 +522,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public Point getNodeUILocationWithin(String compartment) {
         compartment = StringUtils.orElse(compartment, "_");
-        Integer x = nodeMetadata.getInteger(Path.of("location", compartment, "x"), null);
-        Integer y = nodeMetadata.getInteger(Path.of("location", compartment, "y"), null);
+        Integer x = nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartment, "x"), null);
+        Integer y = nodeMetadata.getInteger(JIPipePathMetadataStore.key("location", compartment, "y"), null);
         if (x == null || y == null) {
             return null;
         } else {
@@ -539,8 +539,8 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public void setNodeUILocationWithin(String compartment, Point location) {
         compartment = StringUtils.orElse(compartment, "_");
-        nodeMetadata.putPrimitive(Path.of("location", compartment, "x"), location.x);
-        nodeMetadata.putPrimitive(Path.of("location", compartment, "y"), location.y);
+        nodeMetadata.putPrimitive(JIPipePathMetadataStore.key("location", compartment, "x"), location.x);
+        nodeMetadata.putPrimitive(JIPipePathMetadataStore.key("location", compartment, "y"), location.y);
     }
 
     /**
