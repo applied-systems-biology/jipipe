@@ -45,7 +45,9 @@ public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWor
             }
         });
 
-        add(textArea, BorderLayout.CENTER);
+        JScrollPane scrollPane = new JScrollPane(textArea);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(25);
+        add(scrollPane, BorderLayout.CENTER);
 
         // Initialize toolbar
         JToolBar toolBar = new JToolBar();
