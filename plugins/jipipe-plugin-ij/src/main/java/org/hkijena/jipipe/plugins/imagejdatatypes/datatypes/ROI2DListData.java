@@ -1496,73 +1496,51 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
         if (addNameToTable) {
             result.addStringColumn("Name");
         }
-        if (imp != null) {
-            Calibration oldCalibration = imp.getCalibration();
-            try {
-                if (!measurePhysicalSizes) {
-                    imp.setCalibration(null);
-                }
-
-                CustomAnalyzer analyzer = new CustomAnalyzer(imp, measurements.getNativeValue(), new ResultsTable());
-                ResultsTable rtSys = analyzer.getResultsTable();
-                rtSys.reset();
-
-                for (int z = 0; z < imp.getNSlices(); z++) {
-                    for (int c = 0; c < imp.getNChannels(); c++) {
-                        for (int t = 0; t < imp.getNFrames(); t++) {
-                            imp.setSliceWithoutUpdate(imp.getStackIndex(c + 1, z + 1, t + 1));
-                            for (Roi roi : this) {
-                                if ((roi.getZPosition() == 0 || roi.getZPosition() == z + 1) &&
-                                        (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
-                                        (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
-                                    imp.setRoi(roi);
-                                    rtSys.reset();
-                                    analyzer.measure();
-                                    ResultsTableData forRoi;
-                                    if (addNameToTable) {
-                                        forRoi = new ResultsTableData();
-                                        forRoi.addStringColumn("Name");
-                                        forRoi.addRows(new ResultsTableData(rtSys));
-                                    } else {
-                                        forRoi = new ResultsTableData(rtSys);
-                                    }
-                                    ImageMeasurementUtils.calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
-                                    result.addRows(forRoi);
-                                }
-                            }
-                        }
-                    }
-                }
-            } finally {
-                // Restore
-                imp.setSliceWithoutUpdate(1);
-                imp.setCalibration(oldCalibration);
-            }
-
-        } else {
+        if(imp == null) {
             imp = createDummyImage();
+        }
+
+        Calibration oldCalibration = imp.getCalibration();
+        try {
+            if (!measurePhysicalSizes) {
+                imp.setCalibration(null);
+            }
 
             CustomAnalyzer analyzer = new CustomAnalyzer(imp, measurements.getNativeValue(), new ResultsTable());
             ResultsTable rtSys = analyzer.getResultsTable();
             rtSys.reset();
 
-            for (Roi roi : this) {
-                imp.setRoi(roi);
-                rtSys.reset();
-                analyzer.measure();
-                ResultsTableData forRoi = new ResultsTableData(rtSys);
-                ImageMeasurementUtils.calculateAdditionalMeasurements(measurements, addNameToTable, roi, forRoi);
-                result.addRows(forRoi);
+            for (int z = 0; z < imp.getNSlices(); z++) {
+                for (int c = 0; c < imp.getNChannels(); c++) {
+                    for (int t = 0; t < imp.getNFrames(); t++) {
+                        imp.setSliceWithoutUpdate(imp.getStackIndex(c + 1, z + 1, t + 1));
+                        for (Roi roi : this) {
+                            if ((roi.getZPosition() == 0 || roi.getZPosition() == z + 1) &&
+                                    (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
+                                    (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
+                                imp.setRoi(roi);
+                                rtSys.reset();
+                                analyzer.measure();
+                                ResultsTableData forRoi;
+                                if (addNameToTable) {
+                                    forRoi = new ResultsTableData();
+                                    forRoi.addStringColumn("Name");
+                                    forRoi.addRows(new ResultsTableData(rtSys));
+                                } else {
+                                    forRoi = new ResultsTableData(rtSys);
+                                }
+                                ImageMeasurementUtils.calculateAdditionalMeasurements(measurements, new ImageSliceIndex(c, z, t), addNameToTable, roi, forRoi);
+                                result.addRows(forRoi);
+                            }
+                        }
+                    }
+                }
             }
+        } finally {
+            // Restore
+            imp.setSliceWithoutUpdate(1);
+            imp.setCalibration(oldCalibration);
         }
-
-        // Ensure that the results table is closed
-        // We should not open any windows?
-//        SwingUtilities.invokeLater(() -> {
-//            if (ResultsTable.getResultsWindow() != null) {
-//                ResultsTable.getResultsWindow().close();
-//            }
-//        });
 
         return result;
     }
