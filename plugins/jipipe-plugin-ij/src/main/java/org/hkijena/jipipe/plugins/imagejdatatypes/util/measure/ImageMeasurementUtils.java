@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.jogamp.vecmath.Point2f;
 
@@ -24,7 +25,7 @@ import org.jogamp.vecmath.Point2f;
  */
 public class ImageMeasurementUtils {
 
-    public static void calculateAdditionalMeasurements(ImageStatisticsSetParameter measurements, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
+    public static void calculateAdditionalMeasurements(ImageStatisticsSetParameter measurements, ImageSliceIndex sliceIndex, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
         if (measurements.getValues().contains(Measurement.BoundingRectangle) || measurements.getValues().contains(Measurement.ShapeDescriptors)) {
             // Calculate fitted rotated rectangle
             Roi mbr = ROI2DListData.calculateMinimumBoundingRectangle(roi);
@@ -71,6 +72,26 @@ public class ImageMeasurementUtils {
             int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
             int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
             int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
+            for (int row = 0; row < forRoi.getRowCount(); row++) {
+                forRoi.setValueAt(sliceIndex.getC() + 1, row, columnChannel);
+                forRoi.setValueAt(sliceIndex.getZ() + 1, row, columnStack);
+                forRoi.setValueAt(sliceIndex.getT() + 1, row, columnFrame);
+            }
+        }
+        if (measurements.getValues().contains(Measurement.StackPosition)) {
+            int columnChannel = forRoi.getOrCreateColumnIndex("img.C", false);
+            int columnStack = forRoi.getOrCreateColumnIndex("img.Z", false);
+            int columnFrame = forRoi.getOrCreateColumnIndex("img.T", false);
+            for (int row = 0; row < forRoi.getRowCount(); row++) {
+                forRoi.setValueAt(sliceIndex.getC(), row, columnChannel);
+                forRoi.setValueAt(sliceIndex.getZ(), row, columnStack);
+                forRoi.setValueAt(sliceIndex.getT(), row, columnFrame);
+            }
+        }
+        if (measurements.getValues().contains(Measurement.StackPosition)) {
+            int columnChannel = forRoi.getOrCreateColumnIndex("roi.C", false);
+            int columnStack = forRoi.getOrCreateColumnIndex("roi.Z", false);
+            int columnFrame = forRoi.getOrCreateColumnIndex("roi.T", false);
             for (int row = 0; row < forRoi.getRowCount(); row++) {
                 forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
                 forRoi.setValueAt(roi.getZPosition(), row, columnStack);

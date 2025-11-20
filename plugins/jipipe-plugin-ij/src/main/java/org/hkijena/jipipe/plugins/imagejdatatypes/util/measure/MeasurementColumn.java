@@ -67,9 +67,15 @@ public enum MeasurementColumn {
     PixelValueSkewness(0x20000, "Skew", "Pixel value skewness", "The third order moment about the mean of grayscale pixel values"),
     PixelValueKurtosis(0x40000, "Kurt", "Pixel value kurosis", "The fourth order moment about the greyscale pixel value mean"),
     AreaFraction(0x80000, "%Area", "Area fraction", "The percentage of non-zero pixels"),
-    StackPositionSlice(0x100000, "Slice", "Stack position: Slice", "The current position within the stack or hyperstack"),
-    StackPositionFrame(0x100000, "Frame", "Stack position: Frame", "The current position within the stack or hyperstack"),
-    StackPositionChannel(0x100000, "Ch", "Stack position: Channel", "The current position within the stack or hyperstack");
+    StackPositionSlice(0x100000, "Slice", "Stack position: Slice", "The current position within the stack or hyperstack. One-based."),
+    StackPositionFrame(0x100000, "Frame", "Stack position: Frame", "The current position within the stack or hyperstack. One-based."),
+    StackPositionChannel(0x100000, "Ch", "Stack position: Channel", "The current position within the stack or hyperstack. One-based."),
+    RoiZ(0x100000, "roi.Z", "ROI position: Slice", "The ROI's Z position (one-based, 0 = Z is ignored)"),
+    RoiT(0x100000, "roi.T", "ROI position: Frame", "The ROI's frame position (one-based, 0 = frame is ignored)"),
+    RoiC(0x100000, "roi.C", "ROI position: Channel", "The ROI's channel position (one-based, 0 = channel is ignored)"),
+    ImgZ(0x100000, "img.Z", "Stack positon: Slice (zero-based)", "The current position within the stack or hyperstack. Zero-based."),
+    ImgT(0x100000, "img.T", "Stack positon: Frame (zero-based)", "The current position within the stack or hyperstack. Zero-based."),
+    ImgC(0x100000, "img.C", "Stack positon: Channel (zero-based)", "The current position within the stack or hyperstack. Zero-based.");
 
     private final int nativeValue;
     private final String columnName;
