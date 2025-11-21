@@ -11,8 +11,8 @@ import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -31,11 +31,11 @@ import java.util.*;
 import java.util.List;
 
 public class ImageJROIUtils {
-    public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, Measurement... statistics) {
-        ImageStatisticsSetParameter statisticsSetParameter = new ImageStatisticsSetParameter();
+    public static ResultsTableData measureROI(Roi roi, ImagePlus reference, boolean physicalUnits, ImageJMeasurement... statistics) {
+        ImageJMeasurementsSetParameter statisticsSetParameter = new ImageJMeasurementsSetParameter();
         if (statistics.length > 0) {
             statisticsSetParameter.getValues().clear();
-            for (Measurement statistic : statistics) {
+            for (ImageJMeasurement statistic : statistics) {
                 statisticsSetParameter.getValues().add(statistic);
             }
         }

@@ -11,36 +11,38 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
 import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
-public class ROI2DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI2DRelationMeasurement> {
-    public ROI2DRelationMeasurementSetParameter() {
+public class Roi2DRelationMeasurementSet extends JIPipeDynamicSetParameter<Roi2DRelationMeasurement> {
+
+    public Roi2DRelationMeasurementSet() {
+        super(new HashSet<>(Arrays.asList(Roi2DRelationMeasurement.values())));
+        setCollapsed(true);
         initialize();
-        setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
     }
 
-    public ROI2DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<ROI2DRelationMeasurement> other) {
+    public Roi2DRelationMeasurementSet(Roi2DRelationMeasurementSet other) {
         super(other);
-        initialize();
     }
 
-    public ROI2DRelationMeasurementSetParameter(Set<ROI2DRelationMeasurement> values) {
+    public Roi2DRelationMeasurementSet(Set<Roi2DRelationMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(ROI2DRelationMeasurement.values()));
+        getAllowedValues().addAll(Arrays.asList(Roi2DRelationMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (ROI2DRelationMeasurement value : getValues()) {
+        for (Roi2DRelationMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -53,10 +55,11 @@ public class ROI2DRelationMeasurementSetParameter extends JIPipeDynamicSetParame
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (ROI2DRelationMeasurement value : getAllowedValues()) {
+        for (Roi2DRelationMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }
         }
     }
 }
+

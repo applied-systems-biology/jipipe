@@ -3,15 +3,15 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeListParameter;
 
 /**
- * A list of {@link MeasurementColumnSortOrder}
+ * A list of {@link ImageJMeasurementColumnSortOrder}
  */
-public class MeasurementColumnSortOrderList extends JIPipeListParameter<MeasurementColumnSortOrder> {
+public class ImageJMeasurementColumnSortOrderList extends JIPipeListParameter<ImageJMeasurementColumnSortOrder> {
 
     /**
      * Creates a new instance
      */
-    public MeasurementColumnSortOrderList() {
-        super(MeasurementColumnSortOrder.class);
+    public ImageJMeasurementColumnSortOrderList() {
+        super(ImageJMeasurementColumnSortOrder.class);
     }
 
     /**
@@ -19,10 +19,10 @@ public class MeasurementColumnSortOrderList extends JIPipeListParameter<Measurem
      *
      * @param other the original
      */
-    public MeasurementColumnSortOrderList(MeasurementColumnSortOrderList other) {
-        super(MeasurementColumnSortOrder.class);
-        for (MeasurementColumnSortOrder measurementFilter : other) {
-            add(new MeasurementColumnSortOrder(measurementFilter));
+    public ImageJMeasurementColumnSortOrderList(ImageJMeasurementColumnSortOrderList other) {
+        super(ImageJMeasurementColumnSortOrder.class);
+        for (ImageJMeasurementColumnSortOrder measurementFilter : other) {
+            add(new ImageJMeasurementColumnSortOrder(measurementFilter));
         }
     }
 
@@ -33,7 +33,7 @@ public class MeasurementColumnSortOrderList extends JIPipeListParameter<Measurem
      */
     public int getNativeMeasurementEnumValue() {
         int result = 0;
-        for (MeasurementColumnSortOrder measurementFilter : this) {
+        for (ImageJMeasurementColumnSortOrder measurementFilter : this) {
             result |= measurementFilter.getKey().getNativeValue();
         }
         return result;

@@ -22,9 +22,9 @@ import java.util.Set;
 
 /**
  * A {@link JIPipeDynamicSetParameter} that contains image statistics measurements.
- * Contains {@link Measurement} items
+ * Contains {@link ImageJMeasurement} items
  */
-public class ImageStatisticsSetParameter extends JIPipeDynamicSetParameter<Measurement> {
+public class ImageJMeasurementsSetParameter extends JIPipeDynamicSetParameter<ImageJMeasurement> {
 
     public static final String ALL_DESCRIPTIONS = "<p><strong>Area</strong><br/><br/>Measures ROI areas. Area of selection in square pixels. Area is in calibrated units if available. They are stored as 'Area'.</p>" +
             "<br/><p><strong>Area fraction</strong><br/><br/>The percentage of non-zero pixels. Values are stored in '%Area'</p>" +
@@ -50,28 +50,28 @@ public class ImageStatisticsSetParameter extends JIPipeDynamicSetParameter<Measu
             "Uses the headings 'Ch', 'Slice' and 'Frame'. Please note that JIPipe algorithms sometimes handle stacks differently compared to their ImageJ equivalents." +
             " We recommend to not rely on this measurement.</p><br/>";
 
-    public ImageStatisticsSetParameter() {
-        super(new HashSet<>(Arrays.asList(Measurement.values())));
+    public ImageJMeasurementsSetParameter() {
+        super(new HashSet<>(Arrays.asList(ImageJMeasurement.values())));
         setCollapsed(true);
         initialize();
     }
 
-    public ImageStatisticsSetParameter(ImageStatisticsSetParameter other) {
+    public ImageJMeasurementsSetParameter(ImageJMeasurementsSetParameter other) {
         super(other);
     }
 
-    public ImageStatisticsSetParameter(Set<Measurement> values) {
+    public ImageJMeasurementsSetParameter(Set<ImageJMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(Measurement.values()));
+        getAllowedValues().addAll(Arrays.asList(ImageJMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (Measurement value : getValues()) {
+        for (ImageJMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -84,7 +84,7 @@ public class ImageStatisticsSetParameter extends JIPipeDynamicSetParameter<Measu
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (Measurement value : getAllowedValues()) {
+        for (ImageJMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }
@@ -92,7 +92,7 @@ public class ImageStatisticsSetParameter extends JIPipeDynamicSetParameter<Measu
     }
 
     @Override
-    public String renderLabel(Measurement value) {
+    public String renderLabel(ImageJMeasurement value) {
         return value != null ? value.getLabel() : "<null>";
     }
 

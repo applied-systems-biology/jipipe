@@ -25,8 +25,8 @@ import org.jogamp.vecmath.Point2f;
  */
 public class ImageMeasurementUtils {
 
-    public static void calculateAdditionalMeasurements(ImageStatisticsSetParameter measurements, ImageSliceIndex sliceIndex, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
-        if (measurements.getValues().contains(Measurement.BoundingRectangle) || measurements.getValues().contains(Measurement.ShapeDescriptors)) {
+    public static void calculateAdditionalMeasurements(ImageJMeasurementsSetParameter measurements, ImageSliceIndex sliceIndex, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
+        if (measurements.getValues().contains(ImageJMeasurement.BoundingRectangle) || measurements.getValues().contains(ImageJMeasurement.ShapeDescriptors)) {
             // Calculate fitted rotated rectangle
             Roi mbr = ROI2DListData.calculateMinimumBoundingRectangle(roi);
             FloatPolygon fp = mbr.getFloatPolygon();
@@ -36,7 +36,7 @@ public class ImageMeasurementUtils {
             Point2f p4 = new Point2f(fp.xpoints[3], fp.ypoints[3]);
             float major = Math.max(p1.distance(p2), p2.distance(p3));
             float minor = Math.min(p1.distance(p2), p2.distance(p3));
-            if (measurements.getValues().contains(Measurement.BoundingRectangle)) {
+            if (measurements.getValues().contains(ImageJMeasurement.BoundingRectangle)) {
                 int columnRBWidth = forRoi.getOrCreateColumnIndex("RBWidth", false);
                 int columnRBHeight = forRoi.getOrCreateColumnIndex("RBHeight", false);
                 int columnRBX1 = forRoi.getOrCreateColumnIndex("RBX1", false);
@@ -60,7 +60,7 @@ public class ImageMeasurementUtils {
                     forRoi.setValueAt(p4.y, row, columnRBY4);
                 }
             }
-            if (measurements.getValues().contains(Measurement.ShapeDescriptors)) {
+            if (measurements.getValues().contains(ImageJMeasurement.ShapeDescriptors)) {
                 float ar = major / minor;
                 int column = forRoi.getOrCreateColumnIndex("rAR", false);
                 for (int row = 0; row < forRoi.getRowCount(); row++) {
@@ -68,7 +68,7 @@ public class ImageMeasurementUtils {
                 }
             }
         }
-        if (measurements.getValues().contains(Measurement.StackPosition)) {
+        if (measurements.getValues().contains(ImageJMeasurement.StackPosition)) {
             int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
             int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
             int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
@@ -78,7 +78,7 @@ public class ImageMeasurementUtils {
                 forRoi.setValueAt(sliceIndex.getT() + 1, row, columnFrame);
             }
         }
-        if (measurements.getValues().contains(Measurement.StackPosition)) {
+        if (measurements.getValues().contains(ImageJMeasurement.StackPosition)) {
             int columnChannel = forRoi.getOrCreateColumnIndex("img.C", false);
             int columnStack = forRoi.getOrCreateColumnIndex("img.Z", false);
             int columnFrame = forRoi.getOrCreateColumnIndex("img.T", false);
@@ -88,7 +88,7 @@ public class ImageMeasurementUtils {
                 forRoi.setValueAt(sliceIndex.getT(), row, columnFrame);
             }
         }
-        if (measurements.getValues().contains(Measurement.StackPosition)) {
+        if (measurements.getValues().contains(ImageJMeasurement.StackPosition)) {
             int columnChannel = forRoi.getOrCreateColumnIndex("roi.C", false);
             int columnStack = forRoi.getOrCreateColumnIndex("roi.Z", false);
             int columnFrame = forRoi.getOrCreateColumnIndex("roi.T", false);

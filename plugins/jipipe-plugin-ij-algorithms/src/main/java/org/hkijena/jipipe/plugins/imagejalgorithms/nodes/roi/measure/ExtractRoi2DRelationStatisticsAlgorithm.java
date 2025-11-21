@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.ROI2DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ROI2DRelationMeasurementSetParameter measurements = new ROI2DRelationMeasurementSetParameter();
+    private Roi2DRelationMeasurementSetParameter measurements = new Roi2DRelationMeasurementSetParameter();
 
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
@@ -53,7 +53,7 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     public ExtractRoi2DRelationStatisticsAlgorithm(ExtractRoi2DRelationStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ROI2DRelationMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi2DRelationMeasurementSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
@@ -105,12 +105,12 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
     @JIPipeParameter("measurements")
-    public ROI2DRelationMeasurementSetParameter getMeasurements() {
+    public Roi2DRelationMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI2DRelationMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi2DRelationMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

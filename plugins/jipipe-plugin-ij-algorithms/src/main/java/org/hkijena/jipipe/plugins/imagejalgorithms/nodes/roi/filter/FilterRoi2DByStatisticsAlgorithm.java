@@ -34,13 +34,13 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -56,12 +56,12 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean outputEmptyLists = true;
 
     private boolean measureInPhysicalUnits = true;
@@ -71,7 +71,7 @@ public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public FilterRoi2dByStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2DByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -80,10 +80,10 @@ public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public FilterRoi2dByStatisticsAlgorithm(FilterRoi2dByStatisticsAlgorithm other) {
+    public FilterRoi2DByStatisticsAlgorithm(FilterRoi2DByStatisticsAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
@@ -157,8 +157,8 @@ public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "Click the 'f' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
-    @JIPipeExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariablesInfo.class, hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = AllMeasurementExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImageJMeasurementsExpressionParameterVariablesInfo.class, hint = "per ROI")
+    @AddJIPipeExpressionParameterVariable(fromClass = AllImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -172,14 +172,14 @@ public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.filters = filters;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 

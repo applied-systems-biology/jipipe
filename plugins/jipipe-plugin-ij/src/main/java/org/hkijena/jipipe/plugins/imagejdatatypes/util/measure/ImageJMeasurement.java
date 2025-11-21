@@ -21,7 +21,7 @@ import java.util.List;
  * Measurements defined by {@link ij.measure.Measurements}.
  * This only includes the measurements that actually generate columns - not measurement settings
  */
-public enum Measurement {
+public enum ImageJMeasurement {
     Area(1),
     PixelValueMean(2),
     PixelValueStandardDeviation(4),
@@ -43,15 +43,15 @@ public enum Measurement {
 
     private final int nativeValue;
 
-    Measurement(int nativeValue) {
+    ImageJMeasurement(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
     public static String getAllDescriptions() {
         StringBuilder builder = new StringBuilder();
-        List<Measurement> measurements = Arrays.asList(values());
-        measurements.sort(Comparator.comparing(Measurement::getLabel));
-        for (Measurement measurement : measurements) {
+        List<ImageJMeasurement> measurements = Arrays.asList(values());
+        measurements.sort(Comparator.comparing(ImageJMeasurement::getLabel));
+        for (ImageJMeasurement measurement : measurements) {
             builder.append("<p><strong>").append(measurement.getLabel()).append("</strong><br/><br/>");
             builder.append(measurement.getDescription());
             builder.append("</p><br/>");
@@ -59,7 +59,7 @@ public enum Measurement {
         return builder.toString();
     }
 
-    public static boolean includes(int nativeValue, Measurement target) {
+    public static boolean includes(int nativeValue, ImageJMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 

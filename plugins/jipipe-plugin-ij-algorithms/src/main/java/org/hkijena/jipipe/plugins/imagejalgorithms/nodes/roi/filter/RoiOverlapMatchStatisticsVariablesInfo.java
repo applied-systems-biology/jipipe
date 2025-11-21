@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,7 +34,7 @@ public class RoiOverlapMatchStatisticsVariablesInfo implements JIPipeExpressionV
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.c", "Candidate C", "The channel (C) location of the candidate ROI (first index is 1, zero indicates no C constraint)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.t", "Candidate T", "The frame (T) location of the candidate ROI (first index is 1, zero indicates no T constraint)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.name", "Candidate Name", "The name of the candidate ROI (empty string if not set)"));
-        for (JIPipeExpressionParameterVariableInfo variable : MeasurementExpressionParameterVariablesInfo.VARIABLES) {
+        for (JIPipeExpressionParameterVariableInfo variable : ImageJMeasurementsExpressionParameterVariablesInfo.VARIABLES) {
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate." + variable.getKey(), "Candidate " + variable.getName(), "Candidate ROI measurement. " + variable.getDescription()));
             VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all.Filter." + variable.getKey(), "Filter " + variable.getName() + " (all)", "Array of measurements from all matching filter ROIs. " + variable.getDescription()));
         }

@@ -99,10 +99,10 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.overlay.SetOverlayAlgor
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DReferencedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistration2DSingleAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.registration.turboreg.TurboRegRegistrationAlgorithmRuleType;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.CropToRoiAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.ROI2DRelationMeasurement;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.ROI2DRelationMeasurementColumn;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.ROI2DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.CropToRoi2DAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DRelationMeasurement;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DRelationMeasurementColumn;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.annotations.RoiPropertiesToAnnotationsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.AssembleExtractedROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.assemble.ExtractFromROIAlgorithm;
@@ -113,7 +113,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractROIProfileAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsOrderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
@@ -704,16 +704,16 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     private void registerGlobalParameters() {
         registerParameterType("ij1:measurement-column-sort-order",
-                MeasurementColumnSortOrder.class,
-                JIPipeParameterArchetype.Value, MeasurementColumnSortOrder::new,
-                o -> new MeasurementColumnSortOrder((MeasurementColumnSortOrder) o),
+                ImageJMeasurementColumnSortOrder.class,
+                JIPipeParameterArchetype.Value, ImageJMeasurementColumnSortOrder::new,
+                o -> new ImageJMeasurementColumnSortOrder((ImageJMeasurementColumnSortOrder) o),
                 "Measurement column sort order",
                 "Describes how a data is sorted by a measurement column",
                 null);
         registerParameterType("ij1:measurement-column-sort-order-list",
-                MeasurementColumnSortOrderList.class,
-                JIPipeParameterArchetype.List, MeasurementColumnSortOrderList::new,
-                o -> new MeasurementColumnSortOrderList((MeasurementColumnSortOrderList) o),
+                ImageJMeasurementColumnSortOrderList.class,
+                JIPipeParameterArchetype.List, ImageJMeasurementColumnSortOrderList::new,
+                o -> new ImageJMeasurementColumnSortOrderList((ImageJMeasurementColumnSortOrderList) o),
                 "Measurement column sort order list",
                 "List of measurement column sort orders",
                 null);
@@ -722,13 +722,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     private void registerGlobalEnums() {
         registerEnumParameterType("ij1-interpolation-method", InterpolationMethod.class,
                 "Interpolation method", "Available interpolation methods");
-        registerEnumParameterType("ij1-measurement", Measurement.class,
+        registerEnumParameterType("ij1-measurement", ImageJMeasurement.class,
                 "Measurement", "Available measurements");
-        registerEnumParameterType("ij1-measurement-column", MeasurementColumn.class,
+        registerEnumParameterType("ij1-measurement-column", ImageJMeasurementColumn.class,
                 "Measurement column", "Available measurement columns");
         registerEnumParameterType("ij1-calibration-mode", ImageJCalibrationMode.class,
                 "Contrast calibration", "Methods to apply display range calibration");
-        registerParameterType("ij1-measurement-set", ImageStatisticsSetParameter.class,
+        registerParameterType("ij1-measurement-set", ImageJMeasurementsSetParameter.class,
                 JIPipeParameterArchetype.MultiSelect, null,
                 null,
                 "Measurements",
@@ -775,9 +775,9 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerROIAlgorithms() {
-        registerEnumParameterType("ij-roi-relation-measurement", ROI2DRelationMeasurement.class, "2D relation measurement", "Relation between two 2D objects");
-        registerEnumParameterType("ij-roi-relation-measurement-column", ROI2DRelationMeasurementColumn.class, "2D relation measurement column", "Relation between two 2D objects");
-        registerParameterType("ij-roi-relation-measurement-set", ROI2DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "2D relation measurements", "A selection of measurements between two 2D objects");
+        registerEnumParameterType("ij-roi-relation-measurement", Roi2DRelationMeasurement.class, "2D relation measurement", "Relation between two 2D objects");
+        registerEnumParameterType("ij-roi-relation-measurement-column", Roi2DRelationMeasurementColumn.class, "2D relation measurement column", "Relation between two 2D objects");
+        registerParameterType("ij-roi-relation-measurement-set", Roi2DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "2D relation measurements", "A selection of measurements between two 2D objects");
 
         registerNodeType("ij1-roi-from-rectangles", DefineRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
@@ -810,10 +810,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoi2dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
-        registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-roi-statistics", Roi2DStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
-        registerNodeType("ij1-roi-filter-statistics", FilterRoi2dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij1-roi-filter-statistics", FilterRoi2DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-filter-slice", SliceRoi2dListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-filter-by-name", FilterRoi2dByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
@@ -925,7 +925,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-transform-scale2d", TransformScale2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
         registerNodeType("ij1-transform-scale3d", TransformScale3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
         registerNodeType("ij1-transform-crop2d", TransformCrop2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
-        registerNodeType("ij1-transform-crop-to-roi", CropToRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
+        registerNodeType("ij1-transform-crop-to-roi", CropToRoi2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
         registerNodeType("ij1-transform-expand2d", TransformExpandCanvas2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
         registerNodeType("ij1-transform-equalize-expand2d", TransformEqualCanvasSize2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
         registerNodeType("ij1-transform-equalize-dimensions", TransformEqualizeDimensionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));

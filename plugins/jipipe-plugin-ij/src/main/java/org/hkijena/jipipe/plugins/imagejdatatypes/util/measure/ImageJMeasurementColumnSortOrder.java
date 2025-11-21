@@ -20,15 +20,15 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import java.util.Comparator;
 
 /**
- * A key-value pair parameter of {@link MeasurementColumn} to {@link SortOrder}
+ * A key-value pair parameter of {@link ImageJMeasurementColumn} to {@link SortOrder}
  */
-public class MeasurementColumnSortOrder extends JIPipePairParameter<MeasurementColumn, SortOrder> {
+public class ImageJMeasurementColumnSortOrder extends JIPipePairParameter<ImageJMeasurementColumn, SortOrder> {
     /**
      * Creates a new instance
      */
-    public MeasurementColumnSortOrder() {
-        super(MeasurementColumn.class, SortOrder.class);
-        this.setKey(MeasurementColumn.Area);
+    public ImageJMeasurementColumnSortOrder() {
+        super(ImageJMeasurementColumn.class, SortOrder.class);
+        this.setKey(ImageJMeasurementColumn.Area);
         this.setValue(SortOrder.Ascending);
     }
 
@@ -37,7 +37,7 @@ public class MeasurementColumnSortOrder extends JIPipePairParameter<MeasurementC
      *
      * @param other the original
      */
-    public MeasurementColumnSortOrder(MeasurementColumnSortOrder other) {
+    public ImageJMeasurementColumnSortOrder(ImageJMeasurementColumnSortOrder other) {
         super(other);
     }
 

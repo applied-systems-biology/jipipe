@@ -47,7 +47,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.CustomAnalyzer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageMeasurementUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -1491,7 +1491,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param measurePhysicalSizes if true, physical sizes will be measured if available
      * @return the measurements
      */
-    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable, boolean measurePhysicalSizes) {
+    public ResultsTableData measure(ImagePlus imp, ImageJMeasurementsSetParameter measurements, boolean addNameToTable, boolean measurePhysicalSizes) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
         if (addNameToTable) {
             result.addStringColumn("Name");

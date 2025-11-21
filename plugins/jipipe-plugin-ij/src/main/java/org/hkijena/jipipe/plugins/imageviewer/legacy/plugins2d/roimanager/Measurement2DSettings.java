@@ -16,27 +16,27 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 
 public class Measurement2DSettings extends AbstractJIPipeParameterCollection {
 
     public static Measurement2DSettings INSTANCE = new Measurement2DSettings();
 
-    private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter statistics = new ImageJMeasurementsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     public Measurement2DSettings() {
         statistics.setCollapsed(false);
     }
 
-    @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("statistics")
-    public ImageStatisticsSetParameter getStatistics() {
+    public ImageJMeasurementsSetParameter getStatistics() {
         return statistics;
     }
 
     @JIPipeParameter("statistics")
-    public void setStatistics(ImageStatisticsSetParameter statistics) {
+    public void setStatistics(ImageJMeasurementsSetParameter statistics) {
         this.statistics = statistics;
     }
 
