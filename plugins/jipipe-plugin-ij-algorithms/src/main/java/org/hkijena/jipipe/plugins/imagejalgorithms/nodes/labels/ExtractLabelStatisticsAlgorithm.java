@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract label statistics 2D", description = "Extracts statistics for all labels in the image. Statistics are extracted over an image (optional). If no image is supplied, the label itself will be used as the image. " +
@@ -42,7 +42,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles... (labels)")
 public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
 
     private boolean measureInPhysicalUnits = true;
 
@@ -52,19 +52,19 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public ExtractLabelStatisticsAlgorithm(ExtractLabelStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that should be extracted from the labels. " +
-            "Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+            "Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 

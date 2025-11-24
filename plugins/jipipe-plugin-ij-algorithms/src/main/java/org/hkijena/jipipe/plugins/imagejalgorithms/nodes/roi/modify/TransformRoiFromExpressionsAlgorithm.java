@@ -32,13 +32,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo2;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
 
@@ -56,8 +56,8 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
     private OptionalJIPipeExpressionParameter positionX = new OptionalJIPipeExpressionParameter(false, "x");
     private OptionalJIPipeExpressionParameter positionY = new OptionalJIPipeExpressionParameter(false, "y");
     private OptionalJIPipeExpressionParameter scaleX = new OptionalJIPipeExpressionParameter(false, "1.0");
@@ -65,7 +65,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     private OptionalJIPipeExpressionParameter angle = new OptionalJIPipeExpressionParameter(false, "0");
     private JIPipeExpressionParameter originX = new JIPipeExpressionParameter("x + Width / 2");
     private JIPipeExpressionParameter originY = new JIPipeExpressionParameter("y + Height / 2");
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     public TransformRoiFromExpressionsAlgorithm(JIPipeNodeInfo info) {
@@ -78,7 +78,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
         this.positionY = new OptionalJIPipeExpressionParameter(other.positionY);
         this.scaleX = new OptionalJIPipeExpressionParameter(other.scaleX);
         this.scaleY = new OptionalJIPipeExpressionParameter(other.scaleY);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.angle = new OptionalJIPipeExpressionParameter(other.angle);
         this.originX = new JIPipeExpressionParameter(other.originX);
         this.originY = new JIPipeExpressionParameter(other.originY);
@@ -197,7 +197,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("origin-y")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -215,7 +215,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("origin-x")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -233,7 +233,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("angle")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -251,7 +251,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("position-x")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -269,7 +269,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("position-y")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -287,7 +287,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("scale-x")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -305,7 +305,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("scale-y")
     @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
@@ -319,14 +319,14 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
         this.scaleY = scaleY;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 

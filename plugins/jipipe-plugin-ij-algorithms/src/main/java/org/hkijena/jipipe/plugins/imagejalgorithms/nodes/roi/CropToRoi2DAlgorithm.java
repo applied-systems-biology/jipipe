@@ -48,7 +48,7 @@ import java.util.List;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Cropped", create = true)
-public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
+public class CropToRoi2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean cropXY = true;
     private boolean cropZ = true;
@@ -63,11 +63,11 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter annotationBoundingHeight = new OptionalTextAnnotationNameParameter("Height", false);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
-    public CropToRoiAlgorithm(JIPipeNodeInfo info) {
+    public CropToRoi2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public CropToRoiAlgorithm(CropToRoiAlgorithm other) {
+    public CropToRoi2DAlgorithm(CropToRoi2DAlgorithm other) {
         super(other);
         this.cropXY = other.cropXY;
         this.cropZ = other.cropZ;

@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.RoiOverlapSt
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -61,7 +61,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
     private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter();
-    private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter overlapFilterMeasurements = new ImageJMeasurementsSetParameter();
     private JIPipeExpressionParameter graphPostprocessing = new JIPipeExpressionParameter();
     private boolean splitAtJunctions = false;
     private boolean trySolveJunctions = true;
@@ -79,7 +79,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.dimensionTOperation = other.dimensionTOperation;
         this.componentNameAnnotation = new OptionalTextAnnotationNameParameter(other.componentNameAnnotation);
         this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
-        this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
+        this.overlapFilterMeasurements = new ImageJMeasurementsSetParameter(other.overlapFilterMeasurements);
         this.splitAtJunctions = other.splitAtJunctions;
         this.trySolveJunctions = other.trySolveJunctions;
         this.graphPostprocessing = new JIPipeExpressionParameter(other.graphPostprocessing);
@@ -446,14 +446,14 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         this.overlapFilter = overlapFilter;
     }
 
-    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("overlap-filter-measurements")
-    public ImageStatisticsSetParameter getOverlapFilterMeasurements() {
+    public ImageJMeasurementsSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
     }
 
     @JIPipeParameter("overlap-filter-measurements")
-    public void setOverlapFilterMeasurements(ImageStatisticsSetParameter overlapFilterMeasurements) {
+    public void setOverlapFilterMeasurements(ImageJMeasurementsSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 

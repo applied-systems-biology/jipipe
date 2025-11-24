@@ -18,7 +18,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
  * This only includes the measurements that actually generate columns - not measurement settings.
  * This contains individually adresses the columns
  */
-public enum MeasurementColumn {
+public enum ImageJMeasurementColumn {
     Area(1, "Area", "Area", "Area in pixels"),
     PixelValueMean(2, "Mean", "Mean pixel value", "Mean of the grayscale pixel value"),
     PixelValueStandardDeviation(4, "StdDev", "Pixel value standard deviation", "Standard deviation of the grayscale pixe lvalue"),
@@ -82,7 +82,7 @@ public enum MeasurementColumn {
     private final String name;
     private final String description;
 
-    MeasurementColumn(int nativeValue, String columnName, String name, String description) {
+    ImageJMeasurementColumn(int nativeValue, String columnName, String name, String description) {
         this.nativeValue = nativeValue;
         this.columnName = columnName;
         this.name = name;

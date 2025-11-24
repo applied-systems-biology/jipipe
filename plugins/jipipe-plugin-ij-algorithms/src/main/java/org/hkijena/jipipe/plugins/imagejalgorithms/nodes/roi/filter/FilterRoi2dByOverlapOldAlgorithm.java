@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -56,7 +56,7 @@ import java.util.List;
 @Deprecated
 public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter overlapFilterMeasurements = new ImageJMeasurementsSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
 
@@ -71,7 +71,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.roi1Settings = new ROIFilterSettings(other.roi1Settings);
         this.roi2Settings = new ROIFilterSettings(other.roi2Settings);
-        this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
+        this.overlapFilterMeasurements = new ImageJMeasurementsSetParameter(other.overlapFilterMeasurements);
         registerSubParameter(roi1Settings);
         registerSubParameter(roi2Settings);
         updateSlots();
@@ -329,14 +329,14 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         return roi2Settings;
     }
 
-    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Overlap filter measurements", description = "Measurements extracted for the overlap filter." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter("overlap-filter-measurements")
-    public ImageStatisticsSetParameter getOverlapFilterMeasurements() {
+    public ImageJMeasurementsSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
     }
 
     @JIPipeParameter("overlap-filter-measurements")
-    public void setOverlapFilterMeasurements(ImageStatisticsSetParameter overlapFilterMeasurements) {
+    public void setOverlapFilterMeasurements(ImageJMeasurementsSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 

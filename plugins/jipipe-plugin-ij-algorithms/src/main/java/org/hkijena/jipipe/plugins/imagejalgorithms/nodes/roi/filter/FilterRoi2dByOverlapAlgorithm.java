@@ -41,9 +41,9 @@ import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumn;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -187,7 +187,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
         for (int i = 0; i < rois.size(); i++) {
             Map<String, Object> measurementDict = new HashMap<>();
-            for (MeasurementColumn column : MeasurementColumn.values()) {
+            for (ImageJMeasurementColumn column : ImageJMeasurementColumn.values()) {
                 int columnIndex = measurements.getColumnIndex(column.getColumnName());
                 if (columnIndex >= 0) {
                     measurementDict.put(column.getColumnName(), measurements.getValueAt(i, columnIndex));
@@ -352,7 +352,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         // Measure only the area and use that
         ROI2DListData tmp = new ROI2DListData();
         tmp.add(roi);
-        ResultsTableData measured = tmp.measure(null, new ImageStatisticsSetParameter(Set.of(Measurement.Area)), false, false);
+        ResultsTableData measured = tmp.measure(null, new ImageJMeasurementsSetParameter(Set.of(ImageJMeasurement.Area)), false, false);
 
         if (measured == null || measured.getRowCount() <= 0) {
             return true;
@@ -611,7 +611,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     public static class MeasurementParameters extends AbstractJIPipeParameterCollection {
-        private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+        private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
         private boolean measurePhysicalSizes = false;
         private ReferenceMode referenceMode = ReferenceMode.None;
 
@@ -619,19 +619,19 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         public MeasurementParameters(MeasurementParameters other) {
-            this.measurements = new ImageStatisticsSetParameter(other.measurements);
+            this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
             this.measurePhysicalSizes = other.measurePhysicalSizes;
             this.referenceMode = other.referenceMode;
         }
 
-        @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that are taken from the candidates, filters, and intersections. <br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+        @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that are taken from the candidates, filters, and intersections. <br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
         @JIPipeParameter("measurements")
-        public ImageStatisticsSetParameter getMeasurements() {
+        public ImageJMeasurementsSetParameter getMeasurements() {
             return measurements;
         }
 
         @JIPipeParameter("measurements")
-        public void setMeasurements(ImageStatisticsSetParameter measurements) {
+        public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
             this.measurements = measurements;
         }
 

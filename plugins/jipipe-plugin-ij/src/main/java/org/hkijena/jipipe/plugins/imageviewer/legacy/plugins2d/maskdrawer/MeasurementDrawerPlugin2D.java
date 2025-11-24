@@ -31,7 +31,7 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopLargeBu
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -201,17 +201,17 @@ public class MeasurementDrawerPlugin2D extends MaskDrawerPlugin2D implements Mas
 
     public static class Settings extends AbstractJIPipeParameterCollection {
 
-        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+        private ImageJMeasurementsSetParameter statistics = new ImageJMeasurementsSetParameter();
         private boolean measureInPhysicalUnits = true;
 
-        @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure " + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+        @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure " + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
         @JIPipeParameter("statistics")
-        public ImageStatisticsSetParameter getStatistics() {
+        public ImageJMeasurementsSetParameter getStatistics() {
             return statistics;
         }
 
         @JIPipeParameter("statistics")
-        public void setStatistics(ImageStatisticsSetParameter statistics) {
+        public void setStatistics(ImageJMeasurementsSetParameter statistics) {
             this.statistics = statistics;
         }
 

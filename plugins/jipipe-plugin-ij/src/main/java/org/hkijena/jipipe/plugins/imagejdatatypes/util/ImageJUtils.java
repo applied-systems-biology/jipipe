@@ -58,6 +58,7 @@ import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -2489,6 +2490,28 @@ public class ImageJUtils {
             bLut[i] = (byte) (firstColor.getBlue() + db * i);
         }
         return new LUT(rLut, gLut, bLut);
+    }
+
+    public static Roi copyRoi(Roi roi) {
+        Roi clone = (Roi) roi.clone();
+        String properties = roi.getProperties();
+        if (properties != null) {
+            // We have to force the props variable to null, because Roi does not make a deep copy of it
+            try {
+                Field field = Roi.class.getDeclaredField("props");
+                field.setAccessible(true);
+                field.set(clone, null);
+            } catch (IllegalAccessException | NoSuchFieldException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        // Keep the image reference
+        clone.setImage(roi.getImage());
+        // Roi clone does not copy properties for some reason (keeps reference)
+        if (properties != null) {
+            clone.setProperties(properties);
+        }
+        return clone;
     }
 }
 

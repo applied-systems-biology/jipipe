@@ -29,10 +29,10 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumn;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumn;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
@@ -48,10 +48,10 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(RoiStatisticsAlgorithm.class);
-    private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
-    private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
+    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private ImageJMeasurementColumn fillMeasurement = ImageJMeasurementColumn.Area;
+    private ImageJMeasurementColumn lineMeasurement = ImageJMeasurementColumn.Area;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
 
@@ -169,23 +169,23 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Fill measurement", description = "The measurement to extract for the filling color.")
     @JIPipeParameter("fill-measurement")
-    public MeasurementColumn getFillMeasurement() {
+    public ImageJMeasurementColumn getFillMeasurement() {
         return fillMeasurement;
     }
 
     @JIPipeParameter("fill-measurement")
-    public void setFillMeasurement(MeasurementColumn fillMeasurement) {
+    public void setFillMeasurement(ImageJMeasurementColumn fillMeasurement) {
         this.fillMeasurement = fillMeasurement;
     }
 
     @SetJIPipeDocumentation(name = "Line measurement", description = "The measurement to extract for the line color.")
     @JIPipeParameter("line-measurement")
-    public MeasurementColumn getLineMeasurement() {
+    public ImageJMeasurementColumn getLineMeasurement() {
         return lineMeasurement;
     }
 
     @JIPipeParameter("line-measurement")
-    public void setLineMeasurement(MeasurementColumn lineMeasurement) {
+    public void setLineMeasurement(ImageJMeasurementColumn lineMeasurement) {
         this.lineMeasurement = lineMeasurement;
     }
 }

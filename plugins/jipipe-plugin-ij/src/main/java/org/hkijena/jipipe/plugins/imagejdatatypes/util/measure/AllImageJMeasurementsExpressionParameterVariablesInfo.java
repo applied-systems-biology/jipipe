@@ -25,14 +25,14 @@ import java.util.Set;
 /**
  * A variable source that contains the ImageJ measurements.
  */
-public class MeasurementExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
+public class AllImageJMeasurementsExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        for (MeasurementColumn column : MeasurementColumn.values()) {
-            VARIABLES.add(new JIPipeExpressionParameterVariableInfo(column.getColumnName(), column.getName(), column.getDescription()));
+        for (ImageJMeasurementColumn column : ImageJMeasurementColumn.values()) {
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + column.getColumnName(), column.getName() + " (All values)", column.getDescription() + ". This variable contains an array of all measurements."));
         }
     }
 

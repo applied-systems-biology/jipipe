@@ -30,10 +30,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementColumnSortOrderList;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumnSortOrderList;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
@@ -56,9 +56,9 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgorithm {
 
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
-    private MeasurementColumnSortOrderList sortOrderList = new MeasurementColumnSortOrderList();
+    private ImageJMeasurementColumnSortOrderList sortOrderList = new ImageJMeasurementColumnSortOrderList();
     private OptionalIntegerRange selectedIndices = new OptionalIntegerRange(new IntegerRange("0"), false);
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
@@ -81,7 +81,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgo
      */
     public SortAndExtractRoiByStatisticsAlgorithm2(SortAndExtractRoiByStatisticsAlgorithm2 other) {
         super(other);
-        this.sortOrderList = new MeasurementColumnSortOrderList(other.sortOrderList);
+        this.sortOrderList = new ImageJMeasurementColumnSortOrderList(other.sortOrderList);
         this.selectedIndices = new OptionalIntegerRange(other.selectedIndices);
         this.autoClamp = other.autoClamp;
         this.mapFillColor = new OptionalColorMapParameter(other.mapFillColor);
@@ -171,12 +171,12 @@ public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgo
     @SetJIPipeDocumentation(name = "Sort order", description = "Allows you to determine by which measurement columns to sort by. You can order by multiple columns " +
             "where the order within this list. If you for example order by 'Area' and then 'Perimeter', the ROI will be ordered by area and if the area is the same by perimeter.")
     @JIPipeParameter("sort-orders")
-    public MeasurementColumnSortOrderList getSortOrderList() {
+    public ImageJMeasurementColumnSortOrderList getSortOrderList() {
         return sortOrderList;
     }
 
     @JIPipeParameter("sort-orders")
-    public void setSortOrderList(MeasurementColumnSortOrderList sortOrderList) {
+    public void setSortOrderList(ImageJMeasurementColumnSortOrderList sortOrderList) {
         this.sortOrderList = sortOrderList;
     }
 

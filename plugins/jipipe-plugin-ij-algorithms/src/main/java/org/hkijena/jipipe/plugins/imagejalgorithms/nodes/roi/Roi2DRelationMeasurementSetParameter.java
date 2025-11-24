@@ -11,38 +11,36 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
 
 import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
-public class RoiRelationMeasurementSet extends JIPipeDynamicSetParameter<RoiRelationMeasurement> {
+public class Roi2DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<Roi2DRelationMeasurement> {
+    public Roi2DRelationMeasurementSetParameter() {
+        initialize();
+        setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
+    }
 
-    public RoiRelationMeasurementSet() {
-        super(new HashSet<>(Arrays.asList(RoiRelationMeasurement.values())));
-        setCollapsed(true);
+    public Roi2DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<Roi2DRelationMeasurement> other) {
+        super(other);
         initialize();
     }
 
-    public RoiRelationMeasurementSet(RoiRelationMeasurementSet other) {
-        super(other);
-    }
-
-    public RoiRelationMeasurementSet(Set<RoiRelationMeasurement> values) {
+    public Roi2DRelationMeasurementSetParameter(Set<Roi2DRelationMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(RoiRelationMeasurement.values()));
+        getAllowedValues().addAll(Arrays.asList(Roi2DRelationMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (RoiRelationMeasurement value : getValues()) {
+        for (Roi2DRelationMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -55,11 +53,10 @@ public class RoiRelationMeasurementSet extends JIPipeDynamicSetParameter<RoiRela
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (RoiRelationMeasurement value : getAllowedValues()) {
+        for (Roi2DRelationMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }
         }
     }
 }
-

@@ -11,27 +11,27 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
 
-public enum RoiRelationMeasurement {
-    Overlap(1),
-    PercentageOverlap(2),
+public enum Roi2DRelationMeasurement {
+    Colocalization(1),
+    PercentageColocalization(2),
     OverlapsBox(4),
     Includes(8),
     IncludesBox(16),
-    MinDistanceBorder(32),
-    IntersectionStatistics(64),
-    CurrentStatistics(128),
-    OtherStatistics(256);
+    DistanceCenter(256),
+    PolygonDistanceStats(512),
+    IntersectionStats(32768),
+    CurrentStats(65536),
+    OtherStats(131072);
 
     private final int nativeValue;
 
-    RoiRelationMeasurement(int nativeValue) {
-
+    Roi2DRelationMeasurement(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
-    public static boolean includes(int nativeValue, RoiRelationMeasurement target) {
+    public static boolean includes(int nativeValue, Roi2DRelationMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 
@@ -42,19 +42,23 @@ public enum RoiRelationMeasurement {
     @Override
     public String toString() {
         switch (this) {
-            case IncludesBox:
-                return "Bounding box includes (0/1)";
+            case PercentageColocalization:
+                return "Colocalization (%)";
             case OverlapsBox:
                 return "Bounding boxes overlaps (0/1)";
-            case PercentageOverlap:
-                return "Overlap (%)";
-            case MinDistanceBorder:
-                return "Minimum distance (borders)";
-            case IntersectionStatistics:
-                return "Intersection ROI statistics";
-            case CurrentStatistics:
+            case Includes:
+                return "Includes (0/1)";
+            case IncludesBox:
+                return "Bounding box includes (0/1)";
+            case DistanceCenter:
+                return "Distance center (2D)";
+            case PolygonDistanceStats:
+                return "Polygon distance (2D) min/max/avg";
+            case IntersectionStats:
+                return "Intersection object statistics";
+            case CurrentStats:
                 return "Current ROI statistics";
-            case OtherStatistics:
+            case OtherStats:
                 return "Other ROI statistics";
             default:
                 return name();

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -50,9 +50,9 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
-public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class Roi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
@@ -66,7 +66,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public RoiStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public Roi2DStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         indexAnnotation.setContent("Image index");
     }
@@ -76,9 +76,9 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public RoiStatisticsAlgorithm(RoiStatisticsAlgorithm other) {
+    public Roi2DStatisticsAlgorithm(Roi2DStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.applyPerChannel = other.applyPerChannel;
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
@@ -123,14 +123,14 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
-            "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+            "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 

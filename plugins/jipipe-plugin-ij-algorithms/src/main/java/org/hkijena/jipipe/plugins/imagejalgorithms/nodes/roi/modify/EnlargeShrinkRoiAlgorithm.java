@@ -36,14 +36,14 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -62,7 +62,7 @@ import java.util.Map;
 public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter pixels = new JIPipeExpressionParameter("5");
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     public EnlargeShrinkRoiAlgorithm(JIPipeNodeInfo info) {
@@ -72,7 +72,7 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
     public EnlargeShrinkRoiAlgorithm(EnlargeShrinkRoiAlgorithm other) {
         super(other);
         this.pixels = new JIPipeExpressionParameter(other.pixels);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
@@ -81,8 +81,8 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ROI2DListData input = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-                JIPipe.createNode(RoiStatisticsAlgorithm.class);
+        Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+                JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
@@ -135,8 +135,8 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Enlarge/shrink (px)", description = "The pixels that determine by how much the ROI is enlarged. Return negative values to shrink the ROI.")
     @JIPipeParameter(value = "pixels", important = true)
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = MeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getPixels() {
         return pixels;
@@ -147,14 +147,14 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.pixels = pixels;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements")
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 

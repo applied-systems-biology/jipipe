@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.parameters;
 
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
 import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParameter;
 
 import java.util.Arrays;
@@ -22,7 +22,7 @@ import java.util.Set;
 
 /**
  * A {@link JIPipeDynamicSetParameter} that contains image statistics measurements.
- * Contains {@link Measurement} items
+ * Contains {@link ImageJMeasurement} items
  */
 public class OverlapStatisticsSetParameter extends JIPipeDynamicSetParameter<OverlapStatistics> {
     public OverlapStatisticsSetParameter() {

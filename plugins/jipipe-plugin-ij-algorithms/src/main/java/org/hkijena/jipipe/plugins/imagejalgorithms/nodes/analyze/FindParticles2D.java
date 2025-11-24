@@ -35,8 +35,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -73,7 +73,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private boolean splitSlices = false;
     private boolean blackBackground = true;
     private OptionalStringParameter annotationType = new OptionalStringParameter();
-    private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter statisticsParameters = new ImageJMeasurementsSetParameter();
     private Neighborhood2D neighborhood = Neighborhood2D.EightConnected;
 
     private boolean measureInPhysicalUnits = true;
@@ -105,7 +105,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.neighborhood = other.neighborhood;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.compositeROI = other.compositeROI;
-        this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
+        this.statisticsParameters = new ImageJMeasurementsSetParameter(other.statisticsParameters);
     }
 
     @SetJIPipeDocumentation(name = "Composite ROI", description = "If enabled, generate composite ROI that can contain holes. Please note " +
@@ -121,14 +121,14 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @SetJIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
-            "Each measurement will be assigned to one or multiple output table columns. <br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+            "Each measurement will be assigned to one or multiple output table columns. <br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getStatisticsParameters() {
+    public ImageJMeasurementsSetParameter getStatisticsParameters() {
         return statisticsParameters;
     }
 
     @JIPipeParameter("measurements")
-    public void setStatisticsParameters(ImageStatisticsSetParameter statisticsParameters) {
+    public void setStatisticsParameters(ImageJMeasurementsSetParameter statisticsParameters) {
         this.statisticsParameters = statisticsParameters;
     }
 
@@ -179,7 +179,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
-                    if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
+                    if (statisticsParameters.getValues().contains(ImageJMeasurement.StackPosition)) {
                         for (int i = 0; i < table.getCounter(); i++) {
                             table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
                             table.setValue("SliceZ", i, index.getZ());
@@ -230,7 +230,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
-                    if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
+                    if (statisticsParameters.getValues().contains(ImageJMeasurement.StackPosition)) {
                         for (int i = 0; i < table.getCounter(); i++) {
                             table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
                             table.setValue("SliceZ", i, index.getZ());

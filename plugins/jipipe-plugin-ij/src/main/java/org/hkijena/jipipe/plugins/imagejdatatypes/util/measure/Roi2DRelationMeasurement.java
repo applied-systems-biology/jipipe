@@ -11,27 +11,27 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi;
+package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-public enum ROI2DRelationMeasurement {
-    Colocalization(1),
-    PercentageColocalization(2),
+public enum Roi2DRelationMeasurement {
+    Overlap(1),
+    PercentageOverlap(2),
     OverlapsBox(4),
     Includes(8),
     IncludesBox(16),
-    DistanceCenter(256),
-    PolygonDistanceStats(512),
-    IntersectionStats(32768),
-    CurrentStats(65536),
-    OtherStats(131072);
+    MinDistanceBorder(32),
+    IntersectionStatistics(64),
+    CurrentStatistics(128),
+    OtherStatistics(256);
 
     private final int nativeValue;
 
-    ROI2DRelationMeasurement(int nativeValue) {
+    Roi2DRelationMeasurement(int nativeValue) {
+
         this.nativeValue = nativeValue;
     }
 
-    public static boolean includes(int nativeValue, ROI2DRelationMeasurement target) {
+    public static boolean includes(int nativeValue, Roi2DRelationMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 
@@ -42,23 +42,19 @@ public enum ROI2DRelationMeasurement {
     @Override
     public String toString() {
         switch (this) {
-            case PercentageColocalization:
-                return "Colocalization (%)";
-            case OverlapsBox:
-                return "Bounding boxes overlaps (0/1)";
-            case Includes:
-                return "Includes (0/1)";
             case IncludesBox:
                 return "Bounding box includes (0/1)";
-            case DistanceCenter:
-                return "Distance center (2D)";
-            case PolygonDistanceStats:
-                return "Polygon distance (2D) min/max/avg";
-            case IntersectionStats:
-                return "Intersection object statistics";
-            case CurrentStats:
+            case OverlapsBox:
+                return "Bounding boxes overlaps (0/1)";
+            case PercentageOverlap:
+                return "Overlap (%)";
+            case MinDistanceBorder:
+                return "Minimum distance (borders)";
+            case IntersectionStatistics:
+                return "Intersection ROI statistics";
+            case CurrentStatistics:
                 return "Current ROI statistics";
-            case OtherStats:
+            case OtherStatistics:
                 return "Other ROI statistics";
             default:
                 return name();

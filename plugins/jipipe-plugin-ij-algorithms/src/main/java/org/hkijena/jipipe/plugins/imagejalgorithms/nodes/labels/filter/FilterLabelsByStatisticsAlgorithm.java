@@ -39,9 +39,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.MeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
@@ -62,7 +62,7 @@ import java.util.Arrays;
 public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     /**
@@ -82,7 +82,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     public FilterLabelsByStatisticsAlgorithm(FilterLabelsByStatisticsAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
-        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
@@ -148,8 +148,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             "Click the 'Edit' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
-    @JIPipeExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariablesInfo.class, hint = "per label")
-    @AddJIPipeExpressionParameterVariable(fromClass = AllMeasurementExpressionParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(variableSource = ImageJMeasurementsExpressionParameterVariablesInfo.class, hint = "per label")
+    @AddJIPipeExpressionParameterVariable(fromClass = AllImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFilters() {
         return filters;
@@ -160,14 +160,14 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         this.filters = filters;
     }
 
-    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
+    @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate." + "<br/><br/>" + ImageJMeasurementsSetParameter.ALL_DESCRIPTIONS)
     @JIPipeParameter(value = "measurements", important = true)
-    public ImageStatisticsSetParameter getMeasurements() {
+    public ImageJMeasurementsSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+    public void setMeasurements(ImageJMeasurementsSetParameter measurements) {
         this.measurements = measurements;
     }
 
