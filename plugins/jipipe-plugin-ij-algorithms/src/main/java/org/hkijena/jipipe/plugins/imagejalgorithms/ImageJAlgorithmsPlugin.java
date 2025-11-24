@@ -168,6 +168,7 @@ import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnum
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameterList;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
@@ -823,6 +824,20 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-sort-and-extract-statistics-2", SortAndExtractRoiByStatisticsAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
         registerNodeType("ij1-roi-sort-by-statistics-expression", SortRoiListByExpressionsAndMeasurementsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/view-sort.png"));
         registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
+        registerNodeExample(ChangeRoiPropertiesAlgorithm.class, "Make ROI show in all channels", node -> {
+            node.setPositionC(new OptionalIntegerParameter(true, 0));
+        });
+        registerNodeExample(ChangeRoiPropertiesAlgorithm.class, "Make ROI show in all Z-slices", node -> {
+            node.setPositionZ(new OptionalIntegerParameter(true, 0));
+        });
+        registerNodeExample(ChangeRoiPropertiesAlgorithm.class, "Make ROI show in all frames", node -> {
+            node.setPositionT(new OptionalIntegerParameter(true, 0));
+        });
+        registerNodeExample(ChangeRoiPropertiesAlgorithm.class, "Make ROI show in all channels/frames/slices", node -> {
+            node.setPositionC(new OptionalIntegerParameter(true, 0));
+            node.setPositionZ(new OptionalIntegerParameter(true, 0));
+            node.setPositionT(new OptionalIntegerParameter(true, 0));
+        });
         registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-scale.png"));
         registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/transform-rotate.png"));
         registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-edit.png"));
