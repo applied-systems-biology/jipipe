@@ -90,23 +90,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      */
     public ROI2DListData(List<Roi> other) {
         for (Roi roi : other) {
-            String properties = roi.getProperties();
-            Roi clone = (Roi) roi.clone();
-            if (properties != null) {
-                // We have to force the props variable to null, because Roi does not make a deep copy of it
-                try {
-                    Field field = Roi.class.getDeclaredField("props");
-                    field.setAccessible(true);
-                    field.set(clone, null);
-                } catch (IllegalAccessException | NoSuchFieldException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            // Keep the image reference
-            clone.setImage(roi.getImage());
-            // Roi clone does not copy properties for some reason (keeps reference)
-            if (properties != null)
-                clone.setProperties(properties);
+            Roi clone = ImageJUtils.copyRoi(roi);
             add(clone);
         }
     }

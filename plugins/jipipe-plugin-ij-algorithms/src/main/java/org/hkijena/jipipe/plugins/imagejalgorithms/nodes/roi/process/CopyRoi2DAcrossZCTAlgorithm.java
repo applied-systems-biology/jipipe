@@ -14,13 +14,10 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.process;
 
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Multimap;
-import com.google.common.primitives.Doubles;
-import gnu.trove.map.TDoubleObjectMap;
-import gnu.trove.map.hash.TDoubleObjectHashMap;
-import gnu.trove.set.TDoubleSet;
-import gnu.trove.set.hash.TDoubleHashSet;
+import com.google.common.primitives.Ints;
+import gnu.trove.map.TIntObjectMap;
+import gnu.trove.map.hash.TIntObjectHashMap;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -61,8 +58,8 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension dimension = HyperstackDimension.Frame;
     private OptionalJIPipeExpressionParameter filter = new OptionalJIPipeExpressionParameter(false, "roi.T <= 1");
-    private JIPipeExpressionParameter locations = new JIPipeExpressionParameter("MAKE_SEQUENCE(0, num_t)");
-    private JIPipeExpressionParameter namingFunction = new JIPipeExpressionParameter("roi.name + \"_\" + target.t");
+    private JIPipeExpressionParameter locations = new JIPipeExpressionParameter("MAKE_SEQUENCE(1, num_t + 1)");
+    private JIPipeExpressionParameter namingFunction = new JIPipeExpressionParameter("roi.name + \"_\" + roi.T");
     private OutputMode outputMode = OutputMode.Merge;
     private boolean measureInPhysicalUnits = true;
 
@@ -75,6 +72,7 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         this.dimension = other.dimension;
         this.locations = new JIPipeExpressionParameter(other.locations);
         this.filter = new OptionalJIPipeExpressionParameter(other.filter);
+        this.namingFunction = new JIPipeExpressionParameter(other.namingFunction);
         this.outputMode = other.outputMode;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
@@ -127,64 +125,37 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
                     }
                 }
                 break;
+            default:
+                throw new IllegalArgumentException("Unsupported output mode: " + outputMode);
         }
 
-        // Find the start vertices
-        Set<FilamentVertex> startVertices = VertexMaskParameter.filter(vertexMask.getFilter(), outputs, outputs.vertexSet(), variablesMap);
-        progressInfo.log(startVertices.size() + " starting vertices will be processed");
-
-        ImmutableList<FilamentVertex> startVerticesList = ImmutableList.copyOf(startVertices);
-        Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap = new HashMap<>();
-        Multimap<Double, FilamentVertex> newVerticesForLocationsMap = HashMultimap.create();
-        for (int i = 0; i < startVerticesList.size(); i++) {
-            FilamentVertex startVertex = startVerticesList.get(i);
-            JIPipeProgressInfo vertexProgress = progressInfo.resolveAndLog("Vertex " + startVertex.getUuid(), i, startVerticesList.size());
-            FilamentVertexVariablesInfo.writeToVariables(outputs, startVertex, variablesMap, "");
+        Map<Roi, TIntObjectMap<Roi>> roisForLocationsMap = new HashMap<>();
+        Multimap<Integer, Roi> newRoisForLocationsMap = HashMultimap.create();
+        JIPipePercentageProgressInfo roisProgress = progressInfo.percentage("Processing ROIs");
+        for (int i = 0; i < sources.size(); i++) {
+            roisProgress.logPercentage(i, sources.size());
+            Roi sourceRoi = sources.get(i);
+            putRoiMeasurementsInVariables(i, measurements, variablesMap);
 
             // Preprocess requested locations
-            List<Double> rawRequestedLocations = locations.evaluateToDoubleList(variablesMap);
-            TDoubleSet requestedLocationsSet = new TDoubleHashSet();
-            if (dimension != HyperstackDimension.Depth) {
-                // Apply rounding for non-depth
-                rawRequestedLocations.replaceAll(aDouble -> (double) aDouble.intValue());
-            }
-            // Deduplication and sorting
-            requestedLocationsSet.addAll(rawRequestedLocations);
-            double[] requestedLocationsArray = Doubles.toArray(rawRequestedLocations);
+            List<Integer> rawRequestedLocations = locations.evaluateToDoubleList(variablesMap).stream().map(Double::intValue).toList();
+            int[] requestedLocationsArray = Ints.toArray(rawRequestedLocations);
             Arrays.sort(requestedLocationsArray);
 
-            vertexProgress.log("Will be expanded to " + rawRequestedLocations.size() + " locations (min: " + Doubles.min(requestedLocationsArray) + ", max: " + Doubles.max(requestedLocationsArray) + ")");
+//            roisProgress.log("Will be expanded to " + rawRequestedLocations.size() + " locations (min: " + Doubles.min(requestedLocationsArray) + ", max: " + Doubles.max(requestedLocationsArray) + ")");
 
-            TDoubleObjectMap<FilamentVertex> perLocation = new TDoubleObjectHashMap<>();
-            verticesForLocationsMap.put(startVertex, perLocation);
+            TIntObjectMap<Roi> perLocation = new TIntObjectHashMap<>();
+            roisForLocationsMap.put(sourceRoi, perLocation);
 
             if (dimension == HyperstackDimension.Frame) {
-                copyStartingVertexAcrossFrame(startVertex, requestedLocationsArray, perLocation, newVerticesForLocationsMap, outputs);
+                copyAcrossFrame(sourceRoi, requestedLocationsArray, perLocation, newRoisForLocationsMap, variablesMap, outputs);
             } else if (dimension == HyperstackDimension.Channel) {
-                copyStartingVertexAcrossChannel(startVertex, requestedLocationsArray, perLocation, newVerticesForLocationsMap, outputs);
+                copyAcrossChannel(sourceRoi, requestedLocationsArray, perLocation, newRoisForLocationsMap, variablesMap, outputs);
             } else if (dimension == HyperstackDimension.Depth) {
-                copyStartingVertexAcrossDepth(startVertex, requestedLocationsArray, perLocation, newVerticesForLocationsMap, outputs);
+                copyAcrossDepth(sourceRoi, requestedLocationsArray, perLocation, newRoisForLocationsMap, variablesMap, outputs);
             } else {
                 throw new RuntimeException("Unknown dimension: " + dimension);
             }
-        }
-
-        // Copy starting vertices relationships
-        if (copyOriginalEdges) {
-            progressInfo.log("Copying original edges");
-            copyOriginalEdges(startVerticesList, verticesForLocationsMap, inputs, outputs, progressInfo);
-        }
-
-        // Connect new vertices to their start vertices
-        if (connectNewVerticesToStart) {
-            progressInfo.log("Connecting start vertices directly to new vertices");
-            connectNewVerticesToStart(startVerticesList, verticesForLocationsMap, outputs, variablesMap, progressInfo);
-        }
-
-        // Create linear connection over related vertices
-        if (connectOverDimensionLinear) {
-            progressInfo.log("Creating linear connections");
-            connectVerticesLinear(startVerticesList, verticesForLocationsMap, outputs, variablesMap, progressInfo);
         }
 
         // Output
@@ -197,198 +168,47 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void connectVerticesLinear(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
-        List<FilamentEdgeMetadataEntry> metadataEntries = connectOverDimensionLinearSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
-        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Linear connections");
-        percentage.log("Start vertices: " + startVerticesList.size());
-        for (int j = 0; j < startVerticesList.size(); j++) {
-            percentage.logPercentage(j, startVerticesList.size());
-            FilamentVertex startVertex = startVerticesList.get(j);
-
-            if (progressInfo.isCanceled()) {
-                return;
-            }
-
-            TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if (startVertexAtLocations == null) {
-                continue;
-            }
-
-            double[] keys = startVertexAtLocations.keys();
-            Arrays.sort(keys);
-
-            for (int i = 0; i < keys.length - 1; i++) {
-                if (progressInfo.isCanceled()) {
-                    return;
-                }
-
-                FilamentVertex current = startVertexAtLocations.get(keys[i]);
-                FilamentVertex next = startVertexAtLocations.get(keys[i + 1]);
-
-                // Filter (if enabled)
-                FilamentEdgeVariablesInfo.writeToVariables(outputGraph, current, next, variablesMap, "");
-                if (connectOverDimensionLinearSettings.filter.isEnabled()) {
-                    if (!connectOverDimensionLinearSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
-                        continue;
-                    }
-                }
-
-                // Determine color and metadata
-                FilamentEdge edge = new FilamentEdge();
-                edge.setColor(connectOverDimensionLinearSettings.color.evaluateToColor(variablesMap));
-                for (FilamentEdgeMetadataEntry metadataEntry : metadataEntries) {
-                    edge.setMetadata(metadataEntry.getKey(), metadataEntry.getValue().evaluateToString(variablesMap));
-                }
-
-                outputGraph.addEdge(current, next, edge);
-            }
-        }
-    }
-
-    private void connectNewVerticesToStart(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData outputGraph, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
-        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Start-to-new connections");
-        percentage.log("Start vertices: " + startVerticesList.size());
-        List<FilamentEdgeMetadataEntry> metadataEntries = connectNewVerticesToStartSettings.getMetadata().mapToCollection(FilamentEdgeMetadataEntry.class);
-        for (int i = 0; i < startVerticesList.size(); i++) {
-            percentage.logPercentage(i, startVerticesList.size());
-            FilamentVertex startVertex = startVerticesList.get(i);
-            TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if (startVertexAtLocations == null) {
-                continue;
-            }
-            if (progressInfo.isCanceled()) {
-                return;
-            }
-            for (FilamentVertex newVertex : startVertexAtLocations.valueCollection()) {
-                if (newVertex == startVertex) {
-                    continue;
-                }
-                if (progressInfo.isCanceled()) {
-                    return;
-                }
-
-                // Filter (if enabled)
-                FilamentEdgeVariablesInfo.writeToVariables(outputGraph, startVertex, newVertex, variablesMap, "");
-                if (connectNewVerticesToStartSettings.filter.isEnabled()) {
-                    if (!connectNewVerticesToStartSettings.filter.getContent().evaluateToBoolean(variablesMap)) {
-                        continue;
-                    }
-                }
-
-                // Determine color and metadata
-                FilamentEdge edge = new FilamentEdge();
-                edge.setColor(connectNewVerticesToStartSettings.color.evaluateToColor(variablesMap));
-                for (FilamentEdgeMetadataEntry metadataEntry : metadataEntries) {
-                    edge.setMetadata(metadataEntry.getKey(), metadataEntry.getValue().evaluateToString(variablesMap));
-                }
-
-                outputGraph.addEdge(startVertex, newVertex, edge);
-            }
-        }
-    }
-
-    private void copyOriginalEdges(ImmutableList<FilamentVertex> startVerticesList, Map<FilamentVertex, TDoubleObjectMap<FilamentVertex>> verticesForLocationsMap, Filaments3DGraphData inputGraph, Filaments3DGraphData outputGraph, JIPipeProgressInfo progressInfo) {
-        JIPipePercentageProgressInfo percentage = progressInfo.percentage("Copy original edges");
-        percentage.log("Start vertices: " + startVerticesList.size());
-
-        for (int i = 0; i < startVerticesList.size(); i++) {
-            final FilamentVertex startVertex = startVerticesList.get(i);
-            TDoubleObjectMap<FilamentVertex> startVertexAtLocations = verticesForLocationsMap.get(startVertex);
-            if (startVertexAtLocations == null) {
-                continue;
-            }
-            if (progressInfo.isCanceled()) {
-                return;
-            }
-            double[] startVertexLocations = startVertexAtLocations.keys();
-
-            JIPipeProgressInfo vertexProgress = progressInfo.resolveAndLog("Vertex " + startVertex.getUuid(), i, startVerticesList.size());
-            for (FilamentEdge edge : inputGraph.edgesOf(startVertex)) {
-
-                if (progressInfo.isCanceled()) {
-                    return;
-                }
-
-                FilamentVertex startSource = inputGraph.getEdgeSource(edge);
-                FilamentVertex startTarget = inputGraph.getEdgeTarget(edge);
-
-                // Ensure that startSource is always the startVertex and startTarget is its neighbor
-                if (startTarget == startVertex) {
-                    FilamentVertex vertex = startSource;
-                    startSource = startTarget;
-                    startTarget = vertex;
-                }
-
-                assert startSource == startVertex;
-
-                // Go through each location that is new and search for the new vertex
-                TDoubleObjectMap<FilamentVertex> neighborAtLocation = verticesForLocationsMap.get(startTarget);
-                for (double location : startVertexLocations) {
-                    FilamentVertex newSource = startVertexAtLocations.get(location);
-                    FilamentVertex newTarget = neighborAtLocation.get(location);
-                    if (newSource != startSource && newTarget != null) {
-                        FilamentEdge edgeCopy = new FilamentEdge(edge);
-                        outputGraph.addEdge(newSource, newTarget, edgeCopy);
-                    }
-                }
-
-            }
-        }
-    }
-
-    private boolean isAtLocation(FilamentVertex vertex, double location) {
-        switch (dimension) {
-            case Frame:
-                return vertex.getNonSpatialLocation().getFrame() == (int) location;
-            case Channel:
-                return vertex.getNonSpatialLocation().getChannel() == (int) location;
-            case Depth:
-                return vertex.getSpatialLocation().getZ() == location;
-            default:
-                throw new RuntimeException("Unknown dimension: " + dimension);
-        }
-    }
-
-    private void copyStartingVertexAcrossDepth(FilamentVertex vertex, double[] requestedLocationsArray, TDoubleObjectMap<FilamentVertex> perLocation, Multimap<Double, FilamentVertex> newVerticesForLocationsMap, Filaments3DGraphData filaments) {
-        perLocation.put(vertex.getSpatialLocation().getZ(), vertex);
-        for (double depth : requestedLocationsArray) {
+    private void copyAcrossDepth(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+        for (int depth : requestedLocationsArray) {
             if (!perLocation.containsKey(depth)) {
-                FilamentVertex copy = new FilamentVertex(vertex);
-                copy.getSpatialLocation().setZ(depth);
+                variablesMap.put("roi.Z", depth);
+                String newName = namingFunction.evaluateToString(variablesMap);
+                Roi copy = ImageJUtils.copyRoi(roi);
+                copy.setName(newName);
+                copy.setPosition(roi.getCPosition(), depth, roi.getTPosition());
                 perLocation.put(depth, copy);
                 newVerticesForLocationsMap.put(depth, copy);
-
-                filaments.addVertex(copy);
+                outputs.add(copy);
             }
         }
     }
 
-    private void copyStartingVertexAcrossChannel(FilamentVertex vertex, double[] requestedLocationsArray, TDoubleObjectMap<FilamentVertex> perLocation, Multimap<Double, FilamentVertex> newVerticesForLocationsMap, Filaments3DGraphData filaments) {
-        perLocation.put(vertex.getNonSpatialLocation().getChannel(), vertex);
-        for (double location : requestedLocationsArray) {
-            int channel = (int) location;
+    private void copyAcrossChannel(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+        for (int channel : requestedLocationsArray) {
             if (!perLocation.containsKey(channel)) {
-                FilamentVertex copy = new FilamentVertex(vertex);
-                copy.getNonSpatialLocation().setChannel(channel);
+                variablesMap.put("roi.C", channel);
+                String newName = namingFunction.evaluateToString(variablesMap);
+                Roi copy = ImageJUtils.copyRoi(roi);
+                copy.setName(newName);
+                copy.setPosition(channel, roi.getZPosition(), roi.getTPosition());
                 perLocation.put(channel, copy);
-                newVerticesForLocationsMap.put((double) channel, copy);
-
-                filaments.addVertex(copy);
+                newVerticesForLocationsMap.put(channel, copy);
+                outputs.add(copy);
             }
         }
     }
 
-    private void copyStartingVertexAcrossFrame(FilamentVertex vertex, double[] requestedLocationsArray, TDoubleObjectMap<FilamentVertex> perLocation, Multimap<Double, FilamentVertex> newVerticesForLocationsMap, Filaments3DGraphData filaments) {
-        perLocation.put(vertex.getNonSpatialLocation().getFrame(), vertex);
-        for (double location : requestedLocationsArray) {
-            int frame = (int) location;
+    private void copyAcrossFrame(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+        for (int frame : requestedLocationsArray) {
             if (!perLocation.containsKey(frame)) {
-                FilamentVertex copy = new FilamentVertex(vertex);
-                copy.getNonSpatialLocation().setFrame(frame);
+                variablesMap.put("roi.T", frame);
+                String newName = namingFunction.evaluateToString(variablesMap);
+                Roi copy = ImageJUtils.copyRoi(roi);
+                copy.setName(newName);
+                copy.setPosition(roi.getCPosition(), roi.getZPosition(), frame);
                 perLocation.put(frame, copy);
-                newVerticesForLocationsMap.put((double) frame, copy);
-
-                filaments.addVertex(copy);
+                newVerticesForLocationsMap.put(frame, copy);
+                outputs.add(copy);
             }
         }
     }
@@ -404,7 +224,8 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         this.dimension = dimension;
     }
 
-    @SetJIPipeDocumentation(name = "Locations (in direction)", description = "Expression that determines the locations in the selected direction where the ROI will be present.")
+    @SetJIPipeDocumentation(name = "Locations (in direction)", description = "Expression that determines the locations in the selected direction where the ROI will be present. " +
+            "Please note that ROI locations are one-based, i.e. if a location is zero, it is interpreted to be located on all slices.")
     @JIPipeParameter(value = "locations", important = true)
     @AddJIPipeExpressionParameterVariable(fromClass = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
@@ -418,6 +239,22 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("locations")
     public void setLocations(JIPipeExpressionParameter locations) {
         this.locations = locations;
+    }
+
+    @SetJIPipeDocumentation(name = "Naming function", description = "Expression that determines the new name of the ROI. roi.Z/roi.C/roi.T are replaced by the new location depending on the direction.")
+    @JIPipeParameter(value = "naming-function", important = true)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImagePlusPropertiesExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
+    @JIPipeExpressionParameterSettings(hint = "per ROI")
+    public JIPipeExpressionParameter getNamingFunction() {
+        return namingFunction;
+    }
+
+    @JIPipeParameter("naming-function")
+    public void setNamingFunction(JIPipeExpressionParameter namingFunction) {
+        this.namingFunction = namingFunction;
     }
 
     @SetJIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")

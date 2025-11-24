@@ -122,6 +122,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.InterpolateRoiAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.outline.OutlineRoiConcaveHullMoreiraSantosAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.process.CopyRoi2DAcrossZCTAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.ExtractROIMetadataAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.RemoveROIMetadataAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.SetROIMetadataFromTableAlgorithm;
@@ -863,6 +864,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-flatten", FlattenRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/layer-flatten-z.png"));
         registerNodeType("ij1-roi-enlarge-shrink", EnlargeShrinkRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/zoom-draw.png"));
         registerNodeType("ij1-roi-transform-2d", TransformRoiFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/dialog-transform.png"));
+        registerNodeType("ij1-roi-process-copy-across-zct", CopyRoi2DAcrossZCTAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/insert-math-expression.png"));
 
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-ellipse.png"));
@@ -875,6 +877,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
+        registerEnumParameterType("ij1-roi-process-copy-across-zct:output-mode",
+                CopyRoi2DAcrossZCTAlgorithm.OutputMode.class,
+                "ROI2D ZCT Copy Output Mode",
+                "Output mode for the algorithm 'Copy 2D ROI across Z/C/T'");
         registerEnumParameterType("ij1-roi-filter-by-overlap-v2:overlap-type",
                 FilterRoi2dByOverlapAlgorithm.OverlapMode.class,
                 "ROI2D Overlap mode",
