@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
@@ -47,9 +47,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Filter 2D ROI by statistics (Script)", description = "Filters the ROI list elements via statistics. The Python script contains a variable 'roi_list' " +
         "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
@@ -58,7 +56,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class FilterRoi2dByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
     private PythonInterpreter pythonInterpreter;
     private PythonScriptParameter code = new PythonScriptParameter();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,

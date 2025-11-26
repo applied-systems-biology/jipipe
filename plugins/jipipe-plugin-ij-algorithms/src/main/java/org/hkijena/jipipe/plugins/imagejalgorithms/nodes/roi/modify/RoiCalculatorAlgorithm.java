@@ -33,9 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "2D ROI calculator (AND/OR/XOR)", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
         "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")

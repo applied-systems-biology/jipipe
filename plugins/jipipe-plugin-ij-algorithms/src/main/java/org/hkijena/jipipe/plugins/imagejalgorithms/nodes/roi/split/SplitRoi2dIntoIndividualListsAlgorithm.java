@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DPropertiesExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -46,14 +46,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Split into individual 2D ROI lists", description = "Splits the ROI in a ROI list into individual ROI lists.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class SplitRoi2dIntoIndividualListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
@@ -63,7 +61,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the info
      */
-    public ExplodeRoiAlgorithm(JIPipeNodeInfo info) {
+    public SplitRoi2dIntoIndividualListsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         generatedAnnotation.setContent("ROI index");
     }
@@ -73,7 +71,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the other
      */
-    public ExplodeRoiAlgorithm(ExplodeRoiAlgorithm other) {
+    public SplitRoi2dIntoIndividualListsAlgorithm(SplitRoi2dIntoIndividualListsAlgorithm other) {
         super(other);
         this.generatedAnnotation = other.generatedAnnotation;
         this.annotationValue = new JIPipeExpressionParameter(other.annotationValue);
@@ -131,7 +129,7 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Annotation value", description = "If an annotation is generated, sets the value")
     @JIPipeParameter("roi-name")
-    @JIPipeExpressionParameterSettings(variableSource = ChangeRoiPropertiesFromExpressionsAlgorithm.VariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")

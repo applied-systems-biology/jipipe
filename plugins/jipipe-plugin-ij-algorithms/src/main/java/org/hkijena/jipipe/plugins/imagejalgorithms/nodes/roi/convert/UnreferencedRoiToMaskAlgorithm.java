@@ -35,9 +35,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import java.util.Map;
 import java.util.Optional;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Convert only 2D ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")

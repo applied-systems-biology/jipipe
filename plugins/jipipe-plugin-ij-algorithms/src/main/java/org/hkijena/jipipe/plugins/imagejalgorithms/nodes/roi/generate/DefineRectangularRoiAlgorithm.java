@@ -30,9 +30,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.RectangleList;
 
 import java.awt.*;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output")

@@ -43,9 +43,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
 @SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Filters the 3D ROI list elements via statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)

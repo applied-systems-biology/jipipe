@@ -35,9 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpres
 
 import java.awt.geom.Point2D;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Rotate 2D ROI (old)", description = "Rotates all ROI in the ROI list. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

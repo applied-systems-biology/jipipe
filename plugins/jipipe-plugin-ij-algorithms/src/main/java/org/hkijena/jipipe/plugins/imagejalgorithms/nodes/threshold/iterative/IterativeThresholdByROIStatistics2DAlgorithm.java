@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.FindParticles2D;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.ThresholdsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -65,8 +65,8 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", description = "Pre-filtered ROI (according to the criteria)", create = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
     private final FindParticles2D findParticles2DAlgorithm = JIPipe.createNode(FindParticles2D.class);
     private final FilteringParameters filteringParameters;
     private final ScoreParameters scoreParameters;

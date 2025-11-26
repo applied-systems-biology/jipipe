@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumn;
@@ -38,9 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Color 2D ROI by statistics", description = "Sets the ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
@@ -48,8 +46,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
     private ImageJMeasurementColumn fillMeasurement = ImageJMeasurementColumn.Area;
     private ImageJMeasurementColumn lineMeasurement = ImageJMeasurementColumn.Area;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
