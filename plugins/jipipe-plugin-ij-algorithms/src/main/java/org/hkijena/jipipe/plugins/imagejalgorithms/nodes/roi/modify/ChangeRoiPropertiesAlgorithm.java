@@ -33,9 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Set 2D ROI properties", description = "Sets properties of all Roi to a user-defined value.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

@@ -29,9 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Set 2D ROI image", description = "Associates an image to the ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)

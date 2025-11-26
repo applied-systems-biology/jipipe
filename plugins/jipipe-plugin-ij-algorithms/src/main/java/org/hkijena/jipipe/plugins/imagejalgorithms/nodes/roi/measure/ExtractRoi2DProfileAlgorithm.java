@@ -59,7 +59,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nPlot profile")
-public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2DProfileAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     private boolean measureInPhysicalUnits = true;
@@ -68,11 +68,11 @@ public class ExtractROIProfileAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter roiIndexAnnotation = new OptionalTextAnnotationNameParameter("ROI Index", true);
     private OptionalDataAnnotationNameParameter roiDataAnnotation = new OptionalDataAnnotationNameParameter("ROI", true);
 
-    public ExtractROIProfileAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2DProfileAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExtractROIProfileAlgorithm(ExtractROIProfileAlgorithm other) {
+    public ExtractRoi2DProfileAlgorithm(ExtractRoi2DProfileAlgorithm other) {
         super(other);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.rectangleMode = other.rectangleMode;

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
+import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.forms.FormsPlugin;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.background.RollingBallBackgroundEstimator2DAlgorithm;
@@ -111,9 +112,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.CountROIAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractROIProfileAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DProfileAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DRelationStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsOrderedAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.merge.MergeRoiListsPairwiseOrAlgorithm;
@@ -130,8 +131,9 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.properties.SetRoiMe
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.ExplodeRoiAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoiAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoi2DByStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoi2dIntoIndividualListsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitMultiComponentRoi2dAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.split.SplitRoiConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.ClassicWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.segment.RidgeDetector2DAlgorithm;
@@ -785,9 +787,13 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-from-rectangles-referenced", ReferencedDefineRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-append-rectangles", AppendRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-append-rectangles-referenced", ReferencedAppendRectangularRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-rectangle.png"));
-        registerNodeType("ij1-roi-split", SplitRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-split", SplitMultiComponentRoi2dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
         registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
-        registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij1-roi-split-by-statistics", SplitRoi2DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeExample(SplitRoi2DByStatisticsAlgorithm.class, "Split by frame", node -> node.setClassifier(new JIPipeExpressionParameter("t")));
+        registerNodeExample(SplitRoi2DByStatisticsAlgorithm.class, "Split by channel", node -> node.setClassifier(new JIPipeExpressionParameter("c")));
+        registerNodeExample(SplitRoi2DByStatisticsAlgorithm.class, "Split by depth", node -> node.setClassifier(new JIPipeExpressionParameter("z")));
+        registerNodeType("ij1-roi-explode", SplitRoi2dIntoIndividualListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
         registerNodeType("ij1-roi-merge", MergeRoiListsUnorderedAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
         registerNodeType("ij1-roi-combine", MergeRoiListsOrderedAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/merge.png"));
         registerNodeType("ij1-roi-merge-pairwise-or", MergeRoiListsPairwiseOrAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/asterisk.png"));
@@ -812,7 +818,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-crop-list", CropRoiListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-crop.png"));
         registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoi2dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/bordertool.png"));
-        registerNodeType("ij1-roi-statistics", Roi2DStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij1-roi-statistics", ExtractRoi2DStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-relation-2d", ExtractRoi2DRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
         registerNodeType("ij1-roi-filter-statistics", FilterRoi2DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
@@ -888,7 +894,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-geometry-show-measuring-info.png"));
 
 //        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_search.png"));
-        registerNodeType("ij1-roi-extract-profile", ExtractROIProfileAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-line.png"));
+        registerNodeType("ij1-roi-extract-profile", ExtractRoi2DProfileAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-line.png"));
 
         registerNodeType("ij1-roi-convert-to-table", ConvertRoiToTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/table.png"));
 
@@ -929,7 +935,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "ROI label",
                 "Determines how ROI labels are drawn");
         registerEnumParameterType("ij1-roi-extract-profile:rectangle-mode",
-                ExtractROIProfileAlgorithm.RectangleMode.class,
+                ExtractRoi2DProfileAlgorithm.RectangleMode.class,
                 "Rectangle mode",
                 "Determines the behavior for profile extraction from rectangle bounds");
     }

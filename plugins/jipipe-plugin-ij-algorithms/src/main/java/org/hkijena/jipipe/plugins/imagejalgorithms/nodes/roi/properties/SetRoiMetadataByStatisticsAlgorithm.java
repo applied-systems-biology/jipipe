@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
@@ -50,9 +50,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Set 2D ROI metadata by statistics (expression)", description = "Sets ROI metadata by statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
@@ -60,8 +58,8 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private JIPipeParameterCollectionList metadataGenerators = JIPipeParameterCollectionList.containingCollection(MetadataProperty.class);
     private boolean measureInPhysicalUnits = true;

@@ -46,9 +46,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Table to 2D text ROI", description = "Converts data from a table to text ROIs.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw text ROIs from table")

@@ -40,9 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Extract 2D ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "an empty reference image is automatically generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
@@ -50,7 +48,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
-public class Roi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean applyPerSlice = false;
@@ -66,7 +64,7 @@ public class Roi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public Roi2DStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2DStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         indexAnnotation.setContent("Image index");
     }
@@ -76,7 +74,7 @@ public class Roi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public Roi2DStatisticsAlgorithm(Roi2DStatisticsAlgorithm other) {
+    public ExtractRoi2DStatisticsAlgorithm(ExtractRoi2DStatisticsAlgorithm other) {
         super(other);
         this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.applyPerChannel = other.applyPerChannel;

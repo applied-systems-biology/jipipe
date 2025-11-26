@@ -37,9 +37,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
 import java.awt.*;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Remove 2D ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
         "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")

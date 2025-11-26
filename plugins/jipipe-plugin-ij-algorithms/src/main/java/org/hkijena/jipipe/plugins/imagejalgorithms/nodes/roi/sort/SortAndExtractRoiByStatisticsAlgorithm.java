@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumnSortOrderList;
@@ -43,9 +43,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Sort and extract ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
         "Optionally, line and fill colors of the output rows can be colored according to the output order. ")
 @LabelAsJIPipeHidden
@@ -56,7 +54,7 @@ import java.util.List;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
     private ImageJMeasurementColumnSortOrderList sortOrderList = new ImageJMeasurementColumnSortOrderList();
     private NumericFunctionExpression selection = new NumericFunctionExpression();

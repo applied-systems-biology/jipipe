@@ -27,9 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Crop 2D ROI list", description = "Moves all ROI in the list so that their bounding rectangle is located at x=0 and y=0 (default). Also allows to crop the channel, time, and Z locations.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

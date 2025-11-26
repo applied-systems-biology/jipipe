@@ -27,9 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Clear 2D ROI image", description = "Removes any association of the ROI from any image.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

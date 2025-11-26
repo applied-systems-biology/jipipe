@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
@@ -51,9 +51,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Enlarge/shrink 2D ROI", description = "Enlarges or shrinks each input ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
@@ -81,8 +79,8 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
         ROI2DListData input = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-                JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+        ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+                JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 

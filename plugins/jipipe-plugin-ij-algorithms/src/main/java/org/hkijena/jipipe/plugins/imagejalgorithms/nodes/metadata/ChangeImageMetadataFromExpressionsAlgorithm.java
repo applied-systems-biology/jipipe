@@ -38,9 +38,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Map;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Set image properties from expressions", description = "Sets properties of the input images to values extracted from expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)

@@ -40,9 +40,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Table to 2D rectangular/oval ROI", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw rectangular ROIs from table")

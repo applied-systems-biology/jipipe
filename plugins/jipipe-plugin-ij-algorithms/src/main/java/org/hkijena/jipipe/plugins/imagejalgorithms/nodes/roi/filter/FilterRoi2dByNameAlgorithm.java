@@ -36,9 +36,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Filter 2D ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

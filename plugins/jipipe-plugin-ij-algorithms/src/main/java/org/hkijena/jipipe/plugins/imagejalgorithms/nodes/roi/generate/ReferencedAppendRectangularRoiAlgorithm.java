@@ -36,9 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
 import java.awt.*;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")

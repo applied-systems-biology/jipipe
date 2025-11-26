@@ -34,9 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 import java.awt.*;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "2D ROI flood fill", description = "Starts a flood fill (magic wand) operation starting at the location of the ROI. Multiple operations are applied for each point within the ROI. Returns the generated outlines.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)

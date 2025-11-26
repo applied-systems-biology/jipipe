@@ -29,9 +29,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
 import java.util.List;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Merge 2D ROI lists (pairwise OR)", description = "Merges each individual ROI in Target with each individual ROI in Source, generating all pairwise combinations of all ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Target", create = true, description = "Where the ROI are added")

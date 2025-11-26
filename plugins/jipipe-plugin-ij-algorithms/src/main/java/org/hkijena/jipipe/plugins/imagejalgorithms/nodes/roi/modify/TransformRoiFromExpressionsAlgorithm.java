@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.Roi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
@@ -56,8 +56,8 @@ import java.util.Set;
 @AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
 public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final Roi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(Roi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
     private OptionalJIPipeExpressionParameter positionX = new OptionalJIPipeExpressionParameter(false, "x");
     private OptionalJIPipeExpressionParameter positionY = new OptionalJIPipeExpressionParameter(false, "y");
     private OptionalJIPipeExpressionParameter scaleX = new OptionalJIPipeExpressionParameter(false, "1.0");

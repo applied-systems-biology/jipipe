@@ -27,9 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
 
-/**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
- */
+
 @SetJIPipeDocumentation(name = "Scale 2D ROI (old)", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform")
 @AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)

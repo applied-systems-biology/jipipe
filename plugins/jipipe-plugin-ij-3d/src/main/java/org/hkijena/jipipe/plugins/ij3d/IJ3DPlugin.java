@@ -57,6 +57,7 @@ import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify.*;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.OutlineRoi3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3DByStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.plugins.ij3d.utils.*;
@@ -159,6 +160,7 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("ij3d-roi-split-explode", ExplodeRoi3DListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
         registerNodeType("ij3d-roi-split-into-connected-components", SplitRoi3DIntoConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij3d-roi-split-by-statistics", SplitRoi3DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
 
         registerNodeType("ij3d-roi-filter-by-overlap", FilterRoi3DByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
