@@ -91,7 +91,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), aliasMenuPath, getName().replace("CLIJ2", "").replace("CLIJ", "")));
+        return Collections.emptyList();
     }
 
     public Set<String> getIoInputSlots() {
