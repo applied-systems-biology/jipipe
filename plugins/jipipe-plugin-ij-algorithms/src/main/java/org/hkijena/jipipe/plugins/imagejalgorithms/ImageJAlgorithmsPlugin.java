@@ -69,6 +69,7 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.io.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.filter.*;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labkit.LabkitInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.lut.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.macro.RunImageJMacroAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.masking.SetToColorAlgorithm;
@@ -484,6 +485,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerRegistrationAlgorithms();
         registerMaskingAlgorithms();
         registerEnhancementAlgorithms();
+        registerMachineLearningAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-missing-results-table-2", GenerateMissingTablesAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/image-auto-adjust.png"));
@@ -508,6 +510,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerMachineLearningAlgorithms() {
+        registerNodeType("ij1-ml-labkit-segmentation", LabkitInferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/wand-magic-sparkles.png"));
     }
 
     private void registerEnhancementAlgorithms() {

@@ -142,6 +142,16 @@
                 <version>2.0.1</version>
             </dependency>
             <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>labkit-pixel-classification</artifactId>
+                <version>0.1.18</version>
+            </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>labkit-ui</artifactId>
+                <version>0.4.0</version>
+            </dependency>
+            <dependency>
                 <groupId>de.biomedical-imaging.imagej</groupId>
                 <artifactId>ij_ridge_detect</artifactId>
                 <version>1.4.1</version>
@@ -295,6 +305,14 @@
                     <artifactId>jakarta.activation-api</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>labkit-pixel-classification</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>labkit-ui</artifactId>
         </dependency>
 <!--        <dependency>-->
 <!--            <groupId>com.github.miura</groupId>-->
