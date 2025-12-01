@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
+import java.util.concurrent.CancellationException;
 import java.util.function.Consumer;
 
 /**
@@ -50,6 +51,10 @@ public class JIPipeBDVProgressWriter implements ProgressWriter {
 
     @Override
     public void setProgress(double completionRatio) {
+        // Cancellation guard
+        if(progressInfo.isCancelled()) {
+            throw new CancellationException();
+        }
         this.completionRatio = completionRatio;
     }
 
