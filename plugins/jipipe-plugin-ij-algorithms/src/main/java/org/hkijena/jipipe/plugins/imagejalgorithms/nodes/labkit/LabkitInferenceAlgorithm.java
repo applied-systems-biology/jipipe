@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.JIPipeBDVProgressWriter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import sc.fiji.labkit.ui.segmentation.SegmentationTool;
@@ -42,6 +43,10 @@ public class LabkitInferenceAlgorithm extends JIPipeIteratingAlgorithm {
     private final OutputSettings outputSettings;
     private boolean useGPU = false;
 
+    private boolean applyPerZ = false;
+    private boolean applyPerC = false;
+    private boolean applyPerT = false;
+
     public LabkitInferenceAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.outputSettings = new OutputSettings();
@@ -53,6 +58,9 @@ public class LabkitInferenceAlgorithm extends JIPipeIteratingAlgorithm {
         super(other);
         this.useGPU = other.useGPU;
         this.outputSettings = new OutputSettings(other.outputSettings);
+        this.applyPerZ = other.applyPerZ;
+        this.applyPerC = other.applyPerC;
+        this.applyPerT = other.applyPerT;
         registerSubParameter(outputSettings);
         updateSlots();
     }
@@ -78,7 +86,6 @@ public class LabkitInferenceAlgorithm extends JIPipeIteratingAlgorithm {
         segmenter.setUseGpu(useGPU);
         segmenter.setProgressWriter(new JIPipeBDVProgressWriter(progressInfo));
         segmenter.openModel(tmpPath.toString());
-
 
         if (outputSettings.outputProbabilities) {
             progressInfo.log("Calculating probabilities ...");
