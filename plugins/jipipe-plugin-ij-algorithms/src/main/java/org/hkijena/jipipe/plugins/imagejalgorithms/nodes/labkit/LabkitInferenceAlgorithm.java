@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labkit;
 
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import net.imglib2.img.VirtualStackAdapter;
 import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
@@ -20,12 +21,15 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.utils.JIPipeBDVProgressWriter
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.strings.JsonData;
 import sc.fiji.labkit.ui.segmentation.SegmentationTool;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Labkit inference", description = "Uses Labkit to segment or calculate the probability map of the input images")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Plugins\nLabkit\nMacro Recordable\nSegment Image With Labkit")
@@ -87,22 +91,73 @@ public class LabkitInferenceAlgorithm extends JIPipeIteratingAlgorithm {
         segmenter.setProgressWriter(new JIPipeBDVProgressWriter(progressInfo));
         segmenter.openModel(tmpPath.toString());
 
+        // Provide the whole image as-is as input for the segmenter
         if (outputSettings.outputProbabilities) {
-            progressInfo.log("Calculating probabilities ...");
+            progressInfo.log("Calculating probabilities");
             ImagePlus output = ImageJFunctions.wrap(segmenter.probabilityMap(VirtualStackAdapter.wrap(img)), "");
+            ImageJUtils.copyAttributes(img, output);
             iterationStep.addOutputData("Probabilities", new ImagePlusData(output), progressInfo);
         }
-
         if (outputSettings.outputLabels) {
-            progressInfo.log("Calculating labels ...");
+            progressInfo.log("Calculating labels");
             ImagePlus output = ImageJFunctions.wrap(segmenter.segment(VirtualStackAdapter.wrap(img)), "");
+            ImageJUtils.copyAttributes(img, output);
             iterationStep.addOutputData("Labels", new ImagePlusData(output), progressInfo);
         }
+
+//        if(!applyPerC && !applyPerT && !applyPerZ) {
+//            // Provide the whole image as-is as input for the segmenter
+//            if (outputSettings.outputProbabilities) {
+//                progressInfo.log("Calculating probabilities");
+//                ImagePlus output = ImageJFunctions.wrap(segmenter.probabilityMap(VirtualStackAdapter.wrap(img)), "");
+//                ImageJUtils.copyAttributes(img, output);
+//                iterationStep.addOutputData("Probabilities", new ImagePlusData(output), progressInfo);
+//            }
+//            if (outputSettings.outputLabels) {
+//                progressInfo.log("Calculating labels");
+//                ImagePlus output = ImageJFunctions.wrap(segmenter.segment(VirtualStackAdapter.wrap(img)), "");
+//                ImageJUtils.copyAttributes(img, output);
+//                iterationStep.addOutputData("Labels", new ImagePlusData(output), progressInfo);
+//            }
+//        }
+//        else if(!applyPerC && !applyPerT && applyPerZ) {
+//            if (outputSettings.outputProbabilities) {
+//                Map<ImageSliceIndex, ImageProcessor> mapping = new HashMap<>();
+//                ImageJIterationUtils.forEachIndexedZHyperStack(img, (input, index, subProgress) -> {
+//                    ImagePlus output = ImageJFunctions.wrap(segmenter.probabilityMap(VirtualStackAdapter.wrap(input)), "");
+//                    putToSliceMap(output, index, mapping);
+//                }, progressInfo.resolve("Calculating probabilities"));
+//                ImagePlus output = ImageJUtils.combineSlices(mapping);
+//                ImageJUtils.copyAttributes(img, output);
+//                iterationStep.addOutputData("Probabilities", new ImagePlusData(output), progressInfo);
+//            }
+//            if (outputSettings.outputLabels) {
+//                Map<ImageSliceIndex, ImageProcessor> mapping = new HashMap<>();
+//                ImageJIterationUtils.forEachIndexedZHyperStack(img, (input, index, subProgress) -> {
+//                    ImagePlus output = ImageJFunctions.wrap(segmenter.segment(VirtualStackAdapter.wrap(input)), "");
+//                    putToSliceMap(output, index, mapping);
+//                }, progressInfo.resolve("Calculating labels"));
+//                ImagePlus output = ImageJUtils.combineSlices(mapping);
+//                ImageJUtils.copyAttributes(img, output);
+//                iterationStep.addOutputData("Labels", new ImagePlusData(output), progressInfo);
+//            }
+//        }
+
 
         try {
             Files.deleteIfExists(tmpPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void putToSliceMap(ImagePlus src, ImageSliceIndex index, Map<ImageSliceIndex, ImageProcessor> mapping) {
+        for (int c = 0; c < src.getNChannels(); c++) {
+            for (int z = 0; z < src.getNSlices(); z++) {
+                for (int t = 0; t < src.getNFrames(); t++) {
+                    mapping.put(new ImageSliceIndex(index.getC() + c, index.getZ() + z, index.getT() + t), ImageJUtils.getSliceZero(src, c, z, t));
+                }
+            }
         }
     }
 
@@ -122,6 +177,39 @@ public class LabkitInferenceAlgorithm extends JIPipeIteratingAlgorithm {
     public void setUseGPU(boolean useGPU) {
         this.useGPU = useGPU;
     }
+
+//    @SetJIPipeDocumentation(name = "Apply per Z slice", description = "If enabled, Labkit is applied per Z-slice. Results are automatically combined.")
+//    @JIPipeParameter("apply-per-z")
+//    public boolean isApplyPerZ() {
+//        return applyPerZ;
+//    }
+//
+//    @JIPipeParameter("apply-per-z")
+//    public void setApplyPerZ(boolean applyPerZ) {
+//        this.applyPerZ = applyPerZ;
+//    }
+//
+//    @SetJIPipeDocumentation(name = "Apply per channel", description = "If enabled, Labkit is applied per channel-slice. Results are automatically combined.")
+//    @JIPipeParameter("apply-per-c")
+//    public boolean isApplyPerC() {
+//        return applyPerC;
+//    }
+//
+//    @JIPipeParameter("apply-per-c")
+//    public void setApplyPerC(boolean applyPerC) {
+//        this.applyPerC = applyPerC;
+//    }
+//
+//    @SetJIPipeDocumentation(name = "Apply per frame", description = "If enabled, Labkit is applied per frame-slice. Results are automatically combined.")
+//    @JIPipeParameter("apply-per-t")
+//    public boolean isApplyPerT() {
+//        return applyPerT;
+//    }
+//
+//    @JIPipeParameter("apply-per-t")
+//    public void setApplyPerT(boolean applyPerT) {
+//        this.applyPerT = applyPerT;
+//    }
 
     @Override
     public void onParameterChanged(ParameterChangedEvent event) {
