@@ -14,9 +14,12 @@
 package org.hkijena.jipipe.desktop.commons.components.project;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.acceleration.JIPipeHardwareAccelerationMode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAccelerationApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -44,6 +47,8 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
 
     private void reloadMenu() {
         popupMenu.removeAll();
+        popupMenu.add(UIUtils.createMenuItem("Auto-detect", "Automatically detects the acceleration", JIPipe.RESOURCES.getIcon16("actions/tools-wizard.png"), this::autodetectAcceleration));
+        popupMenu.addSeparator();
         for (JIPipeHardwareAccelerationMode value : JIPipeHardwareAccelerationMode.values()) {
             JCheckBoxMenuItem menuItem = new JCheckBoxMenuItem(value.toString(), settings.getAccelerationPreference() == value);
             menuItem.addActionListener(e -> {
@@ -55,6 +60,28 @@ public class JIPipeDesktopAccelerationOptionsControl extends JButton implements 
         }
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+    }
+
+    private void autodetectAcceleration() {
+        JIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Find acceleration settings";
+            }
+
+            @Override
+            public void run() {
+                try {
+                    JIPipe.getInstance().getAcceleration().autoDetect(getProgressInfo());
+                }
+                finally {
+                    SwingUtilities.invokeLater(() -> {
+                       updateText();
+                    });
+                }
+            }
+        };
+        JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), run);
     }
 
     private void openApplicationSettings() {

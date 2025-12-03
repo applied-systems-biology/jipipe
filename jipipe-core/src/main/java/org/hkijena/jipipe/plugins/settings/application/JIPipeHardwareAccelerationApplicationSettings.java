@@ -71,12 +71,12 @@ public class JIPipeHardwareAccelerationApplicationSettings extends JIPipeDefault
     }
 
     @SetJIPipeDocumentation(name = "Auto-configure acceleration on next startup", description = "Attempts to automatically determine the acceleration during the next JIPipe startup.")
-    @JIPipeParameter("auto-configure-acceleration-on-next-startup")
+    @JIPipeParameter("auto-configure-acceleration-on-next-startup-v2")
     public boolean isAutoConfigureAccelerationOnNextStartup() {
         return autoConfigureAccelerationOnNextStartup;
     }
 
-    @JIPipeParameter("auto-configure-acceleration-on-next-startup")
+    @JIPipeParameter("auto-configure-acceleration-on-next-startup-v2")
     public void setAutoConfigureAccelerationOnNextStartup(boolean autoConfigureAccelerationOnNextStartup) {
         this.autoConfigureAccelerationOnNextStartup = autoConfigureAccelerationOnNextStartup;
     }

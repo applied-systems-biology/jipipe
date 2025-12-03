@@ -203,7 +203,7 @@ public class ProcessUtils {
     }
 
     /**
-     * Queries standard output with a timeout.
+     * Queries standard output with a standard timeout.
      * Does not listen to cancellation signals
      *
      * @param executable   the executable
@@ -212,45 +212,79 @@ public class ProcessUtils {
      * @return the stdout
      */
     public static String queryFast(Path executable, JIPipeProgressInfo progressInfo, String... args) {
-        return queryFast(executable, true, progressInfo, args);
+        return queryFast(executable, true, -1, progressInfo, args);
     }
 
     /**
-     * Queries standard output with a timeout.
-     * Does not listen to cancellation signals
+     * Queries standard output with a standard timeout.
+     * Does not listen to cancellation signals.
      *
-     * @param executable   the executable
-     * @param progressInfo the progress info
-     * @param args         executable args
-     * @return the stdout
+     * @param executable     the executable
+     * @param handleQuoting  whether to handle quoting
+     * @param progressInfo   the progress info
+     * @param args           executable args
+     * @return the stdout, or null on failure/timeout
      */
-    public static String queryFast(Path executable, boolean handleQuoting, JIPipeProgressInfo progressInfo, String... args) {
+    public static String queryFast(Path executable,
+                                   boolean handleQuoting,
+                                   JIPipeProgressInfo progressInfo,
+                                   String... args) {
+        return queryFast(executable, handleQuoting, -1, progressInfo, args);
+    }
+
+    /**
+     * Queries standard output with an optional timeout.
+     * Does not listen to cancellation signals.
+     *
+     * @param executable     the executable
+     * @param handleQuoting  whether to handle quoting
+     * @param progressInfo   the progress info
+     * @param timeoutMillis  timeout in milliseconds; 0 or negative = no timeout
+     * @param args           executable args
+     * @return the stdout, or null on failure/timeout
+     */
+    public static String queryFast(Path executable,
+                                   boolean handleQuoting,
+                                   long timeoutMillis,
+                                   JIPipeProgressInfo progressInfo,
+                                   String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());
         for (String arg : args) {
             commandLine.addArgument(arg, handleQuoting);
         }
         progressInfo.log("Running " + executable + " " + JsonUtils.toJsonString(args));
+
         DefaultExecutor executor = new DefaultExecutor();
 
-        // Capture stdout
+        // Capture stdout/stderr
         ByteArrayOutputStream standardOutputStream = new ByteArrayOutputStream();
         ByteArrayOutputStream errorOutputStream = new ByteArrayOutputStream();
         PumpStreamHandler outputStreamHandler = new PumpStreamHandler(standardOutputStream, errorOutputStream);
         executor.setStreamHandler(outputStreamHandler);
 
+        // Optional timeout
+        ExecuteWatchdog watchdog = null;
+        if (timeoutMillis > 0) {
+            watchdog = new ExecuteWatchdog(timeoutMillis);
+            executor.setWatchdog(watchdog);
+        }
+
         try {
             int exitValue = executor.execute(commandLine);
 
             if (!executor.isFailure(exitValue)) {
-                return new String(standardOutputStream.toByteArray());
-            } else {
+                return standardOutputStream.toString(); // uses platform default charset
+            }
+            return null;
+        } catch (IOException e) {
+            // If a watchdog was active and killed the process, treat as timeout
+            if (watchdog != null && watchdog.killedProcess()) {
                 return null;
             }
-
-        } catch (IOException e) {
             return null;
         }
     }
+
 
     public static void killProcessTree(long pid, JIPipeProgressInfo progressInfo) {
         if (pid != -1) {

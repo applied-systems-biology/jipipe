@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CUDAUtils {
 
@@ -64,11 +66,12 @@ public class CUDAUtils {
         }
 
         try {
-            String output = ProcessUtils.queryFast(nvidiaSmiPath, new JIPipeProgressInfo());
+            String output = ProcessUtils.queryFast(nvidiaSmiPath, true, 1000, new JIPipeProgressInfo());
             if (output == null) {
                 return 0;
             }
-            return (int) StringUtils.tryParseDouble(parseMaxCudaVersion(output), 0);
+            String maxCudaVersion = parseMaxCudaVersion(output).replace(".", "");
+            return (int) StringUtils.tryParseDouble(maxCudaVersion, 0);
         } catch (Exception e) {
             return 0;
         }
@@ -84,7 +87,7 @@ public class CUDAUtils {
         }
 
         try {
-            String output = ProcessUtils.queryFast(nvidiaSmiPath, new JIPipeProgressInfo(), "--query-gpu=compute_cap", "--format=csv,noheader");
+            String output = ProcessUtils.queryFast(nvidiaSmiPath, true, 1000, new JIPipeProgressInfo(), "--query-gpu=compute_cap", "--format=csv,noheader");
             String[] computeCaps = output.split("\\r?\\n");
             double minCudaVersion = Double.MAX_VALUE;
 
@@ -101,15 +104,13 @@ public class CUDAUtils {
     }
 
     private static String parseMaxCudaVersion(String nvidiaSmiOutput) {
-        String[] lines = nvidiaSmiOutput.split("\\r?\\n");
-        for (String line : lines) {
-            if (line.contains("CUDA Version")) {
-                return line.split(":")[1].trim();
-            }
+        Pattern pattern = Pattern.compile("CUDA Version: (\\d+\\.\\d+)");
+        Matcher matcher = pattern.matcher(nvidiaSmiOutput);
+        if(matcher.find()) {
+            return matcher.group(1);
         }
         return "Unknown";
     }
-
 
     /**
      * Maps compute capability to the minimum CUDA version.

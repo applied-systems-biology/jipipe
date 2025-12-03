@@ -317,29 +317,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         // Check acceleration
         JIPipeHardwareAccelerationApplicationSettings hardwareAccelerationApplicationSettings = JIPipeHardwareAccelerationApplicationSettings.getInstance();
         if (hardwareAccelerationApplicationSettings.isAutoConfigureAccelerationOnNextStartup()) {
-            getProgressInfo().log("Determining acceleration profile ...");
-            try {
-
-                if (CUDAUtils.hasCudaSupport()) {
-                    getProgressInfo().log("Determining acceleration profile ... CUDA support detected");
-                    hardwareAccelerationApplicationSettings.setAccelerationPreference(JIPipeHardwareAccelerationMode.CUDA);
-
-                    try {
-                        hardwareAccelerationApplicationSettings.setAccelerationPreferenceVersions(new Vector2iParameter(
-                                CUDAUtils.getMinimumCudaVersion(),
-                                0  // Broken due to Nvidia-SMI hanging on Linux -> have to use 0
-                        ));
-                        getProgressInfo().log("Determined CUDA version limits as " + hardwareAccelerationApplicationSettings.getAccelerationPreferenceVersions());
-                    } catch (Exception e) {
-                        getProgressInfo().log(e);
-                    }
-                }
-
-                hardwareAccelerationApplicationSettings.setAutoConfigureAccelerationOnNextStartup(false);
-                getService().getApplicationSettings().save();
-            } catch (Exception e) {
-                getProgressInfo().log(e);
-            }
+            getService().getAcceleration().autoDetect(getProgressInfo());
         }
 
         // Load templates
