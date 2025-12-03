@@ -11,26 +11,26 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.ArrowAnnotationGraphNode;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.ArrowGraphCanvasNote;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ArrowAnnotationGraphNode> {
-    public ArrowAnnotationGraphNodeTool() {
-        super(ArrowAnnotationGraphNode.class);
+public class ArrowNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ArrowGraphCanvasNote> {
+    public ArrowNoteGraphNodeTool() {
+        super(ArrowGraphCanvasNote.class);
     }
 
     @Override
-    protected ArrowAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
+    protected ArrowGraphCanvasNote createAndConfigureNode(Point firstPoint, Point secondPoint) {
         double angle = Math.atan2(secondPoint.y - firstPoint.y, secondPoint.x - firstPoint.x);
-        ArrowAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
+        ArrowGraphCanvasNote node = super.createAndConfigureNode(firstPoint, secondPoint);
         node.setAngle((int) (angle / (Math.PI * 2) * 360));
         return node;
     }
@@ -67,6 +67,6 @@ public class ArrowAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<
 
     @Override
     public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
-        return new ArrowAnnotationGraphNodeToolProperties(graphEditorUI, this);
+        return new ArrowNoteGraphNodeToolProperties(graphEditorUI, this);
     }
 }

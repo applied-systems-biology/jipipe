@@ -11,24 +11,21 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class EditAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<EditAnnotationGraphNodeTool> {
-    public EditAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, EditAnnotationGraphNodeTool tool) {
+public class ArrowNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ArrowNoteGraphNodeTool> {
+    public ArrowNoteGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ArrowNoteGraphNodeTool tool) {
         super(graphEditorUI, tool);
     }
 
     @Override
     public void initializeContent() {
         super.initializeContent();
-        getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Select all", JIPipe.RESOURCES.getIcon16("actions/stock_select-all.png"), () -> {
-            getGraphEditorUI().getSelectionManager().selectAll();
-        }));
         getFormPanel().addWideToForm(UIUtils.createLeftAlignedButton("Close tool", JIPipe.RESOURCES.getIcon16("actions/message-close.png"), () -> {
             getGraphEditorUI().selectTool(null);
         }));

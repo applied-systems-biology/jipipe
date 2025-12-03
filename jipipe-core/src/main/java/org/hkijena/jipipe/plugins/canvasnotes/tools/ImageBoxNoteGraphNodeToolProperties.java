@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopFormGraphEditorToolPanel;
@@ -22,12 +22,12 @@ import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktop
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.utils.UIUtils;
 
-public class ImageBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener {
+public class ImageBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<ImageBoxNoteGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener {
 
     private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
     private final JIPipeDesktopColorPaletteUI paletteUI;
 
-    public ImageBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxAnnotationGraphNodeTool tool) {
+    public ImageBoxNoteGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, ImageBoxNoteGraphNodeTool tool) {
         super(graphEditorUI, tool);
         this.paletteUI = new JIPipeDesktopColorPaletteUI(getDesktopWorkbench(), JIPipeDesktopColorPaletteUI.NONE, JIPipeDesktopColorPalette.PASTEL);
         this.paletteUI.setUserColors(new JIPipeDesktopRegistryBackedColorPaletteUserColorStorage(paletteUI));

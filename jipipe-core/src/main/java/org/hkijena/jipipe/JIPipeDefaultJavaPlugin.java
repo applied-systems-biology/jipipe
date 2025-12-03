@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
@@ -262,7 +262,7 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      * @param icon           the icon URL
      * @param <T>            the node class
      */
-    public <T extends JIPipeAnnotationGraphNode> void registerAnnotationNodeType(String id, Class<T> nodeClass, Class<? extends JIPipeAnnotationGraphNodeTool<T>> graphToolClass, URL icon) {
+    public <T extends JIPipeGraphCanvasNote> void registerAnnotationNodeType(String id, Class<T> nodeClass, Class<? extends JIPipeAnnotationGraphNodeTool<T>> graphToolClass, URL icon) {
         registerNodeType(id, nodeClass, icon);
         registerGraphEditorTool(graphToolClass);
     }

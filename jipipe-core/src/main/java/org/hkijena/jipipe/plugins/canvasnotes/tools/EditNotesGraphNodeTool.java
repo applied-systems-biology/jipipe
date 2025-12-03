@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditorTool;
@@ -10,7 +10,7 @@ import javax.swing.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 
-public class EditAnnotationGraphNodeTool implements JIPipeDesktopToggleableGraphEditorTool {
+public class EditNotesGraphNodeTool implements JIPipeDesktopToggleableGraphEditorTool {
     private JIPipeDesktopGraphEditorUI graphEditor;
 
     @Override
@@ -25,7 +25,7 @@ public class EditAnnotationGraphNodeTool implements JIPipeDesktopToggleableGraph
 
     @Override
     public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
-        return new EditAnnotationGraphNodeToolProperties(graphEditorUI, this);
+        return new EditNotesGraphNodeToolProperties(graphEditorUI, this);
     }
 
     @Override
@@ -35,12 +35,12 @@ public class EditAnnotationGraphNodeTool implements JIPipeDesktopToggleableGraph
 
     @Override
     public String getName() {
-        return "Edit annotations";
+        return "Edit canvas notes";
     }
 
     @Override
     public String getTooltip() {
-        return "Allows to move, edit, and delete annotations while active";
+        return "Allows to move, edit, and delete canvas notes while active";
     }
 
     @Override

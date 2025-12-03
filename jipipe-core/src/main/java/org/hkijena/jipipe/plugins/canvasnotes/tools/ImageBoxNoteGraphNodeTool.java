@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import ij.IJ;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
@@ -20,7 +20,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.ImageBoxAnnotationGraphNode;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.ImageBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -36,17 +36,17 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 
-public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ImageBoxAnnotationGraphNode> {
+public class ImageBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<ImageBoxGraphCanvasNote> {
 
     private JIPipeDesktopColorPaletteColor color;
 
-    public ImageBoxAnnotationGraphNodeTool() {
-        super(ImageBoxAnnotationGraphNode.class);
+    public ImageBoxNoteGraphNodeTool() {
+        super(ImageBoxGraphCanvasNote.class);
     }
 
     @Override
-    protected ImageBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
-        ImageBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
+    protected ImageBoxGraphCanvasNote createAndConfigureNode(Point firstPoint, Point secondPoint) {
+        ImageBoxGraphCanvasNote node = super.createAndConfigureNode(firstPoint, secondPoint);
         Path path = JIPipeDesktop.openFile(getDesktopWorkbench().getWindow(),
                 getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External,
                 "Open image",
@@ -87,7 +87,7 @@ public class ImageBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTo
 
     @Override
     public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
-        return new ImageBoxAnnotationGraphNodeToolProperties(graphEditorUI, this);
+        return new ImageBoxNoteGraphNodeToolProperties(graphEditorUI, this);
     }
 
     public JIPipeDesktopColorPaletteColor getColor() {

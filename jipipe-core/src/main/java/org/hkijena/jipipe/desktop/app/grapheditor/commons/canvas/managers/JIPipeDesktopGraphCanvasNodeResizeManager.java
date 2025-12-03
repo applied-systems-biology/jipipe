@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.managers;
 
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
@@ -239,7 +239,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                 Rectangle rectangle = getCurrentResizeTargetAnchorArea(anchor);
                 if (rectangle != null) {
                     if (rectangle.contains(mouseEvent.getPoint())) {
-                        JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) currentResizeTarget.getNode();
+                        JIPipeGraphCanvasNote node = (JIPipeGraphCanvasNote) currentResizeTarget.getNode();
                         Point gridLocation = node.getNodeUILocationWithin(StringUtils.nullToEmpty(canvasUI.getCompartmentUUID()));
                         currentResizeOperationStartProperties = new Rectangle(gridLocation.x, gridLocation.y, node.getGridWidth(), node.getGridHeight());
                         currentResizeOperationAnchor = anchor;

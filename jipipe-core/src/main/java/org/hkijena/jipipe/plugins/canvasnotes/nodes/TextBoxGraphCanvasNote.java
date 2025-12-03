@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.nodes;
+package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,19 +24,19 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "Text box", description = "An annotation that contains text")
+@SetJIPipeDocumentation(name = "Text box canvas note", description = "A canvas note that contains text")
 @ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
-public class TextBoxAnnotationGraphNode extends DefaultTextBoxAnnotationGraphNode {
+public class TextBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ShapeParameters shapeParameters;
 
-    public TextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
+    public TextBoxGraphCanvasNote(JIPipeNodeInfo info) {
         super(info);
         this.shapeParameters = new ShapeParameters();
         this.setTextTitle("Text box");
         registerSubParameter(shapeParameters);
     }
 
-    public TextBoxAnnotationGraphNode(TextBoxAnnotationGraphNode other) {
+    public TextBoxGraphCanvasNote(TextBoxGraphCanvasNote other) {
         super(other);
         this.shapeParameters = new ShapeParameters(other.shapeParameters);
         registerSubParameter(shapeParameters);

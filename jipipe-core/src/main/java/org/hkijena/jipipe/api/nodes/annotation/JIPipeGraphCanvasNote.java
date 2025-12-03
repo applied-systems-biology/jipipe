@@ -35,17 +35,17 @@ import java.util.Set;
  * A node that is an annotation
  * Nodes of this type are rendered by {@link JIPipeDesktopAnnotationGraphNodeUI} instead of {@link JIPipeDesktopGraphNodeUI} and have a custom size information
  */
-public abstract class JIPipeAnnotationGraphNode extends JIPipeGraphNode {
+public abstract class JIPipeGraphCanvasNote extends JIPipeGraphNode {
 
     private int gridWidth = 4;
     private int gridHeight = 3;
     private int zOrder = 1; // default value pushes the node in front of all others
 
-    public JIPipeAnnotationGraphNode(JIPipeNodeInfo info) {
+    public JIPipeGraphCanvasNote(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().seal().build());
     }
 
-    public JIPipeAnnotationGraphNode(JIPipeAnnotationGraphNode other) {
+    public JIPipeGraphCanvasNote(JIPipeGraphCanvasNote other) {
         super(other);
         this.gridWidth = other.gridWidth;
         this.gridHeight = other.gridHeight;
