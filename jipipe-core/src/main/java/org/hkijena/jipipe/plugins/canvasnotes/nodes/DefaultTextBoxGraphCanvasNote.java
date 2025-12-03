@@ -11,11 +11,11 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.nodes;
+package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 import java.util.Objects;
 
-public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotationGraphNode {
+public abstract class DefaultTextBoxGraphCanvasNote extends JIPipeGraphCanvasNote {
     private final TextRenderParameters titleStyle;
     private final TextRenderParameters contentStyle;
     private final TextLocationParameters textLocation;
@@ -48,7 +48,7 @@ public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotation
     private int renderedGridWidth;
     private int renderedGridHeight;
 
-    public DefaultTextBoxAnnotationGraphNode(JIPipeNodeInfo info) {
+    public DefaultTextBoxGraphCanvasNote(JIPipeNodeInfo info) {
         super(info);
 
         this.titleStyle = new TextRenderParameters();
@@ -61,7 +61,7 @@ public abstract class DefaultTextBoxAnnotationGraphNode extends JIPipeAnnotation
         registerSubParameter(textLocation);
     }
 
-    public DefaultTextBoxAnnotationGraphNode(DefaultTextBoxAnnotationGraphNode other) {
+    public DefaultTextBoxGraphCanvasNote(DefaultTextBoxGraphCanvasNote other) {
         super(other);
 
         this.titleStyle = new TextRenderParameters(other.titleStyle);

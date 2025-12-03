@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.nodes;
+package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,18 +28,18 @@ import org.hkijena.jipipe.utils.SizeFitMode;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@SetJIPipeDocumentation(name = "Image box", description = "An annotation that contains an image")
+@SetJIPipeDocumentation(name = "Image box canvas note", description = "A canvas note that displays an image")
 @ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
-public class ImageBoxAnnotationGraphNode extends DefaultTextBoxAnnotationGraphNode {
+public class ImageBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ImageParameters imageParameters;
 
-    public ImageBoxAnnotationGraphNode(JIPipeNodeInfo info) {
+    public ImageBoxGraphCanvasNote(JIPipeNodeInfo info) {
         super(info);
         this.imageParameters = new ImageParameters();
         registerSubParameter(imageParameters);
     }
 
-    public ImageBoxAnnotationGraphNode(ImageBoxAnnotationGraphNode other) {
+    public ImageBoxGraphCanvasNote(ImageBoxGraphCanvasNote other) {
         super(other);
         this.imageParameters = new ImageParameters(other.imageParameters);
         registerSubParameter(imageParameters);

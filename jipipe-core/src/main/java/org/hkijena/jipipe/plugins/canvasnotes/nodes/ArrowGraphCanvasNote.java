@@ -11,12 +11,12 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.nodes;
+package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
@@ -25,20 +25,20 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAn
 import java.awt.*;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Arrow", description = "An arrow")
+@SetJIPipeDocumentation(name = "Arrow canvas note", description = "A canvas note that displays an arrow")
 @ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
-public class ArrowAnnotationGraphNode extends JIPipeAnnotationGraphNode {
+public class ArrowGraphCanvasNote extends JIPipeGraphCanvasNote {
 
     private int angle = 0;
     private int arrowSize = 10;
     private Color color = new Color(0xD99323);
     private int lineThickness = 4;
 
-    public ArrowAnnotationGraphNode(JIPipeNodeInfo info) {
+    public ArrowGraphCanvasNote(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ArrowAnnotationGraphNode(ArrowAnnotationGraphNode other) {
+    public ArrowGraphCanvasNote(ArrowGraphCanvasNote other) {
         super(other);
         this.angle = other.angle;
         this.arrowSize = other.arrowSize;

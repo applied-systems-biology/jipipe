@@ -28,9 +28,9 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.util.Objects;
 
-public abstract class JIPipeAnnotationGraphNodeTool<T extends JIPipeAnnotationGraphNode> implements JIPipeDesktopToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
+public abstract class JIPipeAnnotationGraphNodeTool<T extends JIPipeGraphCanvasNote> implements JIPipeDesktopToggleableGraphEditorTool, JIPipeDesktopWorkbenchAccess {
     private final Class<T> nodeClass;
-    private final JIPipeAnnotationGraphNode nodeInstance;
+    private final JIPipeGraphCanvasNote nodeInstance;
     private JIPipeDesktopGraphEditorUI graphEditorUI;
 
     private Point firstPoint;

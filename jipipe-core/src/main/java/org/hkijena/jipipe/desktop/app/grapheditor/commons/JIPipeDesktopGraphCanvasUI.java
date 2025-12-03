@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditor
 import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -404,7 +404,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
             Integer layer;
             registerNodeUIEvents(ui);
 
-            if (algorithm instanceof JIPipeAnnotationGraphNode) {
+            if (algorithm instanceof JIPipeGraphCanvasNote) {
                 layer = Integer.MIN_VALUE;
             } else {
                 layer = currentNodeLayer++;
@@ -435,10 +435,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
     public void updateAnnotationNodeLayers() {
         // Collect all annotations
-        List<JIPipeAnnotationGraphNode> annotationGraphNodes = new ArrayList<>();
-        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        List<JIPipeGraphCanvasNote> annotationGraphNodes = new ArrayList<>();
+        List<JIPipeGraphCanvasNote> selectedAnnotationGraphNodes = new ArrayList<>();
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if (graphNode instanceof JIPipeAnnotationGraphNode annotationGraphNode) {
+            if (graphNode instanceof JIPipeGraphCanvasNote annotationGraphNode) {
                 annotationGraphNodes.add(annotationGraphNode);
                 JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
                 if (nodeUI != null) {
@@ -453,15 +453,15 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         // Sort by Z-order (so we can do a rank transformation)
         // Rank transformation into negative space to fix z-order
-        annotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        annotationGraphNodes.sort(Comparator.comparing(JIPipeGraphCanvasNote::getzOrder));
         int nextZOrder = 0;
         for (int i = annotationGraphNodes.size() - 1; i >= 0; i--) {
-            JIPipeAnnotationGraphNode annotationGraphNode = annotationGraphNodes.get(i);
+            JIPipeGraphCanvasNote annotationGraphNode = annotationGraphNodes.get(i);
             annotationGraphNode.setzOrder(nextZOrder--);
         }
 
         // Determine the displayed Z-order: selected nodes need to be at the front of the other annotations
-        for (JIPipeAnnotationGraphNode annotationGraphNode : annotationGraphNodes) {
+        for (JIPipeGraphCanvasNote annotationGraphNode : annotationGraphNodes) {
             JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
             if (nodeUI != null) {
                 setLayer(nodeUI, annotationGraphNode.getzOrder() - selectedAnnotationGraphNodes.size());
@@ -481,7 +481,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             if (nodeUI.getNode().isUiLocked())
                 continue;
-            if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+            if (nodeUI.getNode() instanceof JIPipeGraphCanvasNote) {
 
                 if (!updated) {
                     getHistoryJournal().snapshot("Send selected nodes to foreground",
@@ -490,7 +490,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                             JIPipe.RESOURCES.getIcon16("actions/object-order-front.png"));
                 }
 
-                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MAX_VALUE);
+                ((JIPipeGraphCanvasNote) nodeUI.getNode()).setzOrder(Integer.MAX_VALUE);
                 updated = true;
             }
         }
@@ -503,7 +503,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         for (JIPipeDesktopGraphNodeUI nodeUI : selection) {
             if (nodeUI.getNode().isUiLocked())
                 continue;
-            if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
+            if (nodeUI.getNode() instanceof JIPipeGraphCanvasNote) {
 
                 if (!updated) {
                     getHistoryJournal().snapshot("Send selected nodes to background",
@@ -512,7 +512,7 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
                             JIPipe.RESOURCES.getIcon16("actions/object-order-back.png"));
                 }
 
-                ((JIPipeAnnotationGraphNode) nodeUI.getNode()).setzOrder(Integer.MIN_VALUE);
+                ((JIPipeGraphCanvasNote) nodeUI.getNode()).setzOrder(Integer.MIN_VALUE);
                 updated = true;
             }
         }
@@ -521,11 +521,11 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     public void raiseSelection(Set<JIPipeDesktopGraphNodeUI> selection) {
-        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
-        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        TIntObjectMap<JIPipeGraphCanvasNote> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeGraphCanvasNote> selectedAnnotationGraphNodes = new ArrayList<>();
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if (graphNode instanceof JIPipeAnnotationGraphNode) {
-                JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) graphNode;
+            if (graphNode instanceof JIPipeGraphCanvasNote) {
+                JIPipeGraphCanvasNote annotationGraphNode = (JIPipeGraphCanvasNote) graphNode;
                 zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
                 JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
                 if (nodeUI != null) {
@@ -546,14 +546,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         // Iterate from hi to low
-        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder).reversed());
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeGraphCanvasNote::getzOrder).reversed());
         boolean updated = false;
-        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+        for (JIPipeGraphCanvasNote annotationGraphNode : selectedAnnotationGraphNodes) {
             if (annotationGraphNode.isUiLocked())
                 continue;
             int oldZ = annotationGraphNode.getzOrder();
             int newZ = annotationGraphNode.getzOrder() + 1;
-            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            JIPipeGraphCanvasNote existing = zOrderAnnotations.get(newZ);
             if (existing != null) {
                 // Swap
                 existing.setzOrder(oldZ);
@@ -569,10 +569,10 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
     }
 
     public void lowerSelection(Set<JIPipeDesktopGraphNodeUI> selection) {
-        TIntObjectMap<JIPipeAnnotationGraphNode> zOrderAnnotations = new TIntObjectHashMap<>();
-        List<JIPipeAnnotationGraphNode> selectedAnnotationGraphNodes = new ArrayList<>();
+        TIntObjectMap<JIPipeGraphCanvasNote> zOrderAnnotations = new TIntObjectHashMap<>();
+        List<JIPipeGraphCanvasNote> selectedAnnotationGraphNodes = new ArrayList<>();
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if (graphNode instanceof JIPipeAnnotationGraphNode annotationGraphNode) {
+            if (graphNode instanceof JIPipeGraphCanvasNote annotationGraphNode) {
                 zOrderAnnotations.put(annotationGraphNode.getzOrder(), annotationGraphNode);
                 JIPipeDesktopGraphNodeUI nodeUI = nodeUIs.getOrDefault(annotationGraphNode, null);
                 if (nodeUI != null) {
@@ -593,14 +593,14 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         // Iterate from low to hi
-        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeAnnotationGraphNode::getzOrder));
+        selectedAnnotationGraphNodes.sort(Comparator.comparing(JIPipeGraphCanvasNote::getzOrder));
         boolean updated = false;
-        for (JIPipeAnnotationGraphNode annotationGraphNode : selectedAnnotationGraphNodes) {
+        for (JIPipeGraphCanvasNote annotationGraphNode : selectedAnnotationGraphNodes) {
             if (annotationGraphNode.isUiLocked())
                 continue;
             int oldZ = annotationGraphNode.getzOrder();
             int newZ = annotationGraphNode.getzOrder() - 1;
-            JIPipeAnnotationGraphNode existing = zOrderAnnotations.get(newZ);
+            JIPipeGraphCanvasNote existing = zOrderAnnotations.get(newZ);
             if (existing != null) {
                 // Swap
                 existing.setzOrder(oldZ);

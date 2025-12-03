@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
 
@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 /**
- * Responsible for drawing {@link JIPipeAnnotationGraphNode}, as those come with a custom rendering that ensures that they are always rendered below all other nodes
+ * Responsible for drawing {@link JIPipeGraphCanvasNote}, as those come with a custom rendering that ensures that they are always rendered below all other nodes
  */
 public class JIPipeDesktopGraphCanvasAnnotationNodesOverlay implements JIPipeDesktopGraphCanvasOverlay {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
@@ -35,7 +35,7 @@ public class JIPipeDesktopGraphCanvasAnnotationNodesOverlay implements JIPipeDes
                 g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
                 g.translate(annotationGraphNodeUI.getX(), annotationGraphNodeUI.getY());
-                JIPipeAnnotationGraphNode node = (JIPipeAnnotationGraphNode) (annotationGraphNodeUI).getNode();
+                JIPipeGraphCanvasNote node = (JIPipeGraphCanvasNote) (annotationGraphNodeUI).getNode();
                 if (node.isDrawWithAntialiasing()) {
                     try {
                         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

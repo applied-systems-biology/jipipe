@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.layers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -27,7 +27,7 @@ import java.util.Set;
 public class SendToForegroundUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matchesNodes(Set<JIPipeDesktopGraphNodeUI> selection) {
-        return selection.stream().anyMatch(ui -> !ui.getNode().isUiLocked() && ui.getNode() instanceof JIPipeAnnotationGraphNode);
+        return selection.stream().anyMatch(ui -> !ui.getNode().isUiLocked() && ui.getNode() instanceof JIPipeGraphCanvasNote);
     }
 
     @Override

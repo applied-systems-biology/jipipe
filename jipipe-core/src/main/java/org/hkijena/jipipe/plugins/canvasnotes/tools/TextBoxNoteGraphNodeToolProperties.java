@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
@@ -25,8 +25,7 @@ import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktop
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteUI;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopRegistryBackedColorPaletteUserColorStorage;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.nodetemplate.JIPipeNodeTemplatePickerDialog;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -35,10 +34,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 
 import javax.swing.*;
-import java.nio.file.Path;
 import java.util.List;
 
-public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxAnnotationGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
+public class TextBoxNoteGraphNodeToolProperties extends JIPipeDesktopFormGraphEditorToolPanel<TextBoxNoteGraphNodeTool> implements JIPipeDesktopColorPaletteUI.SelectedEventListener, JIPipeParameterCollection.ParameterChangedEventListener {
 
     private static JIPipeDesktopColorPaletteColor LAST_COLOR = JIPipeDesktopColorPalette.PASTEL[0];
     private static Anchor LAST_ANCHOR = Anchor.CenterCenter;
@@ -56,7 +54,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
     private final JButton pickPresetButton;
     private final JButton editPresetButton;
 
-    public TextBoxAnnotationGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxAnnotationGraphNodeTool tool) {
+    public TextBoxNoteGraphNodeToolProperties(JIPipeDesktopGraphEditorUI graphEditorUI, TextBoxNoteGraphNodeTool tool) {
         super(graphEditorUI, tool);
 
         // Preset picker
@@ -96,7 +94,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
     private void addPreset() {
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
         copy.setName("Untitled");
-        TextBoxAnnotationGraphNode node = copy.getGraph().findFirstNodeOfType(TextBoxAnnotationGraphNode.class);
+        TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
         if(node == null) {
             throw new RuntimeException("Cannot find node of type TextBoxAnnotationGraphNode");
         }
@@ -125,7 +123,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
         pickPresetButton.setText(LAST_PRESET.getName());
 
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
-        TextBoxAnnotationGraphNode node = copy.getGraph().findFirstNodeOfType(TextBoxAnnotationGraphNode.class);
+        TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
         if(node != null) {
             getTool().setPreset(node);
         }
@@ -135,7 +133,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
         int index = PRESETS.indexOf(LAST_PRESET);
         if(index >= 0) {
             JIPipeNodeTemplate copy = new JIPipeNodeTemplate(LAST_PRESET);
-            TextBoxAnnotationGraphNode node = copy.getGraph().findFirstNodeOfType(TextBoxAnnotationGraphNode.class);
+            TextBoxGraphCanvasNote node = copy.getGraph().findFirstNodeOfType(TextBoxGraphCanvasNote.class);
             if(node == null) {
                 throw new RuntimeException("Cannot find node of type TextBoxAnnotationGraphNode");
             }
@@ -180,7 +178,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
         if(graph == null ) {
             return true;
         }
-        TextBoxAnnotationGraphNode node = graph.findFirstNodeOfType(TextBoxAnnotationGraphNode.class);
+        TextBoxGraphCanvasNote node = graph.findFirstNodeOfType(TextBoxGraphCanvasNote.class);
         return node == null;
     }
 
@@ -194,7 +192,7 @@ public class TextBoxAnnotationGraphNodeToolProperties extends JIPipeDesktopFormG
         if(PRESETS.isEmpty()) {
             JIPipeNodeTemplate template = new  JIPipeNodeTemplate();
             JIPipeGraph graph = new JIPipeGraph();
-            graph.insertNode(JIPipe.createNode(TextBoxAnnotationGraphNode.class));
+            graph.insertNode(JIPipe.createNode(TextBoxGraphCanvasNote.class));
             template.setName("Default");
             template.setGraph(graph);
             PRESETS.add(template);

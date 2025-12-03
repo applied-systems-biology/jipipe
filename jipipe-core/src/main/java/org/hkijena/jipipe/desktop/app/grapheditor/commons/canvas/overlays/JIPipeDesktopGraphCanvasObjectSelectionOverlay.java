@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.overlays;
 
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
@@ -37,8 +37,8 @@ public class JIPipeDesktopGraphCanvasObjectSelectionOverlay implements JIPipeDes
                 }
 
                 // Layer Z (annotations)
-                if (nodeUI.getNode() instanceof JIPipeAnnotationGraphNode) {
-                    int zLayer = ((JIPipeAnnotationGraphNode) nodeUI.getNode()).getzOrder();
+                if (nodeUI.getNode() instanceof JIPipeGraphCanvasNote) {
+                    int zLayer = ((JIPipeGraphCanvasNote) nodeUI.getNode()).getzOrder();
                     g.setFont(JIPipeDesktopGraphCanvasResources.GRAPH_TOOL_CURSOR_FONT);
                     FontMetrics fontMetrics = g.getFontMetrics();
                     String text = "z " + zLayer;

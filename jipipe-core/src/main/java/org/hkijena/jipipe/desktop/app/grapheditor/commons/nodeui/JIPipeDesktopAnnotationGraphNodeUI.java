@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNode;
+import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -35,7 +35,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
      */
     public JIPipeDesktopAnnotationGraphNodeUI(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench, graphCanvasUI, node);
-        if (!JIPipeAnnotationGraphNode.class.isAssignableFrom(node.getClass())) {
+        if (!JIPipeGraphCanvasNote.class.isAssignableFrom(node.getClass())) {
             throw new IllegalArgumentException("Node must be a JIPipeAnnotationGraphNode");
         }
         setBuffered(false);
@@ -50,7 +50,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
     @Override
     protected void updateSize() {
 
-        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        JIPipeGraphCanvasNote annotationGraphNode = (JIPipeGraphCanvasNote) getNode();
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(Math.max(1, annotationGraphNode.getGridWidth()), Math.max(1, annotationGraphNode.getGridHeight()));
@@ -72,7 +72,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
 
     @Override
     public boolean isDrawShadow() {
-        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        JIPipeGraphCanvasNote annotationGraphNode = (JIPipeGraphCanvasNote) getNode();
         return annotationGraphNode.isPaintNodeShadow();
     }
 
@@ -86,7 +86,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
     public void setNodeGridSize(int width, int height) {
         width = Math.max(1, width);
         height = Math.max(1, height);
-        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        JIPipeGraphCanvasNote annotationGraphNode = (JIPipeGraphCanvasNote) getNode();
         annotationGraphNode.setGridWidth(width);
         annotationGraphNode.setGridHeight(height);
         updateView(true, true, true);
@@ -94,7 +94,7 @@ public class JIPipeDesktopAnnotationGraphNodeUI extends JIPipeDesktopGraphNodeUI
 
     @Override
     public void paintMinimap(Graphics2D graphics2D, int x, int y, int width, int height, BasicStroke defaultStroke, BasicStroke selectedStroke, Set<JIPipeDesktopGraphInteractiveObjectUI> selection) {
-        JIPipeAnnotationGraphNode annotationGraphNode = (JIPipeAnnotationGraphNode) getNode();
+        JIPipeGraphCanvasNote annotationGraphNode = (JIPipeGraphCanvasNote) getNode();
         annotationGraphNode.paintMinimap(graphics2D, x, y, width, height, defaultStroke, selectedStroke, selection);
     }
 }

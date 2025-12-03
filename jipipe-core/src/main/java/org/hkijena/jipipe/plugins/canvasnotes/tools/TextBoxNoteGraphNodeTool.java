@@ -11,15 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.plugins.graphannotation.tools;
+package org.hkijena.jipipe.plugins.canvasnotes.tools;
 
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.contextpanel.JIPipeDesktopGraphEditorContextPanelIsland;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPalette;
 import org.hkijena.jipipe.desktop.commons.components.color.palette.JIPipeDesktopColorPaletteColor;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.DefaultTextBoxAnnotationGraphNode;
-import org.hkijena.jipipe.plugins.graphannotation.nodes.TextBoxAnnotationGraphNode;
+import org.hkijena.jipipe.plugins.canvasnotes.nodes.TextBoxGraphCanvasNote;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -28,20 +27,20 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 
-public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeTool<TextBoxAnnotationGraphNode> {
+public class TextBoxNoteGraphNodeTool extends JIPipeAnnotationGraphNodeTool<TextBoxGraphCanvasNote> {
 
     private JIPipeDesktopColorPaletteColor color = JIPipeDesktopColorPalette.PASTEL[0];
     private Anchor anchor = Anchor.CenterCenter;
-    private TextBoxAnnotationGraphNode preset;
+    private TextBoxGraphCanvasNote preset;
 
 
-    public TextBoxAnnotationGraphNodeTool() {
-        super(TextBoxAnnotationGraphNode.class);
+    public TextBoxNoteGraphNodeTool() {
+        super(TextBoxGraphCanvasNote.class);
     }
 
     @Override
-    protected TextBoxAnnotationGraphNode createAndConfigureNode(Point firstPoint, Point secondPoint) {
-        TextBoxAnnotationGraphNode node = super.createAndConfigureNode(firstPoint, secondPoint);
+    protected TextBoxGraphCanvasNote createAndConfigureNode(Point firstPoint, Point secondPoint) {
+        TextBoxGraphCanvasNote node = super.createAndConfigureNode(firstPoint, secondPoint);
 
         if(preset != null) {
             applyPreset(node, preset);
@@ -64,7 +63,7 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
         return node;
     }
 
-    private void applyPreset(TextBoxAnnotationGraphNode target, TextBoxAnnotationGraphNode source) {
+    private void applyPreset(TextBoxGraphCanvasNote target, TextBoxGraphCanvasNote source) {
         target.getShapeParameters().setTo(source.getShapeParameters());
         target.getTitleStyle().setTo(source.getTitleStyle());
         target.getContentStyle().setTo(source.getContentStyle());
@@ -82,7 +81,7 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
 
     @Override
     public JIPipeDesktopGraphEditorContextPanelIsland createPropertiesPanel(JIPipeDesktopGraphEditorUI graphEditorUI) {
-        return new TextBoxAnnotationGraphNodeToolProperties(graphEditorUI, this);
+        return new TextBoxNoteGraphNodeToolProperties(graphEditorUI, this);
     }
 
     public JIPipeDesktopColorPaletteColor getColor() {
@@ -101,11 +100,11 @@ public class TextBoxAnnotationGraphNodeTool extends JIPipeAnnotationGraphNodeToo
         this.anchor = anchor;
     }
 
-    public void setPreset(TextBoxAnnotationGraphNode preset) {
+    public void setPreset(TextBoxGraphCanvasNote preset) {
         this.preset = preset;
     }
 
-    public TextBoxAnnotationGraphNode getPreset() {
+    public TextBoxGraphCanvasNote getPreset() {
         return preset;
     }
 }
