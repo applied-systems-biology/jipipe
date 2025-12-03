@@ -62,6 +62,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeNodeTemplatesServiceComponent nodeTemplates;
     private final JIPipeRecentProjectsRegistry recentProjects;
     private final JIPipeMetadataTypesServiceComponent metadataTypes;
+    private final JIPipeAccelerationServiceComponent acceleration;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -93,6 +94,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         metadataTypes = new JIPipeMetadataTypesServiceComponent(this);
         artifacts = new JIPipeArtifactsServiceComponent(this);
         nodeTemplates = new JIPipeNodeTemplatesServiceComponent(this);
+        acceleration = new JIPipeAccelerationServiceComponent(this);
     }
 
     @Override
@@ -306,5 +308,9 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
             throw new IllegalStateException("The JIPipe service has already been initialized.");
         }
         this.initializer = initializer;
+    }
+
+    public JIPipeAccelerationServiceComponent getAcceleration() {
+        return acceleration;
     }
 }
