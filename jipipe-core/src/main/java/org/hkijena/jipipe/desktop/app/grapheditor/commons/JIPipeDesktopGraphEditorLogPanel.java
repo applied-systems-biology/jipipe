@@ -1,8 +1,9 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
-import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueuePanelUI;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -11,9 +12,11 @@ public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPane
 
     private final JCheckBox autoShowProgress = new JCheckBox("Auto show progress");
     private final JCheckBox autoShowResults = new JCheckBox("Auto show results");
+    private final JIPipeDesktopRunQueueLoggerPanel loggerPanel;
 
     public JIPipeDesktopGraphEditorLogPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench);
+        this.loggerPanel = new JIPipeDesktopRunQueueLoggerPanel(workbench, JIPipeRunnableQueue.getInstance());
         initialize();
     }
 
@@ -22,7 +25,7 @@ public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPane
         autoShowResults.setSelected(true);
 
         setLayout(new BorderLayout());
-        add(new JIPipeDesktopRunnableQueuePanelUI(), BorderLayout.CENTER);
+        add(loggerPanel, BorderLayout.CENTER);
 
         JToolBar toolbar = new JToolBar();
         toolbar.setFloatable(false);
