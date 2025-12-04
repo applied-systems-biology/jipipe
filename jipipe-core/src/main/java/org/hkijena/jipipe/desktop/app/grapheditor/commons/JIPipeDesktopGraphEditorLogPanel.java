@@ -27,12 +27,9 @@ public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPane
         setLayout(new BorderLayout());
         add(loggerPanel, BorderLayout.CENTER);
 
-        JToolBar toolbar = new JToolBar();
-        toolbar.setFloatable(false);
-        add(toolbar, BorderLayout.NORTH);
-
-        toolbar.add(autoShowProgress);
-        toolbar.add(autoShowResults);
+        loggerPanel.addHeaderPanelComponent(autoShowProgress);
+        loggerPanel.addHeaderPanelComponent(autoShowResults);
+        loggerPanel.addDefaultCancelButton();
     }
 
     public boolean isAutoShowProgress() {
