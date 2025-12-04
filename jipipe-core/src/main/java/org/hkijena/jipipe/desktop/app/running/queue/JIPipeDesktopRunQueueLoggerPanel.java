@@ -108,7 +108,15 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void cancelCurrentRun() {
-
+        if(targetRun != null) {
+            queue.cancel(targetRun);
+        }
+        else {
+            JIPipeRunnable currentRun = queue.getCurrentRun();
+            if(currentRun != null) {
+                queue.cancel(currentRun);
+            }
+        }
     }
 
     public void addButton(JButton button) {

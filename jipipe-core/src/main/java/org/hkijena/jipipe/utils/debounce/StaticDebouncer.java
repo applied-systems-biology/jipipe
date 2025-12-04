@@ -17,15 +17,24 @@ import org.scijava.Disposable;
 
 import javax.swing.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class StaticDebouncer implements Disposable {
     private final Timer timer;
     private final Runnable runnable;
+    private final AtomicLong lastFireTime = new AtomicLong(System.currentTimeMillis());
+    private final long intervalMillis;
 
     public StaticDebouncer(long delay, TimeUnit unit, Runnable runnable) {
         this.runnable = runnable;
-        timer = new Timer((int) unit.convert(delay, TimeUnit.MILLISECONDS), e -> runnable.run());
+        this.intervalMillis = unit.toMillis(delay);
+        timer = new Timer((int) unit.convert(delay, TimeUnit.MILLISECONDS), e -> doRun());
         timer.setRepeats(false);
+    }
+
+    private void doRun() {
+        lastFireTime.set(System.currentTimeMillis());
+        runnable.run();
     }
 
     public StaticDebouncer(long delay, Runnable runnable) {
@@ -37,6 +46,12 @@ public class StaticDebouncer implements Disposable {
     }
 
     public void debounce() {
-        timer.restart();
+        long timeDiff = System.currentTimeMillis() - lastFireTime.get();
+        if(timeDiff > intervalMillis) {
+            doRun();
+        }
+        else {
+            timer.restart();
+        }
     }
 }
