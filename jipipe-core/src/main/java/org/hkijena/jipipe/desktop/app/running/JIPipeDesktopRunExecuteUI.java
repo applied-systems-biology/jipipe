@@ -66,13 +66,16 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
+        JPanel contentPane = new JPanel(new BorderLayout(8,8));
         JIPipeDesktopRunExecuteUI ui = new JIPipeDesktopRunExecuteUI(workbench, run, queue);
+        ui.setBorder(UIUtils.createEmptyBorder(8));
         ui.setDialog(dialog);
-        dialog.setContentPane(ui);
+        contentPane.add(ui, BorderLayout.CENTER);
+        dialog.setContentPane(contentPane);
         dialog.pack();
         dialog.revalidate();
         dialog.repaint();
-        dialog.setSize(640, 480);
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         queue.getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {

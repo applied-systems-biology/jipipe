@@ -31,11 +31,18 @@ public class SpinnerIcon implements Icon {
     private final double[] x2Locations = new double[numLines];
     private final double[] y2Locations = new double[numLines];
     private final Color[] colors;
+    private final Color baseColor;
     private Component parent;
     private int colorShift = 0;
+    private final int size;
 
     public SpinnerIcon(Component parent) {
+        this(parent, 16);
+    }
+
+    public SpinnerIcon(Component parent, int size) {
         this.parent = parent;
+        this.size = size;
         this.timer = new Timer(ANIMATION_DELAY, e -> updateIcon());
         this.timer.setRepeats(true);
         this.timer.setCoalesce(false);
@@ -49,7 +56,7 @@ public class SpinnerIcon implements Icon {
             x2Locations[i] = (Math.cos(angle) * rOuter) + getIconWidth() / 2.0;
             y2Locations[i] = (Math.sin(angle) * rOuter) + getIconHeight() / 2.0;
         }
-        Color baseColor = ThemeUtils.isUsingDarkTheme() ? new Color(0xdfdfdf) : new Color(0x444444);
+        baseColor = ThemeUtils.getCurrentStyle().getButtonToggled();
         colors = ColorUtils.renderGradient(Arrays.asList(
                 new ColorUtils.GradientStop(0.0f, baseColor),
                 new ColorUtils.GradientStop(0.75f, ThemeUtils.getCurrentStyle().getPrimaryColor()),
@@ -75,9 +82,15 @@ public class SpinnerIcon implements Icon {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        for (int i = 0; i < numLines; i++) {
-            graphics2D.setColor(colors[(numLines - i - 1 + colorShift) % numLines]);
-            graphics2D.draw(new Line2D.Double(x + x1Locations[i], y + y1Locations[i], x + x2Locations[i], y + y2Locations[i]));
+        if(timer.isRunning()) {
+            for (int i = 0; i < numLines; i++) {
+                graphics2D.setColor(colors[(numLines - i - 1 + colorShift) % numLines]);
+                graphics2D.draw(new Line2D.Double(x + x1Locations[i], y + y1Locations[i], x + x2Locations[i], y + y2Locations[i]));
+            }
+        }
+        else {
+            graphics2D.setColor(baseColor);
+            graphics2D.drawOval(1, 1, getIconWidth() - 2, getIconHeight() - 2);
         }
     }
 
@@ -97,6 +110,10 @@ public class SpinnerIcon implements Icon {
 
     public void stop() {
         timer.stop();
+
+        // Ensure status change
+        parent.repaint();
+        parent.getToolkit().sync();
     }
 
     public Timer getTimer() {
@@ -113,12 +130,12 @@ public class SpinnerIcon implements Icon {
 
     @Override
     public int getIconWidth() {
-        return 16;
+        return size;
     }
 
     @Override
     public int getIconHeight() {
-        return 16;
+        return size;
     }
 
 
