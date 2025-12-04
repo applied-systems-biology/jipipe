@@ -208,6 +208,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             progressBar.setIndeterminate(true);
         }
         else {
+            progressBar.setIndeterminate(false);
             progressBar.setMaximum(batchedProgressMax);
             progressBar.setValue(batchedProgressCurrent);
         }
