@@ -25,7 +25,11 @@ public class JIPipeDesktopRunnableQueueSpinnerIcon extends SpinnerIcon implement
     }
 
     public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableQueue runnerQueue) {
-        super(parent);
+        this(parent, runnerQueue, 16);
+    }
+
+    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableQueue runnerQueue, int size) {
+        super(parent, size);
 
         runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         runnerQueue.getStartedEventEmitter().subscribeWeak(this);

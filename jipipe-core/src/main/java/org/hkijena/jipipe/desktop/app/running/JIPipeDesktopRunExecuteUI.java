@@ -18,9 +18,12 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationButton;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,13 +31,12 @@ import java.awt.*;
 /**
  * UI that executes an {@link JIPipeRunnable} and shows the progress in a dialog
  */
-public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener {
+public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
+    private static final Logger log = LoggerFactory.getLogger(JIPipeDesktopRunExecuteUI.class);
     private final JIPipeRunnableQueue queue;
     private final JIPipeRunnable run;
-    private JProgressBar progressBar;
-    private JButton cancelButton;
+    private final JIPipeDesktopRunQueueLoggerPanel loggerPanel;
     private JButton closeButton;
-    private JTextArea log;
     private JDialog dialog;
 
     public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run) {
@@ -49,11 +51,11 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         super(workbench);
         this.run = run;
         this.queue = queue;
+        this.loggerPanel = new JIPipeDesktopRunQueueLoggerPanel(workbench, queue);
+        this.loggerPanel.setTargetRun(run);
         initialize();
-        queue.getStartedEventEmitter().subscribeWeak(this);
-        queue.getInterruptedEventEmitter().subscribeWeak(this);
-        queue.getProgressEventEmitter().subscribeWeak(this);
         queue.getFinishedEventEmitter().subscribeWeak(this);
+        queue.getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run) {
@@ -64,13 +66,16 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
+        JPanel contentPane = new JPanel(new BorderLayout(8,8));
         JIPipeDesktopRunExecuteUI ui = new JIPipeDesktopRunExecuteUI(workbench, run, queue);
+        ui.setBorder(UIUtils.createEmptyBorder(8));
         ui.setDialog(dialog);
-        dialog.setContentPane(ui);
+        contentPane.add(ui, BorderLayout.CENTER);
+        dialog.setContentPane(contentPane);
         dialog.pack();
         dialog.revalidate();
         dialog.repaint();
-        dialog.setSize(640, 480);
+        dialog.setSize(800, 600);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         queue.getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
@@ -84,41 +89,15 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
 
     private void initialize() {
         setLayout(new BorderLayout(8, 8));
+        add(loggerPanel, BorderLayout.CENTER);
 
-        log = new JTextArea();
-        log.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
-        log.setEditable(false);
-        JScrollPane logScrollPane = new JScrollPane(log);
-        add(logScrollPane, BorderLayout.CENTER);
+        loggerPanel.addDefaultCancelButton();
 
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        progressBar = new JProgressBar();
-        progressBar.setString("Ready");
-        progressBar.setStringPainted(true);
-
-        JLabel throbberLabel = new JLabel();
-        throbberLabel.setIcon(new JIPipeDesktopRunnableQueueSpinnerIcon(throbberLabel));
-        buttonPanel.add(throbberLabel);
-        buttonPanel.add(Box.createHorizontalStrut(8));
-
-        buttonPanel.add(progressBar);
-        buttonPanel.add(Box.createHorizontalStrut(16));
-
-        buttonPanel.add(new JIPipeDesktopGenericNotificationButton(getDesktopWorkbench(), run.getProgressInfo().getNotifications()));
-
-        cancelButton = new JButton("Cancel", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
-        cancelButton.addActionListener(e -> requestCancelRun());
-        buttonPanel.add(cancelButton);
-
+        // Create and add close button
         closeButton = new JButton("Close", JIPipe.RESOURCES.getIcon16("actions/cancel.png"));
         closeButton.addActionListener(e -> dialog.setVisible(false));
         closeButton.setVisible(false);
-        buttonPanel.add(closeButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
+        loggerPanel.addButton(closeButton);
     }
 
     /**
@@ -126,22 +105,17 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
      */
     public void startRun() {
         queue.enqueue(run);
-        progressBar.setString("Waiting until other processes are finished ...");
-        progressBar.setIndeterminate(true);
     }
 
     /**
      * Cancels the run
      */
     public void requestCancelRun() {
-        cancelButton.setEnabled(false);
         queue.cancel(run);
     }
 
     private void switchToCloseButtonIfPossible() {
         if (dialog != null) {
-            cancelButton.setEnabled(false);
-            cancelButton.setVisible(false);
             closeButton.setVisible(true);
             revalidate();
             repaint();
@@ -157,28 +131,9 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     @Override
-    public void onRunnableStarted(JIPipeRunnable.StartedEvent event) {
-        cancelButton.setEnabled(true);
-    }
-
-    @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
-            progressBar.setString("Finished");
-        }
-    }
-
-    @Override
-    public void onRunnableProgress(JIPipeRunnable.ProgressEvent event) {
-        if (event.getRun() == run) {
-            progressBar.setIndeterminate(false);
-            progressBar.setMaximum(event.getStatus().getMaxProgress());
-            progressBar.setValue(event.getStatus().getProgress());
-            progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
-            log.append(event.getStatus().render() + "\n");
-        } else {
-            log.append("[~] " + event.getStatus().render() + "\n");
         }
     }
 
@@ -186,7 +141,6 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
-            progressBar.setString("Finished");
         }
     }
 }

@@ -280,12 +280,26 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
                 checkedEnvironments.add(environment);
             }
         }
+    }
 
-
+    public String getOperationName() {
+        if(settings.isStoreToCache() && !settings.isSaveToDisk()) {
+            if(settings.isStoreIntermediateResults()) {
+                return "Cache intermediate results";
+            }
+            return "Update cache";
+        }
+        return "Run";
     }
 
     @Override
     public String getTaskLabel() {
+        if(targetNodes.size() == 1) {
+            return getOperationName() + ": " + targetNodes.getFirst().getDisplayName();
+        }
+        else if(!targetNodes.isEmpty()) {
+            return getOperationName() + ": " +  targetNodes.getFirst().getDisplayName() + " (+ " + (targetNodes.size() - 1) + ")";
+        }
         return "Run";
     }
 }
