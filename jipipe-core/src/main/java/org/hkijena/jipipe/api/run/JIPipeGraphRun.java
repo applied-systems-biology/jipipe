@@ -205,12 +205,14 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
             progressInfo.log("Preparing artifacts and environments ...");
 
             // Gather all environments from all active nodes
+            progressInfo.log("Gathering environments for all nodes ...");
             for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
                 graphNode.getEnvironmentDependencies(allEnvironments, environmentConfigurationCache);
             }
             allEnvironments.removeIf(Objects::isNull);
 
             // Apply additional configuration steps
+            progressInfo.log("Configuring environments ...");
             for (int i = 0; i < allEnvironments.size(); i++) {
                 JIPipeEnvironmentConfigurator<?> reference = allEnvironments.get(i);
                 JIPipeEnvironment environment = reference.get(progressInfo.resolve("Configure environments", i, allEnvironments.size()).resolve(reference.getEnvironmentInfo().getId()));

@@ -16,12 +16,15 @@ package org.hkijena.jipipe.desktop.commons.components.project;
 import net.java.balloontip.BalloonTip;
 import net.java.balloontip.styles.EdgedBalloonStyle;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryReference;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifactRepositoryType;
+import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopArtifactManagerUI;
+import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
@@ -106,6 +109,8 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
     private void reloadMenu() {
         popupMenu.removeAll();
 
+        popupMenu.add(UIUtils.createMenuItem("Fix broken project-wide services", "Attempts to fix project-wide services for this project", JIPipe.RESOURCES.getIcon16("actions/autocorrection.png"), this::autoFixProjectEnvironments));
+        popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Manage project-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentProjectSettings));
         popupMenu.add(UIUtils.createMenuItem("Manage application-wide connected services ...", "Manages the connected services settings for this project", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openEnvironmentApplicationSettings));
         popupMenu.addSeparator();
@@ -114,6 +119,22 @@ public class JIPipeDesktopArtifactsOptionsControl extends JButton implements JIP
         popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Add remote artifacts local directory ...", "Adds a local artifacts repository for offline use", JIPipe.RESOURCES.getIcon16("actions/add-folder-to-archive.png"), this::addLocalRepository));
         popupMenu.add(UIUtils.createMenuItem("Manage remote artifacts settings ...", "Opens the application settings", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+    }
+
+    private void autoFixProjectEnvironments() {
+        JIPipeRunnable runnable = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Fix broken project-wide services";
+            }
+
+            @Override
+            public void run() {
+                workbench.getProject().fixBrokenEnvironments(getProgressInfo());
+            }
+        };
+        JIPipeDesktopRunExecuteUI.runInDialog(workbench, workbench.getWindow(), runnable);
+        JOptionPane.showMessageDialog(workbench.getWindow(), "The operation finished", "Fix broken project-wide services",  JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void openEnvironmentApplicationSettings() {

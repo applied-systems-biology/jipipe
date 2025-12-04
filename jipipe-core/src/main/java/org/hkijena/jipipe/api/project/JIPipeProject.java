@@ -32,9 +32,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
-import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.environments.*;
+import org.hkijena.jipipe.api.environments.sources.JIPipeEnvironmentConfiguratorProjectSource;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
@@ -49,10 +48,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
@@ -156,10 +157,12 @@ public class JIPipeProject implements JIPipeValidatable {
 
         // Update the graph compartments
         compartmentGraph.getGraphChangedEventEmitter().subscribe(event -> {
-            if (isCleaningUp)
+            if (isCleaningUp) {
                 return;
-            if (isLoading)
+            }
+            if (isLoading) {
                 return;
+            }
             if (event.getGraph() == compartmentGraph) {
                 for (JIPipeGraphNode algorithm : compartmentGraph.getGraphNodes()) {
                     if (algorithm instanceof JIPipeProjectCompartment) {
@@ -206,6 +209,7 @@ public class JIPipeProject implements JIPipeValidatable {
         project.fromJson(jsonData, context, report, notifications, progressInfo);
         project.setWorkDirectory(fileName.getParent());
         project.validateUserPaths(notifications);
+        project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
         project.projectFile = fileName;
         return project;
     }
@@ -219,8 +223,9 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public static Set<JIPipeDependency> loadDependenciesFromJson(JsonNode node) {
         node = node.path("dependencies");
-        if (node.isMissingNode())
+        if (node.isMissingNode()) {
             return new HashSet<>();
+        }
         TypeReference<HashSet<JIPipeDependency>> typeReference = new TypeReference<HashSet<JIPipeDependency>>() {
         };
         try {
@@ -242,8 +247,9 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public static JIPipeProjectMetadata loadMetadataFromJson(JsonNode node) {
         node = node.path("metadata");
-        if (node.isMissingNode())
+        if (node.isMissingNode()) {
             return new JIPipeProjectMetadata();
+        }
         try {
             return JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node);
         } catch (IOException e) {
@@ -340,10 +346,11 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public JIPipeProjectCompartment findCompartment(String uuidOrAlias) {
         JIPipeGraphNode node = compartmentGraph.findNode(uuidOrAlias);
-        if (node instanceof JIPipeProjectCompartment)
+        if (node instanceof JIPipeProjectCompartment) {
             return (JIPipeProjectCompartment) node;
-        else
+        } else {
             return null;
+        }
     }
 
     public JIPipeRunnableQueue getSnapshotQueue() {
@@ -683,6 +690,58 @@ public class JIPipeProject implements JIPipeValidatable {
                 environmentReference.reportValidity(reportContext, reportSettings, report, progressInfo);
                 checkedEnvironments.add(environment);
             }
+        }
+    }
+
+    /**
+     * Fixes broken project-wide environments and corrects the associated settings
+     *
+     * @param progressInfo the progress info
+     */
+    public void fixBrokenEnvironments(JIPipeProgressInfo progressInfo) {
+        try {
+            JIPipeEnvironmentConfiguratorProjectSource source = new JIPipeEnvironmentConfiguratorProjectSource<>(this);
+            boolean didRepositoryRefresh = false;
+            for (Map.Entry<String, JIPipeEnvironmentsServiceComponent.EnvironmentInfo> entry : JIPipe.getEnvironments().getInfosById().entrySet()) {
+                JIPipeEnvironmentsServiceComponent.EnvironmentInfo environmentInfo = entry.getValue();
+                if (environmentInfo.isArtifact() && environmentInfo.hasArtifactQuery() && environmentInfo.getArchetype() == JIPipeEnvironmentArchetype.Managed) {
+                    JIPipeProgressInfo environmentProgress = progressInfo.resolveAndLog("Checking environment type " + entry.getKey());
+                    JIPipeOptionalParameter optionalParameter = source.resolve(environmentInfo.getEnvironmentClass(), environmentInfo);
+                    Object content = optionalParameter.getContent();
+                    boolean broken = false;
+                    if (content == null) {
+                        environmentProgress.log("Found null value!");
+                        broken = true;
+                    } else if (content instanceof JIPipeEnvironment environment) {
+                        if (!environment.isValid()) {
+                            environmentProgress.log("Found misconfigured environment!");
+                            broken = true;
+                        }
+                    }
+
+                    if (broken) {
+                        environmentProgress.log("Attempting to repair ...");
+                        if (!didRepositoryRefresh) {
+                            progressInfo.log("Refreshing artifact repositories (internet connection required!) ...");
+                            JIPipe.getArtifacts().updateCachedArtifacts(progressInfo.resolve("Update artifacts"));
+                            didRepositoryRefresh = true;
+                        }
+
+                        JIPipeEnvironment environment = (JIPipeEnvironment) JIPipe.getParameterTypes().getInfoByFieldClass(environmentInfo.getEnvironmentClass()).newInstance();
+                        if (environment instanceof JIPipeArtifactEnvironment artifactEnvironment) {
+                            environmentProgress.log("Apply standard version pinning ...");
+                            artifactEnvironment.trySetToLatestVersionPinnedArtifact();
+                            optionalParameter.setContent(artifactEnvironment);
+                        } else {
+                            environmentProgress.error("Environment is not an artifact environment!");
+                        }
+
+                    }
+                }
+            }
+        }
+        catch (Throwable ex) {
+            progressInfo.log(ex);
         }
     }
 
