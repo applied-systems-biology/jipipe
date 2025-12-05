@@ -1200,10 +1200,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         return getProject().getEnvironmentConfigurator(klass, configurationCache);
     }
 
-    public void unload() {
-        project.getCache().clearAll(new JIPipeProgressInfo());
-    }
-
     /**
      * Triggered when a compartment is deleted.
      * Closes corresponding tabs.

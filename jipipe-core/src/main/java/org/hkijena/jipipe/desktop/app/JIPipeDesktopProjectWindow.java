@@ -175,13 +175,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         }
     }
 
-    private void unloadProject() {
-        projectWorkbench.unload();
-    }
-
     @Override
     public void dispose() {
-        unloadProject();
+        closeCurrentProject();
         OPEN_WINDOWS.remove(this);
         WINDOW_CLOSED_EVENT_EMITTER.emit(new WindowClosedEvent(this));
         super.dispose();
@@ -600,12 +596,30 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         switch (UIUtils.askOpenInCurrentWindow(this, messageTitle)) {
             case JOptionPane.YES_OPTION:
                 closeAllBalloons();
+                closeCurrentProject();
                 loadProject(project, false, isNewProject);
                 return this;
             case JOptionPane.NO_OPTION:
                 return newWindow(context, project, showIntroduction, isNewProject);
         }
         return null;
+    }
+
+    private void closeCurrentProject() {
+        if(project != null && projectWorkbench != null) {
+            JIPipeRunnable runnable = new DefaultJIPipeRunnable() {
+                @Override
+                public String getTaskLabel() {
+                    return "Close project";
+                }
+
+                @Override
+                public void run() {
+                    project.close(getProgressInfo());
+                }
+            };
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeRunnableQueue("Project cleanup"));
+        }
     }
 
     private void closeAllBalloons() {

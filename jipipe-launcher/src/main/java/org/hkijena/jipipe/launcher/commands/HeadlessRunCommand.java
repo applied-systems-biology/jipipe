@@ -252,5 +252,13 @@ public class HeadlessRunCommand {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
         run.getProgressInfo().setLogToStdOut(true);
         run.run();
+
+        // Cleanup temporary files
+        try {
+            project.close(run.getProgressInfo().resolve("Cleanup"));
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

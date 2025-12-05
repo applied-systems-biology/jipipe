@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.*;
+import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeMutableDependency;
@@ -61,6 +62,7 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationS
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.scijava.Disposable;
 
 import java.awt.*;
 import java.io.IOException;
@@ -105,6 +107,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private boolean isLoading;
     private Path projectFile;
     private String projectJIPipeVersion = JIPipe.getJIPipeVersion();
+    private FileLocker temporaryBaseDirectoryLocker;
 
     /**
      * A JIPipe project
@@ -323,18 +326,47 @@ public class JIPipeProject implements JIPipeValidatable {
                 output = workDirectory.resolve(settings.getOverrideTempDirectory().getContent());
             } else {
                 output = workDirectory.resolve("JIPipe.tmp.dir");
-                if (temporaryBaseDirectory == null || !temporaryBaseDirectory.startsWith(output)) {
-                    PathUtils.createDirectories(output);
-                    output = PathUtils.createTempSubDirectory(output);
-                } else {
-                    output = temporaryBaseDirectory;
-                }
             }
         } else {
             output = JIPipe.getTemporaryBaseDirectory();
         }
+
+        // Ensure that output is always parented at "JIPipe.tmp.dir"
+        if(!output.getFileName().toString().equals("JIPipe.tmp.dir")) {
+            output = output.resolve("JIPipe.tmp.dir");
+        }
+
+        // Create subdirectory
+        if (temporaryBaseDirectory == null || !temporaryBaseDirectory.startsWith(output)) {
+            PathUtils.createDirectories(output);
+            output = PathUtils.createTempSubDirectory(output);
+        } else {
+            output = temporaryBaseDirectory;
+        }
+
+        // Release any old tmp handles
+        if(!output.equals(temporaryBaseDirectory) && temporaryBaseDirectoryLocker != null) {
+            temporaryBaseDirectoryLocker.releaseLock();
+            temporaryBaseDirectoryLocker = null;
+        }
+
         PathUtils.createDirectories(output);
         temporaryBaseDirectory = output;
+
+        // Acquire new lock if necessary
+        if(temporaryBaseDirectoryLocker == null) {
+            temporaryBaseDirectoryLocker = new FileLocker(JIPipeProgressInfo.SILENT, temporaryBaseDirectory.resolve("lock"));
+            boolean success = false;
+            if(temporaryBaseDirectoryLocker.tryWriteLock()) {
+                success = temporaryBaseDirectoryLocker.acquireWriteLock();
+            }
+            if(!success) {
+                IJ.handleException(new IOException("Unable to acquire project temporary directory lock on " + temporaryBaseDirectory));
+                temporaryBaseDirectoryLocker.releaseLock();
+                temporaryBaseDirectoryLocker = null;
+            }
+        }
+
         return output;
     }
 
@@ -400,6 +432,27 @@ public class JIPipeProject implements JIPipeValidatable {
                     }
                 }
             }
+        }
+    }
+
+    public void close(JIPipeProgressInfo progressInfo) {
+        // Clear the cache
+        progressInfo.log("Clearing cache ...");
+        cache.clearAll(progressInfo.resolve("Clear cache"));
+
+        if(temporaryBaseDirectoryLocker != null) {
+            // Release temporary directory lock
+            progressInfo.log("Releasing temporary directory lock on " + getTemporaryBaseDirectory() + " ...");
+            temporaryBaseDirectoryLocker.releaseLock();
+        }
+
+        // Clear temporary directory
+        progressInfo.log("Clearing temporary directory ...");
+        try {
+            PathUtils.deleteDirectoryRecursively(getTemporaryBaseDirectory(), progressInfo.resolve("Delete temporary directory"));
+        }
+        catch (Exception e) {
+            progressInfo.log(e);
         }
     }
 
