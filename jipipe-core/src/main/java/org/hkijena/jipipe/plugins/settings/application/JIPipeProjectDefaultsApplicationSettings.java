@@ -42,6 +42,7 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
     private StringList projectTemplateDownloadRepositories = new StringList();
     private boolean restoreTabs = true;
     private Path defaultProjectsDirectory = Path.of("JIPipeProjects");
+    private boolean autoFixProjectEnvironments = true;
 
     public JIPipeProjectDefaultsApplicationSettings() {
         projectTemplate.setValue(JIPipeProjectTemplate.getFallbackTemplateId());
@@ -50,6 +51,18 @@ public class JIPipeProjectDefaultsApplicationSettings extends JIPipeDefaultAppli
 
     public static JIPipeProjectDefaultsApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeProjectDefaultsApplicationSettings.class);
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-repair project-wide connected services", description = "If enabled, project-wide connected services are " +
+            "automatically repaired when a project is loaded")
+    @JIPipeParameter("auto-fix-project-environments")
+    public boolean isAutoFixProjectEnvironments() {
+        return autoFixProjectEnvironments;
+    }
+
+    @JIPipeParameter("auto-fix-project-environments")
+    public void setAutoFixProjectEnvironments(boolean autoFixProjectEnvironments) {
+        this.autoFixProjectEnvironments = autoFixProjectEnvironments;
     }
 
     @SetJIPipeDocumentation(name = "New project template", description = "Template used for creating new projects")

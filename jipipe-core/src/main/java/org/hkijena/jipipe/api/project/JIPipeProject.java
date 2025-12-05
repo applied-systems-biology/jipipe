@@ -57,6 +57,7 @@ import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParamete
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
@@ -209,7 +210,9 @@ public class JIPipeProject implements JIPipeValidatable {
         project.fromJson(jsonData, context, report, notifications, progressInfo);
         project.setWorkDirectory(fileName.getParent());
         project.validateUserPaths(notifications);
-        project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
+        if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
+            project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
+        }
         project.projectFile = fileName;
         return project;
     }
