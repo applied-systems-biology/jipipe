@@ -380,7 +380,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                             project.setWorkDirectory(path.getParent());
                             project.validateUserPaths(notifications);
                             project.setProjectFile(path);
-                            project.fixBrokenEnvironments(getProgressInfo().resolve("Fix environments"));
+                            if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
+                                project.fixBrokenEnvironments(getProgressInfo().resolve("Fix environments"));
+                            }
 
                             if (getProgressInfo().isCancelled()) {
                                 return;
