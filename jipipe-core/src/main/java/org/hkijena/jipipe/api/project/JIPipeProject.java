@@ -447,12 +447,13 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         // Clear temporary directory
-        progressInfo.log("Clearing temporary directory ...");
-        try {
-            PathUtils.deleteDirectoryRecursively(getTemporaryBaseDirectory(), progressInfo.resolve("Delete temporary directory"));
-        }
-        catch (Exception e) {
-            progressInfo.log(e);
+        if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
+            progressInfo.log("Clearing temporary directory ...");
+            try {
+                PathUtils.deleteDirectoryRecursively(getTemporaryBaseDirectory(), progressInfo.resolve("Delete temporary directory"));
+            } catch (Exception e) {
+                progressInfo.log(e);
+            }
         }
     }
 

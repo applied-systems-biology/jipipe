@@ -170,6 +170,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Start indexing
         nodeDatabase.rebuildImmediately();
+
+        // Do cleanup
+        if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanOldTemporaryDirectories()) {
+            JIPipe.getInstance().getCleanup().scheduleProjectTemporaryFilesCleanup(project);
+        }
     }
 
 
@@ -488,8 +493,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 documentTabPane.switchToLastTab();
             return documentTab;
         } else if (switchToTab) {
-            JIPipeDesktopTabPane.DocumentTab tab = documentTabPane.getTabContainingContent(compartmentUIs.get(0));
-            documentTabPane.switchToContent(compartmentUIs.get(0));
+            JIPipeDesktopTabPane.DocumentTab tab = documentTabPane.getTabContainingContent(compartmentUIs.getFirst());
+            documentTabPane.switchToContent(compartmentUIs.getFirst());
             return tab;
         }
         return null;
@@ -505,6 +510,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         backgroundQueuesIndicator.addQueue(backupQueue, JIPipe.RESOURCES.getIcon16Inverted("actions/document-save-all.png"));
         backgroundQueuesIndicator.addQueue(JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/document-preview.png"));
         backgroundQueuesIndicator.addQueue(nodeDatabase.getQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
+        backgroundQueuesIndicator.addQueue(JIPipe.getInstance().getCleanup().getCleanupQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/clear-brush.png"));
         statusBar.add(backgroundQueuesIndicator);
         statusBar.add(Box.createHorizontalStrut(16));
 

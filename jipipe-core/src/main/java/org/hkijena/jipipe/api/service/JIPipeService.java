@@ -63,6 +63,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeRecentProjectsRegistry recentProjects;
     private final JIPipeMetadataTypesServiceComponent metadataTypes;
     private final JIPipeAccelerationServiceComponent acceleration;
+    private final JIPipeCleanupServiceComponent cleanup;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -95,6 +96,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         artifacts = new JIPipeArtifactsServiceComponent(this);
         nodeTemplates = new JIPipeNodeTemplatesServiceComponent(this);
         acceleration = new JIPipeAccelerationServiceComponent(this);
+        cleanup = new JIPipeCleanupServiceComponent(this);
     }
 
     @Override
@@ -120,6 +122,10 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public LogService getLogService() {
         return logService;
+    }
+
+    public JIPipeCleanupServiceComponent getCleanup() {
+        return cleanup;
     }
 
     public JIPipeEnvironmentsServiceComponent getEnvironments() {

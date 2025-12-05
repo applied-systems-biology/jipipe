@@ -65,8 +65,8 @@ public class PathUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final FileNameExtensionFilter EXTENSION_FILTER_HDF5 = new FileNameExtensionFilter("HDF5 data (*.hdf5, *.h5)", "hdf5", "h5");
     public static final FileNameExtensionFilter EXTENSION_FILTER_ZARR_ZIP = new FileNameExtensionFilter("ZARR ZIP (*.zarr.zip)", "zarr.zip");
-    private static final String RANDOM_TMP_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
-    private static final int RANDOM_TMP_LENGTH = 7;
+    public static final String RANDOM_TMP_CHARACTERS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    public static final int RANDOM_TMP_LENGTH = 7;
 
     private PathUtils() {
 
