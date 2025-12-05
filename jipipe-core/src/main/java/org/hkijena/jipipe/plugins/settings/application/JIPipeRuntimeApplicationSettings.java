@@ -38,6 +38,8 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     private int defaultRunThreads = 1;
     private int defaultQuickRunThreads = 1;
     private int logLimit = 15;
+    private boolean autoCleanClosedProjectTemporaryDirectories = true;
+    private boolean autoCleanOldTemporaryDirectories = true;
 
     /**
      * Creates a new instance
@@ -183,5 +185,27 @@ public class JIPipeRuntimeApplicationSettings extends JIPipeDefaultApplicationsS
     @Override
     public String getDescription() {
         return "General properties of JIPipe runs (number of threads, etc.)";
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-cleanup old remaining temporary files", description = "If enabled, JIPipe will look for old temporary files within JIPipe.tmp.dir and delete them if they are not in active use")
+    @JIPipeParameter("auto-clean-old-temporary-directories")
+    public boolean isAutoCleanOldTemporaryDirectories() {
+        return autoCleanOldTemporaryDirectories;
+    }
+
+    @JIPipeParameter("auto-clean-old-temporary-directories")
+    public void setAutoCleanOldTemporaryDirectories(boolean autoCleanOldTemporaryDirectories) {
+        this.autoCleanOldTemporaryDirectories = autoCleanOldTemporaryDirectories;
+    }
+
+    @SetJIPipeDocumentation(name = "Auto-cleanup project temporary files", description = "If enabled, project-associated temporary files within JIPipe.tmp.dir are automatically deleted when the project is closed")
+    @JIPipeParameter("auto-clean-closed-project-temporary-directories")
+    public boolean isAutoCleanClosedProjectTemporaryDirectories() {
+        return autoCleanClosedProjectTemporaryDirectories;
+    }
+
+    @JIPipeParameter("auto-clean-closed-project-temporary-directories")
+    public void setAutoCleanClosedProjectTemporaryDirectories(boolean autoCleanClosedProjectTemporaryDirectories) {
+        this.autoCleanClosedProjectTemporaryDirectories = autoCleanClosedProjectTemporaryDirectories;
     }
 }
