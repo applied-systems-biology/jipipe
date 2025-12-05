@@ -80,7 +80,7 @@ public class JIPipeCleanupServiceComponent extends JIPipeServiceComponent {
         @Override
         public void run() {
             JIPipeProgressInfo progressInfo = getProgressInfo();
-            progressInfo.setLogToStdOut(true);
+//            progressInfo.setLogToStdOut(true);
             progressInfo.log("Cleanup for " + root);
 
             if(!"JIPipe.tmp.dir".equals(StringUtils.nullToEmpty(root.getFileName()))) {
