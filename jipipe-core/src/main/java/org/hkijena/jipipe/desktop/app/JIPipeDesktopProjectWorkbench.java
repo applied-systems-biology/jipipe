@@ -327,6 +327,13 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            // Prevent "Getting started" tab
+            if(TAB_INTRODUCTION.equals(documentTabPane.getCurrentlySelectedSingletonTabId())) {
+                documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
+                documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
+            }
+
         } else {
             documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
             documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
