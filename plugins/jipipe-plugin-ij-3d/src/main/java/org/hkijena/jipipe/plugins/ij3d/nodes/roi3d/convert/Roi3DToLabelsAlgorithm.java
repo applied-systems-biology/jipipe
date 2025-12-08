@@ -31,7 +31,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the output")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class Roi3DToLabelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public Roi3DToLabelsAlgorithm(JIPipeNodeInfo info) {

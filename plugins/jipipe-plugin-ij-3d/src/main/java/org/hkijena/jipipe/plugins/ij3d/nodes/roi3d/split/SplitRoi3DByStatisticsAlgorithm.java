@@ -46,7 +46,6 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Split ROI", create = true)
-@MarkNodeAsUnstable
 public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean measureInPhysicalUnits = true;

@@ -46,7 +46,6 @@ import java.util.Set;
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @Deprecated
 @LabelAsJIPipeHidden
-@MarkNodeAsUnstable
 public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

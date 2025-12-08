@@ -29,7 +29,6 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class MergeROI3DAlgorithm extends JIPipeMergingAlgorithm {
 
     public MergeROI3DAlgorithm(JIPipeNodeInfo info) {

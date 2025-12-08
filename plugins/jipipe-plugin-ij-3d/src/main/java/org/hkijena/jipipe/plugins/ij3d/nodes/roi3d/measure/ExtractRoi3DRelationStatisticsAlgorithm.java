@@ -35,7 +35,6 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
-@MarkNodeAsUnstable
 public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROI3DRelationMeasurementSetParameter measurements = new ROI3DRelationMeasurementSetParameter();

@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ROI3DOutline outline = ROI3DOutline.BoundingBox;

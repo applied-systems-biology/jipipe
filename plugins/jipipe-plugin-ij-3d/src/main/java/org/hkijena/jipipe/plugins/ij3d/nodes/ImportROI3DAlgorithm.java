@@ -30,7 +30,6 @@ import java.nio.file.Path;
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true, description = "A *.zip file")
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public ImportROI3DAlgorithm(JIPipeNodeInfo info) {

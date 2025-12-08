@@ -36,7 +36,6 @@ import java.awt.*;
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter roiName = new OptionalStringParameter("", false);
     private OptionalStringParameter roiComment = new OptionalStringParameter("", false);

@@ -48,7 +48,6 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();

@@ -42,7 +42,6 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", create = true, description = "Table containing the metadata (1 row per ROI)")
 @AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class ChangeRoi3DPropertiesFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter rowSelector = new JIPipeExpressionParameter("table.row == index");
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "Name");

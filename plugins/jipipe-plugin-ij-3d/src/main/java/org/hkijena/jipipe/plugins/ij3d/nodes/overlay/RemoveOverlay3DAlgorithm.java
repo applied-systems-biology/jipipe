@@ -30,7 +30,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nOverlay")
-@MarkNodeAsUnstable
 public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RemoveOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);

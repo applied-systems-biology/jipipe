@@ -29,7 +29,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
-@MarkNodeAsUnstable
 public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
     public SetOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
