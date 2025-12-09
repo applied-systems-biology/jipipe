@@ -21,30 +21,30 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Merge IJ3D ROI", description = "Merges the input 3D ROI lists")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-public class MergeROI3DAlgorithm extends JIPipeMergingAlgorithm {
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
+public class MergeRoi3DAlgorithm extends JIPipeMergingAlgorithm {
 
-    public MergeROI3DAlgorithm(JIPipeNodeInfo info) {
+    public MergeRoi3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public MergeROI3DAlgorithm(JIPipeMergingAlgorithm other) {
+    public MergeRoi3DAlgorithm(JIPipeMergingAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        List<IJ3DROIListData> inputData = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
+        List<Ij3dSuiteRoiListData> inputData = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
         if (!inputData.isEmpty()) {
-            IJ3DROIListData outputData = new IJ3DROIListData();
-            for (IJ3DROIListData data : inputData) {
+            Ij3dSuiteRoiListData outputData = new Ij3dSuiteRoiListData();
+            for (Ij3dSuiteRoiListData data : inputData) {
                 outputData.addAll(data);
             }
             iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);

@@ -25,7 +25,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
@@ -51,7 +51,7 @@ public class ROIDrawerFormData extends FormData {
     private ROIManagerPlugin2D roiManagerPlugin;
     private MaskToROIDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
-    private ROI2DListData lazyLoadedROIs;
+    private Roi2dListData lazyLoadedROIs;
 
     public ROIDrawerFormData(List<JIPipeMultiIterationStep> iterationSteps, DrawROIAlgorithm drawROIAlgorithm) {
         this.iterationSteps = iterationSteps;
@@ -94,8 +94,8 @@ public class ROIDrawerFormData extends FormData {
         getImageViewerPanel();
 
         ROIDrawerFormData sourceData = (ROIDrawerFormData) source;
-        ROI2DListData sourceROIs = sourceData.roiManagerPlugin.getRois();
-        roiManagerPlugin.setRois(new ROI2DListData(sourceROIs), false);
+        Roi2dListData sourceROIs = sourceData.roiManagerPlugin.getRois();
+        roiManagerPlugin.setRois(new Roi2dListData(sourceROIs), false);
     }
 
     @Override
@@ -139,7 +139,7 @@ public class ROIDrawerFormData extends FormData {
     public void loadData(JIPipeMultiIterationStep iterationStep) {
         int row = iterationSteps.indexOf(iterationStep);
         ImagePlus referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
-        ROI2DListData rois = drawROIAlgorithm.getOutputSlot("ROI").getData(row, ROI2DListData.class, new JIPipeProgressInfo());
+        Roi2dListData rois = drawROIAlgorithm.getOutputSlot("ROI").getData(row, Roi2dListData.class, new JIPipeProgressInfo());
 
         if (imageViewerPanel != null) {
             imageViewerPanel.setImagePlus(referenceImage);

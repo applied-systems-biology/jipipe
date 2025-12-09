@@ -22,17 +22,17 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DPlugin;
 
 import javax.swing.*;
 
-public class ImageViewerUIROI3DDisplayApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
+public class ImageViewerUIRoi3DDisplayApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static String ID = "org.hkijena.jipipe:image-viewer-ui-roi-3d-display";
     private boolean showROI = true;
 
     private boolean renderROIAsVolume = false;
 
-    public ImageViewerUIROI3DDisplayApplicationSettings() {
+    public ImageViewerUIRoi3DDisplayApplicationSettings() {
     }
 
-    public static ImageViewerUIROI3DDisplayApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, ImageViewerUIROI3DDisplayApplicationSettings.class);
+    public static ImageViewerUIRoi3DDisplayApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, ImageViewerUIRoi3DDisplayApplicationSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "Show ROI", description = "If enabled, ROI are visible")

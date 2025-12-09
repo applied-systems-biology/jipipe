@@ -21,12 +21,12 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "IJ3D Set 3D overlay", description = "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
@@ -41,8 +41,8 @@ public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).shallowCopy();
-        IJ3DROIListData rois = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
-        img.removeOverlaysOfType(IJ3DROIListData.class);
+        Ij3dSuiteRoiListData rois = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
+        img.removeOverlaysOfType(Ij3dSuiteRoiListData.class);
         img.addOverlay(rois);
         iterationStep.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }

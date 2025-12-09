@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -42,8 +42,8 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Split into individual IJ3D ROI lists", description = "Splits the 3D ROI lists into individual 3D ROI lists.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter generatedAnnotation = new OptionalStringParameter();
     private JIPipeExpressionParameter annotationValue = new JIPipeExpressionParameter("\"index=\" + index + \";name=\" + name");
@@ -71,7 +71,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData data = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData data = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
@@ -93,7 +93,7 @@ public class ExplodeRoi3DListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
                 annotations.add(new JIPipeTextAnnotation(generatedAnnotation.getContent(), annotationValue.evaluateToString(variables)));
             }
-            IJ3DROIListData output = new IJ3DROIListData();
+            Ij3dSuiteRoiListData output = new Ij3dSuiteRoiListData();
             output.add(roi);
             iterationStep.addOutputData(getFirstOutputSlot(), output, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }

@@ -23,25 +23,25 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 @SetJIPipeDocumentation(name = "Convert 2D ROI to IJ3D ROI", description = "Converts a 2D ROI list into a 3D ROI list. Please note that you need to enable the fast mode to merge 2D ROI in the Z-axis.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-public class Roi2DToRoi3DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
+public class Roi2dToRoi3DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean fast = false;
     private boolean force2D = true;
     private Neighborhood3D neighborhood = Neighborhood3D.TwentySixConnected;
 
-    public Roi2DToRoi3DConverterAlgorithm(JIPipeNodeInfo info) {
+    public Roi2dToRoi3DConverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public Roi2DToRoi3DConverterAlgorithm(Roi2DToRoi3DConverterAlgorithm other) {
+    public Roi2dToRoi3DConverterAlgorithm(Roi2dToRoi3DConverterAlgorithm other) {
         super(other);
         this.fast = other.fast;
         this.force2D = other.force2D;
@@ -50,8 +50,8 @@ public class Roi2DToRoi3DConverterAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        IJ3DROIListData outputData = IJ3DUtils.roi2DtoRoi3D(inputData, force2D, fast, neighborhood, progressInfo);
+        Roi2dListData inputData = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
+        Ij3dSuiteRoiListData outputData = IJ3DUtils.roi2DtoRoi3D(inputData, force2D, fast, neighborhood, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 

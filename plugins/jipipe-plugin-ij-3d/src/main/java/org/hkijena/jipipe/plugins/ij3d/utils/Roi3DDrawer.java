@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
@@ -83,7 +83,7 @@ public class Roi3DDrawer extends AbstractJIPipeParameterCollection {
         this.overrideFillColor = overrideFillColor;
     }
 
-    public ImagePlus draw(IJ3DROIListData roi3DListData, ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
+    public ImagePlus draw(Ij3dSuiteRoiListData roi3DListData, ImagePlus referenceImage, JIPipeProgressInfo progressInfo) {
 
         if (referenceImage == null) {
             referenceImage = roi3DListData.createBlankCanvas("RGB", 24);

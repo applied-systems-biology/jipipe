@@ -34,9 +34,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -53,13 +53,13 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set 2D ROI metadata by statistics (expression)", description = "Sets ROI metadata by statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private JIPipeParameterCollectionList metadataGenerators = JIPipeParameterCollectionList.containingCollection(MetadataProperty.class);
     private boolean measureInPhysicalUnits = true;
@@ -99,7 +99,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo));
+        Roi2dListData rois = new Roi2dListData(iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo));
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Export 3D ROI to ImageJ")
-public class ROI3DImageJExporter implements ImageJDataExporter {
+public class Roi3DImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         boolean multiple = Prefs.get("RoiManager3D-Options_UseMultiple.boolean", false);
@@ -37,7 +37,7 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
             multiple = false;
         List<Object> result = new ArrayList<>();
         for (int row = 0; row < dataTable.getRowCount(); row++) {
-            IJ3DROIListData data = dataTable.getData(row, IJ3DROIListData.class, progressInfo);
+            Ij3dSuiteRoiListData data = dataTable.getData(row, Ij3dSuiteRoiListData.class, progressInfo);
             RoiManager3D_2 manager3D = null;
             if (!multiple) {
                 Object obj = ReflectionUtils.getDeclaredStaticFieldValue("manager3d", RoiManager3D_2.class);
@@ -59,7 +59,7 @@ public class ROI3DImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<? extends JIPipeData> getExportedJIPipeDataType() {
-        return IJ3DROIListData.class;
+        return Ij3dSuiteRoiListData.class;
     }
 
     @Override

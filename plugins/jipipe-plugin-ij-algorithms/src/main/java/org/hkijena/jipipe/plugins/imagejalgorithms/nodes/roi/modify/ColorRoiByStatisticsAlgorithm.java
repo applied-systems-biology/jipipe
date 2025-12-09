@@ -29,9 +29,9 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumn;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
@@ -41,13 +41,13 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Color 2D ROI by statistics", description = "Sets the ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private ImageJMeasurementColumn fillMeasurement = ImageJMeasurementColumn.Area;
     private ImageJMeasurementColumn lineMeasurement = ImageJMeasurementColumn.Area;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
@@ -88,9 +88,9 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData outputData = new ROI2DListData();
+        Roi2dListData outputData = new Roi2dListData();
 
-        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData inputRois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Obtain statistics

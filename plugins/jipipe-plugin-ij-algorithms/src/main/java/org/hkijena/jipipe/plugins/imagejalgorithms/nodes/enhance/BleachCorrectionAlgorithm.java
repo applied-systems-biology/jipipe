@@ -25,7 +25,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -38,7 +38,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Bleach correction", description = "Applies bleach correction for 2D or 3D time series. Applies bleach correction per channel.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Enhance")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true, optional = true, description = "The ROI where the correction should be applied. If not provided, the whole image is corrected.")
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true, optional = true, description = "The ROI where the correction should be applied. If not provided, the whole image is corrected.")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 @AddJIPipeCitation("Also cite 10.12688/f1000research.27171.1")
 public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
@@ -410,10 +410,10 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus originalImage = iterationStep.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROI2DListData inputRoi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData inputRoi = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         Roi curROI = null;
         if (inputRoi != null) {
-            ROI2DListData tmp = new ROI2DListData();
+            Roi2dListData tmp = new Roi2dListData();
             tmp.addAll(inputRoi);
             if (tmp.size() > 1) {
                 tmp.logicalOr();

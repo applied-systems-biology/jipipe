@@ -31,10 +31,10 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.AllROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.AllRoi3DMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -45,12 +45,12 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Filters the 3D ROI list elements via statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
-    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
+    private Roi3DMeasurementSetParameter measurements = new Roi3DMeasurementSetParameter();
     private boolean outputEmptyLists = true;
     private boolean measureInPhysicalUnits = true;
 
@@ -71,14 +71,14 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public FilterRoi3DByStatisticsAlgorithm(FilterRoi3DByStatisticsAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
-        this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi3DMeasurementSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData inputRois = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData inputRois = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
@@ -99,7 +99,7 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         variableSet.set("num_roi", inputRois.size());
 
         // Apply filter
-        IJ3DROIListData outputData = new IJ3DROIListData();
+        Ij3dSuiteRoiListData outputData = new Ij3dSuiteRoiListData();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
             IJ3DROI roi = inputRois.get(row);
@@ -133,8 +133,8 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -151,12 +151,12 @@ public class FilterRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
     @JIPipeParameter(value = "measurements", important = true)
-    public ROI3DMeasurementSetParameter getMeasurements() {
+    public Roi3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

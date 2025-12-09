@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -46,9 +46,9 @@ import java.util.List;
         "Alternative: Extract to ROI")
 @ConfigureJIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Cropped", create = true)
-public class CropToRoi2DAlgorithm extends JIPipeIteratingAlgorithm {
+public class CropToRoi2dAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean cropXY = true;
     private boolean cropZ = true;
@@ -63,11 +63,11 @@ public class CropToRoi2DAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter annotationBoundingHeight = new OptionalTextAnnotationNameParameter("Height", false);
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
-    public CropToRoi2DAlgorithm(JIPipeNodeInfo info) {
+    public CropToRoi2dAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public CropToRoi2DAlgorithm(CropToRoi2DAlgorithm other) {
+    public CropToRoi2dAlgorithm(CropToRoi2dAlgorithm other) {
         super(other);
         this.cropXY = other.cropXY;
         this.cropZ = other.cropZ;
@@ -86,7 +86,7 @@ public class CropToRoi2DAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus input = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         Rectangle bounds = rois.getBounds();
 
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();

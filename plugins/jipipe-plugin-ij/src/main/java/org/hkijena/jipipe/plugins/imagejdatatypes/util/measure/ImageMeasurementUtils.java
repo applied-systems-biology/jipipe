@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.jogamp.vecmath.Point2f;
@@ -28,7 +28,7 @@ public class ImageMeasurementUtils {
     public static void calculateAdditionalMeasurements(ImageJMeasurementsSetParameter measurements, ImageSliceIndex sliceIndex, boolean addNameToTable, Roi roi, ResultsTableData forRoi) {
         if (measurements.getValues().contains(ImageJMeasurement.BoundingRectangle) || measurements.getValues().contains(ImageJMeasurement.ShapeDescriptors)) {
             // Calculate fitted rotated rectangle
-            Roi mbr = ROI2DListData.calculateMinimumBoundingRectangle(roi);
+            Roi mbr = Roi2dListData.calculateMinimumBoundingRectangle(roi);
             FloatPolygon fp = mbr.getFloatPolygon();
             Point2f p1 = new Point2f(fp.xpoints[0], fp.ypoints[0]);
             Point2f p2 = new Point2f(fp.xpoints[1], fp.ypoints[1]);

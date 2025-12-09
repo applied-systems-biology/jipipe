@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 
@@ -39,7 +39,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Convert only 2D ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -89,9 +89,9 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData inputData = (Roi2dListData) iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo).duplicate(progressInfo);
         if (preferAssociatedImage) {
-            for (Map.Entry<Optional<ImagePlus>, ROI2DListData> entry : inputData.groupByReferenceImage().entrySet()) {
+            for (Map.Entry<Optional<ImagePlus>, Roi2dListData> entry : inputData.groupByReferenceImage().entrySet()) {
                 if (entry.getKey().isPresent()) {
                     ImagePlus reference = entry.getKey().get();
                     ImagePlus target = IJ.createImage("ROIs",

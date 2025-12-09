@@ -34,9 +34,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -51,13 +51,13 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Filter 2D ROI by statistics", description = "Filters the ROI list elements via statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
+public class FilterRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean outputEmptyLists = true;
@@ -69,7 +69,7 @@ public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public FilterRoi2DByStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public FilterRoi2dByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -78,7 +78,7 @@ public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public FilterRoi2DByStatisticsAlgorithm(FilterRoi2DByStatisticsAlgorithm other) {
+    public FilterRoi2dByStatisticsAlgorithm(FilterRoi2dByStatisticsAlgorithm other) {
         super(other);
         this.filters = new JIPipeExpressionParameter(other.filters);
         this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
@@ -98,7 +98,7 @@ public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData inputRois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
@@ -125,7 +125,7 @@ public class FilterRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Apply filter
-        ROI2DListData outputData = new ROI2DListData();
+        Roi2dListData outputData = new Roi2dListData();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
             if (progressInfo.isCancelled()) {

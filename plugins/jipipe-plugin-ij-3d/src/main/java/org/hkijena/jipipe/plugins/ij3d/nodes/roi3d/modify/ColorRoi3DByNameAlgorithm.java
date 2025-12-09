@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
@@ -36,8 +36,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Color IJ3D ROI by name", description = "Sets the 3D ROI item colors by their name.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ColorRoi3DByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
 
@@ -62,7 +62,7 @@ public class ColorRoi3DByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData rois = new IJ3DROIListData(iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo));
+        Ij3dSuiteRoiListData rois = new Ij3dSuiteRoiListData(iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo));
         Set<String> names = new HashSet<>();
         for (IJ3DROI roi : rois) {
             names.add(StringUtils.nullToEmpty(roi.getObject3D().getName()));

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
@@ -44,11 +44,11 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Extract 2D ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "an empty reference image is automatically generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
-public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2dStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean applyPerSlice = false;
@@ -64,7 +64,7 @@ public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public ExtractRoi2DStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2dStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         indexAnnotation.setContent("Image index");
     }
@@ -74,7 +74,7 @@ public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public ExtractRoi2DStatisticsAlgorithm(ExtractRoi2DStatisticsAlgorithm other) {
+    public ExtractRoi2dStatisticsAlgorithm(ExtractRoi2dStatisticsAlgorithm other) {
         super(other);
         this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.applyPerChannel = other.applyPerChannel;
@@ -87,7 +87,7 @@ public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData roi = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData roi = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roi.isEmpty()) {
             iterationStep.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
@@ -98,7 +98,7 @@ public class ExtractRoi2DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             if (progressInfo.isCancelled()) {
                 return;
             }
-            ROI2DListData data = new ROI2DListData(entry.getValue());
+            Roi2dListData data = new Roi2dListData(entry.getValue());
             ResultsTableData result = data.measure(reference, measurements, addNameToTable, measureInPhysicalUnits);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {

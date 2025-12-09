@@ -20,12 +20,12 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 
-public class AddROI3DToManagerDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
+public class AddRoi3DToManagerDataDisplayOperation implements JIPipeDesktopDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeDesktopWorkbench desktopWorkbench, JIPipeDataSource source) {
         RoiManager3D_2 manager3D = null;
@@ -40,7 +40,7 @@ public class AddROI3DToManagerDataDisplayOperation implements JIPipeDesktopDataD
             manager3D = new RoiManager3D_2();
             manager3D.create3DManager();
         }
-        IJ3DROIListData listData = (IJ3DROIListData) data;
+        Ij3dSuiteRoiListData listData = (Ij3dSuiteRoiListData) data;
         manager3D.addObjects3DPopulation(listData.toPopulation());
     }
 

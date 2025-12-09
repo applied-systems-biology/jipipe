@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
@@ -48,8 +48,8 @@ import java.awt.*;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Lines", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Junctions", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Lines", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Junctions", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins", aliasName = "Ridge Detection")
 public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -104,8 +104,8 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
 
-        ROI2DListData outputLines = new ROI2DListData();
-        ROI2DListData outputJunctions = new ROI2DListData();
+        Roi2dListData outputLines = new Roi2dListData();
+        Roi2dListData outputJunctions = new Roi2dListData();
         ImagePlus outputMask = ImageJIterationUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
             double sigma_ = sigma;
             double lowerThreshold_ = lowerThreshold;
@@ -194,7 +194,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return ip;
     }
 
-    private void extractJunctions(ROI2DListData outputJunctions, LineDetector lineDetector, ImageSliceIndex index) {
+    private void extractJunctions(Roi2dListData outputJunctions, LineDetector lineDetector, ImageSliceIndex index) {
         for (Junction j : lineDetector.getJunctions()) {
             PointRoi pr = new PointRoi(j.getX() + 0.5, j.getY() + 0.5);
             pr.setName("JP-C" + j.getLine1().getID() + "-C" + j.getLine2().getID());
@@ -204,7 +204,7 @@ public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void extractLines(ROI2DListData outputLines, Lines lines, ImageSliceIndex index) {
+    private void extractLines(Roi2dListData outputLines, Lines lines, ImageSliceIndex index) {
         for (Line c : lines) {
             float[] x = c.getXCoordinates();
             for (int j = 0; j < x.length; j++) {

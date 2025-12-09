@@ -27,8 +27,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 import java.util.HashSet;
@@ -36,8 +36,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter IJ3D ROI list", description = "Only passes 3D ROI lists that match the filter criteria.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
@@ -55,7 +55,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData rois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
         Vector3D[] bounds = rois.getBounds();
@@ -69,7 +69,7 @@ public class FilterRoi3DListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filter.test(parameters)) {
             iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         } else if (outputEmptyLists) {
-            iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new Roi2dListData(), progressInfo);
         }
     }
 

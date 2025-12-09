@@ -22,17 +22,17 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DOutline;
 
 
 @SetJIPipeDocumentation(name = "Outline IJ3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ROI3DOutline outline = ROI3DOutline.BoundingBox;
+    private Roi3DOutline outline = Roi3DOutline.BoundingBox;
     private boolean ignoreErrors;
 
     /**
@@ -57,19 +57,19 @@ public class OutlineRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData data = (IJ3DROIListData) iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo).duplicate(progressInfo);
+        Ij3dSuiteRoiListData data = (Ij3dSuiteRoiListData) iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline, ignoreErrors, progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 
     @SetJIPipeDocumentation(name = "Outline method", description = "The outlining method that should be applied.")
     @JIPipeParameter("outline")
-    public ROI3DOutline getOutline() {
+    public Roi3DOutline getOutline() {
         return outline;
     }
 
     @JIPipeParameter("outline")
-    public void setOutline(ROI3DOutline outline) {
+    public void setOutline(Roi3DOutline outline) {
         this.outline = outline;
     }
 

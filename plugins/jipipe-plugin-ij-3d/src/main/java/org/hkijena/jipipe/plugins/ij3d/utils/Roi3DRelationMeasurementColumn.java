@@ -18,7 +18,7 @@ package org.hkijena.jipipe.plugins.ij3d.utils;
  * This only includes the measurements that actually generate columns - not measurement settings.
  * This contains individually addressed columns
  */
-public enum ROI3DRelationMeasurementColumn {
+public enum Roi3DRelationMeasurementColumn {
     Colocalization(1, "Colocalization", "Colocalization", "The number of intersecting voxels"),
     PercentageColocalization(2, "PercentageColocalization", "Percentage Colocalization", "Percentage of colocalization between two objects relative to this object"),
     OverlapsBox(4, "OverlapsBox", "Overlaps box", "If the bounding boxes intersect (0 = no, 1 = yes)"),
@@ -169,7 +169,7 @@ public enum ROI3DRelationMeasurementColumn {
     private final String name;
     private final String description;
 
-    ROI3DRelationMeasurementColumn(int nativeValue, String columnName, String name, String description) {
+    Roi3DRelationMeasurementColumn(int nativeValue, String columnName, String name, String description) {
         this.nativeValue = nativeValue;
         this.columnName = columnName;
         this.name = name;

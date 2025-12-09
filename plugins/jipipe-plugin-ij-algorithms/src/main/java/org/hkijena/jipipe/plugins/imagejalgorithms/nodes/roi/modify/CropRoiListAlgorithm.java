@@ -25,13 +25,13 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
 @SetJIPipeDocumentation(name = "Crop 2D ROI list", description = "Moves all ROI in the list so that their bounding rectangle is located at x=0 and y=0 (default). Also allows to crop the channel, time, and Z locations.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class CropRoiListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean cropXY = true;
@@ -58,7 +58,7 @@ public class CropRoiListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData data = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData data = (Roi2dListData) iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo).duplicate(progressInfo);
         data.crop(cropXY, cropZ, cropC, cropT);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }

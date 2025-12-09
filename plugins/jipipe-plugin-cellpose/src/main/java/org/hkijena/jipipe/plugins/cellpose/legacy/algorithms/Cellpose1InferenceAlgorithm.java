@@ -45,7 +45,7 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelD
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.legacy.parameters.*;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
@@ -84,7 +84,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ImagePlus3DColorRGBData.class, name = "Flows")
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Styles")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @Deprecated
 @LabelAsJIPipeHidden
@@ -134,7 +134,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
 
     public static void extractCellposeOutputs(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, CellposeSegmentationOutputSettings_Old outputParameters) {
         if (outputParameters.isOutputROI()) {
-            ROI2DListData rois = CellposeUtils.cellposeROIJsonToImageJ(outputRoiOutline);
+            Roi2dListData rois = CellposeUtils.cellposeROIJsonToImageJ(outputRoiOutline);
             iterationStep.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputLabels()) {
@@ -621,7 +621,7 @@ public class Cellpose1InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
         if (outputParameters.isOutputROI()) {
             if (!getOutputSlotMap().containsKey("ROI")) {
-                slotConfiguration.addOutputSlot("ROI", "", ROI2DListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI", "", Roi2dListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI")) {

@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
 @SetJIPipeDocumentation(name = "Merge 2D ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
@@ -32,8 +32,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
         "annotation columns empty.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class MergeRoiListsUnorderedAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
@@ -56,8 +56,8 @@ public class MergeRoiListsUnorderedAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData result = new ROI2DListData();
-        for (ROI2DListData rois : iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo)) {
+        Roi2dListData result = new Roi2dListData();
+        for (Roi2dListData rois : iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);

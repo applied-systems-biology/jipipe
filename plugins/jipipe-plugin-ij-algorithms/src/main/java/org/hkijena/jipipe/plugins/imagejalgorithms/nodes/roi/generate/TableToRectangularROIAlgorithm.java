@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportConte
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.draw.VisualROIProperties;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -45,7 +45,7 @@ import java.awt.*;
 @ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw", aliasName = "Draw rectangular ROIs from table")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final VisualROIProperties roiProperties;
@@ -120,7 +120,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        ROI2DListData rois = new ROI2DListData();
+        Roi2dListData rois = new Roi2dListData();
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
@@ -197,7 +197,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void createROI(ROI2DListData rois, int w, int h, int x, int y, int z, int c, int t, String name, String metadata, JIPipeExpressionVariablesMap variables) {
+    private void createROI(Roi2dListData rois, int w, int h, int x, int y, int z, int c, int t, String name, String metadata, JIPipeExpressionVariablesMap variables) {
         Roi roi;
         switch (mode) {
             case Rectangle:

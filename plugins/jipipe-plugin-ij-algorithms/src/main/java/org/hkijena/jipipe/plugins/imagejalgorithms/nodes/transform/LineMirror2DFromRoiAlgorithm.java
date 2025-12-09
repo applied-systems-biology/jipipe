@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.LineMirror;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
         "The resulting line is used as axis to mirror the image pixels. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Mirror", create = true, role = JIPipeDataSlotRole.ParametersLooping)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Mirror", create = true, role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Transform")
 public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -88,13 +88,13 @@ public class LineMirror2DFromRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus srcImage = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo).getImage();
-        ROI2DListData rois = iterationStep.getInputData("Mirror", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("Mirror", Roi2dListData.class, progressInfo);
 
         for (int i = 0; i < rois.size(); i++) {
             Roi roi = rois.get(i);
             FloatPolygon polygon = roi.getFloatPolygon();
             if (polygon.npoints != 2) {
-                ROI2DListData single = new ROI2DListData();
+                Roi2dListData single = new Roi2dListData();
                 single.add(roi);
                 single.outline(RoiOutline.OrientedLine, InvalidRoiOutlineBehavior.Error);
                 polygon = single.get(0).getFloatPolygon();

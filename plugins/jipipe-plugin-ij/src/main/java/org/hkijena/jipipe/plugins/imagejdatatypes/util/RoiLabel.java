@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.util;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
@@ -64,7 +64,7 @@ public enum RoiLabel {
             label = roi.getName();
         }
         if (this == Centroid) {
-            Point centroid = ROI2DListData.getCentroid(roi);
+            Point centroid = Roi2dListData.getCentroid(roi);
             label = centroid.x + ", " + centroid.y;
         }
         if (this == Metadata) {

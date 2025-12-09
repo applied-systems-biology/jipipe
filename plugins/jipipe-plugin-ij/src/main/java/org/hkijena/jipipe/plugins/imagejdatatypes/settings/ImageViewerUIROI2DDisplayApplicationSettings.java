@@ -22,17 +22,17 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 
 import javax.swing.*;
 
-public class ImageViewerUIROI2DDisplayApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
+public class ImageViewerUIRoi2dDisplayApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static String ID = "org.hkijena.jipipe:image-viewer-ui-roi-display";
     private RoiDrawer roiDrawer = new RoiDrawer();
     private boolean showROI = true;
     private boolean renderROIAsOverlay = true;
 
-    public ImageViewerUIROI2DDisplayApplicationSettings() {
+    public ImageViewerUIRoi2dDisplayApplicationSettings() {
     }
 
-    public static ImageViewerUIROI2DDisplayApplicationSettings getInstance() {
-        return JIPipe.getSettings().getById(ID, ImageViewerUIROI2DDisplayApplicationSettings.class);
+    public static ImageViewerUIRoi2dDisplayApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, ImageViewerUIRoi2dDisplayApplicationSettings.class);
     }
 
     @SetJIPipeDocumentation(name = "2D ROI visualization")

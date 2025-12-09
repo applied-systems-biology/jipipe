@@ -32,9 +32,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo2;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -51,13 +51,13 @@ import java.util.Set;
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform", aliasName = "Translate 2D ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform", aliasName = "Scale 2D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private OptionalJIPipeExpressionParameter positionX = new OptionalJIPipeExpressionParameter(false, "x");
     private OptionalJIPipeExpressionParameter positionY = new OptionalJIPipeExpressionParameter(false, "y");
     private OptionalJIPipeExpressionParameter scaleX = new OptionalJIPipeExpressionParameter(false, "1.0");
@@ -97,7 +97,7 @@ public class TransformRoiFromExpressionsAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRois = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData inputRois = (Roi2dListData) iterationStep.getInputData("Input", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);

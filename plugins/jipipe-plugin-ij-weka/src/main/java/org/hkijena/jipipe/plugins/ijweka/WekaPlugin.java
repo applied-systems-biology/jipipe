@@ -188,8 +188,8 @@ public class WekaPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Register nodes
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
-        registerNodeType("weka-training-roi-2d", WekaTrainingROI2DAlgorithm.class, wekaIcon);
-        registerNodeType("weka-training-roi-3d", WekaTrainingROI3DAlgorithm.class, wekaIcon);
+        registerNodeType("weka-training-roi-2d", WekaTrainingRoi2dAlgorithm.class, wekaIcon);
+        registerNodeType("weka-training-roi-3d", WekaTrainingRoi3DAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-mask-2d", WekaTrainingMask2DAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-label-2d", WekaTrainingLabels2DAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-mask-2d-v2", WekaTrainingMask2DAlgorithm2.class, wekaIcon);

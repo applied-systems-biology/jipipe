@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.utils;
 
-public enum ROI3DOutline {
+public enum Roi3DOutline {
     BoundingBox,
     BoundingBoxOriented,
     ConvexHull,

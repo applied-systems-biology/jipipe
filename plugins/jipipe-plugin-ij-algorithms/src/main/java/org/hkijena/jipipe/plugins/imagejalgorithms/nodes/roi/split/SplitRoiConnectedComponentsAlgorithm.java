@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.RoiOverlapStatisticsOldVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -52,9 +52,9 @@ import java.util.*;
 
 @SetJIPipeDocumentation(name = "Split 2D ROI into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @ConfigureJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Components", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Components", create = true)
 public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
@@ -88,7 +88,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData input = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData input = (Roi2dListData) iterationStep.getInputData("Input", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
             // Add to graph
@@ -99,7 +99,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
 
         boolean withFiltering = !StringUtils.isNullOrEmpty(overlapFilter.getExpression());
-        ROI2DListData temp = new ROI2DListData();
+        Roi2dListData temp = new Roi2dListData();
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Write annotations map
@@ -248,7 +248,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         ConnectivityInspector<Integer, DefaultEdge> connectivityInspector = new ConnectivityInspector<>(graph);
         int outputIndex = 0;
         for (Set<Integer> set : connectivityInspector.connectedSets()) {
-            ROI2DListData rois = new ROI2DListData();
+            Roi2dListData rois = new Roi2dListData();
             for (Integer index : set) {
                 rois.add(input.get(index));
             }
@@ -289,7 +289,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
      * @param graph the roi graph
      * @return if is a junction
      */
-    private boolean isJunction(int index, ROI2DListData list, DefaultUndirectedGraph<Integer, DefaultEdge> graph) {
+    private boolean isJunction(int index, Roi2dListData list, DefaultUndirectedGraph<Integer, DefaultEdge> graph) {
         List<Integer> neighbors = Graphs.neighborListOf(graph, index);
 
         // Only one or no neighbor -> No junction
@@ -332,7 +332,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         return false;
     }
 
-    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, JIPipeExpressionVariablesMap variableSet, Roi overlap, ROI2DListData temp, Roi roi1, Roi roi2) {
+    private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, JIPipeExpressionVariablesMap variableSet, Roi overlap, Roi2dListData temp, Roi roi1, Roi roi2) {
 
         variableSet.set("ROI1.z", roi1.getZPosition());
         variableSet.set("ROI1.c", roi1.getCPosition());
@@ -375,7 +375,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
         }
     }
 
-    private Roi calculateOverlap(ROI2DListData temp, Roi roi1, Roi roi2) {
+    private Roi calculateOverlap(Roi2dListData temp, Roi roi1, Roi roi2) {
         temp.clear();
         temp.add(roi1);
         temp.add(roi2);

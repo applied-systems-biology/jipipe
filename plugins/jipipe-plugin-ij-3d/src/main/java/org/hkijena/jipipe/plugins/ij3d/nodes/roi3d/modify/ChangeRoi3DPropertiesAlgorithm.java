@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
@@ -34,8 +34,8 @@ import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Set IJ3D ROI properties", description = "Sets the properties of all 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalStringParameter roiName = new OptionalStringParameter("", false);
     private OptionalStringParameter roiComment = new OptionalStringParameter("", false);
@@ -64,7 +64,7 @@ public class ChangeRoi3DPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData outputROI = new IJ3DROIListData(iterationStep.getInputData("Input", IJ3DROIListData.class, progressInfo));
+        Ij3dSuiteRoiListData outputROI = new Ij3dSuiteRoiListData(iterationStep.getInputData("Input", Ij3dSuiteRoiListData.class, progressInfo));
 
         for (int row = 0; row < outputROI.size(); row++) {
             IJ3DROI roi = outputROI.get(row);

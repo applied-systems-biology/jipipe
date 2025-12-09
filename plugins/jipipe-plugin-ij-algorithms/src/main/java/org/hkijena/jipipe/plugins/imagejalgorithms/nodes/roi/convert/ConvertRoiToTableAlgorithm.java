@@ -12,7 +12,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -22,7 +22,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Convert 2D ROI to table", description = "Writes the point coordinates and other metadata of the incoming ROI into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ConvertRoiToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertRoiToTableAlgorithm(JIPipeNodeInfo info) {
@@ -35,7 +35,7 @@ public class ConvertRoiToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData inputData = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
         ResultsTableData outputData = new ResultsTableData();
 
         for (int i = 0; i < inputData.size(); i++) {

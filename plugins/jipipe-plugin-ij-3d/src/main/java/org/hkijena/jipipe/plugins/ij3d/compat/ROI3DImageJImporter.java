@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -31,16 +31,16 @@ import java.util.List;
 import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Import 3D ROI from ImageJ")
-public class ROI3DImageJImporter implements ImageJDataImporter {
+public class Roi3DImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable dataTable = new JIPipeDataTable(IJ3DROIListData.class);
+        JIPipeDataTable dataTable = new JIPipeDataTable(Ij3dSuiteRoiListData.class);
         if (!objects.isEmpty()) {
             for (Object object : objects) {
                 if (object instanceof RoiManager3D_2) {
                     RoiManager3D_2 manager = (RoiManager3D_2) object;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
-                    IJ3DROIListData listData = new IJ3DROIListData();
+                    Ij3dSuiteRoiListData listData = new Ij3dSuiteRoiListData();
                     listData.addFromPopulation(population, 0, 0);
                     if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
@@ -56,7 +56,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
                     }
                     RoiManager3D_2 manager = (RoiManager3D_2) window;
                     Objects3DPopulation population = (Objects3DPopulation) ReflectionUtils.getDeclaredFieldValue("objects3DPopulation", manager);
-                    IJ3DROIListData listData = new IJ3DROIListData();
+                    Ij3dSuiteRoiListData listData = new Ij3dSuiteRoiListData();
                     listData.addFromPopulation(population, 0, 0);
                     if (parameters.isDuplicate())
                         dataTable.addData(listData.duplicate(progressInfo), progressInfo);
@@ -70,7 +70,7 @@ public class ROI3DImageJImporter implements ImageJDataImporter {
 
     @Override
     public Class<? extends JIPipeData> getImportedJIPipeDataType() {
-        return IJ3DROIListData.class;
+        return Ij3dSuiteRoiListData.class;
     }
 
     @Override

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "IJ3D Remove 3D overlay", description = "Remove overlay ROIs")
@@ -42,7 +42,7 @@ public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData img = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).shallowCopy();
-        img.removeOverlaysOfType(IJ3DROIListData.class);
+        img.removeOverlaysOfType(Ij3dSuiteRoiListData.class);
         iterationStep.addOutputData(getFirstOutputSlot(), img, progressInfo);
     }
 }

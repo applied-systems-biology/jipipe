@@ -32,9 +32,9 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DRelationMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -49,13 +49,13 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Split IJ3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
 @ConfigureJIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Components", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Components", create = true)
 public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter componentNameAnnotation = new OptionalTextAnnotationNameParameter("Component", true);
     private JIPipeExpressionParameter overlapFilter = new JIPipeExpressionParameter("");
-    private ROI3DRelationMeasurementSetParameter overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter();
+    private Roi3DRelationMeasurementSetParameter overlapFilterMeasurements = new Roi3DRelationMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
     private boolean preciseColocalization = true;
@@ -71,7 +71,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
         super(other);
         this.componentNameAnnotation = new OptionalTextAnnotationNameParameter(other.componentNameAnnotation);
         this.overlapFilter = new JIPipeExpressionParameter(other.overlapFilter);
-        this.overlapFilterMeasurements = new ROI3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
+        this.overlapFilterMeasurements = new Roi3DRelationMeasurementSetParameter(other.overlapFilterMeasurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
@@ -81,7 +81,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roiList = iterationStep.getInputData("Input", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData roiList = iterationStep.getInputData("Input", Ij3dSuiteRoiListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
@@ -141,7 +141,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             componentNameAnnotation.addAnnotationIfEnabled(annotations, "" + i);
 
-            IJ3DROIListData componentList = new IJ3DROIListData();
+            Ij3dSuiteRoiListData componentList = new Ij3dSuiteRoiListData();
             for (Integer index : connectedSet) {
                 componentList.add(roiList.get(index));
             }
@@ -185,7 +185,7 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
     @SetJIPipeDocumentation(name = "Overlap filter", description = "Determines if two objects overlap. If left empty, the objects are tested for colocalization of at least one voxel.")
     @JIPipeParameter("overlap-filter")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DRelationMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DRelationMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
     public JIPipeExpressionParameter getOverlapFilter() {
         return overlapFilter;
@@ -198,12 +198,12 @@ public class SplitRoi3DIntoConnectedComponentsAlgorithm extends JIPipeIteratingA
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be generated")
     @JIPipeParameter("overlap-filter-measurements")
-    public ROI3DRelationMeasurementSetParameter getOverlapFilterMeasurements() {
+    public Roi3DRelationMeasurementSetParameter getOverlapFilterMeasurements() {
         return overlapFilterMeasurements;
     }
 
     @JIPipeParameter("overlap-filter-measurements")
-    public void setOverlapFilterMeasurements(ROI3DRelationMeasurementSetParameter overlapFilterMeasurements) {
+    public void setOverlapFilterMeasurements(Roi3DRelationMeasurementSetParameter overlapFilterMeasurements) {
         this.overlapFilterMeasurements = overlapFilterMeasurements;
     }
 

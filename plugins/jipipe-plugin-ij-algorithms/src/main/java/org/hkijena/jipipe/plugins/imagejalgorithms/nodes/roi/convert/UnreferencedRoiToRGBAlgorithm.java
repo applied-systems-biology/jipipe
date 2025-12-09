@@ -32,9 +32,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
@@ -52,7 +52,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Convert only 2D ROI to RGB", description = "Converts ROI lists to color images. The line and fill color is stored within the ROI themselves. " +
         "This algorithm does not need a reference image that determines the output size.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -120,18 +120,18 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
-            for (Map.Entry<Optional<ImagePlus>, ROI2DListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).groupByReferenceImage().entrySet()) {
-                ROI2DListData inputData = (ROI2DListData) referenceEntry.getValue().duplicate(progressInfo);
+            for (Map.Entry<Optional<ImagePlus>, Roi2dListData> referenceEntry : iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo).groupByReferenceImage().entrySet()) {
+                Roi2dListData inputData = (Roi2dListData) referenceEntry.getValue().duplicate(progressInfo);
                 processROIList(iterationStep, inputData, referenceEntry.getKey().orElse(null), runContext, progressInfo);
             }
         } else {
-            ROI2DListData inputData = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
+            Roi2dListData inputData = (Roi2dListData) iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo).duplicate(progressInfo);
             processROIList(iterationStep, inputData, null, runContext, progressInfo);
         }
 
     }
 
-    private void processROIList(JIPipeSingleIterationStep iterationStep, ROI2DListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+    private void processROIList(JIPipeSingleIterationStep iterationStep, Roi2dListData inputData, ImagePlus reference, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
@@ -155,7 +155,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         Map<Roi, Integer> roiIndices = new HashMap<>();
         Filler roiFiller = new Filler();
         if (drawLabel) {
-            ExtractRoi2DStatisticsAlgorithm statisticsAlgorithm =
+            ExtractRoi2dStatisticsAlgorithm statisticsAlgorithm =
                     JIPipe.createNode("ij1-roi-statistics");
             statisticsAlgorithm.getMeasurements().setNativeValue(ImageJMeasurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);

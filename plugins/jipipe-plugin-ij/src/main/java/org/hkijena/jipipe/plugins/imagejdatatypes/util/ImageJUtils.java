@@ -2381,7 +2381,7 @@ public class ImageJUtils {
 
     //    public static Roi makeBand(Roi roi, double size) {
 //        int dxy = (int) (size * 1.5);
-//        ROI2DListData listData = new ROI2DListData();
+//        Roi2dListData listData = new Roi2dListData();
 //        ImagePlus dummyImage = listData.createDummyImage();
 //        dummyImage = expandImageCanvas(dummyImage, Color.BLACK, dummyImage.getWidth() + 2 * dxy,  dummyImage.getHeight() + 2 * dxy, Anchor.CenterCenter);
 //

@@ -18,29 +18,29 @@ import org.hkijena.jipipe.plugins.parameters.api.options.JIPipeDynamicSetParamet
 import java.util.Arrays;
 import java.util.Set;
 
-public class ROI3DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI3DRelationMeasurement> {
-    public ROI3DRelationMeasurementSetParameter() {
+public class Roi3DRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<Roi3DRelationMeasurement> {
+    public Roi3DRelationMeasurementSetParameter() {
         initialize();
         setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
     }
 
-    public ROI3DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<ROI3DRelationMeasurement> other) {
+    public Roi3DRelationMeasurementSetParameter(JIPipeDynamicSetParameter<Roi3DRelationMeasurement> other) {
         super(other);
         initialize();
     }
 
-    public ROI3DRelationMeasurementSetParameter(Set<ROI3DRelationMeasurement> values) {
+    public Roi3DRelationMeasurementSetParameter(Set<Roi3DRelationMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(ROI3DRelationMeasurement.values()));
+        getAllowedValues().addAll(Arrays.asList(Roi3DRelationMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (ROI3DRelationMeasurement value : getValues()) {
+        for (Roi3DRelationMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -53,7 +53,7 @@ public class ROI3DRelationMeasurementSetParameter extends JIPipeDynamicSetParame
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (ROI3DRelationMeasurement value : getAllowedValues()) {
+        for (Roi3DRelationMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }

@@ -34,8 +34,8 @@ import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallButtonRibbonAction;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopSmallToggleButtonRibbonAction;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
@@ -65,8 +65,8 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private final List<ROIManagerPlugin3DSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
     private final RoiDrawer roiDrawer = new RoiDrawer();
-    private final Map<ImageSliceIndex, ROI2DListData> renderedRois = new HashMap<>();
-    private IJ3DROIListData rois = new IJ3DROIListData();
+    private final Map<ImageSliceIndex, Roi2dListData> renderedRois = new HashMap<>();
+    private Ij3dSuiteRoiListData rois = new Ij3dSuiteRoiListData();
     private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
@@ -83,7 +83,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     }
 
     private void loadDefaults() {
-        ImageViewerUIROI3DDisplayApplicationSettings settings = ImageViewerUIROI3DDisplayApplicationSettings.getInstance();
+        ImageViewerUIRoi3DDisplayApplicationSettings settings = ImageViewerUIRoi3DDisplayApplicationSettings.getInstance();
         displayROIViewMenuItem.setSelected(settings.isShowROI());
     }
 
@@ -91,10 +91,10 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     public void onImageChanged() {
         updateListModel(Collections.emptySet());
 
-        // Load ROI3D content
+        // Load Roi3D content
         if (getCurrentImage() != null) {
-            IJ3DROIListData data = new IJ3DROIListData();
-            for (IJ3DROIListData listData : getCurrentImage().extractOverlaysOfType(IJ3DROIListData.class)) {
+            Ij3dSuiteRoiListData data = new Ij3dSuiteRoiListData();
+            for (Ij3dSuiteRoiListData listData : getCurrentImage().extractOverlaysOfType(Ij3dSuiteRoiListData.class)) {
                 data.addAll(listData);
             }
             if (!data.isEmpty()) {
@@ -105,8 +105,8 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     @Override
     public void onOverlayAdded(Object overlay) {
-        if (overlay instanceof IJ3DROIListData) {
-            importROIs((IJ3DROIListData) overlay);
+        if (overlay instanceof Ij3dSuiteRoiListData) {
+            importROIs((Ij3dSuiteRoiListData) overlay);
         }
     }
 
@@ -115,7 +115,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         // Currently not possible (creates copies of the ROI)
     }
 
-    private void importROIs(IJ3DROIListData overlay) {
+    private void importROIs(Ij3dSuiteRoiListData overlay) {
         for (IJ3DROI roi3D : overlay) {
             IJ3DROI copy = new IJ3DROI();
             copy.setObject3D(roi3D.getObject3D());
@@ -148,7 +148,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         return mainPanel;
     }
 
-    public IJ3DROIListData getSelectedROIOrAll(String title, String message) {
+    public Ij3dSuiteRoiListData getSelectedROIOrAll(String title, String message) {
         if (rois.isEmpty()) {
             JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
             return null;
@@ -167,7 +167,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
             else if (result == JOptionPane.YES_OPTION)
                 return rois;
             else {
-                IJ3DROIListData roi3DListData = new IJ3DROIListData();
+                Ij3dSuiteRoiListData roi3DListData = new Ij3dSuiteRoiListData();
                 roi3DListData.addAll(roiListControl.getSelectedValuesList());
                 return roi3DListData;
             }
@@ -328,7 +328,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 //    }
 
     private void measureSelectedROI() {
-        IJ3DROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
+        Ij3dSuiteRoiListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
         Measurement3DSettings settings = Measurement3DSettings.INSTANCE;
         ResultsTableData measurements = data.measure(ImageHandler.wrap(getCurrentImagePlus()), settings.getStatistics().getNativeValue(),
                 settings.isMeasureInPhysicalUnits(), "", new JIPipeProgressInfo());
@@ -376,7 +376,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
                 "Do you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIROI3DDisplayApplicationSettings settings = ImageViewerUIROI3DDisplayApplicationSettings.getInstance();
+            ImageViewerUIRoi3DDisplayApplicationSettings settings = ImageViewerUIRoi3DDisplayApplicationSettings.getInstance();
             settings.setShowROI(displayROIViewMenuItem.getState());
             JIPipe.autoSaveSettings();
         }
@@ -385,19 +385,19 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     private void importROIsFromFile() {
         Path path = JIPipeDesktop.openFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Import 3D ROI", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
-            IJ3DROIListData data = IJ3DROIListData.importData(path, JIPipeProgressInfo.SILENT);
+            Ij3dSuiteRoiListData data = Ij3dSuiteRoiListData.importData(path, JIPipeProgressInfo.SILENT);
             importROIs(data);
         }
     }
 
     private void exportROIsToFile() {
-        IJ3DROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+        Ij3dSuiteRoiListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
         if (result != null) {
             exportROIsToFile(result);
         }
     }
 
-    private void exportROIsToFile(IJ3DROIListData rois) {
+    private void exportROIsToFile(Ij3dSuiteRoiListData rois) {
         Path path = JIPipeDesktop.saveFile(getViewerPanel(), getWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Export ROI", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_ROI_ZIP);
         if (path != null) {
             rois.save(path);
@@ -422,9 +422,9 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayROIViewMenuItem.getState()) {
-            ROI2DListData rendered = renderedRois.getOrDefault(sliceIndex, null);
+            Roi2dListData rendered = renderedRois.getOrDefault(sliceIndex, null);
             if (rendered == null) {
-                rendered = rois.toRoi2D(sliceIndex.add(1), JIPipeProgressInfo.SILENT);
+                rendered = rois.toRoi2d(sliceIndex.add(1), JIPipeProgressInfo.SILENT);
                 renderedRois.put(sliceIndex, rendered);
             }
             for (Roi roi : rendered) {
@@ -437,13 +437,13 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if (displayROIViewMenuItem.getState()) {
-            ROI2DListData rendered = renderedRois.getOrDefault(sliceIndex, null);
+            Roi2dListData rendered = renderedRois.getOrDefault(sliceIndex, null);
             if (rendered == null) {
-                rendered = rois.toRoi2D(sliceIndex.add(1), JIPipeProgressInfo.SILENT);
+                rendered = rois.toRoi2d(sliceIndex.add(1), JIPipeProgressInfo.SILENT);
                 renderedRois.put(sliceIndex, rendered);
             }
             Graphics2D graphics = image.createGraphics();
-            ROI2DListData copy = new ROI2DListData();
+            Roi2dListData copy = new Roi2dListData();
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImagePlus(), magnification);
             for (Roi roi : rendered) {
                 Roi clone = (Roi) roi.clone();
@@ -526,7 +526,7 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
 
     private void initialize() {
         // Setup ROI list
-        roiListControl.setCellRenderer(new ROI3DListCellRenderer());
+        roiListControl.setCellRenderer(new Roi3DListCellRenderer());
         roiListControl.addListSelectionListener(e -> {
             updateContextPanels();
         });
@@ -555,16 +555,16 @@ public class ROIManagerPlugin3D extends JIPipeDesktopLegacyImageViewerPlugin2D {
         updateListModel(Collections.emptySet());
     }
 
-    public IJ3DROIListData getRois() {
+    public Ij3dSuiteRoiListData getRois() {
         return rois;
     }
 
-    public void setRois(IJ3DROIListData rois) {
+    public void setRois(Ij3dSuiteRoiListData rois) {
         this.rois = rois;
         updateListModel(Collections.emptySet());
     }
 
-    public void exportROIsToManager(ROI2DListData rois) {
+    public void exportROIsToManager(Roi2dListData rois) {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 

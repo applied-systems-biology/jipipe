@@ -24,14 +24,14 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
 @SetJIPipeDocumentation(name = "Merge 2D ROI lists (ordered)", description = "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Target", create = true, description = "Where the ROI are added")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Source", create = true, description = "The ROI to be added")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Target", create = true, description = "Where the ROI are added")
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Source", create = true, description = "The ROI to be added")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class MergeRoiListsOrderedAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
@@ -54,11 +54,11 @@ public class MergeRoiListsOrderedAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData result = new ROI2DListData();
-        for (ROI2DListData rois : iterationStep.getInputData("Target", ROI2DListData.class, progressInfo)) {
+        Roi2dListData result = new Roi2dListData();
+        for (Roi2dListData rois : iterationStep.getInputData("Target", Roi2dListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
-        for (ROI2DListData rois : iterationStep.getInputData("Source", ROI2DListData.class, progressInfo)) {
+        for (Roi2dListData rois : iterationStep.getInputData("Source", Roi2dListData.class, progressInfo)) {
             result.mergeWith(rois);
         }
         iterationStep.addOutputData(getFirstOutputSlot(), result, progressInfo);

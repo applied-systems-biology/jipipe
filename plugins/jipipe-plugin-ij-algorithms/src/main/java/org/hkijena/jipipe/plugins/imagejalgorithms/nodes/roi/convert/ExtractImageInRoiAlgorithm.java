@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Extract images inside ROI", description = "Extracts image slices that are marked via ROI and outputs them. The images are annotated with locational information for later reconstruction.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "ROI images", create = true)
 public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -70,7 +70,7 @@ public class ExtractImageInRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus image = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
     }

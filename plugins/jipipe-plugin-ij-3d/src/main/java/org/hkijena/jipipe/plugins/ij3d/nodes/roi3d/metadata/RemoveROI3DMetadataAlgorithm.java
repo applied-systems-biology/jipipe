@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -35,24 +35,24 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove/Filter IJ3D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-public class RemoveROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
+public class RemoveRoi3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filterExpression = new JIPipeExpressionParameter("true");
 
-    public RemoveROI3DMetadataAlgorithm(JIPipeNodeInfo info) {
+    public RemoveRoi3DMetadataAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public RemoveROI3DMetadataAlgorithm(RemoveROI3DMetadataAlgorithm other) {
+    public RemoveRoi3DMetadataAlgorithm(RemoveRoi3DMetadataAlgorithm other) {
         super(other);
         this.filterExpression = new JIPipeExpressionParameter(other.filterExpression);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData rois = new IJ3DROIListData(iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo));
+        Ij3dSuiteRoiListData rois = new Ij3dSuiteRoiListData(iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo));
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (IJ3DROI roi : rois) {

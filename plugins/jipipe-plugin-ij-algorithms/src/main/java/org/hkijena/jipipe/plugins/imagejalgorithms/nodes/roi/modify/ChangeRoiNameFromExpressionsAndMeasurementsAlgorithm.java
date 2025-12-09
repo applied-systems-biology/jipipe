@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -46,9 +46,9 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Set 2D ROI name from measurements (expression)", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
         "The expression has access to annotations and statistics.")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -70,12 +70,12 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData inputRois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        ROI2DListData result = new ROI2DListData();
+        Roi2dListData result = new Roi2dListData();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
-        ROI2DListData tmp = new ROI2DListData();
+        Roi2dListData tmp = new Roi2dListData();
 
         ImagePlus referenceImage = null;
         if (inputReference != null) {

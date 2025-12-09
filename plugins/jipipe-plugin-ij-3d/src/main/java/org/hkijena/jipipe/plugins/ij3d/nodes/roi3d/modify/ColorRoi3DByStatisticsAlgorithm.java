@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementColumn;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementColumn;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
@@ -36,11 +36,11 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
-    private ROI3DMeasurementColumn fillMeasurement = ROI3DMeasurementColumn.Index;
+    private Roi3DMeasurementColumn fillMeasurement = Roi3DMeasurementColumn.Index;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
 
     private boolean measureInPhysicalUnits = true;
@@ -59,9 +59,9 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData outputData = new IJ3DROIListData();
+        Ij3dSuiteRoiListData outputData = new Ij3dSuiteRoiListData();
 
-        IJ3DROIListData inputRois = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData inputRois = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Obtain statistics
@@ -116,12 +116,12 @@ public class ColorRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Fill measurement", description = "The measurement to extract for the filling color.")
     @JIPipeParameter("fill-measurement")
-    public ROI3DMeasurementColumn getFillMeasurement() {
+    public Roi3DMeasurementColumn getFillMeasurement() {
         return fillMeasurement;
     }
 
     @JIPipeParameter("fill-measurement")
-    public void setFillMeasurement(ROI3DMeasurementColumn fillMeasurement) {
+    public void setFillMeasurement(Roi3DMeasurementColumn fillMeasurement) {
         this.fillMeasurement = fillMeasurement;
     }
 

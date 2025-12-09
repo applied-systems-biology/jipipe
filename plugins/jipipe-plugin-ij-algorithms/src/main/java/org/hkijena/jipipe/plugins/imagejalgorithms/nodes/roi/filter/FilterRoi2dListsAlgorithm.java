@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
 
 import java.awt.*;
@@ -38,8 +38,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter 2D ROI list", description = "Only passes ROI lists that match the filter criteria.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class FilterRoi2dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
@@ -57,7 +57,7 @@ public class FilterRoi2dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
 
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
@@ -70,7 +70,7 @@ public class FilterRoi2dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (filter.test(parameters)) {
             iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
         } else if (outputEmptyLists) {
-            iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new Roi2dListData(), progressInfo);
         }
     }
 

@@ -23,14 +23,14 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
 @SetJIPipeDocumentation(name = "Convert IJ3D ROI to RGB", description = "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, optional = true, description = "Optional image where the objects are drawn on")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class Roi3DToRGBAlgorithm extends JIPipeIteratingAlgorithm {
@@ -57,7 +57,7 @@ public class Roi3DToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roi3DListData = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData roi3DListData = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
         ImagePlusData referenceImage = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo);
 
         ImagePlus outputImage = drawer.draw(roi3DListData, referenceImage != null ? referenceImage.getImage() : null, progressInfo);

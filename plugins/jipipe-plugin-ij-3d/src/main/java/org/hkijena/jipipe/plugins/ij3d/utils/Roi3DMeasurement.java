@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.utils;
 
-public enum ROI3DMeasurement {
+public enum Roi3DMeasurement {
     Index(1),
     Name(2),
     Comment(4),
@@ -33,11 +33,11 @@ public enum ROI3DMeasurement {
 
     private final int nativeValue;
 
-    ROI3DMeasurement(int nativeValue) {
+    Roi3DMeasurement(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
-    public static boolean includes(int nativeValue, ROI3DMeasurement target) {
+    public static boolean includes(int nativeValue, Roi3DMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 

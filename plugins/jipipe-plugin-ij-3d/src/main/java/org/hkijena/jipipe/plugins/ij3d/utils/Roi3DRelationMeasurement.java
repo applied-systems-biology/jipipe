@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.utils;
 
-public enum ROI3DRelationMeasurement {
+public enum Roi3DRelationMeasurement {
     Colocalization(1),
     PercentageColocalization(2),
     OverlapsBox(4),
@@ -37,11 +37,11 @@ public enum ROI3DRelationMeasurement {
 
     private final int nativeValue;
 
-    ROI3DRelationMeasurement(int nativeValue) {
+    Roi3DRelationMeasurement(int nativeValue) {
         this.nativeValue = nativeValue;
     }
 
-    public static boolean includes(int nativeValue, ROI3DRelationMeasurement target) {
+    public static boolean includes(int nativeValue, Roi3DRelationMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 

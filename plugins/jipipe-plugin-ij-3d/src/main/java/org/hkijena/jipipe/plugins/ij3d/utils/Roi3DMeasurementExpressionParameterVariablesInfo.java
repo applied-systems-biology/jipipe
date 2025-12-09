@@ -25,15 +25,14 @@ import java.util.Set;
 /**
  * A variable source that contains the ImageJ measurements.
  */
-public class AllROI3DRelationMeasurementExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
-
+public class Roi3DMeasurementExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
 
     static {
         VARIABLES = new HashSet<>();
-        for (ROI3DRelationMeasurementColumn column : ROI3DRelationMeasurementColumn.values()) {
-            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("all." + column.getColumnName(), column.getName() + " (All values)", column.getDescription() + ". This variable contains an array of all measurements."));
+        for (Roi3DMeasurementColumn column : Roi3DMeasurementColumn.values()) {
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo(column.getColumnName(), column.getName(), column.getDescription()));
         }
     }
 

@@ -21,26 +21,26 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 @SetJIPipeDocumentation(name = "Convert IJ3D ROI to 2D ROI", description = "Converts a 3D ROI list into a 2D ROI list.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class Roi3DToRoi2DConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    public Roi3DToRoi2DConverterAlgorithm(JIPipeNodeInfo info) {
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
+public class Roi3DToRoi2dConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    public Roi3DToRoi2dConverterAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public Roi3DToRoi2DConverterAlgorithm(Roi3DToRoi2DConverterAlgorithm other) {
+    public Roi3DToRoi2dConverterAlgorithm(Roi3DToRoi2dConverterAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData inputRois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
-        ROI2DListData outputRois = inputRois.toRoi2D(progressInfo);
+        Ij3dSuiteRoiListData inputRois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
+        Roi2dListData outputRois = inputRois.toRoi2d(progressInfo);
         iterationStep.addOutputData(getFirstOutputSlot(), outputRois, progressInfo);
     }
 }

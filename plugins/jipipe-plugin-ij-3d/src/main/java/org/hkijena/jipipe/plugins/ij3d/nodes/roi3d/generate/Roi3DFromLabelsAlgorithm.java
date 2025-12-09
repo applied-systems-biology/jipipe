@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
@@ -36,7 +36,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "IJ3D Labels to 3D ROI", description = "Converts a label image into 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Labels")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double minParticleSize = 0;
@@ -64,7 +64,7 @@ public class Roi3DFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputLabels = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
 
-        IJ3DROIListData roiList = new IJ3DROIListData();
+        Ij3dSuiteRoiListData roiList = new Ij3dSuiteRoiListData();
 
         ImageJIterationUtils.forEachIndexedCTStack(inputLabels, (labels, index, stackProgress) -> {
             progressInfo.log("Detecting connected components ...");

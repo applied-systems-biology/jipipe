@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.ImagePlusPropertiesExpressionParameterVariablesInfo;
@@ -51,10 +51,10 @@ import java.util.*;
         "For example, if a ROI only exists within one channel, and different ROIs are required for each channel, this node then can copy the ROIs to the other channel locations with a unique name. " +
         "If you just want measurements across multiple channels, use 'Change 2D ROI properties' to set the channel location to zero, which yields a behavior consistent with ImageJ.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Process")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", optional = true, create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
-public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
+public class CopyRoi2dAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension dimension = HyperstackDimension.Frame;
     private OptionalJIPipeExpressionParameter filter = new OptionalJIPipeExpressionParameter(false, "roi.T <= 1");
@@ -63,11 +63,11 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
     private OutputMode outputMode = OutputMode.Merge;
     private boolean measureInPhysicalUnits = true;
 
-    public CopyRoi2DAcrossZCTAlgorithm(JIPipeNodeInfo info) {
+    public CopyRoi2dAcrossZCTAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public CopyRoi2DAcrossZCTAlgorithm(CopyRoi2DAcrossZCTAlgorithm other) {
+    public CopyRoi2dAcrossZCTAlgorithm(CopyRoi2dAcrossZCTAlgorithm other) {
         super(other);
         this.dimension = other.dimension;
         this.locations = new JIPipeExpressionParameter(other.locations);
@@ -79,8 +79,8 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputs = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
-        ROI2DListData outputs;
+        Roi2dListData inputs = iterationStep.getInputData("Input", Roi2dListData.class, progressInfo);
+        Roi2dListData outputs;
         ImagePlus referenceImage = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         if(referenceImage == null) {
             referenceImage = inputs.createDummyImage();
@@ -98,7 +98,7 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Find the source rois
         progressInfo.log("Filtering sources ...");
-        ROI2DListData sources = new ROI2DListData();
+        Roi2dListData sources = new Roi2dListData();
         for (int i = 0; i < inputs.size(); i++) {
             Roi roi = inputs.get(i);
             if (filter.isEnabled()) {
@@ -112,13 +112,13 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         // Determine the outputs
         switch (outputMode) {
             case Merge:
-                outputs = new ROI2DListData(sources);
+                outputs = new Roi2dListData(sources);
                 break;
             case OnlyNew:
-                outputs = new ROI2DListData();
+                outputs = new Roi2dListData();
                 break;
             case OnlyNewAndOther:
-                outputs = new ROI2DListData();
+                outputs = new Roi2dListData();
                 for (Roi roi : inputs) {
                     if(!sources.contains(roi)) {
                         outputs.add(roi);
@@ -168,7 +168,7 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void copyAcrossDepth(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+    private void copyAcrossDepth(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, Roi2dListData outputs) {
         for (int depth : requestedLocationsArray) {
             if (!perLocation.containsKey(depth)) {
                 variablesMap.put("roi.Z", depth);
@@ -183,7 +183,7 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void copyAcrossChannel(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+    private void copyAcrossChannel(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, Roi2dListData outputs) {
         for (int channel : requestedLocationsArray) {
             if (!perLocation.containsKey(channel)) {
                 variablesMap.put("roi.C", channel);
@@ -198,7 +198,7 @@ public class CopyRoi2DAcrossZCTAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void copyAcrossFrame(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, ROI2DListData outputs) {
+    private void copyAcrossFrame(Roi roi, int[] requestedLocationsArray, TIntObjectMap<Roi> perLocation, Multimap<Integer, Roi> newVerticesForLocationsMap, JIPipeExpressionVariablesMap variablesMap, Roi2dListData outputs) {
         for (int frame : requestedLocationsArray) {
             if (!perLocation.containsKey(frame)) {
                 variablesMap.put("roi.T", frame);

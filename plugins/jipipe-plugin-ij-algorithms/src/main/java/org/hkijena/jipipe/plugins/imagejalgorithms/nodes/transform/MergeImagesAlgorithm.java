@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -105,7 +105,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
@@ -115,7 +115,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }
             case OutsideRoi: {
-                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Target", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());

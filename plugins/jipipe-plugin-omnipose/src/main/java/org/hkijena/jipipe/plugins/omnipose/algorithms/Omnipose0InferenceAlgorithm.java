@@ -52,7 +52,7 @@ import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2SegmentationO
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
@@ -89,7 +89,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows Z")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows d")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 @RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)
 public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
@@ -99,7 +99,7 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_Z = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows Z", "Flows in Z direction (black for non-3D images)");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_D = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows d", "Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)");
     public static final JIPipeDataSlotInfo OUTPUT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Probabilities", "An image indicating the cell probabilities for each pixel");
-    public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROI2DListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
+    public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(Roi2dListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
     private final Cellpose2GPUSettings gpuSettings;
     private final OmniposeSegmentationTweaksSettings segmentationTweaksSettings;
@@ -316,9 +316,9 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
         }
         if (segmentationOutputSettings.isOutputROI()) {
             progressInfo.log("Reading ROI ...");
-            ROI2DListData rois = new ROI2DListData();
+            Roi2dListData rois = new Roi2dListData();
             for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
-                ROI2DListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
+                Roi2dListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
                 if (imageInfo.sliceBaseNames.size() > 1) {
                     for (Roi roi : sliceRoi) {
                         roi.setPosition(0, entry.getKey().getZ() + 1, 0);

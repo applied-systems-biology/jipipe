@@ -26,34 +26,34 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2dRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract pairwise 2D ROI statistics", description = "Extracts all pairwise statistics between the 2D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 1", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
-public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2dRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private Roi2DRelationMeasurementSetParameter measurements = new Roi2DRelationMeasurementSetParameter();
+    private Roi2dRelationMeasurementSetParameter measurements = new Roi2dRelationMeasurementSetParameter();
 
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
     private boolean preciseColocalization = true;
 
-    public ExtractRoi2DRelationStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2dRelationStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExtractRoi2DRelationStatisticsAlgorithm(ExtractRoi2DRelationStatisticsAlgorithm other) {
+    public ExtractRoi2dRelationStatisticsAlgorithm(ExtractRoi2dRelationStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new Roi2DRelationMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi2dRelationMeasurementSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
@@ -61,8 +61,8 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData roi1List = iterationStep.getInputData("ROI 1", ROI2DListData.class, progressInfo);
-        ROI2DListData roi2List = iterationStep.getInputData("ROI 2", ROI2DListData.class, progressInfo);
+        Roi2dListData roi1List = iterationStep.getInputData("ROI 1", Roi2dListData.class, progressInfo);
+        Roi2dListData roi2List = iterationStep.getInputData("ROI 2", Roi2dListData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
@@ -105,12 +105,12 @@ public class ExtractRoi2DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
     @JIPipeParameter("measurements")
-    public Roi2DRelationMeasurementSetParameter getMeasurements() {
+    public Roi2dRelationMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(Roi2DRelationMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi2dRelationMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

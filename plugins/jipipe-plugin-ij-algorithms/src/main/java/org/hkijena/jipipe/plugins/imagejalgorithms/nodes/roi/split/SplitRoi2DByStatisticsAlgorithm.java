@@ -31,9 +31,9 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DPropertiesExpressionVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2dPropertiesExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -51,10 +51,10 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Split 2D ROI lists by statistics", description = "Splits the incoming 2D ROI lists by a classifier value that is calculated based on statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Split")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Split ROI", create = true)
-public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Split ROI", create = true)
+public class SplitRoi2dByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageJMeasurementsSetParameter measurements = new ImageJMeasurementsSetParameter();
     private boolean measureInPhysicalUnits = true;
@@ -66,7 +66,7 @@ public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param info the info
      */
-    public SplitRoi2DByStatisticsAlgorithm(JIPipeNodeInfo info) {
+    public SplitRoi2dByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -75,7 +75,7 @@ public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      *
      * @param other the other
      */
-    public SplitRoi2DByStatisticsAlgorithm(SplitRoi2DByStatisticsAlgorithm other) {
+    public SplitRoi2dByStatisticsAlgorithm(SplitRoi2dByStatisticsAlgorithm other) {
         super(other);
         this.measurements = new ImageJMeasurementsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
@@ -85,7 +85,7 @@ public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData roiList = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData roiList = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlus reference = getReferenceImage(iterationStep, progressInfo);
         if (roiList.isEmpty()) {
             iterationStep.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
@@ -94,21 +94,21 @@ public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         ResultsTableData measured = roiList.measure(reference, measurements, true, measureInPhysicalUnits);
-        Map<String, ROI2DListData> groups = new HashMap<>();
+        Map<String, Roi2dListData> groups = new HashMap<>();
 
         for (int i = 0; i < roiList.size(); i++) {
             Roi roi = roiList.get(i);
-            Roi2DPropertiesExpressionVariablesInfo.putVariables(roi, roiList.size(), measured, i, variablesMap);
+            Roi2dPropertiesExpressionVariablesInfo.putVariables(roi, roiList.size(), measured, i, variablesMap);
             String group = classifier.evaluateToString(variablesMap);
-            ROI2DListData target = groups.getOrDefault(group, null);
+            Roi2dListData target = groups.getOrDefault(group, null);
             if(target == null) {
-                target = new ROI2DListData();
+                target = new Roi2dListData();
                 groups.put(group, target);
             }
             target.add(roi);
         }
 
-        for (Map.Entry<String, ROI2DListData> entry : groups.entrySet()) {
+        for (Map.Entry<String, Roi2dListData> entry : groups.entrySet()) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             classifierAnnotation.addAnnotationIfEnabled(annotationList, entry.getKey());
             iterationStep.addOutputData(getFirstOutputSlot(), entry.getValue(), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -153,7 +153,7 @@ public class SplitRoi2DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("classifier")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = Roi2DPropertiesExpressionVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi2dPropertiesExpressionVariablesInfo.class)
     public JIPipeExpressionParameter getClassifier() {
         return classifier;
     }

@@ -2,7 +2,7 @@ package org.hkijena.jipipe.plugins.ij3d.viewers;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.ImagePlusDataViewer;
@@ -14,16 +14,16 @@ import java.util.List;
 
 import static org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS;
 
-public class ROI3DListDataViewer extends ImagePlusDataViewer {
-    public ROI3DListDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
+public class Roi3DListDataViewer extends ImagePlusDataViewer {
+    public Roi3DListDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow);
     }
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
         getLegacyImageViewer().clearOverlays();
-        if (data instanceof IJ3DROIListData) {
-            super.loadDataIntoLegacyViewer(new ImagePlusData(((IJ3DROIListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
+        if (data instanceof Ij3dSuiteRoiListData) {
+            super.loadDataIntoLegacyViewer(new ImagePlusData(((Ij3dSuiteRoiListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
             getLegacyImageViewer().addOverlay(data);
 //            getLegacyImageViewer().getViewerPanel2D().getViewerRunnerQueue().enqueue(new AbstractJIPipeRunnable() {
 //                @Override
@@ -33,7 +33,7 @@ public class ROI3DListDataViewer extends ImagePlusDataViewer {
 //
 //                @Override
 //                public void run() {
-//                    ROI2DListData roi2D = ((ROI3DListData) data).toRoi2D(getProgressInfo());
+//                    Roi2dListData roi2D = ((Roi3DListData) data).toRoi2d(getProgressInfo());
 //                    SwingUtilities.invokeLater(() -> {
 //                        getLegacyImageViewer().addOverlay(roi2D);
 //                    });
@@ -51,8 +51,8 @@ public class ROI3DListDataViewer extends ImagePlusDataViewer {
 
     @Override
     protected void loadDataIntoVtkViewer(JIPipeData data) {
-        if (data instanceof IJ3DROIListData) {
-            super.loadDataIntoVtkViewer(new ImagePlusData(((IJ3DROIListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
+        if (data instanceof Ij3dSuiteRoiListData) {
+            super.loadDataIntoVtkViewer(new ImagePlusData(((Ij3dSuiteRoiListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
         }
     }
 }

@@ -37,9 +37,9 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DOutline;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DOutline;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerOverlay;
@@ -66,25 +66,25 @@ import java.util.zip.ZipOutputStream;
 @SetJIPipeDocumentation(name = "IJ3D ROI list", description = "Collection of 3D ROI from ImageJ 3D Suite")
 @ConfigureJIPipeDataCrate(entities = {
         @DefineJIPipeDataCrateEntity(id = "glob:./*.zip", type = JIPipeDataCrateEntityType.File, name = "IJ3D Suite 3D ROI ZIP",
-                description = "ZIP files that contain IJ3D Suite ROI3D files", encodingFormat = EncodingFormats.ZIP)
+                description = "ZIP files that contain IJ3D Suite Roi3D files", encodingFormat = EncodingFormats.ZIP)
 })
 @LabelAsJIPipeHeavyData
 @LabelAsJIPipeCommonData
-public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
-    public IJ3DROIListData() {
+public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
+    public Ij3dSuiteRoiListData() {
 
     }
 
-    public IJ3DROIListData(IJ3DROIListData other) {
+    public Ij3dSuiteRoiListData(Ij3dSuiteRoiListData other) {
         for (IJ3DROI roi3D : other) {
             add(new IJ3DROI(roi3D));
         }
     }
 
-    public static IJ3DROIListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+    public static Ij3dSuiteRoiListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path zipFile = storage.findFileByExtension(".roi3d").get();
         try (InputStream stream = storage.open(zipFile)) {
-            IJ3DROIListData target = new IJ3DROIListData();
+            Ij3dSuiteRoiListData target = new Ij3dSuiteRoiListData();
             target.loadObjectsFromStream(stream, progressInfo);
             return target;
         } catch (IOException e) {
@@ -92,9 +92,9 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         }
     }
 
-    public static IJ3DROIListData importData(Path zipFile, JIPipeProgressInfo progressInfo) {
+    public static Ij3dSuiteRoiListData importData(Path zipFile, JIPipeProgressInfo progressInfo) {
         try (InputStream stream = Files.newInputStream(zipFile)) {
-            IJ3DROIListData target = new IJ3DROIListData();
+            Ij3dSuiteRoiListData target = new Ij3dSuiteRoiListData();
             target.loadObjectsFromStream(stream, progressInfo);
             return target;
         } catch (IOException e) {
@@ -117,7 +117,7 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData result = new IJ3DROIListData();
+        Ij3dSuiteRoiListData result = new Ij3dSuiteRoiListData();
         for (int i = 0; i < this.size(); i++) {
             progressInfo.resolveAndLog("Copy 3D Object", i, size());
             IJ3DROI roi3D = this.get(i);
@@ -318,8 +318,8 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         return population;
     }
 
-    public IJ3DROIListData filteredForFrameAndChannel(int channel, int frame) {
-        IJ3DROIListData listData = new IJ3DROIListData();
+    public Ij3dSuiteRoiListData filteredForFrameAndChannel(int channel, int frame) {
+        Ij3dSuiteRoiListData listData = new Ij3dSuiteRoiListData();
         for (IJ3DROI roi3D : this) {
             if (roi3D.sameChannel(channel) && roi3D.sameFrame(frame)) {
                 listData.add(roi3D);
@@ -334,7 +334,7 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
      * @param population the population
      * @param channel    the channel (one-based)
      * @param frame      the frame (one-based)
-     * @return added ROI3D
+     * @return added Roi3D
      */
     public List<IJ3DROI> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
         List<IJ3DROI> added = new ArrayList<>();
@@ -369,8 +369,8 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
     }
 
     public void logicalXor() {
-        IJ3DROIListData or = new IJ3DROIListData();
-        IJ3DROIListData and = new IJ3DROIListData();
+        Ij3dSuiteRoiListData or = new Ij3dSuiteRoiListData();
+        Ij3dSuiteRoiListData and = new Ij3dSuiteRoiListData();
         or.addAll(this);
         and.addAll(this);
         or.logicalOr();
@@ -443,7 +443,7 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         }
         Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
-            IJ3DROIListData toRender = new IJ3DROIListData();
+            Ij3dSuiteRoiListData toRender = new Ij3dSuiteRoiListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
             toRender.toPopulation().draw(ih, 255);
@@ -480,7 +480,7 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         }
         Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
-            IJ3DROIListData toRender = new IJ3DROIListData();
+            Ij3dSuiteRoiListData toRender = new Ij3dSuiteRoiListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
             for (IJ3DROI roi3D : toRender) {
@@ -490,12 +490,12 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         return outputImage;
     }
 
-    public ROI2DListData toRoi2D(JIPipeProgressInfo progressInfo) {
-        return toRoi2D(ImageSliceIndex.ZERO, progressInfo);
+    public Roi2dListData toRoi2d(JIPipeProgressInfo progressInfo) {
+        return toRoi2d(ImageSliceIndex.ZERO, progressInfo);
     }
 
-    public ROI2DListData toRoi2D(ImageSliceIndex oneSliceIndex, JIPipeProgressInfo progressInfo) {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData toRoi2d(ImageSliceIndex oneSliceIndex, JIPipeProgressInfo progressInfo) {
+        Roi2dListData result = new Roi2dListData();
         for (int i = 0; i < this.size(); i++) {
             if (progressInfo.isCancelled())
                 return null;
@@ -552,7 +552,7 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         return result;
     }
 
-    public void outline(ROI3DOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {
+    public void outline(Roi3DOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {
         for (int i = 0; i < size(); i++) {
             if (progressInfo.isCancelled())
                 return;
@@ -609,8 +609,8 @@ public class IJ3DROIListData extends ArrayList<IJ3DROI> implements JIPipeData, J
         }
     }
 
-    public IJ3DROIListData shallowCopy() {
-        IJ3DROIListData result = new IJ3DROIListData();
+    public Ij3dSuiteRoiListData shallowCopy() {
+        Ij3dSuiteRoiListData result = new Ij3dSuiteRoiListData();
         result.addAll(this);
         return result;
     }

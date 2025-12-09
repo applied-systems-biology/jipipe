@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.util.List;
 
@@ -33,15 +33,15 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Import ROI", description = "Loads a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (ROI)")
-public class ImportRoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ImportRoi2dAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**
      * @param info the algorithm info
      */
-    public ImportRoi2DAlgorithm(JIPipeNodeInfo info) {
+    public ImportRoi2dAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -50,14 +50,14 @@ public class ImportRoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ImportRoi2DAlgorithm(ImportRoi2DAlgorithm other) {
+    public ImportRoi2dAlgorithm(ImportRoi2dAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         FileData fileData = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        List<Roi> rois = ROI2DListData.loadRoiListFromFile(fileData.toPath());
-        iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(rois), progressInfo);
+        List<Roi> rois = Roi2dListData.loadRoiListFromFile(fileData.toPath());
+        iterationStep.addOutputData(getFirstOutputSlot(), new Roi2dListData(rois), progressInfo);
     }
 }

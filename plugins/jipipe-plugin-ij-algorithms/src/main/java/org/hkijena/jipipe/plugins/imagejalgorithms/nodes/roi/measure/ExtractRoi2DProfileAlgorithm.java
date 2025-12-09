@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDataAnnotationNameParameter;
@@ -54,12 +54,12 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Extract 2D ROI profile", description = "Extracts the pixel intensities along the ROI if a straight or irregular line ROI are given. " +
         "If a rotated rectangle is processed, it is converted into a straight line." +
         "If any other ROI type is given, either the row or column average of the bounding rectangle is calculated.")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", create = true, description = "The profile(s) are created on this image")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nPlot profile")
-public class ExtractRoi2DProfileAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExtractRoi2dProfileAlgorithm extends JIPipeIteratingAlgorithm {
 
 
     private boolean measureInPhysicalUnits = true;
@@ -68,11 +68,11 @@ public class ExtractRoi2DProfileAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalTextAnnotationNameParameter roiIndexAnnotation = new OptionalTextAnnotationNameParameter("ROI Index", true);
     private OptionalDataAnnotationNameParameter roiDataAnnotation = new OptionalDataAnnotationNameParameter("ROI", true);
 
-    public ExtractRoi2DProfileAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2dProfileAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExtractRoi2DProfileAlgorithm(ExtractRoi2DProfileAlgorithm other) {
+    public ExtractRoi2dProfileAlgorithm(ExtractRoi2dProfileAlgorithm other) {
         super(other);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.rectangleMode = other.rectangleMode;
@@ -83,7 +83,7 @@ public class ExtractRoi2DProfileAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlus img = iterationStep.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo).getImage();
         Calibration calibration = measureInPhysicalUnits ? img.getCalibration() : null;
 
@@ -155,7 +155,7 @@ public class ExtractRoi2DProfileAlgorithm extends JIPipeIteratingAlgorithm {
             roiIndexAnnotation.addAnnotationIfEnabled(textAnnotationList, String.valueOf(i));
 
             if (roiDataAnnotation.isEnabled()) {
-                dataAnnotationList.add(new JIPipeDataAnnotation(roiDataAnnotation.getContent(), new ROI2DListData(Collections.singletonList(roi))));
+                dataAnnotationList.add(new JIPipeDataAnnotation(roiDataAnnotation.getContent(), new Roi2dListData(Collections.singletonList(roi))));
             }
 
             iterationStep.addOutputData(getFirstOutputSlot(),

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
@@ -40,9 +40,9 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -71,7 +71,7 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData currentData = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData currentData = (Roi2dListData) iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);

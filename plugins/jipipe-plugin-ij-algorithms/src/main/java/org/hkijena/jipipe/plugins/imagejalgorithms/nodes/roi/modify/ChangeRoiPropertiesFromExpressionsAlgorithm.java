@@ -31,10 +31,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2DPropertiesExpressionVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.Roi2dPropertiesExpressionVariablesInfo;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -44,13 +44,13 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 @SetJIPipeDocumentation(name = "Set 2D ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "name");
     private OptionalJIPipeExpressionParameter positionX = new OptionalJIPipeExpressionParameter(false, "x");
     private OptionalJIPipeExpressionParameter positionY = new OptionalJIPipeExpressionParameter(false, "y");
@@ -110,7 +110,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRois = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData inputRois = (Roi2dListData) iterationStep.getInputData("Input", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
@@ -142,7 +142,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
             t = roi.getTPosition();
 
             // Make metadata accessible
-            Roi2DPropertiesExpressionVariablesInfo.putVariables(roi, inputRois.size(), statistics, i, variables);
+            Roi2dPropertiesExpressionVariablesInfo.putVariables(roi, inputRois.size(), statistics, i, variables);
 
             if (positionX.isEnabled())
                 x = positionX.getContent().evaluateToNumber(variables);
@@ -186,7 +186,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-x")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -203,7 +203,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Location (Y)", description = "The Y location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-y")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -221,7 +221,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @SetJIPipeDocumentation(name = "Slice position (Z)", description = "Allows to relocate the ROI to a different Z-position. " +
             "The first index is 1. If set to zero, the ROI is located on all slices. The annotation value is converted to an integer.")
     @JIPipeParameter("position-z")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -240,7 +240,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
             "that 'Channel' refers to an image slice and not to a pixel channel. " +
             "The first index is 1. If set to zero, the ROI is located on all channels. The annotation value is converted to an integer.")
     @JIPipeParameter("position-c")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -258,7 +258,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @SetJIPipeDocumentation(name = "Slice position (Frame)", description = "Allows to relocate the ROI to a different frame/time-position. " +
             "The first index is 1. If set to zero, the ROI is located on all frames. The annotation value is converted to an integer.")
     @JIPipeParameter("position-t")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -275,7 +275,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -292,7 +292,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -309,7 +309,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -326,7 +326,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -343,7 +343,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
     @JIPipeParameter("scale-x")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -360,7 +360,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
     @JIPipeParameter("scale-y")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -377,7 +377,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @SetJIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center. Must evaluate to a boolean.")
     @JIPipeParameter("center-scale")
-    @JIPipeExpressionParameterSettings(variableSource = Roi2DPropertiesExpressionVariablesInfo.class, hint = "per ROI")
+    @JIPipeExpressionParameterSettings(variableSource = Roi2dPropertiesExpressionVariablesInfo.class, hint = "per ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = ImageJMeasurementsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)

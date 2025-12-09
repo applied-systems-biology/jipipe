@@ -26,15 +26,15 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 
 
 @SetJIPipeDocumentation(name = "Interpolate 2D ROI", description = "Converts the ROI into a sub-pixel resolution ROI of floating-point coordinates spaced interval pixels apart.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Outline")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class InterpolateRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double interval = 1;
@@ -56,8 +56,8 @@ public class InterpolateRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        ROI2DListData outputData = new ROI2DListData();
+        Roi2dListData inputData = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
+        Roi2dListData outputData = new Roi2dListData();
         for (Roi roi : inputData) {
             Roi outlined = null;
             try {

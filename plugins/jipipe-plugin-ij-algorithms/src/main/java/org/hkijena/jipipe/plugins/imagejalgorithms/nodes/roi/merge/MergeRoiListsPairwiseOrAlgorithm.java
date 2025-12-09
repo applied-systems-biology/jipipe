@@ -25,16 +25,16 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.util.List;
 
 
 @SetJIPipeDocumentation(name = "Merge 2D ROI lists (pairwise OR)", description = "Merges each individual ROI in Target with each individual ROI in Source, generating all pairwise combinations of all ROI.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Target", create = true, description = "Where the ROI are added")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Source", create = true, description = "The ROI to be added")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Target", create = true, description = "Where the ROI are added")
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Source", create = true, description = "The ROI to be added")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class MergeRoiListsPairwiseOrAlgorithm extends JIPipeMergingAlgorithm {
 
     /**
@@ -57,29 +57,29 @@ public class MergeRoiListsPairwiseOrAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMultiIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        List<ROI2DListData> targetRoiLists = iterationStep.getInputData("Target", ROI2DListData.class, progressInfo);
-        List<ROI2DListData> sourceRoiLists = iterationStep.getInputData("Source", ROI2DListData.class, progressInfo);
+        List<Roi2dListData> targetRoiLists = iterationStep.getInputData("Target", Roi2dListData.class, progressInfo);
+        List<Roi2dListData> sourceRoiLists = iterationStep.getInputData("Source", Roi2dListData.class, progressInfo);
 
         // Merge all into one list
-        ROI2DListData targetRois = new ROI2DListData();
-        ROI2DListData sourceRois = new ROI2DListData();
+        Roi2dListData targetRois = new Roi2dListData();
+        Roi2dListData sourceRois = new Roi2dListData();
 
-        for (ROI2DListData targetRoiList : targetRoiLists) {
+        for (Roi2dListData targetRoiList : targetRoiLists) {
             targetRois.addAll(targetRoiList);
         }
-        for (ROI2DListData sourceRoiList : sourceRoiLists) {
+        for (Roi2dListData sourceRoiList : sourceRoiLists) {
             sourceRois.addAll(sourceRoiList);
         }
 
         // pairwise iteration
-        ROI2DListData result = new ROI2DListData();
+        Roi2dListData result = new Roi2dListData();
         for (Roi roi1 : targetRois) {
             for (Roi roi2 : sourceRois) {
                 if (progressInfo.isCancelled()) {
                     return;
                 }
                 if (roi1 != roi2) {
-                    ROI2DListData tmp = new ROI2DListData();
+                    Roi2dListData tmp = new Roi2dListData();
                     tmp.add(roi1);
                     tmp.add(roi2);
                     tmp.logicalOr();

@@ -29,9 +29,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -43,13 +43,13 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Split IJ3D ROI lists by statistics", description = "Splits the incoming 3D ROI lists by a classifier value that is calculated based on statistics.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Split ROI", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Split ROI", create = true)
 public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean measureInPhysicalUnits = true;
-    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
+    private Roi3DMeasurementSetParameter measurements = new Roi3DMeasurementSetParameter();
     private JIPipeExpressionParameter classifier = new JIPipeExpressionParameter("index");
     private OptionalTextAnnotationNameParameter classifierAnnotation = new OptionalTextAnnotationNameParameter("Classifier", true);
 
@@ -60,14 +60,14 @@ public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public SplitRoi3DByStatisticsAlgorithm(SplitRoi3DByStatisticsAlgorithm other) {
         super(other);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi3DMeasurementSetParameter(other.measurements);
         this.classifier = new JIPipeExpressionParameter(other.classifier);
         this.classifierAnnotation = new OptionalTextAnnotationNameParameter(other.classifierAnnotation);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData inputRois = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData inputRois = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
@@ -80,7 +80,7 @@ public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         variableSet.set("num_roi", inputRois.size());
 
         // Apply filter
-        Map<String, IJ3DROIListData> groups = new HashMap<>();
+        Map<String, Ij3dSuiteRoiListData> groups = new HashMap<>();
 
         for (int row = 0; row < statistics.getRowCount(); row++) {
             IJ3DROI roi = inputRois.get(row);
@@ -98,15 +98,15 @@ public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             }
 
             String group = classifier.evaluateToString(variableSet);
-            IJ3DROIListData target = groups.getOrDefault(group, null);
+            Ij3dSuiteRoiListData target = groups.getOrDefault(group, null);
             if (target == null) {
-                target = new IJ3DROIListData();
+                target = new Ij3dSuiteRoiListData();
                 groups.put(group, target);
             }
             target.add(roi);
         }
 
-          for (Map.Entry<String, IJ3DROIListData> entry : groups.entrySet()) {
+          for (Map.Entry<String, Ij3dSuiteRoiListData> entry : groups.entrySet()) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             classifierAnnotation.addAnnotationIfEnabled(annotationList, entry.getKey());
             iterationStep.addOutputData(getFirstOutputSlot(), entry.getValue(), annotationList, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -115,12 +115,12 @@ public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to generate")
     @JIPipeParameter("measurements")
-    public ROI3DMeasurementSetParameter getMeasurements() {
+    public Roi3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 
@@ -137,7 +137,7 @@ public class SplitRoi3DByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Classifier", description = "An expression that returns a string that is used to classify the ROIs")
     @JIPipeParameter("classifier")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
     @AddJIPipeExpressionParameterVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")

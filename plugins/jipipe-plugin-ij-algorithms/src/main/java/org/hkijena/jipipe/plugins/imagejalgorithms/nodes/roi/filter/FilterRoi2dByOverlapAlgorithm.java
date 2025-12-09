@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
@@ -54,12 +54,12 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Filter 2D ROI by overlap", description = "Only returns candidate ROIs that overlap with at least N ROIs from the filter set.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Candidates", description = "The ROIs that are filtered", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Filters", description = "The ROIs that are used as filters", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Matched", description = "The candidates that match the filter")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Rejected", description = "The candidates that do not match the filter")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Intersections", description = "The intersection ROIs")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Filters", description = "The remaining filter ROIs. Will be different if 'Consume on overlap' is enabled.")
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Candidates", description = "The ROIs that are filtered", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Filters", description = "The ROIs that are used as filters", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Matched", description = "The candidates that match the filter")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Rejected", description = "The candidates that do not match the filter")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Intersections", description = "The intersection ROIs")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Filters", description = "The remaining filter ROIs. Will be different if 'Consume on overlap' is enabled.")
 public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo SLOT_INPUT_REFERENCE = JIPipeDataSlotInfo.builder().name("Reference").description("Reference image used for measurements")
@@ -71,13 +71,13 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     public static final JIPipeDataSlotInfo SLOT_INPUT_REFERENCE_INTERSECTIONS = JIPipeDataSlotInfo.builder().name("Intersections ref").description("Reference image used for intersection ROI measurements")
             .slotType(JIPipeSlotType.Input).dataClass(ImagePlusData.class).optional(true).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_MATCHED = JIPipeDataSlotInfo.builder().name("Matched").description("The candidates that match the filter")
-            .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
+            .slotType(JIPipeSlotType.Output).dataClass(Roi2dListData.class).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_REJECTED = JIPipeDataSlotInfo.builder().name("Rejected").description("The candidates that do not match the filter")
-            .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
+            .slotType(JIPipeSlotType.Output).dataClass(Roi2dListData.class).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_INTERSECTIONS = JIPipeDataSlotInfo.builder().name("Intersections").description("The intersection ROIs.")
-            .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
+            .slotType(JIPipeSlotType.Output).dataClass(Roi2dListData.class).build();
     public static final JIPipeDataSlotInfo SLOT_OUTPUT_FILTERS = JIPipeDataSlotInfo.builder().name("Filters").description("The remaining filter ROIs. Will be different if 'Consume on overlap' is enabled.")
-            .slotType(JIPipeSlotType.Output).dataClass(ROI2DListData.class).build();
+            .slotType(JIPipeSlotType.Output).dataClass(Roi2dListData.class).build();
     private final OutputParameters outputParameters;
     private final MeasurementParameters measurementParameters;
     private OverlapMode overlapMode = OverlapMode.BoundingBoxPrefilter;
@@ -114,14 +114,14 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData candidates = iterationStep.getInputData("Candidates", ROI2DListData.class, progressInfo);
-        ROI2DListData filters = iterationStep.getInputData("Filters", ROI2DListData.class, progressInfo);
+        Roi2dListData candidates = iterationStep.getInputData("Candidates", Roi2dListData.class, progressInfo);
+        Roi2dListData filters = iterationStep.getInputData("Filters", Roi2dListData.class, progressInfo);
         ImagePlus candidateReference = null;
         ImagePlus filterReference = null;
         ImagePlus intersectionReference = null;
-        ROI2DListData matched = new ROI2DListData();
-        ROI2DListData rejected = new ROI2DListData();
-        ROI2DListData intersections = new ROI2DListData();
+        Roi2dListData matched = new Roi2dListData();
+        Roi2dListData rejected = new Roi2dListData();
+        Roi2dListData intersections = new Roi2dListData();
 
         // Initialize the reference images
         if (measurementParameters.referenceMode == ReferenceMode.SameForAll) {
@@ -160,7 +160,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Convert filters over from measured ROIs
-        filters = new ROI2DListData();
+        filters = new Roi2dListData();
         for (MeasuredRoi measuredFilter : measuredFilters) {
             filters.add(measuredFilter.roi);
         }
@@ -180,7 +180,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private List<MeasuredRoi> toMeasuredRoi(ROI2DListData rois, ResultsTableData measurements) {
+    private List<MeasuredRoi> toMeasuredRoi(Roi2dListData rois, ResultsTableData measurements) {
         List<MeasuredRoi> result = new ArrayList<>();
         if (rois.size() != measurements.getRowCount()) {
             throw new IllegalArgumentException("Unable to create measured ROIs from different input sizes: " + rois.size() + " <> " + measurements.getRowCount());
@@ -201,7 +201,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void processCandidate(MeasuredRoi candidate, List<MeasuredRoi> filters, ImagePlus intersectionReference,
-                                  ROI2DListData matched, ROI2DListData rejected, ROI2DListData intersections, JIPipeExpressionVariablesMap variablesMap, JIPipePercentageProgressInfo progressInfo) {
+                                  Roi2dListData matched, Roi2dListData rejected, Roi2dListData intersections, JIPipeExpressionVariablesMap variablesMap, JIPipePercentageProgressInfo progressInfo) {
         List<MeasuredRoi> matchingFilters = new ArrayList<>();
         List<Roi> matchingIntersections = new ArrayList<>();
 
@@ -231,10 +231,10 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
             // Do an exact check if enabled
             final boolean overlapSuccess;
-            ROI2DListData tempIntersections = new ROI2DListData();
+            Roi2dListData tempIntersections = new Roi2dListData();
 
             if (overlapMode == OverlapMode.ExactOnly || overlapMode == OverlapMode.BoundingBoxPrefilter) {
-                ROI2DListData tmp = new ROI2DListData();
+                Roi2dListData tmp = new Roi2dListData();
                 tmp.add(candidate.roi);
                 tmp.add(filter.roi);
                 tmp.logicalAnd();
@@ -350,7 +350,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Measure only the area and use that
-        ROI2DListData tmp = new ROI2DListData();
+        Roi2dListData tmp = new Roi2dListData();
         tmp.add(roi);
         ResultsTableData measured = tmp.measure(null, new ImageJMeasurementsSetParameter(Set.of(ImageJMeasurement.Area)), false, false);
 
@@ -369,7 +369,7 @@ public class FilterRoi2dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return sumArea <= 0;
     }
 
-    private boolean isIntersectingExact(ROI2DListData intersectionNonEmpty, MeasuredRoi candidateMeasurements, MeasuredRoi filterMeasurements, ImagePlus intersectionReference, JIPipeExpressionVariablesMap variablesMap) {
+    private boolean isIntersectingExact(Roi2dListData intersectionNonEmpty, MeasuredRoi candidateMeasurements, MeasuredRoi filterMeasurements, ImagePlus intersectionReference, JIPipeExpressionVariablesMap variablesMap) {
         if (!overlapCondition.isEnabled()) {
             // It's enough if we have intersecting filters (empty intersections already filtered out by isEmptyIntersection)
             return !intersectionNonEmpty.isEmpty();

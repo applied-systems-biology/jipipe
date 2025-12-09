@@ -19,30 +19,30 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Roi2DRelationMeasurementSet extends JIPipeDynamicSetParameter<Roi2DRelationMeasurement> {
+public class Roi2dRelationMeasurementSet extends JIPipeDynamicSetParameter<Roi2dRelationMeasurement> {
 
-    public Roi2DRelationMeasurementSet() {
-        super(new HashSet<>(Arrays.asList(Roi2DRelationMeasurement.values())));
+    public Roi2dRelationMeasurementSet() {
+        super(new HashSet<>(Arrays.asList(Roi2dRelationMeasurement.values())));
         setCollapsed(true);
         initialize();
     }
 
-    public Roi2DRelationMeasurementSet(Roi2DRelationMeasurementSet other) {
+    public Roi2dRelationMeasurementSet(Roi2dRelationMeasurementSet other) {
         super(other);
     }
 
-    public Roi2DRelationMeasurementSet(Set<Roi2DRelationMeasurement> values) {
+    public Roi2dRelationMeasurementSet(Set<Roi2dRelationMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(Roi2DRelationMeasurement.values()));
+        getAllowedValues().addAll(Arrays.asList(Roi2dRelationMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (Roi2DRelationMeasurement value : getValues()) {
+        for (Roi2dRelationMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -55,7 +55,7 @@ public class Roi2DRelationMeasurementSet extends JIPipeDynamicSetParameter<Roi2D
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (Roi2DRelationMeasurement value : getAllowedValues()) {
+        for (Roi2dRelationMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }

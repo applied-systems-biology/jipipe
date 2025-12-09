@@ -19,30 +19,30 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ROI3DMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI3DMeasurement> {
-    public ROI3DMeasurementSetParameter() {
-        super(new HashSet<>(Arrays.asList(ROI3DMeasurement.values())));
+public class Roi3DMeasurementSetParameter extends JIPipeDynamicSetParameter<Roi3DMeasurement> {
+    public Roi3DMeasurementSetParameter() {
+        super(new HashSet<>(Arrays.asList(Roi3DMeasurement.values())));
         setCollapsed(true);
         initialize();
     }
 
-    public ROI3DMeasurementSetParameter(JIPipeDynamicSetParameter<ROI3DMeasurement> other) {
+    public Roi3DMeasurementSetParameter(JIPipeDynamicSetParameter<Roi3DMeasurement> other) {
         super(other);
         initialize();
     }
 
-    public ROI3DMeasurementSetParameter(Set<ROI3DMeasurement> values) {
+    public Roi3DMeasurementSetParameter(Set<Roi3DMeasurement> values) {
         super(values);
         initialize();
     }
 
     private void initialize() {
-        getAllowedValues().addAll(Arrays.asList(ROI3DMeasurement.values()));
+        getAllowedValues().addAll(Arrays.asList(Roi3DMeasurement.values()));
     }
 
     public int getNativeValue() {
         int result = 0;
-        for (ROI3DMeasurement value : getValues()) {
+        for (Roi3DMeasurement value : getValues()) {
             result |= value.getNativeValue();
         }
         return result;
@@ -55,7 +55,7 @@ public class ROI3DMeasurementSetParameter extends JIPipeDynamicSetParameter<ROI3
      */
     public void setNativeValue(int nativeValue) {
         getValues().clear();
-        for (ROI3DMeasurement value : getAllowedValues()) {
+        for (Roi3DMeasurement value : getAllowedValues()) {
             if ((value.getNativeValue() & nativeValue) == value.getNativeValue()) {
                 getValues().add(value);
             }

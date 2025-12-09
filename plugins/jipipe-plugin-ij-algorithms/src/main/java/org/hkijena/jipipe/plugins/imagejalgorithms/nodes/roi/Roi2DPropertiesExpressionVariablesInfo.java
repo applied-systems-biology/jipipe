@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class Roi2DPropertiesExpressionVariablesInfo implements JIPipeExpressionVariablesInfo {
+public class Roi2dPropertiesExpressionVariablesInfo implements JIPipeExpressionVariablesInfo {
 
     private static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES = new HashSet<>();
 

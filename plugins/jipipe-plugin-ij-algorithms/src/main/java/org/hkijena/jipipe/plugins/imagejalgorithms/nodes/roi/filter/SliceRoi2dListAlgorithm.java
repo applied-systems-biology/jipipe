@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.ranges.IntegerRange;
 
 import java.util.List;
@@ -37,8 +37,8 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Slice 2D ROI list", description = "Extracts a sublist of ROI from the input")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class SliceRoi2dListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange selectedIndices = new IntegerRange();
@@ -68,9 +68,9 @@ public class SliceRoi2dListAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData inputRois = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
 
-        ROI2DListData outputRois = new ROI2DListData();
+        Roi2dListData outputRois = new Roi2dListData();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         List<Integer> indices = selectedIndices.getIntegers(0, inputRois.size() - 1, variables);

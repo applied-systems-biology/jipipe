@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -70,8 +70,8 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        IJ3DROIListData rois = new IJ3DROIListData();
-        for (IJ3DROIListData data : image.extractOverlaysOfType(IJ3DROIListData.class)) {
+        Ij3dSuiteRoiListData rois = new Ij3dSuiteRoiListData();
+        for (Ij3dSuiteRoiListData data : image.extractOverlaysOfType(Ij3dSuiteRoiListData.class)) {
             rois.addAll(data);
         }
         ImagePlus outputImage = drawer.draw(rois, image.getImage(), progressInfo);

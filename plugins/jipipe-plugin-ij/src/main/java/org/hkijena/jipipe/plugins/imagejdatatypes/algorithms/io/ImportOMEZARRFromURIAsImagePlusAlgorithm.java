@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ZARRUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
@@ -168,7 +168,7 @@ public class ImportOMEZARRFromURIAsImagePlusAlgorithm extends JIPipeSimpleIterat
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                     datasetNameAnnotation.addAnnotationIfEnabled(annotations, treeNode.getPath());
                     if (omexmlMetadata != null) {
-                        ROI2DListData rois = ROIHandler.openROIs((loci.formats.meta.IMetadata) omexmlMetadata, new ImagePlus[]{image});
+                        Roi2dListData rois = ROIHandler.openROIs((loci.formats.meta.IMetadata) omexmlMetadata, new ImagePlus[]{image});
                         iterationStep.addOutputData(getFirstOutputSlot(), new OMEImageData(image, rois, omexmlMetadata), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
                     } else {
                         iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);

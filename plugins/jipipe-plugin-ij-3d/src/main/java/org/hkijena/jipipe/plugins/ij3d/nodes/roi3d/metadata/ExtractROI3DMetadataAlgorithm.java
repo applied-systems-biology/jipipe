@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -32,20 +32,20 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Extract IJ3D ROI metadata as table", description = "Extracts the metadata (properties map) of each 3D ROI and writes them into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
-public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ExtractRoi3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter nameColumn = new OptionalStringParameter("ROI Name", false);
 
     private OptionalStringParameter indexColumn = new OptionalStringParameter("ROI Index", false);
 
 
-    public ExtractROI3DMetadataAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi3DMetadataAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ExtractROI3DMetadataAlgorithm(ExtractROI3DMetadataAlgorithm other) {
+    public ExtractRoi3DMetadataAlgorithm(ExtractRoi3DMetadataAlgorithm other) {
         super(other);
         nameColumn = new OptionalStringParameter(other.nameColumn);
         indexColumn = new OptionalStringParameter(other.indexColumn);
@@ -53,7 +53,7 @@ public class ExtractROI3DMetadataAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData rois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
         ResultsTableData table = new ResultsTableData();
         for (int i = 0; i < rois.size(); i++) {
             IJ3DROI roi = rois.get(i);

@@ -32,10 +32,10 @@ import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVaria
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.AllROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.AllRoi3DMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementExpressionParameterVariablesInfo;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
@@ -50,9 +50,9 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set IJ3D ROI properties from expressions", description = "Sets the properties of all 3D ROI via expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "Name");
     private OptionalJIPipeExpressionParameter roiComment = new OptionalJIPipeExpressionParameter(false, "Comment");
@@ -63,7 +63,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     private OptionalJIPipeExpressionParameter frameLocation = new OptionalJIPipeExpressionParameter(false, "Frame");
     private OptionalJIPipeExpressionParameter fillColor = new OptionalJIPipeExpressionParameter(false, "FillColor");
     private JIPipeParameterCollectionList metadataEntries = JIPipeParameterCollectionList.containingCollection(MetadataEntry.class);
-    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
+    private Roi3DMeasurementSetParameter measurements = new Roi3DMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     public ChangeRoi3DPropertiesFromExpressionsAlgorithm(JIPipeNodeInfo info) {
@@ -87,7 +87,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData outputROI = new IJ3DROIListData(iterationStep.getInputData("Input", IJ3DROIListData.class, progressInfo));
+        Ij3dSuiteRoiListData outputROI = new Ij3dSuiteRoiListData(iterationStep.getInputData("Input", Ij3dSuiteRoiListData.class, progressInfo));
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         // Create variables
@@ -169,8 +169,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "ROI name", description = "If true, override the ROI name")
     @JIPipeParameter("roi-name")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -188,8 +188,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "ROI comment", description = "If true, override the ROI's comment field")
     @JIPipeParameter("roi-comment")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -207,8 +207,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Center (X)", description = "If true, override the ROI's center X location")
     @JIPipeParameter("center-x")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -226,8 +226,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Center (Y)", description = "If true, override the ROI's center Y location")
     @JIPipeParameter("center-y")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -245,8 +245,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Center (Z)", description = "If true, override the ROI's center Z location")
     @JIPipeParameter("center-z")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -264,8 +264,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Channel", description = "If true, override the ROI's channel location (0 = all channels)")
     @JIPipeParameter("channel-location")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -283,8 +283,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Frame", description = "If true, override the ROI's frame location (0 = all frames)")
     @JIPipeParameter("frame-location")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -302,8 +302,8 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
     @SetJIPipeDocumentation(name = "Fill color", description = "If true, override the ROI's fill color (you can return a color or a HEX string)")
     @JIPipeParameter("fill-color")
     @JIPipeExpressionParameterSettings(hint = "per ROI")
-    @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
-    @AddJIPipeExpressionParameterVariable(fromClass = AllROI3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = AllRoi3DMeasurementExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
     @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)
@@ -332,12 +332,12 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
     @JIPipeParameter(value = "measurements", important = true)
-    public ROI3DMeasurementSetParameter getMeasurements() {
+    public Roi3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 
@@ -379,7 +379,7 @@ public class ChangeRoi3DPropertiesFromExpressionsAlgorithm extends JIPipeSimpleI
         @SetJIPipeDocumentation(name = "Metadata value")
         @JIPipeParameter("metadata-value")
         @JIPipeExpressionParameterSettings(hint = "per ROI")
-        @AddJIPipeExpressionParameterVariable(fromClass = ROI3DMeasurementExpressionParameterVariablesInfo.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = Roi3DMeasurementExpressionParameterVariablesInfo.class)
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         @AddJIPipeExpressionParameterVariable(name = "ROI number", key = "num_roi", description = "The number of ROI")
         @AddJIPipeExpressionParameterVariable(fromClass = JIPipeCustomExpressionVariablesParameterVariablesInfo.class)

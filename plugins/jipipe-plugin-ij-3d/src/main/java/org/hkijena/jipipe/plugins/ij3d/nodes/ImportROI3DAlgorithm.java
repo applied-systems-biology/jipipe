@@ -22,28 +22,28 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import IJ3D ROI", description = "Imports a 3D ROI list from a *.zip file")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true, description = "A *.zip file")
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
-public class ImportROI3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
+public class ImportRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    public ImportROI3DAlgorithm(JIPipeNodeInfo info) {
+    public ImportRoi3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportROI3DAlgorithm(ImportROI3DAlgorithm other) {
+    public ImportRoi3DAlgorithm(ImportRoi3DAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Path path = iterationStep.getInputData(getFirstInputSlot(), FileData.class, progressInfo).toPath();
-        IJ3DROIListData roi3D = IJ3DROIListData.importData(path, progressInfo.resolve("Import ROI3D"));
+        Ij3dSuiteRoiListData roi3D = Ij3dSuiteRoiListData.importData(path, progressInfo.resolve("Import Roi3D"));
         iterationStep.addOutputData(getFirstOutputSlot(), roi3D, progressInfo);
     }
 }

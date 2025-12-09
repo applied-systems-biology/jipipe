@@ -25,21 +25,21 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 /**
  * Loads ROI data from a file via IJ.openFile()
  */
 @SetJIPipeDocumentation(name = "Extract ROI from OME image", description = "Loads a ROI list from an OME image.")
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Image", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class ExtractRoi2DFromOMEImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ExtractRoi2dFromOMEImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**
      * @param info the algorithm info
      */
-    public ExtractRoi2DFromOMEImageAlgorithm(JIPipeNodeInfo info) {
+    public ExtractRoi2dFromOMEImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -48,7 +48,7 @@ public class ExtractRoi2DFromOMEImageAlgorithm extends JIPipeSimpleIteratingAlgo
      *
      * @param other the original
      */
-    public ExtractRoi2DFromOMEImageAlgorithm(ExtractRoi2DFromOMEImageAlgorithm other) {
+    public ExtractRoi2dFromOMEImageAlgorithm(ExtractRoi2dFromOMEImageAlgorithm other) {
         super(other);
     }
 
@@ -58,6 +58,6 @@ public class ExtractRoi2DFromOMEImageAlgorithm extends JIPipeSimpleIteratingAlgo
         if (omeImageData.getRois() != null)
             iterationStep.addOutputData(getFirstOutputSlot(), omeImageData.getRois(), progressInfo);
         else
-            iterationStep.addOutputData(getFirstOutputSlot(), new ROI2DListData(), progressInfo);
+            iterationStep.addOutputData(getFirstOutputSlot(), new Roi2dListData(), progressInfo);
     }
 }

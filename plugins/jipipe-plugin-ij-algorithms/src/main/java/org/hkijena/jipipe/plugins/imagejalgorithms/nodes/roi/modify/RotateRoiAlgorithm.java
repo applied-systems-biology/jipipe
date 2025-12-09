@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo;
 
 import java.awt.geom.Point2D;
@@ -38,9 +38,9 @@ import java.awt.geom.Point2D;
 
 @SetJIPipeDocumentation(name = "Rotate 2D ROI (old)", description = "Rotates all ROI in the ROI list. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter angle = new JIPipeExpressionParameter("15");
@@ -62,7 +62,7 @@ public class RotateRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData rois = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("Input", Roi2dListData.class, progressInfo);
         ImagePlusData imagePlusData = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);

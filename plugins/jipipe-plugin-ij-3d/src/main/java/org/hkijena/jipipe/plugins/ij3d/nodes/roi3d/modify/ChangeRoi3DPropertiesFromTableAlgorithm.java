@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -39,9 +39,9 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Set IJ3D ROI properties from table", description = "Sets properties of all ROI to values extracted from a table. Table rows are matched to their ROI and the column values are put into " +
         "expression variables, so the ROI can be modified.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", create = true, description = "Table containing the metadata (1 row per ROI)")
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ChangeRoi3DPropertiesFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeExpressionParameter rowSelector = new JIPipeExpressionParameter("table.row == index");
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "Name");
@@ -74,7 +74,7 @@ public class ChangeRoi3DPropertiesFromTableAlgorithm extends JIPipeSimpleIterati
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData outputROI = new IJ3DROIListData(iterationStep.getInputData("Input", IJ3DROIListData.class, progressInfo));
+        Ij3dSuiteRoiListData outputROI = new Ij3dSuiteRoiListData(iterationStep.getInputData("Input", Ij3dSuiteRoiListData.class, progressInfo));
         ResultsTableData inputMetadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
 
         // Create variables

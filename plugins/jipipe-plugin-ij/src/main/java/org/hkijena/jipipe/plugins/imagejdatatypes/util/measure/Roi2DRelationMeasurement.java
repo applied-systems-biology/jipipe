@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.util.measure;
 
-public enum Roi2DRelationMeasurement {
+public enum Roi2dRelationMeasurement {
     Overlap(1),
     PercentageOverlap(2),
     OverlapsBox(4),
@@ -26,12 +26,12 @@ public enum Roi2DRelationMeasurement {
 
     private final int nativeValue;
 
-    Roi2DRelationMeasurement(int nativeValue) {
+    Roi2dRelationMeasurement(int nativeValue) {
 
         this.nativeValue = nativeValue;
     }
 
-    public static boolean includes(int nativeValue, Roi2DRelationMeasurement target) {
+    public static boolean includes(int nativeValue, Roi2dRelationMeasurement target) {
         return (nativeValue & target.nativeValue) == target.nativeValue;
     }
 

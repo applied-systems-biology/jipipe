@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -47,7 +47,7 @@ import java.util.Set;
         "Automatic and unbiased segmentation and quantification of myofibers in skeletal muscle. Sci Rep 11, 11793 (2021). doi: https://doi.org/10.1038/s41598-021-91191-6.")
 @ConfigureJIPipeNode(menuPath = "Labels\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", description = "The labels image", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", description = "The generated ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", description = "The generated ROI", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -70,7 +70,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus labelsImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
-        ROI2DListData rois = new ROI2DListData();
+        Roi2dListData rois = new Roi2dListData();
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
@@ -83,7 +83,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void executeProtectedFloodfill(ROI2DListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
+    private void executeProtectedFloodfill(Roi2dListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
         for (int targetLabel : LabelImages.findAllLabels(ip)) {
             if (progressInfo.isCancelled())
                 return;
@@ -122,7 +122,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    private void executeFloodfill(ROI2DListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index) {
+    private void executeFloodfill(Roi2dListData outputList, JIPipeExpressionVariablesMap variables, ImageProcessor ip, ImageSliceIndex index) {
         ImageProcessor copy = (ImageProcessor) ip.clone();
         ImagePlus wrapper = new ImagePlus("slice", copy);
         for (int y = 0; y < copy.getHeight(); y++) {

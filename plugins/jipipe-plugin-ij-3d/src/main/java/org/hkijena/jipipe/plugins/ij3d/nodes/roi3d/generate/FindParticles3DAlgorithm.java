@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood3D;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -39,7 +39,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "IJ3D Find particles 3D", description = "Finds 3D particles within a mask image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
-@AddJIPipeOutputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double minParticleSize = 0;
@@ -80,7 +80,7 @@ public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageJIterationUtils.forEachIndexedZCTSlice(maskImage, (ip, index) -> ip.invert(), progressInfo.resolve("Invert mask"));
         }
 
-        IJ3DROIListData roiList = new IJ3DROIListData();
+        Ij3dSuiteRoiListData roiList = new Ij3dSuiteRoiListData();
 
         ImageJIterationUtils.forEachIndexedCTStack(maskImage, (imp, index, stackProgress) -> {
             progressInfo.log("Detecting connected components ...");

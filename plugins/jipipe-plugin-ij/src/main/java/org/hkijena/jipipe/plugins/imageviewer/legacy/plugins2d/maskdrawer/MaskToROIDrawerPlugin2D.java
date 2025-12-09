@@ -19,7 +19,7 @@ import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
 
@@ -77,7 +77,7 @@ public class MaskToROIDrawerPlugin2D extends MaskDrawerPlugin2D {
                 0,
                 Double.POSITIVE_INFINITY);
         analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
-        ROI2DListData rois = new ROI2DListData(Arrays.asList(manager.getRoisAsArray()));
+        Roi2dListData rois = new Roi2dListData(Arrays.asList(manager.getRoisAsArray()));
         ROIManagerPlugin2D roiManager = getViewerPanel().getPlugin(ROIManagerPlugin2D.class);
         roiManager.importROIs(rois, false);
         clearCurrentMask();

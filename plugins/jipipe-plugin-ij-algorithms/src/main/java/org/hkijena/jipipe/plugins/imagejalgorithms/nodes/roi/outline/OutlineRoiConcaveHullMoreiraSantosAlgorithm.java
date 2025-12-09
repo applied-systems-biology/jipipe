@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ConcaveHullMoreiraSantos;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
@@ -39,8 +39,8 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Outline")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @AddJIPipeCitation("Moreira, A., & Santos, M. Y. (2007, March). Concave hull: A k-nearest neighbours approach for the computation of the region occupied by a set of points. In International Conference on Computer Graphics Theory and Applications (Vol. 2, pp. 61-68). SciTePress.")
 public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -101,8 +101,8 @@ public class OutlineRoiConcaveHullMoreiraSantosAlgorithm extends JIPipeSimpleIte
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData input = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        ROI2DListData output = new ROI2DListData();
+        Roi2dListData input = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
+        Roi2dListData output = new Roi2dListData();
 
         for (int i = 0; i < input.size(); i++) {
             Roi roi = input.get(i);

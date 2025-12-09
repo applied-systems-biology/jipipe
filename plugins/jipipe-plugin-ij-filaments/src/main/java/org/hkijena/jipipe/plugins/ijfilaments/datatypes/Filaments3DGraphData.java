@@ -39,11 +39,11 @@ import org.hkijena.jipipe.api.data.utils.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObjectCreator3D;
 import org.hkijena.jipipe.plugins.ijfilaments.display.FilamentsManagerPlugin2D;
 import org.hkijena.jipipe.plugins.ijfilaments.util.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
@@ -260,8 +260,8 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
         return String.format("Filaments [%d vertices, %d edges]", vertexSet().size(), edgeSet().size());
     }
 
-    public ROI2DListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
-        ROI2DListData outputData = new ROI2DListData();
+    public Roi2dListData toRoi(boolean ignoreNon2DEdges, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius) {
+        Roi2dListData outputData = new Roi2dListData();
 
         if (withEdges) {
             for (FilamentEdge edge : edgeSet()) {
@@ -1091,20 +1091,20 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
     }
 
     public ImagePlus toLabels(ImagePlus referenceImage, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
+        Ij3dSuiteRoiListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
         return roi3D.toLabels(referenceImage, progressInfo);
     }
 
     public ImagePlus toMask(ImagePlus referenceImage, boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
+        Ij3dSuiteRoiListData roi3D = toRoi3D(withEdges, withVertices, forcedLineThickness, forcedVertexRadius, progressInfo);
         return roi3D.toMask(referenceImage, progressInfo);
     }
 
-    public IJ3DROIListData toRoi3D(boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
+    public Ij3dSuiteRoiListData toRoi3D(boolean withEdges, boolean withVertices, int forcedLineThickness, int forcedVertexRadius, JIPipeProgressInfo progressInfo) {
         ConnectivityInspector<FilamentVertex, FilamentEdge> connectivityInspector = getConnectivityInspector();
         List<Set<FilamentVertex>> connectedSets = connectivityInspector.connectedSets();
 
-        IJ3DROIListData result = new IJ3DROIListData();
+        Ij3dSuiteRoiListData result = new Ij3dSuiteRoiListData();
 
         ImagePlus blankCanvas = createBlankCanvas("", 8);
         ImageJIterationUtils.forEachIndexedCTStack(blankCanvas, (imp, index, ctProgress) -> {

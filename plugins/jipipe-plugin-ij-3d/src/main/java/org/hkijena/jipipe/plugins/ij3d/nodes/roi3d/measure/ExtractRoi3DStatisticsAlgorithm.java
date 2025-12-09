@@ -24,22 +24,22 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract IJ3D ROI statistics", description = "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
         "NaN is returned.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI 3D)")
 public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean measureInPhysicalUnits = true;
-    private ROI3DMeasurementSetParameter measurements = new ROI3DMeasurementSetParameter();
+    private Roi3DMeasurementSetParameter measurements = new Roi3DMeasurementSetParameter();
 
     public ExtractRoi3DStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -48,12 +48,12 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public ExtractRoi3DStatisticsAlgorithm(ExtractRoi3DStatisticsAlgorithm other) {
         super(other);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
-        this.measurements = new ROI3DMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi3DMeasurementSetParameter(other.measurements);
     }
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roi = iterationStep.getInputData("ROI", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData roi = iterationStep.getInputData("ROI", Ij3dSuiteRoiListData.class, progressInfo);
         ImagePlusData reference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
         ImageHandler referenceHandler;
         if (reference == null) {
@@ -67,12 +67,12 @@ public class ExtractRoi3DStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements to generate")
     @JIPipeParameter("measurements")
-    public ROI3DMeasurementSetParameter getMeasurements() {
+    public Roi3DMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi3DMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 

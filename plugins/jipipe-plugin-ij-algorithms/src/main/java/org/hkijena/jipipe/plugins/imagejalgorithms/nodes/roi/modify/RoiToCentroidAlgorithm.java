@@ -26,15 +26,15 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.awt.geom.Point2D;
 
 
 @SetJIPipeDocumentation(name = "Outline 2D ROI (Centroid)", description = "Converts the ROI into point ROI that are the centroids of their inputs")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
 
@@ -58,10 +58,10 @@ public class RoiToCentroidAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRoi = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        ROI2DListData outputRoi = new ROI2DListData();
+        Roi2dListData inputRoi = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
+        Roi2dListData outputRoi = new Roi2dListData();
         for (Roi roi : inputRoi) {
-            Point2D centroid = ROI2DListData.getCentroidDouble(roi);
+            Point2D centroid = Roi2dListData.getCentroidDouble(roi);
             PointRoi roi1 = new PointRoi(centroid.getX(), centroid.getY());
             roi1.setPosition(roi.getCPosition(), roi.getZPosition(), roi.getTPosition());
             outputRoi.add(roi1);

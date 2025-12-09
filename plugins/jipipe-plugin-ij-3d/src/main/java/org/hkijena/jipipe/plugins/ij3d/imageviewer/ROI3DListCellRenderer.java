@@ -23,14 +23,14 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class ROI3DListCellRenderer extends JPanel implements ListCellRenderer<IJ3DROI> {
+public class Roi3DListCellRenderer extends JPanel implements ListCellRenderer<IJ3DROI> {
 
     private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel infoLabel = new JLabel();
 
-    public ROI3DListCellRenderer() {
+    public Roi3DListCellRenderer() {
         initialize();
     }
 

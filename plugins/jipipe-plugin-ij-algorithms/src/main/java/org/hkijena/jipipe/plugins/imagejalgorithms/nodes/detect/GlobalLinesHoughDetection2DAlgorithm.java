@@ -41,7 +41,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.HoughLineSegments;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
@@ -61,8 +61,8 @@ import java.util.Map;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeCitation("Based on code by Hartmut Gimpel, https://sourceforge.net/p/octave/image/ci/default/tree/inst/")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Mask", description = "Mask that contains the segmented edges. ", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Peaks", create = true, description = "The detected peaks in the accumulator")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Lines", create = true, description = "The detected lines represented as ROI")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Peaks", create = true, description = "The detected peaks in the accumulator")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, description = "Mask that contains the detected lines")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The detected lines as table")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Accumulator", create = true, description = "The Hough array")
@@ -96,7 +96,7 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlus inputMask = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ROI2DListData outputROI = new ROI2DListData();
+        Roi2dListData outputROI = new Roi2dListData();
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.addNumericColumn("Image Z");
         outputTable.addNumericColumn("Image C");
@@ -132,14 +132,14 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
 
         Map<ImageSliceIndex, ImageProcessor> outputMaskSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> outputAccumulatorSlices = new HashMap<>();
-        ROI2DListData outputPeaks = new ROI2DListData();
+        Roi2dListData outputPeaks = new Roi2dListData();
 
         ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputMask, (ip, index, sliceProgress) -> {
 
             ImageProcessor bw = ip.duplicate();
             final int numPeakIterations = nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray ? 1 : this.numPeaks;
             final int numPeaksPerIteration = nmsAlgorithm == HoughLinesNMSAlgorithm.HoughArray ? this.numPeaks : 1;
-            ROI2DListData localROI = new ROI2DListData();
+            Roi2dListData localROI = new Roi2dListData();
             ImageProcessor houghArray = null;
 
             for (int peakIterationIndex = 0; peakIterationIndex < numPeakIterations; peakIterationIndex++) {
@@ -176,7 +176,7 @@ public class GlobalLinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingA
 
                 // Generate line ROIs and table rows
                 List<HoughLineSegments.Line> lines = HoughLineSegments.houghGlobalLines(bw, houghResult.getThetas(), houghResult.getRhos(), peaks, minLength, new Dimension(bw.getWidth(), bw.getHeight()), peakIterationProgress);
-                ROI2DListData currentIterationROI = new ROI2DListData();
+                Roi2dListData currentIterationROI = new Roi2dListData();
 
                 for (HoughLineSegments.Line line : lines) {
                     // Add to table

@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeDataExporterApplicationSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -41,25 +41,25 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Deprecated. Please use the new node. Exports a 3D ROI list into one or multiple ROI files")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @Deprecated
 @LabelAsJIPipeHidden
-public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {
+public class ExportRoi3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
     private boolean relativeToProjectDir = false;
 
-    public ExportROI3DAlgorithm(JIPipeNodeInfo info) {
+    public ExportRoi3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.exporter = new JIPipeDataByMetadataExporter(JIPipeDataExporterApplicationSettings.getInstance());
         registerSubParameter(exporter);
     }
 
-    public ExportROI3DAlgorithm(ExportROI3DAlgorithm other) {
+    public ExportRoi3DAlgorithm(ExportRoi3DAlgorithm other) {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;
@@ -97,7 +97,7 @@ public class ExportROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         }
         PathUtils.ensureParentDirectoriesExist(outputPath);
 
-        IJ3DROIListData rois = iterationStep.getInputData(getFirstInputSlot(), IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData rois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
 
         rois.save(outputPath);
         iterationStep.addOutputData(getFirstOutputSlot(), new FileData(outputPath), progressInfo);

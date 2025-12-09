@@ -75,12 +75,12 @@ import java.util.zip.ZipOutputStream;
         @DefineJIPipeDataCrateEntity(id = "regex:\\./.*\\.(roi|zip)", type = JIPipeDataCrateEntityType.File, name = "ROI/ZIP file", description = "In ImageJ format")
 })
 @LabelAsJIPipeCommonData
-public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariOverlay {
+public class Roi2dListData extends ArrayList<Roi> implements JIPipeData, NapariOverlay {
 
     /**
      * Creates an empty set of ROI
      */
-    public ROI2DListData() {
+    public Roi2dListData() {
     }
 
     /**
@@ -88,7 +88,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @param other the original
      */
-    public ROI2DListData(List<Roi> other) {
+    public Roi2dListData(List<Roi> other) {
         for (Roi roi : other) {
             Roi clone = ImageJUtils.copyRoi(roi);
             add(clone);
@@ -100,7 +100,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @param roiManager the ROI manager
      */
-    public ROI2DListData(RoiManager roiManager) {
+    public Roi2dListData(RoiManager roiManager) {
         this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
     }
 
@@ -110,10 +110,10 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param rois the rois
      * @return the image. 1x1 pixel if no ROI or empty roi are provided
      */
-    public static ImagePlus createDummyImageFor(Collection<ROI2DListData> rois) {
+    public static ImagePlus createDummyImageFor(Collection<Roi2dListData> rois) {
         int width = 1;
         int height = 1;
-        for (ROI2DListData data : rois) {
+        for (Roi2dListData data : rois) {
             Rectangle bounds = data.getBounds();
             int w = Math.max(0, bounds.x) + bounds.width;
             int h = Math.max(0, bounds.y) + bounds.height;
@@ -128,8 +128,8 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @param storage path that contains a zip/roi file
      */
-    public static ROI2DListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        ROI2DListData result = new ROI2DListData();
+    public static Roi2dListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Roi2dListData result = new Roi2dListData();
         Path zipFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".zip");
         Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi");
         if (zipFile != null) {
@@ -148,9 +148,9 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param fileName the zip file
      * @return the Roi list
      */
-    public static ROI2DListData loadRoiListFromFile(Path fileName) {
+    public static Roi2dListData loadRoiListFromFile(Path fileName) {
         // Code adapted from ImageJ RoiManager
-        ROI2DListData result = new ROI2DListData();
+        Roi2dListData result = new Roi2dListData();
 
         if (fileName.toString().toLowerCase(Locale.ROOT).endsWith(".roi")) {
             try {
@@ -412,8 +412,8 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @return shallow copy
      */
-    public ROI2DListData shallowClone() {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData shallowClone() {
+        Roi2dListData result = new Roi2dListData();
         result.addAll(this);
         return result;
     }
@@ -606,7 +606,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new ROI2DListData(this);
+        return new Roi2dListData(this);
     }
 
     @Override
@@ -615,7 +615,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
         if (isEmpty()) {
             mask = IJ.createImage("empty", "8-bit", width, height, 1);
         } else {
-            ROI2DListData copy = new ROI2DListData(this);
+            Roi2dListData copy = new Roi2dListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
             Margin margin = new Margin();
@@ -632,13 +632,13 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @return map of reference image to ROI
      */
-    public Map<Optional<ImagePlus>, ROI2DListData> groupByReferenceImage() {
-        Map<Optional<ImagePlus>, ROI2DListData> byImage = new HashMap<>();
+    public Map<Optional<ImagePlus>, Roi2dListData> groupByReferenceImage() {
+        Map<Optional<ImagePlus>, Roi2dListData> byImage = new HashMap<>();
         for (Roi roi : this) {
             Optional<ImagePlus> key = Optional.ofNullable(roi.getImage());
-            ROI2DListData rois = byImage.getOrDefault(key, null);
+            Roi2dListData rois = byImage.getOrDefault(key, null);
             if (rois == null) {
-                rois = new ROI2DListData();
+                rois = new Roi2dListData();
                 byImage.put(key, rois);
             }
             rois.add(roi);
@@ -654,8 +654,8 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param scaleY   the y-scale
      * @param centered if the scaling expands from the ROI center
      */
-    public ROI2DListData scale(double scaleX, double scaleY, boolean centered) {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData scale(double scaleX, double scaleY, boolean centered) {
+        Roi2dListData result = new Roi2dListData();
         for (Roi roi : this) {
             result.add(RoiScaler.scale(roi, scaleX, scaleY, centered));
         }
@@ -670,8 +670,8 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      * @param center the center point
      * @return the rotated ROIs
      */
-    public ROI2DListData rotate(double angle, Point2D center) {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData rotate(double angle, Point2D center) {
+        Roi2dListData result = new Roi2dListData();
         for (Roi roi : this) {
             result.add(RoiRotator.rotate(roi, angle, center.getX(), center.getY()));
         }
@@ -1169,7 +1169,7 @@ public class ROI2DListData extends ArrayList<Roi> implements JIPipeData, NapariO
      *
      * @param other the other data. The entries are copied.
      */
-    public void mergeWith(ROI2DListData other) {
+    public void mergeWith(Roi2dListData other) {
         for (Roi item : other) {
             add((Roi) item.clone());
         }

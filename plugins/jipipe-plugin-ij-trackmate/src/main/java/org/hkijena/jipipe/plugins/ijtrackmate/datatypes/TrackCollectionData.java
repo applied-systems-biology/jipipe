@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeImageThumbnailData;
 import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
@@ -89,8 +89,8 @@ public class TrackCollectionData extends SpotsCollectionData {
         }
     }
 
-    public ROI2DListData trackToROIList(int trackId) {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData trackToROIList(int trackId) {
+        Roi2dListData result = new Roi2dListData();
         for (Spot spot : getTrackModel().trackSpots(trackId)) {
             double x = spot.getDoublePosition(0) / getImage().getCalibration().pixelWidth;
             double y = spot.getDoublePosition(1) / getImage().getCalibration().pixelWidth;

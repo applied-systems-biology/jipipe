@@ -28,7 +28,7 @@ import org.hkijena.jipipe.desktop.api.nodes.AddJIPipeDesktopNodeQuickAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -37,7 +37,7 @@ import java.nio.file.Path;
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Export ROI", description = "Exports a ROI list into one or multiple ROI files")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
@@ -57,7 +57,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputData = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData inputData = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
 
         Map<String, Path> projectDataDirs;
         if (getRuntimeProject() != null) {
@@ -84,7 +84,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
                 Path path = PathUtils.ensureExtension(outputPath.getParent().resolve(roiName), ".roi");
-                ROI2DListData.saveSingleRoi(roi, path);
+                Roi2dListData.saveSingleRoi(roi, path);
                 iterationStep.addOutputData(getFirstOutputSlot(), new FileData(path), progressInfo);
             }
         } else {

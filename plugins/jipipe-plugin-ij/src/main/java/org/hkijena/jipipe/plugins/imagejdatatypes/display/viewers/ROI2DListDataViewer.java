@@ -16,19 +16,19 @@ package org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 
-public class ROI2DListDataViewer extends ImagePlusDataViewer {
-    public ROI2DListDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
+public class Roi2dListDataViewer extends ImagePlusDataViewer {
+    public Roi2dListDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
         super(dataViewerWindow);
     }
 
     @Override
     protected void loadDataIntoLegacyViewer(JIPipeData data) {
         getLegacyImageViewer().clearOverlays();
-        if (data instanceof ROI2DListData) {
-            ROI2DListData listData = (ROI2DListData) data;
+        if (data instanceof Roi2dListData) {
+            Roi2dListData listData = (Roi2dListData) data;
             ImagePlus canvas = listData.createBlankCanvas("ROI", BitDepth.Grayscale8u);
             getLegacyImageViewer().setImagePlus(canvas);
             getLegacyImageViewer().addOverlay(data);

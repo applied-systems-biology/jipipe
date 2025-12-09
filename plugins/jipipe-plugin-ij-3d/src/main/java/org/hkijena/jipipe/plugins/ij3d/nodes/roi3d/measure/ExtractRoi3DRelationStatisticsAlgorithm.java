@@ -24,20 +24,20 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DRelationMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DRelationMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 @SetJIPipeDocumentation(name = "Extract pairwise IJ3D ROI statistics", description = "Extracts all pairwise statistics between the 3D ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI 1", create = true)
-@AddJIPipeInputSlot(value = IJ3DROIListData.class, name = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true)
 public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private ROI3DRelationMeasurementSetParameter measurements = new ROI3DRelationMeasurementSetParameter();
+    private Roi3DRelationMeasurementSetParameter measurements = new Roi3DRelationMeasurementSetParameter();
 
     private boolean measureInPhysicalUnits = true;
     private boolean requireColocalization = true;
@@ -53,7 +53,7 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     public ExtractRoi3DRelationStatisticsAlgorithm(ExtractRoi3DRelationStatisticsAlgorithm other) {
         super(other);
-        this.measurements = new ROI3DRelationMeasurementSetParameter(other.measurements);
+        this.measurements = new Roi3DRelationMeasurementSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.requireColocalization = other.requireColocalization;
         this.preciseColocalization = other.preciseColocalization;
@@ -63,8 +63,8 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        IJ3DROIListData roi1List = iterationStep.getInputData("ROI 1", IJ3DROIListData.class, progressInfo);
-        IJ3DROIListData roi2List = iterationStep.getInputData("ROI 2", IJ3DROIListData.class, progressInfo);
+        Ij3dSuiteRoiListData roi1List = iterationStep.getInputData("ROI 1", Ij3dSuiteRoiListData.class, progressInfo);
+        Ij3dSuiteRoiListData roi2List = iterationStep.getInputData("ROI 2", Ij3dSuiteRoiListData.class, progressInfo);
         ImageHandler imageHandler = IJ3DUtils.wrapImage(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
         ResultsTableData outputResults = new ResultsTableData();
 
@@ -131,12 +131,12 @@ public class ExtractRoi3DRelationStatisticsAlgorithm extends JIPipeIteratingAlgo
 
     @SetJIPipeDocumentation(name = "Measurements", description = "The measurements that will be extracted")
     @JIPipeParameter("measurements")
-    public ROI3DRelationMeasurementSetParameter getMeasurements() {
+    public Roi3DRelationMeasurementSetParameter getMeasurements() {
         return measurements;
     }
 
     @JIPipeParameter("measurements")
-    public void setMeasurements(ROI3DRelationMeasurementSetParameter measurements) {
+    public void setMeasurements(Roi3DRelationMeasurementSetParameter measurements) {
         this.measurements = measurements;
     }
 
