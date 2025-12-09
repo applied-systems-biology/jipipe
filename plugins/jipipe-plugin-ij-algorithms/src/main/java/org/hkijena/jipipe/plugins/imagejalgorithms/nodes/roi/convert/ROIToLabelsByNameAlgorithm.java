@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
@@ -53,7 +53,7 @@ import java.util.Set;
         "The label value is provided by mapping the name to a value. If no name mapping is provided for a ROI, a unique label is generated. If no reference image is provided, " +
         "the dimensions are estimated from the ROI. The background color (where no ROI is located) is zero.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Optional reference image used to calculate the size of the output", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Labels", description = "Output label image", create = true)
 public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
@@ -76,7 +76,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
 
         // Create result image
         ImagePlus result;

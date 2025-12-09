@@ -37,9 +37,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze.FindParticles2D;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.ThresholdsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -62,11 +62,11 @@ import java.util.List;
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", description = "The image to be thresholded", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "The generated mask", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", description = "Pre-filtered ROI (according to the criteria)", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", description = "Pre-filtered ROI (according to the criteria)", create = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
     private final FindParticles2D findParticles2DAlgorithm = JIPipe.createNode(FindParticles2D.class);
     private final FilteringParameters filteringParameters;
     private final ScoreParameters scoreParameters;
@@ -145,7 +145,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         // Apply thresholding
         List<Integer> detectedThresholds = new ArrayList<>();
-        ROI2DListData outputROI = new ROI2DListData();
+        Roi2dListData outputROI = new Roi2dListData();
         ImageStack outputStack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
         ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (inputIp, index) -> {
             ImageProcessor referenceIp = ImageJUtils.getClosestSliceZero(referenceImage, index);
@@ -209,17 +209,17 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         ImagePlus maskImage = new ImagePlus("mask", maskIp);
 
         // Detect ROI
-        ROI2DListData rois;
+        Roi2dListData rois;
         {
             findParticles2DAlgorithm.clearSlotData(false, progressInfo);
             findParticles2DAlgorithm.getInputSlot("Mask").addData(new ImagePlusGreyscaleMaskData(maskImage), progressInfo);
             findParticles2DAlgorithm.run(runContext, progressInfo);
-            rois = findParticles2DAlgorithm.getFirstOutputSlot().getData(0, ROI2DListData.class, progressInfo);
+            rois = findParticles2DAlgorithm.getFirstOutputSlot().getData(0, Roi2dListData.class, progressInfo);
             findParticles2DAlgorithm.clearSlotData(false, progressInfo);
         }
 
         // Filter ROI
-        ROI2DListData filteredRois = new ROI2DListData();
+        Roi2dListData filteredRois = new Roi2dListData();
         List<Double> scores = new ArrayList<>();
         if (!rois.isEmpty()) {
             roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
@@ -447,13 +447,13 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
     public static class ThresholdingResult {
         private final ImageProcessor mask;
-        private final ROI2DListData rois;
+        private final Roi2dListData rois;
 
         private final int threshold;
 
         private final double score;
 
-        private ThresholdingResult(ImageProcessor mask, ROI2DListData rois, int threshold, double score) {
+        private ThresholdingResult(ImageProcessor mask, Roi2dListData rois, int threshold, double score) {
             this.mask = mask;
             this.rois = rois;
             this.threshold = threshold;
@@ -468,7 +468,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             return mask;
         }
 
-        public ROI2DListData getRois() {
+        public Roi2dListData getRois() {
             return rois;
         }
 

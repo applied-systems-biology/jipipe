@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 
@@ -43,8 +43,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
         "<li>Apply split fitting to polygons</li>" +
         "</ul>")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Outline")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private RoiOutline outline = RoiOutline.ClosedPolygon;
@@ -62,7 +62,7 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData data = (ROI2DListData) iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData data = (Roi2dListData) iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline, errorBehavior);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }

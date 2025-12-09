@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
@@ -38,9 +38,9 @@ import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 
 @SetJIPipeDocumentation(name = "Draw 2D rectangular ROI (old)", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.  We recommend to use the 'Draw 2D rectangle/oval/line ROI' algorithm.")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 @Deprecated
 public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -87,11 +87,11 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Collect target and reference
-        ROI2DListData target = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData target = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         if (target == null) {
-            target = new ROI2DListData();
+            target = new Roi2dListData();
         } else {
-            target = new ROI2DListData(target);
+            target = new Roi2dListData(target);
         }
         Rectangle reference;
         ImagePlusData referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);

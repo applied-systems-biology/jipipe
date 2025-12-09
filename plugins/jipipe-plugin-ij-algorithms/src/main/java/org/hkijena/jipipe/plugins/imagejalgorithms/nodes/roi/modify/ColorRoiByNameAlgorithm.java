@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
@@ -39,8 +39,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Color 2D ROI by name", description = "Sets the ROI item colors by their name.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ColorRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
@@ -67,7 +67,7 @@ public class ColorRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo));
+        Roi2dListData rois = new Roi2dListData(iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo));
         Set<String> names = new HashSet<>();
         for (Roi roi : rois) {
             names.add(StringUtils.nullToEmpty(roi.getName()));

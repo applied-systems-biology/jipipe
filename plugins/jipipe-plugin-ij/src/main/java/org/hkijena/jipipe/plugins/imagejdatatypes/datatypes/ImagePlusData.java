@@ -107,7 +107,7 @@ public class ImagePlusData implements JIPipeData {
             // Import ROI
             Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi", ".zip");
             if (roiFile != null) {
-                ROI2DListData rois = ROI2DListData.importData(storage, progressInfo.resolve("Import ROI"));
+                Roi2dListData rois = Roi2dListData.importData(storage, progressInfo.resolve("Import ROI"));
                 Overlay overlay = new Overlay();
                 for (Roi roi : rois) {
                     overlay.add(roi);
@@ -327,7 +327,7 @@ public class ImagePlusData implements JIPipeData {
             IJ.saveAsTiff(image, outputPath.toString());
         }
         if (image.getOverlay() != null) {
-            ROI2DListData rois = new ROI2DListData();
+            Roi2dListData rois = new Roi2dListData();
             for (Roi roi : image.getOverlay()) {
                 rois.add(roi);
             }
@@ -399,7 +399,7 @@ public class ImagePlusData implements JIPipeData {
         }
 
         // ROI rendering
-        ROI2DListData rois = new ROI2DListData();
+        Roi2dListData rois = new Roi2dListData();
         if (image.getRoi() != null)
             rois.add(image.getRoi());
         if (image.getOverlay() != null) {

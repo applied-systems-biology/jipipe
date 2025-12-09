@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 /**
@@ -70,7 +70,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
             }
             case InsideRoi: {
-                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());
@@ -80,7 +80,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 }
             }
             case OutsideRoi: {
-                ROI2DListData rois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                Roi2dListData rois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                 ImagePlusData img = iterationStep.getInputData("Input", ImagePlusData.class, progressInfo);
                 if (rois.isEmpty()) {
                     return ImageROITargetArea.createWhiteMaskProcessor(img.getImage());

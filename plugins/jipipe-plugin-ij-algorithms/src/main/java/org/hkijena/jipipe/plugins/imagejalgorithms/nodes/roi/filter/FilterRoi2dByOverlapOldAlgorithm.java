@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -48,11 +48,11 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Filter 2D ROI by overlap (old)", description = "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. " +
         "The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This node is deprecated and was replaced with 'Filter 2D ROI by overlap'.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 1", create = true)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI 2", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI 1", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI 2", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, description = "An optional reference image", optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI 1", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI 2", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI 1", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI 2", create = true)
 @Deprecated
 public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -81,7 +81,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         if (roi1Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("ROI 1")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("ROI 1", "The first set of ROI", ROI2DListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI 1", "The first set of ROI", Roi2dListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI 1")) {
@@ -92,7 +92,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         if (roi2Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("ROI 2")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("ROI 2", "The second set of ROI", ROI2DListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI 2", "The second set of ROI", Roi2dListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI 2")) {
@@ -115,8 +115,8 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData roi1_original = iterationStep.getInputData("ROI 1", ROI2DListData.class, progressInfo);
-        ROI2DListData roi2_original = iterationStep.getInputData("ROI 2", ROI2DListData.class, progressInfo);
+        Roi2dListData roi1_original = iterationStep.getInputData("ROI 1", Roi2dListData.class, progressInfo);
+        Roi2dListData roi2_original = iterationStep.getInputData("ROI 2", Roi2dListData.class, progressInfo);
 
         ImagePlus referenceImage = null;
         {
@@ -126,11 +126,11 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
         if (referenceImage == null) {
-            referenceImage = ROI2DListData.createDummyImageFor(Arrays.asList(roi1_original, roi2_original));
+            referenceImage = Roi2dListData.createDummyImageFor(Arrays.asList(roi1_original, roi2_original));
         }
         if (roi1Settings.isEnabled()) {
-            ROI2DListData roi1 = new ROI2DListData(roi1_original);
-            ROI2DListData roi2 = new ROI2DListData(roi2_original);
+            Roi2dListData roi1 = new Roi2dListData(roi1_original);
+            Roi2dListData roi2 = new Roi2dListData(roi2_original);
             applyFiltering(roi1,
                     roi2,
                     "ROI1",
@@ -142,8 +142,8 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo.resolveAndLog("ROI 1 filtering"));
         }
         if (roi2Settings.isEnabled()) {
-            ROI2DListData roi1 = new ROI2DListData(roi1_original);
-            ROI2DListData roi2 = new ROI2DListData(roi2_original);
+            Roi2dListData roi1 = new Roi2dListData(roi1_original);
+            Roi2dListData roi2 = new Roi2dListData(roi2_original);
             applyFiltering(roi2,
                     roi1,
                     "ROI2",
@@ -156,11 +156,11 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private void applyFiltering(ROI2DListData first, ROI2DListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
+    private void applyFiltering(Roi2dListData first, Roi2dListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = settings.getOverlapFilter().isEnabled() && !settings.getOverlapFilter().getContent().isEmpty();
         JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
-        ROI2DListData temp = new ROI2DListData();
-        ROI2DListData result = new ROI2DListData();
+        Roi2dListData temp = new Roi2dListData();
+        Roi2dListData result = new Roi2dListData();
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
@@ -236,7 +236,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(outputSlot, result, progressInfo);
     }
 
-    private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, JIPipeExpressionVariablesMap variableSet, Roi overlap, ImagePlus referenceImage, ROI2DListData temp, boolean measureInPhysicalUnits) {
+    private void putMeasurementsIntoVariable(Roi first, String firstPrefix, Roi second, String secondPrefix, JIPipeExpressionVariablesMap variableSet, Roi overlap, ImagePlus referenceImage, Roi2dListData temp, boolean measureInPhysicalUnits) {
 
         variableSet.set(firstPrefix + ".z", first.getZPosition());
         variableSet.set(firstPrefix + ".c", first.getCPosition());
@@ -276,7 +276,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private Roi calculateOverlap(ROI2DListData temp, Roi roi1, Roi roi2, boolean fastMode, boolean ignoreC, boolean ignoreT) {
+    private Roi calculateOverlap(Roi2dListData temp, Roi roi1, Roi roi2, boolean fastMode, boolean ignoreC, boolean ignoreT) {
 
         if (!ignoreC) {
             if (roi1.getCPosition() != roi2.getCPosition() && (roi1.getCPosition() > 0 || roi2.getCPosition() > 0)) {

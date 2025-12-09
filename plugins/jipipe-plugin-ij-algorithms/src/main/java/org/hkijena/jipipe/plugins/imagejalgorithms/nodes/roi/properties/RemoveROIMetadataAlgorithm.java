@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 
 import java.util.HashSet;
@@ -39,8 +39,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove/Filter 2D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filterExpression = new JIPipeExpressionParameter("true");
@@ -56,7 +56,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo));
+        Roi2dListData rois = new Roi2dListData(iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo));
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (Roi roi : rois) {

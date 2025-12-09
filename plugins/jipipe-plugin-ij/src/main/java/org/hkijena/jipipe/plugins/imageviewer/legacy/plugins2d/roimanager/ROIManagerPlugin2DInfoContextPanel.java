@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager;
 
 import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import javax.swing.*;
 import java.util.List;
@@ -40,7 +40,7 @@ public class ROIManagerPlugin2DInfoContextPanel extends ROIManagerPlugin2DSelect
 
 
     @Override
-    public void selectionUpdated(ROI2DListData allROI, List<Roi> selectedROI) {
+    public void selectionUpdated(Roi2dListData allROI, List<Roi> selectedROI) {
         if (selectedROI.isEmpty())
             roiInfoLabel.setText(allROI.size() + " ROI");
         else

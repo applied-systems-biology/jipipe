@@ -1,0 +1,58 @@
+package org.hkijena.jipipe.plugins.ij3d.viewers;
+
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.display.viewers.ImagePlusDataViewer;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.api.JIPipeDesktopLegacyImageViewerPlugin;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageViewer.DEFAULT_PLUGINS;
+
+public class Roi3dListDataViewer extends ImagePlusDataViewer {
+    public Roi3dListDataViewer(JIPipeDesktopDataViewerWindow dataViewerWindow) {
+        super(dataViewerWindow);
+    }
+
+    @Override
+    protected void loadDataIntoLegacyViewer(JIPipeData data) {
+        getLegacyImageViewer().clearOverlays();
+        if (data instanceof Ij3dSuiteRoiListData) {
+            super.loadDataIntoLegacyViewer(new ImagePlusData(((Ij3dSuiteRoiListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
+            getLegacyImageViewer().addOverlay(data);
+//            getLegacyImageViewer().getViewerPanel2D().getViewerRunnerQueue().enqueue(new AbstractJIPipeRunnable() {
+//                @Override
+//                public String getTaskLabel() {
+//                    return "Converting 3D ROI to 2D ROI";
+//                }
+//
+//                @Override
+//                public void run() {
+//                    Roi2dListData roi2D = ((Roi3dListData) data).toRoi2d(getProgressInfo());
+//                    SwingUtilities.invokeLater(() -> {
+//                        getLegacyImageViewer().addOverlay(roi2D);
+//                    });
+//                }
+//            });
+        }
+    }
+
+    @Override
+    protected List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> getLegacyImageViewerPlugins() {
+        List<Class<? extends JIPipeDesktopLegacyImageViewerPlugin>> plugins = new ArrayList<>(DEFAULT_PLUGINS);
+        plugins.add(ROIManagerPlugin3D.class);
+        return plugins;
+    }
+
+    @Override
+    protected void loadDataIntoVtkViewer(JIPipeData data) {
+        if (data instanceof Ij3dSuiteRoiListData) {
+            super.loadDataIntoVtkViewer(new ImagePlusData(((Ij3dSuiteRoiListData) data).createBlankCanvas("ROI", BitDepth.Grayscale8u)));
+        }
+    }
+}

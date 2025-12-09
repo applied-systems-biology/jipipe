@@ -34,7 +34,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -52,7 +52,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Detect corners 2D (Harris)", description = "OrientationJ implementation of the the Harris corner detection.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Detect")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Overlay", create = true, description = "Detected corners as ROI")
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Overlay", create = true, description = "Detected corners as ROI")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Energy")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Orientation")
@@ -93,7 +93,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.radians = other.radians;
     }
 
-    public static void extractHarris(GroupImage gim, OrientationParameters params, ImageSliceIndex sliceIndex, ResultsTableData table, ROI2DListData overlay) {
+    public static void extractHarris(GroupImage gim, OrientationParameters params, ImageSliceIndex sliceIndex, ResultsTableData table, Roi2dListData overlay) {
         if (gim == null) {
             return;
         }
@@ -174,7 +174,7 @@ public class CornerHarris2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Map<ImageSliceIndex, ImageProcessor> orientationSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> energySlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> coherencyIndexSlices = new HashMap<>();
-        ROI2DListData overlay = new ROI2DListData();
+        Roi2dListData overlay = new Roi2dListData();
         ResultsTableData results = new ResultsTableData();
 
         ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {

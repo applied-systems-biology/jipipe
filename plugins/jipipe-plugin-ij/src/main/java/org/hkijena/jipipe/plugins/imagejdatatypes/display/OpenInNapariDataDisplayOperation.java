@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.napari.NapariOverlay;
 import org.hkijena.jipipe.plugins.napari.NapariPlugin;
 
@@ -44,7 +44,7 @@ public class OpenInNapariDataDisplayOperation implements JIPipeDesktopDataDispla
         if (data instanceof ImagePlusData) {
             image = ((ImagePlusData) data).getImage();
             if (image.getOverlay() != null) {
-                ROI2DListData rois = new ROI2DListData();
+                Roi2dListData rois = new Roi2dListData();
                 for (Roi roi : image.getOverlay()) {
                     rois.add(roi);
                 }

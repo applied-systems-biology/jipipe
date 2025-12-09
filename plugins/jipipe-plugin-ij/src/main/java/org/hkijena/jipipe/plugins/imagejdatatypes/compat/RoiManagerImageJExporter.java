@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,18 +36,18 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
                 manager.reset();
             }
             for (int i = 0; i < dataTable.getRowCount(); i++) {
-                ROI2DListData data = dataTable.getData(i, ROI2DListData.class, new JIPipeProgressInfo());
+                Roi2dListData data = dataTable.getData(i, Roi2dListData.class, new JIPipeProgressInfo());
                 if (parameters.isDuplicate())
-                    data = (ROI2DListData) data.duplicate(new JIPipeProgressInfo());
+                    data = (Roi2dListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
             }
             result.add(manager);
         } else {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 RoiManager manager = new RoiManager();
-                ROI2DListData data = dataTable.getData(i, ROI2DListData.class, new JIPipeProgressInfo());
+                Roi2dListData data = dataTable.getData(i, Roi2dListData.class, new JIPipeProgressInfo());
                 if (parameters.isDuplicate())
-                    data = (ROI2DListData) data.duplicate(new JIPipeProgressInfo());
+                    data = (Roi2dListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
                 result.add(manager);
             }
@@ -57,7 +57,7 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<? extends JIPipeData> getExportedJIPipeDataType() {
-        return ROI2DListData.class;
+        return Roi2dListData.class;
     }
 
     @Override

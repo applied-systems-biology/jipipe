@@ -37,7 +37,7 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -84,13 +84,13 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         ImagePlus keyImage = iterationStep.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         ImagePlus valueImage = iterationStep.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
 
-        ROI2DListData roiInput = null;
+        Roi2dListData roiInput = null;
         ImagePlus maskInput = null;
 
         switch (sourceArea) {
             case InsideRoi:
             case OutsideRoi:
-                roiInput = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                roiInput = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                 break;
             case InsideMask:
             case OutsideMask:
@@ -98,7 +98,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
                 break;
         }
 
-        ROI2DListData finalRoiInput = roiInput;
+        Roi2dListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
         List<Float> allValues = new ArrayList<>();
@@ -192,7 +192,7 @@ public class KeyValueAveragesGenerator extends JIPipeIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    private ImageProcessor getMask(int width, int height, ROI2DListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
+    private ImageProcessor getMask(int width, int height, Roi2dListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 

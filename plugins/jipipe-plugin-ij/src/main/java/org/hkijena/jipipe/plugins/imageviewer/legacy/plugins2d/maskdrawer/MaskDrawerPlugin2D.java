@@ -37,7 +37,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.ribbon.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -171,7 +171,7 @@ public class MaskDrawerPlugin2D extends JIPipeDesktopLegacyImageViewerPlugin2D i
                 0,
                 Double.POSITIVE_INFINITY);
         analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
-        ROI2DListData rois = new ROI2DListData(Arrays.asList(manager.getRoisAsArray()));
+        Roi2dListData rois = new Roi2dListData(Arrays.asList(manager.getRoisAsArray()));
 
         // Set slices
         if (getViewerPanel().getImagePlus().getStackSize() > 1) {

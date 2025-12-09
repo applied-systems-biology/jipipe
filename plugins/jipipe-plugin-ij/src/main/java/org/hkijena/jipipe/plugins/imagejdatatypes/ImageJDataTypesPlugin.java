@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
-import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ExtractRoi2DFromOMEImageAlgorithm;
+import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.ExtractRoi2dFromOMEImageAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.SetBioFormatsExporterSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.AnnotateDataWithImagePropertiesAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.algorithms.annotate.BioFormatsAnnotatorAlgorithm;
@@ -87,7 +87,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImageDataPrevie
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ImportImageJPathDataDisplayOperation;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.plugins.imagejdatatypes.resultanalysis.ROIDataPreview;
-import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIROI2DDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.imagejdatatypes.settings.ImageViewerUIRoi2dDisplayApplicationSettings;
 import org.hkijena.jipipe.plugins.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIElementDrawingMode;
@@ -479,7 +479,7 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, imageImporter, imageExporter, "data-types/imgplus-5d-color-lab.png");
         registerConverters();
 
-        registerDatatype("imagej-roi", ROI2DListData.class, JIPipe.RESOURCES.getIcon16URL("data-types/roi.png"),
+        registerDatatype("imagej-roi", Roi2dListData.class, JIPipe.RESOURCES.getIcon16URL("data-types/roi.png"),
                 null, ROIDataPreview.class,
                 new AddToROIManagerDataDisplayOperation());
         registerDatatype("imagej-lut", LUTData.class, JIPipe.RESOURCES.getIcon16URL("data-types/lut.png"));
@@ -506,8 +506,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, imageImporter, imageExporter, "data-types/imgplus-fft-5d.png");
 
         // Register data sources
-        registerNodeType("import-imagej-roi-from-file", ImportRoi2DAlgorithm.class);
-        registerNodeType("extract-imagej-roi-from-ome-image", ExtractRoi2DFromOMEImageAlgorithm.class);
+        registerNodeType("import-imagej-roi-from-file", ImportRoi2dAlgorithm.class);
+        registerNodeType("extract-imagej-roi-from-ome-image", ExtractRoi2dFromOMEImageAlgorithm.class);
         registerEnumParameterType("import-imagej-results-table-from-file:file-format", ImportResultsTableAlgorithm.FileFormat.class, "File format", "A file format");
         registerNodeType("import-imagej-results-table-from-file", ImportResultsTableAlgorithm.class);
         registerNodeType("import-imagej-imgplus-from-file", ImportImagePlusAlgorithm.class);
@@ -553,12 +553,12 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerMenuExtension(BioFormatsConfigTool.class);
 
-        registerApplicationSettingsSheet(new ImageViewerUIROI2DDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUIRoi2dDisplayApplicationSettings());
         registerApplicationSettingsSheet(new ImageViewerGeneralUIApplicationSettings());
 
         // Register viewers
         registerDefaultDataTypeViewer(ImagePlusData.class, ImagePlusDataViewer.class);
-        registerDefaultDataTypeViewer(ROI2DListData.class, ROI2DListDataViewer.class);
+        registerDefaultDataTypeViewer(Roi2dListData.class, Roi2dListDataViewer.class);
         registerDefaultDataTypeViewer(OMEImageData.class, OMEImageDataViewer.class);
         registerDefaultDataTypeViewer(ResultsTableData.class, ResultsTableDataViewer.class);
 

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotFeatureVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.*;
@@ -44,7 +44,7 @@ import java.util.Optional;
 @SetJIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
 @ConfigureJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalJIPipeExpressionParameter roiName = new OptionalJIPipeExpressionParameter(false, "\"ID\" + id");
@@ -69,12 +69,12 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
         SpotsCollectionData data = iterationStep.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
         variables.set("n_spots", data.getSpots().getNSpots(true));
-        ROI2DListData rois = spotsToROIList(data, variables);
+        Roi2dListData rois = spotsToROIList(data, variables);
         iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    public ROI2DListData spotsToROIList(SpotsCollectionData spotsCollectionData, JIPipeExpressionVariablesMap variables) {
-        ROI2DListData result = new ROI2DListData();
+    public Roi2dListData spotsToROIList(SpotsCollectionData spotsCollectionData, JIPipeExpressionVariablesMap variables) {
+        Roi2dListData result = new Roi2dListData();
         int index = 0;
         ImagePlus image = spotsCollectionData.getImage();
         for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {

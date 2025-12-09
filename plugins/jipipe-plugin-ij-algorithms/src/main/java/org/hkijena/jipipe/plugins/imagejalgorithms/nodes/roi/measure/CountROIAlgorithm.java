@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.AnnotationTableData;
 
 import java.util.ArrayList;
@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
         "You can add multiple input slots. " +
         "All output table column is named according to the slot name of the incoming ROI list." +
         "This node can merge ROI lists according to their annotations. The sum of the counts within the same iteration step are generated.")
-@AddJIPipeInputSlot(value = ROI2DListData.class)
+@AddJIPipeInputSlot(value = Roi2dListData.class)
 @AddJIPipeOutputSlot(value = AnnotationTableData.class, name = "Counts")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
@@ -51,9 +51,9 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
     public CountROIAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Counted ROI", "ROI to be counted", ROI2DListData.class)
+                .addInputSlot("Counted ROI", "ROI to be counted", Roi2dListData.class)
                 .addOutputSlot("Counts", "The counts", AnnotationTableData.class)
-                .restrictInputTo(ROI2DListData.class)
+                .restrictInputTo(Roi2dListData.class)
                 .sealOutput().build());
     }
 
@@ -98,8 +98,8 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
         // write into result
         int row = currentResult.addRow();
         for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
-            List<ROI2DListData> rois = iterationStep.getInputData(inputSlot, ROI2DListData.class, progressInfo);
-            long count = rois.stream().collect(Collectors.summarizingInt(ROI2DListData::size)).getSum();
+            List<Roi2dListData> rois = iterationStep.getInputData(inputSlot, Roi2dListData.class, progressInfo);
+            long count = rois.stream().collect(Collectors.summarizingInt(Roi2dListData::size)).getSum();
             int col = currentResult.getOrCreateColumnIndex(inputSlot.getName(), false);
             currentResult.setValueAt(1.0 * count, row, col);
         }

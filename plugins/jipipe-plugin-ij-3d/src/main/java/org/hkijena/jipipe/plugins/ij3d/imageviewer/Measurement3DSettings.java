@@ -16,13 +16,13 @@ package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.utils.ROI3DMeasurementSetParameter;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurementSetParameter;
 
 public class Measurement3DSettings extends AbstractJIPipeParameterCollection {
 
     public static Measurement3DSettings INSTANCE = new Measurement3DSettings();
 
-    private ROI3DMeasurementSetParameter statistics = new ROI3DMeasurementSetParameter();
+    private Roi3dMeasurementSetParameter statistics = new Roi3dMeasurementSetParameter();
     private boolean measureInPhysicalUnits = true;
 
     public Measurement3DSettings() {
@@ -31,12 +31,12 @@ public class Measurement3DSettings extends AbstractJIPipeParameterCollection {
 
     @SetJIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
     @JIPipeParameter("statistics")
-    public ROI3DMeasurementSetParameter getStatistics() {
+    public Roi3dMeasurementSetParameter getStatistics() {
         return statistics;
     }
 
     @JIPipeParameter("statistics")
-    public void setStatistics(ROI3DMeasurementSetParameter statistics) {
+    public void setStatistics(Roi3dMeasurementSetParameter statistics) {
         this.statistics = statistics;
     }
 

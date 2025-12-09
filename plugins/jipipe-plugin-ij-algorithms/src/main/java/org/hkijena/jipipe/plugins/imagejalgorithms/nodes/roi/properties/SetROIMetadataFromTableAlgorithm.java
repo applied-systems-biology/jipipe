@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
@@ -38,9 +38,9 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Set 2D ROI metadata from table", description = "Sets the ROI metadata (property map) from a table. The table either has a column that indicates the ROI index or contains one row per ROI (row index is the ROI index)")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Metadata")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", description = "Table of ROI metadata, one row per ROI", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter roiIndexColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "row");
@@ -60,7 +60,7 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo));
+        Roi2dListData rois = new Roi2dListData(iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo));
         ResultsTableData metadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
         TableColumnData indexColumn = roiIndexColumn.pickOrGenerateColumn(metadata, new JIPipeExpressionVariablesMap(iterationStep));
 

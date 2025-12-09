@@ -30,11 +30,11 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.ijfilaments.util.NonSpatialPoint3d;
 import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 @SetJIPipeDocumentation(name = "Convert 2D ROI to filaments", description = "Converts 2D ROI into equivalent filaments")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class ConvertROIToFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertROIToFilamentsAlgorithm(JIPipeNodeInfo info) {
@@ -47,7 +47,7 @@ public class ConvertROIToFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData rois = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
         Filaments3DGraphData filaments = new Filaments3DGraphData();
 
         for (Roi roi : rois) {

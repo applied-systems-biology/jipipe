@@ -30,7 +30,7 @@ import ome.xml.model.Point;
 import ome.xml.model.Polygon;
 import ome.xml.model.Shape;
 import ome.xml.model.primitives.NonNegativeInteger;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.awt.*;
 import java.awt.Rectangle;
@@ -48,7 +48,7 @@ public class ROIHandler {
      * Look for ROIs in the given OMEXMLMetadata; if any are present, apply
      * them to the given images and display them in the ROI manager.
      */
-    public static ROI2DListData openROIs(IMetadata retrieve, ImagePlus[] images) {
+    public static Roi2dListData openROIs(IMetadata retrieve, ImagePlus[] images) {
         return openROIs(retrieve, images, false);
     }
 
@@ -60,11 +60,11 @@ public class ROIHandler {
      * @param isOMERO  {@code true} if data stored in OMERO,
      *                 {@code false} otherwise.
      */
-    public static ROI2DListData openROIs(IMetadata retrieve, ImagePlus[] images,
+    public static Roi2dListData openROIs(IMetadata retrieve, ImagePlus[] images,
                                          boolean isOMERO) {
-        if (!(retrieve instanceof OMEXMLMetadata)) return new ROI2DListData();
+        if (!(retrieve instanceof OMEXMLMetadata)) return new Roi2dListData();
         int nextRoi = 0;
-        ROI2DListData resultROIs = new ROI2DListData();
+        Roi2dListData resultROIs = new Roi2dListData();
 
         OME root = (OME) retrieve.getRoot();
         Roi roi;
@@ -371,7 +371,7 @@ public class ROIHandler {
      *
      * @param store Where to store the rois.
      */
-    public static void saveROIs(MetadataStore store, ROI2DListData roiListData) {
+    public static void saveROIs(MetadataStore store, Roi2dListData roiListData) {
 
         Roi[] rois;
 

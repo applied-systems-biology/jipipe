@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
 
 /**
@@ -34,8 +34,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDime
  */
 @SetJIPipeDocumentation(name = "Reorder 2D ROI dimensions", description = "Reorders dimensions of all the ROI contained in the ROI lists. " +
         "Unlike the equivalent method for images, this node allows to have non-unique mappings.")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -56,7 +56,7 @@ public class ReorderRoiDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData rois = new ROI2DListData(iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo));
+        Roi2dListData rois = new Roi2dListData(iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo));
 
         for (Roi roi : rois) {
             int depth = roi.getZPosition();

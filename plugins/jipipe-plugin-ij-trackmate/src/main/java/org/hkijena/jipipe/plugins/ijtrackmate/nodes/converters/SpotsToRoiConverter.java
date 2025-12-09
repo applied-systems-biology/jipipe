@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataConverter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 public class SpotsToRoiConverter implements JIPipeDataConverter {
     @Override
@@ -27,7 +27,7 @@ public class SpotsToRoiConverter implements JIPipeDataConverter {
 
     @Override
     public Class<? extends JIPipeData> getOutputType() {
-        return ROI2DListData.class;
+        return Roi2dListData.class;
     }
 
     @Override

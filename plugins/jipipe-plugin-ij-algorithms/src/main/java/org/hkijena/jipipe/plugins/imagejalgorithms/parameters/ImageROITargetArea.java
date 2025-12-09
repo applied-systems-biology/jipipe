@@ -18,7 +18,7 @@ import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 
 
@@ -56,7 +56,7 @@ public enum ImageROITargetArea {
      * @param mask       the mask (can be null if not InsideMask and OutsideMask)
      * @return the mask
      */
-    public ImageProcessor getMask(ImagePlus inputImage, ROI2DListData rois, ImagePlus mask) {
+    public ImageProcessor getMask(ImagePlus inputImage, Roi2dListData rois, ImagePlus mask) {
         switch (this) {
             case WholeImage: {
                 return createWhiteMaskProcessor(inputImage);

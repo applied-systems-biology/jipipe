@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.InvalidRoiOutlineBehavior;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
@@ -41,9 +41,9 @@ import java.awt.*;
 @SetJIPipeDocumentation(name = "Remove 2D ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
         "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "The ROI to be processed", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "The ROI to be processed", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The reference image", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Cleaned ROI", description = "The cleaned ROI", create = true)
 public class RemoveBorderRoi2dAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Margin borderDefinition = new Margin();
@@ -79,7 +79,7 @@ public class RemoveBorderRoi2dAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData data = (ROI2DListData) iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData data = (Roi2dListData) iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         data.outline(outline, errorBehavior);
         ImagePlus reference = iterationStep.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);

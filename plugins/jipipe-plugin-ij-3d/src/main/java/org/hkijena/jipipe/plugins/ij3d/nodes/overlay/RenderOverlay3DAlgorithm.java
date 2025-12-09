@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
@@ -36,10 +36,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "ROI")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
-@MarkNodeAsUnstable
 public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final Roi3DDrawer drawer;
+    private final Roi3dDrawer drawer;
 
     /**
      * Instantiates a new node type.
@@ -48,7 +47,7 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public RenderOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.drawer = new Roi3DDrawer();
+        this.drawer = new Roi3dDrawer();
         registerSubParameter(drawer);
     }
 
@@ -59,7 +58,7 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public RenderOverlay3DAlgorithm(RenderOverlay3DAlgorithm other) {
         super(other);
-        this.drawer = new Roi3DDrawer(other.drawer);
+        this.drawer = new Roi3dDrawer(other.drawer);
         registerSubParameter(drawer);
     }
 
@@ -71,8 +70,8 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData image = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-        IJ3DROIListData rois = new IJ3DROIListData();
-        for (IJ3DROIListData data : image.extractOverlaysOfType(IJ3DROIListData.class)) {
+        Ij3dSuiteRoiListData rois = new Ij3dSuiteRoiListData();
+        for (Ij3dSuiteRoiListData data : image.extractOverlaysOfType(Ij3dSuiteRoiListData.class)) {
             rois.addAll(data);
         }
         ImagePlus outputImage = drawer.draw(rois, image.getImage(), progressInfo);
@@ -82,7 +81,7 @@ public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "ROI rendering settings", description = "The following settings determine how the 3D ROI are rendered")
     @JIPipeParameter("drawer-settings")
-    public Roi3DDrawer getDrawer() {
+    public Roi3dDrawer getDrawer() {
         return drawer;
     }
 }

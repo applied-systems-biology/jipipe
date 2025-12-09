@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 import java.util.Map;
 import java.util.Optional;
@@ -34,7 +34,7 @@ import java.util.Optional;
 
 @SetJIPipeDocumentation(name = "Get ROI image", description = "Gets the associated image from a ROI. No output is generated if the ROI have no associated images.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", create = true)
 public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -58,8 +58,8 @@ public class GetRoiImageAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData data = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
-        for (Map.Entry<Optional<ImagePlus>, ROI2DListData> entry : data.groupByReferenceImage().entrySet()) {
+        Roi2dListData data = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
+        for (Map.Entry<Optional<ImagePlus>, Roi2dListData> entry : data.groupByReferenceImage().entrySet()) {
             if (entry.getKey().isPresent()) {
                 iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusData(entry.getKey().get()).duplicate(progressInfo), progressInfo);
             }

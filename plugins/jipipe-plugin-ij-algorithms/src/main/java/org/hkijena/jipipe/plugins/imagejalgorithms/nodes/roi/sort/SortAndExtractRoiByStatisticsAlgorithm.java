@@ -30,9 +30,9 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.NumericFunctionExpression;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementColumnSortOrderList;
 import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo;
@@ -49,12 +49,12 @@ import java.util.List;
 @LabelAsJIPipeHidden
 @Deprecated
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private final ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    private final ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
     private ImageJMeasurementColumnSortOrderList sortOrderList = new ImageJMeasurementColumnSortOrderList();
     private NumericFunctionExpression selection = new NumericFunctionExpression();
@@ -100,12 +100,12 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
 
-        ROI2DListData inputRois = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData inputRois = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         ImagePlusData inputReference = iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        ROI2DListData outputData = new ROI2DListData();
+        Roi2dListData outputData = new Roi2dListData();
 
-        ROI2DListData data = inputRois;
+        Roi2dListData data = inputRois;
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData(false, progressInfo);
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
@@ -127,7 +127,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgor
             }
             rowIndices.sort(comparator);
 
-            ROI2DListData sortedData = new ROI2DListData();
+            Roi2dListData sortedData = new Roi2dListData();
             for (int i = 0; i < data.size(); i++) {
                 sortedData.add(null);
             }

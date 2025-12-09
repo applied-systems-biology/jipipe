@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.parameters.CycleFinderAlgorithm;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentComponentVariablesInfo;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentEdge;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.HashSet;
@@ -50,7 +50,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Convert filament cycles to 2D ROI", description = "Finds all cycles in the input filament graph and converts each cycle into a 2D ROI. Please note that the Z position will be set to the median Z/C/T value of all points plus 1.")
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ConvertFilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private CycleFinderAlgorithm cycleFinderAlgorithm = CycleFinderAlgorithm.PatonCycleBasis;
@@ -70,7 +70,7 @@ public class ConvertFilamentCyclesToROIAlgorithm extends JIPipeSimpleIteratingAl
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
-        ROI2DListData outputData = new ROI2DListData();
+        Roi2dListData outputData = new Roi2dListData();
         progressInfo.log("Finding cycles ...");
         Set<List<FilamentEdge>> cycles = cycleFinderAlgorithm.findCycles(inputData);
         progressInfo.log("Detected " + cycles.size() + " cycles");

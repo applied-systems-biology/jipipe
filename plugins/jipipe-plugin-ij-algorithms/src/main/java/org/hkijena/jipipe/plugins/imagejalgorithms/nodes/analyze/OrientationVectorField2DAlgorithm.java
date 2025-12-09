@@ -35,7 +35,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJLogWrapper;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJStructureTensorParameters;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.OrientationJVectorFieldType;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -51,7 +51,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Orientation vector field 2D (OrientationJ)", description = "Applies the OrientationJ vector field calculation algorithm")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Overlay", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Overlay", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Energy")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Orientation")
@@ -90,7 +90,7 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         this.vectorFieldType = other.vectorFieldType;
     }
 
-    public static void extractVectorField(GroupImage gim, OrientationParameters params, ROI2DListData overlay, ResultsTableData table, ImageSliceIndex sliceIndex) {
+    public static void extractVectorField(GroupImage gim, OrientationParameters params, Roi2dListData overlay, ResultsTableData table, ImageSliceIndex sliceIndex) {
         if (gim == null) {
             return;
         }
@@ -205,7 +205,7 @@ public class OrientationVectorField2DAlgorithm extends JIPipeSimpleIteratingAlgo
         Map<ImageSliceIndex, ImageProcessor> orientationSlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> energySlices = new HashMap<>();
         Map<ImageSliceIndex, ImageProcessor> coherencyIndexSlices = new HashMap<>();
-        ROI2DListData overlay = new ROI2DListData();
+        Roi2dListData overlay = new Roi2dListData();
         ResultsTableData results = new ResultsTableData();
 
         ImageJIterationUtils.forEachIndexedZCTSliceWithProgress(inputImage, (ip, index, sliceProgress) -> {

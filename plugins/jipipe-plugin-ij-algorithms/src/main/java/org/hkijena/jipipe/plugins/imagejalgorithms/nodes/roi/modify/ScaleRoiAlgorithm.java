@@ -25,13 +25,13 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 
 @SetJIPipeDocumentation(name = "Scale 2D ROI (old)", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes. A newer algorithm that allows to do scaling/rotating/translation in one is available.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Transform")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double scaleX = 1.0;
@@ -57,7 +57,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData data = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
+        Roi2dListData data = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
         data = data.scale(scaleX, scaleY, centerScale);
         iterationStep.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }

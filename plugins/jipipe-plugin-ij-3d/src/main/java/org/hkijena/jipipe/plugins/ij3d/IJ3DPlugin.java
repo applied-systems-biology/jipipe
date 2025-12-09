@@ -21,12 +21,12 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.filesystem.FilesystemPlugin;
-import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJExporter;
-import org.hkijena.jipipe.plugins.ij3d.compat.ROI3DImageJImporter;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROIListData;
-import org.hkijena.jipipe.plugins.ij3d.display.AddROI3DToManagerDataDisplayOperation;
-import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIROI3DDisplayApplicationSettings;
-import org.hkijena.jipipe.plugins.ij3d.nodes.ImportROI3DAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.compat.Roi3dImageJExporter;
+import org.hkijena.jipipe.plugins.ij3d.compat.Roi3dImageJImporter;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.display.AddRoi3dToManagerDataDisplayOperation;
+import org.hkijena.jipipe.plugins.ij3d.imageviewer.ImageViewerUIRoi3dDisplayApplicationSettings;
+import org.hkijena.jipipe.plugins.ij3d.nodes.ImportRoi3dAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.binary.DistanceMap3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.binary.ErodedVolumeFraction3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.binary.Voronoi3DAlgorithm;
@@ -39,29 +39,30 @@ import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.ExtractOverlay3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.RemoveOverlay3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.RenderOverlay3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportROI3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportROI3DAlgorithm2;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportRoi3dAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportRoi3dAlgorithm2;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.convert.*;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3DByOverlapAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3DByStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3DListsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByOverlapAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByOverlapOldAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dListsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.generate.FindParticles3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.generate.Roi3DFromLabelsAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.measure.ExtractRoi3DRelationStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.measure.ExtractRoi3DStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.merge.MergeROI3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.ExtractROI3DMetadataAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.RemoveROI3DMetadataAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.SetROI3DMetadataFromTableAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.generate.Roi3dFromLabelsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.measure.ExtractRoi3dRelationStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.measure.ExtractRoi3dStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.merge.MergeRoi3dAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.ExtractRoi3dMetadataAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.RemoveRoi3dMetadataAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata.SetRoi3dMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify.*;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.OutlineRoi3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.RemoveBorderRoi3DAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.ExplodeRoi3DListAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3DByStatisticsAlgorithm;
-import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3DIntoConnectedComponentsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.OutlineRoi3dAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process.RemoveBorderRoi3dAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.ExplodeRoi3dListAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3dByStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split.SplitRoi3dIntoConnectedComponentsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.segmentation.*;
 import org.hkijena.jipipe.plugins.ij3d.utils.*;
-import org.hkijena.jipipe.plugins.ij3d.viewers.ROI3DListDataViewer;
+import org.hkijena.jipipe.plugins.ij3d.viewers.Roi3dListDataViewer;
 import org.hkijena.jipipe.plugins.imagejalgorithms.ImageJAlgorithmsPlugin;
 import org.hkijena.jipipe.plugins.imagejdatatypes.ImageJDataTypesPlugin;
 import org.hkijena.jipipe.plugins.multiparameters.MultiParameterAlgorithmsPlugin;
@@ -131,61 +132,63 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
 
-        registerApplicationSettingsSheet(new ImageViewerUIROI3DDisplayApplicationSettings());
+        registerApplicationSettingsSheet(new ImageViewerUIRoi3dDisplayApplicationSettings());
 
-        registerEnumParameterType("ij3d-measurement", ROI3DMeasurement.class, "IJ3D Measurement", "A 3D object measurement");
-        registerEnumParameterType("ij3d-measurement-column", ROI3DMeasurementColumn.class, "IJ3D measurement column", "A 3D object measurement column");
-        registerParameterType("ij3d-measurement-set", ROI3DMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D Measurements", "A selection of 3D object measurements");
-        registerEnumParameterType("ij3d-relation-measurement", ROI3DRelationMeasurement.class, "IJ3D relation measurement", "Relation between two 3D objects");
-        registerEnumParameterType("ij3d-relation-measurement-column", ROI3DRelationMeasurementColumn.class, "IJ3D relation measurement column", "Relation between two 3D objects");
-        registerParameterType("ij3d-relation-measurement-set", ROI3DRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D relation measurements", "A selection of measurements between two 3D objects");
-        registerEnumParameterType("ij3d-roi-outline", ROI3DOutline.class, "IJ3D ROI outline", "Outline algorithm for 3D ROI");
+        registerEnumParameterType("ij3d-measurement", Roi3dMeasurement.class, "IJ3D Measurement", "A 3D object measurement");
+        registerEnumParameterType("ij3d-measurement-column", Roi3dMeasurementColumn.class, "IJ3D measurement column", "A 3D object measurement column");
+        registerParameterType("ij3d-measurement-set", Roi3dMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D Measurements", "A selection of 3D object measurements");
+        registerEnumParameterType("ij3d-relation-measurement", Roi3dRelationMeasurement.class, "IJ3D relation measurement", "Relation between two 3D objects");
+        registerEnumParameterType("ij3d-relation-measurement-column", Roi3dRelationMeasurementColumn.class, "IJ3D relation measurement column", "Relation between two 3D objects");
+        registerParameterType("ij3d-relation-measurement-set", Roi3dRelationMeasurementSetParameter.class, JIPipeParameterArchetype.MultiSelect, "IJ3D relation measurements", "A selection of measurements between two 3D objects");
+        registerEnumParameterType("ij3d-roi-outline", Roi3dOutline.class, "IJ3D ROI outline", "Outline algorithm for 3D ROI");
 
-        registerDatatype("roi-3d-list", IJ3DROIListData.class, RESOURCES.getIcon16URL("data-type-roi3d.png"), new AddROI3DToManagerDataDisplayOperation());
-        registerDefaultDataTypeViewer(IJ3DROIListData.class, ROI3DListDataViewer.class);
-        registerImageJDataImporter("import-roi-3d", new ROI3DImageJImporter(), null);
-        registerImageJDataExporter("export-roi-3d", new ROI3DImageJExporter(), null);
-        registerNodeType("import-roi-3d", ImportROI3DAlgorithm.class);
-        registerNodeType("export-roi-3d", ExportROI3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
-        registerNodeType("export-roi-3d-v2", ExportROI3DAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerDatatype("roi-3d-list", Ij3dSuiteRoiListData.class, RESOURCES.getIcon16URL("data-type-roi3d.png"), new AddRoi3dToManagerDataDisplayOperation());
+        registerDefaultDataTypeViewer(Ij3dSuiteRoiListData.class, Roi3dListDataViewer.class);
+        registerImageJDataImporter("import-roi-3d", new Roi3dImageJImporter(), null);
+        registerImageJDataExporter("export-roi-3d", new Roi3dImageJExporter(), null);
+        registerNodeType("import-roi-3d", ImportRoi3dAlgorithm.class);
+        registerNodeType("export-roi-3d", ExportRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
+        registerNodeType("export-roi-3d-v2", ExportRoi3dAlgorithm2.class, JIPipe.RESOURCES.getIcon16URL("actions/document-export.png"));
 
         registerNodeType("ij3d-analyze-find-particles", FindParticles3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tool_elliptical_selection.png"));
-        registerNodeType("ij3d-labels-to-roi", Roi3DFromLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tool_elliptical_selection.png"));
+        registerNodeType("ij3d-labels-to-roi", Roi3dFromLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/tool_elliptical_selection.png"));
 
-        registerNodeType("ij3d-measure-roi3d", ExtractRoi3DStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
-        registerNodeType("ij3d-measure-pairwise-roi3d", ExtractRoi3DRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij3d-measure-roi3d", ExtractRoi3dStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
+        registerNodeType("ij3d-measure-pairwise-roi3d", ExtractRoi3dRelationStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/statistics.png"));
 
-        registerNodeType("ij3d-filter-roi3d-list", FilterRoi3DListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
-        registerNodeType("ij3d-filter-roi3d-by-statistics", FilterRoi3DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-filter-roi3d-list", FilterRoi3dListsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-filter-roi3d-by-statistics", FilterRoi3dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
-        registerNodeType("ij3d-roi-split-explode", ExplodeRoi3DListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
-        registerNodeType("ij3d-roi-split-into-connected-components", SplitRoi3DIntoConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
-        registerNodeType("ij3d-roi-split-by-statistics", SplitRoi3DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij3d-roi-split-explode", ExplodeRoi3dListAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij3d-roi-split-into-connected-components", SplitRoi3dIntoConnectedComponentsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
+        registerNodeType("ij3d-roi-split-by-statistics", SplitRoi3dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
 
-        registerNodeType("ij3d-roi-filter-by-overlap", FilterRoi3DByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-roi-filter-by-overlap", FilterRoi3dByOverlapOldAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-roi-filter-by-overlap-v2", FilterRoi3dByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerEnumParameterType("ij3d-roi-filter-by-overlap-v2:colocalization-mode", FilterRoi3dByOverlapAlgorithm.ColocalizationMode.class, "3D ROI colocalization constraint", "If ROI overlaps require colocalization");
 
-        registerNodeType("ij3d-roi-merge", MergeROI3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
+        registerNodeType("ij3d-roi-merge", MergeRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
 
-        registerNodeType("ij3d-roi-outline", OutlineRoi3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
-        registerNodeType("ij3d-roi-remove-border", RemoveBorderRoi3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-roi-outline", OutlineRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-connector.png"));
+        registerNodeType("ij3d-roi-remove-border", RemoveBorderRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
-        registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3DPropertiesFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
-        registerNodeType("ij3d-roi-change-properties-from-table", ChangeRoi3DPropertiesFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
-        registerNodeType("ij3d-roi-change-properties", ChangeRoi3DPropertiesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
-        registerNodeType("ij3d-roi-calculator", ROI3DCalculatorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
-        registerNodeType("ij3d-roi-color-by-name", ColorRoi3DByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
-        registerNodeType("ij3d-roi-color-by-statistics", ColorRoi3DByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
+        registerNodeType("ij3d-roi-change-properties-from-expressions", ChangeRoi3dPropertiesFromExpressionsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-change-properties-from-table", ChangeRoi3dPropertiesFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-change-properties", ChangeRoi3dPropertiesAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/stock_edit.png"));
+        registerNodeType("ij3d-roi-calculator", Roi3dCalculatorAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/calculator.png"));
+        registerNodeType("ij3d-roi-color-by-name", ColorRoi3dByNameAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
+        registerNodeType("ij3d-roi-color-by-statistics", ColorRoi3dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/fill-color.png"));
 
-        registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2DToRoi3DConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
-        registerNodeType("ij3d-roi-convert-3d-to-2d", Roi3DToRoi2DConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d.png"));
-        registerNodeType("ij3d-roi-convert-to-mask", Roi3DToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
-        registerNodeType("ij3d-roi-convert-to-labels", Roi3DToLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
-        registerNodeType("ij3d-roi-convert-to-rgb", Roi3DToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colormanagement.png"));
-        registerNodeType("ij3d-roi-convert-to-3d-mesh", Roi3DTo3DMeshAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/shape-cuboid.png"));
+        registerNodeType("ij3d-roi-convert-2d-to-3d", Roi2dToRoi3dConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-cuboid.png"));
+        registerNodeType("ij3d-roi-convert-3d-to-2d", Roi3dToRoi2dConverterAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d.png"));
+        registerNodeType("ij3d-roi-convert-to-mask", Roi3dToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij3d-roi-convert-to-labels", Roi3dToLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij3d-roi-convert-to-rgb", Roi3dToRGBAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/colormanagement.png"));
+        registerNodeType("ij3d-roi-convert-to-3d-mesh", Roi3dTo3DMeshAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/shape-cuboid.png"));
 
-        registerNodeType("ij3d-roi-extract-metadata", ExtractROI3DMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_extractfiles.png"));
-        registerNodeType("ij3d-roi-set-metadata-from-table", SetROI3DMetadataFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_packfiles.png"));
-        registerNodeType("ij3d-roi-remove-metadata", RemoveROI3DMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-roi-extract-metadata", ExtractRoi3dMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_extractfiles.png"));
+        registerNodeType("ij3d-roi-set-metadata-from-table", SetRoi3dMetadataFromTableAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/cm_packfiles.png"));
+        registerNodeType("ij3d-roi-remove-metadata", RemoveRoi3dMetadataAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
 
         registerNodeType("ij3d-roi-remove-overlay", RemoveOverlay3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/editclear.png"));
         registerNodeType("ij3d-roi-render-overlay", RenderOverlay3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/color-management.png"));

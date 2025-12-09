@@ -10,7 +10,7 @@ import ij.plugin.RoiScaler;
 import ij.process.FloatPolygon;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurement;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -39,13 +39,13 @@ public class ImageJROIUtils {
                 statisticsSetParameter.getValues().add(statistic);
             }
         }
-        ROI2DListData dummy = new ROI2DListData();
+        Roi2dListData dummy = new Roi2dListData();
         dummy.add(roi);
         return dummy.measure(reference, statisticsSetParameter, true, physicalUnits);
     }
 
     public static Roi intersectROI(Roi roi1, Roi roi2) {
-        ROI2DListData dummy = new ROI2DListData();
+        Roi2dListData dummy = new Roi2dListData();
         dummy.add(roi1);
         dummy.add(roi2);
         dummy.logicalAnd();
@@ -267,7 +267,7 @@ public class ImageJROIUtils {
             return null;
         }
 
-        ROI2DListData listData = new ROI2DListData();
+        Roi2dListData listData = new Roi2dListData();
         listData.add(roi);
         ImagePlus dummyImage = listData.createDummyImage();
         ImageProcessor ip = dummyImage.getProcessor();
@@ -297,7 +297,7 @@ public class ImageJROIUtils {
      */
     public static Roi fitCircleToRoi(Roi roi) {
         if (roi.isArea()) {      //create circle with the same area and centroid
-            ROI2DListData listData = new ROI2DListData();
+            Roi2dListData listData = new Roi2dListData();
             listData.add(roi);
             ImagePlus dummyImage = listData.createDummyImage();
             ImageProcessor ip = dummyImage.getProcessor();

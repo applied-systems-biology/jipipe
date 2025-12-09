@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
 import org.hkijena.jipipe.plugins.expressions.custom.JIPipeCustomExpressionVariablesParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -47,9 +47,9 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Set 2D ROI properties from table", description = "Sets properties of all ROI to values extracted from a table. Table rows are matched to their ROI and the column values are put into " +
         "expression variables, so the ROI can be modified.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Metadata", create = true, description = "Table containing the metadata (1 row per ROI)")
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter rowSelector = new JIPipeExpressionParameter("table.row == index");
@@ -87,7 +87,7 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
         this.centerScale = new OptionalJIPipeExpressionParameter(other.centerScale);
     }
 
-    private static void writeROIMetadataToVariables(JIPipeExpressionVariablesMap variables, Map<String, String> roiProperties, int roiIndex, ROI2DListData inputRois, double x, double y, int z, int c, int t, Roi roi) {
+    private static void writeROIMetadataToVariables(JIPipeExpressionVariablesMap variables, Map<String, String> roiProperties, int roiIndex, Roi2dListData inputRois, double x, double y, int z, int c, int t, Roi roi) {
         variables.set("metadata", roiProperties);
         for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
             variables.set("metadata." + entry.getKey(), entry.getValue());
@@ -108,7 +108,7 @@ public class ChangeRoiPropertiesFromTableAlgorithm extends JIPipeIteratingAlgori
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRois = (ROI2DListData) iterationStep.getInputData("Input", ROI2DListData.class, progressInfo).duplicate(progressInfo);
+        Roi2dListData inputRois = (Roi2dListData) iterationStep.getInputData("Input", Roi2dListData.class, progressInfo).duplicate(progressInfo);
         ResultsTableData inputMetadata = iterationStep.getInputData("Metadata", ResultsTableData.class, progressInfo);
 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);

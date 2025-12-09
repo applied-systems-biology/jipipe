@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Margin;
 import org.hkijena.jipipe.plugins.parameters.library.roi.MarginList;
 
@@ -41,7 +41,7 @@ import java.awt.*;
         "image, but also allows more flexibility in defining the rectangles.")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -75,7 +75,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         ImagePlus reference = iterationStep.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         Rectangle boundaries = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
 
-        ROI2DListData currentData = new ROI2DListData();
+        Roi2dListData currentData = new Roi2dListData();
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         for (Margin margin : rectangles) {
@@ -83,7 +83,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
                 getFirstOutputSlot().addData(currentData, progressInfo);
-                currentData = new ROI2DListData();
+                currentData = new Roi2dListData();
             }
         }
         if (!currentData.isEmpty()) {

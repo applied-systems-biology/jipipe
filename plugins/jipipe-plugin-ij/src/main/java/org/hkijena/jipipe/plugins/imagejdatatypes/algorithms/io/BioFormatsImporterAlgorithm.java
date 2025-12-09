@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEColorMode;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ROIHandler;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.IntegerList;
@@ -185,7 +185,7 @@ public class BioFormatsImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                     }
                 }
 
-                ROI2DListData rois = new ROI2DListData();
+                Roi2dListData rois = new Roi2dListData();
                 if (extractRois) {
                     rois = ROIHandler.openROIs(process.getOMEMetadata(), new ImagePlus[]{image});
                 }

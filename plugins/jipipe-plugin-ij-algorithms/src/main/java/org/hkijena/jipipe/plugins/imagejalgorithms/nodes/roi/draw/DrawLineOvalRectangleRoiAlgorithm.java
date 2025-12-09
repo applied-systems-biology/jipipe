@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ShapeUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.expressions.Image5DExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
@@ -45,9 +45,9 @@ import java.awt.geom.Rectangle2D;
 import java.awt.geom.RoundRectangle2D;
 
 @SetJIPipeDocumentation(name = "Draw 2D rectangle/oval/line ROI", description = "Draws one or multiple ROI that have two definition points, including lines, rectangles, and ovals.")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, all image-related variables will be set to 0", optional = true, create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Draw")
 public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -75,11 +75,11 @@ public class DrawLineOvalRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm 
         JIPipeExpressionVariablesMap variables = new JIPipeExpressionVariablesMap(iterationStep);
 
         // Collect target and reference
-        ROI2DListData target = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+        Roi2dListData target = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
         if (target == null) {
-            target = new ROI2DListData();
+            target = new Roi2dListData();
         } else {
-            target = new ROI2DListData(target);
+            target = new Roi2dListData(target);
         }
 
         // Extract reference variables

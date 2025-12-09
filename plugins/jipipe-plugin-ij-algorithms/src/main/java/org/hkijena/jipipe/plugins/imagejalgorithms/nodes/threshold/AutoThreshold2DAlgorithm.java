@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.ImageROITargetArea;
 import org.hkijena.jipipe.plugins.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
@@ -101,14 +101,14 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             ImagePlusData inputData = iterationStep.getInputData("Input", ImagePlusGreyscale8UData.class, progressInfo);
             ImagePlus img = inputData.getDuplicateImage();
-            ROI2DListData roiInput = null;
+            Roi2dListData roiInput = null;
             ImagePlus maskInput = null;
             AutoThresholder autoThresholder = new AutoThresholder();
 
             switch (sourceArea) {
                 case InsideRoi:
                 case OutsideRoi:
-                    roiInput = iterationStep.getInputData("ROI", ROI2DListData.class, progressInfo);
+                    roiInput = iterationStep.getInputData("ROI", Roi2dListData.class, progressInfo);
                     break;
                 case InsideMask:
                 case OutsideMask:
@@ -116,7 +116,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     break;
             }
 
-            ROI2DListData finalRoiInput = roiInput;
+            Roi2dListData finalRoiInput = roiInput;
             ImagePlus finalMaskInput = maskInput;
 
             if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
@@ -324,7 +324,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    private ImageProcessor getMask(int width, int height, ROI2DListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
+    private ImageProcessor getMask(int width, int height, Roi2dListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 

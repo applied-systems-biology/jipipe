@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.FontFamilyParameter;
@@ -38,7 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Advanced ROI drawing algorithm with better flexibility compared to the methods of {@link ROI2DListData}
+ * Advanced ROI drawing algorithm with better flexibility compared to the methods of {@link Roi2dListData}
  */
 public class RoiDrawer extends AbstractJIPipeParameterCollection {
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
@@ -287,7 +287,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
         this.ignoreT = ignoreT;
     }
 
-    public ImagePlus draw(ImagePlus reference, ROI2DListData roisToDraw, JIPipeProgressInfo progressInfo) {
+    public ImagePlus draw(ImagePlus reference, Roi2dListData roisToDraw, JIPipeProgressInfo progressInfo) {
 
         // Find the bounds and future stack position
         int sx = reference.getWidth();
@@ -303,7 +303,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
             for (int i = 0; i < roisToDraw.size(); i++) {
                 Roi roi = roisToDraw.get(i);
                 roiIndices.put(roi, i);
-                roiCentroids.put(roi, ROI2DListData.getCentroid(roi));
+                roiCentroids.put(roi, Roi2dListData.getCentroid(roi));
             }
         }
 
@@ -406,7 +406,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
      * @param index           the index of the slice (zero-based)
      * @param roisToHighlight ROIs to highlight (will be drawn again, while other ROIs are toned down)
      */
-    public void drawOnProcessor(ROI2DListData roisToDraw, ColorProcessor processor, ImageSliceIndex index, Set<Roi> roisToHighlight) {
+    public void drawOnProcessor(Roi2dListData roisToDraw, ColorProcessor processor, ImageSliceIndex index, Set<Roi> roisToHighlight) {
         // ROI statistics needed for labels
         Map<Roi, Point> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
@@ -414,7 +414,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
             for (int i = 0; i < roisToDraw.size(); i++) {
                 Roi roi = roisToDraw.get(i);
                 roiIndices.put(roi, i);
-                roiCentroids.put(roi, ROI2DListData.getCentroid(roi));
+                roiCentroids.put(roi, Roi2dListData.getCentroid(roi));
             }
         }
 
@@ -501,12 +501,12 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
      * @param index the current image index
      * @return the filtered ROI
      */
-    public ROI2DListData filterVisibleROI(ROI2DListData rois, ImageSliceIndex index) {
+    public Roi2dListData filterVisibleROI(Roi2dListData rois, ImageSliceIndex index) {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
 
-        ROI2DListData result = new ROI2DListData();
+        Roi2dListData result = new Roi2dListData();
         for (Roi roi : rois) {
             int rz = ignoreZ ? 0 : roi.getZPosition();
             int rc = ignoreC ? 0 : roi.getCPosition();
@@ -533,7 +533,7 @@ public class RoiDrawer extends AbstractJIPipeParameterCollection {
      * @param roisToHighlight highlighted ROI
      * @param magnification   the magnification
      */
-    public void drawOverlayOnGraphics(ROI2DListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, Set<Roi> roisToHighlight, double magnification) {
+    public void drawOverlayOnGraphics(Roi2dListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, Set<Roi> roisToHighlight, double magnification) {
         // ROI statistics needed for labels
         Map<Roi, Point2D> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();

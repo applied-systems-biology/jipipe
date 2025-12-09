@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.*;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashSet;
@@ -39,8 +39,8 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter 2D ROI by properties (expression)", description = "Filters the ROI list elements by the name and other basic properties.")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class FilterRoi2dByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filters = new JIPipeExpressionParameter();
@@ -68,8 +68,8 @@ public class FilterRoi2dByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData inputRois = iterationStep.getInputData(getFirstInputSlot(), ROI2DListData.class, progressInfo);
-        ROI2DListData outputRois = new ROI2DListData();
+        Roi2dListData inputRois = iterationStep.getInputData(getFirstInputSlot(), Roi2dListData.class, progressInfo);
+        Roi2dListData outputRois = new Roi2dListData();
 
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 

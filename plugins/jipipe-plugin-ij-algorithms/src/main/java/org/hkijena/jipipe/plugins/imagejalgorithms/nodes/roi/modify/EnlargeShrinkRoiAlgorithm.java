@@ -36,9 +36,9 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2DStatisticsAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.measure.ExtractRoi2dStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJROIUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.AllImageJMeasurementsExpressionParameterVariablesInfo;
@@ -54,9 +54,9 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Enlarge/shrink 2D ROI", description = "Enlarges or shrinks each input ROI")
 @ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@AddJIPipeInputSlot(value = ROI2DListData.class, name = "Input", create = true)
+@AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "Output", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private JIPipeExpressionParameter pixels = new JIPipeExpressionParameter("5");
@@ -76,11 +76,11 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
-        ROI2DListData input = iterationStep.getInputData("Input", ROI2DListData.class, progressInfo);
+        Roi2dListData input = iterationStep.getInputData("Input", Roi2dListData.class, progressInfo);
         ImagePlus reference = ImageJUtils.unwrap(iterationStep.getInputData("Reference", ImagePlusData.class, progressInfo));
 
-        ExtractRoi2DStatisticsAlgorithm roiStatisticsAlgorithm =
-                JIPipe.createNode(ExtractRoi2DStatisticsAlgorithm.class);
+        ExtractRoi2dStatisticsAlgorithm roiStatisticsAlgorithm =
+                JIPipe.createNode(ExtractRoi2dStatisticsAlgorithm.class);
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
@@ -106,7 +106,7 @@ public class EnlargeShrinkRoiAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        ROI2DListData output = new ROI2DListData();
+        Roi2dListData output = new Roi2dListData();
         JIPipePercentageProgressInfo processingRoiProgress = progressInfo.percentage("Processing ROI");
         for (int i = 0; i < input.size(); i++) {
             Roi roi = input.get(i);

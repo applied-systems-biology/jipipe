@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -113,13 +113,13 @@ public class CellposeUtils {
     }
 
     /**
-     * Converts ROI in a custom Json format to {@link ROI2DListData}
+     * Converts ROI in a custom Json format to {@link Roi2dListData}
      *
      * @param file the ROI file
      * @return ImageJ ROI
      */
-    public static ROI2DListData cellposeROIJsonToImageJ(Path file) {
-        ROI2DListData rois = new ROI2DListData();
+    public static Roi2dListData cellposeROIJsonToImageJ(Path file) {
+        Roi2dListData rois = new Roi2dListData();
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(file.toFile());
             for (JsonNode roiItem : ImmutableList.copyOf(node.elements())) {
@@ -293,10 +293,10 @@ public class CellposeUtils {
         return ImageJUtils.mergeMappedSlices(sliceMap);
     }
 
-    public static ROI2DListData extractROIFromInfo(CellposeImageInfo imageInfo, Path ioPath) {
-        ROI2DListData rois = new ROI2DListData();
+    public static Roi2dListData extractROIFromInfo(CellposeImageInfo imageInfo, Path ioPath) {
+        Roi2dListData rois = new Roi2dListData();
         for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.getSliceBaseNames().entrySet()) {
-            ROI2DListData sliceRoi = cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
+            Roi2dListData sliceRoi = cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
             if (imageInfo.getSliceBaseNames().size() > 1) {
                 for (Roi roi : sliceRoi) {
                     roi.setPosition(entry.getKey().getC() + 1, entry.getKey().getZ() + 1, entry.getKey().getT() + 1);

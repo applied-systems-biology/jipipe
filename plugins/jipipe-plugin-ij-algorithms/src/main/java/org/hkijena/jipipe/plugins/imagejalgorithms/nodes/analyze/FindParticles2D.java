@@ -32,7 +32,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejalgorithms.parameters.Neighborhood2D;
-import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ROI2DListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -58,7 +58,7 @@ import java.util.List;
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", create = true)
-@AddJIPipeOutputSlot(value = ROI2DListData.class, name = "ROI", description = "The extracted ROI", create = true)
+@AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", description = "The extracted ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "The measurements of the ROI")
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
@@ -192,7 +192,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                     if (annotationType.isEnabled() && !StringUtils.isNullOrEmpty(annotationType.getContent())) {
                         annotations.add(new JIPipeTextAnnotation(annotationType.getContent(), "" + index));
                     }
-                    ROI2DListData rois = new ROI2DListData(Arrays.asList(manager.getRoisAsArray()));
+                    Roi2dListData rois = new Roi2dListData(Arrays.asList(manager.getRoisAsArray()));
                     ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
                     for (Roi roi : rois) {
                         roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
@@ -207,7 +207,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 }, progressInfo);
             } else {
                 ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
-                ROI2DListData mergedROI = new ROI2DListData(new ArrayList<>());
+                Roi2dListData mergedROI = new Roi2dListData(new ArrayList<>());
                 ImagePlus roiReferenceImage = inputData.getDuplicateImage();
 
                 int finalOptions = options;
@@ -238,7 +238,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             table.setValue("SliceT", i, index.getT());
                         }
                     }
-                    ROI2DListData rois = new ROI2DListData(Arrays.asList(manager.getRoisAsArray()));
+                    Roi2dListData rois = new Roi2dListData(Arrays.asList(manager.getRoisAsArray()));
                     for (Roi roi : rois) {
                         roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
                         roi.setImage(roiReferenceImage);
