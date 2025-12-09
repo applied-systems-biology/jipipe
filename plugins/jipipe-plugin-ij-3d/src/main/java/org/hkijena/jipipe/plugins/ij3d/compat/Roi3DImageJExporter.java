@@ -28,7 +28,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Export 3D ROI to ImageJ")
+@SetJIPipeDocumentation(name = "Export IJ3D ROI to ImageJ")
 public class Roi3DImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
