@@ -542,4 +542,11 @@ public class IJ3DUtils {
         }
         return result;
     }
+
+    public static ImageHandler unwrap(ImagePlusData data) {
+        if(data != null) {
+            return ImageHandler.wrap(data.getImage());
+        }
+        return null;
+    }
 }

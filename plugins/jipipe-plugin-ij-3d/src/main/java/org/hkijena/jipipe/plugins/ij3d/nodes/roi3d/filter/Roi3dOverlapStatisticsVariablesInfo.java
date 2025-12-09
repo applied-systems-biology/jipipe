@@ -32,12 +32,12 @@ public class Roi3dOverlapStatisticsVariablesInfo implements JIPipeExpressionVari
     static {
         VARIABLES = new HashSet<>();
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the iteration step"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.z", "Candidate Z", "The Z location of the candidate ROI (first index is 1, zero indicates no Z constraint)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.c", "Candidate C", "The channel (C) location of the candidate ROI (first index is 1, zero indicates no C constraint)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.name", "Candidate Name", "The name of the candidate ROI (empty string if not set)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.z", "Filter Z", "The Z location of the filter ROI (first index is 1, zero indicates no Z constraint)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.c", "Filter C", "The channel (C) location of the filter ROI (first index is 1, zero indicates no C constraint)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.name", "Filter Name", "The name of the filter ROI (empty string if not set)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.t", "Candidate frame", "The frame location of the candidate ROI (first index is 1, zero indicates no frame constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.c", "Candidate channel", "The channel (C) location of the candidate ROI (first index is 1, zero indicates no C constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.name", "Candidate name", "The name of the candidate ROI (empty string if not set)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.t", "Filter frame", "The frame location of the candidate ROI (first index is 1, zero indicates no frame constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.c", "Filter channel", "The channel (C) location of the filter ROI (first index is 1, zero indicates no C constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Filter.name", "Filter name", "The name of the filter ROI (empty string if not set)"));
         
         // Add 3D-specific measurements
         for (Roi3dMeasurementColumn column : Roi3dMeasurementColumn.values()) {

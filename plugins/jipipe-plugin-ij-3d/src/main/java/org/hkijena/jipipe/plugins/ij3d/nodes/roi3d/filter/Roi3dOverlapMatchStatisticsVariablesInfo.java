@@ -30,8 +30,8 @@ public class Roi3dOverlapMatchStatisticsVariablesInfo implements JIPipeExpressio
     static {
         VARIABLES = new HashSet<>();
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("annotations", "Annotations map", "A map of annotations that are attached to the iteration step"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.z", "Candidate Z", "The Z location of the candidate ROI (first index is 1, zero indicates no Z constraint)"));
-        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.c", "Candidate C", "The channel (C) location of the candidate ROI (first index is 1, zero indicates no C constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.t", "Candidate Frame", "The frame location of the candidate ROI (first index is 1, zero indicates no frame constraint)"));
+        VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.c", "Candidate Channel", "The channel (C) location of the candidate ROI (first index is 1, zero indicates no channel constraint)"));
         VARIABLES.add(new JIPipeExpressionParameterVariableInfo("Candidate.name", "Candidate Name", "The name of the candidate ROI (empty string if not set)"));
         
         // Add 3D-specific measurements for candidate

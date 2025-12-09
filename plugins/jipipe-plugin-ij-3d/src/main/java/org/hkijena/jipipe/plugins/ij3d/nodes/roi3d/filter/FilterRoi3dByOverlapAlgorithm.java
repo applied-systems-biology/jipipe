@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
+import mcib3d.image3d.ImageHandler;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -38,10 +39,10 @@ import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariab
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
+import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurementSetParameter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.roi.filter.RoiOverlapMatchStatisticsVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.measure.ImageJMeasurementsSetParameter;
@@ -117,9 +118,9 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Ij3dSuiteRoiListData candidates = iterationStep.getInputData("Candidates", Ij3dSuiteRoiListData.class, progressInfo);
         Ij3dSuiteRoiListData filters = iterationStep.getInputData("Filters", Ij3dSuiteRoiListData.class, progressInfo);
-        ImagePlus candidateReference = null;
-        ImagePlus filterReference = null;
-        ImagePlus intersectionReference = null;
+        ImageHandler candidateReference = null;
+        ImageHandler filterReference = null;
+        ImageHandler intersectionReference = null;
         Ij3dSuiteRoiListData matched = new Ij3dSuiteRoiListData();
         Ij3dSuiteRoiListData rejected = new Ij3dSuiteRoiListData();
         Ij3dSuiteRoiListData intersections = new Ij3dSuiteRoiListData();
@@ -127,21 +128,23 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         // Initialize the reference images
         if (measurementParameters.referenceMode == ReferenceMode.SameForAll) {
             ImagePlus imp = ImageJUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE.getName(), ImagePlusData.class, progressInfo));
-            candidateReference = imp;
-            filterReference = imp;
-            intersectionReference = imp;
+            if(imp != null) {
+                candidateReference = ImageHandler.wrap(imp);
+                filterReference = ImageHandler.wrap(imp);
+                intersectionReference = ImageHandler.wrap(imp);
+            }
         } else if (measurementParameters.referenceMode == ReferenceMode.PerRoiSet) {
-            candidateReference = ImageJUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_CANDIDATES.getName(), ImagePlusData.class, progressInfo));
-            filterReference = ImageJUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_FILTERS.getName(), ImagePlusData.class, progressInfo));
-            intersectionReference = ImageJUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_INTERSECTIONS.getName(), ImagePlusData.class, progressInfo));
+            candidateReference = IJ3DUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_CANDIDATES.getName(), ImagePlusData.class, progressInfo));
+            filterReference = IJ3DUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_FILTERS.getName(), ImagePlusData.class, progressInfo));
+            intersectionReference = IJ3DUtils.unwrap(iterationStep.getInputData(SLOT_INPUT_REFERENCE_INTERSECTIONS.getName(), ImagePlusData.class, progressInfo));
         }
 
         // Do initial measurements
         progressInfo.log("Measuring candidates ...");
-        ResultsTableData candidateMeasurements = candidates.measure(candidateReference, measurementParameters.measurements, true, measurementParameters.measurePhysicalSizes);
+        ResultsTableData candidateMeasurements = candidates.measure(candidateReference, measurementParameters.measurements.getNativeValue(), measurementParameters.measurePhysicalSizes, "", progressInfo.resolve("Measure candidates"));
         progressInfo.cancellationCheck();
         progressInfo.log("Measuring filters ...");
-        ResultsTableData filterMeasurements = filters.measure(filterReference, measurementParameters.measurements, true, measurementParameters.measurePhysicalSizes);
+        ResultsTableData filterMeasurements = filters.measure(filterReference, measurementParameters.measurements.getNativeValue(), measurementParameters.measurePhysicalSizes, "", progressInfo.resolve("Measure filters"));
         progressInfo.cancellationCheck();
 
         // Convert into measured ROIs
@@ -201,10 +204,10 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return result;
     }
 
-    private void processCandidate(MeasuredRoi candidate, List<MeasuredRoi> filters, ImagePlus intersectionReference,
+    private void processCandidate(MeasuredRoi candidate, List<MeasuredRoi> filters, ImageHandler intersectionReference,
                                   Ij3dSuiteRoiListData matched, Ij3dSuiteRoiListData rejected, Ij3dSuiteRoiListData intersections, JIPipeExpressionVariablesMap variablesMap, JIPipePercentageProgressInfo progressInfo) {
         List<MeasuredRoi> matchingFilters = new ArrayList<>();
-        List<Roi> matchingIntersections = new ArrayList<>();
+        List<Ij3dSuiteRoi> matchingIntersections = new ArrayList<>();
 
         JIPipePercentageProgressInfo filterProgress = progressInfo.percentage("Filter");
         for (int i = 0; i < filters.size(); i++) {
@@ -251,7 +254,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         tmp.logicalOr();
                     }
 
-                    overlapSuccess = isIntersectingExact(tmp, candidate, filter, intersectionReference, variablesMap);
+                    overlapSuccess = isIntersectingExact(tmp, candidate, filter, intersectionReference, variablesMap, progressInfo);
                     tempIntersections.addAll(tmp);
                 }
             } else {
@@ -318,9 +321,8 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void putMeasurementListsIntoVariable(List<MeasuredRoi> measuredRoi, String prefix, JIPipeExpressionVariablesMap variablesMap) {
-        variablesMap.put(prefix + ".z", measuredRoi.stream().map(roi -> roi.roi.getZPosition()).toList());
-        variablesMap.put(prefix + ".c", measuredRoi.stream().map(roi -> roi.roi.getCPosition()).toList());
-        variablesMap.put(prefix + ".t", measuredRoi.stream().map(roi -> roi.roi.getTPosition()).toList());
+        variablesMap.put(prefix + ".c", measuredRoi.stream().map(roi -> roi.roi.getChannel()).toList());
+        variablesMap.put(prefix + ".t", measuredRoi.stream().map(roi -> roi.roi.getFrame()).toList());
         Set<String> keys = new HashSet<>();
         for (MeasuredRoi roi : measuredRoi) {
             keys.addAll(roi.measurements.keySet());
@@ -331,16 +333,15 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private void putMeasurementsIntoVariable(MeasuredRoi measuredRoi, String prefix, JIPipeExpressionVariablesMap variablesMap) {
-        variablesMap.set(prefix + ".z", measuredRoi.roi.getZPosition());
-        variablesMap.set(prefix + ".c", measuredRoi.roi.getCPosition());
-        variablesMap.set(prefix + ".t", measuredRoi.roi.getTPosition());
+        variablesMap.set(prefix + ".c", measuredRoi.roi.getChannel());
+        variablesMap.set(prefix + ".t", measuredRoi.roi.getFrame());
         variablesMap.set(prefix + ".name", StringUtils.nullToEmpty(measuredRoi.roi.getName()));
         for (Map.Entry<String, Object> entry : measuredRoi.measurements.entrySet()) {
             variablesMap.put(prefix + "." + entry.getKey(), entry.getValue());
         }
     }
 
-    private boolean isEmptyIntersection(Roi roi) {
+    private boolean isEmptyIntersection(Ij3dSuiteRoi roi) {
         // Do simple bounding box check
         Rectangle bounds = roi.getBounds();
         if (bounds == null) {
@@ -370,14 +371,14 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return sumArea <= 0;
     }
 
-    private boolean isIntersectingExact(Ij3dSuiteRoiListData intersectionNonEmpty, MeasuredRoi candidateMeasurements, MeasuredRoi filterMeasurements, ImagePlus intersectionReference, JIPipeExpressionVariablesMap variablesMap) {
+    private boolean isIntersectingExact(Ij3dSuiteRoiListData intersectionNonEmpty, MeasuredRoi candidateMeasurements, MeasuredRoi filterMeasurements, ImageHandler intersectionReference, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
         if (!overlapCondition.isEnabled()) {
             // It's enough if we have intersecting filters (empty intersections already filtered out by isEmptyIntersection)
             return !intersectionNonEmpty.isEmpty();
         }
 
         // Measure the intersection ROI
-        ResultsTableData measurements = intersectionNonEmpty.measure(intersectionReference, measurementParameters.measurements, true, measurementParameters.measurePhysicalSizes);
+        ResultsTableData measurements = intersectionNonEmpty.measure(intersectionReference, measurementParameters.measurements.getNativeValue(),  measurementParameters.measurePhysicalSizes, "", progressInfo);
         MeasuredRoi intersectionMeasurements = toMeasuredRoi(intersectionNonEmpty, measurements).getFirst();
 
         // Store variables that are measured
@@ -388,7 +389,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return overlapCondition.getContent().evaluateToBoolean(variablesMap);
     }
 
-    private Roi createBoundingBoxIntersection(Roi candidate, Roi filter) {
+    private Ij3dSuiteRoi createBoundingBoxIntersection(Ij3dSuiteRoi candidate, Ij3dSuiteRoi filter) {
         Rectangle b1 = candidate.getBounds();
         Rectangle b2 = filter.getBounds();
 
@@ -399,7 +400,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         return result;
     }
 
-    private boolean isIntersectingBoundingBox(Roi roi1, Roi roi2) {
+    private boolean isIntersectingBoundingBox(Ij3dSuiteRoi roi1, Ij3dSuiteRoi roi2) {
         Rectangle b1 = roi1.getBounds();
         Rectangle b2 = roi2.getBounds();
         if (b1 == null) {
@@ -471,17 +472,6 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreChannel = ignoreChannel;
     }
 
-    @SetJIPipeDocumentation(name = "Ignore Z", description = "If enabled, the Z location is ignored. Please note that if the Z location of a ROI is 0, it is seen as visible in all depths")
-    @JIPipeParameter("ignore-z")
-    public boolean isIgnoreZ() {
-        return ignoreZ;
-    }
-
-    @JIPipeParameter("ignore-z")
-    public void setIgnoreZ(boolean ignoreZ) {
-        this.ignoreZ = ignoreZ;
-    }
-
     @SetJIPipeDocumentation(name = "Ignore frame", description = "If enabled, the frame location is ignored. Please note that if the frame location of a ROI is 0, it is seen as visible in all frames")
     @JIPipeParameter("ignore-frame")
     public boolean isIgnoreFrame() {
@@ -508,7 +498,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     @SetJIPipeDocumentation(name = "Overlap condition", description = "Optional expression that allows to customize what is considered an overlap. If the expression returns true, it the tested candidate-filter-overlap triplet is considered an overlap." +
             " If the expression is disabled, any overlap is seen as overlap.")
     @JIPipeParameter(value = "overlap-condition", uiOrder = -90)
-    @AddJIPipeExpressionParameterVariable(fromClass = Roi3dOverlapMatchStatisticsVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = Roi3dOverlapStatisticsVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per overlapping ROI")
     public OptionalJIPipeExpressionParameter getOverlapCondition() {
         return overlapCondition;
@@ -601,7 +591,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    public record MeasuredRoi(Roi roi, Map<String, Object> measurements) {
+    public record MeasuredRoi(Ij3dSuiteRoi roi, Map<String, Object> measurements) {
 
     }
 
