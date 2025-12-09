@@ -267,12 +267,27 @@ public class Ij3dSuiteRoiListData extends ArrayList<Ij3dSuiteRoi> implements JIP
         return target;
     }
 
+    public Ij3dSuiteBoundingBox getBounds() {
+        Vector3D[] array = getBoundsArray();
+        Vector3D pos = array[0];
+        Vector3D sz = array[1];
+
+        Ij3dSuiteBoundingBox boundingBox = new Ij3dSuiteBoundingBox();
+        boundingBox.setxMin((int) pos.x);
+        boundingBox.setxMax((int) (pos.x + sz.x));
+        boundingBox.setyMin((int) pos.y);
+        boundingBox.setyMax((int) (pos.y + sz.y));
+        boundingBox.setzMin((int) pos.z);
+        boundingBox.setzMax((int) (pos.z + sz.z));
+        return boundingBox;
+    }
+
     /**
      * Gets the bounds of the 3D ROI
      *
      * @return array with two 3D vectors, the first one being the location and the other one containing the width, height, and depth
      */
-    public Vector3D[] getBounds() {
+    public Vector3D[] getBoundsArray() {
         if (isEmpty()) {
             return new Vector3D[]{
                     new Vector3D(0, 0, 0),
@@ -399,7 +414,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<Ij3dSuiteRoi> implements JIP
         int nSlices = 1;
         int nChannels = 1;
         int nFrames = 1;
-        Vector3D[] bounds = getBounds();
+        Vector3D[] bounds = getBoundsArray();
 
         width = (int) Math.max(width, bounds[0].x + bounds[1].x);
         height = (int) Math.max(height, bounds[0].y + bounds[1].y);

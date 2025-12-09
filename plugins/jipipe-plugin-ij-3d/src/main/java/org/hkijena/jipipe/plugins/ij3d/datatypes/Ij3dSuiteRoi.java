@@ -126,6 +126,10 @@ public class Ij3dSuiteRoi {
         object3D.setName(name);
     }
 
+    public Ij3dSuiteBoundingBox getBoundingBox() {
+        return new Ij3dSuiteBoundingBox(object3D);
+    }
+
     public Scene3DUnindexedMeshGeometry toGeometry(Color overrideColor, boolean physicalSizes, boolean forceMeshLengthUnit, Quantity.LengthUnit meshLengthUnit, boolean smooth, JIPipeProgressInfo progressInfo) {
 
         float voxDimXY = 1;

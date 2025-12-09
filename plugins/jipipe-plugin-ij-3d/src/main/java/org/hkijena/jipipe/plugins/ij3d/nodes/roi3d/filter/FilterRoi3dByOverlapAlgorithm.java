@@ -40,6 +40,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteBoundingBox;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurementSetParameter;
@@ -342,33 +343,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private boolean isEmptyIntersection(Ij3dSuiteRoi roi) {
-        // Do simple bounding box check
-        Rectangle bounds = roi.getBounds();
-        if (bounds == null) {
-            return true;
-        }
-        if (bounds.getWidth() <= 0 || bounds.getHeight() <= 0) {
-            return true;
-        }
-
-        // Measure only the area and use that
-        Ij3dSuiteRoiListData tmp = new Ij3dSuiteRoiListData();
-        tmp.add(roi);
-        ResultsTableData measured = tmp.measure(null, new ImageJMeasurementsSetParameter(Set.of(ImageJMeasurement.Area)), false, false);
-
-        if (measured == null || measured.getRowCount() <= 0) {
-            return true;
-        }
-        TableColumnData areaColumn = measured.getColumnReference("Area");
-        if (areaColumn == null) {
-            return true;
-        }
-        double sumArea = 0;
-        for (int i = 0; i < areaColumn.getRows(); i++) {
-            sumArea += areaColumn.getRowAsDouble(i);
-        }
-
-        return sumArea <= 0;
+        return roi == null || roi.getObject3D().getVolumePixels() <= 0;
     }
 
     private boolean isIntersectingExact(Ij3dSuiteRoiListData intersectionNonEmpty, MeasuredRoi candidateMeasurements, MeasuredRoi filterMeasurements, ImageHandler intersectionReference, JIPipeExpressionVariablesMap variablesMap, JIPipeProgressInfo progressInfo) {
@@ -390,26 +365,24 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Ij3dSuiteRoi createBoundingBoxIntersection(Ij3dSuiteRoi candidate, Ij3dSuiteRoi filter) {
-        Rectangle b1 = candidate.getBounds();
-        Rectangle b2 = filter.getBounds();
+        Ij3dSuiteBoundingBox b1 = candidate.getBoundingBox();
+        Ij3dSuiteBoundingBox b2 = filter.getBoundingBox();
+        Ij3dSuiteBoundingBox intersection = Ij3dSuiteBoundingBox.intersect(b1, b2);
 
-        Rectangle intersection = b1.intersection(b2);
-        Roi result = new ShapeRoi(intersection);
-        result.copyAttributes(candidate);
-        result.setPosition(candidate.getCPosition(), candidate.getZPosition(), candidate.getTPosition());
-        return result;
+        if(intersection != null) {
+            Ij3dSuiteRoi roi = intersection.toRoi();
+            roi.copyMetadata(candidate);
+            return roi;
+        }
+
+        return null;
     }
 
     private boolean isIntersectingBoundingBox(Ij3dSuiteRoi roi1, Ij3dSuiteRoi roi2) {
-        Rectangle b1 = roi1.getBounds();
-        Rectangle b2 = roi2.getBounds();
-        if (b1 == null) {
+        if(roi1 == null || roi2 == null) {
             return false;
         }
-        if (b2 == null) {
-            return false;
-        }
-        return b1.intersects(b2);
+        return roi1.getBoundingBox().intersects(roi2.getBoundingBox());
     }
 
     private boolean isZCTVisible(Ij3dSuiteRoi roi1, Ij3dSuiteRoi roi2) {

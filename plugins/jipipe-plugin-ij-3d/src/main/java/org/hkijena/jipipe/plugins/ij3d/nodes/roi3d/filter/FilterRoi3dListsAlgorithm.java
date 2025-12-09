@@ -58,7 +58,7 @@ public class FilterRoi3dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Ij3dSuiteRoiListData rois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
         JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
 
-        Vector3D[] bounds = rois.getBounds();
+        Vector3D[] bounds = rois.getBoundsArray();
         parameters.set("count", rois.size());
         parameters.set("x", bounds[0].x);
         parameters.set("y", bounds[0].y);
