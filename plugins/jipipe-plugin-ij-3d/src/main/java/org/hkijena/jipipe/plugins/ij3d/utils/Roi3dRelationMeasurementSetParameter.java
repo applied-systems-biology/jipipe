@@ -21,7 +21,7 @@ import java.util.Set;
 public class Roi3dRelationMeasurementSetParameter extends JIPipeDynamicSetParameter<Roi3dRelationMeasurement> {
     public Roi3dRelationMeasurementSetParameter() {
         initialize();
-        setNativeValue(32767); // All except intersection stats and roi1, roi2 stats
+        setNativeValue(1 + 2 + 4 + 8 + 16 + 32 + 64 + 128 + 256 + 512 + 2024); // Fast standard set
     }
 
     public Roi3dRelationMeasurementSetParameter(JIPipeDynamicSetParameter<Roi3dRelationMeasurement> other) {

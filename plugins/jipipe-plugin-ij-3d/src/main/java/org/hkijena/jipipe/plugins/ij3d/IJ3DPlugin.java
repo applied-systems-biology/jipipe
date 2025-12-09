@@ -42,6 +42,7 @@ import org.hkijena.jipipe.plugins.ij3d.nodes.overlay.SetOverlay3DAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportRoi3dAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.ExportRoi3dAlgorithm2;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.convert.*;
+import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByOverlapAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByOverlapOldAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dByStatisticsAlgorithm;
 import org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter.FilterRoi3dListsAlgorithm;
@@ -163,6 +164,8 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij3d-roi-split-by-statistics", SplitRoi3dByStatisticsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/split.png"));
 
         registerNodeType("ij3d-roi-filter-by-overlap", FilterRoi3dByOverlapOldAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerNodeType("ij3d-roi-filter-by-overlap-v2", FilterRoi3dByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerEnumParameterType("ij3d-roi-filter-by-overlap-v2:colocalization-mode", FilterRoi3dByOverlapAlgorithm.ColocalizationMode.class, "3D ROI colocalization constraint", "If ROI overlaps require colocalization");
 
         registerNodeType("ij3d-roi-merge", MergeRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
 

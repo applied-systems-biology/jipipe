@@ -51,41 +51,24 @@ public enum Roi3dRelationMeasurement {
 
     @Override
     public String toString() {
-        switch (this) {
-            case PercentageColocalization:
-                return "Colocalization (%)";
-            case OverlapsBox:
-                return "Bounding boxes overlaps (0/1)";
-            case Includes:
-                return "Includes (0/1)";
-            case IncludesBox:
-                return "Bounding box includes (0/1)";
-            case RadiusCenter:
-                return "Radius center";
-            case RadiusCenterOpposite:
-                return "Radius center (opposite)";
-            case DistanceCenter2D:
-                return "Distance center (2D)";
-            case DistanceCenter:
-                return "Distance center (3D)";
-            case DistanceHausdorff:
-                return "Distance (Hausdorff)";
-            case DistanceBorder:
-                return "Minimum distance (borders)";
-            case EdgeContactColocalization:
-                return "Edge contact (colocalization)";
-            case EdgeContactSide:
-                return "Edge contact (include side pixels)";
-            case EdgeContactDiagonal:
-                return "Edge contact (include side and diagonal pixels)";
-            case IntersectionStats:
-                return "Intersection object statistics";
-            case CurrentStats:
-                return "Current ROI statistics";
-            case OtherStats:
-                return "Other ROI statistics";
-            default:
-                return name();
-        }
+        return switch (this) {
+            case PercentageColocalization -> "Colocalization (%)";
+            case OverlapsBox -> "Bounding boxes overlaps (0/1)";
+            case Includes -> "Includes (0/1)";
+            case IncludesBox -> "Bounding box includes (0/1)";
+            case RadiusCenter -> "Radius center";
+            case RadiusCenterOpposite -> "Radius center (opposite)";
+            case DistanceCenter2D -> "Distance center (2D)";
+            case DistanceCenter -> "Distance center (3D)";
+            case DistanceHausdorff -> "Distance (Hausdorff)";
+            case DistanceBorder -> "Minimum distance (borders, slow!)";
+            case EdgeContactColocalization -> "Edge contact (colocalization, slow!)";
+            case EdgeContactSide -> "Edge contact (include side pixels, slow!)";
+            case EdgeContactDiagonal -> "Edge contact (include side and diagonal pixels, slow!)";
+            case IntersectionStats -> "Intersection object statistics";
+            case CurrentStats -> "Current ROI statistics";
+            case OtherStats -> "Other ROI statistics";
+            default -> name();
+        };
     }
 }

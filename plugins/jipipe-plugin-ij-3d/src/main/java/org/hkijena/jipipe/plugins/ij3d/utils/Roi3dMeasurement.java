@@ -48,7 +48,7 @@ public enum Roi3dMeasurement {
     @Override
     public String toString() {
         return switch (this) {
-            case ShapeMeasurements -> "Shape measurements";
+            case ShapeMeasurements -> "Shape measurements (slow!)";
             case DistCenterStats -> "Distance to center (+ statistics)";
             case PixelValueStats -> "Pixel value statistics";
             case ContourPixelValueStats -> "Contour pixel value statistics";
