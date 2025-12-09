@@ -31,6 +31,6 @@ public class FilamentsToRoi3dDataTypeConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input, JIPipeProgressInfo progressInfo) {
-        return ((Filaments3DGraphData) input).toRoi3D(false, true, -1, -1, progressInfo);
+        return ((Filaments3DGraphData) input).toRoi3d(false, true, -1, -1, progressInfo);
     }
 }

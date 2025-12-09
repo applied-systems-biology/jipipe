@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import javax.swing.*;
@@ -40,7 +40,7 @@ public class ROIManagerPlugin3DInfoContextPanel extends ROIManagerPlugin3DSelect
 
 
     @Override
-    public void selectionUpdated(Ij3dSuiteRoiListData allROI, List<IJ3DROI> selectedROI) {
+    public void selectionUpdated(Ij3dSuiteRoiListData allROI, List<Ij3dSuiteRoi> selectedROI) {
         if (selectedROI.isEmpty())
             roiInfoLabel.setText(allROI.size() + " ROI");
         else

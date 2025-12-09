@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.imageviewer;
 
-import org.hkijena.jipipe.plugins.ij3d.datatypes.IJ3DROI;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 
 import javax.swing.*;
@@ -31,5 +31,5 @@ public abstract class ROIManagerPlugin3DSelectionContextPanel extends JPanel {
         return roiManagerPlugin;
     }
 
-    public abstract void selectionUpdated(Ij3dSuiteRoiListData allROI, List<IJ3DROI> selectedROI);
+    public abstract void selectionUpdated(Ij3dSuiteRoiListData allROI, List<Ij3dSuiteRoi> selectedROI);
 }

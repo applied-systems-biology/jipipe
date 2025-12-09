@@ -37,8 +37,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.imageviewer.ROIManagerPlugin3D;
 import org.hkijena.jipipe.plugins.ij3d.utils.ExtendedObject3DVoxels;
-import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DOutline;
-import org.hkijena.jipipe.plugins.ij3d.utils.Roi3DDrawer;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dOutline;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.BitDepth;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
@@ -66,18 +66,18 @@ import java.util.zip.ZipOutputStream;
 @SetJIPipeDocumentation(name = "IJ3D ROI list", description = "Collection of 3D ROI from ImageJ 3D Suite")
 @ConfigureJIPipeDataCrate(entities = {
         @DefineJIPipeDataCrateEntity(id = "glob:./*.zip", type = JIPipeDataCrateEntityType.File, name = "IJ3D Suite 3D ROI ZIP",
-                description = "ZIP files that contain IJ3D Suite Roi3D files", encodingFormat = EncodingFormats.ZIP)
+                description = "ZIP files that contain IJ3D Suite Roi3d files", encodingFormat = EncodingFormats.ZIP)
 })
 @LabelAsJIPipeHeavyData
 @LabelAsJIPipeCommonData
-public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
+public class Ij3dSuiteRoiListData extends ArrayList<Ij3dSuiteRoi> implements JIPipeData, JIPipeDesktopLegacyImageViewerOverlay, NapariOverlay {
     public Ij3dSuiteRoiListData() {
 
     }
 
     public Ij3dSuiteRoiListData(Ij3dSuiteRoiListData other) {
-        for (IJ3DROI roi3D : other) {
-            add(new IJ3DROI(roi3D));
+        for (Ij3dSuiteRoi roi3D : other) {
+            add(new Ij3dSuiteRoi(roi3D));
         }
     }
 
@@ -120,8 +120,8 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         Ij3dSuiteRoiListData result = new Ij3dSuiteRoiListData();
         for (int i = 0; i < this.size(); i++) {
             progressInfo.resolveAndLog("Copy 3D Object", i, size());
-            IJ3DROI roi3D = this.get(i);
-            result.add(new IJ3DROI(roi3D));
+            Ij3dSuiteRoi roi3D = this.get(i);
+            result.add(new Ij3dSuiteRoi(roi3D));
         }
         return result;
     }
@@ -138,7 +138,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
      * @param perFrame   group per frame
      * @return groups (grouped by zero-index positions)
      */
-    public Map<ImageSliceIndex, List<IJ3DROI>> groupByPosition(boolean perChannel, boolean perFrame) {
+    public Map<ImageSliceIndex, List<Ij3dSuiteRoi>> groupByPosition(boolean perChannel, boolean perFrame) {
         return this.stream().collect(Collectors.groupingBy(roi -> {
             ImageSliceIndex index = new ImageSliceIndex();
             if (perFrame)
@@ -158,7 +158,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
     public void loadObjectsFromStream(InputStream inputStream, JIPipeProgressInfo progressInfo) {
         //ImagePlus plus = this.getImage();
         Map<String, Object3D> objectByNameMap = new HashMap<>();
-        Map<String, IJ3DROI> roiByNameMap = new HashMap<>();
+        Map<String, Ij3dSuiteRoi> roiByNameMap = new HashMap<>();
         try (ZipInputStream zipinputstream = new ZipInputStream(inputStream)) {
             ZipEntry zipentry = zipinputstream.getNextEntry();
             while (zipentry != null) {
@@ -179,7 +179,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
                 } else if (entryName.equals("jipipe-metadata.json")) {
                     JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(new UnclosableInputStream(zipinputstream));
                     for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(node.fields())) {
-                        IJ3DROI roi3D = JsonUtils.getObjectMapper().readerFor(IJ3DROI.class).readValue(entry.getValue());
+                        Ij3dSuiteRoi roi3D = JsonUtils.getObjectMapper().readerFor(Ij3dSuiteRoi.class).readValue(entry.getValue());
                         roiByNameMap.put(entry.getKey(), roi3D);
                     }
                 }
@@ -192,7 +192,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             throw new RuntimeException(e);
         }
 
-        for (Map.Entry<String, IJ3DROI> entry : roiByNameMap.entrySet()) {
+        for (Map.Entry<String, Ij3dSuiteRoi> entry : roiByNameMap.entrySet()) {
             Object3D object3D = objectByNameMap.get(entry.getKey());
             if (object3D != null) {
                 entry.getValue().setObject3D(object3D);
@@ -202,9 +202,9 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             add(entry.getValue());
         }
         for (Map.Entry<String, Object3D> entry : objectByNameMap.entrySet()) {
-            IJ3DROI roi3D = roiByNameMap.get(entry.getKey());
+            Ij3dSuiteRoi roi3D = roiByNameMap.get(entry.getKey());
             if (roi3D == null) {
-                roi3D = new IJ3DROI(entry.getValue());
+                roi3D = new Ij3dSuiteRoi(entry.getValue());
                 add(roi3D);
             }
         }
@@ -216,8 +216,8 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             //  ZIP
             ZipOutputStream zip = new ZipOutputStream(stream);
             Set<String> names = new HashSet<>();
-            Map<IJ3DROI, String> nameMap = new IdentityHashMap<>();
-            for (IJ3DROI roi3D : this) {
+            Map<Ij3dSuiteRoi, String> nameMap = new IdentityHashMap<>();
+            for (Ij3dSuiteRoi roi3D : this) {
 
                 if (progressInfo.isCancelled()) {
                     return;
@@ -246,8 +246,8 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
 
             // Save JIPipe metadata
             zip.putNextEntry(new ZipEntry("jipipe-metadata.json"));
-            Map<String, IJ3DROI> metadataMap = new HashMap<>();
-            for (IJ3DROI roi3D : this) {
+            Map<String, Ij3dSuiteRoi> metadataMap = new HashMap<>();
+            for (Ij3dSuiteRoi roi3D : this) {
                 String name = nameMap.get(roi3D);
                 metadataMap.put(name, roi3D);
             }
@@ -285,7 +285,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         double maxY = Double.NEGATIVE_INFINITY;
         double minZ = Double.POSITIVE_INFINITY;
         double maxZ = Double.NEGATIVE_INFINITY;
-        for (IJ3DROI roi3D : this) {
+        for (Ij3dSuiteRoi roi3D : this) {
             Object3D object3D = roi3D.getObject3D();
             minX = Math.min(minX, object3D.getXmin());
             maxX = Math.max(maxX, object3D.getXmax());
@@ -302,7 +302,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
 
     public Objects3DPopulation toPopulation() {
         Objects3DPopulation population = new Objects3DPopulation();
-        for (IJ3DROI roi3D : this) {
+        for (Ij3dSuiteRoi roi3D : this) {
             population.addObject(roi3D.getObject3D());
         }
         return population;
@@ -310,7 +310,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
 
     public Objects3DPopulation toPopulation(int channel, int frame) {
         Objects3DPopulation population = new Objects3DPopulation();
-        for (IJ3DROI roi3D : this) {
+        for (Ij3dSuiteRoi roi3D : this) {
             if (roi3D.sameChannel(channel) && roi3D.sameFrame(frame)) {
                 population.addObject(roi3D.getObject3D());
             }
@@ -320,7 +320,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
 
     public Ij3dSuiteRoiListData filteredForFrameAndChannel(int channel, int frame) {
         Ij3dSuiteRoiListData listData = new Ij3dSuiteRoiListData();
-        for (IJ3DROI roi3D : this) {
+        for (Ij3dSuiteRoi roi3D : this) {
             if (roi3D.sameChannel(channel) && roi3D.sameFrame(frame)) {
                 listData.add(roi3D);
             }
@@ -334,12 +334,12 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
      * @param population the population
      * @param channel    the channel (one-based)
      * @param frame      the frame (one-based)
-     * @return added Roi3D
+     * @return added Roi3d
      */
-    public List<IJ3DROI> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
-        List<IJ3DROI> added = new ArrayList<>();
+    public List<Ij3dSuiteRoi> addFromPopulation(Objects3DPopulation population, int channel, int frame) {
+        List<Ij3dSuiteRoi> added = new ArrayList<>();
         for (int i = 0; i < population.getNbObjects(); i++) {
-            IJ3DROI roi3D = new IJ3DROI(population.getObject(i));
+            Ij3dSuiteRoi roi3D = new Ij3dSuiteRoi(population.getObject(i));
             roi3D.setChannel(channel);
             roi3D.setFrame(frame);
             add(roi3D);
@@ -351,10 +351,10 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
     public void logicalAnd() {
         if (!isEmpty()) {
             Object3DVoxels voxels = new ExtendedObject3DVoxels();
-            voxels.addVoxelsIntersection(new ArrayList<>(stream().map(IJ3DROI::getObject3D).collect(Collectors.toList())));
+            voxels.addVoxelsIntersection(new ArrayList<>(stream().map(Ij3dSuiteRoi::getObject3D).collect(Collectors.toList())));
             clear();
             if (!voxels.isEmpty()) {
-                add(new IJ3DROI(voxels));
+                add(new Ij3dSuiteRoi(voxels));
             }
         }
     }
@@ -362,9 +362,9 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
     public void logicalOr() {
         if (!isEmpty()) {
             Object3DVoxels voxels = new ExtendedObject3DVoxels();
-            voxels.addVoxelsUnion(new ArrayList<>(stream().map(IJ3DROI::getObject3D).collect(Collectors.toList())));
+            voxels.addVoxelsUnion(new ArrayList<>(stream().map(Ij3dSuiteRoi::getObject3D).collect(Collectors.toList())));
             clear();
-            add(new IJ3DROI(voxels));
+            add(new Ij3dSuiteRoi(voxels));
         }
     }
 
@@ -377,13 +377,13 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         and.logicalAnd();
         clear();
         if (!or.isEmpty() && !and.isEmpty()) {
-            for (IJ3DROI r1 : or) {
+            for (Ij3dSuiteRoi r1 : or) {
                 Object3DVoxels voxels = r1.getObject3D().getObject3DVoxels();
-                for (IJ3DROI r2 : and) {
+                for (Ij3dSuiteRoi r2 : and) {
                     voxels.substractObject(r2.getObject3D());
                 }
                 if (!voxels.isEmpty()) {
-                    add(new IJ3DROI(voxels));
+                    add(new Ij3dSuiteRoi(voxels));
                 }
             }
         }
@@ -405,7 +405,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         height = (int) Math.max(height, bounds[0].y + bounds[1].y);
         nSlices = (int) Math.max(nSlices, bounds[0].z + bounds[1].z);
 
-        for (IJ3DROI roi3D : this) {
+        for (Ij3dSuiteRoi roi3D : this) {
             nChannels = Math.max(nChannels, roi3D.getChannel());
             nFrames = Math.max(nFrames, roi3D.getFrame());
         }
@@ -441,7 +441,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         } else {
             outputImage = createBlankCanvas("Mask", BitDepth.Grayscale8u);
         }
-        Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
+        Map<ImageSliceIndex, List<Ij3dSuiteRoi>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
             Ij3dSuiteRoiListData toRender = new Ij3dSuiteRoiListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
@@ -474,16 +474,16 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             outputImage = createBlankCanvas("Labels", bitDepth);
         }
 
-        Map<IJ3DROI, Integer> labelAssignments = new HashMap<>();
+        Map<Ij3dSuiteRoi, Integer> labelAssignments = new HashMap<>();
         for (int i = 0; i < size(); i++) {
             labelAssignments.put(get(i), i + 1);
         }
-        Map<ImageSliceIndex, List<IJ3DROI>> groups = groupByPosition(true, true);
+        Map<ImageSliceIndex, List<Ij3dSuiteRoi>> groups = groupByPosition(true, true);
         IJ3DUtils.forEach3DIn5DIO(outputImage, (ih, index, ctProgress) -> {
             Ij3dSuiteRoiListData toRender = new Ij3dSuiteRoiListData();
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(-1, -1, -1), Collections.emptyList()));
             toRender.addAll(groups.getOrDefault(new ImageSliceIndex(index.getC(), -1, index.getT()), Collections.emptyList()));
-            for (IJ3DROI roi3D : toRender) {
+            for (Ij3dSuiteRoi roi3D : toRender) {
                 roi3D.getObject3D().draw(ih, labelAssignments.get(roi3D));
             }
         }, progressInfo);
@@ -500,7 +500,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             if (progressInfo.isCancelled())
                 return null;
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("ROI", i, size());
-            IJ3DROI roi3D = this.get(i);
+            Ij3dSuiteRoi roi3D = this.get(i);
 
             if (oneSliceIndex.getC() != 0 && roi3D.getChannel() != 0 && roi3D.getChannel() != oneSliceIndex.getC()) {
                 continue;
@@ -552,13 +552,13 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
         return result;
     }
 
-    public void outline(Roi3DOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {
+    public void outline(Roi3dOutline outline, boolean ignoreErrors, JIPipeProgressInfo progressInfo) {
         for (int i = 0; i < size(); i++) {
             if (progressInfo.isCancelled())
                 return;
             JIPipeProgressInfo roiProgress = progressInfo.resolveAndLog("Generating outline", i, size());
             try {
-                IJ3DROI roi3D = get(i);
+                Ij3dSuiteRoi roi3D = get(i);
                 switch (outline) {
                     case BoundingBox: {
                         int[] boundingBox = roi3D.getObject3D().getBoundingBox();
@@ -627,7 +627,7 @@ public class Ij3dSuiteRoiListData extends ArrayList<IJ3DROI> implements JIPipeDa
             Path outputFile = outputDirectory.resolve(prefix + "_roi3d.tif");
 
             progressInfo.log("Exporting " + size() + " 3D ROIs ...");
-            Roi3DDrawer roiDrawer = new Roi3DDrawer();
+            Roi3dDrawer roiDrawer = new Roi3dDrawer();
             roiDrawer.setDrawOver(false);
             ImagePlus rendered = roiDrawer.draw(this, imp, progressInfo);
             IJ.saveAsTiff(rendered, outputFile.toString());

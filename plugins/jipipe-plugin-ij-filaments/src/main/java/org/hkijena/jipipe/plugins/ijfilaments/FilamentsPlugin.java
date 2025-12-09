@@ -174,7 +174,7 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("filaments-convert-cycles-to-roi", ConvertFilamentCyclesToROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
         registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
-        registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
+        registerNodeType("filaments-convert-to-roi3d", ConvertFilamentsToRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/roi.png"));
         registerNodeType("filaments-convert-to-mask", ConvertFilamentsToMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
         registerNodeType("filaments-convert-to-labels", ConvertFilamentsToLabelsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));
         registerNodeType("filaments-convert-to-labels-v2", ConvertFilamentsToLabels2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/reload.png"));

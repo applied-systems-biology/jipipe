@@ -1,0 +1,121 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter;
+
+import mcib3d.geom.Vector3D;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.plugins.expressions.*;
+import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.BooleanParameterSettings;
+
+import java.util.HashSet;
+import java.util.Set;
+
+@SetJIPipeDocumentation(name = "Filter IJ3D ROI list", description = "Only passes 3D ROI lists that match the filter criteria.")
+@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
+@AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
+public class FilterRoi3dListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("count > 0");
+    private boolean outputEmptyLists = true;
+
+    public FilterRoi3dListsAlgorithm(JIPipeNodeInfo info) {
+        super(info);
+    }
+
+    public FilterRoi3dListsAlgorithm(FilterRoi3dListsAlgorithm other) {
+        super(other);
+        this.filter = new JIPipeExpressionParameter(other.filter);
+        this.outputEmptyLists = other.outputEmptyLists;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        Ij3dSuiteRoiListData rois = iterationStep.getInputData(getFirstInputSlot(), Ij3dSuiteRoiListData.class, progressInfo);
+        JIPipeExpressionVariablesMap parameters = new JIPipeExpressionVariablesMap(iterationStep);
+
+        Vector3D[] bounds = rois.getBounds();
+        parameters.set("count", rois.size());
+        parameters.set("x", bounds[0].x);
+        parameters.set("y", bounds[0].y);
+        parameters.set("z", bounds[0].z);
+        parameters.set("width", bounds[1].x);
+        parameters.set("height", bounds[1].y);
+        parameters.set("depth", bounds[1].z);
+        if (filter.test(parameters)) {
+            iterationStep.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        } else if (outputEmptyLists) {
+            iterationStep.addOutputData(getFirstOutputSlot(), new Roi2dListData(), progressInfo);
+        }
+    }
+
+    @SetJIPipeDocumentation(name = "Operation on filtered-out ROI", description = "Determines what kind of data is stored into the output if a ROI list was filtered out.")
+    @JIPipeParameter("output-empty-list")
+    @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Output empty list", falseLabel = "Output nothing")
+    public boolean isOutputEmptyLists() {
+        return outputEmptyLists;
+    }
+
+    @JIPipeParameter("output-empty-list")
+    public void setOutputEmptyLists(boolean outputEmptyLists) {
+        this.outputEmptyLists = outputEmptyLists;
+    }
+
+    @SetJIPipeDocumentation(name = "Keep 3D ROI list if ...", description = "The filter expression used to test ROI lists. Must return a boolean.")
+    @JIPipeParameter("filter")
+    @JIPipeExpressionParameterSettings(variableSource = VariablesInfo.class, hint = "per ROI list")
+    public JIPipeExpressionParameter getFilter() {
+        return filter;
+    }
+
+    @JIPipeParameter("filter")
+    public void setFilter(JIPipeExpressionParameter filter) {
+        this.filter = filter;
+    }
+
+    public static class VariablesInfo implements JIPipeExpressionVariablesInfo {
+
+        public static final Set<JIPipeExpressionParameterVariableInfo> VARIABLES;
+
+        static {
+            VARIABLES = new HashSet<>();
+            VARIABLES.add(JIPipeExpressionParameterVariableInfo.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("count", "Number of items", "Number of items in the list"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("x", "Bounding box X", "Top-left X coordinate of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("y", "Bounding box Y", "Top-left Y coordinate of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("z", "Bounding box Z", "Top-left Z coordinate of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("width", "Bounding box width", "Width of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("height", "Bounding box height", "Height of the bounding box around all ROIs (zero if empty list)"));
+            VARIABLES.add(new JIPipeExpressionParameterVariableInfo("depth", "Bounding box depth", "Depth of the bounding box around all ROIs (zero if empty list)"));
+        }
+
+        @Override
+        public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
+            return VARIABLES;
+        }
+    }
+}

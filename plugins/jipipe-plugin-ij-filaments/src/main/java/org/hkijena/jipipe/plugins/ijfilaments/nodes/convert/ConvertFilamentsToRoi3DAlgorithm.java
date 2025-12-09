@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Convert")
-public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ConvertFilamentsToRoi3dAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean withEdges = true;
     private boolean withVertices = true;
 
@@ -41,11 +41,11 @@ public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgor
 
     private OptionalIntegerParameter forcedVertexRadius = new OptionalIntegerParameter(false, 1);
 
-    public ConvertFilamentsToRoi3DAlgorithm(JIPipeNodeInfo info) {
+    public ConvertFilamentsToRoi3dAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ConvertFilamentsToRoi3DAlgorithm(ConvertFilamentsToRoi3DAlgorithm other) {
+    public ConvertFilamentsToRoi3dAlgorithm(ConvertFilamentsToRoi3dAlgorithm other) {
         super(other);
         this.withEdges = other.withEdges;
         this.withVertices = other.withVertices;
@@ -56,7 +56,7 @@ public class ConvertFilamentsToRoi3DAlgorithm extends JIPipeSimpleIteratingAlgor
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         Filaments3DGraphData inputData = iterationStep.getInputData(getFirstInputSlot(), Filaments3DGraphData.class, progressInfo);
-        Ij3dSuiteRoiListData outputData = inputData.toRoi3D(withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
+        Ij3dSuiteRoiListData outputData = inputData.toRoi3d(withEdges, withVertices, forcedLineThickness.orElse(-1), forcedVertexRadius.orElse(-1), progressInfo);
 
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
