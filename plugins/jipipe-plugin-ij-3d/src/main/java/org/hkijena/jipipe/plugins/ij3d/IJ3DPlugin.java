@@ -165,6 +165,8 @@ public class IJ3DPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         registerNodeType("ij3d-roi-filter-by-overlap", FilterRoi3dByOverlapOldAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
         registerNodeType("ij3d-roi-filter-by-overlap-v2", FilterRoi3dByOverlapAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/filter.png"));
+        registerEnumParameterType("ij3d-roi-filter-by-overlap-v2:overlap-mode",FilterRoi3dByOverlapAlgorithm.OverlapMode.class, "3D ROI overlap mode", "Overlap modes");
+        registerEnumParameterType("ij3d-roi-filter-by-overlap-v2:reference-mode",FilterRoi3dByOverlapAlgorithm.ReferenceMode.class, "3D ROI reference mode", "Reference modes");
 
         registerNodeType("ij3d-roi-merge", MergeRoi3dAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/rabbitvcs-merge.png"));
 

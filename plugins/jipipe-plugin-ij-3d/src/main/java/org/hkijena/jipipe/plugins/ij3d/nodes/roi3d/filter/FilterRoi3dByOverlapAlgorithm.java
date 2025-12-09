@@ -43,6 +43,7 @@ import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteBoundingBox;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoi;
 import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
+import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurement;
 import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dMeasurementSetParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -574,6 +575,7 @@ public class FilterRoi3dByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private ReferenceMode referenceMode = ReferenceMode.None;
 
         public MeasurementParameters() {
+            measurements.setCollapsed(false);
         }
 
         public MeasurementParameters(MeasurementParameters other) {

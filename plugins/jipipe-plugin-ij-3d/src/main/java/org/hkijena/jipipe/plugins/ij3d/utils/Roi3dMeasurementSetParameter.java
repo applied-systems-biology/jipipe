@@ -22,7 +22,7 @@ import java.util.Set;
 public class Roi3dMeasurementSetParameter extends JIPipeDynamicSetParameter<Roi3dMeasurement> {
     public Roi3dMeasurementSetParameter() {
         super(new HashSet<>(Arrays.asList(Roi3dMeasurement.values())));
-        setCollapsed(true);
+        setCollapsed(false);
         initialize();
     }
 
