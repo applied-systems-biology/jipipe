@@ -175,7 +175,7 @@ def extract_data_from_npy(npy_file, output_dir, options, progress_callback=None)
         try:
             roi_list = process_roi_optimized(npy_data)
             with open(npy_base_output_path + "_roi.json", "w") as f:
-                json.dump(roi_list, f, indent=4)
+                json.dump(roi_list, f)
             if progress_callback:
                 progress_callback(f"Extracted {len(roi_list)} ROIs", 80)
         except Exception as e:
@@ -187,7 +187,7 @@ def extract_data_from_npy(npy_file, output_dir, options, progress_callback=None)
         try:
             json_data = {
                 "chan_choose": data_dict.get("chan_choose"),
-                "diameter": get_diameter(npy_data),
+                "est_diam": get_diameter(npy_data),
                 "cellpose_version": cellpose_version
             }
             with open(npy_base_output_path + "_info.json", "w") as f:
@@ -212,7 +212,7 @@ def extract_data_from_npy(npy_file, output_dir, options, progress_callback=None)
 def progress_callback_simple(message, percentage):
     """Simple progress callback for basic reporting."""
     if percentage >= 0:
-        print(f"[{percentage:3d}%] {message}")
+        print(f"[{percentage:5.1f}%] {message}")
     else:
         print(f"[ERROR] {message}")
 
@@ -221,7 +221,7 @@ def progress_callback_detailed(message, percentage):
     current_time = time.time()
     if percentage >= 0 and percentage < 100:
         eta = "Calculating..."
-        print(f"[{percentage:3d}%] {message} - ETA: {eta}")
+        print(f"[{percentage:5.1f}%] {message} - ETA: {eta}")
     elif percentage == 100:
         print(f"[100%] {message} - COMPLETED")
     else:

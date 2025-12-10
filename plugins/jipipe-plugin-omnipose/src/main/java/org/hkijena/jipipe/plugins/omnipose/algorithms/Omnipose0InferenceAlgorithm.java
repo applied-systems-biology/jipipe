@@ -279,13 +279,13 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 arguments.add("--skip-roi");
             }
             if(!segmentationOutputSettings.isOutputFlowsD()) {
-                arguments.add("--output-flows-dz-dy-dx");
+                arguments.add("--skip-flows-dz-dy-dx");
             }
             if(!segmentationOutputSettings.isOutputFlowsXY()) {
-                arguments.add("--output-flows-rgb");
+                arguments.add("--skip-flows-rgb");
             }
             if(!segmentationOutputSettings.isOutputFlowsZ()) {
-                arguments.add("--output-flows-z");
+                arguments.add("--skip-flows-z");
             }
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
@@ -311,13 +311,13 @@ public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm 
                 arguments.add("--skip-roi");
             }
             if(!segmentationOutputSettings.isOutputFlowsD()) {
-                arguments.add("--output-flows-dz-dy-dx");
+                arguments.add("--skip-flows-dz-dy-dx");
             }
             if(!segmentationOutputSettings.isOutputFlowsXY()) {
-                arguments.add("--output-flows-rgb");
+                arguments.add("--skip-flows-rgb");
             }
             if(!segmentationOutputSettings.isOutputFlowsZ()) {
-                arguments.add("--output-flows-z");
+                arguments.add("--skip-flows-z");
             }
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
