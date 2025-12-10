@@ -1,8 +1,11 @@
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
+import ij.ImageJ;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -59,4 +62,26 @@ public class JIPipeUtils {
     }
 
 
+    public static void showImageJ() {
+        ImageJ ij = IJ.getInstance(); // non-null when running inside Fiji/ImageJ
+
+        if (ij == null) {
+            // Standalone case: create the *real* ImageJ main window (not EMBEDDED)
+            ij = new ImageJ(ImageJ.STANDALONE);
+        } else {
+            // Plugin case: just focus existing main window
+            if (!ij.isVisible()) {
+                ij.setVisible(true);
+            }
+        }
+
+        // Bring to front reliably
+        if ((ij.getExtendedState() & Frame.ICONIFIED) != 0) {
+            ij.setExtendedState(ij.getExtendedState() & ~Frame.ICONIFIED);
+        }
+        ij.setSize(610, 115);
+        ij.setVisible(true);
+        ij.toFront();
+        ij.requestFocus();
+    }
 }
