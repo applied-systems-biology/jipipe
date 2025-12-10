@@ -263,13 +263,31 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose2-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose2-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
-            if (!segmentationOutputSettings.isOutputROI())
+            arguments.add("--cellpose-version");
+            arguments.add("2");
+            if(!segmentationOutputSettings.isOutputProbabilities()) {
+                arguments.add("--skip-probabilities");
+            }
+            if(!segmentationOutputSettings.isOutputLabels()) {
+                arguments.add("--skip-labels");
+            }
+            if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsD()) {
+                arguments.add("--skip-flows-dz-dy-dx");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsXY()) {
+                arguments.add("--skip-flows-rgb");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsZ()) {
+                arguments.add("--skip-flows-z");
+            }
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
             PythonUtils.runPython(arguments.toArray(new String[0]),
@@ -282,8 +300,25 @@ public class Cellpose2SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
+            arguments.add("--cellpose-version");
+            arguments.add("2");
+            if(!segmentationOutputSettings.isOutputProbabilities()) {
+                arguments.add("--skip-probabilities");
+            }
+            if(!segmentationOutputSettings.isOutputLabels()) {
+                arguments.add("--skip-labels");
+            }
             if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsD()) {
+                arguments.add("--skip-flows-dz-dy-dx");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsXY()) {
+                arguments.add("--skip-flows-rgb");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsZ()) {
+                arguments.add("--skip-flows-z");
             }
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
