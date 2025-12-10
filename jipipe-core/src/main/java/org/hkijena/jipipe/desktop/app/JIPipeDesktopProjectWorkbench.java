@@ -82,10 +82,7 @@ import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.*;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 import org.scijava.Context;
@@ -202,7 +199,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     public static boolean canAddOrDeleteNodes(JIPipeWorkbench workbench) {
         if (workbench instanceof JIPipeDesktopProjectWorkbench) {
-            JIPipeProject project = ((JIPipeDesktopProjectWorkbench) workbench).getProject();
+            JIPipeProject project = workbench.getProject();
             if (project.getMetadata().getPermissions().isPreventAddingDeletingNodes()) {
                 workbench.showMessageDialog("Deleting nodes & compartments is disabled for this project. " +
                                 "\n\nIf this is not intentional, change this setting in Project > Project settings > Prevent adding/deleting nodes",
@@ -747,6 +744,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             menu.add(toolsMenu);
 
         menu.add(Box.createHorizontalGlue());
+
+        // ImageJ button
+        JButton imageJButton = UIUtils.createButton("ImageJ", JIPipe.RESOURCES.getIcon16("actions/imagej.png"), JIPipeUtils::showImageJ);
+        UIUtils.setStandardButtonBorder(imageJButton);
+        menu.add(imageJButton);
 
         // Overview link
         openProjectOverviewButton = new JButton("Project", JIPipe.RESOURCES.getIcon16("actions/view-list-icons.png"));
