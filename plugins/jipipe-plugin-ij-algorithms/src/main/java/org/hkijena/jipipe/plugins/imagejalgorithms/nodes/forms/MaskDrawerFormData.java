@@ -173,7 +173,7 @@ public class MaskDrawerFormData extends FormData {
     @Override
     public void loadData(JIPipeMultiIterationStep iterationStep) {
         int row = iterationSteps.indexOf(iterationStep);
-        ImagePlus referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
+        ImagePlus referenceImage = iterationStep.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).getFirst().getImage();
         ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusGreyscaleMaskData.class, new JIPipeProgressInfo()).getImage();
 
         if (imageViewerPanel != null) {

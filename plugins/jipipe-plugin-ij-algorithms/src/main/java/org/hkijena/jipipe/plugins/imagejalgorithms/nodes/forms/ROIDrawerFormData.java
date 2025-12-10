@@ -46,6 +46,7 @@ import java.util.List;
 /**
  * Structural {@link FormData} for drawing ROIs
  */
+@Deprecated
 public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMultiIterationStep> iterationSteps;

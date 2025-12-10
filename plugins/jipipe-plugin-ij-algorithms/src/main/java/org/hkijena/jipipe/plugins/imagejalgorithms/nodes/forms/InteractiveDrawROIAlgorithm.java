@@ -47,15 +47,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SetJIPipeDocumentation(name = "Draw/modify ROIs (interactive)", description = "Allows users to draw or modify ROIs that are drawn over a reference image." +
+@SetJIPipeDocumentation(name = "Draw/modify ROIs (interactive, BROKEN!)", description = "Allows users to draw or modify ROIs that are drawn over a reference image." +
         " You can supply existing masks via the 'ROI' input. If a iteration step has no existing mask, a new one is generated according to the " +
-        "node parameters. DO NOT USE THIS ALGORITHM")
+        "node parameters. BROKEN! USE THE MASK DRAWER INSTEAD OR USE IMAGEJ DIRECTLY!")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @MarkNodeAsUnstable
 @LabelAsJIPipeHidden
+@Deprecated
 public class InteractiveDrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);

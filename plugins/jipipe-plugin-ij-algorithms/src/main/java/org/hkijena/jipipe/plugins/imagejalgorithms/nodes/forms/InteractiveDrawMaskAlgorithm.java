@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -78,6 +79,12 @@ public class InteractiveDrawMaskAlgorithm extends JIPipeIteratingMissingDataGene
 
         if (isPassThrough())
             return;
+
+        // Ensure that we have copies
+        JIPipeOutputDataSlot maskSlot = getOutputSlot("Mask");
+        for (int row = 0; row < maskSlot.getRowCount(); row++) {
+            maskSlot.setData(row, maskSlot.getData(row, JIPipeData.class, progressInfo).duplicate(progressInfo));
+        }
 
         // Get back the iteration steps
         List<JIPipeMultiIterationStep> iterationSteps;
