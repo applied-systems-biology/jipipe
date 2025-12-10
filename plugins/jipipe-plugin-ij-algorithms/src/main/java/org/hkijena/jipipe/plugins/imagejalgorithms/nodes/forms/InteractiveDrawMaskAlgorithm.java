@@ -22,21 +22,17 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingMissingDataGeneratorAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -50,24 +46,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SetJIPipeDocumentation(name = "Draw/modify mask", description = "Allows users to draw or modify a mask that is drawn over a reference image." +
+@SetJIPipeDocumentation(name = "Draw/modify mask (interactive)", description = "Allows users to draw or modify a mask that is drawn over a reference image." +
         " You can supply existing masks via the 'Masks' input. If a iteration step has no existing mask, a new one is generated according to the " +
         "node parameters.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Forms")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
-public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
+@MarkNodeAsUnstable
+public class InteractiveDrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorithm {
 
     private OptionalIntegerParameter overwriteSizeZ = new OptionalIntegerParameter(false, 1);
     private OptionalIntegerParameter overwriteSizeC = new OptionalIntegerParameter(false, 1);
     private OptionalIntegerParameter overwriteSizeT = new OptionalIntegerParameter(false, 1);
 
-    public DrawMaskAlgorithm(JIPipeNodeInfo info) {
+    public InteractiveDrawMaskAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public DrawMaskAlgorithm(DrawMaskAlgorithm other) {
+    public InteractiveDrawMaskAlgorithm(InteractiveDrawMaskAlgorithm other) {
         super(other);
         this.overwriteSizeZ = new OptionalIntegerParameter(other.overwriteSizeZ);
         this.overwriteSizeC = new OptionalIntegerParameter(other.overwriteSizeC);
@@ -103,7 +100,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
             iterationSteps = generateIterationSteps(getNonParameterInputSlots(), progressInfo).getDataBatches();
         }
 
-        runForm(iterationSteps, progressInfo);
+        runForm(iterationSteps, runContext, progressInfo);
     }
 
     @Override
@@ -116,10 +113,19 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         return true;
     }
 
-    private void runForm(List<JIPipeMultiIterationStep> iterationSteps, JIPipeProgressInfo progressInfo) {
+    private void runForm(List<JIPipeMultiIterationStep> iterationSteps, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         if (iterationSteps.isEmpty()) {
             progressInfo.log("No iteration steps selected (according to limit). Skipping.");
             return;
+        }
+
+        JIPipeDesktopProjectWorkbench workbench = runContext.getWorkbench();
+        if(workbench == null) {
+            throw new JIPipeValidationRuntimeException(JIPipeValidationReportContext.UNSPECIFIED.node(this),
+                    new NullPointerException("Workbench not found"),
+                    "No interactive JIPipe window found!",
+                    "This node requires interactive GUI, which is not available",
+                    "Run the pipeline using the JIPipe desktop software");
         }
 
         // Make all non-generated outputs unique
@@ -145,7 +151,6 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeDesktopWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     FormsDialog dialog = new FormsDialog(workbench, iterationSteps, formsSlot, "Tab");
                     dialog.setTitle(getName());
                     dialog.setSize(1024, 768);
@@ -198,7 +203,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
     @Override
     protected void runGenerator(JIPipeMultiIterationStep iterationStep, JIPipeInputDataSlot inputSlot, JIPipeOutputDataSlot outputSlot, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot referenceSlot = getInputSlot("Reference");
-        ImagePlus referenceImage = iterationStep.getInputData(referenceSlot, ImagePlusData.class, progressInfo).get(0).getImage();
+        ImagePlus referenceImage = iterationStep.getInputData(referenceSlot, ImagePlusData.class, progressInfo).getFirst().getImage();
         int width = referenceImage.getWidth();
         int height = referenceImage.getHeight();
         int sizeC = referenceImage.getNChannels();

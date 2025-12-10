@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -103,10 +105,18 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         List<Path> pathList = new ArrayList<>();
         Object lock = new Object();
 
+        JIPipeDesktopProjectWorkbench workbench = runContext.getWorkbench();
+        if(workbench == null) {
+            throw new JIPipeValidationRuntimeException(JIPipeValidationReportContext.UNSPECIFIED.node(this),
+                    new NullPointerException("Workbench not found"),
+                    "No interactive JIPipe window found!",
+                    "This node requires interactive GUI, which is not available",
+                    "Run the pipeline using the JIPipe desktop software");
+        }
+
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
                         pathList.addAll(JIPipeDesktop.selectMulti(((JIPipeDesktopWorkbench) workbench).getWindow(),
                                 workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,

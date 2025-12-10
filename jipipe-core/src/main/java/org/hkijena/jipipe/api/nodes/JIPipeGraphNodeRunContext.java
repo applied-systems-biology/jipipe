@@ -15,7 +15,10 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 
 public class JIPipeGraphNodeRunContext {
     private JIPipeFixedThreadPool threadPool;
@@ -64,5 +67,20 @@ public class JIPipeGraphNodeRunContext {
 
     public void setEnvironmentConfigurationCache(JIPipeEnvironmentConfigurationCache environmentConfigurationCache) {
         this.environmentConfigurationCache = environmentConfigurationCache;
+    }
+
+    public JIPipeProject getProject() {
+        return graphRun.getProject();
+    }
+
+    public JIPipeDesktopProjectWorkbench getWorkbench() {
+        JIPipeProject project = getProject();
+        if(project != null) {
+            JIPipeDesktopProjectWindow window = JIPipeDesktopProjectWindow.getWindowFor(project);
+            if (window != null) {
+                return window.getProjectWorkbench();
+            }
+        }
+        return null;
     }
 }

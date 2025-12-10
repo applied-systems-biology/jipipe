@@ -37,11 +37,11 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenera
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
-import org.hkijena.jipipe.desktop.app.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.ui.FormsDialog;
@@ -58,7 +58,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-@SetJIPipeDocumentation(name = "Form processor (merging)", description = "An algorithm that iterates through groups of data in " +
+@SetJIPipeDocumentation(name = "Form processor (merging, interactive)", description = "An algorithm that iterates through groups of data in " +
         "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "Groups are based on the annotations. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
@@ -68,6 +68,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
+@MarkNodeAsUnstable
 public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     private String tabAnnotation = "Tab";
@@ -94,6 +95,16 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             // Just copy without changes
             outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
+
+            JIPipeDesktopProjectWorkbench workbench = runContext.getWorkbench();
+            if (workbench == null) {
+                throw new JIPipeValidationRuntimeException(JIPipeValidationReportContext.UNSPECIFIED.node(this),
+                        new NullPointerException("Workbench not found"),
+                        "No interactive JIPipe window found!",
+                        "This node requires interactive GUI, which is not available",
+                        "Run the pipeline using the JIPipe desktop software");
+            }
+
             // Generate iteration steps and show the user interface
             List<JIPipeMultiIterationStep> iterationStepList = generateIterationSteps(getDataInputSlots(), progressInfo).getDataBatches();
 
@@ -112,7 +123,6 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
                     try {
-                        JIPipeDesktopWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                         FormsDialog dialog = new FormsDialog(workbench, iterationStepList, formsSlot, tabAnnotation);
                         dialog.setTitle(getName());
                         dialog.setSize(1024, 768);

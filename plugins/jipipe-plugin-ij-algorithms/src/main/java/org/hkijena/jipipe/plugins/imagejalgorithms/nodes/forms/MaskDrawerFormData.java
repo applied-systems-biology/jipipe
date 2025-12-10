@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
@@ -31,7 +32,9 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskDrawerPlugin2D;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -43,18 +46,28 @@ import java.util.List;
 public class MaskDrawerFormData extends FormData {
 
     private final List<JIPipeMultiIterationStep> iterationSteps;
-    private final DrawMaskAlgorithm drawMaskAlgorithm;
+    private final InteractiveDrawMaskAlgorithm drawMaskAlgorithm;
+    private JPanel imageViewerPanelContainer;
     private JIPipeDesktopLegacyImageViewer imageViewerPanel;
     private MaskDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private ImagePlus lazyLoadedMask;
 
-    public MaskDrawerFormData(List<JIPipeMultiIterationStep> iterationSteps, DrawMaskAlgorithm drawMaskAlgorithm) {
+    public MaskDrawerFormData(List<JIPipeMultiIterationStep> iterationSteps, InteractiveDrawMaskAlgorithm drawMaskAlgorithm) {
         this.iterationSteps = iterationSteps;
         this.drawMaskAlgorithm = drawMaskAlgorithm;
     }
 
     private void initializeImageViewer() {
+        imageViewerPanelContainer = new JPanel(new BorderLayout(8,8));
+        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+        JIPipeDesktopRibbon ribbon = new  JIPipeDesktopRibbon();
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        imageViewerPanelContainer.add(dockPanel, BorderLayout.CENTER);
+        imageViewerPanelContainer.add(ribbon, BorderLayout.NORTH);
+        imageViewerPanelContainer.add(toolBar, BorderLayout.SOUTH);
+
         imageViewerPanel = new JIPipeDesktopLegacyImageViewer(new JIPipeDesktopDummyWorkbench(),
                 Arrays.asList(CalibrationPlugin2D.class,
                         PixelInfoPlugin2D.class,
@@ -62,6 +75,12 @@ public class MaskDrawerFormData extends FormData {
                         MaskDrawerPlugin2D.class),
                 null,
                 Collections.emptyMap());
+        dockPanel.setMainComponent(imageViewerPanel);
+
+        imageViewerPanel.buildDock(dockPanel);
+        imageViewerPanel.buildStatusBar(toolBar);
+        imageViewerPanel.buildRibbon(ribbon);
+
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskDrawerPlugin2D.class);
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImageData(new ImagePlusData(lazyLoadedImage));
@@ -69,6 +88,9 @@ public class MaskDrawerFormData extends FormData {
             lazyLoadedImage = null;
             lazyLoadedMask = null;
         }
+
+        ribbon.rebuildRibbon();
+        ribbon.selectTask("Mask");
     }
 
     public JIPipeDesktopLegacyImageViewer getImageViewerPanel() {
@@ -76,6 +98,13 @@ public class MaskDrawerFormData extends FormData {
             initializeImageViewer();
         }
         return imageViewerPanel;
+    }
+
+    public JPanel getImageViewerPanelContainer() {
+        if (imageViewerPanel == null || maskDrawerPlugin == null) {
+            initializeImageViewer();
+        }
+        return imageViewerPanelContainer;
     }
 
     @Override
@@ -136,7 +165,9 @@ public class MaskDrawerFormData extends FormData {
 
     @Override
     public Component getEditor(JIPipeDesktopWorkbench workbench) {
-        return getImageViewerPanel();
+        JPanel panel = getImageViewerPanelContainer();
+        maskDrawerPlugin.recalculateMaskPreview();
+        return panel;
     }
 
     @Override
