@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStepGenera
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -53,7 +54,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Form processor (iterating)", description = "An algorithm that iterates through groups of data in " +
+@SetJIPipeDocumentation(name = "Form processor (iterating, interactive)", description = "An algorithm that iterates through groups of data in " +
         "its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "Groups are based on the annotations. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface." +
@@ -63,6 +64,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeOutputSlot(value = FormData.class, name = "Forms", role = JIPipeDataSlotRole.Parameters)
+@MarkNodeAsUnstable
 public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm {
 
     public static final String SLOT_FORMS = "Forms";
@@ -145,6 +147,16 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 outputSlot.addDataFromSlot(inputSlot, progressInfo);
             }
         } else {
+
+            JIPipeDesktopProjectWorkbench workbench = runContext.getWorkbench();
+            if (workbench == null) {
+                throw new JIPipeValidationRuntimeException(JIPipeValidationReportContext.UNSPECIFIED.node(this),
+                        new NullPointerException("Workbench not found"),
+                        "No interactive JIPipe window found!",
+                        "This node requires interactive GUI, which is not available",
+                        "Run the pipeline using the JIPipe desktop software");
+            }
+
             // Generate iteration steps and show the user interface
             List<JIPipeMultiIterationStep> iterationStepList = generateIterationSteps(getDataInputSlots(), progressInfo).getDataBatches();
 
@@ -169,7 +181,6 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
                     try {
-                        JIPipeDesktopWorkbench workbench = JIPipeDesktopProjectWorkbench.tryFindProjectWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                         FormsDialog dialog = new FormsDialog(workbench, iterationStepList, formsSlot, tabAnnotation);
                         dialog.setTitle(getName());
                         dialog.setSize(1024, 768);

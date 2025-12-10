@@ -63,8 +63,8 @@ import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DForwardTransfo
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DInverseTransform;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFT2DSwapQuadrants;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.fft.FFTBandPassFilter;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawMaskAlgorithm;
-import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.DrawROIAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.InteractiveDrawMaskAlgorithm;
+import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.forms.InteractiveDrawROIAlgorithm;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.generate.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.io.*;
 import org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.*;
@@ -662,8 +662,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     }
 
     private void registerFormAlgorithms() {
-        registerNodeType("ij-form-draw-mask", DrawMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
-        registerNodeType("ij-form-draw-rois", DrawROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
+        registerNodeType("ij-form-draw-mask", InteractiveDrawMaskAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
+        registerNodeType("ij-form-draw-rois", InteractiveDrawROIAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/draw-brush.png"));
     }
 
     private void registerOpticalFlowAlgorithms() {

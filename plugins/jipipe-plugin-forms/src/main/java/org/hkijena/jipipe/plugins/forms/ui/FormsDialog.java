@@ -66,7 +66,7 @@ public class FormsDialog extends JFrame {
     public FormsDialog(JIPipeDesktopWorkbench workbench, List<JIPipeMultiIterationStep> iterationStepList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;
         setIconImage(UIUtils.getJIPipeIcon128());
-        this.workbench = workbench;
+        this.workbench = Objects.requireNonNull(workbench);
         this.iterationStepList = iterationStepList;
         this.tabAnnotation = tabAnnotation;
         this.documentation = MarkdownText.fromResourceURL(FormsPlugin.class.getResource("/org/hkijena/jipipe/plugins/forms/form-dialog-documentation.md"),

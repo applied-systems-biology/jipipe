@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.MarkNodeAsUnstable;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.plugins.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.plugins.forms.datatypes.EnumFormData;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
 @ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@MarkNodeAsUnstable
 public class EnumFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 
     public EnumFormGeneratorAlgorithm(JIPipeNodeInfo info) {

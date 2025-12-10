@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopDummyWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.ribbon.JIPipeDesktopRibbon;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
@@ -31,9 +32,12 @@ import org.hkijena.jipipe.plugins.imageviewer.legacy.JIPipeDesktopLegacyImageVie
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.CalibrationPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.LUTManagerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.PixelInfoPlugin2D;
+import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.maskdrawer.MaskToROIDrawerPlugin2D;
 import org.hkijena.jipipe.plugins.imageviewer.legacy.plugins2d.roimanager.ROIManagerPlugin2D;
+import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,30 +46,48 @@ import java.util.List;
 /**
  * Structural {@link FormData} for drawing ROIs
  */
+@Deprecated
 public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMultiIterationStep> iterationSteps;
-    private final DrawROIAlgorithm drawROIAlgorithm;
+    private final InteractiveDrawROIAlgorithm drawROIAlgorithm;
     private JIPipeDesktopLegacyImageViewer imageViewerPanel;
 
+    private JPanel imageViewerPanelContainer;
     private ROIManagerPlugin2D roiManagerPlugin;
     private MaskToROIDrawerPlugin2D maskDrawerPlugin;
     private ImagePlus lazyLoadedImage;
     private Roi2dListData lazyLoadedROIs;
 
-    public ROIDrawerFormData(List<JIPipeMultiIterationStep> iterationSteps, DrawROIAlgorithm drawROIAlgorithm) {
+    public ROIDrawerFormData(List<JIPipeMultiIterationStep> iterationSteps, InteractiveDrawROIAlgorithm drawROIAlgorithm) {
         this.iterationSteps = iterationSteps;
         this.drawROIAlgorithm = drawROIAlgorithm;
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new JIPipeDesktopLegacyImageViewer(new JIPipeDesktopDummyWorkbench(), Arrays.asList(CalibrationPlugin2D.class,
-                PixelInfoPlugin2D.class,
-                LUTManagerPlugin2D.class,
-                ROIManagerPlugin2D.class,
-                MaskToROIDrawerPlugin2D.class),
+        imageViewerPanelContainer = new JPanel(new BorderLayout(8,8));
+        JIPipeDesktopDockPanel dockPanel = new JIPipeDesktopDockPanel();
+        JIPipeDesktopRibbon ribbon = new  JIPipeDesktopRibbon();
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        imageViewerPanelContainer.add(dockPanel, BorderLayout.CENTER);
+        imageViewerPanelContainer.add(ribbon, BorderLayout.NORTH);
+        imageViewerPanelContainer.add(toolBar, BorderLayout.SOUTH);
+
+        imageViewerPanel = new JIPipeDesktopLegacyImageViewer(new JIPipeDesktopDummyWorkbench(),
+                Arrays.asList(CalibrationPlugin2D.class,
+                        PixelInfoPlugin2D.class,
+                        LUTManagerPlugin2D.class,
+                        ROIManagerPlugin2D.class,
+                        MaskToROIDrawerPlugin2D.class),
                 null,
                 Collections.emptyMap());
+        dockPanel.setMainComponent(imageViewerPanel);
+
+        imageViewerPanel.buildDock(dockPanel);
+        imageViewerPanel.buildStatusBar(toolBar);
+        imageViewerPanel.buildRibbon(ribbon);
+
         maskDrawerPlugin = imageViewerPanel.getPlugin(MaskToROIDrawerPlugin2D.class);
         roiManagerPlugin = imageViewerPanel.getPlugin(ROIManagerPlugin2D.class);
         if (lazyLoadedImage != null) {
@@ -74,6 +96,9 @@ public class ROIDrawerFormData extends FormData {
             lazyLoadedImage = null;
             lazyLoadedROIs = null;
         }
+
+        ribbon.rebuildRibbon();
+        ribbon.selectTask("Mask");
     }
 
     public JIPipeDesktopLegacyImageViewer getImageViewerPanel() {
@@ -81,6 +106,14 @@ public class ROIDrawerFormData extends FormData {
             initializeImageViewer();
         }
         return imageViewerPanel;
+    }
+
+
+    public JPanel getImageViewerPanelContainer() {
+        if (imageViewerPanel == null || maskDrawerPlugin == null) {
+            initializeImageViewer();
+        }
+        return imageViewerPanelContainer;
     }
 
     @Override
@@ -132,7 +165,7 @@ public class ROIDrawerFormData extends FormData {
 
     @Override
     public Component getEditor(JIPipeDesktopWorkbench workbench) {
-        return getImageViewerPanel();
+        return getImageViewerPanelContainer();
     }
 
     @Override
