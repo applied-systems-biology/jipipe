@@ -264,13 +264,30 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Deploy and run extraction script
         progressInfo.log("Deploying script to extract Cellpose *.npy results ...");
-        Path npyExtractorScript = workDirectory.resolve("extract-cellpose3-npy.py");
-        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose3-npy.py", npyExtractorScript);
+        Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
+        CellposePlugin.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
         if (!runWith2D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
+            arguments.add("--cellpose-version");
+            arguments.add("4");
+            if(!segmentationOutputSettings.isOutputProbabilities()) {
+                arguments.add("--skip-probabilities");
+            }
+            if(!segmentationOutputSettings.isOutputLabels()) {
+                arguments.add("--skip-labels");
+            }
             if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsD()) {
+                arguments.add("--output-flows-dz-dy-dx");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsXY()) {
+                arguments.add("--output-flows-rgb");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsZ()) {
+                arguments.add("--output-flows-z");
             }
             arguments.add(io2DPath.toString());
             arguments.add(io2DPath.toString());
@@ -284,8 +301,25 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         if (!runWith3D.isEmpty()) {
             List<String> arguments = new ArrayList<>();
             arguments.add(npyExtractorScript.toString());
+            arguments.add("--cellpose-version");
+            arguments.add("4");
+            if(!segmentationOutputSettings.isOutputProbabilities()) {
+                arguments.add("--skip-probabilities");
+            }
+            if(!segmentationOutputSettings.isOutputLabels()) {
+                arguments.add("--skip-labels");
+            }
             if (!segmentationOutputSettings.isOutputROI()) {
                 arguments.add("--skip-roi");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsD()) {
+                arguments.add("--output-flows-dz-dy-dx");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsXY()) {
+                arguments.add("--output-flows-rgb");
+            }
+            if(!segmentationOutputSettings.isOutputFlowsZ()) {
+                arguments.add("--output-flows-z");
             }
             arguments.add(io3DPath.toString());
             arguments.add(io3DPath.toString());
