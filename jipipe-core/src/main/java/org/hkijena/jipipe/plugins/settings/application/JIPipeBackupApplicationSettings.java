@@ -112,15 +112,15 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         private OptionalIntegerParameter maxAgeDays = new OptionalIntegerParameter(true, 60);
         private OptionalIntegerParameter keepBackupsPerYear = new OptionalIntegerParameter(true, 12);
         private OptionalIntegerParameter keepBackupsPerMonth = new OptionalIntegerParameter(true, 4);
-        private OptionalIntegerParameter keepBackupsPerWeek = new OptionalIntegerParameter(true, 1);
-        private OptionalIntegerParameter keepBackupsPerDay = new OptionalIntegerParameter(true, 24);
+        private OptionalIntegerParameter keepBackupsPerWeek = new OptionalIntegerParameter(true, 4);
+        private OptionalIntegerParameter keepBackupsPerDay = new OptionalIntegerParameter(true, 1);
         private OptionalIntegerParameter keepBackupsPerHour = new OptionalIntegerParameter(true, 1);
 
         public CleanupSettings() {
 
         }
 
-        @SetJIPipeDocumentation(name = "Maximum age (days)", description = "If enabled, sets the maximum age of backups in days. Backups older than the given age are deleted. Please note that this age-based rule is overwritten by the number of retained backups (year/month/week/day).")
+        @SetJIPipeDocumentation(name = "Maximum age (days)", description = "If enabled, sets the maximum age of backups in days. Backups older than the given age are deleted. Please note that this age-based rule is overwritten by the number of retained backups (year/month/week/day). Fallback rule.")
         @JIPipeParameter(value = "max-age-days", uiOrder = 100)
         public OptionalIntegerParameter getMaxAgeDays() {
             if(maxAgeDays.getContent() <= 0) {

@@ -13,21 +13,27 @@
 
 package org.hkijena.jipipe.api.backups;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.components.JIPipeProjectBackupServiceComponent;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 public class ThinBackupsRun extends DefaultJIPipeRunnable {
 
-    public ThinBackupsRun() {
+    private final boolean interactive;
+
+    public ThinBackupsRun(boolean interactive) {
+        this.interactive = interactive;
     }
 
     @Override
@@ -49,36 +55,11 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
         List<JIPipeProjectBackupItemCollection> backupItemCollections = subRun.getOutput();
         List<JIPipeProjectBackupItem> itemsToDelete = new ArrayList<>();
 
-        // Get retention settings - check if they are disabled (null or empty)
-        int hourlyRetention = settings.getMaxAgeHourly().orElse(Integer.MAX_VALUE);
-        int dailyRetention = settings.getMaxAgeDaily().orElse(Integer.MAX_VALUE);
-        int weeklyRetention = settings.getMaxAgeWeekly().orElse(Integer.MAX_VALUE);
-        int monthlyRetention = settings.getMaxAgeMonthly().orElse(Integer.MAX_VALUE);
-
-        boolean retentionEnabled = hourlyRetention != Integer.MAX_VALUE || dailyRetention != Integer.MAX_VALUE ||
-                                 weeklyRetention != Integer.MAX_VALUE || monthlyRetention != Integer.MAX_VALUE;
-
-        getProgressInfo().log("Applying graduated retention strategy:");
-        if (retentionEnabled) {
-            getProgressInfo().log("- Hourly retention: " + hourlyRetention + " hours");
-            getProgressInfo().log("- Daily retention: " + dailyRetention + " days");
-            getProgressInfo().log("- Weekly retention: " + weeklyRetention + " weeks");
-            getProgressInfo().log("- Monthly retention: " + monthlyRetention + " months");
-        } else {
-            getProgressInfo().log("- Retention limits disabled - keeping all backups");
-            return;
-        }
 
         LocalDateTime now = LocalDateTime.now();
 
         for (JIPipeProjectBackupItemCollection backupItemCollection : backupItemCollections) {
-            List<JIPipeProjectBackupItem> backupItems = backupItemCollection.getBackupItemList();
-            
-            // Sort by backup time (oldest first) for proper tiered retention
-            backupItems.sort(Comparator.comparing(JIPipeProjectBackupItem::getBackupTime));
-
-            // Apply graduated retention strategy
-            applyGraduatedRetention(backupItemCollection, backupItems, itemsToDelete, now, hourlyRetention, dailyRetention, weeklyRetention, monthlyRetention);
+            applyCascadingCleanupRules(backupItemCollection, itemsToDelete, now, settings, getProgressInfo().resolve(backupItemCollection.renderName()));
         }
 
         getProgressInfo().log("-> Collected " + itemsToDelete.size() + " items to delete");
@@ -87,17 +68,15 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
             return;
         }
 
-        for (int i = 5; i >= 0; i--) {
-            getProgressInfo().log("Will continue in " + i + " seconds before deleting backups");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+        if(interactive) {
+            for (int i = 5; i >= 0; i--) {
+                getProgressInfo().log("Will continue in " + i + " seconds before deleting backups");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
-        }
-
-        if(true) {
-            return;
         }
 
         if (getProgressInfo().isCancelled())
@@ -115,83 +94,99 @@ public class ThinBackupsRun extends DefaultJIPipeRunnable {
         PruneBackupsRun.pruneEmptySessions(backupsDir, getProgressInfo().resolve("Postprocessing"));
     }
 
-    /**
-     * Applies graduated retention strategy to a list of backup items.
-     *
-     * @param backupItemCollection the item collection
-     * @param backupItems          List of backup items sorted by time (oldest first)
-     * @param itemsToDelete        List to add items to be deleted to
-     * @param now                  Current time
-     * @param hourlyRetention      Hours to keep hourly backups
-     * @param dailyRetention       Days to keep daily backups
-     * @param weeklyRetention      Weeks to keep weekly backups
-     * @param monthlyRetention     Months to keep monthly backups
-     */
-    private void applyGraduatedRetention(JIPipeProjectBackupItemCollection backupItemCollection, List<JIPipeProjectBackupItem> backupItems,
-                                         List<JIPipeProjectBackupItem> itemsToDelete,
-                                         LocalDateTime now,
-                                         int hourlyRetention, int dailyRetention,
-                                         int weeklyRetention, int monthlyRetention) {
+
+    private void applyCascadingCleanupRules(JIPipeProjectBackupItemCollection backupItemCollection,
+                                            List<JIPipeProjectBackupItem> itemsToDelete,
+                                            LocalDateTime now,
+                                            JIPipeBackupApplicationSettings.CleanupSettings settings, JIPipeProgressInfo progressInfo) {
         
+        List<JIPipeProjectBackupItem> backupItems = backupItemCollection.getBackupItemList();
         if (backupItems.isEmpty()) {
             return;
         }
 
-        // Calculate cutoff times for each tier
-        LocalDateTime hourlyCutoff = now.minusHours(hourlyRetention);
-        LocalDateTime dailyCutoff = now.minusDays(dailyRetention);
-        LocalDateTime weeklyCutoff = now.minusWeeks(weeklyRetention);
-        LocalDateTime monthlyCutoff = now.minusMonths(monthlyRetention);
+        // Sort by backup time (newest first)
+        backupItems.sort(Comparator.comparing(JIPipeProjectBackupItem::getBackupTime).reversed());
 
-        // Process backups in tiers
-        int hourlyCount = 0;
-        int dailyCount = 0;
-        int weeklyCount = 0;
-        int monthlyCount = 0;
-        int numDeleted = 0;
+        // Keep track of items that should be preserved
+        Set<JIPipeProjectBackupItem> itemsToKeep = new HashSet<>();
+
+        // Always keep the newest backup overall
+        itemsToKeep.add(backupItems.getFirst());
+
+        Multimap<Long,JIPipeProjectBackupItem> bucketYears = HashMultimap.create();
+        Multimap<Long,JIPipeProjectBackupItem> bucketMonths = HashMultimap.create();
+        Multimap<Long,JIPipeProjectBackupItem> bucketWeeks = HashMultimap.create();
+        Multimap<Long,JIPipeProjectBackupItem> bucketDays = HashMultimap.create();
+        Multimap<Long,JIPipeProjectBackupItem> bucketHours = HashMultimap.create();
 
         for (JIPipeProjectBackupItem backupItem : backupItems) {
             LocalDateTime backupTime = backupItem.getBackupTime();
+            long ageInYears = ChronoUnit.YEARS.between(backupTime, now);
+            long ageInMonths = ChronoUnit.MONTHS.between(backupTime, now);
+            long ageInWeeks = ChronoUnit.WEEKS.between(backupTime, now);
+            long ageInDays = ChronoUnit.DAYS.between(backupTime, now);
+            long ageInHours = ChronoUnit.HOURS.between(backupTime, now);
+            boolean ruleMatched = false;
 
-            // Delete everything older than monthly cutoff
-            if (backupTime.isBefore(monthlyCutoff)) {
-                itemsToDelete.add(backupItem);
-                ++numDeleted;
-                continue;
+            ruleMatched = tryBucket(ageInYears, settings.getKeepBackupsPerYear(), bucketYears, backupItem, ruleMatched);
+            ruleMatched = tryBucket(ageInMonths, settings.getKeepBackupsPerMonth(), bucketMonths, backupItem, ruleMatched);
+            ruleMatched = tryBucket(ageInWeeks, settings.getKeepBackupsPerWeek(), bucketWeeks, backupItem, ruleMatched);
+            ruleMatched = tryBucket(ageInDays, settings.getKeepBackupsPerDay(), bucketDays, backupItem, ruleMatched);
+            ruleMatched = tryBucket(ageInHours, settings.getKeepBackupsPerHour(), bucketHours, backupItem, ruleMatched);
+
+            // For very young backups (less than 1 h, we keep them)
+            if(ageInHours == 0) {
+                itemsToKeep.add(backupItem);
             }
 
-            // For backups within monthly window, apply graduated retention
-            if (backupTime.isBefore(weeklyCutoff)) {
-                // Keep one backup per week in this tier
-                if (weeklyCount == 0) {
-                    // Keep the first (oldest) backup in this weekly tier
-                    weeklyCount++;
-                } else {
-                    ++numDeleted;
-                    itemsToDelete.add(backupItem);
+            if(!ruleMatched) {
+                if(settings.getMaxAgeDays().isEnabled()) {
+                    if(ageInDays > settings.getMaxAgeDays().getContent()) {
+                        itemsToKeep.add(backupItem);
+                    }
                 }
-            } else if (backupTime.isBefore(dailyCutoff)) {
-                // Keep one backup per day in this tier
-                if (dailyCount == 0) {
-                    // Keep the first (oldest) backup in this daily tier
-                    dailyCount++;
-                } else {
-                    ++numDeleted;
-                    itemsToDelete.add(backupItem);
-                }
-            } else if (backupTime.isBefore(hourlyCutoff)) {
-                // Keep one backup per hour in this tier
-                if (hourlyCount == 0) {
-                    // Keep the first (oldest) backup in this hourly tier
-                    hourlyCount++;
-                } else {
-                    ++numDeleted;
-                    itemsToDelete.add(backupItem);
+                else {
+                    // No deletion
+                    itemsToKeep.add(backupItem);
                 }
             }
-            // Keep all backups within the hourly window (most recent)
         }
 
-        getProgressInfo().log(backupItemCollection.renderName() + ": " + backupItems.size() + " => ( h" + hourlyCount + " d" +  dailyCount + " w" + weeklyCount + " m" + monthlyCount + " D" + numDeleted + ")");
+        // Process buckets
+        expandBucket(bucketYears, itemsToKeep);
+        expandBucket(bucketMonths, itemsToKeep);
+        expandBucket(bucketWeeks, itemsToKeep);
+        expandBucket(bucketDays, itemsToKeep);
+        expandBucket(bucketHours, itemsToKeep);
+
+        progressInfo.log("Keeping " + itemsToKeep.size() + "/" + backupItems.size() + " [Y" + bucketYears.size() + "M" +  bucketMonths.size() + "W" + bucketWeeks.size() + "d" +  bucketDays.size() + "h" + bucketHours.size() + "]");
+
+        // Mark all items not in itemsToKeep for deletion
+        for (JIPipeProjectBackupItem backupItem : backupItems) {
+            if (!itemsToKeep.contains(backupItem)) {
+                itemsToDelete.add(backupItem);
+            }
+        }
     }
+
+    private void expandBucket(Multimap<Long, JIPipeProjectBackupItem> bucket, Set<JIPipeProjectBackupItem> itemsToKeep) {
+        for (Map.Entry<Long, JIPipeProjectBackupItem> entry : bucket.entries()) {
+            itemsToKeep.add(entry.getValue());
+        }
+    }
+
+    private boolean tryBucket(long age, OptionalIntegerParameter keep, Multimap<Long, JIPipeProjectBackupItem> bucket, JIPipeProjectBackupItem backupItem, boolean alreadyMatched) {
+        if(alreadyMatched) {
+            return alreadyMatched;
+        }
+        if(age >= 1 && keep.isEnabled()) {
+            if(bucket.get(age).size() < keep.getContent()) {
+                bucket.put(age, backupItem);
+            }
+            return true;
+        }
+        return false;
+    }
+
 }

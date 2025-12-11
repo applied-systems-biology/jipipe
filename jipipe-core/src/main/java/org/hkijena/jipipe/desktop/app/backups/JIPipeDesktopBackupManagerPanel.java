@@ -161,7 +161,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     private void thinBackups() {
         if(JOptionPane.showConfirmDialog(this, "Do you really want to cleanup the backups?", "Cleanup backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ThinBackupsRun run = new ThinBackupsRun();
+            ThinBackupsRun run = new ThinBackupsRun(true);
             JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }

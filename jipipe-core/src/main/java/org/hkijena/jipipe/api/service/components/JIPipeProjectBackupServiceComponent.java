@@ -112,7 +112,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
 
     public void scheduleCleanup() {
         JIPipeRunnableQueue cleanupQueue = getService().getCleanup().getCleanupQueue();
-        cleanupQueue.enqueue(new ThinBackupsRun());
+        cleanupQueue.enqueue(new ThinBackupsRun(false));
     }
 
     @Override
