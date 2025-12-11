@@ -119,7 +119,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     public void postprocess(JIPipeProgressInfo progressInfo) {
         getSettings().getParameterChangedEventEmitter().subscribe(this);
         restartTimer();
-        if(getSettings().getCleanupSettings().isEnableAutoCleanup()) {
+        if(getSettings().getCleanupSettings().isEnableAutoCleanupOnStartup()) {
             scheduleCleanup();
         }
     }
