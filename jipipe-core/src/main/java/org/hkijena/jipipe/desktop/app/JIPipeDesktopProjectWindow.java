@@ -414,7 +414,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         }
                     }
                 };
-                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
+                JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {
@@ -620,7 +620,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     project.close(getProgressInfo());
                 }
             };
-            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeRunnableQueue("Project cleanup"));
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeRunnableQueue("Project cleanup"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 
@@ -825,7 +825,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 }
             };
 
-            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 
@@ -909,6 +909,6 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             }
         };
 
-        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue);
+        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
     }
 }

@@ -78,7 +78,7 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         return true;
     }
 
-    @SetJIPipeDocumentation(name = "Custom backup path", description = "Allows to change the path where the auto-saves are placed. By default, they are put into a temporary directory.")
+    @SetJIPipeDocumentation(name = "Custom backup path", description = "Allows to change the path where the auto-saves are placed. By default, they are put into the profile directory.")
     @JIPipeParameter("custom-backup-path")
     public OptionalPathParameter getCustomBackupPath() {
         return customBackupPath;
@@ -122,10 +122,10 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
 
     public static class CleanupSettings extends AbstractJIPipeParameterCollection {
         private boolean enableAutoCleanup = true;
-        private OptionalIntegerParameter maxAgeHourly = new OptionalIntegerParameter(false, 24);
-        private OptionalIntegerParameter maxAgeDaily = new OptionalIntegerParameter(false, 30);
-        private OptionalIntegerParameter maxAgeWeekly = new OptionalIntegerParameter(false, 52);
-        private OptionalIntegerParameter maxAgeMonthly = new OptionalIntegerParameter(false, 60);
+        private OptionalIntegerParameter maxAgeHourly = new OptionalIntegerParameter(true, 24);
+        private OptionalIntegerParameter maxAgeDaily = new OptionalIntegerParameter(true, 30);
+        private OptionalIntegerParameter maxAgeWeekly = new OptionalIntegerParameter(true, 52);
+        private OptionalIntegerParameter maxAgeMonthly = new OptionalIntegerParameter(true, 60);
 
         public CleanupSettings() {
 
@@ -142,36 +142,46 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
             this.enableAutoCleanup = enableAutoCleanup;
         }
 
-        // TODO: add @SetJIPipeDocumentation to getter with name and brief description
-        // TODO: add @JIPipeParameter("jsonified-id") to getter and setter
+        @SetJIPipeDocumentation(name = "Hourly backup retention", description = "Maximum age (in hours) for hourly backups to be kept. Default: 24 hours.")
+        @JIPipeParameter("max-age-hourly")
         public OptionalIntegerParameter getMaxAgeHourly() {
             return maxAgeHourly;
         }
 
+        @JIPipeParameter("max-age-hourly")
         public void setMaxAgeHourly(OptionalIntegerParameter maxAgeHourly) {
             this.maxAgeHourly = maxAgeHourly;
         }
 
+        @SetJIPipeDocumentation(name = "Daily backup retention", description = "Maximum age (in days) for daily backups to be kept. Default: 30 days.")
+        @JIPipeParameter("max-age-daily")
         public OptionalIntegerParameter getMaxAgeDaily() {
             return maxAgeDaily;
         }
 
+        @JIPipeParameter("max-age-daily")
         public void setMaxAgeDaily(OptionalIntegerParameter maxAgeDaily) {
             this.maxAgeDaily = maxAgeDaily;
         }
 
+        @SetJIPipeDocumentation(name = "Weekly backup retention", description = "Maximum age (in weeks) for weekly backups to be kept. Default: 52 weeks.")
+        @JIPipeParameter("max-age-weekly")
         public OptionalIntegerParameter getMaxAgeWeekly() {
             return maxAgeWeekly;
         }
 
+        @JIPipeParameter("max-age-weekly")
         public void setMaxAgeWeekly(OptionalIntegerParameter maxAgeWeekly) {
             this.maxAgeWeekly = maxAgeWeekly;
         }
 
+        @SetJIPipeDocumentation(name = "Monthly backup retention", description = "Maximum age (in months) for monthly backups to be kept. Default: 60 months.")
+        @JIPipeParameter("max-age-monthly")
         public OptionalIntegerParameter getMaxAgeMonthly() {
             return maxAgeMonthly;
         }
 
+        @JIPipeParameter("max-age-monthly")
         public void setMaxAgeMonthly(OptionalIntegerParameter maxAgeMonthly) {
             this.maxAgeMonthly = maxAgeMonthly;
         }

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
 import java.time.LocalDateTime;
@@ -33,13 +34,17 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     private final Set<UUID> addedLogs = new HashSet<>();
 
     public JIPipeDesktopRunnableLogsCollection() {
-        // Listen for default queue
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        registerQueue(JIPipeRunnableQueue.getInstance());
+    }
 
-        // Listen for artifacts queue
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+    public void registerQueue(JIPipeRunnableQueue queue) {
+        queue.getFinishedEventEmitter().subscribe(this);
+        queue.getInterruptedEventEmitter().subscribe(this);
+    }
+
+    public void unregisterQueue(JIPipeRunnableQueue queue) {
+        queue.getFinishedEventEmitter().unsubscribe(this);
+        queue.getInterruptedEventEmitter().unsubscribe(this);
     }
 
     public static JIPipeDesktopRunnableLogsCollection getInstance() {
@@ -73,12 +78,13 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
         logUpdatedEventEmitter.emit(new LogUpdatedEvent(this));
     }
 
-    private void pushToLog(JIPipeRunnable run, boolean success) {
+    public void pushToLog(JIPipeRunnable run, boolean success) {
         StringBuilder log = run.getProgressInfo().getLog();
-        if (log != null && log.length() > 0) {
+        if (log != null && !log.isEmpty()) {
             final JIPipeRuntimeApplicationSettings runtimeSettings = JIPipeRuntimeApplicationSettings.getInstance();
-            if (runtimeSettings != null && logEntries.size() + 1 > runtimeSettings.getLogLimit())
-                logEntries.remove(0);
+            if (runtimeSettings != null && logEntries.size() + 1 > runtimeSettings.getLogLimit()) {
+                logEntries.removeFirst();
+            }
             JIPipeRunnableLogEntry entry = new JIPipeRunnableLogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), new JIPipeNotificationInbox(run.getProgressInfo().getNotifications()), success);
             logEntries.add(entry);
             if (run.isLogSilent()) {
