@@ -15,30 +15,33 @@ package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.service.components.JIPipeProjectBackupServiceComponent;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteOldBackupsRun extends DefaultJIPipeRunnable {
-    private final Duration maxAge;
+public class ThinBackupsRun extends DefaultJIPipeRunnable {
 
-    public DeleteOldBackupsRun(Duration maxAge) {
-        this.maxAge = maxAge;
+    public ThinBackupsRun() {
     }
 
     @Override
     public String getTaskLabel() {
-        return "Delete old backups";
+        return "Thin backups";
     }
 
     @Override
     public void run() {
-        Path backupsDir = JIPipe.getInstance().getProjectBackup().getCurrentBackupPath();
+        JIPipeProjectBackupServiceComponent projectBackupServiceComponent = JIPipe.getInstance().getProjectBackup();
+        JIPipeBackupApplicationSettings.CleanupSettings settings = JIPipeBackupApplicationSettings.getInstance().getCleanupSettings();
+
+        // TODO: we ignore settings.isEnableAutoCleanup(), because this will be checked earlier
+
+        Path backupsDir = projectBackupServiceComponent.getCurrentBackupPath();
         CollectBackupsRun subRun = new CollectBackupsRun();
         subRun.setProgressInfo(getProgressInfo().resolve("Collecting backups"));
         subRun.run();
@@ -46,6 +49,7 @@ public class DeleteOldBackupsRun extends DefaultJIPipeRunnable {
         List<JIPipeProjectBackupItemCollection> backupItemCollections = subRun.getOutput();
         List<JIPipeProjectBackupItem> itemsToDelete = new ArrayList<>();
 
+        // TODO: adapt starting here the backup thinning according to the settings. The following code shows how to handle backups
         LocalDateTime targetDateTime = LocalDateTime.now().minus(maxAge);
 
         for (JIPipeProjectBackupItemCollection backupItemCollection : backupItemCollections) {

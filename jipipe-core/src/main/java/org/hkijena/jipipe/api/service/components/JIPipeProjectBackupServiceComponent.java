@@ -4,8 +4,10 @@ import ij.IJ;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
+import org.hkijena.jipipe.api.backups.ThinBackupsRun;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -137,14 +139,17 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     }
 
     public void scheduleCleanup() {
-        // TODO
+        JIPipeRunnableQueue cleanupQueue = getService().getCleanup().getCleanupQueue();
+        cleanupQueue.enqueue(new ThinBackupsRun());
     }
 
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
         getSettings().getParameterChangedEventEmitter().subscribe(this);
         restartTimer();
-        scheduleCleanup();
+        if(getSettings().getCleanupSettings().isEnableAutoCleanup()) {
+            scheduleCleanup();
+        }
     }
 
     @Override

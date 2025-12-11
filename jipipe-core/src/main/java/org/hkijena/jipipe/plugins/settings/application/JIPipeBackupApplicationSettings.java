@@ -18,11 +18,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -41,8 +43,10 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
     private boolean enableBackups = true;
     private int backupDelay = 7;
     private OptionalPathParameter customBackupPath = new OptionalPathParameter();
+    private final CleanupSettings cleanupSettings;
 
     public JIPipeBackupApplicationSettings() {
+        this.cleanupSettings = new CleanupSettings();
     }
 
     public static JIPipeBackupApplicationSettings getInstance() {
@@ -108,5 +112,68 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
     @Override
     public String getDescription() {
         return "Determine the behavior of the automated backup functionality";
+    }
+
+    @SetJIPipeDocumentation(name = "Cleanup", description = "Settings related to the automated cleanup of backups")
+    @JIPipeParameter("cleanup-settings")
+    public CleanupSettings getCleanupSettings() {
+        return cleanupSettings;
+    }
+
+    public static class CleanupSettings extends AbstractJIPipeParameterCollection {
+        private boolean enableAutoCleanup = true;
+        private OptionalIntegerParameter maxAgeHourly = new OptionalIntegerParameter(false, 24);
+        private OptionalIntegerParameter maxAgeDaily = new OptionalIntegerParameter(false, 30);
+        private OptionalIntegerParameter maxAgeWeekly = new OptionalIntegerParameter(false, 52);
+        private OptionalIntegerParameter maxAgeMonthly = new OptionalIntegerParameter(false, 60);
+
+        public CleanupSettings() {
+
+        }
+
+        @SetJIPipeDocumentation(name = "Automatically cleanup backups", description = "If enabled, JIPipe will regularly cleanup old backups")
+        @JIPipeParameter(value = "enable-auto-cleanup", uiOrder = -100)
+        public boolean isEnableAutoCleanup() {
+            return enableAutoCleanup;
+        }
+
+        @JIPipeParameter("enable-auto-cleanup")
+        public void setEnableAutoCleanup(boolean enableAutoCleanup) {
+            this.enableAutoCleanup = enableAutoCleanup;
+        }
+
+        // TODO: add @SetJIPipeDocumentation to getter with name and brief description
+        // TODO: add @JIPipeParameter("jsonified-id") to getter and setter
+        public OptionalIntegerParameter getMaxAgeHourly() {
+            return maxAgeHourly;
+        }
+
+        public void setMaxAgeHourly(OptionalIntegerParameter maxAgeHourly) {
+            this.maxAgeHourly = maxAgeHourly;
+        }
+
+        public OptionalIntegerParameter getMaxAgeDaily() {
+            return maxAgeDaily;
+        }
+
+        public void setMaxAgeDaily(OptionalIntegerParameter maxAgeDaily) {
+            this.maxAgeDaily = maxAgeDaily;
+        }
+
+        public OptionalIntegerParameter getMaxAgeWeekly() {
+            return maxAgeWeekly;
+        }
+
+        public void setMaxAgeWeekly(OptionalIntegerParameter maxAgeWeekly) {
+            this.maxAgeWeekly = maxAgeWeekly;
+        }
+
+        public OptionalIntegerParameter getMaxAgeMonthly() {
+            return maxAgeMonthly;
+        }
+
+        public void setMaxAgeMonthly(OptionalIntegerParameter maxAgeMonthly) {
+            this.maxAgeMonthly = maxAgeMonthly;
+        }
     }
 }

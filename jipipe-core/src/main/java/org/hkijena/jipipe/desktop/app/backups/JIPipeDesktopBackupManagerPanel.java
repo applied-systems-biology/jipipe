@@ -29,7 +29,6 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueBu
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -169,7 +168,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             int days = ((Number) daySpinner.getModel().getValue()).intValue();
             if (days > 0) {
-                DeleteOldBackupsRun run = new DeleteOldBackupsRun(Duration.ofDays(days));
+                DeleteOldBackupsByAgeRun run = new DeleteOldBackupsByAgeRun(Duration.ofDays(days));
                 JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, BACKUP_QUEUE);
             }
         }
