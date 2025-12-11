@@ -206,23 +206,7 @@ public class JIPipeDesktop {
             if (fileName != null) {
                 Path path = Paths.get(fileName);
                 instance.setLastDirectoryBy(key, path.getParent());
-                if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() &&
-                        extensionFilters.length > 0) {
-                    boolean found = false;
-                    outer:
-                    for (FileNameExtensionFilter extensionFilter : extensionFilters) {
-                        for (String extension : extensionFilter.getExtensions()) {
-                            if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
-                                found = true;
-                                break outer;
-                            }
-                        }
-                    }
-                    if (!found) {
-                        String extension = extensionFilters[0].getExtensions()[0];
-                        path = path.getParent().resolve(path.getFileName() + "." + extension);
-                    }
-                }
+                path = addExtensionIfNeeded(extensionFilters, path);
                 return path;
             } else {
                 return null;
@@ -241,17 +225,7 @@ public class JIPipeDesktop {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
                 if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && extensionFilters.length > 0 && fileChooser.getFileFilter() instanceof FileNameExtensionFilter) {
-                    FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
-                    boolean found = false;
-                    for (String extension : fileNameExtensionFilter.getExtensions()) {
-                        if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        path = path.getParent().resolve(path.getFileName() + "." + fileNameExtensionFilter.getExtensions()[0]);
-                    }
+                    path = addExtensionIfNeeded(extensionFilters, path);
                 }
                 return path;
             } else {
@@ -271,17 +245,7 @@ public class JIPipeDesktop {
                 Path path = fileChooser.getSelectedFile().toPath();
                 instance.setLastDirectoryBy(key, path.getParent());
                 if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() && extensionFilters.length > 0 && fileChooser.getFileFilter() instanceof FileNameExtensionFilter) {
-                    FileNameExtensionFilter fileNameExtensionFilter = (FileNameExtensionFilter) fileChooser.getFileFilter();
-                    boolean found = false;
-                    for (String extension : fileNameExtensionFilter.getExtensions()) {
-                        if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        path = path.getParent().resolve(path.getFileName() + "." + fileNameExtensionFilter.getExtensions()[0]);
-                    }
+                    path = addExtensionIfNeeded(extensionFilters, path);
                 }
                 return path;
             } else {
@@ -297,7 +261,7 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(false);
             ModernNativeFileChooserResponse response = fileChooser.showSaveDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> fileChooser.getSelectedFile().toPath();
+                case OK -> addExtensionIfNeeded(extensionFilters, fileChooser.getSelectedFile().toPath());
                 case Cancelled -> null;
                 case Error ->
                         saveFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
@@ -312,9 +276,34 @@ public class JIPipeDesktop {
                     extensionFilters);
             if (path != null) {
                 instance.setLastDirectoryBy(key, path.getParent());
+                path = addExtensionIfNeeded(extensionFilters, path);
             }
             return path;
         }
+    }
+
+    private static Path addExtensionIfNeeded(FileNameExtensionFilter[] extensionFilters, Path path) {
+        if(path == null) {
+            return null;
+        }
+        if (JIPipeFileChooserApplicationSettings.getInstance().isAddFileExtension() &&
+                extensionFilters.length > 0) {
+            boolean found = false;
+            outer:
+            for (FileNameExtensionFilter extensionFilter : extensionFilters) {
+                for (String extension : extensionFilter.getExtensions()) {
+                    if (path.toString().toLowerCase(Locale.ROOT).endsWith(extension)) {
+                        found = true;
+                        break outer;
+                    }
+                }
+            }
+            if (!found) {
+                String extension = extensionFilters[0].getExtensions()[0];
+                path = path.getParent().resolve(path.getFileName() + "." + extension);
+            }
+        }
+        return path;
     }
 
     /**
