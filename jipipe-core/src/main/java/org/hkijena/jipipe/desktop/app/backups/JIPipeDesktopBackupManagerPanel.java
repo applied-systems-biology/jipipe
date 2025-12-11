@@ -257,7 +257,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     }
 
     private void openBackupFolder() {
-        UIUtils.desktopOpenFile(JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath().toFile());
+        UIUtils.desktopOpenFile(JIPipe.getInstance().getProjectBackup().getCurrentBackupPath());
     }
 
     private void reloadBackups() {

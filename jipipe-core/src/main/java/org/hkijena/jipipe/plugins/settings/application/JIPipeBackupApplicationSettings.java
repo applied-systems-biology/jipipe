@@ -38,104 +38,15 @@ import java.time.format.DateTimeFormatter;
 
 public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSettingsSheet {
     public static final String ID = "org.hkijena.jipipe:backups";
-    private final Timer backupTimer;
     private boolean enableBackups = true;
     private int backupDelay = 7;
     private OptionalPathParameter customBackupPath = new OptionalPathParameter();
 
     public JIPipeBackupApplicationSettings() {
-        backupTimer = new Timer(backupDelay * 60 * 1000, e -> backupAll());
-        backupTimer.setRepeats(true);
-        backupTimer.start();
     }
 
     public static JIPipeBackupApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeBackupApplicationSettings.class);
-    }
-
-    private Path getDefaultSavePath() {
-        Path targetDirectory = PathUtils.getJIPipeUserDir().resolve("backups");
-        if (!Files.isDirectory(targetDirectory)) {
-            try {
-                Files.createDirectories(targetDirectory);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return targetDirectory;
-    }
-
-    public void backup(JIPipeDesktopProjectWindow window) {
-        String name = "untitled";
-        if (window.getProjectSavePath() != null) {
-            name = window.getProjectSavePath().getFileName().toString();
-        }
-        window.getProjectWorkbench().getBackupQueue().cancelAll();
-        String finalName = name;
-        JIPipeRunnable run = new DefaultJIPipeRunnable() {
-            @Override
-            public String getTaskLabel() {
-                return "Creating backup";
-            }
-
-            @Override
-            public void run() {
-                try {
-                    Path directory = getCurrentBackupPath();
-                    directory = directory.resolve(window.getSessionId().toString());
-                    Files.createDirectories(directory);
-
-                    String dateTimeFormatted = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-
-                    String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
-                    baseName = StringUtils.makeFilesystemCompatible(baseName);
-                    Path targetFile = directory.resolve(baseName + ".jip");
-                    window.getProject().saveProject(targetFile, false);
-
-                    SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup to " + targetFile));
-
-                    // Write storage info
-                    JIPipeProjectBackupSessionInfo info = new JIPipeProjectBackupSessionInfo();
-                    info.setProjectStoragePath(window.getProjectSavePath() != null ? window.getProjectSavePath().toString() : "");
-                    info.setProjectSessionId(window.getSessionId().toString());
-                    info.setLastDateTimeInfo(dateTimeFormatted);
-                    JsonUtils.saveToFile(info, directory.resolve("backup-info.json"));
-
-                } catch (IOException e) {
-                    SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Failed to save backup: " + e.getMessage()));
-                    IJ.handleException(e);
-                    e.printStackTrace();
-                }
-            }
-        };
-        window.getProjectWorkbench().getBackupQueue().enqueue(run);
-    }
-
-    public Path getCurrentBackupPath() {
-        Path directory;
-        if (customBackupPath.isEnabled()) {
-            if (!Files.isDirectory(customBackupPath.getContent())) {
-                directory = customBackupPath.getContent();
-                try {
-                    Files.createDirectories(customBackupPath.getContent());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                directory = customBackupPath.getContent();
-            }
-        } else {
-            directory = getDefaultSavePath();
-        }
-        return directory;
-    }
-
-    public void backupAll() {
-        for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
-            if (window.isVisible()) {
-                backup(window);
-            }
-        }
     }
 
     @SetJIPipeDocumentation(name = "Enable", description = "If enabled, JIPipe will automatically save all projects into a separate folder for crash recovery.")
@@ -147,11 +58,6 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
     @JIPipeParameter("enable-backups")
     public void setEnableBackups(boolean enableBackups) {
         this.enableBackups = enableBackups;
-        if (!enableBackups) {
-            backupTimer.stop();
-        } else {
-            backupTimer.restart();
-        }
     }
 
     @SetJIPipeDocumentation(name = "Backup interval (minutes)", description = "Determines the interval between auto-saves")
@@ -165,8 +71,6 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         if (autoSaveDelay <= 0)
             return false;
         this.backupDelay = autoSaveDelay;
-        this.backupTimer.setDelay(autoSaveDelay * 60 * 1000);
-        this.backupTimer.restart();
         return true;
     }
 

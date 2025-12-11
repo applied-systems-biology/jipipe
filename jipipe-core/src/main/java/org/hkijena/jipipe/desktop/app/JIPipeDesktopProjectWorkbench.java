@@ -605,7 +605,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         restoreMenuItem.addActionListener(e -> JIPipeDesktopBackupManagerPanel.openNewWindow(this));
         projectMenu.add(restoreMenuItem);
 
-        projectMenu.add(UIUtils.createMenuItem("Create backup now", "Creates a backup of the current project", JIPipe.RESOURCES.getIcon16("actions/backup.png"), () -> JIPipeBackupApplicationSettings.getInstance().backup(getProjectWindow())));
+        projectMenu.add(UIUtils.createMenuItem("Create backup now", "Creates a backup of the current project", JIPipe.RESOURCES.getIcon16("actions/backup.png"), () -> JIPipe.getInstance().getProjectBackup().backup(getProjectWindow())));
 
         projectMenu.addSeparator();
 

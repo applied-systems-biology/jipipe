@@ -30,7 +30,7 @@ public class TriggerBackupAllTool extends JIPipeDesktopMenuExtension {
         setText("Backup all open windows now");
         setToolTipText("Triggers the backup function for all open JIPipe windows");
         setIcon(JIPipe.RESOURCES.getIcon16("actions/filesave.png"));
-        addActionListener(e -> JIPipeBackupApplicationSettings.getInstance().backupAll());
+        addActionListener(e -> JIPipe.getInstance().getProjectBackup().backupAll());
     }
 
     @Override

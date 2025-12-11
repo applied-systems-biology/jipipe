@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.backups;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 
@@ -37,7 +38,7 @@ public class DeleteOldBackupsRun extends DefaultJIPipeRunnable {
 
     @Override
     public void run() {
-        Path backupsDir = JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath();
+        Path backupsDir = JIPipe.getInstance().getProjectBackup().getCurrentBackupPath();
         CollectBackupsRun subRun = new CollectBackupsRun();
         subRun.setProgressInfo(getProgressInfo().resolve("Collecting backups"));
         subRun.run();
