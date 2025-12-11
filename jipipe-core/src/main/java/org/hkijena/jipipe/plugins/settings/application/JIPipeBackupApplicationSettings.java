@@ -173,5 +173,47 @@ public class JIPipeBackupApplicationSettings extends JIPipeDefaultApplicationsSe
         public void setKeepBackupsPerMonth(OptionalIntegerParameter keepBackupsPerMonth) {
             this.keepBackupsPerMonth = keepBackupsPerMonth;
         }
+
+        @SetJIPipeDocumentation(name = "Keep weekly backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one week but do not fall within the 'Keep yearly backups' or 'Keep monthly backups' rules.")
+        @JIPipeParameter(value = "keep-backups-per-week", uiOrder = 70)
+        public OptionalIntegerParameter getKeepBackupsPerWeek() {
+            if(keepBackupsPerWeek.getContent() <= 0) {
+                keepBackupsPerWeek.setContent(1);
+            }
+            return keepBackupsPerWeek;
+        }
+
+        @JIPipeParameter("keep-backups-per-week")
+        public void setKeepBackupsPerWeek(OptionalIntegerParameter keepBackupsPerWeek) {
+            this.keepBackupsPerWeek = keepBackupsPerWeek;
+        }
+
+        @SetJIPipeDocumentation(name = "Keep daily backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one day but do not fall within the 'Keep yearly backups', 'Keep monthly backups', or 'Keep weekly backups' rules.")
+        @JIPipeParameter(value = "keep-backups-per-day", uiOrder = 60)
+        public OptionalIntegerParameter getKeepBackupsPerDay() {
+            if(keepBackupsPerDay.getContent() <= 0) {
+                keepBackupsPerDay.setContent(1);
+            }
+            return keepBackupsPerDay;
+        }
+
+        @JIPipeParameter("keep-backups-per-day")
+        public void setKeepBackupsPerDay(OptionalIntegerParameter keepBackupsPerDay) {
+            this.keepBackupsPerDay = keepBackupsPerDay;
+        }
+
+        @SetJIPipeDocumentation(name = "Keep hourly backups", description = "If enabled, JIPipe will keep the given number of backups if they are older than one hour but do not fall within the 'Keep yearly backups', 'Keep monthly backups', 'Keep weekly backups', or 'Keep daily backups' rules.")
+        @JIPipeParameter(value = "keep-backups-per-hour", uiOrder = 50)
+        public OptionalIntegerParameter getKeepBackupsPerHour() {
+            if(keepBackupsPerHour.getContent() <= 0) {
+                keepBackupsPerHour.setContent(1);
+            }
+            return keepBackupsPerHour;
+        }
+
+        @JIPipeParameter("keep-backups-per-hour")
+        public void setKeepBackupsPerHour(OptionalIntegerParameter keepBackupsPerHour) {
+            this.keepBackupsPerHour = keepBackupsPerHour;
+        }
     }
 }
