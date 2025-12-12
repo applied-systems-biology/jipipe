@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.backups;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,21 +23,21 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DeleteOldBackupsRun extends DefaultJIPipeRunnable {
+public class DeleteOldBackupsByAgeRun extends DefaultJIPipeRunnable {
     private final Duration maxAge;
 
-    public DeleteOldBackupsRun(Duration maxAge) {
+    public DeleteOldBackupsByAgeRun(Duration maxAge) {
         this.maxAge = maxAge;
     }
 
     @Override
     public String getTaskLabel() {
-        return "Delete old backups";
+        return "Delete old backups (by age)";
     }
 
     @Override
     public void run() {
-        Path backupsDir = JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath();
+        Path backupsDir = JIPipe.getInstance().getProjectBackup().getCurrentBackupPath();
         CollectBackupsRun subRun = new CollectBackupsRun();
         subRun.setProgressInfo(getProgressInfo().resolve("Collecting backups"));
         subRun.run();

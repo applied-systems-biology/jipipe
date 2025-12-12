@@ -204,14 +204,20 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void updateProgress() {
-        if(batchedProgressMax <= 1) {
-            progressBar.setIndeterminate(true);
+        if(queue.getCurrentRun() != null) {
+            if(batchedProgressMax <= 1) {
+                progressBar.setIndeterminate(true);
+            }
+            else {
+                progressBar.setIndeterminate(false);
+                progressBar.setMaximum(batchedProgressMax);
+                progressBar.setValue(batchedProgressCurrent);
+            }
         }
         else {
             progressBar.setIndeterminate(false);
-            progressBar.setMaximum(batchedProgressMax);
-            progressBar.setValue(batchedProgressCurrent);
         }
+
         statusLabel.setText(batchedStatusText);
         loggerPanel.appendLine(batchedProgressText.toString().trim());
         batchedProgressText.setLength(0);

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
 import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializer;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
@@ -303,7 +304,7 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         postprocessingProgress.log("Registering extension-provided templates ...");
         getService().getNodes().executeScheduledRegisterTemplates();
 
-        // Check recent projects and backups
+        // Check recent projects
         getProgressInfo().setProgress(6);
         getProgressInfo().log("Checking recent projects ...");
         getService().getRecentProjects().reload();
@@ -323,6 +324,12 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         // Load templates
         getProgressInfo().log("Loading node templates ...");
         getService().getNodeTemplates().reloadGlobalTemplates(getProgressInfo().resolve("Node templates"));
+
+        // Postprocess services
+        postprocessingProgress.log("Post-processing service components ...");
+        for(JIPipeServiceComponent component : getService ().getComponents()) {
+            component.postprocess(getProgressInfo().resolve(component.getClass().getSimpleName()));
+        }
 
         getProgressInfo().setProgress(8);
         getProgressInfo().log("JIPipe loading finished");
