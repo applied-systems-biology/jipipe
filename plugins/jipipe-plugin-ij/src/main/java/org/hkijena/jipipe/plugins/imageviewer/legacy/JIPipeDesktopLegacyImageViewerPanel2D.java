@@ -535,7 +535,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     private void saveRawImageToTiff() {
         Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Save as *.tif", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
-            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, new RawImage2DExporterRun(getImagePlus(), path), viewerRunnerQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 
@@ -613,7 +613,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             String format = fileFormatEditor.getSelectedItem() + "";
             String baseName = StringUtils.makeFilesystemCompatible(baseNameEditor.getText());
             Stack2DExporterRun run = new Stack2DExporterRun(imageViewer, targetPath, baseName, format);
-            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 
@@ -633,7 +633,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
             availableDimensions.add(HyperstackDimension.Channel);
 
         JComboBox<HyperstackDimension> dimensionEditor = new JComboBox<>(availableDimensions.toArray(new HyperstackDimension[0]));
-        dimensionEditor.setSelectedItem(availableDimensions.get(0));
+        dimensionEditor.setSelectedItem(availableDimensions.getFirst());
         formPanel.addToForm(dimensionEditor, new JLabel("Animated dimension"), null);
 
         JComboBox<AVICompression> compressionEditor = new JComboBox<>(AVICompression.values());
@@ -660,7 +660,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
                     compressionQualityEditor.getValue());
-            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue);
+            JIPipeDesktopRunExecuteUI.runInDialog(workbench, this, run, viewerRunnerQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 

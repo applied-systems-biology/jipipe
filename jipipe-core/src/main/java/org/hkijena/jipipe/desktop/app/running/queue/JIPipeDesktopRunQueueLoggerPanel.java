@@ -218,6 +218,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
         else {
             progressBar.setIndeterminate(false);
         }
+
         statusLabel.setText(batchedStatusText);
         loggerPanel.appendLine(batchedProgressText.toString().trim());
         batchedProgressText.setLength(0);

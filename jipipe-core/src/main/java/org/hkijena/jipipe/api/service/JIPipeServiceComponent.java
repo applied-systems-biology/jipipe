@@ -24,4 +24,8 @@ public abstract class JIPipeServiceComponent {
     public Context getContext() {
         return service.getContext();
     }
+
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+
+    }
 }

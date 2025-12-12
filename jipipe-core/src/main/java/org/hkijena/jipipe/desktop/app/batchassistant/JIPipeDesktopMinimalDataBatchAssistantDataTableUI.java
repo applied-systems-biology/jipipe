@@ -297,7 +297,7 @@ public class JIPipeDesktopMinimalDataBatchAssistantDataTableUI extends JIPipeDes
                             String name = path.getFileName().toString();
                             JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                         }
                     }));
 
@@ -311,7 +311,7 @@ public class JIPipeDesktopMinimalDataBatchAssistantDataTableUI extends JIPipeDes
                                 String name = path.getFileName().toString();
                                 JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"));
+                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                             }
                         }));
             }

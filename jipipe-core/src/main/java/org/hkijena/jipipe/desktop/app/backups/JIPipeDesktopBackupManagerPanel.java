@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.backups.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -29,7 +28,6 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueBu
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -54,7 +52,6 @@ import java.util.List;
 
 public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 
-    private static final JIPipeRunnableQueue BACKUP_QUEUE = new JIPipeRunnableQueue("Backups");
     private final JIPipeDesktopSearchTextField searchTextField = new JIPipeDesktopSearchTextField();
     private final JCheckBox limitToCurrentProjectFilter = new JCheckBox("Limit to current project");
     private final JIPipeDesktopFormPanel propertiesPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
@@ -63,7 +60,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
     public JIPipeDesktopBackupManagerPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench);
-        BACKUP_QUEUE.getFinishedEventEmitter().subscribe(this);
+        JIPipe.getInstance().getProjectBackup().getQueue().getFinishedEventEmitter().subscribe(this);
         initialize();
         reloadBackups();
         refreshTree();
@@ -97,7 +94,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         toolBar.add(searchTextField);
         toolBar.add(limitToCurrentProjectFilter);
         toolBar.addSeparator();
-        toolBar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), BACKUP_QUEUE));
+        toolBar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipe.getInstance().getProjectBackup().getQueue()));
         toolBar.add(UIUtils.createStandardButton("Reload", JIPipe.RESOURCES.getIcon16("actions/reload.png"), this::reloadBackups));
 
         backupTree.setCellRenderer(new JIPipeDesktopBackupManagerTreeCellRenderer());
@@ -130,7 +127,11 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 "You can enable/disable backups and change the interval in the application settings.");
 
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Open backup directory", JIPipe.RESOURCES.getIcon16("actions/folder-open.png"), this::openBackupFolder));
-        propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove old backups", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::removeOldBackups));
+        JButton cleanupButton = UIUtils.createLeftAlignedButton("Remove old backups", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), () -> { });
+        JPopupMenu cleanupMenu = UIUtils.addPopupMenuToButton(cleanupButton);
+        cleanupMenu.add(UIUtils.createMenuItem("Cleanup backups", "Applies the standard backup cleanup operation", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::thinBackups));
+        cleanupMenu.add(UIUtils.createMenuItem("Remove old backups (days)", "Removes backups older than a given number of days", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), this::removeOldBackups));
+        propertiesPanel.addWideToForm(cleanupButton);
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups without project file", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::removeUnnamedBackups));
         propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Remove backups with project file", JIPipe.RESOURCES.getIcon16("actions/delete.png"), this::removeNamedBackups));
 
@@ -141,16 +142,14 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
 
         if (backupTree.getLastSelectedPathComponent() != null) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) backupTree.getLastSelectedPathComponent();
-            if (node.getUserObject() instanceof JIPipeProjectBackupItemCollection) {
+            if (node.getUserObject() instanceof JIPipeProjectBackupItemCollection itemCollection) {
                 propertiesPanel.addGroupHeader("Backup collection", JIPipe.RESOURCES.getIcon16("mimetypes/application-jipipe.png"));
-                JIPipeProjectBackupItemCollection itemCollection = (JIPipeProjectBackupItemCollection) node.getUserObject();
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField("" + itemCollection.getBackupItemList().size()), new JLabel("Backup count"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getSessionId()), new JLabel("Session ID"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(itemCollection.getOriginalProjectPath()), new JLabel("Original project path"));
 
-            } else if (node.getUserObject() instanceof JIPipeProjectBackupItem) {
+            } else if (node.getUserObject() instanceof JIPipeProjectBackupItem backupItem) {
                 propertiesPanel.addGroupHeader("Backup", JIPipe.RESOURCES.getIcon16("actions/clock.png"));
-                JIPipeProjectBackupItem backupItem = (JIPipeProjectBackupItem) node.getUserObject();
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getOriginalProjectPath()), new JLabel("Original project path"));
                 propertiesPanel.addToForm(UIUtils.createReadonlyTextField(backupItem.getBackupTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)), new JLabel("Modification time"));
                 propertiesPanel.addWideToForm(UIUtils.createLeftAlignedButton("Restore", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"), () -> restoreBackup(backupItem)));
@@ -158,6 +157,13 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         }
 
         propertiesPanel.addVerticalGlue();
+    }
+
+    private void thinBackups() {
+        if(JOptionPane.showConfirmDialog(this, "Do you really want to cleanup the backups?", "Cleanup backups", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ThinBackupsRun run = new ThinBackupsRun(true);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
+        }
     }
 
     private void removeOldBackups() {
@@ -169,8 +175,8 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             int days = ((Number) daySpinner.getModel().getValue()).intValue();
             if (days > 0) {
-                DeleteOldBackupsRun run = new DeleteOldBackupsRun(Duration.ofDays(days));
-                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, BACKUP_QUEUE);
+                DeleteOldBackupsByAgeRun run = new DeleteOldBackupsByAgeRun(Duration.ofDays(days));
+                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
             }
         }
     }
@@ -245,23 +251,23 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     private void removeNamedBackups() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have a storage path?\n" +
                 "Please note that the tool will NOT check if the files are still present at the path.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(false, true), BACKUP_QUEUE);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(false, true), JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }
 
     private void removeUnnamedBackups() {
         if (JOptionPane.showConfirmDialog(this, "Do you really want to remove all backups of projects that have NO storage path because they were never saved?\n" +
                 "It might be possible that some of the affected projects have been saved after the creation of the backup.", "Remove backups with project file", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(true, false), BACKUP_QUEUE);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new PruneBackupsRun(true, false), JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }
 
     private void openBackupFolder() {
-        UIUtils.desktopOpenFile(JIPipeBackupApplicationSettings.getInstance().getCurrentBackupPath().toFile());
+        UIUtils.desktopOpenFile(JIPipe.getInstance().getProjectBackup().getCurrentBackupPath());
     }
 
     private void reloadBackups() {
-        BACKUP_QUEUE.enqueue(new CollectBackupsRun());
+        JIPipe.getInstance().getProjectBackup().getQueue().enqueue(new CollectBackupsRun());
     }
 
     private void refreshTree() {
@@ -323,7 +329,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable()) {
-            BACKUP_QUEUE.getFinishedEventEmitter().unsubscribe(this);
+            JIPipe.getInstance().getProjectBackup().getQueue().getFinishedEventEmitter().unsubscribe(this);
             return;
         }
         if (event.getRun() instanceof CollectBackupsRun) {

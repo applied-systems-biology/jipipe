@@ -18,9 +18,8 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel;
-import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopRunnableQueueSpinnerIcon;
-import org.hkijena.jipipe.desktop.commons.notifications.JIPipeDesktopGenericNotificationButton;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,14 +58,14 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run) {
-        runInDialog(workbench, parent, run, JIPipeRunnableQueue.getInstance());
+        runInDialog(workbench, parent, run, JIPipeRunnableQueue.getInstance(), GlobalLogMode.OnlyFailures);
     }
 
-    public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run, JIPipeRunnableQueue queue) {
+    public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run, JIPipeRunnableQueue queue, GlobalLogMode logMode) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
-        JPanel contentPane = new JPanel(new BorderLayout(8,8));
+        JPanel contentPane = new JPanel(new BorderLayout(8, 8));
         JIPipeDesktopRunExecuteUI ui = new JIPipeDesktopRunExecuteUI(workbench, run, queue);
         ui.setBorder(UIUtils.createEmptyBorder(8));
         ui.setDialog(dialog);
@@ -80,9 +79,19 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         dialog.setModal(true);
         queue.getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             if (event.getRun() == run) {
+                if (logMode == GlobalLogMode.Everything && queue != JIPipeRunnableQueue.getInstance()) {
+                    JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, true);
+                }
                 dialog.setVisible(false);
             }
         });
+        if(logMode == GlobalLogMode.Everything || logMode == GlobalLogMode.OnlyFailures) {
+            queue.getInterruptedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
+                if (queue != JIPipeRunnableQueue.getInstance()) {
+                    JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+                }
+            });
+        }
         queue.enqueue(run);
         dialog.setVisible(true);
     }
@@ -142,5 +151,11 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
         }
+    }
+
+    public enum GlobalLogMode {
+        None,
+        OnlyFailures,
+        Everything
     }
 }

@@ -64,6 +64,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeMetadataTypesServiceComponent metadataTypes;
     private final JIPipeAccelerationServiceComponent acceleration;
     private final JIPipeCleanupServiceComponent cleanup;
+    private final JIPipeProjectBackupServiceComponent projectBackup;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -76,6 +77,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     @Parameter
     private PluginService pluginService;
     private boolean autosaveSettings;
+    private final JIPipeServiceComponent[] components;
 
     public JIPipeService() {
         recentProjects = new JIPipeRecentProjectsRegistry(this);
@@ -97,6 +99,13 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         nodeTemplates = new JIPipeNodeTemplatesServiceComponent(this);
         acceleration = new JIPipeAccelerationServiceComponent(this);
         cleanup = new JIPipeCleanupServiceComponent(this);
+        projectBackup = new JIPipeProjectBackupServiceComponent(this);
+
+        // Add into components list so we can later postprocess them
+        this.components = new JIPipeServiceComponent[] {
+                recentProjects, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup
+        };
     }
 
     @Override
@@ -318,5 +327,13 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public JIPipeAccelerationServiceComponent getAcceleration() {
         return acceleration;
+    }
+
+    public JIPipeProjectBackupServiceComponent getProjectBackup() {
+        return projectBackup;
+    }
+
+    public JIPipeServiceComponent[] getComponents() {
+        return components;
     }
 }

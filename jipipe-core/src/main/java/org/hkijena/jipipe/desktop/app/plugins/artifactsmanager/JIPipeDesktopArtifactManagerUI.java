@@ -313,7 +313,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         message.append("\nDo you want to continue?");
         if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeRunnableQueue.getInstance());
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeRunnableQueue.getInstance(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }
 

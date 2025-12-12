@@ -123,7 +123,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final JIPipeDesktopNotificationButton notificationButton = new JIPipeDesktopNotificationButton(this);
     private final Map<JIPipeGraphNode, Timer> algorithmUpdateTimers = new WeakHashMap<>();
     private final JIPipeNodeDatabase nodeDatabase;
-    private final JIPipeRunnableQueue backupQueue = new JIPipeRunnableQueue("Backups");
     public JIPipeDesktopTabPane documentTabPane;
     private JLabel statusText;
     private JIPipeDesktopReloadableValidityChecker validityCheckerPanel;
@@ -511,7 +510,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         // Background processes
         JIPipeDesktopRunnableBackgroundQueuesIndicator backgroundQueuesIndicator = new JIPipeDesktopRunnableBackgroundQueuesIndicator();
         backgroundQueuesIndicator.addQueue(project.getSnapshotQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/clock-rotate-left.png"));
-        backgroundQueuesIndicator.addQueue(backupQueue, JIPipe.RESOURCES.getIcon16Inverted("actions/document-save-all.png"));
+        backgroundQueuesIndicator.addQueue(JIPipe.getInstance().getProjectBackup().getQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/document-save-all.png"));
         backgroundQueuesIndicator.addQueue(JIPipeThumbnailGenerationQueue.getInstance().getRunnerQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/document-preview.png"));
         backgroundQueuesIndicator.addQueue(nodeDatabase.getQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/search.png"));
         backgroundQueuesIndicator.addQueue(JIPipe.getInstance().getCleanup().getCleanupQueue(), JIPipe.RESOURCES.getIcon16Inverted("actions/clear-brush.png"));
@@ -605,7 +604,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         restoreMenuItem.addActionListener(e -> JIPipeDesktopBackupManagerPanel.openNewWindow(this));
         projectMenu.add(restoreMenuItem);
 
-        projectMenu.add(UIUtils.createMenuItem("Create backup now", "Creates a backup of the current project", JIPipe.RESOURCES.getIcon16("actions/backup.png"), () -> JIPipeBackupApplicationSettings.getInstance().backup(getProjectWindow())));
+        projectMenu.add(UIUtils.createMenuItem("Create backup now", "Creates a backup of the current project", JIPipe.RESOURCES.getIcon16("actions/backup.png"), () -> JIPipe.getInstance().getProjectBackup().backup(getProjectWindow())));
 
         projectMenu.addSeparator();
 
@@ -1231,10 +1230,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     @Override
     public void onJIPipePluginRegistered(JIPipePluginRegisteredEvent event) {
         sendStatusBarText("Registered extension: '" + event.getExtension().getMetadata().getName() + "' with id '" + event.getExtension().getDependencyId() + "'. We recommend to restart ImageJ.");
-    }
-
-    public JIPipeRunnableQueue getBackupQueue() {
-        return backupQueue;
     }
 
     public void openProjectSettings(String navigateToCategory) {
