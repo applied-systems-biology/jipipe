@@ -91,6 +91,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
 
         JPanel statusInfoPanel = new JPanel(new GridBagLayout());
         progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 4));
+        progressBar.setMinimumSize(new Dimension(32, 4));
         progressBar.setPreferredSize(new Dimension(100, 4));
         statusInfoPanel.add(progressBar, new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0,0));
         statusInfoPanel.add(statusLabel, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, UIUtils.UI_PADDING, 0,0));
@@ -204,13 +205,18 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void updateProgress() {
-        if(batchedProgressMax <= 1) {
-            progressBar.setIndeterminate(true);
+        if(queue.getCurrentRun() != null) {
+            if(batchedProgressMax <= 1) {
+                progressBar.setIndeterminate(true);
+            }
+            else {
+                progressBar.setIndeterminate(false);
+                progressBar.setMaximum(batchedProgressMax);
+                progressBar.setValue(batchedProgressCurrent);
+            }
         }
         else {
             progressBar.setIndeterminate(false);
-            progressBar.setMaximum(batchedProgressMax);
-            progressBar.setValue(batchedProgressCurrent);
         }
         statusLabel.setText(batchedStatusText);
         loggerPanel.appendLine(batchedProgressText.toString().trim());
@@ -223,6 +229,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Finished;
         }
         updateHeader();
+        updateProgress();
 
         // Manually update UI
         batchedStatusText = "Finished.";
@@ -238,6 +245,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Interrupted;
         }
         updateHeader();
+        updateProgress();
 
         // Manually update UI
         batchedStatusText = "Interrupted.";
@@ -253,11 +261,13 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
             targetRunStatus = Status.Running;
         }
         updateHeader();
+        updateProgress();
     }
 
     @Override
     public void onRunnableEnqueued(JIPipeRunnable.EnqueuedEvent event) {
         updateHeader();
+        updateProgress();
     }
 
     public enum Status {
