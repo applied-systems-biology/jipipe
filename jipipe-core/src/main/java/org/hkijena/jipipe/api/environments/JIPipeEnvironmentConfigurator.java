@@ -24,10 +24,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
-import org.hkijena.jipipe.api.validation.JIPipeValidatable;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
-import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
@@ -228,7 +225,13 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
                     artifact = configureArtifactQuery(configuredArtifactEnvironment, progressInfo.resolve("Artifact configuration"));
                 }
                 if (!(artifact instanceof JIPipeLocalArtifact)) {
-                    throw new IllegalStateException("Artifact download was unsuccessful: " + artifact.getFullId() + " not local artifact after download!");
+                    throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                            JIPipeValidationReportContext.UNSPECIFIED,
+                            "Artifact download was unsuccessful!",
+                            "JIPipe could not download the remote data for the artifact " + artifact.getFullId() + ". " +
+                                    "The current operation cannot continue without this artifact.",
+                            "Check your internet connection and if your firewall does not block remote repositories, for example GHCR and GitHub. " +
+                                    "If you use ORAS CLI, please logout using 'oras logout ghcr.io'."));
                 }
 
                 // Apply the final configuration
@@ -244,6 +247,7 @@ public class JIPipeEnvironmentConfigurator<T extends JIPipeEnvironment> implemen
     }
 
     private void downloadArtifact(JIPipeRemoteArtifact remoteArtifact, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Downloading artifact " + remoteArtifact.getFullId());
         JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(
                 List.of(remoteArtifact), Collections.emptyList());
         run.setExternalContext(artifactOperationContext); // Needed to prevent deadlock for nested runs
