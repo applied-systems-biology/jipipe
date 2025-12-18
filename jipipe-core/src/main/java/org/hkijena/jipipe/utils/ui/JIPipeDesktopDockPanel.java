@@ -658,6 +658,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         } else {
             updateToolbars();
         }
+
+        revalidate();
+        repaint(50);
     }
 
     private PanelLocation tryRestoreLocationState(State state, String id, PanelLocation location) {
@@ -687,6 +690,9 @@ public class JIPipeDesktopDockPanel extends JPanel implements JIPipeDesktopSplit
         } else {
             updateToolbars();
         }
+
+        revalidate();
+        repaint(50);
     }
 
     public State getSavedState() {
