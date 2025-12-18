@@ -89,6 +89,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                         currentResizeTarget.moveToGridLocation(new Point(newX, newY), true, true);
                         currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                     }
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case TopCenter: {
@@ -100,6 +101,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                         currentResizeTarget.moveToGridLocation(new Point(startGridX, newY), true, true);
                         currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width, newHeight);
                     }
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case TopRight: {
@@ -113,6 +115,7 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                         currentResizeTarget.moveToGridLocation(new Point(startGridX, newY), true, true);
                         currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                     }
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case CenterLeft: {
@@ -124,11 +127,13 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                         currentResizeTarget.moveToGridLocation(new Point(newX, startGridY), true, true);
                         currentResizeTarget.setNodeGridSize(newWidth, currentResizeOperationStartProperties.height);
                     }
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case CenterRight: {
                     int dGridWidth = mouseInGrid.x - endGridX;
                     currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width + dGridWidth, currentResizeOperationStartProperties.height);
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case BottomLeft: {
@@ -142,17 +147,20 @@ public class JIPipeDesktopGraphCanvasNodeResizeManager {
                         currentResizeTarget.moveToGridLocation(new Point(newX, startGridY), true, true);
                         currentResizeTarget.setNodeGridSize(newWidth, newHeight);
                     }
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case BottomCenter: {
                     int dGridHeight = mouseInGrid.y - endGridY;
                     currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width, currentResizeOperationStartProperties.height + dGridHeight);
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
                 case BottomRight: {
                     int dGridWidth = mouseInGrid.x - endGridX;
                     int dGridHeight = mouseInGrid.y - endGridY;
                     currentResizeTarget.setNodeGridSize(currentResizeOperationStartProperties.width + dGridWidth, currentResizeOperationStartProperties.height + dGridHeight);
+                    canvasUI.getSelectionBoxManager().clear();
                 }
                 break;
             }
