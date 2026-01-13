@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -88,20 +89,21 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
+        ImagePlus inputImage = inputData.getDuplicateImage();
         int minThreshold = threshold.getMin();
         int maxThreshold = threshold.getMax();
-        ImageJIterationUtils.forEachSlice(img, ip -> {
-            for (int i = 0; i < ip.getPixelCount(); i++) {
-                int v = ip.get(i);
-                if (v > maxThreshold)
-                    ip.set(i, 0);
-                else if (v < minThreshold)
-                    ip.set(i, 0);
-                else
-                    ip.set(i, 255);
-                ((ShortProcessor) ip).findMinAndMax();
-            }
+        ImagePlus outputImage = IJ.createHyperStack(inputImage.getTitle() + " Thresholded",
+                inputImage.getWidth(),
+                inputImage.getHeight(),
+                inputImage.getNChannels(),
+                inputImage.getNSlices(),
+                inputImage.getNFrames(),
+                8);
+        ImageJIterationUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
+                    outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
+                    : outputImage.getProcessor());
+            applyThreshold(ip, targetProcessor, maxThreshold, minThreshold);
         }, progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         if (minThresholdAnnotation.isEnabled()) {
@@ -111,10 +113,23 @@ public class ManualThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorith
             annotations.add(maxThresholdAnnotation.createAnnotation("" + maxThreshold));
         }
         iterationStep.addOutputData(getFirstOutputSlot(),
-                new ImagePlusGreyscaleMaskData(img),
+                new ImagePlusGreyscaleMaskData(outputImage),
                 annotations,
                 thresholdAnnotationStrategy,
                 progressInfo);
+    }
+
+    private void applyThreshold(ImageProcessor ip, ByteProcessor targetProcessor, int maxThreshold, int minThreshold) {
+        for (int i = 0; i < ip.getPixelCount(); i++) {
+            int v = ip.get(i);
+            if (v > maxThreshold) {
+                targetProcessor.set(i, 0);
+            } else if (v < minThreshold) {
+                targetProcessor.set(i, 0);
+            } else {
+                targetProcessor.set(i, 255);
+            }
+        }
     }
 
     @SetJIPipeDocumentation(name = "Threshold", description = "Determines the threshold. If min and max are inverted, values outside the defined range are returned")
