@@ -117,12 +117,6 @@ public class RunPythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm imple
     }
 
     @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-    }
-
-    @Override
     public void runParameterSet(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
 
         JIPipePythonAdapterLibraryEnvironment adapterLibraryEnvironment = getEnvironment(JIPipePythonAdapterLibraryEnvironment.class, runContext, progressInfo);

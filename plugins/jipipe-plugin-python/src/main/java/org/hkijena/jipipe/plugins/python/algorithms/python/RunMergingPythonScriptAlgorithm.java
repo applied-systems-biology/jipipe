@@ -143,12 +143,6 @@ public class RunMergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm impl
         updateSlots();
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-    }
-
     private String getScriptCode(JIPipeMultiIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         if (externalCode) {
             List<PythonScriptData> inputData = iterationStep.getInputData(SLOT_SCRIPT.getName(), PythonScriptData.class, progressInfo);

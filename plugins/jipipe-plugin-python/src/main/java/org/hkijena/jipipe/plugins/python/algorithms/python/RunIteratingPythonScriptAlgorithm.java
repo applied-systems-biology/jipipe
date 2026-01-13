@@ -142,14 +142,6 @@ public class RunIteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm 
         this.suppressLogs = suppressLogs;
     }
 
-    @Override
-    public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
-        super.reportValidity(reportContext, reportSettings, report, progressInfo);
-        String scriptCode = externalCode ? "" : code.getCode();
-        JythonUtils.checkScriptValidity(scriptCode, scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script", "script"), report);
-        JythonUtils.checkScriptParametersValidity(scriptParameters, new ParameterValidationReportContext(reportContext, this, "Script parameters", "script-parameters"), report);
-    }
-
     private String getScriptCode(JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         if (externalCode) {
             return iterationStep.getInputData(SLOT_SCRIPT.getName(), PythonScriptData.class, progressInfo).getData();
