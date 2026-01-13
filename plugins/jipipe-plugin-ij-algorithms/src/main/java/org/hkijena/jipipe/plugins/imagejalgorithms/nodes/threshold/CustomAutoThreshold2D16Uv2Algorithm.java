@@ -315,13 +315,14 @@ public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorith
         short[] src = (short[]) source.getPixels();
         byte[] dst = (byte[]) target.getPixels();
         for (int i = 0; i < src.length; i++) {
-            int v = src[i];
-            if (v > maxThreshold)
+            int v = Short.toUnsignedInt(src[i]);
+            if (v > maxThreshold) {
                 dst[i] = 0;
-            else if (v < minThreshold)
+            } else if (v < minThreshold) {
                 dst[i] = 0;
-            else
+            } else {
                 dst[i] = (byte) 255;
+            }
         }
     }
 
