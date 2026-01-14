@@ -109,6 +109,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private Path projectFile;
     private String projectJIPipeVersion = JIPipe.getJIPipeVersion();
     private FileLocker temporaryBaseDirectoryLocker;
+    private boolean disposed;
 
     /**
      * A JIPipe project
@@ -439,6 +440,9 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     public void close(JIPipeProgressInfo progressInfo) {
+
+        this.disposed = true;
+
         // Clear the cache
         progressInfo.log("Clearing cache ...");
         cache.clearAll(progressInfo.resolve("Clear cache"));
@@ -1549,6 +1553,10 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public String getProjectJIPipeVersion() {
         return projectJIPipeVersion;
+    }
+
+    public boolean isDisposed() {
+        return disposed;
     }
 
     public interface CompartmentAddedEventListener {
