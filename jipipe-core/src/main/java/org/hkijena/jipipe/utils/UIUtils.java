@@ -483,6 +483,41 @@ public class UIUtils {
         return popupMenu;
     }
 
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target         target button
+     * @param popupMenu      the popup menu
+     * @param reloadFunction the function that is run before showing the popup
+     * @return the popup menu
+     */
+    public static JPopupMenu addReloadablePopupMenuToButton(AbstractButton target, JPopupMenu popupMenu, Consumer<JPopupMenu> reloadFunction) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                reloadFunction.accept(popupMenu);
+                popupMenu.revalidate();
+                popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    reloadFunction.accept(popupMenu);
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
     public static void addRightClickPopupMenuToJList(JList<?> target, JPopupMenu popupMenu, Runnable reloadFunction) {
         target.addMouseListener(new MouseAdapter() {
             @Override
@@ -697,10 +732,26 @@ public class UIUtils {
      *
      * @param component the button
      */
-    public static void setStandardButtonBorder(AbstractButton component) {
+    public static void setStandardButtonBorder(JComponent component) {
         component.setBackground(Color.WHITE);
         component.setOpaque(false);
         Border margin = new EmptyBorder(5, 15, 5, 15);
+//        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
+        //        Border margin = new EmptyBorder(2, 2, 2, 2);
+        Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
+                new CompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), margin));
+        component.setBorder(compound);
+    }
+
+    /**
+     * Makes a button flat
+     *
+     * @param component the button
+     */
+    public static void setStandardSplitButtonBorder(JComponent component) {
+        component.setBackground(Color.WHITE);
+        component.setOpaque(false);
+        Border margin = new EmptyBorder(5, 15, 5, 5);
 //        Border compound = new CompoundBorder(UIUtils.createControlBorder(), margin);
         //        Border margin = new EmptyBorder(2, 2, 2, 2);
         Border compound = new CompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),

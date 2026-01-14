@@ -63,6 +63,9 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     }
 
     public void backup(JIPipeDesktopProjectWindow window) {
+        if(window.getProject().isDisposed()) {
+            return;
+        }
         String name = "untitled";
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();

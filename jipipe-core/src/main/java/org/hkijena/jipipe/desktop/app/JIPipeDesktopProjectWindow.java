@@ -574,6 +574,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             updateTitle();
             projectWorkbench.setProjectModified(false);
             projectWorkbench.sendStatusBarText("Saved project to " + savePath);
+            projectWorkbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(projectWorkbench));
             JIPipe.getInstance().getRecentProjects().add(savePath);
 
             // Remove tmp file

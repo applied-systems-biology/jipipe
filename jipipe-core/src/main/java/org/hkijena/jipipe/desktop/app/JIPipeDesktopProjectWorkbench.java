@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeThumbnailGenerationQueue;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -41,6 +43,7 @@ import org.hkijena.jipipe.desktop.app.backups.JIPipeDesktopBackupManagerPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheBrowserUI;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopCacheManagerUI;
 import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopAuthorProfileButton;
+import org.hkijena.jipipe.desktop.app.components.JIPipeDesktopProjectSaveManagerButton;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopCustomizerDialog;
 import org.hkijena.jipipe.desktop.app.customizer.JIPipeDesktopThemeManager;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDataTypeCompendiumUI;
@@ -67,6 +70,7 @@ import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueNo
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopApplicationSettingsUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
+import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
@@ -101,6 +105,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 /**
  * UI around an {@link JIPipeProject}
@@ -129,6 +134,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private JIPipeDesktopPluginValidityCheckerPanel pluginValidityCheckerPanel;
     private boolean projectModified;
     private JButton openProjectOverviewButton;
+    private final ProjectSavedEventEmitter projectSavedEventEmitter = new ProjectSavedEventEmitter();
 
     /**
      * @param window           Parent window
@@ -168,7 +174,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         nodeDatabase.rebuildImmediately();
 
         // Do cleanup
-        if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanOldTemporaryDirectories()) {
+        if (JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanOldTemporaryDirectories()) {
             JIPipe.getInstance().getCleanup().scheduleProjectTemporaryFilesCleanup(project);
         }
     }
@@ -330,7 +336,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             }
 
             // Prevent "Getting started" tab
-            if(TAB_INTRODUCTION.equals(documentTabPane.getCurrentlySelectedSingletonTabId())) {
+            if (TAB_INTRODUCTION.equals(documentTabPane.getCurrentlySelectedSingletonTabId())) {
                 documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
                 documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
             }
@@ -559,6 +565,102 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JMenuBar menu = new JMenuBar();
         menu.setBorderPainted(false);
 
+        initializeProjectMenu(menu);
+
+        // Tools menu
+        initializeToolsMenu(menu);
+
+        menu.add(Box.createHorizontalGlue());
+
+        // ImageJ button
+        JButton imageJButton = UIUtils.createButton("ImageJ", JIPipe.RESOURCES.getIcon16("actions/imagej.png"), JIPipeUtils::showImageJ);
+        UIUtils.setStandardButtonBorder(imageJButton);
+        menu.add(imageJButton);
+
+        // Overview link
+        openProjectOverviewButton = new JButton("Project", JIPipe.RESOURCES.getIcon16("actions/view-list-icons.png"));
+        openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
+        openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
+        UIUtils.setStandardButtonBorder(openProjectOverviewButton);
+        menu.add(openProjectOverviewButton);
+
+        // Compartments link
+        initializeCompartmentsMenu(menu);
+
+        // Cache monitor
+        JIPipeDesktopCacheManagerUI cacheManagerUI = new JIPipeDesktopCacheManagerUI(this);
+        UIUtils.setStandardButtonBorder(cacheManagerUI);
+        menu.add(cacheManagerUI);
+
+        // Queue monitor
+        JIPipeDesktopRunnableQueueButton taskManagerButton = new JIPipeDesktopRunnableQueueButton(this);
+        taskManagerButton.setReadyLabel("Tasks");
+        taskManagerButton.setTasksFinishedLabel("Tasks");
+        menu.add(taskManagerButton);
+
+        // Logs button
+        menu.add(new JIPipeDesktopRunnableLogsButton(this));
+
+        // "Run" entry
+        JButton runProjectButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/play.png"));
+        runProjectButton.setToolTipText("Runs the whole pipeline");
+        UIUtils.setStandardButtonBorder(runProjectButton);
+
+        runProjectButton.addActionListener(e -> runWholeProject());
+        menu.add(runProjectButton);
+
+        // Notification panel
+        menu.add(notificationButton);
+
+        // Publish button
+        initializePublishMenu(menu);
+
+        // Save manager
+        menu.add(new JIPipeDesktopProjectSaveManagerButton(this));
+
+        // Help menu
+        initializeHelpMenu(menu);
+
+        add(menu, BorderLayout.NORTH);
+    }
+
+    private void initializeCompartmentsMenu(JMenuBar menu) {
+        SplitButton openCompartmentsButton = new SplitButton("Compartments", JIPipe.RESOURCES.getIcon16("actions/graph-compartments.png"));
+        openCompartmentsButton.setOpaque(false);
+        openCompartmentsButton.setToolTipText("Opens the compartment editor if it was closed or switches to the existing tab if it is currently open.");
+        openCompartmentsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR));
+        Consumer<JPopupMenu> reloadFunction = (JPopupMenu targetMenu) -> {
+            targetMenu.removeAll();
+            for (JIPipeGraphNode node : project.getCompartmentGraph().traverse()) {
+                if (node instanceof JIPipeProjectCompartment) {
+                    targetMenu.add(UIUtils.createMenuItem(StringUtils.orElse(node.getName(), "Unnamed"),
+                            StringUtils.orElse(node.getCustomDescription().toPlainText(), "No description provided"),
+                            JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"),
+                            () -> {
+                                getOrOpenPipelineEditorTab((JIPipeProjectCompartment) node, true);
+                            }));
+                }
+            }
+        };
+        openCompartmentsButton.setPopupMenuReloadFunction(reloadFunction);
+        menu.add(openCompartmentsButton);
+    }
+
+    private void initializePublishMenu(JMenuBar menu) {
+        JPopupMenu publishMenu = new JPopupMenu("Publish");
+        UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
+        if (publishMenu.getComponentCount() > 0) {
+            JButton publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
+            publishProjectButton.setToolTipText("Publishes or shares the project");
+            UIUtils.setStandardButtonBorder(publishProjectButton);
+
+            UIUtils.addPopupMenuToButton(publishProjectButton, publishMenu);
+
+            menu.add(publishProjectButton);
+        }
+    }
+
+    private void initializeProjectMenu(JMenuBar menu) {
         JMenu projectMenu = new JMenu("Project");
 
         // Add "New project" toolbar entry
@@ -709,8 +811,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         projectMenu.add(exitButton);
 
         menu.add(projectMenu);
+    }
 
-        // Tools menu
+    private void initializeToolsMenu(JMenuBar menu) {
         JMenu toolsMenu = new JMenu("Tools");
 
         toolsMenu.add(UIUtils.createMenuItem("Customize JIPipe ...", "Allows to customize JIPipe using themes", JIPipe.RESOURCES.getIcon16("actions/palette.png"), this::openCustomizer));
@@ -741,79 +844,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         UIUtils.installMenuExtension(this, toolsMenu, JIPipeMenuExtensionTarget.ProjectToolsMenu, false);
         if (toolsMenu.getItemCount() > 0)
             menu.add(toolsMenu);
+    }
 
-        menu.add(Box.createHorizontalGlue());
-
-        // ImageJ button
-        JButton imageJButton = UIUtils.createButton("ImageJ", JIPipe.RESOURCES.getIcon16("actions/imagej.png"), JIPipeUtils::showImageJ);
-        UIUtils.setStandardButtonBorder(imageJButton);
-        menu.add(imageJButton);
-
-        // Overview link
-        openProjectOverviewButton = new JButton("Project", JIPipe.RESOURCES.getIcon16("actions/view-list-icons.png"));
-        openProjectOverviewButton.setToolTipText("Opens the project info & settings tab or jumps to the existing tab if it is already open.");
-        openProjectOverviewButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW));
-        UIUtils.setStandardButtonBorder(openProjectOverviewButton);
-        menu.add(openProjectOverviewButton);
-
-        // Compartments link
-        JButton openCompartmentsButton = new JButton("Compartments", JIPipe.RESOURCES.getIcon16("actions/graph-compartments.png"));
-        openCompartmentsButton.setToolTipText("Opens the compartment editor if it was closed or switches to the existing tab if it is currently open.");
-        openCompartmentsButton.addActionListener(e -> documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR));
-        JPopupMenu compartmentsPopupMenu = new JPopupMenu();
-        UIUtils.addReloadableRightClickPopupMenuToButton(openCompartmentsButton, compartmentsPopupMenu, () -> {
-            compartmentsPopupMenu.removeAll();
-            for (JIPipeGraphNode node : project.getCompartmentGraph().traverse()) {
-                if (node instanceof JIPipeProjectCompartment) {
-                    compartmentsPopupMenu.add(UIUtils.createMenuItem(StringUtils.orElse(node.getName(), "Unnamed"),
-                            StringUtils.orElse(node.getCustomDescription().toPlainText(), "No description provided"),
-                            JIPipe.RESOURCES.getIcon16("actions/graph-compartment.png"),
-                            () -> {
-                                getOrOpenPipelineEditorTab((JIPipeProjectCompartment) node, true);
-                            }));
-                }
-            }
-        });
-        UIUtils.setStandardButtonBorder(openCompartmentsButton);
-        menu.add(openCompartmentsButton);
-
-        // Cache monitor
-        JIPipeDesktopCacheManagerUI cacheManagerUI = new JIPipeDesktopCacheManagerUI(this);
-        UIUtils.setStandardButtonBorder(cacheManagerUI);
-        menu.add(cacheManagerUI);
-
-        // Queue monitor
-        menu.add(new JIPipeDesktopRunnableQueueButton(this));
-
-        // Logs button
-        menu.add(new JIPipeDesktopRunnableLogsButton(this));
-
-        // "Run" entry
-        JButton runProjectButton = new JButton("Run", JIPipe.RESOURCES.getIcon16("actions/play.png"));
-        runProjectButton.setToolTipText("Runs the whole pipeline");
-        UIUtils.setStandardButtonBorder(runProjectButton);
-
-        runProjectButton.addActionListener(e -> runWholeProject());
-        menu.add(runProjectButton);
-
-        // Notification panel
-        menu.add(notificationButton);
-
-        // Publish button
-        {
-            JPopupMenu publishMenu = new JPopupMenu("Publish");
-            UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
-            if (publishMenu.getComponentCount() > 0) {
-                JButton publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
-                publishProjectButton.setToolTipText("Publishes or shares the project");
-                UIUtils.setStandardButtonBorder(publishProjectButton);
-
-                UIUtils.addPopupMenuToButton(publishProjectButton, publishMenu);
-
-                menu.add(publishProjectButton);
-            }
-        }
-
+    private void initializeHelpMenu(JMenuBar menu) {
         // "Help" entry
         JMenu helpMenu = new JMenu("Help");
         helpMenu.setIcon(JIPipe.RESOURCES.getIcon16("actions/help.png"));
@@ -864,8 +897,6 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         menu.add(helpMenu);
 
         UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
-
-        add(menu, BorderLayout.NORTH);
     }
 
     private void openThemeManagerAndEditor() {
@@ -1270,5 +1301,27 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         dialog.setSize(1280, 768);
         dialog.setLocationRelativeTo(getWindow());
         dialog.setVisible(true);
+    }
+
+    public ProjectSavedEventEmitter getProjectSavedEventEmitter() {
+        return projectSavedEventEmitter;
+    }
+
+    public interface ProjectSavedEventListener {
+        void onProjectSaved(ProjectSavedEvent event);
+    }
+
+    public static class ProjectSavedEvent extends AbstractJIPipeEvent {
+        public ProjectSavedEvent(JIPipeDesktopProjectWorkbench source) {
+            super(source);
+        }
+    }
+
+    public static class ProjectSavedEventEmitter extends JIPipeEventEmitter<ProjectSavedEvent, ProjectSavedEventListener> {
+
+        @Override
+        protected void call(ProjectSavedEventListener listener, ProjectSavedEvent event) {
+            listener.onProjectSaved(event);
+        }
     }
 }
