@@ -420,7 +420,7 @@ public class TablesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "asin",
                 "Returns the arc sine of each value; the returned angle is in the range -pi/2 through pi/2");
         registerTableColumnOperationAndExpressionFunction("convert-atan",
-                new ArcusSineColumnOperation(),
+                new ArctangentColumnOperation(),
                 "Arc tangent",
                 "atan",
                 "Returns the arc tangent of each value; the returned angle is in the range -pi/2 through pi/2");
