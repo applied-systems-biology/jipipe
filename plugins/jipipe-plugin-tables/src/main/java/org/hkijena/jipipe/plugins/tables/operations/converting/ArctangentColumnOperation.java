@@ -17,10 +17,7 @@ import org.hkijena.jipipe.plugins.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.plugins.tables.datatypes.DoubleArrayTableColumnData;
 import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 
-/**
- * Applies a sine function
- */
-public class ArcusTangentColumnOperation implements ConvertingColumnOperation {
+public class ArctangentColumnOperation implements ConvertingColumnOperation {
     @Override
     public TableColumnData apply(TableColumnData column) {
         double[] data = column.getDataAsDouble(column.getRows());

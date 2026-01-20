@@ -255,6 +255,7 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerExpressionFunction(new StringSliceBeforeFunction());
         registerExpressionFunction(new StringTruncateFunction());
         registerExpressionFunction(new ClampFunction());
+        registerExpressionFunction(new Atan2Function());
         registerExpressionFunction(new GetVariableKeysFunction());
         registerExpressionFunction(new GetVariableValuesFunction());
         registerExpressionFunction(new SummarizeVariablesFunction());
