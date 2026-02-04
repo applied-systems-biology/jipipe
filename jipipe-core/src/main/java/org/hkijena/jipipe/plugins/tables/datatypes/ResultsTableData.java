@@ -287,7 +287,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                         String item = j < items.length ? items[j] : "";
                         if (commasReplaced) {
                             item = item.replaceAll(commaSubstitute2, ",");
-                            if (item.startsWith("\"") && item.endsWith("\""))
+                            if (item.startsWith("\"") && item.endsWith("\"") && item.length() > 2)
                                 item = item.substring(1, item.length() - 1);
                         }
                         rt.addValue(headings[j], item);
