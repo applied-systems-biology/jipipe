@@ -80,7 +80,7 @@ public class ImportResultsTableAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             if (PathUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
                 format = FileFormat.CSV;
             } else if (PathUtils.EXTENSION_FILTER_TSV.accept(fileData.toPath().toFile())) {
-                format = FileFormat.XLSX;
+                format = FileFormat.TSV;
             } else if (PathUtils.EXTENSION_FILTER_XLSX.accept(fileData.toPath().toFile())) {
                 format = FileFormat.XLSX;
             } else {
