@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralDataApplicationSettings;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.util.*;
@@ -114,7 +115,10 @@ public class JIPipeDesktopQuickRun extends DefaultJIPipeRunnable implements JIPi
         while (!stack.isEmpty()) {
             JIPipeGraphNode node = stack.pop();
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                for (JIPipeDataSlot sourceSlot : run.getGraph().getInputIncomingSourceSlots(inputSlot)) {
+                Set<JIPipeDataSlot> inputIncomingSourceSlots = run.getGraph().getInputIncomingSourceSlotsNoTunnel(inputSlot);
+
+                // Process the actual source slots (without tunnels)
+                for (JIPipeDataSlot sourceSlot : inputIncomingSourceSlots) {
                     JIPipeGraphNode predecessorNode = sourceSlot.getNode();
                     if (handledNodes.contains(predecessorNode)) {
                         continue;

@@ -50,6 +50,9 @@ import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportConte
 import org.hkijena.jipipe.api.validation.contexts.GraphValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
+import org.hkijena.jipipe.plugins.tunnels.JIPipeDataFlowTunnelUtils;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
+import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -709,6 +712,57 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
 
         if (modified)
             postChangedEvent();
+    }
+
+    /**
+     * If exists, returns the output slots that provide data for the input slot
+     * Returns and empty list if there are none
+     * Dissolves tunnels and instead returns the actual output slots
+     *
+     * @param target The input slot
+     * @return The output slot that generates data for the input. Null if no source exists.
+     */
+    public Set<JIPipeDataSlot> getInputIncomingSourceSlotsNoTunnel(JIPipeDataSlot target) {
+        if (!graph.containsVertex(target))
+            return Collections.emptySet();
+        if (target.isInput()) {
+            Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
+            Set<JIPipeDataSlot> result = new HashSet<>();
+            for (JIPipeGraphEdge edge : edges) {
+                JIPipeDataSlot edgeSource = graph.getEdgeSource(edge);
+                if(edgeSource.getNode() instanceof JIPipeDataFlowTunnelExit) {
+                    // Need to dissolve
+                    Stack<JIPipeDataSlot> edgeSourceStack = new Stack<>();
+                    edgeSourceStack.push(edgeSource);
+                    while(!edgeSourceStack.isEmpty()) {
+                        JIPipeDataSlot es = edgeSourceStack.pop();
+                        if(es.getNode() instanceof JIPipeDataFlowTunnelExit tunnelExit) {
+                            List<JIPipeDataFlowTunnelEntrance> tunnelEntrances = JIPipeDataFlowTunnelUtils.findTunnelEntrances(this, tunnelExit.getCompartmentUUIDInParentGraph(), tunnelExit.getTunnelKeyGroup(), tunnelExit.getTunnelKey());
+                            if (tunnelEntrances.size() == 1) {
+                                // Get the entrance and the input slot that corresponds to the output slot
+                                JIPipeDataFlowTunnelEntrance tunnelEntrance = tunnelEntrances.getFirst();
+                                JIPipeInputDataSlot tunnelEntranceInput = tunnelEntrance.getInputForOutput(edgeSource.getName());
+
+                                // For the stack to handle later
+                                for (JIPipeDataSlot slot : getInputIncomingSourceSlots(tunnelEntranceInput)) {
+                                    edgeSourceStack.push(slot);
+                                }
+                            }
+                        }
+                        else {
+                            result.add(es);
+                        }
+                    }
+                }
+                else {
+                    // No dissolve needed
+                    result.add(edgeSource);
+                }
+
+            }
+            return result;
+        }
+        return Collections.emptySet();
     }
 
     /**
