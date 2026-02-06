@@ -3,6 +3,7 @@ package org.hkijena.jipipe.plugins.tunnels.nodes.tunnel1;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -23,5 +24,10 @@ public class JIPipeDataFlowTunnel1Exit extends JIPipeDataFlowTunnelExit {
     @Override
     public String getTunnelKeyGroup() {
         return "tunnel-1";
+    }
+
+    @Override
+    public JIPipeOutputDataSlot getOutputForInput(String inputSlotName) {
+        return getFirstOutputSlot();
     }
 }

@@ -274,10 +274,10 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
                         project.saveProject(configuration.getOutputPath().resolve("project.jip"), false);
                 } catch (IOException e) {
-                    throw new JIPipeValidationRuntimeException(e,
+                    progressInfo.log(new JIPipeValidationRuntimeException(e,
                             "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
                             "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                            "Check if you can write to the output directory.");
+                            "Check if you can write to the output directory."));
                 }
 
                 progressInfo.log("\n\n------------------------");
@@ -286,13 +286,13 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
                 try {
                     if (configuration.getOutputPath() != null) {
-                        Files.write(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString().getBytes(Charsets.UTF_8));
+                        Files.writeString(configuration.getOutputPath().resolve("log.txt"), progressInfo.getLog().toString(), Charsets.UTF_8);
                     }
                 } catch (IOException e) {
-                    throw new JIPipeValidationRuntimeException(e,
+                    progressInfo.log(new JIPipeValidationRuntimeException(e,
                             "Could not write log '" + configuration.getOutputPath().resolve("log.txt") + "'!",
                             "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
-                            "Check if you can write to the output directory.");
+                            "Check if you can write to the output directory."));
                 }
 
                 if (!progressInfo.getNotifications().isEmpty()) {
@@ -363,8 +363,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
 
     private void fixPartitions(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            if (graphNode instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) graphNode;
+            if (graphNode instanceof JIPipeAlgorithm algorithm) {
                 int requestedIndex = algorithm.getRuntimePartition().getIndex();
                 int mappedIndex = getValidRuntimePartitionIndex(requestedIndex);
                 if (requestedIndex != mappedIndex) {
@@ -378,8 +377,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
     public void cleanGraph(JIPipeGraph graph, JIPipeProgressInfo progressInfo) {
         outer:
         for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
-            if (graphNode instanceof JIPipeAlgorithm) {
-                JIPipeAlgorithm algorithm = (JIPipeAlgorithm) graphNode;
+            if (graphNode instanceof JIPipeAlgorithm algorithm) {
                 if (!(algorithm).isEnabled() || (algorithm).isSkipped()) {
 
                     // Check if algorithm is within a looped partition where looping is enabled

@@ -2,6 +2,8 @@ package org.hkijena.jipipe.plugins.tunnels.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDesktopInteractiveDefaultActionGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;

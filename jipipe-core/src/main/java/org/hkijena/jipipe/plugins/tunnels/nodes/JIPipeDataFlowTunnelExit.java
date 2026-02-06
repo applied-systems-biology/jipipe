@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.plugins.tunnels.nodes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -31,6 +32,13 @@ public abstract class JIPipeDataFlowTunnelExit extends JIPipeDataFlowTunnel {
     public JIPipeDataFlowTunnelExit(JIPipeDataFlowTunnelExit other) {
         super(other);
     }
+
+    /**
+     * Maps the input slot name from the corresponding tunnel entrance to the output slot of this exit.
+     * @param inputSlotName input slot name from the tunnel entrance
+     * @return the output where the data is piped to
+     */
+    public abstract JIPipeOutputDataSlot getOutputForInput(String inputSlotName);
 
     @Override
     public Set<String> getCompatibleTunnelKeys() {
