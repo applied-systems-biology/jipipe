@@ -124,7 +124,7 @@ public abstract class AbstractPathDataSource extends JIPipeAlgorithm {
         JIPipeFilesystemPluginApplicationSettings settings = JIPipeFilesystemPluginApplicationSettings.getInstance();
         if (settings == null || settings.isRelativizePaths()) {
             boolean modified = false;
-            List<Path> paths = getPaths_();
+            List<Path> paths = new ArrayList<>(getPaths_());
             for (int i = 0; i < paths.size(); ++i) {
                 Path path = paths.get(i);
                 if (path != null) {
