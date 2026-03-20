@@ -111,14 +111,6 @@ if [ ! -e "./dependencies/commons-exec-1.3.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/commons-exec-1.3.jar https://repo1.maven.org/maven2/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar || exit 1
 fi
-if [ ! -e "./dependencies/jna-platform-4.5.2.jar" ]; then
-	mkdir -p "./dependencies"
-	wget -O ./dependencies/jna-platform-4.5.2.jar https://repo1.maven.org/maven2/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar || exit 1
-fi
-if [ ! -e "./dependencies/ij_ridge_detect-1.4.1.jar" ]; then
-	mkdir -p "./dependencies"
-	wget -O ./dependencies/ij_ridge_detect-1.4.1.jar https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar || exit 1
-fi
 if [ ! -e "./dependencies/poi-5.2.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/poi-5.2.0.jar https://repo1.maven.org/maven2/org/apache/poi/poi/5.2.0/poi-5.2.0.jar || exit 1
@@ -145,15 +137,15 @@ if [ ! -e "./dependencies/balloontip-1.2.4.1.jar" ]; then
 fi
 if [ ! -e "./dependencies/OrientationJ_.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/OrientationJ_.jar https://bigwww.epfl.ch/demo/orientation/OrientationJ_.jar || exit 1
+	wget -O ./dependencies/OrientationJ_.jar https://github.com/applied-systems-biology/jipipe/releases/download/current/OrientationJ_.jar || exit 1
 fi
-if [ ! -e "./dependencies/jcefmaven-135.0.20.jar" ]; then
+if [ ! -e "./dependencies/jcefmaven-143.0.14.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jcefmaven-135.0.20.jar https://repo1.maven.org/maven2/me/friwi/jcefmaven/135.0.20/jcefmaven-135.0.20.jar || exit 1
+	wget -O ./dependencies/jcefmaven-143.0.14.jar https://repo1.maven.org/maven2/me/friwi/jcefmaven/143.0.14/jcefmaven-143.0.14.jar || exit 1
 fi
-if [ ! -e "./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar" ]; then
+if [ ! -e "./dependencies/jcef-api-jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar https://repo1.maven.org/maven2/me/friwi/jcef-api/jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85/jcef-api-jcef-ca49ada+cef-135.0.20+ge7de5c3+chromium-135.0.7049.85.jar || exit 1
+	wget -O ./dependencies/jcef-api-jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193.jar https://repo1.maven.org/maven2/me/friwi/jcef-api/jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193/jcef-api-jcef-cffac27+cef-143.0.14+gdd46a37+chromium-143.0.7499.193.jar || exit 1
 fi
 if [ ! -e "./dependencies/jackson-datatype-jsr310-2.18.0.jar" ]; then
 	mkdir -p "./dependencies"
