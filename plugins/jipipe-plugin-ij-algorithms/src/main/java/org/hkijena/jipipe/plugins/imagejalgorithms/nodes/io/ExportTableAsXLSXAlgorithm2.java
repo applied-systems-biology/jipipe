@@ -36,11 +36,10 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -146,6 +145,9 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
+     @PathParameterSettings(extensions = {".xlsx"},
+            key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+            ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {
         return filePath;
     }

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -72,20 +73,34 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
     }
 
     public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter... extensions) {
-        Path path;
-        switch (pathType) {
-            case DirectoriesOnly:
-                path = JIPipeDesktop.saveDirectory(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
-                break;
-            case FilesOnly:
-                path = JIPipeDesktop.saveFile(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY, extensions);
-                break;
-            case FilesAndDirectories:
-                path = JIPipeDesktop.savePath(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
-                break;
-            default:
-                throw new IllegalArgumentException("Unsupported path type: " + pathType);
+        if(JIPipeFileChooserApplicationSettings.getInstance().isUseLegacyDataExportPathChooser()) {
+            return showLegacyPathChooser(parent, workbench, title, pathType, extensions);
         }
+        else {
+            return showNewPathChooser(parent, workbench, title, pathType, extensions);
+        }
+    }
+
+    private static DataExportExpressionParameter showNewPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter[] extensions) {
+        DataExportExpressionParameterEditorPathChooserUI ui = new DataExportExpressionParameterEditorPathChooserUI(SwingUtilities.getWindowAncestor(parent), title, workbench, pathType, extensions);
+        UIUtils.addEscapeListener(ui);
+        ui.pack();
+        ui.setSize(1024,768);
+        ui.setLocationRelativeTo(parent);
+        ui.setVisible(true);
+        return ui.getOutputParameter();
+    }
+
+    public static DataExportExpressionParameter showLegacyPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter... extensions) {
+        Path path = switch (pathType) {
+            case DirectoriesOnly ->
+                    JIPipeDesktop.saveDirectory(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
+            case FilesOnly ->
+                    JIPipeDesktop.saveFile(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY, extensions);
+            case FilesAndDirectories ->
+                    JIPipeDesktop.savePath(parent, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, title, HTMLText.EMPTY);
+            default -> throw new IllegalArgumentException("Unsupported path type: " + pathType);
+        };
 
         if (path != null) {
             if (workbench instanceof JIPipeDesktopProjectWorkbench) {

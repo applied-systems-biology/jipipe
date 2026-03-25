@@ -35,6 +35,9 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.HyperstackDimension;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -206,6 +209,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
+    @PathParameterSettings(extensions = {".tif", ".tif", ".png", ".jpg", ".jpeg", ".bmp", ".avi"}, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {
         return filePath;
     }

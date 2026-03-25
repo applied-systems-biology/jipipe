@@ -42,6 +42,7 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
     private Path lastDataDirectory;
     private Path lastExternalDirectory;
     private boolean addFileExtension = true;
+    private boolean useLegacyDataExportPathChooser = false;
 
     private FileChooserBookmarkList bookmarks = new FileChooserBookmarkList();
 
@@ -55,6 +56,17 @@ public class JIPipeFileChooserApplicationSettings extends JIPipeDefaultApplicati
 
     public static void setID(String ID) {
         JIPipeFileChooserApplicationSettings.ID = ID;
+    }
+
+    @SetJIPipeDocumentation(name = "Use legacy data exporter path chooser", description = "If enabled, use the older JIPipe 5.x data exporter path chooser")
+    @JIPipeParameter("use-legacy-data-export-path-chooser")
+    public boolean isUseLegacyDataExportPathChooser() {
+        return useLegacyDataExportPathChooser;
+    }
+
+    @JIPipeParameter("use-legacy-data-export-path-chooser")
+    public void setUseLegacyDataExportPathChooser(boolean useLegacyDataExportPathChooser) {
+        this.useLegacyDataExportPathChooser = useLegacyDataExportPathChooser;
     }
 
     @SetJIPipeDocumentation(name = "OS dialogs: ask on path select", description = "If the 'Prefer OS dialogs' option is selected and a path (i.e. file or directory) is opened/saved," +

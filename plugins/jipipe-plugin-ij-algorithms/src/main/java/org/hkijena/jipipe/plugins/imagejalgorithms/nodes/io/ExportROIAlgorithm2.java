@@ -29,6 +29,9 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanv
 import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -95,6 +98,8 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
+    @PathParameterSettings(extensions = {".zip", ".roi"},
+            key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {
         return filePath;
     }

@@ -16,14 +16,14 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
     }
 
     private void initialize() {
-        JButton setPathButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"));
+        JButton setPathButton = new JButton("Build", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"));
         setPathButton.addActionListener(e -> {
-            openPath();
+            buildPath();
         });
         getEditPanel().add(setPathButton);
     }
 
-    private void openPath() {
+    private void buildPath() {
         PathIOMode ioMode = PathIOMode.Save;
         PathType pathType = PathType.FilesAndDirectories;
         String[] extensions = new String[]{};
