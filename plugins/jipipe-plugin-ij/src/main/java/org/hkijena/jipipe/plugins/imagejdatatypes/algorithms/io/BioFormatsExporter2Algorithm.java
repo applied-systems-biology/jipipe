@@ -93,7 +93,7 @@ public class BioFormatsExporter2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
     @SetJIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
     @JIPipeParameter("ome-exporter-settings")
-    @PathParameterSettings(extensions = {".ome.tif", ".ome.tiff"}, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
+    @PathParameterSettings(extensions = {"ome.tif", "ome.tiff"}, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public OMEExporterSettings getExporterSettings() {
         return exporterSettings;
     }

@@ -129,7 +129,7 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
-     @PathParameterSettings(extensions = {".hdf5", ".hdf"},
+     @PathParameterSettings(extensions = {"hdf5", "hdf"},
             key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
             ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {

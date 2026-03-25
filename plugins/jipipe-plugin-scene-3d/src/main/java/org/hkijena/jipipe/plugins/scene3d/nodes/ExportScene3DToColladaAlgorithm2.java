@@ -92,7 +92,7 @@ public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
-    @PathParameterSettings(extensions = {".dae"},
+    @PathParameterSettings(extensions = {"dae"},
             key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
             ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {

@@ -11,6 +11,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopDualIcon;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderSyntaxChecker;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.scripting.ScriptUtils;
 
@@ -37,28 +38,6 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
     private JScrollPane entryPanelScrollPane;
     private RSyntaxTextArea expressionEditor;
 
-    public DataExportExpressionParameterEditorPathChooserUI(Frame owner, String title, JIPipeWorkbench workbench, PathType pathType, FileNameExtensionFilter[] extensions) {
-        super(owner);
-        this.title = title;
-        this.workbench = workbench;
-        this.pathType = pathType;
-        this.extensions = extensions;
-        initialize();
-        initializeEntries();
-        onEntriesUpdated();
-    }
-
-    public DataExportExpressionParameterEditorPathChooserUI(Dialog owner, String title, JIPipeWorkbench workbench, PathType pathType, FileNameExtensionFilter[] extensions) {
-        super(owner);
-        this.title = title;
-        this.workbench = workbench;
-        this.pathType = pathType;
-        this.extensions = extensions;
-        initialize();
-        initializeEntries();
-        onEntriesUpdated();
-    }
-
     public DataExportExpressionParameterEditorPathChooserUI(Window owner, String title, JIPipeWorkbench workbench, PathType pathType, FileNameExtensionFilter[] extensions) {
         super(owner);
         this.title = title;
@@ -82,7 +61,8 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
 
         contentPane.add(UIUtils.createInfoLabel("Exporter path builder",
                 "This tool helps you with building a portable (i.e. can be transferred to other PCs) path for your exporter nodes. " +
-                        "Click the items to build the output folder and subfolders, as well as the file name."), BorderLayout.NORTH);
+                        "Click the items to build the output folder and subfolders, as well as the file name. " +
+                        "You can also simulate saving a file and let the tool guess most of the settings for you."), BorderLayout.NORTH);
 
         // Init entry panel
         entryPanel.setLayout(new BoxLayout(entryPanel, BoxLayout.X_AXIS));
@@ -111,12 +91,17 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
 
         // Wrapper panels
         JPanel entryWrapperPanel = new JPanel(new BorderLayout(8,8));
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(UIUtils.createButton("Auto-guess from path", "Simulate a file saving procedure and automatically design appropriate settings", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"), this::tryAutoPopulateFromPath));
+        entryWrapperPanel.add(toolBar, BorderLayout.NORTH);
         entryWrapperPanel.add(entryPanelScrollPane, BorderLayout.CENTER);
         entryWrapperPanel.add(UIUtils.createJLabel("Click the path items to change their contents", JIPipe.RESOURCES.getIcon16("actions/input-mouse-click-left.png")), BorderLayout.SOUTH);
 
         JPanel previewWrapperPanel = new JPanel(new BorderLayout(8,8));
         previewWrapperPanel.add(UIUtils.createJLabel("Preview", JIPipe.RESOURCES.getIcon16("actions/preview.png")), BorderLayout.NORTH);
         previewWrapperPanel.add(new JScrollPane(expressionEditor), BorderLayout.CENTER);
+        previewWrapperPanel.add(new ExpressionBuilderSyntaxChecker(expressionEditor), BorderLayout.SOUTH);
 
         // Init split pane
         JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JIPipeDesktopSplitPane.TOP_BOTTOM,
@@ -129,6 +114,120 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         contentPane.add(splitPane, BorderLayout.CENTER);
 
         initializeButtonPanel();
+    }
+
+    private void tryAutoPopulateFromPath() {
+        Path path = JIPipeDesktop.saveFile(this, workbench, JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, "Simulate saving", HTMLText.EMPTY, extensions);
+        if(path != null) {
+            path = path.toAbsolutePath();
+            
+            JIPipeProject project = workbench.getProject();
+            List<Entry> newDirectoryEntries = new ArrayList<>();
+            Entry newLastEntry = new Entry();
+            
+            // Try to match against project directory or user paths
+            boolean matched = false;
+            
+            if(project != null) {
+                Path projectPath = project.getWorkDirectory();
+                
+                // Check if path is within the project directory
+                if(projectPath != null && path.startsWith(projectPath)) {
+                    matched = true;
+                    Entry rootEntry = new Entry();
+                    rootEntry.sourceType = EntrySourceType.ProjectDirectory;
+                    newDirectoryEntries.add(rootEntry);
+                    
+                    // Add relative path components
+                    Path relativePath = projectPath.relativize(path);
+                    addRelativePathEntries(relativePath, newDirectoryEntries, newLastEntry);
+                }
+                
+                // Check if path is within a project user path
+                if(!matched && projectPath != null) {
+                    for(Map.Entry<String, Path> userPathEntry : project.getMetadata().getUserPaths().getDirectoryMap(projectPath).entrySet()) {
+                        Path userPath = userPathEntry.getValue();
+                        if(path.startsWith(userPath)) {
+                            matched = true;
+                            
+                            Entry rootEntry = new Entry();
+                            rootEntry.sourceType = EntrySourceType.ProjectUserPath;
+                            rootEntry.content = userPathEntry.getKey();
+                            newDirectoryEntries.add(rootEntry);
+                            
+                            // Add relative path components
+                            Path relativePath = userPath.relativize(path);
+                            addRelativePathEntries(relativePath, newDirectoryEntries, newLastEntry);
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // If no match found, use custom entries for the full path
+            if(!matched) {
+                Path parent = path.getParent();
+                String fileName = path.getFileName() != null ? path.getFileName().toString() : "";
+                
+                if(parent != null) {
+                    for(Path component : parent) {
+                        Entry entry = new Entry();
+                        entry.sourceType = EntrySourceType.Custom;
+                        entry.content = component.toString();
+                        newDirectoryEntries.add(entry);
+                    }
+                }
+                
+                newLastEntry.sourceType = EntrySourceType.Custom;
+                newLastEntry.content = fileName;
+            }
+            
+            // Ensure at least one directory entry exists
+            if(newDirectoryEntries.isEmpty()) {
+                Entry defaultEntry = new Entry();
+                defaultEntry.sourceType = EntrySourceType.ProjectDirectory;
+                newDirectoryEntries.add(defaultEntry);
+            }
+            
+            // Apply the new configuration
+            directoryEntryList = newDirectoryEntries;
+            lastEntry = newLastEntry;
+            onEntriesUpdated();
+        }
+    }
+    
+    /**
+     * Adds entries from a relative path, splitting directories and the final filename.
+     *
+     * @param relativePath the relative path to process
+     * @param directoryEntries list to add directory entries to
+     * @param lastEntry the last entry (filename) to populate
+     */
+    private void addRelativePathEntries(Path relativePath, List<Entry> directoryEntries, Entry lastEntry) {
+        // Convert path to use forward slashes for consistency
+        String pathStr = relativePath.toString().replace('\\', '/');
+        
+        // Split into components
+        String[] components = pathStr.split("/");
+        
+        // All but the last component are directories
+        for(int i = 0; i < components.length - 1; i++) {
+            if(!components[i].isEmpty()) {
+                Entry entry = new Entry();
+                entry.sourceType = EntrySourceType.Custom;
+                entry.content = components[i];
+                directoryEntries.add(entry);
+            }
+        }
+        
+        // The last component is the filename
+        if(components.length > 0 && !components[components.length - 1].isEmpty()) {
+            lastEntry.sourceType = EntrySourceType.Custom;
+            lastEntry.content = components[components.length - 1];
+        } else {
+            // Default to auto if no filename
+            lastEntry.sourceType = EntrySourceType.Auto;
+        }
     }
 
     private void initializeEntries() {
@@ -517,6 +616,303 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         UIUtils.makeNonOpaque(buttonPanel, true);
 
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public void tryImportCurrentExpression(String currentExpression) {
+        if (StringUtils.isNullOrEmpty(currentExpression)) {
+            return;
+        }
+
+        currentExpression = currentExpression.trim();
+
+        try {
+            // Check if it's a simple string literal "<path>"
+            if (currentExpression.startsWith("\"") && currentExpression.endsWith("\"")) {
+                tryImportSimpleStringLiteral(currentExpression);
+                return;
+            }
+
+            // Check if it's PATH_COMBINE(...)
+            if (currentExpression.startsWith("PATH_COMBINE(") && currentExpression.endsWith(")")) {
+                tryImportPathCombineExpression(currentExpression);
+                return;
+            }
+
+            // If neither, ignore the expression (invalid format)
+        } catch (Exception e) {
+            // If parsing fails, leave the current state unchanged
+        }
+    }
+
+    private void tryImportSimpleStringLiteral(String expression) {
+        // Extract the string content from "<path>"
+        String path = JIPipeExpressionEvaluator.unescapeString(expression);
+
+        if (StringUtils.isNullOrEmpty(path)) {
+            return;
+        }
+
+        // Split the path into directory entries and filename
+        Path p = Path.of(path);
+
+        List<Entry> newDirectoryEntries = new ArrayList<>();
+        Entry newLastEntry = new Entry();
+
+        // Get the parent path components
+        Path parent = p.getParent();
+        String fileName = p.getFileName() != null ? p.getFileName().toString() : "";
+
+        if (parent != null) {
+            // Add each parent component as a Custom entry
+            for (Path component : parent) {
+                Entry entry = new Entry();
+                entry.sourceType = EntrySourceType.Custom;
+                entry.content = component.toString();
+                newDirectoryEntries.add(entry);
+            }
+        }
+
+        // Set the filename as the last entry
+        newLastEntry.sourceType = EntrySourceType.Custom;
+        newLastEntry.content = fileName;
+
+        // Validate: must have at least 1 directory item
+        if (newDirectoryEntries.isEmpty()) {
+            // Create a default directory entry
+            Entry defaultEntry = new Entry();
+            defaultEntry.sourceType = EntrySourceType.ProjectDirectory;
+            newDirectoryEntries.add(defaultEntry);
+        }
+
+        // Apply the new configuration
+        directoryEntryList = newDirectoryEntries;
+        lastEntry = newLastEntry;
+        onEntriesUpdated();
+    }
+
+    private void tryImportPathCombineExpression(String expression) {
+        // Extract the content inside PATH_COMBINE(...)
+        String innerContent = expression.substring("PATH_COMBINE(".length(), expression.length() - 1);
+
+        // Tokenize to extract arguments
+        JIPipeExpressionEvaluator evaluator = JIPipeExpressionParameter.getEvaluatorInstance();
+        List<String> tokens = evaluator.tokenize(innerContent, false, true);
+
+        // Parse arguments (split by comma, respecting parentheses and quotes)
+        List<String> arguments = parseArguments(tokens);
+
+        if (arguments.size() < 2) {
+            // Invalid: need at least one directory and one file item
+            return;
+        }
+
+        List<Entry> newDirectoryEntries = new ArrayList<>();
+        Entry newLastEntry = new Entry();
+
+        // Parse all but the last argument as directory entries
+        for (int i = 0; i < arguments.size() - 1; i++) {
+            Entry entry = parseEntry(arguments.get(i), i == 0);
+            if (entry == null) {
+                return; // Invalid entry, abort
+            }
+            newDirectoryEntries.add(entry);
+        }
+
+        // Parse the last argument as the file entry
+        Entry parsedLastEntry = parseLastEntry(arguments.get(arguments.size() - 1));
+        if (parsedLastEntry == null) {
+            return; // Invalid entry, abort
+        }
+        newLastEntry = parsedLastEntry;
+
+        // Validate: must have at least 1 directory item
+        if (newDirectoryEntries.isEmpty()) {
+            return;
+        }
+
+        // Apply the new configuration
+        directoryEntryList = newDirectoryEntries;
+        lastEntry = newLastEntry;
+        onEntriesUpdated();
+    }
+
+    private List<String> parseArguments(List<String> tokens) {
+        List<String> arguments = new ArrayList<>();
+        StringBuilder currentArg = new StringBuilder();
+        int parenDepth = 0;
+
+        for (String token : tokens) {
+            if ("(".equals(token)) {
+                parenDepth++;
+                currentArg.append(token);
+            } else if (")".equals(token)) {
+                parenDepth--;
+                currentArg.append(token);
+            } else if (",".equals(token) && parenDepth == 0) {
+                String arg = currentArg.toString().trim();
+                if (!arg.isEmpty()) {
+                    arguments.add(arg);
+                }
+                currentArg = new StringBuilder();
+            } else {
+                currentArg.append(token);
+            }
+        }
+
+        // Add the last argument
+        String lastArg = currentArg.toString().trim();
+        if (!lastArg.isEmpty()) {
+            arguments.add(lastArg);
+        }
+
+        return arguments;
+    }
+
+    private Entry parseEntry(String argument, boolean isFirstEntry) {
+        argument = argument.trim();
+
+        if (argument.isEmpty()) {
+            return null;
+        }
+
+        Entry entry = new Entry();
+
+        // Check for project_dir (only valid for first entry)
+        if ("project_dir".equals(argument)) {
+            if (!isFirstEntry) {
+                return null; // project_dir only valid as first entry
+            }
+            entry.sourceType = EntrySourceType.ProjectDirectory;
+            entry.content = "";
+            return entry;
+        }
+
+        // Check for data_dir (only valid for first entry, maps to Auto)
+        if ("data_dir".equals(argument)) {
+            if (!isFirstEntry) {
+                return null; // data_dir only valid as first entry
+            }
+            entry.sourceType = EntrySourceType.Auto;
+            entry.content = "";
+            return entry;
+        }
+
+        // Check for project_user_path.key format
+        if (argument.startsWith("project_user_path.")) {
+            String key = argument.substring("project_user_path.".length());
+            entry.sourceType = EntrySourceType.ProjectUserPath;
+            entry.content = key;
+            return entry;
+        }
+
+        // Check for project_user_paths @ "key" format
+        if (argument.startsWith("project_user_paths @ ") || argument.startsWith("project_user_paths@")) {
+            String keyPart = argument.contains(" @ ")
+                ? argument.substring("project_user_paths @ ".length())
+                : argument.substring("project_user_paths@".length());
+            // Extract the key from quotes
+            String key = extractQuotedString(keyPart);
+            if (key != null) {
+                entry.sourceType = EntrySourceType.ProjectUserPath;
+                entry.content = key;
+                return entry;
+            }
+        }
+
+        // Check for string literal (Custom)
+        if (argument.startsWith("\"") && argument.endsWith("\"")) {
+            String content = JIPipeExpressionEvaluator.unescapeString(argument);
+            entry.sourceType = EntrySourceType.Custom;
+            entry.content = content;
+            return entry;
+        }
+
+        // Check for variable reference with $ prefix
+        if (argument.startsWith("$")) {
+            String varContent = argument.substring(1);
+            // Check if it's a quoted variable name
+            if (varContent.startsWith("\"") && varContent.endsWith("\"")) {
+                entry.sourceType = EntrySourceType.Variable;
+                entry.content = JIPipeExpressionEvaluator.unescapeString(varContent);
+                return entry;
+            }
+            // Otherwise it's a direct variable reference
+            entry.sourceType = EntrySourceType.Variable;
+            entry.content = varContent;
+            return entry;
+        }
+
+        // Check if it's a simple variable name (valid identifier)
+        if (ScriptUtils.isValidVariableName(argument)) {
+            entry.sourceType = EntrySourceType.Variable;
+            entry.content = argument;
+            return entry;
+        }
+
+        // Otherwise, treat it as an expression
+        entry.sourceType = EntrySourceType.Expression;
+        entry.content = argument;
+        return entry;
+    }
+
+    private Entry parseLastEntry(String argument) {
+        argument = argument.trim();
+
+        if (argument.isEmpty()) {
+            return null;
+        }
+
+        Entry entry = new Entry();
+
+        // Check for auto_file_name
+        if ("auto_file_name".equals(argument)) {
+            entry.sourceType = EntrySourceType.Auto;
+            entry.content = "";
+            return entry;
+        }
+
+        // Check for string literal (Custom)
+        if (argument.startsWith("\"") && argument.endsWith("\"")) {
+            String content = JIPipeExpressionEvaluator.unescapeString(argument);
+            entry.sourceType = EntrySourceType.Custom;
+            entry.content = content;
+            return entry;
+        }
+
+        // Check for variable reference with $ prefix
+        if (argument.startsWith("$")) {
+            String varContent = argument.substring(1);
+            // Check if it's a quoted variable name
+            if (varContent.startsWith("\"") && varContent.endsWith("\"")) {
+                entry.sourceType = EntrySourceType.Variable;
+                entry.content = JIPipeExpressionEvaluator.unescapeString(varContent);
+                return entry;
+            }
+            // Otherwise it's a direct variable reference
+            entry.sourceType = EntrySourceType.Variable;
+            entry.content = varContent;
+            return entry;
+        }
+
+        // Check if it's a simple variable name (valid identifier)
+        if (ScriptUtils.isValidVariableName(argument)) {
+            entry.sourceType = EntrySourceType.Variable;
+            entry.content = argument;
+            return entry;
+        }
+
+        // Otherwise, treat it as an expression
+        entry.sourceType = EntrySourceType.Expression;
+        entry.content = argument;
+        return entry;
+    }
+
+    private String extractQuotedString(String quotedString) {
+        quotedString = quotedString.trim();
+        if (quotedString.startsWith("\"") && quotedString.endsWith("\"") && quotedString.length() >= 2) {
+            return JIPipeExpressionEvaluator.unescapeString(quotedString);
+        }
+        return null;
     }
 
     private static class Entry {

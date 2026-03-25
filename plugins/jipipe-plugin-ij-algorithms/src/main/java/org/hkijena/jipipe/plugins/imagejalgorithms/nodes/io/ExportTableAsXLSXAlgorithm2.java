@@ -145,7 +145,7 @@ public class ExportTableAsXLSXAlgorithm2 extends JIPipeMergingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
-     @PathParameterSettings(extensions = {".xlsx"},
+     @PathParameterSettings(extensions = {"xlsx"},
             key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
             ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {

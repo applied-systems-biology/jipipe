@@ -98,7 +98,7 @@ public class ExportTableAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
-    @PathParameterSettings(extensions = {".csv", ".xlsx"},
+    @PathParameterSettings(extensions = {"csv", "xlsx"},
             key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
             ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {

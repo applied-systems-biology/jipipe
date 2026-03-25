@@ -34,12 +34,14 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
             extensions = settings.extensions();
         }
 
+        String currentExpression = getParameter().getExpression();
+
         DataExportExpressionParameter selectedPath;
         if (extensions == null || extensions.length == 0) {
-            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType);
+            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, currentExpression);
         } else {
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Supported files", extensions);
-            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, filter);
+            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, currentExpression, filter);
         }
 
         if (selectedPath != null) {

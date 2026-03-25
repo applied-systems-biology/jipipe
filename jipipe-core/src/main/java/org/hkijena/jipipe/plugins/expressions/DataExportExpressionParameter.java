@@ -73,17 +73,24 @@ public class DataExportExpressionParameter extends JIPipeExpressionParameter {
     }
 
     public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter... extensions) {
+       return showPathChooser(parent, workbench, title,  pathType, "", extensions);
+    }
+
+    public static DataExportExpressionParameter showPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, String currentExpression, FileNameExtensionFilter... extensions) {
         if(JIPipeFileChooserApplicationSettings.getInstance().isUseLegacyDataExportPathChooser()) {
             return showLegacyPathChooser(parent, workbench, title, pathType, extensions);
         }
         else {
-            return showNewPathChooser(parent, workbench, title, pathType, extensions);
+            return showNewPathChooser(parent, workbench, title, pathType, currentExpression, extensions);
         }
     }
 
-    private static DataExportExpressionParameter showNewPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, FileNameExtensionFilter[] extensions) {
+    private static DataExportExpressionParameter showNewPathChooser(Component parent, JIPipeWorkbench workbench, String title, PathType pathType, String currentExpression, FileNameExtensionFilter[] extensions) {
         DataExportExpressionParameterEditorPathChooserUI ui = new DataExportExpressionParameterEditorPathChooserUI(SwingUtilities.getWindowAncestor(parent), title, workbench, pathType, extensions);
         UIUtils.addEscapeListener(ui);
+        if(!StringUtils.isNullOrEmpty(currentExpression)) {
+            ui.tryImportCurrentExpression(currentExpression);
+        }
         ui.pack();
         ui.setSize(1024,768);
         ui.setLocationRelativeTo(parent);

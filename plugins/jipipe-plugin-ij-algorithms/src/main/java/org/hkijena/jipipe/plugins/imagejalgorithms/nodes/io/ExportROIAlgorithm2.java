@@ -98,7 +98,7 @@ public class ExportROIAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
-    @PathParameterSettings(extensions = {".zip", ".roi"},
+    @PathParameterSettings(extensions = {"zip", "roi"},
             key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {
         return filePath;
