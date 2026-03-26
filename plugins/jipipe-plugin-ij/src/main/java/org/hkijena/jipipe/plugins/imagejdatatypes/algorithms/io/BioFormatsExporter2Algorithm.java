@@ -30,6 +30,9 @@ import org.hkijena.jipipe.plugins.expressions.DataExportExpressionParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -90,6 +93,7 @@ public class BioFormatsExporter2Algorithm extends JIPipeSimpleIteratingAlgorithm
 
     @SetJIPipeDocumentation(name = "Exporter settings", description = "The following settings control how files are exported:")
     @JIPipeParameter("ome-exporter-settings")
+    @PathParameterSettings(extensions = {"ome.tif", "ome.tiff"}, key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data, ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public OMEExporterSettings getExporterSettings() {
         return exporterSettings;
     }

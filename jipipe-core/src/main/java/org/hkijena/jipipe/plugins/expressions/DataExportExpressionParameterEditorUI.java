@@ -5,6 +5,7 @@ import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParamete
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -16,14 +17,15 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
     }
 
     private void initialize() {
-        JButton setPathButton = new JButton("Select", JIPipe.RESOURCES.getIcon16("actions/fileopen.png"));
+        JButton setPathButton = new JButton("Build", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"));
+        setPathButton.setBorder(UIUtils.createSuccessBorder());
         setPathButton.addActionListener(e -> {
-            openPath();
+            buildPath();
         });
         getEditPanel().add(setPathButton);
     }
 
-    private void openPath() {
+    private void buildPath() {
         PathIOMode ioMode = PathIOMode.Save;
         PathType pathType = PathType.FilesAndDirectories;
         String[] extensions = new String[]{};
@@ -34,12 +36,14 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
             extensions = settings.extensions();
         }
 
+        String currentExpression = getParameter().getExpression();
+
         DataExportExpressionParameter selectedPath;
         if (extensions == null || extensions.length == 0) {
-            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType);
+            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, currentExpression);
         } else {
             FileNameExtensionFilter filter = new FileNameExtensionFilter("Supported files", extensions);
-            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, filter);
+            selectedPath = DataExportExpressionParameter.showPathChooser(getDesktopWorkbench().getWindow(), getWorkbench(), "Select path", pathType, currentExpression, filter);
         }
 
         if (selectedPath != null) {

@@ -35,8 +35,11 @@ import org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils;
 import org.hkijena.jipipe.plugins.ilastik.utils.hdf5.IJ1Hdf5;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
+import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -126,6 +129,9 @@ public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgori
 
     @SetJIPipeDocumentation(name = "File path", description = "Expression that generates the output file path")
     @JIPipeParameter("file-path")
+     @PathParameterSettings(extensions = {"hdf5", "hdf"},
+            key = JIPipeFileChooserApplicationSettings.LastDirectoryKey.Data,
+            ioMode = PathIOMode.Save, pathMode = PathType.FilesOnly)
     public DataExportExpressionParameter getFilePath() {
         return filePath;
     }

@@ -2233,6 +2233,15 @@ public class UIUtils {
         return button;
     }
 
+    public static JButton createButton(String text, String tooltip, Icon icon, Runnable function) {
+        JButton button = new JButton(text, icon);
+        button.setToolTipText(tooltip);
+        if (function != null) {
+            button.addActionListener(e -> function.run());
+        }
+        return button;
+    }
+
     public static JButton createIconOnlyButton(String text, Icon icon, Runnable function) {
         JButton button = new JButton(icon);
         button.setToolTipText(text);
