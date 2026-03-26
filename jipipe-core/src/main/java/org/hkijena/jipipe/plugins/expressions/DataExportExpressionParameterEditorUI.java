@@ -5,6 +5,7 @@ import org.hkijena.jipipe.plugins.expressions.ui.JIPipeExpressionDesktopParamete
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -17,6 +18,7 @@ public class DataExportExpressionParameterEditorUI extends JIPipeExpressionDeskt
 
     private void initialize() {
         JButton setPathButton = new JButton("Build", JIPipe.RESOURCES.getIcon16("actions/wand-magic-sparkles.png"));
+        setPathButton.setBorder(UIUtils.createSuccessBorder());
         setPathButton.addActionListener(e -> {
             buildPath();
         });

@@ -8,8 +8,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.JIPipeDesktopDualIcon;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.plugins.expressions.ui.ExpressionBuilderSyntaxChecker;
 import org.hkijena.jipipe.utils.*;
@@ -270,6 +273,14 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 sb.append(JIPipeExpressionEvaluator.escapeVariable(firstEntry.content));
             }
             break;
+            case JoinedVariables: {
+                if (firstEntry.joinedVariables != null) {
+                    sb.append(firstEntry.joinedVariables.toExpression());
+                } else {
+                    return "INVALID_EXPRESSION";
+                }
+            }
+            break;
             case Expression: {
                 sb.append(firstEntry.content);
             }
@@ -291,6 +302,14 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             switch (entry.sourceType) {
                 case Variable: {
                     sb.append(JIPipeExpressionEvaluator.escapeVariable(entry.content));
+                }
+                break;
+                case JoinedVariables: {
+                    if (entry.joinedVariables != null) {
+                        sb.append(entry.joinedVariables.toExpression());
+                    } else {
+                        return "INVALID_EXPRESSION";
+                    }
                 }
                 break;
                 case Expression: {
@@ -319,6 +338,14 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 }
                 else {
                     sb.append("$\"").append(ScriptUtils.escapeString(lastEntry.content)).append("\"");
+                }
+            }
+            break;
+            case JoinedVariables: {
+                if (lastEntry.joinedVariables != null) {
+                    sb.append(lastEntry.joinedVariables.toExpression());
+                } else {
+                    return "INVALID_EXPRESSION";
                 }
             }
             break;
@@ -387,6 +414,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             case Expression -> JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
             case Custom -> JIPipe.RESOURCES.getIcon16("actions/text-convert-to-regular.png");
             case Variable -> JIPipe.RESOURCES.getIcon16("data-types/annotation.png");
+            case JoinedVariables -> JIPipe.RESOURCES.getIcon16("data-types/annotation.png");
             case ProjectUserPath -> JIPipe.RESOURCES.getIcon16("actions/preferences-system-symbolic.png");
             case ProjectDirectory -> JIPipe.RESOURCES.getIcon16("jipipe.png");
             default -> JIPipe.RESOURCES.getIcon16("missing.png");
@@ -396,6 +424,13 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             button.setFont(button.getFont().deriveFont(Font.ITALIC));
         } else if (entry.sourceType == EntrySourceType.ProjectDirectory) {
             button.setText("Project directory");
+        } else if (entry.sourceType == EntrySourceType.JoinedVariables) {
+            if (entry.joinedVariables != null) {
+                button.setText(entry.joinedVariables.toString());
+                button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            } else {
+                button.setText("(empty joined variables)");
+            }
         } else if (entry.sourceType == EntrySourceType.Expression || entry.sourceType == EntrySourceType.Variable || entry.sourceType == EntrySourceType.ProjectUserPath) {
             button.setText(StringUtils.nullToEmpty(entry.content));
             button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -471,6 +506,24 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                         onEntriesUpdated();
                     }
                 }));
+        popupMenu.add(UIUtils.createMenuItem("Joined annotations/variables",
+                "Join multiple annotations/variables with a custom delimiter",
+                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
+                () -> {
+                    JoinedVariablesEntry newEntry = new JoinedVariablesEntry();
+                    boolean confirmed = JIPipeDesktopParameterFormPanel.showDialog(
+                            (JIPipeDesktopWorkbench) workbench,
+                            DataExportExpressionParameterEditorPathChooserUI.this,
+                            newEntry,
+                            MarkdownText.EMPTY,
+                            "Configure joined variables",
+                            JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
+                    if (confirmed) {
+                        entry.sourceType = EntrySourceType.JoinedVariables;
+                        entry.joinedVariables = newEntry;
+                        onEntriesUpdated();
+                    }
+                }));
         popupMenu.add(UIUtils.createMenuItem("Expression",
                 "Input a raw expression",
                 JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png"),
@@ -522,12 +575,20 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             case Expression -> JIPipe.RESOURCES.getIcon16("actions/insert-math-expression.png");
             case Custom -> JIPipe.RESOURCES.getIcon16("actions/text-convert-to-regular.png");
             case Variable -> JIPipe.RESOURCES.getIcon16("data-types/annotation.png");
+            case JoinedVariables -> JIPipe.RESOURCES.getIcon16("data-types/annotation.png");
             default -> JIPipe.RESOURCES.getIcon16("missing.png");
         };
         button.setIcon(new JIPipeDesktopDualIcon(typeIcon, sourceIcon, 4));
         if (entry.sourceType == EntrySourceType.Auto) {
             button.setText("Automatically generated");
             button.setFont(button.getFont().deriveFont(Font.ITALIC));
+        } else if (entry.sourceType == EntrySourceType.JoinedVariables) {
+            if (entry.joinedVariables != null) {
+                button.setText(entry.joinedVariables.toString());
+                button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+            } else {
+                button.setText("(empty joined variables)");
+            }
         } else if (entry.sourceType == EntrySourceType.Expression || entry.sourceType == EntrySourceType.Variable) {
             button.setText(StringUtils.nullToEmpty(entry.content));
             button.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
@@ -553,6 +614,24 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                     if (!StringUtils.isNullOrEmpty(name)) {
                         entry.sourceType = EntrySourceType.Variable;
                         entry.content = name;
+                        onEntriesUpdated();
+                    }
+                }));
+        popupMenu.add(UIUtils.createMenuItem("Joined annotations/variables",
+                "Join multiple annotations/variables with a custom delimiter",
+                JIPipe.RESOURCES.getIcon16("data-types/annotation.png"),
+                () -> {
+                    JoinedVariablesEntry newEntry = new JoinedVariablesEntry();
+                    boolean confirmed = JIPipeDesktopParameterFormPanel.showDialog(
+                            (JIPipeDesktopWorkbench) workbench,
+                            DataExportExpressionParameterEditorPathChooserUI.this,
+                            newEntry,
+                            MarkdownText.EMPTY,
+                            "Configure joined variables",
+                            JIPipeDesktopParameterFormPanel.DEFAULT_DIALOG_FLAGS);
+                    if (confirmed) {
+                        entry.sourceType = EntrySourceType.JoinedVariables;
+                        entry.joinedVariables = newEntry;
                         onEntriesUpdated();
                     }
                 }));
@@ -918,6 +997,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
     private static class Entry {
         private EntrySourceType sourceType;
         private String content = "";
+        private JoinedVariablesEntry joinedVariables;
     }
 
     private enum EntrySourceType {
@@ -926,6 +1006,7 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         Custom,
         Expression,
         Variable,
+        JoinedVariables,
         Auto
     }
 }
