@@ -86,14 +86,6 @@ See the LICENSE file provided with this code for the full license.
             <id>imagej.public</id>
             <url>https://maven.imagej.net/content/groups/public</url>
         </repository>
-        <repository>
-            <id>jipipe-nexus-snapshots</id>
-            <url>https://jipipe.hki-jena.de/nexus/repository/jipipe-snapshots/</url>
-        </repository>
-        <repository>
-            <id>jipipe-nexus-releases</id>
-            <url>https://jipipe.hki-jena.de/nexus/repository/jipipe-releases/</url>
-        </repository>
     </repositories>
 
     <dependencyManagement>
