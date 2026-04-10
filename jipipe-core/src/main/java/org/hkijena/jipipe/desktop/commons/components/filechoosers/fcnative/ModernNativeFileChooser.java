@@ -10,9 +10,9 @@
 package org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative;
 
 import com.sun.jna.Platform;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.linux.ModernNativeFileChooserLinux;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.macos.ModernNativeFileChooserMacOS;
-import org.hkijena.jipipe.desktop.commons.components.filechoosernative.windows.ModernNativeFileChooserWindows;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.linux.ModernNativeFileChooserLinux;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.macos.ModernNativeFileChooserMacOS;
+import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.windows.ModernNativeFileChooserWindows;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 
