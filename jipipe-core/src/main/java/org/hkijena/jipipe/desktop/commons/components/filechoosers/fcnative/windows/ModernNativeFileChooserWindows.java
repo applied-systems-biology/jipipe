@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.desktop.commons.components.filechoosernative.windows;
+package org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.windows;
 
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooser;
 import org.hkijena.jipipe.desktop.commons.components.filechoosers.fcnative.ModernNativeFileChooserImplementation;
