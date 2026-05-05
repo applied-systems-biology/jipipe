@@ -39,7 +39,7 @@ public class JIPipeDesktopAIStatusControl extends JButton {
     }
 
     private void startEmbeddingModel() {
-
+        JIPipeDesktopAISetupDialog.checkFirstTimeSetup(workbench);
     }
 
     private void stopEmbeddingModel() {
