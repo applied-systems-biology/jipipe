@@ -15,22 +15,22 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-public class JIPipeOnnxEmbeddingAiModel implements JIPipeEmbeddingAiModel {
+public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRunner {
 
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path modelPath;
     private final Path tokenizerPath;
-    private JIPipeAiModelStatus status = JIPipeAiModelStatus.Unloaded;
+    private JIPipeAIModelRunnerStatus status = JIPipeAIModelRunnerStatus.Unloaded;
 
     private OrtEnvironment env;
     private OrtSession session;
     private HuggingFaceTokenizer tokenizer;
 
-    public JIPipeOnnxEmbeddingAiModel(Path modelFolder) {
+    public JIPipeOnnxEmbeddingAIModelRunner(Path modelFolder) {
         this(modelFolder.resolve("model.onnx"), modelFolder.resolve("tokenizer.json"));
     }
 
-    public JIPipeOnnxEmbeddingAiModel(Path modelPath, Path tokenizerPath) {
+    public JIPipeOnnxEmbeddingAIModelRunner(Path modelPath, Path tokenizerPath) {
         this.modelPath = modelPath;
         this.tokenizerPath = tokenizerPath;
     }
@@ -99,17 +99,17 @@ public class JIPipeOnnxEmbeddingAiModel implements JIPipeEmbeddingAiModel {
     }
 
     @Override
-    public JIPipeAiModelStatus getStatus() {
+    public JIPipeAIModelRunnerStatus getStatus() {
         return status;
     }
 
     @Override
     public void start() {
         lock.readLock().lock();
-        if (status == JIPipeAiModelStatus.Unloaded) {
+        if (status == JIPipeAIModelRunnerStatus.Unloaded) {
             lock.readLock().unlock();
             lock.writeLock().lock();
-            status = JIPipeAiModelStatus.Loading;
+            status = JIPipeAIModelRunnerStatus.Loading;
             try {
                 this.env = OrtEnvironment.getEnvironment();
                 OrtSession.SessionOptions options = new OrtSession.SessionOptions();
@@ -128,9 +128,9 @@ public class JIPipeOnnxEmbeddingAiModel implements JIPipeEmbeddingAiModel {
                         tokenizerPath
                 );
 
-                status = JIPipeAiModelStatus.Idle;
+                status = JIPipeAIModelRunnerStatus.Idle;
             } catch (Exception e) {
-                status = JIPipeAiModelStatus.Failed;
+                status = JIPipeAIModelRunnerStatus.Failed;
             } finally {
                 lock.writeLock().unlock();
             }
@@ -145,7 +145,7 @@ public class JIPipeOnnxEmbeddingAiModel implements JIPipeEmbeddingAiModel {
     }
 
     public static void main(String[] args) {
-        JIPipeOnnxEmbeddingAiModel model = new JIPipeOnnxEmbeddingAiModel(Path.of("/data/src/bge-small-en-v1.5-ONNX/onnx/model.onnx"),
+        JIPipeOnnxEmbeddingAIModelRunner model = new JIPipeOnnxEmbeddingAIModelRunner(Path.of("/data/src/bge-small-en-v1.5-ONNX/onnx/model.onnx"),
                 Path.of("/data/src/bge-small-en-v1.5-ONNX/tokenizer.json"));
         System.out.println("Loading ...");
         model.start();

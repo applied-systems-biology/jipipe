@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.api.ai;
 
-public enum JIPipeAiModelStatus {
+public enum JIPipeAIModelRunnerStatus {
     Unloaded,
     Loading,
     Idle,

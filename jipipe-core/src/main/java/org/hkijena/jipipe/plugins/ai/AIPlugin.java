@@ -16,6 +16,9 @@ import org.scijava.plugin.Plugin;
 
 @Plugin(type = JIPipeJavaPlugin.class)
 public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
+
+    public static final String DEFAULT_EMBEDDING_ARTIFACT = "cn.ac.baai.bge_small_en:*";
+
     @Override
     public StringList getDependencyCitations() {
         return new StringList();
@@ -34,7 +37,7 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerArtifactEnvironment("ai-embedding-model",
-                "cn.ac.baai.bge_small_en:*",
+                DEFAULT_EMBEDDING_ARTIFACT,
                 JIPipeEnvironmentArchetype.Base,
                 EmbeddingModelEnvironment.class,
                 OptionalEmbeddingModelEnvironment.class,

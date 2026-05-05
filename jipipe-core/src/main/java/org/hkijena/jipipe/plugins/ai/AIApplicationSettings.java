@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCate
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.ai.environments.OptionalEmbeddingModelEnvironment;
+import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
 
 import javax.swing.*;
 
@@ -14,7 +15,7 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
 
     public static final String ID = "org.hkijena.jipipe:ai";
     private boolean enableAI = true;
-    private OptionalEmbeddingModelEnvironment embeddingModelEnvironment = new OptionalEmbeddingModelEnvironment();
+    private OptionalEmbeddingModelEnvironment overrideEmbeddingModelEnvironment = new OptionalEmbeddingModelEnvironment();
 
     public AIApplicationSettings() {
     }
@@ -32,13 +33,25 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
 
     @SetJIPipeDocumentation(name = "Override embedding model", description = "Allows to overwrite the embedding model (semantic search etc.)")
     @JIPipeParameter("embedding-model")
-    public OptionalEmbeddingModelEnvironment getEmbeddingModelEnvironment() {
-        return embeddingModelEnvironment;
+    public OptionalEmbeddingModelEnvironment getOverrideEmbeddingModelEnvironment() {
+        return overrideEmbeddingModelEnvironment;
     }
 
     @JIPipeParameter("embedding-model")
-    public void setEmbeddingModelEnvironment(OptionalEmbeddingModelEnvironment embeddingModelEnvironment) {
-        this.embeddingModelEnvironment = embeddingModelEnvironment;
+    public void setOverrideEmbeddingModelEnvironment(OptionalEmbeddingModelEnvironment overrideEmbeddingModelEnvironment) {
+        this.overrideEmbeddingModelEnvironment = overrideEmbeddingModelEnvironment;
+    }
+
+    public EmbeddingModelEnvironment getEmbeddingModelEnvironment() {
+        if(overrideEmbeddingModelEnvironment.isEnabled() && overrideEmbeddingModelEnvironment.getContent().isValid()) {
+            return new EmbeddingModelEnvironment(overrideEmbeddingModelEnvironment.getContent());
+        }
+        else {
+            EmbeddingModelEnvironment environment = new EmbeddingModelEnvironment();
+            environment.setLoadFromArtifact(true);
+            environment.setArtifactQuery(new JIPipeArtifactQueryParameter(AIPlugin.DEFAULT_EMBEDDING_ARTIFACT));
+            return environment;
+        }
     }
 
     @Override
@@ -66,5 +79,7 @@ public class AIApplicationSettings extends JIPipeDefaultApplicationsSettingsShee
         return "Settings related to AI helpers";
     }
 
-
+    public static AIApplicationSettings getInstance() {
+        return JIPipe.getSettings().getById(ID, AIApplicationSettings.class);
+    }
 }
