@@ -65,6 +65,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeAccelerationServiceComponent acceleration;
     private final JIPipeCleanupServiceComponent cleanup;
     private final JIPipeProjectBackupServiceComponent projectBackup;
+    private final JIPipeAIServiceComponent aiService;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -100,11 +101,12 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         acceleration = new JIPipeAccelerationServiceComponent(this);
         cleanup = new JIPipeCleanupServiceComponent(this);
         projectBackup = new JIPipeProjectBackupServiceComponent(this);
+        aiService = new JIPipeAIServiceComponent(this);
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[] {
                 recentProjects, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService
         };
     }
 
@@ -252,6 +254,10 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeProjectTemplatesServiceComponent getProjectTemplates() {
         ensureInitialized();
         return projectTemplates;
+    }
+
+    public JIPipeAIServiceComponent getAiService() {
+        return aiService;
     }
 
     public JIPipeProgressInfo getProgressInfo() {
