@@ -36,6 +36,10 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
+        registerEnumParameterType("ai-embedding-model-type",
+                EmbeddingModelType.class,
+                "AI embedding model type",
+                "An embedding model type");
         registerArtifactEnvironment("ai-embedding-model",
                 DEFAULT_EMBEDDING_ARTIFACT,
                 JIPipeEnvironmentArchetype.Base,
