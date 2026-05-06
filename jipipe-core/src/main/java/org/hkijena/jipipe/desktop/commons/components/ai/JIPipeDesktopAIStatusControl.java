@@ -3,6 +3,7 @@ package org.hkijena.jipipe.desktop.commons.components.ai;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -12,10 +13,14 @@ public class JIPipeDesktopAIStatusControl extends JButton {
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
     private final AIApplicationSettings settings;
+    private final ImageIcon defaultIcon;
+    private final SpinnerIcon busyIcon; // Icon for when the model is not unloaded or idle
 
     public JIPipeDesktopAIStatusControl(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
         this.settings = AIApplicationSettings.getInstance();
+        this.defaultIcon = JIPipe.RESOURCES.getIcon16("actions/ai.png");
+        this.busyIcon = new SpinnerIcon(this);
         initialize();
         updateStatus();
 
@@ -24,7 +29,7 @@ public class JIPipeDesktopAIStatusControl extends JButton {
 
     private void initialize() {
         UIUtils.makeButtonFlat(this);
-        setIcon(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
+        setIcon(defaultIcon);
         setText("N/A");
         UIUtils.addReloadablePopupMenuToButton(this, popupMenu, this::reloadMenu);
     }
