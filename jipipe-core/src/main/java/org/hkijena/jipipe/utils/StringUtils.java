@@ -20,6 +20,8 @@ import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.apache.commons.text.WordUtils;
 
 import java.awt.*;
+import java.net.InetAddress;
+import java.net.URI;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

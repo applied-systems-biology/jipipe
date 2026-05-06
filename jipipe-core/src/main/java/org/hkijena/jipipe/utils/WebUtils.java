@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import com.google.common.net.InternetDomainName;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -33,8 +34,13 @@ import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class WebUtils {
+
+    private static final Pattern IPV4 =
+            Pattern.compile("^\\d{1,3}(\\.\\d{1,3}){3}$");
+
     private static boolean isRedirected(Map<String, List<String>> header) {
         for (String hv : header.get(null)) {
             if (hv.contains(" 301 ")
@@ -187,6 +193,120 @@ public class WebUtils {
             return URI.create(url).toURL();
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+
+    public static boolean isLikelyRemoteUrl(String input) {
+        if (input == null || input.isBlank()) {
+            return false;
+        }
+
+        String host = extractHost(input.trim());
+        if (host == null || host.isBlank()) {
+            return false;
+        }
+
+        host = normalizeHost(host);
+
+        if (isLocalhostName(host)) {
+            return false;
+        }
+
+        if (isLikelyIpAddress(host)) {
+            return isPublicIp(host);
+        }
+
+        // Single-label names like "app", "printer", "devbox" are usually local.
+        if (!host.contains(".")) {
+            return false;
+        }
+
+        // Explicit local/development pseudo-TLDs.
+        if (isLocalPseudoDomain(host)) {
+            return false;
+        }
+
+        try {
+            InternetDomainName domain = InternetDomainName.from(host);
+
+            // hasPublicSuffix() means Guava recognizes the suffix from the Public Suffix List.
+            // Examples:
+            //   example.com       -> true
+            //   foo.co.uk         -> true
+            //   app.local         -> false
+            //   service.internal  -> false
+            return domain.hasPublicSuffix();
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
+
+    private static String extractHost(String input) {
+        try {
+            URI uri = URI.create(input);
+            String host = uri.getHost();
+
+            if (host != null) {
+                return host;
+            }
+
+            // Handle schemeless inputs such as "example.com/path" or "localhost:8080".
+            if (!input.contains("://")) {
+                return URI.create("http://" + input).getHost();
+            }
+
+            return null;
+        } catch (IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    private static String normalizeHost(String host) {
+        host = host.toLowerCase(Locale.ROOT);
+
+        // FQDN form: example.com.
+        if (host.endsWith(".")) {
+            host = host.substring(0, host.length() - 1);
+        }
+
+        // Defensive handling for bracketed IPv6 literals.
+        if (host.startsWith("[") && host.endsWith("]")) {
+            host = host.substring(1, host.length() - 1);
+        }
+
+        return host;
+    }
+
+    private static boolean isLocalhostName(String host) {
+        return host.equals("localhost")
+                || host.equals("localhost.localdomain")
+                || host.endsWith(".localhost");
+    }
+
+    private static boolean isLocalPseudoDomain(String host) {
+        return host.endsWith(".local")
+                || host.endsWith(".test")
+                || host.endsWith(".internal")
+                || host.endsWith(".lan")
+                || host.endsWith(".home");
+    }
+
+    private static boolean isLikelyIpAddress(String host) {
+        return IPV4.matcher(host).matches() || host.contains(":");
+    }
+
+    private static boolean isPublicIp(String host) {
+        try {
+            InetAddress address = InetAddress.getByName(host);
+
+            return !(address.isAnyLocalAddress()
+                    || address.isLoopbackAddress()
+                    || address.isLinkLocalAddress()
+                    || address.isSiteLocalAddress()
+                    || address.isMulticastAddress());
+        } catch (Exception e) {
+            return false;
         }
     }
 }

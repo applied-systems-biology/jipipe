@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.ai.JIPipeAPIEmbeddingAIModelRunner;
+import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
+import org.hkijena.jipipe.api.ai.JIPipeOnnxEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -131,8 +134,8 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
     @Override
     public void applyConfigurationFromArtifact(JIPipeLocalArtifact artifact, JIPipeProgressInfo progressInfo) {
         setModelType(EmbeddingModelType.LocalOnnx);
-        setLocalModelFile(artifact.getLocalPath().resolve("model").resolve("onnx").resolve("model.onnx"));
-        setLocalTokenizerFile(artifact.getLocalPath().resolve("model").resolve("tokenizer.json"));
+        setLocalModelFile(artifact.getLocalPath().resolve("embedding").resolve("onnx").resolve("model.onnx"));
+        setLocalTokenizerFile(artifact.getLocalPath().resolve("embedding").resolve("tokenizer.json"));
     }
 
     @Override
@@ -177,5 +180,14 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
             return Files.isRegularFile(getLocalModelFile()) && Files.isRegularFile(getLocalTokenizerFile());
         }
         return false;
+    }
+
+    public JIPipeEmbeddingAIModelRunner toRunner() {
+        if(getModelType() == EmbeddingModelType.LocalOnnx) {
+            return new JIPipeOnnxEmbeddingAIModelRunner(localModelFile, localTokenizerFile);
+        }
+        else if(getModelType() == EmbeddingModelType.OpenAIAPI) {
+            return new JIPipeAPIEmbeddingAIModelRunner(apiBase, apiModel, apiKey.getPassword());
+        }
     }
 }

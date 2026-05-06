@@ -17,6 +17,9 @@ public class JIPipeDesktopAIStatusControl extends JButton {
         this.workbench = workbench;
         this.settings = AIApplicationSettings.getInstance();
         initialize();
+        updateStatus();
+
+        // TODO: regularly update status
     }
 
     private void initialize() {
@@ -36,13 +39,33 @@ public class JIPipeDesktopAIStatusControl extends JButton {
         else {
             popupMenu.add(UIUtils.createMenuItem("Load embedding model", "Loads the embedding model", JIPipe.RESOURCES.getIcon16("actions/circle-play.png"), this::startEmbeddingModel));
         }
+        popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the settings page for AI", JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
+    }
+
+    private void openApplicationSettings() {
+        workbench.openApplicationSettings("/General/AI");
     }
 
     private void startEmbeddingModel() {
-        JIPipeDesktopAISetupDialog.checkFirstTimeSetup(workbench);
+        if(!JIPipeDesktopAISetupDialog.checkFirstTimeSetup(workbench)) {
+            return;
+        }
+        JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+        aiService.tryStartEmbeddingModel();
     }
 
     private void stopEmbeddingModel() {
+        JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+        aiService.tryStopEmbeddingModel();
+    }
 
+    private void updateStatus() {
+        JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+        if(aiService.hasEmbeddingModel()) {
+            setText("AI " + aiService.getEmbeddingModelStatus());
+        }
+        else {
+            setText("AI is offline");
+        }
     }
 }

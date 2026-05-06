@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.service.components;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
 import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
@@ -31,7 +33,30 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         }
     }
 
+    public JIPipeAIModelRunnerStatus getEmbeddingModelStatus() {
+        if(embeddingModelRunner != null) {
+            return embeddingModelRunner.getStatus();
+        }
+        return JIPipeAIModelRunnerStatus.Unloaded;
+    }
+
     public boolean hasEmbeddingModel() {
         return embeddingModelRunner != null;
+    }
+
+    public void startEmbeddingModelNow(JIPipeProgressInfo progressInfo) {
+        // TODO: blocking start
+    }
+
+    public void stopEmbeddingModelNow(JIPipeProgressInfo progressInfo) {
+        // TODO: blocking shutdown
+    }
+
+    public void tryStartEmbeddingModel() {
+        // TODO: enqueue start
+    }
+
+    public void tryStopEmbeddingModel() {
+        // TODO: enqueue stop
     }
 }

@@ -185,6 +185,17 @@ public class JIPipeArtifact extends AbstractJIPipeParameterCollection implements
      * @return if the artifact is compatible
      */
     public boolean isCompatible() {
+        if("*".equals(getClassifier())) {
+            return true;
+        }
+
+        String[] split = StringUtils.nullToEmpty(getClassifier()).split("_");
+        for (String s : split) {
+            if("any".equals(s)) {
+                return true;
+            }
+        }
+
         if ("*".equals(getClassifier()) || "any".equalsIgnoreCase(getClassifier())) {
             return true;
         } else if (SystemUtils.IS_OS_WINDOWS) {

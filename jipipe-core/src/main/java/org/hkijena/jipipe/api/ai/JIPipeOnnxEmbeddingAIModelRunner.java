@@ -26,10 +26,6 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     private OrtSession session;
     private HuggingFaceTokenizer tokenizer;
 
-    public JIPipeOnnxEmbeddingAIModelRunner(Path modelFolder) {
-        this(modelFolder.resolve("model.onnx"), modelFolder.resolve("tokenizer.json"));
-    }
-
     public JIPipeOnnxEmbeddingAIModelRunner(Path modelPath, Path tokenizerPath) {
         this.modelPath = modelPath;
         this.tokenizerPath = tokenizerPath;
@@ -142,16 +138,5 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     @Override
     public void shutdown() {
 
-    }
-
-    public static void main(String[] args) {
-        JIPipeOnnxEmbeddingAIModelRunner model = new JIPipeOnnxEmbeddingAIModelRunner(Path.of("/data/src/bge-small-en-v1.5-ONNX/onnx/model.onnx"),
-                Path.of("/data/src/bge-small-en-v1.5-ONNX/tokenizer.json"));
-        System.out.println("Loading ...");
-        model.start();
-        System.out.println("Loading finished");
-        float[] embed = model.embed("His La Hee performance still lives rent free in my head. What a guy. I'm glad he's better now");
-        System.out.println(JsonUtils.toJsonString(embed));
-        model.shutdown();
     }
 }

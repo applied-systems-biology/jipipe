@@ -10,4 +10,10 @@ public class OptionalEmbeddingModelEnvironment extends JIPipeOptionalParameter<E
     public OptionalEmbeddingModelEnvironment(OptionalEmbeddingModelEnvironment other) {
         super(other);
     }
+
+    public OptionalEmbeddingModelEnvironment(EmbeddingModelEnvironment embeddingModelEnvironment, boolean enabled) {
+        super(EmbeddingModelEnvironment.class);
+        setContent(embeddingModelEnvironment);
+        setEnabled(enabled);
+    }
 }
