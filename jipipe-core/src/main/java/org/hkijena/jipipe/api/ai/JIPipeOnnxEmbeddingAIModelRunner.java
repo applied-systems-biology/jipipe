@@ -21,6 +21,7 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     private final Path modelPath;
     private final Path tokenizerPath;
     private JIPipeAIModelRunnerStatus status = JIPipeAIModelRunnerStatus.Unloaded;
+    private String lastError = null;
 
     private OrtEnvironment env;
     private OrtSession session;
@@ -100,6 +101,11 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     }
 
     @Override
+    public String getLastError() {
+        return lastError;
+    }
+
+    @Override
     public void start() {
         lock.readLock().lock();
         if (status == JIPipeAIModelRunnerStatus.Unloaded) {
@@ -137,6 +143,26 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
 
     @Override
     public void shutdown() {
-
+        lock.writeLock().lock();
+        try {
+            if (status == JIPipeAIModelRunnerStatus.Unloaded) {
+                return;
+            }
+            status = JIPipeAIModelRunnerStatus.Unloading;
+            try {
+                if (session != null) {
+                    session.close();
+                    session = null;
+                }
+                // Do NOT close env - it's shared/singleton
+                tokenizer = null;
+                status = JIPipeAIModelRunnerStatus.Unloaded;
+            } catch (Exception e) {
+                lastError = e.getMessage();
+                status = JIPipeAIModelRunnerStatus.Failed;
+            }
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 }

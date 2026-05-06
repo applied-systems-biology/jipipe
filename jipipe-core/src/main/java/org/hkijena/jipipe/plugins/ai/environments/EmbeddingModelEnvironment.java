@@ -189,5 +189,6 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
         else if(getModelType() == EmbeddingModelType.OpenAIAPI) {
             return new JIPipeAPIEmbeddingAIModelRunner(apiBase, apiModel, apiKey.getPassword());
         }
+        throw new IllegalArgumentException("Unknown model type: " + modelType);
     }
 }
