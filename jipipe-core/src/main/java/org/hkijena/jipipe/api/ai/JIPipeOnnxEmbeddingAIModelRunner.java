@@ -20,6 +20,7 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     private final ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     private final Path modelPath;
     private final Path tokenizerPath;
+    private final String modelId;
     private JIPipeAIModelRunnerStatus status = JIPipeAIModelRunnerStatus.Unloaded;
     private String lastError = null;
 
@@ -27,9 +28,10 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     private OrtSession session;
     private HuggingFaceTokenizer tokenizer;
 
-    public JIPipeOnnxEmbeddingAIModelRunner(Path modelPath, Path tokenizerPath) {
+    public JIPipeOnnxEmbeddingAIModelRunner(Path modelPath, Path tokenizerPath, String modelId) {
         this.modelPath = modelPath;
         this.tokenizerPath = tokenizerPath;
+        this.modelId = modelId;
     }
 
     @Override
@@ -164,5 +166,10 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
         } finally {
             lock.writeLock().unlock();
         }
+    }
+
+    @Override
+    public String getModelId() {
+        return modelId;
     }
 }

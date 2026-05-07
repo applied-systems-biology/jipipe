@@ -29,6 +29,11 @@ import java.util.Set;
  */
 public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
+    /**
+     * A query flag that indicates that the search algorithm to be used is the AI-based one (embedding-based)
+     */
+    public static final Object FLAG_USE_AI_SEARCH = new Object();
+
     private static JIPipeNodeDatabase INSTANCE;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
     private final JIPipeProject project;
@@ -38,6 +43,8 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     private final JIPipeEnhancedNodeDatabaseSearch enhancedSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
 
+
+    // TODO: implement AI-based search - will have similar optimizations like the enhanced algorithm with a global database (keyed by embedding model ID)
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -107,7 +114,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     }
 
     @Override
-    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds) {
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
         return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
     }
 
@@ -117,7 +124,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     }
 
     @Override
-    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType) {
+    public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
     }
 

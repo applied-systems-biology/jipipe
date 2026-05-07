@@ -395,7 +395,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                JIPipeNodeDatabasePipelineVisibility role,
                                                boolean allowExisting,
                                                boolean allowNew,
-                                               Set<String> pinnedIds) {
+                                               Set<String> pinnedIds, Object... flags) {
         return internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
     }
 
@@ -419,7 +419,7 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
                                                boolean allowExisting,
                                                boolean allowNew,
                                                JIPipeSlotType targetSlotType,
-                                               Class<? extends JIPipeData> targetDataType) {
+                                               Class<? extends JIPipeData> targetDataType, Object... flags) {
         return internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
     }
 

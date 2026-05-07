@@ -184,7 +184,14 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
 
     public JIPipeEmbeddingAIModelRunner toRunner() {
         if(getModelType() == EmbeddingModelType.LocalOnnx) {
-            return new JIPipeOnnxEmbeddingAIModelRunner(localModelFile, localTokenizerFile);
+            String modelId;
+            if(isLoadFromArtifact()) {
+                modelId = getLastConfiguredArtifact().getFullId();
+            }
+            else {
+                modelId = localModelFile.toString();
+            }
+            return new JIPipeOnnxEmbeddingAIModelRunner(localModelFile, localTokenizerFile, modelId);
         }
         else if(getModelType() == EmbeddingModelType.OpenAIAPI) {
             return new JIPipeAPIEmbeddingAIModelRunner(apiBase, apiModel, apiKey.getPassword());

@@ -140,4 +140,9 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
             status = JIPipeAIModelRunnerStatus.Failed;
         }
     }
+
+    @Override
+    public String getModelId() {
+        return apiBase + "[" + apiModel + "]";
+    }
 }
