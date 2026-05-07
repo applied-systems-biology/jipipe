@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -669,6 +670,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 }
             }
         });
+        if (AIApplicationSettings.getInstance().isEnableAI()) {
+            toolBar.add(aiSearchButton);
+        }
 
         JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(menuButton);
@@ -846,7 +850,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     role,
                     false,
                     true,
-                    pinnedNodeDatabaseEntries);
+                    pinnedNodeDatabaseEntries,
+                    AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
 
             for (JIPipeNodeDatabaseEntry entry : queryResult) {
                 if ("jipipe:dummy:templates".equals(selectedCategoryId)) {

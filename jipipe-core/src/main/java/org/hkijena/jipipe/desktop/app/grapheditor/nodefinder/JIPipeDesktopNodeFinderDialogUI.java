@@ -377,7 +377,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                         allowExisting,
                         allowNew,
                         querySlot.getSlotType(),
-                        querySlot.getInfo().getDataClass())) {
+                        querySlot.getInfo().getDataClass(),
+                        AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null)) {
                     JIPipeGraphNode existingNode = null;
                     if (entry instanceof ExistingPipelineNodeDatabaseEntry) {
                         existingNode = ((ExistingPipelineNodeDatabaseEntry) entry).getGraphNode();
@@ -391,7 +392,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     model.addElement(entry);
                 }
             } else {
-                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries)) {
+                for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(), role, allowExisting, allowNew, pinnedNodeDatabaseEntries, AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null)) {
                     model.addElement(entry);
                 }
             }

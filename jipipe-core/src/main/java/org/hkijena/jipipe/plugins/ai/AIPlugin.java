@@ -9,6 +9,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelListEnvironment;
 import org.hkijena.jipipe.plugins.ai.environments.OptionalEmbeddingModelEnvironment;
+import org.hkijena.jipipe.plugins.ai.tools.BuildAIEmbeddingIndexTool;
 import org.hkijena.jipipe.plugins.ai.tools.ExportGlobalEmbeddingDatabaseTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
@@ -51,6 +52,7 @@ public class AIPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "An embedding model for AI functionality",
                 JIPipe.RESOURCES.getIcon16("actions/ai.png"));
         registerApplicationSettingsSheet(new AIApplicationSettings());
+        registerMenuExtension(BuildAIEmbeddingIndexTool.class);
         registerMenuExtension(ExportGlobalEmbeddingDatabaseTool.class);
     }
 

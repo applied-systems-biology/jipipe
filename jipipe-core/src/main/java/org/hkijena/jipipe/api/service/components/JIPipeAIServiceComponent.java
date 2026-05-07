@@ -277,6 +277,19 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
+     * Get the model ID of the currently loaded embedding model runner.
+     * Returns null if no model is loaded.
+     *
+     * @return the model ID, or null if no model is loaded
+     */
+    public String getModelId() {
+        if (embeddingModelRunner != null) {
+            return embeddingModelRunner.getModelId();
+        }
+        return null;
+    }
+
+    /**
      * Checks if the embedding model is configured and ready to be started (not if it is currently running).
      * This checks if the model CAN be started, not if it IS started.
      *

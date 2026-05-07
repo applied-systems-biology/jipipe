@@ -14,21 +14,22 @@
 package org.hkijena.jipipe.plugins.ai.tools;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.database.JIPipeAINodeDatabaseSearch;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
+import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Map;
+import java.util.Set;
 
 public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtension {
 
@@ -46,10 +47,68 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
     }
 
     private void runExportTool() {
-        Path outputFile = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Output file", HTMLText.EMPTY);
-        if (outputFile != null) {
-            // TODO: export embeddings
-            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(), "OK", getText(), JOptionPane.INFORMATION_MESSAGE);
+        // Check if AI is enabled
+        if (!AIApplicationSettings.getInstance().isEnableAI()) {
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
+                    "AI functionality is disabled. Please enable it in the AI settings.",
+                    getText(), JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        // Get the AI search instance and embedding database
+        JIPipeAINodeDatabaseSearch aiSearch = JIPipeNodeDatabase.getInstance().getAiSearch();
+        JIPipeEmbeddingDatabase embeddingDatabase = aiSearch.getEmbeddingDatabase();
+
+        // Resolve the model ID: try the AI service first, then fall back to the AI search's current model
+        String modelId = null;
+        if (JIPipe.isInstantiated()) {
+            JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+            modelId = aiService.getModelId();
+        }
+        if (modelId == null) {
+            modelId = aiSearch.getCurrentModelId();
+        }
+
+        if (modelId == null) {
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
+                    "No embedding model is currently loaded. Please configure and load an embedding model first.",
+                    getText(), JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Check if there are any embeddings to export
+        Set<String> nodeIds = embeddingDatabase.getNodeIds(modelId);
+        if (nodeIds.isEmpty()) {
+            int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
+                    "The embedding database is empty for model '" + modelId + "'.\n" +
+                            "You may need to compute embeddings first by using the AI search.\n\n" +
+                            "Do you want to continue anyway?",
+                    getText(), JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
+
+        // Show file chooser
+        Path outputFile = JIPipeDesktop.saveFile(getDesktopWorkbench().getWindow(), getDesktopWorkbench(),
+                JIPipeFileChooserApplicationSettings.LastDirectoryKey.External, "Output file", HTMLText.EMPTY);
+        if (outputFile == null) {
+            return;
+        }
+
+        // Perform the export
+        try {
+            embeddingDatabase.saveToDisk(outputFile, modelId);
+
+            // Verify the export by re-checking the count
+            int count = nodeIds.size();
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
+                    "Successfully exported " + count + " embedding(s) for model '" + modelId + "'\nto " + outputFile,
+                    getText(), JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
+                    "Failed to export embedding database: " + e.getMessage(),
+                    getText(), JOptionPane.ERROR_MESSAGE);
         }
     }
 

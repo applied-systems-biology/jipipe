@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.ai.JIPipeAPIEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.ai.JIPipeEmbeddingAIModelRunner;
 import org.hkijena.jipipe.api.ai.JIPipeOnnxEmbeddingAIModelRunner;
+import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -197,5 +198,55 @@ public class EmbeddingModelEnvironment extends JIPipeArtifactEnvironment {
             return new JIPipeAPIEmbeddingAIModelRunner(apiBase, apiModel, apiKey.getPassword());
         }
         throw new IllegalArgumentException("Unknown model type: " + modelType);
+    }
+
+    /**
+     * Derives a stable model ID from the current configuration without starting the model.
+     * This replicates the same ID that {@link #toRunner()} would produce, but without
+     * requiring the model to be loaded or the artifact to be fully resolved.
+     * <p>
+     * The derivation follows the same logic as the runner constructors:
+     * <ul>
+     *     <li>Local ONNX from artifact: the resolved artifact's full ID, or the artifact query string as fallback</li>
+     *     <li>Local ONNX from file: the local model file path</li>
+     *     <li>OpenAI API: {@code apiBase + "[" + apiModel + "]"}</li>
+     * </ul>
+     *
+     * @return the derived model ID, or null if it cannot be determined
+     */
+    public String deriveModelId() {
+        if (getModelType() == EmbeddingModelType.LocalOnnx) {
+            if (isLoadFromArtifact()) {
+                // Try the last configured artifact first (set after a previous model start)
+                JIPipeLocalArtifact lastArtifact = getLastConfiguredArtifact();
+                if (lastArtifact != null) {
+                    return lastArtifact.getFullId();
+                }
+                // Try to resolve from the artifact cache without downloading
+                if (JIPipe.isInstantiated()) {
+                    try {
+                        JIPipeArtifact artifact =
+                                JIPipe.getArtifacts().queryPreferredCachedArtifact(getArtifactQuery().getQuery());
+                        if (artifact != null) {
+                            return artifact.getFullId();
+                        }
+                    } catch (Exception e) {
+                        // Artifact cache not available, fall through
+                    }
+                }
+                // Fallback: use the artifact query string as a stable identifier
+                String query = getArtifactQuery().getQuery();
+                if (!StringUtils.isNullOrEmpty(query)) {
+                    return "artifact-query:" + query;
+                }
+                return null;
+            } else {
+                return localModelFile.toString();
+            }
+        } else if (getModelType() == EmbeddingModelType.OpenAIAPI) {
+            // Matches JIPipeAPIEmbeddingAIModelRunner.getModelId()
+            return apiBase + "[" + apiModel + "]";
+        }
+        return null;
     }
 }

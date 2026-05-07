@@ -7,8 +7,10 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Status bar button that displays the current AI model status and provides controls
@@ -16,8 +18,17 @@ import javax.swing.*;
  * <p>
  * Subscribes to {@link JIPipeAIServiceComponent.StatusChangedEventEmitter} for event-driven
  * updates instead of polling.
+ * <p>
+ * The Busy→Idle transition is debounced to prevent UI flickering when
+ * the model rapidly alternates between busy and idle states during batched
+ * embedding requests.
  */
 public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAIServiceComponent.StatusChangedEventListener {
+
+    /**
+     * Debounce delay for the Busy→Idle transition (milliseconds).
+     */
+    private static final long IDLE_DEBOUNCE_MS = 500;
 
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
@@ -25,11 +36,24 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     private final ImageIcon defaultIcon;
     private final SpinnerIcon busyIcon;
 
+    /**
+     * Tracks the last status that was applied to the UI, used to detect Busy→Idle transitions.
+     */
+    private JIPipeAIModelRunnerStatus displayedStatus = null;
+
+    /**
+     * Debouncer for the Busy→Idle transition. If the status changes back to Busy
+     * before the debouncer fires, the pending Idle update is effectively cancelled
+     * because the next {@link #onAIStatusChanged} call will apply Busy immediately.
+     */
+    private final StaticDebouncer idleDebouncer;
+
     public JIPipeDesktopAIStatusControl(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
         this.settings = AIApplicationSettings.getInstance();
         this.defaultIcon = JIPipe.RESOURCES.getIcon16("actions/ai.png");
         this.busyIcon = new SpinnerIcon(this);
+        this.idleDebouncer = new StaticDebouncer(IDLE_DEBOUNCE_MS, TimeUnit.MILLISECONDS, this::applyIdleStatus);
         initialize();
         updateStatus();
 
@@ -47,7 +71,37 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     @Override
     public void onAIStatusChanged(JIPipeAIServiceComponent.StatusChangedEvent event) {
         // Status changes arrive from the queue worker thread; must update UI on EDT
-        SwingUtilities.invokeLater(this::updateStatus);
+        SwingUtilities.invokeLater(() -> handleStatusChange(event.getNewStatus()));
+    }
+
+    /**
+     * Handles a status change with debouncing for the Busy→Idle transition.
+     * All other transitions are applied immediately.
+     */
+    private void handleStatusChange(JIPipeAIModelRunnerStatus newStatus) {
+        if (newStatus == JIPipeAIModelRunnerStatus.Idle
+                && displayedStatus == JIPipeAIModelRunnerStatus.Busy) {
+            // Debounce the Busy→Idle transition to prevent flickering
+            idleDebouncer.debounce();
+        } else {
+            // Apply all other transitions immediately
+            updateStatus();
+        }
+    }
+
+    /**
+     * Applies the Idle status to the UI. Called by the debouncer after the
+     * debounce delay, or directly if no debouncing is needed.
+     */
+    private void applyIdleStatus() {
+        // Re-read the current status in case it changed during the debounce window
+        JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
+        JIPipeAIModelRunnerStatus currentStatus = aiService.getEmbeddingModelStatus();
+        if (currentStatus == JIPipeAIModelRunnerStatus.Idle) {
+            updateStatus();
+        }
+        // If status is no longer Idle (e.g., went back to Busy), do nothing —
+        // the next onAIStatusChanged call will handle it
     }
 
     private void reloadMenu() {
@@ -90,6 +144,7 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     private void updateStatus() {
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
         JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
+        displayedStatus = status;
 
         switch (status) {
             case Unloaded:

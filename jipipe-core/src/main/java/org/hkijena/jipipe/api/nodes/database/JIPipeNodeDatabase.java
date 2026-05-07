@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 
 import java.util.ArrayList;
@@ -41,10 +42,8 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     //    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
     private final JIPipeLegacyNodeDatabaseSearch legacySearch;
     private final JIPipeEnhancedNodeDatabaseSearch enhancedSearch;
+    private final JIPipeAINodeDatabaseSearch aiSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
-
-
-    // TODO: implement AI-based search - will have similar optimizations like the enhanced algorithm with a global database (keyed by embedding model ID)
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -56,6 +55,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 //        this.luceneSearch = new JIPipeLuceneNodeDatabaseSearch(this);
         this.legacySearch = new JIPipeLegacyNodeDatabaseSearch(this);
         this.enhancedSearch = new JIPipeEnhancedNodeDatabaseSearch(this);
+        this.aiSearch = new JIPipeAINodeDatabaseSearch();
         rebuildImmediately();
     }
 
@@ -77,6 +77,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
         this.entries = entries;
+        aiSearch.setEntries(entries);
     }
 
     public JIPipeRunnableQueue getQueue() {
@@ -115,6 +116,12 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
+        if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
+            List<JIPipeNodeDatabaseEntry> result = aiSearch.query(text, role, allowExisting, allowNew, pinnedIds, flags);
+            if (result != null) {
+                return result;
+            }
+        }
         return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
     }
 
@@ -125,10 +132,41 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
+        if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
+            List<JIPipeNodeDatabaseEntry> result = aiSearch.query(text, role, allowExisting, allowNew, targetSlotType, targetDataType, flags);
+            if (result != null) {
+                return result;
+            }
+        }
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
     }
 
     public void buildIndex() {
         getSearch().buildIndex();
+        aiSearch.buildIndex();
+    }
+
+    /**
+     * Checks if the given flags array contains the specified flag using identity comparison.
+     *
+     * @param flags the flags array (may be null)
+     * @param flag  the flag to search for
+     * @return true if the flag is found
+     */
+    private boolean containsFlag(Object[] flags, Object flag) {
+        if (flags == null) return false;
+        for (Object f : flags) {
+            if (f == flag) return true;  // Identity check for flag constants
+        }
+        return false;
+    }
+
+    /**
+     * Gets the AI-powered search instance.
+     *
+     * @return the AI search
+     */
+    public JIPipeAINodeDatabaseSearch getAiSearch() {
+        return aiSearch;
     }
 }
