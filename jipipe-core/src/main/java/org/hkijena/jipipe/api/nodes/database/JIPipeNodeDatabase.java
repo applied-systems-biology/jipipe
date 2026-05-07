@@ -117,10 +117,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
         if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
-            List<JIPipeNodeDatabaseEntry> result = aiSearch.query(text, role, allowExisting, allowNew, pinnedIds, flags);
-            if (result != null) {
-                return result;
-            }
+            return aiSearch.query(text, role, allowExisting, allowNew, pinnedIds, flags);
         }
         return getSearch().query(text, role, allowExisting, allowNew, pinnedIds);
     }
@@ -133,10 +130,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
         if (containsFlag(flags, FLAG_USE_AI_SEARCH) && AIApplicationSettings.getInstance().isEnableAI()) {
-            List<JIPipeNodeDatabaseEntry> result = aiSearch.query(text, role, allowExisting, allowNew, targetSlotType, targetDataType, flags);
-            if (result != null) {
-                return result;
-            }
+            return aiSearch.query(text, role, allowExisting, allowNew, targetSlotType, targetDataType, flags);
         }
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
     }

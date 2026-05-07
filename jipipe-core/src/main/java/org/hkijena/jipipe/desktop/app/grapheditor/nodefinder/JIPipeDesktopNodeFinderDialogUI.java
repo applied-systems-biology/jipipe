@@ -269,7 +269,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         mainToolBar.add(searchField);
 
         // AI-based search
-        UIUtils.makeButtonFlat25x25(aiSearchButton);
+        UIUtils.makeButtonFlatWithSize(aiSearchButton, 36);
         aiSearchButton.setSelected(AI_SEARCH);
         aiSearchButton.setToolTipText("Use AI-based node search using an embedding model");
         aiSearchButton.addActionListener(e -> {
@@ -280,9 +280,15 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                     // Spin up the embedding model already
                     JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
 
+                    // Clear list to indicate AI switch
+                    nodeList.setModel(new DefaultListModel<>());
+
                     // Trigger refresh
                     reloadList();
                 }
+            } else {
+                // Switched AI off — reload with standard search
+                reloadList();
             }
         });
         if (AIApplicationSettings.getInstance().isEnableAI()) {

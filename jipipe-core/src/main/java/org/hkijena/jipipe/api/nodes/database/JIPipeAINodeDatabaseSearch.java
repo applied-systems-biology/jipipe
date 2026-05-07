@@ -45,9 +45,9 @@ import java.util.stream.Collectors;
  * Embeddings are computed JIT (just-in-time) similar to how
  * {@link JIPipeEnhancedNodeDatabaseSearch} computes {@code CandidateView} attachments.
  * <p>
- * Returns {@code null} when AI is unavailable or the search fails;
- * the caller ({@link JIPipeNodeDatabase}) is responsible for falling back
- * to the standard search implementation.
+ * Returns an empty list when AI is unavailable or the search fails;
+ * the caller ({@link JIPipeNodeDatabase}) should NOT fall back to the standard
+ * search implementation when AI mode is explicitly requested.
  */
 public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
@@ -141,7 +141,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
+        List<JIPipeNodeDatabaseEntry> result = internalQuery(text, role, allowExisting, allowNew, pinnedIds, null, null);
+        return result != null ? result : Collections.emptyList();
     }
 
     @Override
@@ -151,7 +152,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
 
     @Override
     public List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags) {
-        return internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
+        List<JIPipeNodeDatabaseEntry> result = internalQuery(text, role, allowExisting, allowNew, Collections.emptySet(), targetSlotType, targetDataType);
+        return result != null ? result : Collections.emptyList();
     }
 
     @Override
