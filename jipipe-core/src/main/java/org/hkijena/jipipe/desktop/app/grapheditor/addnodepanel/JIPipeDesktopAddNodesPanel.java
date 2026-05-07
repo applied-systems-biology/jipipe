@@ -31,9 +31,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatePopupMenu;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
@@ -64,6 +66,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
+    private static boolean AI_SEARCH = false;
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
@@ -81,6 +84,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
     private String currentHierarchyVertex;
+    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
 
     public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
@@ -652,6 +656,21 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             }
         });
         toolBar.add(searchField);
+
+        // AI-based search
+        UIUtils.makeButtonFlat25x25(aiSearchButton);
+        aiSearchButton.setSelected(AI_SEARCH);
+        aiSearchButton.setToolTipText("Use AI-based node search using an embedding model");
+        aiSearchButton.addActionListener(e -> {
+            AI_SEARCH = aiSearchButton.isSelected();
+            if (aiSearchButton.isSelected()) {
+                // Ensure that AI is set up
+                if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(getDesktopWorkbench())) {
+                    // Spin up the embedding model already
+                    JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
+                }
+            }
+        });
 
         JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
         UIUtils.makeButtonFlat25x25(menuButton);
