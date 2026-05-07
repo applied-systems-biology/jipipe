@@ -322,6 +322,11 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         return false;
     }
 
+    @Override
+    public JIPipeNodeClassification getNodeClassification() {
+        return JIPipeNodeClassification.AutoImport;
+    }
+
     public Map<String, Boolean> getNodeParametersByRef() {
         return nodeParametersByRef;
     }

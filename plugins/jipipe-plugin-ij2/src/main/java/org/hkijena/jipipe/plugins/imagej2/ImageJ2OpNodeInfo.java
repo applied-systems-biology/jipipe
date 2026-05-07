@@ -232,6 +232,11 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         return false;
     }
 
+    @Override
+    public JIPipeNodeClassification getNodeClassification() {
+        return JIPipeNodeClassification.AutoImport;
+    }
+
     public Map<ModuleItem<?>, ImageJ2ModuleIO> getInputModuleIO() {
         return inputModuleIO;
     }

@@ -61,6 +61,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setMenuPath(getMenuPathOf(nodeClass));
         setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
         setAliases(getAliasesOf(nodeClass));
+        setNodeClassification(getClassificationOf(nodeClass));
         setEnvironments(getEnvironmentsOf(nodeClass));
         if (nodeClass.getAnnotation(LabelAsJIPipeHidden.class) != null) {
             setHidden(true);
@@ -158,6 +159,21 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
             return annotations[0].dataSourceMenuLocation();
         } else {
             return JIPipeEmptyData.class;
+        }
+    }
+
+    /**
+     * Returns the node classification of an algorithm
+     *
+     * @param klass The algorithm class
+     * @return The node classification
+     */
+    public static JIPipeNodeClassification getClassificationOf(Class<? extends JIPipeGraphNode> klass) {
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
+        if (annotations.length > 0) {
+            return annotations[0].nodeClassification();
+        } else {
+            return JIPipeNodeClassification.Standard;
         }
     }
 

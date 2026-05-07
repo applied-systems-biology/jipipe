@@ -279,6 +279,9 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(canvasUI.getDesktopWorkbench())) {
                     // Spin up the embedding model already
                     JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
+
+                    // Trigger refresh
+                    reloadList();
                 }
             }
         });

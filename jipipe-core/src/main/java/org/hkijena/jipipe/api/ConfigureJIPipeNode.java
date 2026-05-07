@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
@@ -56,4 +57,13 @@ public @interface ConfigureJIPipeNode {
      * If set to {@link JIPipeEmptyData}, no re-allocation is applied.
      */
     Class<? extends JIPipeData> dataSourceMenuLocation() default JIPipeEmptyData.class;
+
+    /**
+     * Classification of the node that affects search ranking.
+     * Standard nodes are shown at full rank, AutoImport nodes are downranked,
+     * and EdgeCase nodes are further downranked.
+     *
+     * @return the node classification
+     */
+    JIPipeNodeClassification nodeClassification() default JIPipeNodeClassification.Standard;
 }

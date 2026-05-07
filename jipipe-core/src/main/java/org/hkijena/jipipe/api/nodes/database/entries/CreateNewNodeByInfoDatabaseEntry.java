@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -204,5 +205,10 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     @Override
     public boolean isDeprecatedOrUnstable() {
         return nodeInfo.isDeprecated();
+    }
+
+    @Override
+    public JIPipeNodeClassification getNodeClassification() {
+        return nodeInfo.getNodeClassification();
     }
 }

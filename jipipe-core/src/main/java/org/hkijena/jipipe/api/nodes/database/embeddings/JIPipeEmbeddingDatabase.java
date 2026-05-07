@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes.database.embeddings;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
@@ -308,14 +310,19 @@ public class JIPipeEmbeddingDatabase {
         // Menu location
         List<String> locationInfos = entry.getLocationInfos();
         if (locationInfos != null && !locationInfos.isEmpty()) {
-            sb.append("Menu: ").append(String.join(" > ", locationInfos)).append("\n");
+            for (String locationInfo : locationInfos) {
+                sb.append("Menu: ").append(locationInfo.replace("\n", " > ")).append("\n");
+            }
         }
 
         // Input slots
         Map<String, JIPipeDataSlotInfo> inputSlots = entry.getInputSlots();
         if (inputSlots != null && !inputSlots.isEmpty()) {
             String inputs = inputSlots.entrySet().stream()
-                    .map(e -> e.getKey() + " (" + e.getValue().getDataClass().getSimpleName() + ")")
+                    .map(e -> {
+                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
+                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
+                    })
                     .collect(Collectors.joining(", "));
             sb.append("Inputs: ").append(inputs).append("\n");
         }
@@ -324,7 +331,10 @@ public class JIPipeEmbeddingDatabase {
         Map<String, JIPipeDataSlotInfo> outputSlots = entry.getOutputSlots();
         if (outputSlots != null && !outputSlots.isEmpty()) {
             String outputs = outputSlots.entrySet().stream()
-                    .map(e -> e.getKey() + " (" + e.getValue().getDataClass().getSimpleName() + ")")
+                    .map(e -> {
+                        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
+                        return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
+                    })
                     .collect(Collectors.joining(", "));
             sb.append("Outputs: ").append(outputs).append("\n");
         }

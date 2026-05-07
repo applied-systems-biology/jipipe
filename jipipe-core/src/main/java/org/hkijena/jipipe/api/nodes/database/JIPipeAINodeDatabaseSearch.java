@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
@@ -284,6 +285,10 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             // won't complete until the model finishes loading AND the embedding is computed.
             // If the model isn't loaded yet, the 30s embed timeout expires before loading finishes,
             // causing InterruptedException. We must wait for the model to be ready first.
+            if (Thread.currentThread().isInterrupted()) {
+                LOGGER.debug("AI search was interrupted/cancelled before waiting for model");
+                return null;
+            }
             JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
             if (!waitForEmbeddingModelReady(aiService)) {
                 LOGGER.warn("AI model failed to load within timeout, falling back to standard search");
@@ -291,6 +296,10 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             }
 
             // Ensure candidates have embeddings (JIT computation — only for filtered entries, not all)
+            if (Thread.currentThread().isInterrupted()) {
+                LOGGER.debug("AI search was interrupted/cancelled before ensuring embeddings");
+                return null;
+            }
             embeddingDatabase.ensureEmbeddingsForEntries(candidates, modelId, aiService);
 
             // Embed the search query text
@@ -300,6 +309,10 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return null;
             }
 
+            if (Thread.currentThread().isInterrupted()) {
+                LOGGER.debug("AI search was interrupted/cancelled before getting query embedding");
+                return null;
+            }
             float[] queryEmbedding = queryFuture.get(QUERY_EMBED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (queryEmbedding == null) {
                 LOGGER.warn("Query embedding is null, returning null");
@@ -320,6 +333,14 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                     similarity = -1.0;
                 }
 
+                // Apply classification penalty
+                JIPipeNodeClassification classification = entry.getNodeClassification();
+                if (classification == JIPipeNodeClassification.AutoImport) {
+                    similarity *= 0.85;
+                } else if (classification == JIPipeNodeClassification.EdgeCase) {
+                    similarity *= 0.7;
+                }
+
                 boolean isPinned = pinnedIds != null && pinnedIds.contains(entry.getId());
                 scored.add(new ScoredEntry(entry, similarity, isPinned));
             }
@@ -336,6 +357,10 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                     .map(se -> se.entry)
                     .collect(Collectors.toList());
 
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOGGER.debug("AI search was interrupted/cancelled");
+            return null;
         } catch (TimeoutException e) {
             LOGGER.warn("Timeout embedding search query, returning null");
             return null;
@@ -414,7 +439,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 Thread.sleep(MODEL_LOAD_POLL_INTERVAL_MS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                LOGGER.warn("Interrupted while waiting for embedding model to load");
+                LOGGER.debug("Interrupted while waiting for embedding model to load");
                 return false;
             }
         }

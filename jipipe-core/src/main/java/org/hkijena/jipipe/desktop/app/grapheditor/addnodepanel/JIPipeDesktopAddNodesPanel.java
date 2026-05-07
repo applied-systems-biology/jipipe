@@ -96,7 +96,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         initializeMainCategoryFilters();
         initialize();
 
-        reloadAlgorithmList();
+        reloadList();
         updateSubCategoryPanels();
     }
 
@@ -347,7 +347,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                         }
                     }
                     resetSubCategory();
-                    reloadAlgorithmList();
+                    reloadList();
                 });
                 mainCategoryFilters.add(currentFilter);
             }
@@ -392,7 +392,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         updateSubCategoryPanels();
     }
 
-    private void reloadAlgorithmList() {
+    private void reloadList() {
         queue.cancelAll();
         queue.enqueue(new ReloadListRun(this));
     }
@@ -439,7 +439,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     if (mainCategoryHierarchy.containsVertex(fullComponent)) {
                         currentHierarchyVertex = fullComponent;
                         updateSubCategoryPanels();
-                        reloadAlgorithmList();
+                        reloadList();
                     }
                 });
                 subCategoryPathPanel.add(navigateButton);
@@ -456,7 +456,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                                 if (mainCategoryHierarchy.containsVertex(successor)) {
                                     currentHierarchyVertex = successor;
                                     updateSubCategoryPanels();
-                                    reloadAlgorithmList();
+                                    reloadList();
                                 }
                             }));
                 }
@@ -475,7 +475,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     if (mainCategoryHierarchy.containsVertex(successor)) {
                         currentHierarchyVertex = successor;
                         updateSubCategoryPanels();
-                        reloadAlgorithmList();
+                        reloadList();
                     }
                 });
                 subCategorySelectionPanel.add(button);
@@ -584,7 +584,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             }
         }
         JIPipe.getSettings().save();
-        reloadAlgorithmList();
+        reloadList();
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
@@ -593,7 +593,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             ids.remove(entry.getId());
         }
         JIPipe.getSettings().save();
-        reloadAlgorithmList();
+        reloadList();
     }
 
     private void initializeMainCategoryPanel() {
@@ -628,7 +628,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 0));
 
         searchField = new JIPipeDesktopSearchTextField(queue);
-        searchField.addActionListener(e -> reloadAlgorithmList());
+        searchField.addActionListener(e -> reloadList());
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -667,6 +667,9 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(getDesktopWorkbench())) {
                     // Spin up the embedding model already
                     JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
+
+                    // Trigger refresh
+                    reloadList();
                 }
             }
         });
@@ -694,7 +697,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         showNodeDescriptionToggle.setToolTipText("Show node descriptions in the search results, which will take up a bit more vertical space per item");
         showNodeDescriptionToggle.setSelected(graphEditorSettings.getNodeSearchSettings().isShowDescriptions());
         showNodeDescriptionToggle.addActionListener(e -> {
-            reloadAlgorithmList();
+            reloadList();
             graphEditorSettings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
             JIPipe.getSettings().save();
         });

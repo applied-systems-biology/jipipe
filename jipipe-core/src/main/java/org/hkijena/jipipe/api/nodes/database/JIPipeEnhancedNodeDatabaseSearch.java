@@ -6,6 +6,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.contrib.libstemmer.ext.EnglishStemmer;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -564,9 +565,18 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             // Deprecated penalty
             double deprecatedPenalty = e.isDeprecatedOrUnstable() ? 0.12 : 0.0;
 
+            // Classification penalty
+            double classificationPenalty = 0.0;
+            JIPipeNodeClassification classification = e.getNodeClassification();
+            if (classification == JIPipeNodeClassification.AutoImport) {
+                classificationPenalty = 0.12;
+            } else if (classification == JIPipeNodeClassification.EdgeCase) {
+                classificationPenalty = 0.25;
+            }
+
             // Convert "higher is better" coverage to distance-like (lower is better)
             double fused = (1.0 - coverage) * 0.9 + 0.1 * ldName;
-            double finalScore = fused + lengthPenalty + deprecatedPenalty + typeBias;
+            double finalScore = fused + lengthPenalty + deprecatedPenalty + classificationPenalty + typeBias;
 
             primaryScore.put(e, finalScore);
 
