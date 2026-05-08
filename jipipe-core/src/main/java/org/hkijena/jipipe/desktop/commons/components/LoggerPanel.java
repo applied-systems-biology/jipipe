@@ -264,6 +264,15 @@ public class LoggerPanel extends JPanel {
     }
 
     /**
+     * Gets the current text content of the log.
+     *
+     * @return the current text content
+     */
+    public String getText() {
+        return textArea.getText();
+    }
+
+    /**
      * Calculates line count from a string (helper method).
      *
      * @param text the text to count lines in

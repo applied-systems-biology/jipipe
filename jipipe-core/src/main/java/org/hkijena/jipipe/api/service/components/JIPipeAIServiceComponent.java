@@ -37,6 +37,12 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     private String embeddingModelError;
     private final StatusChangedEventEmitter statusChangedEventEmitter = new StatusChangedEventEmitter();
 
+    /**
+     * Progress info for embedding-related operations (model loading, embedding computation, cache I/O).
+     * The AI monitor window can subscribe to this to display logs in the UI.
+     */
+    private final JIPipeProgressInfo embeddingProgressInfo = new JIPipeProgressInfo();
+
     public JIPipeAIServiceComponent(JIPipeService service) {
         super(service);
         taskQueue.setSilent(true);
@@ -307,6 +313,18 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             // Do a local configuration check
             return environment.isValid();
         }
+    }
+
+    // ===== Progress Info Access =====
+
+    /**
+     * Gets the progress info for embedding-related operations.
+     * Subscribe to {@code getEmbeddingProgressInfo().getStatusUpdatedEventEmitter()} to receive log updates.
+     *
+     * @return the embedding progress info
+     */
+    public JIPipeProgressInfo getEmbeddingProgressInfo() {
+        return embeddingProgressInfo;
     }
 
     // ===== Queue Access =====

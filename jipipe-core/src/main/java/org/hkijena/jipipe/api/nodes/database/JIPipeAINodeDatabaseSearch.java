@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -96,6 +97,23 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
+     * Gets the progress info for AI embedding operations.
+     * Returns the embedding progress info from the AI service if available,
+     * otherwise falls back to {@link JIPipeProgressInfo#SILENT}.
+     *
+     * @return the progress info
+     */
+    private JIPipeProgressInfo getProgressInfo() {
+        try {
+            if (JIPipe.isInstantiated()) {
+                return JIPipe.getInstance().getAiService().getEmbeddingProgressInfo();
+            }
+        } catch (Exception ignored) {
+        }
+        return JIPipeProgressInfo.SILENT;
+    }
+
+    /**
      * Sets the list of node database entries to search through.
      * The fallback search receives entries from its own {@code JIPipeNodeDatabase} reference.
      *
@@ -164,16 +182,17 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             return;
         }
 
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         try {
             String modelId = resolveCurrentModelId();
             if (modelId == null) {
-                LOGGER.warn("Could not resolve model ID, skipping embedding index build");
+                progressInfo.warn("Could not resolve model ID, skipping embedding index build");
                 return;
             }
 
             // Check if model changed since last build
             if (!Objects.equals(currentModelId, modelId)) {
-                LOGGER.info("Model ID changed from {} to {}, clearing old embeddings", currentModelId, modelId);
+                progressInfo.log("Model ID changed from " + currentModelId + " to " + modelId + ", clearing old embeddings");
                 if (currentModelId != null) {
                     embeddingDatabase.clearModel(currentModelId);
                 }
@@ -183,11 +202,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             // Only load cached embeddings (bundled resource + user disk cache).
             // Do NOT compute new embeddings here — that is done JIT in internalQuery()
             // or on demand via the manual BuildAIEmbeddingIndexTool.
-            embeddingDatabase.loadUserCache(modelId);
+            embeddingDatabase.loadUserCache(modelId, progressInfo);
 
-            LOGGER.info("Loaded AI search index with {} cached entries for model {}", entries.size(), modelId);
+            progressInfo.log("Loaded AI search index with " + entries.size() + " cached entries for model " + modelId);
         } catch (Exception e) {
-            LOGGER.warn("Failed to build AI search index, falling back to enhanced search", e);
+            progressInfo.warn("Failed to build AI search index, falling back to enhanced search");
+            LOGGER.debug("Failed to build AI search index", e);
         }
     }
 
@@ -265,21 +285,22 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         }
 
         // AI search path
+        JIPipeProgressInfo progressInfo = getProgressInfo();
         try {
             String modelId = resolveCurrentModelId();
             if (modelId == null) {
-                LOGGER.warn("Could not resolve model ID, returning null");
+                progressInfo.warn("Could not resolve model ID, returning null");
                 return null;
             }
 
             // Check if model changed since last query
             if (!Objects.equals(currentModelId, modelId)) {
-                LOGGER.info("Model ID changed from {} to {}, reloading embeddings", currentModelId, modelId);
+                progressInfo.log("Model ID changed from " + currentModelId + " to " + modelId + ", reloading embeddings");
                 if (currentModelId != null) {
                     embeddingDatabase.clearModel(currentModelId);
                 }
                 currentModelId = modelId;
-                embeddingDatabase.loadUserCache(modelId);
+                embeddingDatabase.loadUserCache(modelId, progressInfo);
             }
 
             // Get the AI service and ensure the embedding model is loaded before computing anything.
@@ -292,8 +313,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return null;
             }
             JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-            if (!waitForEmbeddingModelReady(aiService)) {
-                LOGGER.warn("AI model failed to load within timeout, falling back to standard search");
+            if (!waitForEmbeddingModelReady(aiService, progressInfo)) {
+                progressInfo.warn("AI model failed to load within timeout, falling back to standard search");
                 return null;
             }
 
@@ -302,12 +323,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 LOGGER.debug("AI search was interrupted/cancelled before ensuring embeddings");
                 return null;
             }
-            embeddingDatabase.ensureEmbeddingsForEntries(candidates, modelId, aiService);
+            embeddingDatabase.ensureEmbeddingsForEntries(candidates, modelId, aiService, progressInfo);
 
             // Embed the search query text
             CompletableFuture<float[]> queryFuture = aiService.tryEmbed(text);
             if (queryFuture == null) {
-                LOGGER.warn("AI service returned null future, returning null");
+                progressInfo.warn("AI service returned null future, returning null");
                 return null;
             }
 
@@ -317,7 +338,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             }
             float[] queryEmbedding = queryFuture.get(QUERY_EMBED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
             if (queryEmbedding == null) {
-                LOGGER.warn("Query embedding is null, returning null");
+                progressInfo.warn("Query embedding is null, returning null");
                 return null;
             }
 
@@ -364,10 +385,11 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             LOGGER.debug("AI search was interrupted/cancelled");
             return null;
         } catch (TimeoutException e) {
-            LOGGER.warn("Timeout embedding search query, returning null");
+            progressInfo.warn("Timeout embedding search query, returning null");
             return null;
         } catch (Exception e) {
-            LOGGER.warn("AI search failed, returning null", e);
+            progressInfo.warn("AI search failed, returning null");
+            LOGGER.debug("AI search failed", e);
             return null;
         }
     }
@@ -408,7 +430,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * @param aiService the AI service component
      * @return true if the model is ready, false if it failed to load or timed out
      */
-    private boolean waitForEmbeddingModelReady(JIPipeAIServiceComponent aiService) {
+    private boolean waitForEmbeddingModelReady(JIPipeAIServiceComponent aiService, JIPipeProgressInfo progressInfo) {
         JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
 
         // Already ready?
@@ -417,7 +439,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         }
 
         // Model needs to be started — trigger the load
-        LOGGER.info("Embedding model not loaded (status={}), starting it now", status);
+        progressInfo.log("Embedding model not loaded (status=" + status + "), starting it now");
         aiService.tryStartEmbeddingModel();
 
         // Poll until ready, failed, or timeout
@@ -426,13 +448,13 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             status = aiService.getEmbeddingModelStatus();
 
             if (status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy) {
-                LOGGER.info("Embedding model is now ready (status={})", status);
+                progressInfo.log("Embedding model is now ready (status=" + status + ")");
                 return true;
             }
 
             if (status == JIPipeAIModelRunnerStatus.Failed) {
                 String error = aiService.getEmbeddingModelError();
-                LOGGER.warn("Embedding model failed to load: {}", error);
+                progressInfo.warn("Embedding model failed to load: " + error);
                 return false;
             }
 
@@ -446,8 +468,7 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             }
         }
 
-        LOGGER.warn("Embedding model did not become ready within {} seconds (status={})",
-                MODEL_LOAD_TIMEOUT_SECONDS, aiService.getEmbeddingModelStatus());
+        progressInfo.warn("Embedding model did not become ready within " + MODEL_LOAD_TIMEOUT_SECONDS + " seconds (status=" + aiService.getEmbeddingModelStatus() + ")");
         return false;
     }
 

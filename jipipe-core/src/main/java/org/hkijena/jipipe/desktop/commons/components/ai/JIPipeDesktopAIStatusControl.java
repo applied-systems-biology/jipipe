@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
+import org.hkijena.jipipe.desktop.commons.components.ai.monitor.JIPipeDesktopAIMonitorWindow;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -137,6 +138,9 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
         }
 
         popupMenu.addSeparator();
+        popupMenu.add(UIUtils.createMenuItem("Open AI monitor", "Opens the AI monitor window",
+                JIPipe.RESOURCES.getIcon16("actions/ai.png"), this::openAIMonitor));
+        popupMenu.addSeparator();
         popupMenu.add(UIUtils.createMenuItem("Configure ...", "Opens the settings page for AI",
                 JIPipe.RESOURCES.getIcon16("actions/configure.png"), this::openApplicationSettings));
     }
@@ -231,5 +235,11 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
         JOptionPane.showMessageDialog(this,
                 "AI model error:\n" + (error != null ? error : "Unknown error"),
                 "AI Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void openAIMonitor() {
+        JIPipeDesktopAIMonitorWindow window = new JIPipeDesktopAIMonitorWindow(workbench);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
     }
 }

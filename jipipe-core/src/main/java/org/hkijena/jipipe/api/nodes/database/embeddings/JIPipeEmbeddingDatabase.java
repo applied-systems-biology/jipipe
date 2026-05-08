@@ -14,12 +14,14 @@
 package org.hkijena.jipipe.api.nodes.database.embeddings;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +47,7 @@ public class JIPipeEmbeddingDatabase {
 
     private static final String MAGIC = "JEMB";
     private static final int VERSION = 1;
-    private static final String BUNDLED_RESOURCE_PATH = "/org/hkijena/jipipe/ai/embeddings.db";
+    private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
 
     // Inner storage: modelId -> (nodeId -> embedding vector)
@@ -73,21 +75,24 @@ public class JIPipeEmbeddingDatabase {
      * Uses the binary format described in the class documentation.
      * Merges into the embeddings map under the given modelId.
      *
-     * @param resourcePath the classpath resource path (e.g., "/org/hkijena/jipipe/ai/embeddings.db")
+     * @param resourcePath the plugin-internal resource path (e.g., "ai/embeddings.db")
      * @param modelId      the model ID to associate the loaded embeddings with
+     * @param progressInfo the progress info for logging
      */
-    public void loadFromResource(String resourcePath, String modelId) {
+    public void loadFromResource(String resourcePath, String modelId, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(resourcePath, "Resource path must not be null");
         Objects.requireNonNull(modelId, "Model ID must not be null");
+        Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
-        try (InputStream is = getClass().getResourceAsStream(resourcePath)) {
+        try (InputStream is = ResourceUtils.getPluginResourceAsStream(resourcePath)) {
             if (is == null) {
-                LOGGER.warn("Resource not found: {}", resourcePath);
+                progressInfo.warn("Resource not found: " + resourcePath);
                 return;
             }
-            loadFromStream(is, modelId);
+            loadFromStream(is, modelId, progressInfo);
         } catch (IOException e) {
-            LOGGER.error("Failed to load embeddings from resource: {}", resourcePath, e);
+            progressInfo.error("Failed to load embeddings from resource: " + resourcePath);
+            progressInfo.log(e);
         }
     }
 
@@ -96,12 +101,14 @@ public class JIPipeEmbeddingDatabase {
      * Uses the binary format described in the class documentation.
      * Merges into the embeddings map.
      *
-     * @param path    the file path to load from
-     * @param modelId the model ID to associate the loaded embeddings with
+     * @param path         the file path to load from
+     * @param modelId      the model ID to associate the loaded embeddings with
+     * @param progressInfo the progress info for logging
      */
-    public void loadFromDisk(Path path, String modelId) {
+    public void loadFromDisk(Path path, String modelId, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(path, "Path must not be null");
         Objects.requireNonNull(modelId, "Model ID must not be null");
+        Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
         if (!Files.exists(path)) {
             LOGGER.debug("Disk cache file does not exist: {}", path);
@@ -110,9 +117,10 @@ public class JIPipeEmbeddingDatabase {
 
         diskLock.readLock().lock();
         try (InputStream is = Files.newInputStream(path)) {
-            loadFromStream(is, modelId);
+            loadFromStream(is, modelId, progressInfo);
         } catch (IOException e) {
-            LOGGER.error("Failed to load embeddings from disk: {}", path, e);
+            progressInfo.error("Failed to load embeddings from disk: " + path);
+            progressInfo.log(e);
         } finally {
             diskLock.readLock().unlock();
         }
@@ -242,15 +250,17 @@ public class JIPipeEmbeddingDatabase {
      * and calls the AI service to generate embeddings.
      * Should be callable from any thread.
      *
-     * @param entries   the list of node database entries to ensure embeddings for
-     * @param modelId   the model ID to use
-     * @param aiService the AI service component for computing embeddings
+     * @param entries      the list of node database entries to ensure embeddings for
+     * @param modelId      the model ID to use
+     * @param aiService    the AI service component for computing embeddings
+     * @param progressInfo the progress info for logging
      */
     public void ensureEmbeddingsForEntries(List<JIPipeNodeDatabaseEntry> entries, String modelId,
-                                           JIPipeAIServiceComponent aiService) {
+                                           JIPipeAIServiceComponent aiService, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(entries, "Entries must not be null");
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(aiService, "AI service must not be null");
+        Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
         for (JIPipeNodeDatabaseEntry entry : entries) {
             String nodeId = entryToId(entry);
@@ -271,9 +281,10 @@ public class JIPipeEmbeddingDatabase {
                     LOGGER.debug("Computed embedding for node: {}", nodeId);
                 }
             } catch (TimeoutException e) {
-                LOGGER.warn("Timeout computing embedding for node: {}", nodeId);
+                progressInfo.warn("Timeout computing embedding for node: " + nodeId);
             } catch (Exception e) {
-                LOGGER.warn("Failed to compute embedding for node: {}", nodeId, e);
+                progressInfo.warn("Failed to compute embedding for node: " + nodeId);
+                LOGGER.debug("Failed to compute embedding for node: {}", nodeId, e);
             }
         }
     }
@@ -380,19 +391,21 @@ public class JIPipeEmbeddingDatabase {
      * Resource embeddings are the baseline; disk cache overlays on top
      * (disk cache wins for overlapping entries, as it may be newer).
      *
-     * @param modelId the model ID to load caches for
+     * @param modelId      the model ID to load caches for
+     * @param progressInfo the progress info for logging
      */
-    public void loadUserCache(String modelId) {
+    public void loadUserCache(String modelId, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(modelId, "Model ID must not be null");
+        Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
         // First load the bundled resource (baseline)
-        loadFromResource(BUNDLED_RESOURCE_PATH, modelId);
+        loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
 
         // Then load from disk cache (overrides resource entries)
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
-        loadFromDisk(diskPath, modelId);
+        loadFromDisk(diskPath, modelId, progressInfo);
 
-        LOGGER.info("Loaded user cache for model {}. Total entries: {}", modelId, getNodeIds(modelId).size());
+        progressInfo.log("Loaded user cache for model " + modelId + ". Total entries: " + getNodeIds(modelId).size());
     }
 
     /**
@@ -435,11 +448,12 @@ public class JIPipeEmbeddingDatabase {
      * Merges into the embeddings map under the given modelId.
      * Handles empty streams gracefully.
      *
-     * @param is      the input stream
-     * @param modelId the model ID
+     * @param is           the input stream
+     * @param modelId      the model ID
+     * @param progressInfo the progress info for logging
      * @throws IOException if an I/O error occurs
      */
-    private void loadFromStream(InputStream is, String modelId) throws IOException {
+    private void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         DataInputStream dis = new DataInputStream(bis);
 
@@ -454,14 +468,14 @@ public class JIPipeEmbeddingDatabase {
         dis.readFully(magicBytes);
         String magic = new String(magicBytes, "ASCII");
         if (!MAGIC.equals(magic)) {
-            LOGGER.warn("Invalid magic bytes in embedding file. Expected '{}', got '{}'", MAGIC, magic);
+            progressInfo.warn("Invalid magic bytes in embedding file. Expected '" + MAGIC + "', got '" + magic + "'");
             return;
         }
 
         // Read and validate version
         int version = dis.readInt();
         if (version != VERSION) {
-            LOGGER.warn("Unsupported embedding file version {}. Expected {}", version, VERSION);
+            progressInfo.warn("Unsupported embedding file version " + version + ". Expected " + VERSION);
             return;
         }
 
@@ -475,14 +489,14 @@ public class JIPipeEmbeddingDatabase {
         // Read dimension
         int dimension = dis.readInt();
         if (dimension <= 0) {
-            LOGGER.warn("Invalid dimension {} in embedding file for model {}", dimension, modelId);
+            progressInfo.warn("Invalid dimension " + dimension + " in embedding file for model " + modelId);
             return;
         }
 
         // Read entry count
         int entryCount = dis.readInt();
         if (entryCount < 0) {
-            LOGGER.warn("Invalid entry count {} in embedding file for model {}", entryCount, modelId);
+            progressInfo.warn("Invalid entry count " + entryCount + " in embedding file for model " + modelId);
             return;
         }
 
@@ -506,7 +520,7 @@ public class JIPipeEmbeddingDatabase {
             modelEmbeddings.put(nodeId, embedding);
         }
 
-        LOGGER.info("Loaded {} embeddings for model {}", entryCount, modelId);
+        progressInfo.log("Loaded " + entryCount + " embeddings for model " + modelId);
     }
 
     /**

@@ -83,7 +83,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         }
 
         // Ensure the cache is loaded before computing
-        embeddingDatabase.loadUserCache(modelId);
+        embeddingDatabase.loadUserCache(modelId, JIPipe.getInstance().getAiService().getEmbeddingProgressInfo());
 
         // Get the entries
         List<JIPipeNodeDatabaseEntry> entries = aiSearch.getEntries();
