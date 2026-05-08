@@ -59,6 +59,11 @@ public class JIPipeEmbeddingDatabase {
     // Dimension of embeddings for each model
     private final Map<String, Integer> dimensions = new ConcurrentHashMap<>();
 
+    // Tracks which model IDs have had their cache (bundled resource + user disk) loaded.
+    // This prevents ensureEmbeddingsForEntries() from computing embeddings that are
+    // already available in the cache but haven't been loaded yet.
+    private final Set<String> cacheLoadedModels = ConcurrentHashMap.newKeySet();
+
     // Lock for thread-safe disk operations
     private final ReentrantReadWriteLock diskLock = new ReentrantReadWriteLock();
 
@@ -234,12 +239,14 @@ public class JIPipeEmbeddingDatabase {
 
     /**
      * Remove all embeddings for a model.
+     * Also resets the cache-loaded flag so the cache will be re-loaded on next access.
      *
      * @param modelId the model ID to clear
      */
     public void clearModel(String modelId) {
         embeddings.remove(modelId);
         dimensions.remove(modelId);
+        cacheLoadedModels.remove(modelId);
     }
 
     // ===== JIT Computation =====
@@ -261,6 +268,12 @@ public class JIPipeEmbeddingDatabase {
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(aiService, "AI service must not be null");
         Objects.requireNonNull(progressInfo, "Progress info must not be null");
+
+        // Ensure the cache (bundled resource + user disk) is loaded before computing any embeddings.
+        // This prevents JIT embedding of entries that are already in the cache but haven't been loaded yet.
+        if (!cacheLoadedModels.contains(modelId)) {
+            loadUserCache(modelId, progressInfo);
+        }
 
         for (JIPipeNodeDatabaseEntry entry : entries) {
             String nodeId = entryToId(entry);
@@ -404,6 +417,10 @@ public class JIPipeEmbeddingDatabase {
         // Then load from disk cache (overrides resource entries)
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
         loadFromDisk(diskPath, modelId, progressInfo);
+
+        // Mark this model's cache as loaded so ensureEmbeddingsForEntries() knows
+        // it doesn't need to load the cache again before computing missing embeddings.
+        cacheLoadedModels.add(modelId);
 
         progressInfo.log("Loaded user cache for model " + modelId + ". Total entries: " + getNodeIds(modelId).size());
     }

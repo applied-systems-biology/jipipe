@@ -68,6 +68,8 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return;
         }
 
+        progressInfo.log("Starting embedding model ...");
+
         // If a runner exists in any state, shut it down first
         if (embeddingModelRunner != null) {
             try {
@@ -172,6 +174,8 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return;
         }
 
+        progressInfo.log("Stopping embedding model ...");
+
         JIPipeAIModelRunnerStatus oldStatus = getEmbeddingModelStatus();
         fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Unloading);
 
@@ -224,6 +228,8 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
                     + embeddingModelRunner.getStatus() + ")");
         }
 
+        embeddingProgressInfo.log("Embedding: " + text);
+
         JIPipeAIModelRunnerStatus oldStatus = getEmbeddingModelStatus();
         fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Busy);
 
@@ -233,6 +239,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return result;
         } catch (Exception e) {
             embeddingModelError = ExceptionUtils.getMessage(e);
+            embeddingProgressInfo.error(embeddingModelError);
             fireStatusChanged(JIPipeAIModelRunnerStatus.Busy, JIPipeAIModelRunnerStatus.Failed);
             throw e;
         }
