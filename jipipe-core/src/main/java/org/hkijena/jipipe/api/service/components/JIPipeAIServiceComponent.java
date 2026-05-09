@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -46,6 +47,19 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     public JIPipeAIServiceComponent(JIPipeService service) {
         super(service);
         taskQueue.setSilent(true);
+
+        // Register a shutdown hook to save any dirty embedding caches before the JVM exits.
+        // This is a safety net; the primary auto-save happens in ensureEmbeddingsForEntries().
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                JIPipeNodeDatabase nodeDatabase = JIPipeNodeDatabase.getInstance();
+                if (nodeDatabase != null) {
+                    nodeDatabase.getAiSearch().getEmbeddingDatabase().saveAllDirty();
+                }
+            } catch (Exception e) {
+                // Best effort on shutdown
+            }
+        }, "JIPipe-AI-Embedding-Shutdown"));
     }
 
     private void fireStatusChanged(JIPipeAIModelRunnerStatus oldStatus, JIPipeAIModelRunnerStatus newStatus) {

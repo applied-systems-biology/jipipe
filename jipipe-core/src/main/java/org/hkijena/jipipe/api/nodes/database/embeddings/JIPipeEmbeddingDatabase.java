@@ -64,6 +64,9 @@ public class JIPipeEmbeddingDatabase {
     // already available in the cache but haven't been loaded yet.
     private final Set<String> cacheLoadedModels = ConcurrentHashMap.newKeySet();
 
+    // Tracks which model IDs have unsaved (dirty) embeddings that need to be persisted to disk.
+    private final Set<String> dirtyModels = ConcurrentHashMap.newKeySet();
+
     // Lock for thread-safe disk operations
     private final ReentrantReadWriteLock diskLock = new ReentrantReadWriteLock();
 
@@ -159,6 +162,7 @@ public class JIPipeEmbeddingDatabase {
             try (OutputStream os = Files.newOutputStream(path)) {
                 saveToStream(os, modelId);
             }
+            dirtyModels.remove(modelId);
             LOGGER.info("Saved {} embeddings for model {} to {}", modelEmbeddings.size(), modelId, path);
         } catch (IOException e) {
             LOGGER.error("Failed to save embeddings to disk: {}", path, e);
@@ -199,6 +203,7 @@ public class JIPipeEmbeddingDatabase {
         embeddings.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>())
                 .put(nodeId, embedding);
         dimensions.put(modelId, embedding.length);
+        dirtyModels.add(modelId);
     }
 
     /**
@@ -247,6 +252,7 @@ public class JIPipeEmbeddingDatabase {
         embeddings.remove(modelId);
         dimensions.remove(modelId);
         cacheLoadedModels.remove(modelId);
+        dirtyModels.remove(modelId);
     }
 
     // ===== JIT Computation =====
@@ -275,6 +281,7 @@ public class JIPipeEmbeddingDatabase {
             loadUserCache(modelId, progressInfo);
         }
 
+        int computedCount = 0;
         for (JIPipeNodeDatabaseEntry entry : entries) {
             String nodeId = entryToId(entry);
             if (hasEmbedding(modelId, nodeId)) {
@@ -291,6 +298,7 @@ public class JIPipeEmbeddingDatabase {
                 float[] embedding = future.get(EMBED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 if (embedding != null) {
                     setEmbedding(modelId, nodeId, embedding);
+                    computedCount++;
                     LOGGER.debug("Computed embedding for node: {}", nodeId);
                 }
             } catch (TimeoutException e) {
@@ -298,6 +306,16 @@ public class JIPipeEmbeddingDatabase {
             } catch (Exception e) {
                 progressInfo.warn("Failed to compute embedding for node: " + nodeId);
                 LOGGER.debug("Failed to compute embedding for node: {}", nodeId, e);
+            }
+        }
+
+        // Auto-save after JIT computation
+        if (computedCount > 0) {
+            try {
+                saveUserCache(modelId);
+                LOGGER.debug("Auto-saved {} new embeddings for model {}", computedCount, modelId);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to auto-save embedding cache for model {}", modelId, e);
             }
         }
     }
@@ -422,6 +440,9 @@ public class JIPipeEmbeddingDatabase {
         // it doesn't need to load the cache again before computing missing embeddings.
         cacheLoadedModels.add(modelId);
 
+        // Freshly loaded data is considered clean
+        dirtyModels.remove(modelId);
+
         progressInfo.log("Loaded user cache for model " + modelId + ". Total entries: " + getNodeIds(modelId).size());
     }
 
@@ -436,6 +457,44 @@ public class JIPipeEmbeddingDatabase {
 
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
         saveToDisk(diskPath, modelId);
+        dirtyModels.remove(modelId);
+    }
+
+    /**
+     * Save the user cache for the given model only if there are unsaved (dirty) changes.
+     * This avoids unnecessary disk I/O when nothing has changed.
+     *
+     * @param modelId the model ID to save the cache for
+     */
+    public void saveIfDirty(String modelId) {
+        if (dirtyModels.contains(modelId)) {
+            saveUserCache(modelId);
+        }
+    }
+
+    /**
+     * Save all models that have unsaved (dirty) embeddings.
+     * Typically called from a shutdown hook to ensure no data is lost on exit.
+     * Errors are logged but not thrown, as this is best-effort.
+     */
+    public void saveAllDirty() {
+        for (String modelId : new HashSet<>(dirtyModels)) {
+            try {
+                saveUserCache(modelId);
+            } catch (Exception e) {
+                LOGGER.error("Failed to save embedding cache for model {} on shutdown", modelId, e);
+            }
+        }
+    }
+
+    /**
+     * Check if a model has unsaved (dirty) embeddings.
+     *
+     * @param modelId the model ID to check
+     * @return true if the model has unsaved changes
+     */
+    public boolean isDirty(String modelId) {
+        return dirtyModels.contains(modelId);
     }
 
     // ===== Active Model ID =====
