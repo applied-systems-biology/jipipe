@@ -608,6 +608,30 @@ public class JIPipeEmbeddingDatabase {
     // ===== User Cache Methods =====
 
     /**
+     * Sanitize a model ID for use as a filename component.
+     * Replaces characters that are invalid on Windows
+     * ({@code < > : " / \ | ? * { }}) with underscores to ensure
+     * the path can be constructed on all platforms.
+     *
+     * @param modelId the model ID to sanitize
+     * @return a filesystem-safe version of the model ID
+     */
+    private static String sanitizeModelIdForPath(String modelId) {
+        return modelId
+                .replace(':', '_')
+                .replace('<', '_')
+                .replace('>', '_')
+                .replace('"', '_')
+                .replace('/', '_')
+                .replace('\\', '_')
+                .replace('|', '_')
+                .replace('?', '_')
+                .replace('*', '_')
+                .replace('{', '_')
+                .replace('}', '_');
+    }
+
+    /**
      * Load from the user cache directory and the bundled resource.
      * Resource embeddings are the baseline; disk cache overlays on top
      * (disk cache wins for overlapping entries, as it may be newer).
@@ -641,7 +665,7 @@ public class JIPipeEmbeddingDatabase {
         loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
 
         // Then load from disk cache (overrides resource entries) - isResource=false, marks as UNVERIFIED
-        Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
+        Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(sanitizeModelIdForPath(modelId) + ".db");
         loadFromDisk(diskPath, modelId, progressInfo);
 
         // Mark this model's cache as loaded so ensureEmbeddingsForEntries() knows
@@ -668,7 +692,7 @@ public class JIPipeEmbeddingDatabase {
             return;  // Non-persistent databases are never saved to disk
         }
 
-        Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
+        Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(sanitizeModelIdForPath(modelId) + ".db");
         saveToDisk(diskPath, modelId);
         dirtyModels.remove(modelId);
     }
