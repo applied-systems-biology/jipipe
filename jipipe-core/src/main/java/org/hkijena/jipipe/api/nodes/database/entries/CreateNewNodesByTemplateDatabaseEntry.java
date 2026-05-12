@@ -29,7 +29,7 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
 
     public CreateNewNodesByTemplateDatabaseEntry(JIPipeNodeTemplate template) {
         this.template = template;
-        this.id = "node-template:" + UUID.randomUUID();
+        this.id = "node-template:" + template.getUUID();
 
         // Find visibility
         boolean foundPipelineOnly = false;

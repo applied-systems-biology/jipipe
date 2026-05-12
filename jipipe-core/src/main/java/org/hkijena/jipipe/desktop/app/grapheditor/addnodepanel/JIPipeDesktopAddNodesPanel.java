@@ -31,6 +31,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
+import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -54,7 +56,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,6 +65,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
+    private static boolean AI_SEARCH = false;
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
     private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
@@ -77,10 +79,11 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private final JCheckBoxMenuItem showNodeDescriptionToggle = new JCheckBoxMenuItem("Show node descriptions");
     private final JCheckBoxMenuItem showHierarchySelectionToggle = new JCheckBoxMenuItem("Show category browser");
     private final DefaultDirectedGraph<String, DefaultEdge> mainCategoryHierarchy = new DefaultDirectedGraph<>(DefaultEdge.class);
-    private JList<JIPipeNodeDatabaseEntry> algorithmList;
+    private JList<JIPipeNodeDatabaseEntry> nodeList;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;
     private String currentHierarchyVertex;
+    private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
 
     public JIPipeDesktopAddNodesPanel(JIPipeDesktopWorkbench workbench, JIPipeDesktopGraphEditorUI graphEditorUI) {
         super(workbench);
@@ -93,7 +96,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         initializeMainCategoryFilters();
         initialize();
 
-        reloadAlgorithmList();
+        reloadList();
         updateSubCategoryPanels();
     }
 
@@ -344,7 +347,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                         }
                     }
                     resetSubCategory();
-                    reloadAlgorithmList();
+                    reloadList();
                 });
                 mainCategoryFilters.add(currentFilter);
             }
@@ -389,7 +392,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         updateSubCategoryPanels();
     }
 
-    private void reloadAlgorithmList() {
+    private void reloadList() {
         queue.cancelAll();
         queue.enqueue(new ReloadListRun(this));
     }
@@ -436,7 +439,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     if (mainCategoryHierarchy.containsVertex(fullComponent)) {
                         currentHierarchyVertex = fullComponent;
                         updateSubCategoryPanels();
-                        reloadAlgorithmList();
+                        reloadList();
                     }
                 });
                 subCategoryPathPanel.add(navigateButton);
@@ -453,7 +456,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                                 if (mainCategoryHierarchy.containsVertex(successor)) {
                                     currentHierarchyVertex = successor;
                                     updateSubCategoryPanels();
-                                    reloadAlgorithmList();
+                                    reloadList();
                                 }
                             }));
                 }
@@ -472,7 +475,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     if (mainCategoryHierarchy.containsVertex(successor)) {
                         currentHierarchyVertex = successor;
                         updateSubCategoryPanels();
-                        reloadAlgorithmList();
+                        reloadList();
                     }
                 });
                 subCategorySelectionPanel.add(button);
@@ -519,11 +522,11 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
 
     private void initializeAlgorithmListContextMenu() {
         JPopupMenu contextMenu = new JPopupMenu();
-        UIUtils.addRightClickPopupMenuToJList(algorithmList, contextMenu, () -> {
+        UIUtils.addRightClickPopupMenuToJList(nodeList, contextMenu, () -> {
             contextMenu.removeAll();
 
             Set<String> pinnedNodeDatabaseEntries = getPinnedNodeDatabaseEntries();
-            List<JIPipeNodeDatabaseEntry> selectedValues = algorithmList.getSelectedValuesList();
+            List<JIPipeNodeDatabaseEntry> selectedValues = nodeList.getSelectedValuesList();
             if (!selectedValues.isEmpty()) {
                 contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor", JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> {
                     insertAtCursor(selectedValues.get(0));
@@ -581,7 +584,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             }
         }
         JIPipe.getSettings().save();
-        reloadAlgorithmList();
+        reloadList();
     }
 
     private void unpinNodes(List<JIPipeNodeDatabaseEntry> selectedValues) {
@@ -590,7 +593,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             ids.remove(entry.getId());
         }
         JIPipe.getSettings().save();
-        reloadAlgorithmList();
+        reloadList();
     }
 
     private void initializeMainCategoryPanel() {
@@ -625,7 +628,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 0));
 
         searchField = new JIPipeDesktopSearchTextField(queue);
-        searchField.addActionListener(e -> reloadAlgorithmList());
+        searchField.addActionListener(e -> reloadList());
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -633,8 +636,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     e.consume(); // Consume the event to prevent default behavior
                     SwingUtilities.invokeLater(() -> {
-                        algorithmList.requestFocus();
-                        algorithmList.setSelectedIndex(0);
+                        nodeList.requestFocus();
+                        nodeList.setSelectedIndex(0);
                     });
                 } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     e.consume(); // Consume the event to prevent default behavior
@@ -653,8 +656,35 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         });
         toolBar.add(searchField);
 
+        // AI-based search
+        UIUtils.makeButtonFlatWithSize(aiSearchButton, 36);
+        aiSearchButton.setSelected(AI_SEARCH);
+        aiSearchButton.setToolTipText("Use AI-based node search using an embedding model");
+        aiSearchButton.addActionListener(e -> {
+            AI_SEARCH = aiSearchButton.isSelected();
+            if (aiSearchButton.isSelected()) {
+                // Ensure that AI is set up
+                if (JIPipeDesktopAISetupDialog.checkFirstTimeSetup(getDesktopWorkbench())) {
+                    // Spin up the embedding model already
+                    JIPipe.getInstance().getAiService().tryStartEmbeddingModel();
+
+                    // Clear list to indicate AI switch
+                    nodeList.setModel(new DefaultListModel<>());
+
+                    // Trigger refresh
+                    reloadList();
+                }
+            } else {
+                // Switched AI off — reload with standard search
+                reloadList();
+            }
+        });
+        if (AIApplicationSettings.getInstance().isEnableAI()) {
+            toolBar.add(aiSearchButton);
+        }
+
         JButton menuButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
-        UIUtils.makeButtonFlat25x25(menuButton);
+        UIUtils.makeButtonFlatWithSize(menuButton, 36);
         JPopupMenu menu = UIUtils.addPopupMenuToButton(menuButton);
         initializeToolbarMenu(menu);
         toolBar.add(menuButton);
@@ -673,7 +703,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
         showNodeDescriptionToggle.setToolTipText("Show node descriptions in the search results, which will take up a bit more vertical space per item");
         showNodeDescriptionToggle.setSelected(graphEditorSettings.getNodeSearchSettings().isShowDescriptions());
         showNodeDescriptionToggle.addActionListener(e -> {
-            reloadAlgorithmList();
+            reloadList();
             graphEditorSettings.getNodeSearchSettings().setShowDescriptions(showNodeDescriptionToggle.isSelected());
             JIPipe.getSettings().save();
         });
@@ -685,15 +715,15 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void initializeAlgorithmList() {
-        algorithmList = new JList<>();
-        algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        algorithmList.setBorder(UIUtils.createEmptyBorder(8));
-        algorithmList.setOpaque(false);
-        algorithmList.setModel(new DefaultListModel<>());
-        algorithmList.setDragEnabled(true);
-        algorithmList.setTransferHandler(new JIPipeDesktopAddNodeTransferHandler());
-        scrollPane = new JScrollPane(algorithmList);
-        algorithmList.setCellRenderer(new JIPipeDesktopAddNodePanelEntryListCellRenderer(scrollPane, this));
+        nodeList = new JList<>();
+        nodeList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        nodeList.setBorder(UIUtils.createEmptyBorder(8));
+        nodeList.setOpaque(false);
+        nodeList.setModel(new DefaultListModel<>());
+        nodeList.setDragEnabled(true);
+        nodeList.setTransferHandler(new JIPipeDesktopAddNodeTransferHandler());
+        scrollPane = new JScrollPane(nodeList);
+        nodeList.setCellRenderer(new JIPipeDesktopAddNodePanelEntryListCellRenderer(scrollPane, this));
         scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollPane, new GridBagConstraints(0,
                 5,
@@ -707,30 +737,30 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 0,
                 0));
 
-        algorithmList.addMouseListener(new MouseAdapter() {
+        nodeList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (SwingUtilities.isLeftMouseButton(e)) {
                     if (e.getClickCount() == 2) {
-                        insertAtCursor(algorithmList.getSelectedValue());
+                        insertAtCursor(nodeList.getSelectedValue());
                     }
                 }
             }
         });
-        algorithmList.addKeyListener(new KeyAdapter() {
+        nodeList.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 // Handle key events before they interfere with text selection
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     e.consume(); // Consume the event to prevent default behavior
                     SwingUtilities.invokeLater(() -> {
-                        if (algorithmList.getSelectedValue() != null) {
-                            insertAtCursor(algorithmList.getSelectedValue());
+                        if (nodeList.getSelectedValue() != null) {
+                            insertAtCursor(nodeList.getSelectedValue());
                             graphEditorUI.getCanvasUI().requestFocus();
                         }
                     });
                 } else if (e.getKeyCode() == KeyEvent.VK_UP) {
-                    if (algorithmList.getSelectedIndex() == 0) {
+                    if (nodeList.getSelectedIndex() == 0) {
                         e.consume(); // Consume the event to prevent default behavior
                         SwingUtilities.invokeLater(() -> {
                             searchField.getTextField().requestFocus();
@@ -749,10 +779,10 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void insertFirstAtCursor() {
-        if (algorithmList.getSelectedValue() != null) {
-            insertAtCursor(algorithmList.getSelectedValue());
-        } else if (algorithmList.getModel().getSize() > 0) {
-            insertAtCursor(algorithmList.getModel().getElementAt(0));
+        if (nodeList.getSelectedValue() != null) {
+            insertAtCursor(nodeList.getSelectedValue());
+        } else if (nodeList.getModel().getSize() > 0) {
+            insertAtCursor(nodeList.getModel().getElementAt(0));
         }
     }
 
@@ -829,7 +859,8 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                     role,
                     false,
                     true,
-                    pinnedNodeDatabaseEntries);
+                    pinnedNodeDatabaseEntries,
+                    AI_SEARCH ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
 
             for (JIPipeNodeDatabaseEntry entry : queryResult) {
                 if ("jipipe:dummy:templates".equals(selectedCategoryId)) {
@@ -863,13 +894,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
             }
 
             try {
-                SwingUtilities.invokeAndWait(() -> toolBox.algorithmList.setModel(model));
+                SwingUtilities.invokeAndWait(() -> toolBox.nodeList.setModel(model));
             } catch (InterruptedException | InvocationTargetException ignored) {
                 return;
             }
             if (!model.isEmpty()) {
                 SwingUtilities.invokeLater(() -> {
-                    toolBox.algorithmList.setSelectedIndex(0);
+                    toolBox.nodeList.setSelectedIndex(0);
                     toolBox.scrollPane.getVerticalScrollBar().setValue(0);
                 });
             }

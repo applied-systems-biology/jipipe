@@ -273,4 +273,15 @@ public interface JIPipeNodeInfo {
     default List<JIPipeNodeMenuLocation> getAliases() {
         return Collections.emptyList();
     }
+
+    /**
+     * Returns the classification of this node, which affects search ranking.
+     * Standard nodes are shown at full rank, AutoImport nodes are downranked,
+     * and EdgeCase nodes are further downranked.
+     *
+     * @return the node classification
+     */
+    default JIPipeNodeClassification getNodeClassification() {
+        return JIPipeNodeClassification.Standard;
+    }
 }

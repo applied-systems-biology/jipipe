@@ -187,6 +187,18 @@ if [ ! -e "./dependencies/simmetrics-core-4.1.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/simmetrics-core-4.1.1.jar https://repo1.maven.org/maven2/com/github/mpkorstanje/simmetrics-core/4.1.1/simmetrics-core-4.1.1.jar || exit 1
 fi
+if [ ! -e "./dependencies/tokenizers-0.36.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/tokenizers-0.36.0.jar https://repo1.maven.org/maven2/ai/djl/huggingface/tokenizers/0.36.0/tokenizers-0.36.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/api-0.36.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/api-0.36.0.jar https://repo1.maven.org/maven2/ai/djl/api/0.36.0/api-0.36.0.jar || exit 1
+fi
+if [ ! -e "./dependencies/onnxruntime-1.25.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/onnxruntime-1.25.1.jar https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime/1.25.1/onnxruntime-1.25.1.jar || exit 1
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html || exit 1

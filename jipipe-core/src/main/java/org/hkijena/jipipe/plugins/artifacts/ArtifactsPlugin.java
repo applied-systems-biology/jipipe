@@ -36,9 +36,7 @@ import org.scijava.plugin.Plugin;
 import java.util.Collections;
 import java.util.Set;
 
-/**
- * The core extension
- */
+
 @Plugin(type = JIPipeJavaPlugin.class)
 public class ArtifactsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 

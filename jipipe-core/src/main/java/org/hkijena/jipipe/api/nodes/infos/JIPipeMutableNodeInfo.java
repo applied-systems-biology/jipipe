@@ -44,6 +44,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private boolean runnable = true;
     private boolean deprecated = false;
     private boolean unstable = false;
+    private JIPipeNodeClassification nodeClassification = JIPipeNodeClassification.Standard;
     private List<String> additionalCitations = new ArrayList<>();
 
     private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
@@ -231,5 +232,14 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setUnstable(boolean unstable) {
         this.unstable = unstable;
+    }
+
+    @Override
+    public JIPipeNodeClassification getNodeClassification() {
+        return nodeClassification;
+    }
+
+    public void setNodeClassification(JIPipeNodeClassification nodeClassification) {
+        this.nodeClassification = nodeClassification;
     }
 }

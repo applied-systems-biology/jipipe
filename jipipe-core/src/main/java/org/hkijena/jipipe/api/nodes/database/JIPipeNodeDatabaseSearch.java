@@ -27,9 +27,10 @@ public interface JIPipeNodeDatabaseSearch {
      * @param allowExisting allow selecting existing nodes
      * @param allowNew      allow creating new nodes
      * @param pinnedIds     bookmarked node IDs
+     * @param flags additional implementation-specific flags
      * @return ranked entries
      */
-    List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds);
+    List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, Set<String> pinnedIds, Object... flags);
 
     /**
      * Used to report to the engine which entry was selected by the user
@@ -53,9 +54,10 @@ public interface JIPipeNodeDatabaseSearch {
      * @param allowNew       allow creating new nodes
      * @param targetSlotType the type of the slot the user selected as reference
      * @param targetDataType the data type of the slot the user selected as reference
+     * @param flags additional implementation-specific flags
      * @return ranked entries
      */
-    List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType);
+    List<JIPipeNodeDatabaseEntry> query(String text, JIPipeNodeDatabasePipelineVisibility role, boolean allowExisting, boolean allowNew, JIPipeSlotType targetSlotType, Class<? extends JIPipeData> targetDataType, Object... flags);
 
     /**
      * Applies indexing operations

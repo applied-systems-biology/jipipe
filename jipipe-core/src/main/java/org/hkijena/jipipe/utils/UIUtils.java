@@ -262,6 +262,27 @@ public class UIUtils {
         return JIPipe.RESOURCES.getIcon128("jipipe.png").getImage();
     }
 
+    /**
+     * Creates a window title string with the JIPipe version prefix.
+     *
+     * @param components optional components to append after the version
+     * @return the formatted window title
+     */
+    public static String getWindowTitle(Object... components) {
+        String s = "JIPipe " + VersionUtils.getJIPipeVersion();
+        if (components.length == 0) {
+            return s;
+        } else if (components.length == 1) {
+            return s + " - " + components[0];
+        } else {
+            StringBuilder builder = new StringBuilder(s);
+            for (Object component : components) {
+                builder.append(" - ").append(component);
+            }
+            return builder.toString();
+        }
+    }
+
     public static void addBalloonToComponent(AbstractButton button, String text) {
         EdgedBalloonStyle style = new EdgedBalloonStyle(UIManager.getColor("TextField.background"), ThemeUtils.getCurrentStyle().getPrimaryColor());
         final BalloonTip balloonTip = new BalloonTip(

@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.nodes.database;
 
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.StampedLock;
@@ -26,5 +28,10 @@ public abstract class DefaultJIPipeNodeDatabaseEntry implements JIPipeNodeDataba
         } finally {
             attachmentsLock.unlock(stamp);
         }
+    }
+
+    @Override
+    public JIPipeNodeClassification getNodeClassification() {
+        return JIPipeNodeClassification.Standard;
     }
 }
