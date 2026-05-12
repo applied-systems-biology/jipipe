@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeAINodeDatabaseSearch;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
@@ -29,12 +30,17 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 
 import javax.swing.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
  * Menu tool that allows users to manually trigger AI embedding computation
  * for all node database entries, with visible progress reporting.
+ * <p>
+ * Uses the tiered architecture: global entries are stored in the
+ * {@link JIPipeGlobalEmbeddingSearch} singleton, local entries in the
+ * per-project transient database.
  */
 public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
 
@@ -60,18 +66,21 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
             return;
         }
 
-        // Get the AI search instance and embedding database
+        // Get the AI search instance
         JIPipeAINodeDatabaseSearch aiSearch = JIPipeNodeDatabase.getInstance().getAiSearch();
-        JIPipeEmbeddingDatabase embeddingDatabase = aiSearch.getEmbeddingDatabase();
 
-        // Resolve the model ID: try the AI service first, then fall back to the AI search's current model
+        // Get the global and local embedding databases
+        JIPipeEmbeddingDatabase globalDb = JIPipeGlobalEmbeddingSearch.getInstance().getEmbeddingDatabase();
+        JIPipeEmbeddingDatabase localDb = aiSearch.getLocalEmbeddingDatabase();
+
+        // Resolve the model ID: try the AI service first, then fall back to the global search's current model
         String resolvedModelId = null;
         if (JIPipe.isInstantiated()) {
             JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
             resolvedModelId = aiService.getModelId();
         }
         if (resolvedModelId == null) {
-            resolvedModelId = aiSearch.getCurrentModelId();
+            resolvedModelId = JIPipeGlobalEmbeddingSearch.getInstance().getCurrentModelId();
         }
         final String modelId = resolvedModelId;
 
@@ -82,10 +91,10 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
             return;
         }
 
-        // Ensure the cache is loaded before computing
-        embeddingDatabase.loadUserCache(modelId, JIPipe.getInstance().getAiService().getEmbeddingProgressInfo());
+        // Ensure the global cache is loaded before computing
+        JIPipeGlobalEmbeddingSearch.getInstance().initialize(modelId, JIPipe.getInstance().getAiService().getEmbeddingProgressInfo());
 
-        // Get the entries
+        // Get the entries and split into global/local
         List<JIPipeNodeDatabaseEntry> entries = aiSearch.getEntries();
         if (entries.isEmpty()) {
             JOptionPane.showMessageDialog(getDesktopWorkbench().getWindow(),
@@ -94,14 +103,29 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
             return;
         }
 
-        // Count how many entries already have embeddings
-        long alreadyEmbedded = entries.stream()
-                .filter(e -> embeddingDatabase.hasEmbedding(modelId, JIPipeEmbeddingDatabase.entryToId(e)))
-                .count();
+        List<JIPipeNodeDatabaseEntry> globalEntries = new ArrayList<>();
+        List<JIPipeNodeDatabaseEntry> localEntries = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if (JIPipeAINodeDatabaseSearch.isGlobalEntry(entry)) {
+                globalEntries.add(entry);
+            } else {
+                localEntries.add(entry);
+            }
+        }
 
-        if(alreadyEmbedded > 0) {
-            if(JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "There are already " + alreadyEmbedded + " embeddings. Clear them?", "Compute embeddings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                embeddingDatabase.clearModel(modelId);
+        // Count how many entries already have embeddings
+        long alreadyEmbeddedGlobal = globalEntries.stream()
+                .filter(e -> globalDb.hasEmbedding(modelId, JIPipeEmbeddingDatabase.entryToId(e)))
+                .count();
+        long alreadyEmbeddedLocal = localEntries.stream()
+                .filter(e -> localDb.hasEmbedding(modelId, JIPipeEmbeddingDatabase.entryToId(e)))
+                .count();
+        long alreadyEmbedded = alreadyEmbeddedGlobal + alreadyEmbeddedLocal;
+
+        if (alreadyEmbedded > 0) {
+            if (JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(), "There are already " + alreadyEmbedded + " embeddings. Clear them?", "Compute embeddings", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                globalDb.clearModel(modelId);
+                localDb.clearModel(modelId);
                 alreadyEmbedded = 0;
             }
         }
@@ -117,6 +141,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         int result = JOptionPane.showConfirmDialog(getDesktopWorkbench().getWindow(),
                 "Compute embeddings for " + (entries.size() - alreadyEmbedded) + " entries " +
                         "(" + alreadyEmbedded + " already cached) using model '" + modelId + "'?\n\n" +
+                        "Global entries: " + globalEntries.size() + ", Local entries: " + localEntries.size() + "\n\n" +
                         "This may take a while depending on the number of entries.",
                 getText(), JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
         if (result != JOptionPane.YES_OPTION) {
@@ -125,7 +150,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
 
         // Create and run the embedding build task with progress UI
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-        BuildEmbeddingIndexRun run = new BuildEmbeddingIndexRun(embeddingDatabase, entries, modelId, aiService);
+        BuildEmbeddingIndexRun run = new BuildEmbeddingIndexRun(globalDb, localDb, globalEntries, localEntries, modelId, aiService);
         JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), getDesktopWorkbench().getWindow(), run);
     }
 
@@ -141,20 +166,27 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
 
     /**
      * Runnable that computes embeddings for all node database entries with progress reporting.
+     * Handles both global and local entries with their respective databases.
      */
     public static class BuildEmbeddingIndexRun extends DefaultJIPipeRunnable {
 
-        private final JIPipeEmbeddingDatabase embeddingDatabase;
-        private final List<JIPipeNodeDatabaseEntry> entries;
+        private final JIPipeEmbeddingDatabase globalDb;
+        private final JIPipeEmbeddingDatabase localDb;
+        private final List<JIPipeNodeDatabaseEntry> globalEntries;
+        private final List<JIPipeNodeDatabaseEntry> localEntries;
         private final String modelId;
         private final JIPipeAIServiceComponent aiService;
 
-        public BuildEmbeddingIndexRun(JIPipeEmbeddingDatabase embeddingDatabase,
-                                      List<JIPipeNodeDatabaseEntry> entries,
+        public BuildEmbeddingIndexRun(JIPipeEmbeddingDatabase globalDb,
+                                      JIPipeEmbeddingDatabase localDb,
+                                      List<JIPipeNodeDatabaseEntry> globalEntries,
+                                      List<JIPipeNodeDatabaseEntry> localEntries,
                                       String modelId,
                                       JIPipeAIServiceComponent aiService) {
-            this.embeddingDatabase = embeddingDatabase;
-            this.entries = entries;
+            this.globalDb = globalDb;
+            this.localDb = localDb;
+            this.globalEntries = globalEntries;
+            this.localEntries = localEntries;
             this.modelId = modelId;
             this.aiService = aiService;
         }
@@ -167,28 +199,31 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
         @Override
         public void run() {
             JIPipeProgressInfo progress = getProgressInfo();
-            progress.setProgress(0, entries.size());
-            progress.log("Computing embeddings for " + entries.size() + " entries (model: " + modelId + ")");
+            int totalEntries = globalEntries.size() + localEntries.size();
+            progress.setProgress(0, totalEntries);
+            progress.log("Computing embeddings for " + totalEntries + " entries (model: " + modelId
+                    + ", global: " + globalEntries.size() + ", local: " + localEntries.size() + ")");
 
             int computed = 0;
             int skipped = 0;
             int failed = 0;
+            int index = 0;
 
-            for (int i = 0; i < entries.size(); i++) {
+            // Process global entries
+            for (JIPipeNodeDatabaseEntry entry : globalEntries) {
                 if (progress.isCancelled()) {
-                    progress.log("Cancelled by user after " + i + " entries.");
+                    progress.log("Cancelled by user after " + index + " entries.");
                     break;
                 }
 
-                JIPipeNodeDatabaseEntry entry = entries.get(i);
                 String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
 
-                if (!embeddingDatabase.hasEmbedding(modelId, nodeId)) {
+                if (!globalDb.hasEmbedding(modelId, nodeId)) {
                     String text = JIPipeEmbeddingDatabase.entryToText(entry);
                     try {
                         float[] embedding = aiService.tryEmbed(text).get(30, TimeUnit.SECONDS);
                         if (embedding != null) {
-                            embeddingDatabase.setEmbedding(modelId, nodeId, embedding);
+                            globalDb.setEmbeddingWithHash(modelId, nodeId, embedding, text);
                             computed++;
                         } else {
                             failed++;
@@ -202,14 +237,48 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
                     skipped++;
                 }
 
-                progress.setProgress(i + 1, entries.size());
+                index++;
+                progress.setProgress(index, totalEntries);
                 progress.incrementProgress();
             }
 
-            // Save the cache after computation
+            // Process local entries
+            for (JIPipeNodeDatabaseEntry entry : localEntries) {
+                if (progress.isCancelled()) {
+                    progress.log("Cancelled by user after " + index + " entries.");
+                    break;
+                }
+
+                String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
+
+                if (!localDb.hasEmbedding(modelId, nodeId)) {
+                    String text = JIPipeEmbeddingDatabase.entryToText(entry);
+                    try {
+                        float[] embedding = aiService.tryEmbed(text).get(30, TimeUnit.SECONDS);
+                        if (embedding != null) {
+                            localDb.setEmbeddingWithHash(modelId, nodeId, embedding, text);
+                            computed++;
+                        } else {
+                            failed++;
+                            progress.log("Warning: Null embedding for '" + entry.getName() + "'");
+                        }
+                    } catch (Exception e) {
+                        failed++;
+                        progress.log("Warning: Failed to embed '" + entry.getName() + "': " + e.getMessage());
+                    }
+                } else {
+                    skipped++;
+                }
+
+                index++;
+                progress.setProgress(index, totalEntries);
+                progress.incrementProgress();
+            }
+
+            // Save only the global database to disk after computation
             if (computed > 0) {
-                progress.log("Saving embedding cache to disk ...");
-                embeddingDatabase.saveUserCache(modelId);
+                progress.log("Saving global embedding cache to disk ...");
+                globalDb.saveUserCache(modelId);
             }
 
             progress.log("Done. Computed: " + computed + ", Skipped (cached): " + skipped + ", Failed: " + failed);

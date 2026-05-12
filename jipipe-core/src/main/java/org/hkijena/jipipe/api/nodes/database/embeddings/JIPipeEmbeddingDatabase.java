@@ -26,8 +26,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,18 +43,44 @@ import java.util.stream.Collectors;
  * Manages embedding vectors for node database entries.
  * Supports loading from resource files, disk caching, and JIT computation.
  * All data is keyed by model ID to distinguish embeddings from different models.
+ *
+ * <p>The database supports hash verification to detect stale embeddings (e.g., when a node's
+ * description changes). Embeddings loaded from cache are marked as {@link VerificationState#UNVERIFIED}
+ * and are verified on first access via {@link #getVerifiedEmbedding}. Embeddings from bundled
+ * resources are marked as {@link VerificationState#PRE_VERIFIED} and skip verification.</p>
+ *
+ * <p>The {@code persistent} flag controls whether embeddings are saved to disk. Non-persistent
+ * databases (e.g., project-specific ones) are never written to the user cache directory.</p>
  */
 public class JIPipeEmbeddingDatabase {
+
+    /**
+     * Verification state for cached embeddings.
+     */
+    public enum VerificationState {
+        /** Loaded from cache, needs hash check */
+        UNVERIFIED,
+        /** Hash checked and matches */
+        VERIFIED,
+        /** From bundled resource, skip verification */
+        PRE_VERIFIED
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeEmbeddingDatabase.class);
 
     private static final String MAGIC = "JEMB";
-    private static final int VERSION = 1;
+    private static final int CURRENT_VERSION = 2;
     private static final String BUNDLED_RESOURCE_PATH = "ai/embeddings.db";
     private static final long EMBED_TIMEOUT_SECONDS = 30;
 
     // Inner storage: modelId -> (nodeId -> embedding vector)
     private final Map<String, Map<String, float[]>> embeddings = new ConcurrentHashMap<>();
+
+    // Hash storage: modelId -> (nodeId -> SHA-256 hash of the text used to generate the embedding)
+    private final Map<String, Map<String, String>> hashes = new ConcurrentHashMap<>();
+
+    // Verification state: modelId -> (nodeId -> verification state)
+    private final Map<String, Map<String, VerificationState>> verificationStates = new ConcurrentHashMap<>();
 
     // The model ID this database is currently associated with (for convenience)
     private String activeModelId;
@@ -70,10 +99,24 @@ public class JIPipeEmbeddingDatabase {
     // Lock for thread-safe disk operations
     private final ReentrantReadWriteLock diskLock = new ReentrantReadWriteLock();
 
+    // If false, never save to disk
+    private final boolean persistent;
+
     /**
-     * Creates a new embedding database.
+     * Creates a new persistent embedding database.
+     * This is equivalent to {@code JIPipeEmbeddingDatabase(true)}.
      */
     public JIPipeEmbeddingDatabase() {
+        this(true);
+    }
+
+    /**
+     * Creates a new embedding database.
+     *
+     * @param persistent if false, embeddings are never saved to disk
+     */
+    public JIPipeEmbeddingDatabase(boolean persistent) {
+        this.persistent = persistent;
     }
 
     // ===== Resource and Disk I/O =====
@@ -82,6 +125,7 @@ public class JIPipeEmbeddingDatabase {
      * Load pre-computed embeddings from a classpath resource (the bundled file).
      * Uses the binary format described in the class documentation.
      * Merges into the embeddings map under the given modelId.
+     * Entries loaded from resources are marked as {@link VerificationState#PRE_VERIFIED}.
      *
      * @param resourcePath the plugin-internal resource path (e.g., "ai/embeddings.db")
      * @param modelId      the model ID to associate the loaded embeddings with
@@ -97,7 +141,7 @@ public class JIPipeEmbeddingDatabase {
                 progressInfo.warn("Resource not found: " + resourcePath);
                 return;
             }
-            loadFromStream(is, modelId, progressInfo);
+            loadFromStream(is, modelId, progressInfo, true);
         } catch (IOException e) {
             progressInfo.error("Failed to load embeddings from resource: " + resourcePath);
             progressInfo.log(e);
@@ -108,6 +152,7 @@ public class JIPipeEmbeddingDatabase {
      * Load embeddings from a file on disk (user cache).
      * Uses the binary format described in the class documentation.
      * Merges into the embeddings map.
+     * Entries loaded from disk are marked as {@link VerificationState#UNVERIFIED}.
      *
      * @param path         the file path to load from
      * @param modelId      the model ID to associate the loaded embeddings with
@@ -125,7 +170,7 @@ public class JIPipeEmbeddingDatabase {
 
         diskLock.readLock().lock();
         try (InputStream is = Files.newInputStream(path)) {
-            loadFromStream(is, modelId, progressInfo);
+            loadFromStream(is, modelId, progressInfo, false);
         } catch (IOException e) {
             progressInfo.error("Failed to load embeddings from disk: " + path);
             progressInfo.log(e);
@@ -175,6 +220,7 @@ public class JIPipeEmbeddingDatabase {
 
     /**
      * Get the embedding for a node, returns null if not found.
+     * Does not perform hash verification; use {@link #getVerifiedEmbedding} for verified access.
      *
      * @param modelId the model ID
      * @param nodeId  the node ID
@@ -189,7 +235,52 @@ public class JIPipeEmbeddingDatabase {
     }
 
     /**
+     * Gets an embedding after verifying its hash against the provided text.
+     * Returns null if the embedding doesn't exist or if the hash doesn't match (invalidates stale entry).
+     *
+     * @param modelId the model ID
+     * @param nodeId  the node ID
+     * @param text    the current text for the node (used to compute hash for verification)
+     * @return the embedding if verified, null if not found or hash mismatch
+     */
+    public float[] getVerifiedEmbedding(String modelId, String nodeId, String text) {
+        Map<String, float[]> modelEmbeddings = embeddings.get(modelId);
+        if (modelEmbeddings == null || !modelEmbeddings.containsKey(nodeId)) {
+            return null;
+        }
+
+        Map<String, VerificationState> modelStates = verificationStates.get(modelId);
+        VerificationState state = modelStates != null ? modelStates.get(nodeId) : null;
+
+        // PRE_VERIFIED entries (from bundled resources) skip verification
+        if (state == VerificationState.PRE_VERIFIED) {
+            return modelEmbeddings.get(nodeId);
+        }
+
+        // UNVERIFIED entries need hash check
+        if (state == VerificationState.UNVERIFIED) {
+            String currentHash = computeHash(text);
+            Map<String, String> modelHashes = hashes.get(modelId);
+            String cachedHash = modelHashes != null ? modelHashes.get(nodeId) : null;
+
+            if (cachedHash != null && cachedHash.equals(currentHash)) {
+                // Hash matches, mark as verified
+                modelStates.put(nodeId, VerificationState.VERIFIED);
+                return modelEmbeddings.get(nodeId);
+            } else {
+                // Hash mismatch - invalidate the embedding
+                removeEmbedding(modelId, nodeId);
+                return null;
+            }
+        }
+
+        // VERIFIED entries are good
+        return modelEmbeddings.get(nodeId);
+    }
+
+    /**
      * Store an embedding, also record the dimension.
+     * The embedding is marked as {@link VerificationState#VERIFIED}.
      *
      * @param modelId   the model ID
      * @param nodeId    the node ID
@@ -203,7 +294,56 @@ public class JIPipeEmbeddingDatabase {
         embeddings.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>())
                 .put(nodeId, embedding);
         dimensions.put(modelId, embedding.length);
+        verificationStates.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>())
+                .put(nodeId, VerificationState.VERIFIED);
         dirtyModels.add(modelId);
+    }
+
+    /**
+     * Store an embedding along with a hash of the source text, and mark as verified.
+     *
+     * @param modelId   the model ID
+     * @param nodeId    the node ID
+     * @param embedding the embedding vector
+     * @param text      the source text used to generate the embedding (for hash computation)
+     */
+    public void setEmbeddingWithHash(String modelId, String nodeId, float[] embedding, String text) {
+        setEmbedding(modelId, nodeId, embedding);
+        String hash = computeHash(text);
+        hashes.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>()).put(nodeId, hash);
+        verificationStates.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>()).put(nodeId, VerificationState.VERIFIED);
+    }
+
+    /**
+     * Remove a single embedding entry and its associated hash and verification state.
+     *
+     * @param modelId the model ID
+     * @param nodeId  the node ID
+     */
+    public void removeEmbedding(String modelId, String nodeId) {
+        Map<String, float[]> modelEmbeddings = embeddings.get(modelId);
+        if (modelEmbeddings != null) {
+            modelEmbeddings.remove(nodeId);
+        }
+        Map<String, String> modelHashes = hashes.get(modelId);
+        if (modelHashes != null) {
+            modelHashes.remove(nodeId);
+        }
+        Map<String, VerificationState> modelStates = verificationStates.get(modelId);
+        if (modelStates != null) {
+            modelStates.remove(nodeId);
+        }
+        dirtyModels.add(modelId);
+    }
+
+    /**
+     * Check if the cache (bundled resource + user disk) has been loaded for a model.
+     *
+     * @param modelId the model ID to check
+     * @return true if the cache has been loaded for this model
+     */
+    public boolean isCacheLoaded(String modelId) {
+        return cacheLoadedModels.contains(modelId);
     }
 
     /**
@@ -250,15 +390,56 @@ public class JIPipeEmbeddingDatabase {
      */
     public void clearModel(String modelId) {
         embeddings.remove(modelId);
+        hashes.remove(modelId);
+        verificationStates.remove(modelId);
         dimensions.remove(modelId);
         cacheLoadedModels.remove(modelId);
         dirtyModels.remove(modelId);
     }
 
+    /**
+     * Marks all current entries for a model as PRE_VERIFIED.
+     * Should be called after loading from bundled resources, since resource-provided
+     * embeddings are stable and don't need hash verification.
+     *
+     * @param modelId the model ID whose entries to mark as pre-verified
+     */
+    public void markPreVerified(String modelId) {
+        Map<String, VerificationState> modelStates = verificationStates.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>());
+        Map<String, float[]> modelEmbeddings = embeddings.get(modelId);
+        if (modelEmbeddings != null) {
+            for (String nodeId : modelEmbeddings.keySet()) {
+                modelStates.put(nodeId, VerificationState.PRE_VERIFIED);
+            }
+        }
+    }
+
+    // ===== Hash Computation =====
+
+    /**
+     * Compute a SHA-256 hash of the given text.
+     *
+     * @param text the text to hash
+     * @return the hex-encoded SHA-256 hash
+     */
+    public static String computeHash(String text) {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hashBytes = digest.digest(text.getBytes(StandardCharsets.UTF_8));
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            return sb.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     // ===== JIT Computation =====
 
     /**
-     * For each entry that doesn't have an embedding yet, compute one JIT.
+     * For each entry that doesn't have a verified embedding, compute one JIT.
      * Uses the entry's text representation (see {@link #entryToText(JIPipeNodeDatabaseEntry)})
      * and calls the AI service to generate embeddings.
      * Should be callable from any thread.
@@ -278,17 +459,24 @@ public class JIPipeEmbeddingDatabase {
         // Ensure the cache (bundled resource + user disk) is loaded before computing any embeddings.
         // This prevents JIT embedding of entries that are already in the cache but haven't been loaded yet.
         if (!cacheLoadedModels.contains(modelId)) {
-            loadUserCache(modelId, progressInfo);
+            if (persistent) {
+                loadUserCache(modelId, progressInfo);
+            } else {
+                cacheLoadedModels.add(modelId);
+            }
         }
 
         int computedCount = 0;
         for (JIPipeNodeDatabaseEntry entry : entries) {
             String nodeId = entryToId(entry);
-            if (hasEmbedding(modelId, nodeId)) {
+            String text = entryToText(entry);
+
+            // Use verified access to detect and invalidate stale embeddings
+            float[] existing = getVerifiedEmbedding(modelId, nodeId, text);
+            if (existing != null) {
                 continue;
             }
 
-            String text = entryToText(entry);
             try {
                 CompletableFuture<float[]> future = aiService.tryEmbed(text);
                 if (future == null) {
@@ -297,7 +485,7 @@ public class JIPipeEmbeddingDatabase {
                 }
                 float[] embedding = future.get(EMBED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
                 if (embedding != null) {
-                    setEmbedding(modelId, nodeId, embedding);
+                    setEmbeddingWithHash(modelId, nodeId, embedding, text);
                     computedCount++;
                     LOGGER.debug("Computed embedding for node: {}", nodeId);
                 }
@@ -361,6 +549,7 @@ public class JIPipeEmbeddingDatabase {
         Map<String, JIPipeDataSlotInfo> inputSlots = entry.getInputSlots();
         if (inputSlots != null && !inputSlots.isEmpty()) {
             String inputs = inputSlots.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
                     .map(e -> {
                         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
                         return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
@@ -373,6 +562,7 @@ public class JIPipeEmbeddingDatabase {
         Map<String, JIPipeDataSlotInfo> outputSlots = entry.getOutputSlots();
         if (outputSlots != null && !outputSlots.isEmpty()) {
             String outputs = outputSlots.entrySet().stream()
+                    .sorted(Map.Entry.comparingByKey())
                     .map(e -> {
                         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(e.getValue().getDataClass());
                         return e.getKey() + " (" + dataInfo.getName() + ", " + dataInfo.getDescription() + ")";
@@ -425,14 +615,32 @@ public class JIPipeEmbeddingDatabase {
      * @param modelId      the model ID to load caches for
      * @param progressInfo the progress info for logging
      */
+    /**
+     * Convenience overload for {@link #loadUserCache(String, JIPipeProgressInfo)}
+     * that uses {@link JIPipeProgressInfo#SILENT}.
+     *
+     * @param modelId the model ID to load caches for
+     */
+    public void loadUserCache(String modelId) {
+        loadUserCache(modelId, JIPipeProgressInfo.SILENT);
+    }
+
+    /**
+     * Load from the user cache directory and the bundled resource.
+     * Resource embeddings are the baseline; disk cache overlays on top
+     * (disk cache wins for overlapping entries, as it may be newer).
+     *
+     * @param modelId      the model ID to load caches for
+     * @param progressInfo the progress info for logging
+     */
     public void loadUserCache(String modelId, JIPipeProgressInfo progressInfo) {
         Objects.requireNonNull(modelId, "Model ID must not be null");
         Objects.requireNonNull(progressInfo, "Progress info must not be null");
 
-        // First load the bundled resource (baseline)
+        // First load the bundled resource (baseline) - isResource=true, marks as PRE_VERIFIED
         loadFromResource(BUNDLED_RESOURCE_PATH, modelId, progressInfo);
 
-        // Then load from disk cache (overrides resource entries)
+        // Then load from disk cache (overrides resource entries) - isResource=false, marks as UNVERIFIED
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
         loadFromDisk(diskPath, modelId, progressInfo);
 
@@ -449,11 +657,16 @@ public class JIPipeEmbeddingDatabase {
     /**
      * Save to the user cache directory.
      * Creates the {@code ai-embeddings} directory if it doesn't exist.
+     * Does nothing if this database is not persistent.
      *
      * @param modelId the model ID to save the cache for
      */
     public void saveUserCache(String modelId) {
         Objects.requireNonNull(modelId, "Model ID must not be null");
+
+        if (!persistent) {
+            return;  // Non-persistent databases are never saved to disk
+        }
 
         Path diskPath = PathUtils.getJIPipeUserDir().resolve("ai-embeddings").resolve(modelId + ".db");
         saveToDisk(diskPath, modelId);
@@ -517,19 +730,32 @@ public class JIPipeEmbeddingDatabase {
         this.activeModelId = activeModelId;
     }
 
+    // ===== Persistence Flag =====
+
+    /**
+     * Check if this database is persistent (saves to disk).
+     *
+     * @return true if the database saves embeddings to disk
+     */
+    public boolean isPersistent() {
+        return persistent;
+    }
+
     // ===== Internal I/O Methods =====
 
     /**
      * Load embeddings from an input stream using the binary format.
      * Merges into the embeddings map under the given modelId.
      * Handles empty streams gracefully.
+     * Supports both version 1 (no hashes) and version 2 (with hashes) formats.
      *
      * @param is           the input stream
      * @param modelId      the model ID
      * @param progressInfo the progress info for logging
+     * @param isResource   if true, entries are marked as PRE_VERIFIED; if false, as UNVERIFIED
      * @throws IOException if an I/O error occurs
      */
-    private void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo) throws IOException {
+    private void loadFromStream(InputStream is, String modelId, JIPipeProgressInfo progressInfo, boolean isResource) throws IOException {
         BufferedInputStream bis = new BufferedInputStream(is);
         DataInputStream dis = new DataInputStream(bis);
 
@@ -542,16 +768,16 @@ public class JIPipeEmbeddingDatabase {
         // Read and validate magic bytes
         byte[] magicBytes = new byte[4];
         dis.readFully(magicBytes);
-        String magic = new String(magicBytes, "ASCII");
+        String magic = new String(magicBytes, StandardCharsets.US_ASCII);
         if (!MAGIC.equals(magic)) {
             progressInfo.warn("Invalid magic bytes in embedding file. Expected '" + MAGIC + "', got '" + magic + "'");
             return;
         }
 
-        // Read and validate version
+        // Read version
         int version = dis.readInt();
-        if (version != VERSION) {
-            progressInfo.warn("Unsupported embedding file version " + version + ". Expected " + VERSION);
+        if (version != 1 && version != 2) {
+            progressInfo.warn("Unsupported embedding file version " + version + ". Expected 1 or 2");
             return;
         }
 
@@ -559,7 +785,7 @@ public class JIPipeEmbeddingDatabase {
         int modelIdLength = dis.readInt();
         byte[] modelIdBytes = new byte[modelIdLength];
         dis.readFully(modelIdBytes);
-        String fileModelId = new String(modelIdBytes, "UTF-8");
+        String fileModelId = new String(modelIdBytes, StandardCharsets.UTF_8);
         LOGGER.debug("Loading embeddings for model '{}' from file (file says model '{}')", modelId, fileModelId);
 
         // Read dimension
@@ -576,31 +802,56 @@ public class JIPipeEmbeddingDatabase {
             return;
         }
 
-        LOGGER.debug("Loading {} embeddings with dimension {} for model {}", entryCount, dimension, modelId);
+        LOGGER.debug("Loading {} embeddings (v{}) with dimension {} for model {}", entryCount, version, dimension, modelId);
 
         // Read entries
         Map<String, float[]> modelEmbeddings = embeddings.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>());
+        Map<String, String> modelHashes = hashes.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>());
+        Map<String, VerificationState> modelStates = verificationStates.computeIfAbsent(modelId, k -> new ConcurrentHashMap<>());
         dimensions.put(modelId, dimension);
 
         for (int i = 0; i < entryCount; i++) {
+            // Read node ID
             int nodeIdLength = dis.readInt();
             byte[] nodeIdBytes = new byte[nodeIdLength];
             dis.readFully(nodeIdBytes);
-            String nodeId = new String(nodeIdBytes, "UTF-8");
+            String nodeId = new String(nodeIdBytes, StandardCharsets.UTF_8);
 
+            // Read hash (version 2 only)
+            String hash = "";
+            if (version >= 2) {
+                int hashLength = dis.readInt();
+                byte[] hashBytes = new byte[hashLength];
+                dis.readFully(hashBytes);
+                hash = new String(hashBytes, StandardCharsets.UTF_8);
+            }
+
+            // Read embedding floats
             float[] embedding = new float[dimension];
             for (int j = 0; j < dimension; j++) {
                 embedding[j] = dis.readFloat();
             }
 
             modelEmbeddings.put(nodeId, embedding);
+            if (!hash.isEmpty()) {
+                modelHashes.put(nodeId, hash);
+            }
+            // Only set UNVERIFIED if not already PRE_VERIFIED (from resource loading)
+            if (!VerificationState.PRE_VERIFIED.equals(modelStates.get(nodeId))) {
+                modelStates.put(nodeId, VerificationState.UNVERIFIED);
+            }
         }
 
-        progressInfo.log("Loaded " + entryCount + " embeddings for model " + modelId);
+        // If loaded from a bundled resource, mark all entries as PRE_VERIFIED
+        if (isResource) {
+            markPreVerified(modelId);
+        }
+
+        progressInfo.log("Loaded " + entryCount + " embeddings (v" + version + ") for model " + modelId);
     }
 
     /**
-     * Save embeddings to an output stream using the binary format.
+     * Save embeddings to an output stream using the binary format (version 2 with hashes).
      *
      * @param os      the output stream
      * @param modelId the model ID
@@ -623,13 +874,13 @@ public class JIPipeEmbeddingDatabase {
         DataOutputStream dos = new DataOutputStream(bos);
 
         // Write magic bytes
-        dos.write(MAGIC.getBytes("ASCII"));
+        dos.write(MAGIC.getBytes(StandardCharsets.US_ASCII));
 
-        // Write version
-        dos.writeInt(VERSION);
+        // Write version 2
+        dos.writeInt(CURRENT_VERSION);
 
         // Write model ID
-        byte[] modelIdBytes = modelId.getBytes("UTF-8");
+        byte[] modelIdBytes = modelId.getBytes(StandardCharsets.UTF_8);
         dos.writeInt(modelIdBytes.length);
         dos.write(modelIdBytes);
 
@@ -639,12 +890,24 @@ public class JIPipeEmbeddingDatabase {
         // Write entry count
         dos.writeInt(modelEmbeddings.size());
 
-        // Write entries
+        // Get hashes for this model
+        Map<String, String> modelHashes = hashes.get(modelId);
+
+        // Write entries (version 2 format: nodeId + hash + embedding)
         for (Map.Entry<String, float[]> entry : modelEmbeddings.entrySet()) {
-            byte[] nodeIdBytes = entry.getKey().getBytes("UTF-8");
+            // Write node ID
+            byte[] nodeIdBytes = entry.getKey().getBytes(StandardCharsets.UTF_8);
             dos.writeInt(nodeIdBytes.length);
             dos.write(nodeIdBytes);
 
+            // Write hash (empty string if no hash stored)
+            String hash = modelHashes != null ? modelHashes.get(entry.getKey()) : "";
+            if (hash == null) hash = "";
+            byte[] hashBytes = hash.getBytes(StandardCharsets.UTF_8);
+            dos.writeInt(hashBytes.length);
+            dos.write(hashBytes);
+
+            // Write embedding floats
             float[] embedding = entry.getValue();
             for (int i = 0; i < dimension && i < embedding.length; i++) {
                 dos.writeFloat(embedding[i]);

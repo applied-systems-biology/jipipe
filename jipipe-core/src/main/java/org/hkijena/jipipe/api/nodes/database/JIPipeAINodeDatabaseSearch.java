@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
@@ -40,8 +41,13 @@ import java.util.stream.Collectors;
  * AI-powered node database search using embedding vector similarity.
  * <p>
  * This is a separate implementation from legacy/enhanced search.
- * It uses {@link JIPipeEmbeddingDatabase} for cached embeddings and
- * {@link JIPipeAIServiceComponent} for computing new embeddings.
+ * It uses a tiered architecture:
+ * <ul>
+ *   <li>{@link JIPipeGlobalEmbeddingSearch} singleton for globally-cacheable entries
+ *       (stable IDs like {@code create-node-by-info:*})</li>
+ *   <li>A local {@link JIPipeEmbeddingDatabase} for project-specific entries
+ *       (UUID-based IDs like {@code existing-pipeline-node:*})</li>
+ * </ul>
  * <p>
  * Embeddings are computed JIT (just-in-time) similar to how
  * {@link JIPipeEnhancedNodeDatabaseSearch} computes {@code CandidateView} attachments.
@@ -84,7 +90,15 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      */
     private static final Map<String, Long> USAGE_COUNTS = new ConcurrentHashMap<>();
 
-    private final JIPipeEmbeddingDatabase embeddingDatabase;
+    /**
+     * Local embedding database for project-specific entries. Not persisted to disk.
+     */
+    private final JIPipeEmbeddingDatabase localEmbeddingDatabase;
+
+    /**
+     * Global embedding search singleton for stable, cacheable entries.
+     */
+    private final JIPipeGlobalEmbeddingSearch globalEmbeddingSearch;
 
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
     private String currentModelId;
@@ -93,7 +107,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * Creates a new AI-powered node database search.
      */
     public JIPipeAINodeDatabaseSearch() {
-        this.embeddingDatabase = new JIPipeEmbeddingDatabase();
+        this.localEmbeddingDatabase = new JIPipeEmbeddingDatabase(false);
+        this.globalEmbeddingSearch = JIPipeGlobalEmbeddingSearch.getInstance();
     }
 
     /**
@@ -133,13 +148,24 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     /**
-     * Gets the embedding database used by this search instance.
+     * Get the local embedding database for project-specific entries.
+     * This database is transient (not persisted to disk).
      *
-     * @return the embedding database
+     * @return the local embedding database
      */
-    public JIPipeEmbeddingDatabase getEmbeddingDatabase() {
-        return embeddingDatabase;
+    public JIPipeEmbeddingDatabase getLocalEmbeddingDatabase() {
+        return localEmbeddingDatabase;
     }
+
+    /**
+     * Get the global embedding search singleton.
+     *
+     * @return the global embedding search
+     */
+    public JIPipeGlobalEmbeddingSearch getGlobalEmbeddingSearch() {
+        return globalEmbeddingSearch;
+    }
+
 
     /**
      * Gets the current model ID used by this search instance.
@@ -190,23 +216,24 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return;
             }
 
-            // Check if model changed since last build
+            // Handle model change for local database
             if (!Objects.equals(currentModelId, modelId)) {
-                progressInfo.log("Model ID changed from " + currentModelId + " to " + modelId + ", clearing old embeddings");
                 if (currentModelId != null) {
-                    embeddingDatabase.clearModel(currentModelId);
+                    localEmbeddingDatabase.clearModel(currentModelId);
                 }
                 currentModelId = modelId;
             }
 
-            // Only load cached embeddings (bundled resource + user disk cache).
-            // Do NOT compute new embeddings here — that is done JIT in internalQuery()
-            // or on demand via the manual BuildAIEmbeddingIndexTool.
-            embeddingDatabase.loadUserCache(modelId, progressInfo);
+            // Initialize the global database (loads resource + user cache)
+            globalEmbeddingSearch.initialize(modelId, progressInfo);
 
-            progressInfo.log("Loaded AI search index with " + entries.size() + " cached entries for model " + modelId);
+            // No cache loading needed for local database (transient)
+            EntrySplit split = splitEntries(entries);
+            progressInfo.log("AI search index built. Model: " + modelId
+                    + ", Global entries: " + split.global.size()
+                    + ", Local entries: " + split.local.size());
         } catch (Exception e) {
-            progressInfo.warn("Failed to build AI search index, falling back to enhanced search");
+            progressInfo.warn("Failed to build AI search index");
             LOGGER.debug("Failed to build AI search index", e);
         }
     }
@@ -239,6 +266,43 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
         }
 
         return dotProduct / (Math.sqrt(normA) * Math.sqrt(normB));
+    }
+
+    // ===== Entry Classification =====
+
+    /**
+     * Determine if an entry is globally cacheable (stable ID, not project-specific).
+     * Global entries are stored in the application-wide singleton database.
+     * Local entries are stored in the per-project transient database.
+     *
+     * @param entry the node database entry
+     * @return true if the entry should be stored in the global database
+     */
+    public static boolean isGlobalEntry(JIPipeNodeDatabaseEntry entry) {
+        String id = entry.getId();
+        if (id == null) return false;
+        return id.startsWith("create-node-by-info:") ||
+               id.startsWith("create-node-by-example:") ||
+               id.startsWith("create-node-custom:");
+    }
+
+    /**
+     * Split a list of entries into global and local groups.
+     *
+     * @param entries the entries to split
+     * @return an {@link EntrySplit} containing the two groups
+     */
+    private static EntrySplit splitEntries(List<JIPipeNodeDatabaseEntry> entries) {
+        List<JIPipeNodeDatabaseEntry> global = new ArrayList<>();
+        List<JIPipeNodeDatabaseEntry> local = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if (isGlobalEntry(entry)) {
+                global.add(entry);
+            } else {
+                local.add(entry);
+            }
+        }
+        return new EntrySplit(global, local);
     }
 
     // ===== Internal Methods =====
@@ -293,14 +357,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return null;
             }
 
-            // Check if model changed since last query
+            // Handle model change for local database
             if (!Objects.equals(currentModelId, modelId)) {
-                progressInfo.log("Model ID changed from " + currentModelId + " to " + modelId + ", reloading embeddings");
                 if (currentModelId != null) {
-                    embeddingDatabase.clearModel(currentModelId);
+                    localEmbeddingDatabase.clearModel(currentModelId);
                 }
                 currentModelId = modelId;
-                embeddingDatabase.loadUserCache(modelId, progressInfo);
             }
 
             // Get the AI service and ensure the embedding model is loaded before computing anything.
@@ -318,12 +380,24 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return null;
             }
 
-            // Ensure candidates have embeddings (JIT computation — only for filtered entries, not all)
+            // Split entries into global and local tiers
+            EntrySplit split = splitEntries(candidates);
+
+            // Ensure embeddings for global entries via the singleton
             if (Thread.currentThread().isInterrupted()) {
-                LOGGER.debug("AI search was interrupted/cancelled before ensuring embeddings");
+                LOGGER.debug("AI search was interrupted/cancelled before ensuring global embeddings");
                 return null;
             }
-            embeddingDatabase.ensureEmbeddingsForEntries(candidates, modelId, aiService, progressInfo);
+            globalEmbeddingSearch.ensureEmbeddingsForEntries(
+                    split.global, modelId, aiService, progressInfo);
+
+            // Ensure embeddings for local entries via the local database
+            if (Thread.currentThread().isInterrupted()) {
+                LOGGER.debug("AI search was interrupted/cancelled before ensuring local embeddings");
+                return null;
+            }
+            localEmbeddingDatabase.ensureEmbeddingsForEntries(
+                    split.local, modelId, aiService, progressInfo);
 
             // Embed the search query text
             CompletableFuture<float[]> queryFuture = aiService.tryEmbed(text);
@@ -342,11 +416,20 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 return null;
             }
 
-            // Score each candidate by cosine similarity
+            // Score each candidate by cosine similarity using the appropriate tier
             List<ScoredEntry> scored = new ArrayList<>(candidates.size());
             for (JIPipeNodeDatabaseEntry entry : candidates) {
                 String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
-                float[] entryEmbedding = embeddingDatabase.getEmbedding(modelId, nodeId);
+                float[] entryEmbedding;
+
+                if (isGlobalEntry(entry)) {
+                    entryEmbedding = globalEmbeddingSearch.getVerifiedEmbedding(
+                            modelId, nodeId, entry);
+                } else {
+                    String entryText = JIPipeEmbeddingDatabase.entryToText(entry);
+                    entryEmbedding = localEmbeddingDatabase.getVerifiedEmbedding(
+                            modelId, nodeId, entryText);
+                }
 
                 double similarity;
                 if (entryEmbedding != null) {
@@ -438,9 +521,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             return true;
         }
 
-        // Model needs to be started — trigger the load
-        progressInfo.log("Embedding model not loaded (status=" + status + "), starting it now");
-        aiService.tryStartEmbeddingModel();
+        if (status != JIPipeAIModelRunnerStatus.Loading && status != JIPipeAIModelRunnerStatus.Unloading) {
+            progressInfo.log("Embedding model not loaded (status=" + status + "), starting it now");
+            aiService.tryStartEmbeddingModel();
+        } else {
+            progressInfo.log("Embedding model is " + status + ", waiting for it to become ready");
+        }
 
         // Poll until ready, failed, or timeout
         long deadline = System.currentTimeMillis() + MODEL_LOAD_TIMEOUT_SECONDS * 1000;
@@ -559,6 +645,19 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     // ===== Inner Classes =====
+
+    /**
+     * Helper to hold split entry lists.
+     */
+    private static class EntrySplit {
+        final List<JIPipeNodeDatabaseEntry> global;
+        final List<JIPipeNodeDatabaseEntry> local;
+
+        EntrySplit(List<JIPipeNodeDatabaseEntry> global, List<JIPipeNodeDatabaseEntry> local) {
+            this.global = global;
+            this.local = local;
+        }
+    }
 
     /**
      * Helper class to hold a scored entry during ranking.

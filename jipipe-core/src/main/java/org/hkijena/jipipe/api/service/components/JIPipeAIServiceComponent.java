@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.service.components;
 
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,7 +13,6 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -52,10 +53,8 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         // This is a safety net; the primary auto-save happens in ensureEmbeddingsForEntries().
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             try {
-                JIPipeNodeDatabase nodeDatabase = JIPipeNodeDatabase.getInstance();
-                if (nodeDatabase != null) {
-                    nodeDatabase.getAiSearch().getEmbeddingDatabase().saveAllDirty();
-                }
+                // Save the global embedding database (the only persistent one)
+                JIPipeGlobalEmbeddingSearch.getInstance().saveAllDirty();
             } catch (Exception e) {
                 // Best effort on shutdown
             }
@@ -210,6 +209,18 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
      * If a model is currently loaded, it will be stopped first (unload+load = replace).
      */
     public void tryStartEmbeddingModel() {
+        JIPipeAIModelRunnerStatus status = getEmbeddingModelStatus();
+
+        // Already loading — nothing to do
+        if (status == JIPipeAIModelRunnerStatus.Loading) {
+            return;
+        }
+
+        // Already idle or busy — nothing to do
+        if (status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy) {
+            return;
+        }
+
         if (embeddingModelRunner != null) {
             taskQueue.enqueue(new UnloadEmbeddingModelTask());
         }
@@ -278,7 +289,10 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         if (embeddingModelRunner == null
                 || embeddingModelRunner.getStatus() == JIPipeAIModelRunnerStatus.Unloaded
                 || embeddingModelRunner.getStatus() == JIPipeAIModelRunnerStatus.Failed) {
-            taskQueue.enqueue(new LoadEmbeddingModelTask());
+            // Only enqueue if not already loading (avoid duplicate load tasks)
+            if (getEmbeddingModelStatus() != JIPipeAIModelRunnerStatus.Loading) {
+                taskQueue.enqueue(new LoadEmbeddingModelTask());
+            }
         }
 
         EmbedTextTask embedTask = new EmbedTextTask(text);

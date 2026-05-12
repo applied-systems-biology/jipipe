@@ -14,9 +14,8 @@
 package org.hkijena.jipipe.plugins.ai.tools;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.database.JIPipeAINodeDatabaseSearch;
-import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
+import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeGlobalEmbeddingSearch;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
@@ -55,9 +54,8 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
             return;
         }
 
-        // Get the AI search instance and embedding database
-        JIPipeAINodeDatabaseSearch aiSearch = JIPipeNodeDatabase.getInstance().getAiSearch();
-        JIPipeEmbeddingDatabase embeddingDatabase = aiSearch.getEmbeddingDatabase();
+        // Get the global embedding database
+        JIPipeEmbeddingDatabase embeddingDatabase = JIPipeGlobalEmbeddingSearch.getInstance().getEmbeddingDatabase();
 
         // Resolve the model ID: try the AI service first, then fall back to the AI search's current model
         String modelId = null;
@@ -66,7 +64,7 @@ public class ExportGlobalEmbeddingDatabaseTool extends JIPipeDesktopMenuExtensio
             modelId = aiService.getModelId();
         }
         if (modelId == null) {
-            modelId = aiSearch.getCurrentModelId();
+            modelId = JIPipeGlobalEmbeddingSearch.getInstance().getCurrentModelId();
         }
 
         if (modelId == null) {

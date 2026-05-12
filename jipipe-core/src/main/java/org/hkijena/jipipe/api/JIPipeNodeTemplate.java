@@ -44,6 +44,7 @@ import java.util.*;
 public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     public static final String SOURCE_USER = "User";
     public static final String SOURCE_EXTENSION = "Extension";
+    private UUID uuid = UUID.randomUUID();
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
     private StringList menuPath = new StringList();
@@ -147,6 +148,22 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
 
     public boolean isFromExtension() {
         return JIPipe.getNodeTemplates().isPluginTemplate(this);
+    }
+
+    /**
+     * Get the unique identifier of this template.
+     * The UUID is generated on construction and persisted with the template.
+     *
+     * @return the UUID
+     */
+    @JsonGetter("uuid")
+    public UUID getUUID() {
+        return uuid;
+    }
+
+    @JsonSetter("uuid")
+    public void setUUID(UUID uuid) {
+        this.uuid = uuid;
     }
 
     @SetJIPipeDocumentation(name = "Name", description = "Name of the template")
