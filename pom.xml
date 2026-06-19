@@ -86,6 +86,10 @@ See the LICENSE file provided with this code for the full license.
             <id>imagej.public</id>
             <url>https://maven.imagej.net/content/groups/public</url>
         </repository>
+        <repository>
+            <id>jipipe.backup</id>
+            <url>https://jipipe.hki-jena.de/mvn</url>
+        </repository>
     </repositories>
 
     <dependencyManagement>
