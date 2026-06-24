@@ -186,6 +186,17 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
             if (currentlyRunningWorker == worker) {
                 worker.getRun().getProgressInfo().cancel();
                 worker.cancel(true);
+                // Synchronously release the slot so a following enqueue() can proceed.
+                // This fixes the stuck-"Pending" bug after cancelAll() followed by enqueue():
+                // previously the late async done() callback was relied upon to clear the slot,
+                // leaving a newly enqueued worker stranded in PENDING forever.
+                // This is safe because onRunnableInterrupted/onRunnableFinished guard on
+                // event.getWorker() == currentlyRunningWorker, so the late done() event
+                // for the cancelled worker just fails that guard and becomes a harmless no-op.
+                assignedWorkers.remove(worker.getRun());
+                currentlyRunningWorker = null;
+                tryDequeue();
+                unregisterWorkerEvents(worker);
             } else {
                 queue.remove(worker);
                 interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
@@ -211,6 +222,12 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
             event.getRun().onFinished(event);
         }
         finishedEventEmitter.emit(event);
+        // Safety net: ensure a non-empty queue is never silently stranded,
+        // e.g. if the identity guard above was a no-op because cancel() already
+        // synchronously cleared currentlyRunningWorker. (See investigation plan.)
+        if (currentlyRunningWorker == null && !queue.isEmpty()) {
+            tryDequeue();
+        }
     }
 
     /**
@@ -229,6 +246,12 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
             event.getRun().onInterrupted(event);
         }
         interruptedEventEmitter.emit(event);
+        // Safety net: ensure a non-empty queue is never silently stranded,
+        // e.g. if the identity guard above was a no-op because cancel() already
+        // synchronously cleared currentlyRunningWorker. (See investigation plan.)
+        if (currentlyRunningWorker == null && !queue.isEmpty()) {
+            tryDequeue();
+        }
     }
 
     /**

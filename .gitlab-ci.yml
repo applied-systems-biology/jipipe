@@ -1,28 +1,26 @@
 stages:
+  - ".pre"
   - build
   - package
   - publish
+  - ".post"
 
-# Share the Maven repo across jobs & pipelines; refresh when POMs change
 cache:
   key:
     files:
       - pom.xml
       - "**/pom.xml"
   paths:
-    - .m2/repository/
+    - ".m2/repository/"
   policy: pull-push
 
 variables:
-  # Keep repo fast to fetch but DO NOT wipe .m2/ (Option A)
   GIT_STRATEGY: fetch
   GIT_DEPTH: "1"
   GIT_CLEAN_FLAGS: "-ffdx -e .m2/"
-  # Store Maven local repo inside the project dir (and cache it)
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
 
-# Job template for shared configuration
-.default_build_template: &default_build
+.default_build_template:
   interruptible: true
   retry: 1
   image: maven:3-eclipse-temurin-21-jammy
@@ -32,14 +30,17 @@ variables:
     - git lfs install --force
     - git config --global --add safe.directory "$CI_PROJECT_DIR"
 
-# Master branch jobs - Full pipeline with distribution
 distribution_package:
   stage: package
   interruptible: true
   retry: 1
-  <<: *default_build
+  image: maven:3-eclipse-temurin-21-jammy
+  before_script:
+    - apt-get update
+    - apt-get install -y nsis git git-lfs zip unzip
+    - git lfs install --force
+    - git config --global --add safe.directory "$CI_PROJECT_DIR"
   script:
-    # Pre-warm Maven dependencies to leverage cache and speed up subsequent steps
     - mvn -B -ntp -DskipTests dependency:go-offline
     - git clone --depth 1 https://asb-git.hki-jena.de/RGerst/jipipe-distribution-files.git
     - cd jipipe-distribution-files/scripts
@@ -51,7 +52,7 @@ distribution_package:
     - test -n "$OUTDIR" || { echo "Snapshot output dir not found"; ls -lah; exit 1; }
     - ls -lah "$OUTDIR"
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: $CI_COMMIT_BRANCH == "master"
   artifacts:
     when: always
     expire_in: 1 week
@@ -66,77 +67,196 @@ upload_to_package_registry:
   image: maven:3-eclipse-temurin-21-jammy
   before_script:
     - apt-get update
-    - apt-get install -y git
-    - apt-get install -y curl jq
+    - apt-get install -y git curl jq
   script:
     - set -euo pipefail
-    # Locate snapshot output dir from artifacts
-    - OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
-    - test -n "$OUTDIR" || { echo "Snapshot outdir not found"; ls -lah jipipe-distribution-files || true; exit 1; }
 
-    # Infer version from the ImageJ plugins zip: JIPipe-<ver>-snapshot<IID>.zip
-    - ONE="$(ls "$OUTDIR"/JIPipe-*-snapshot${CI_PIPELINE_IID}.zip 2>/dev/null | grep -v Prepackaged || true | head -n1)"
     - |
+      OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
+      test -n "$OUTDIR" || {
+        echo "Snapshot outdir not found"
+        ls -lah jipipe-distribution-files || true
+        exit 1
+      }
+
+    - |
+      ONE="$(
+        ls "$OUTDIR"/JIPipe-*-snapshot${CI_PIPELINE_IID}.zip 2>/dev/null \
+          | grep -v Prepackaged \
+          | head -n 1 \
+          || true
+      )"
+
       if [ -z "$ONE" ]; then
-        echo "Could not find the plugins zip (JIPipe-*-snapshot${CI_PIPELINE_IID}.zip) to infer version"
+        echo "Could not find the plugins zip JIPipe-*-snapshot${CI_PIPELINE_IID}.zip to infer version"
         ls -lah "$OUTDIR"
         exit 1
       fi
-    - BASE="$(basename "$ONE")"
-    - BASE="${BASE#JIPipe-}"
-    - VERSION_BASE="${BASE%-snapshot${CI_PIPELINE_IID}.zip}"
-    - VERSION="${VERSION_BASE}-snapshot${CI_PIPELINE_IID}"
-    - PKG="jipipe"
-    - BASE_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PKG/$VERSION"
-    - echo "Publishing $OUTDIR as $PKG/$VERSION"
 
-    # Build the exact file list (only regular files, non-empty, five expected names)
     - |
-      FILES="$(find "$OUTDIR" -maxdepth 1 -type f -size +0c \( \
-                 -name "JIPipe-*-${VERSION#${VERSION_BASE}-}-Installer-Win64.exe" -o \
-                 -name "JIPipe-*-${VERSION#${VERSION_BASE}-}-Prepackaged-Win64.zip" -o \
-                 -name "JIPipe-*-${VERSION#${VERSION_BASE}-}-Prepackaged-macOS.zip" -o \
-                 -name "JIPipe-*-${VERSION#${VERSION_BASE}-}-Prepackaged-Linux64.tar.gz" -o \
-                 -name "JIPipe-${VERSION}.zip" \
-               \) | sort)"
+      BASE="$(basename "$ONE")"
+      BASE="${BASE#JIPipe-}"
+      VERSION_BASE="${BASE%-snapshot${CI_PIPELINE_IID}.zip}"
+      VERSION="${VERSION_BASE}-snapshot${CI_PIPELINE_IID}"
+
+      PKG="jipipe"
+      BASE_API="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/$PKG/$VERSION"
+
+      echo "Publishing $OUTDIR as $PKG/$VERSION"
+      echo "Base API URL: $BASE_API"
+
+    - |
+      SNAPSHOT_SUFFIX="${VERSION#${VERSION_BASE}-}"
+
+      FILES="$(
+        find "$OUTDIR" -maxdepth 1 -type f -size +0c \( \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Installer-Win64.exe" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-Win64.zip" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-macOS.zip" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-Linux64.tar.gz" -o \
+          -name "JIPipe-${VERSION}.zip" \
+        \) | sort
+      )"
+
       if [ -z "$FILES" ]; then
-        echo "No matching package files found (regular, non-empty)"; ls -lah "$OUTDIR"; exit 1
+        echo "No matching package files found"
+        echo "Expected files for version: $VERSION"
+        ls -lah "$OUTDIR"
+        exit 1
       fi
-      echo "$FILES" | sed 's/^/  • /'
-    - echo "# JIPipe $VERSION download URLs" > "urls-${VERSION}.txt"
 
-    # Upload each file
+      echo "Files selected for upload:"
+      echo "$FILES" | sed 's/^/  - /'
+
     - |
+      echo "# JIPipe $VERSION download URLs" > "urls-${VERSION}.txt"
+
+      upload_one() {
+        f="$1"
+        name="$(basename "$f")"
+        url="$BASE_API/$name"
+
+        echo "Uploading $name ..."
+
+        body="$(mktemp)"
+        headers="$(mktemp)"
+
+        http_code="$(
+          curl \
+            --retry 3 \
+            --retry-delay 5 \
+            --retry-all-errors \
+            --silent \
+            --show-error \
+            --location \
+            --request PUT \
+            --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+            --upload-file "$f" \
+            --dump-header "$headers" \
+            --output "$body" \
+            --write-out "%{http_code}" \
+            "$url"
+        )"
+
+        echo "HTTP status for $name: $http_code"
+
+        if [ "$http_code" != "201" ]; then
+          echo "Upload failed for $name"
+          echo
+          echo "Response headers:"
+          cat "$headers" || true
+          echo
+          echo "Response body:"
+          cat "$body" || true
+          echo
+          exit 1
+        fi
+
+        echo "Upload successful for $name"
+        cat "$body" || true
+        echo
+
+        echo "$url" >> "urls-${VERSION}.txt"
+      }
+
+      echo "$FILES" | while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        upload_one "$f"
+      done
+
+    - |
+      echo "Verifying uploaded package files ..."
+
+      package_lookup_url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages?package_type=generic&package_name=$PKG&package_version=$VERSION"
+
+      package_json="$(
+        curl \
+          --silent \
+          --show-error \
+          --fail \
+          --location \
+          --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+          "$package_lookup_url"
+      )"
+
+      package_id="$(echo "$package_json" | jq -r '.[0].id // empty')"
+
+      if [ -z "$package_id" ]; then
+        echo "Could not find package after upload: $PKG/$VERSION"
+        echo "$package_json" | jq . || echo "$package_json"
+        exit 1
+      fi
+
+      echo "Found package ID: $package_id"
+
+      package_files_url="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/$package_id/package_files?per_page=100"
+
+      files_json="$(
+        curl \
+          --silent \
+          --show-error \
+          --fail \
+          --location \
+          --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+          "$package_files_url"
+      )"
+
       echo "$FILES" | while IFS= read -r f; do
         [ -n "$f" ] || continue
         name="$(basename "$f")"
-        echo "Uploading $name …"
-        curl --retry 3 --fail -sS \
-          --header "JOB-TOKEN: $CI_JOB_TOKEN" \
-          --upload-file "$f" \
-          "$BASE_API/$name"
-        echo "$BASE_API/$name" >> "urls-${VERSION}.txt"
+
+        if ! echo "$files_json" | jq -e --arg name "$name" '.[] | select(.file_name == $name)' >/dev/null; then
+          echo "Missing uploaded package file: $name"
+          echo "Package files returned by GitLab:"
+          echo "$files_json" | jq . || echo "$files_json"
+          exit 1
+        fi
+
+        echo "Verified package file: $name"
       done
+
+      echo "All expected package files are present."
+
     - echo "Done. URLs written to urls-${VERSION}.txt"
+
   rules:
-    - if: '$CI_COMMIT_BRANCH == "master"'
+    - if: $CI_COMMIT_BRANCH == "master"
   artifacts:
     when: always
     expire_in: 3 months
     paths:
       - urls-*.txt
 
-# Feature branch jobs - Simplified build
 build_feature_branch:
   stage: build
   interruptible: true
   retry: 1
-  <<: *default_build
+  image: maven:3-eclipse-temurin-21-jammy
   before_script:
     - apt-get update
     - apt-get install -y zip wget
   script:
-    - echo "Pre-warming dependencies…"
+    - echo "Pre-warming dependencies..."
     - mvn -B -ntp -DskipTests dependency:go-offline
     - echo "Building JIPipe for feature branch"
     - mvn -B -ntp clean compile
@@ -146,9 +266,9 @@ build_feature_branch:
     - echo "Build completed. Finding generated ZIP files..."
     - find . -name "JIPipe-*.zip" -type f | head -5
   artifacts:
-    name: "jipipe-zip-files-$CI_PIPELINE_ID"
+    name: jipipe-zip-files-$CI_PIPELINE_ID
     paths:
       - dist/zip/JIPipe-*.zip
     expire_in: 1 week
   rules:
-    - if: '$CI_COMMIT_BRANCH != "master"'
+    - if: $CI_COMMIT_BRANCH != "master"
