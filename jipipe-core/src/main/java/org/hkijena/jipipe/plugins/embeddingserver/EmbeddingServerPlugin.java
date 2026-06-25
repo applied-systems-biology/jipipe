@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.components.JIPipeServerServiceComponent;
 import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
+import org.hkijena.jipipe.plugins.embeddingserver.tools.OpenServerMonitorTool;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -43,6 +44,8 @@ public class EmbeddingServerPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 EmbeddingServerInstance.class,
                 (env, port) -> new EmbeddingServerInstance(env, port),
                 JIPipe.RESOURCES.getIcon16("actions/ai.png"));
+
+        registerMenuExtension(OpenServerMonitorTool.class);
     }
 
     @Override
