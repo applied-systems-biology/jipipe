@@ -180,6 +180,11 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
         }
         command.add(modelId);
 
+        // Pass the current JVM's PID so the spawned server can self-terminate
+        // if this parent process is killed (e.g., via SIGKILL).
+        command.add("--parent-pid");
+        command.add(String.valueOf(ProcessHandle.current().pid()));
+
         return command;
     }
 

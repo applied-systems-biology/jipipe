@@ -33,6 +33,7 @@ public class EmbeddingServerProcess {
     private final String modelId;
     private final ObjectMapper objectMapper = new ObjectMapper();
     private volatile boolean modelReady = false;
+    private final long parentPid;
 
     /**
      * Creates and starts the embedding server process.
@@ -41,10 +42,12 @@ public class EmbeddingServerProcess {
      * @param tokenizerPath the path to the tokenizer file
      * @param port         the TCP port to listen on
      * @param modelId      the model identifier reported by the API
+     * @param parentPid    the PID of the parent process to monitor (0 to disable monitoring)
      * @throws Exception if the model or HTTP server cannot be started
      */
-    public EmbeddingServerProcess(Path modelPath, Path tokenizerPath, int port, String modelId) throws Exception {
+    public EmbeddingServerProcess(Path modelPath, Path tokenizerPath, int port, String modelId, long parentPid) throws Exception {
         this.modelId = modelId;
+        this.parentPid = parentPid;
 
         // Load the ONNX model
         this.runner = new JIPipeOnnxEmbeddingAIModelRunner(modelPath, tokenizerPath, modelId);
@@ -57,6 +60,39 @@ public class EmbeddingServerProcess {
         server.createContext("/health", new HealthHandler());
         server.setExecutor(Executors.newFixedThreadPool(4));
         server.start();
+
+        // Start monitoring the parent process so this server self-terminates
+        // if the parent is killed (e.g., via SIGKILL, which cannot run shutdown hooks).
+        if (parentPid > 0) {
+            startParentMonitor();
+        }
+    }
+
+    /**
+     * Starts a daemon thread that periodically checks whether the parent process
+     * (identified by {@link #parentPid}) is still alive. If the parent is gone,
+     * this server self-terminates via {@link System#exit(int)}.
+     *
+     * <p>This handles the case where the parent JIPipe process is killed with
+     * {@code kill -9} (SIGKILL), which prevents shutdown hooks from running and
+     * thus prevents the parent from telling this server to stop.</p>
+     */
+    private void startParentMonitor() {
+        Thread monitor = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(2000); // Check every 2 seconds
+                } catch (InterruptedException e) {
+                    break;
+                }
+                if (!ProcessHandle.of(parentPid).isPresent()) {
+                    // Parent process is gone — self-terminate
+                    System.exit(0);
+                }
+            }
+        }, "Parent-Process-Monitor");
+        monitor.setDaemon(true);
+        monitor.start();
     }
 
     /**
@@ -68,6 +104,7 @@ public class EmbeddingServerProcess {
      *     <li>{@code --tokenizer <path>} - path to the tokenizer file</li>
      *     <li>{@code --port <int>} - TCP port to listen on</li>
      *     <li>{@code --model-id <string>} - model identifier (default: "unknown")</li>
+     *     <li>{@code --parent-pid <long>} - PID of the parent process to monitor (optional)</li>
      * </ul>
      *
      * @param args the command-line arguments
@@ -78,6 +115,7 @@ public class EmbeddingServerProcess {
         Path tokenizerPath = null;
         int port = 0;
         String modelId = "unknown";
+        long parentPid = 0;
 
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
@@ -102,6 +140,11 @@ public class EmbeddingServerProcess {
                         modelId = args[++i];
                     }
                     break;
+                case "--parent-pid":
+                    if (i + 1 < args.length) {
+                        parentPid = Long.parseLong(args[++i]);
+                    }
+                    break;
                 default:
                     // Ignore unknown arguments
                     break;
@@ -109,11 +152,11 @@ public class EmbeddingServerProcess {
         }
 
         if (modelPath == null || tokenizerPath == null || port == 0) {
-            System.err.println("Usage: EmbeddingServerProcess --model <path> --tokenizer <path> --port <int> [--model-id <string>]");
+            System.err.println("Usage: EmbeddingServerProcess --model <path> --tokenizer <path> --port <int> [--model-id <string>] [--parent-pid <long>]");
             System.exit(1);
         }
 
-        new EmbeddingServerProcess(modelPath, tokenizerPath, port, modelId);
+        new EmbeddingServerProcess(modelPath, tokenizerPath, port, modelId, parentPid);
 
         // Keep the process running until killed
         Thread.currentThread().join();
