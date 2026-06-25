@@ -66,6 +66,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeCleanupServiceComponent cleanup;
     private final JIPipeProjectBackupServiceComponent projectBackup;
     private final JIPipeAIServiceComponent aiService;
+    private final JIPipeServerServiceComponent serverService;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -102,17 +103,21 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         cleanup = new JIPipeCleanupServiceComponent(this);
         projectBackup = new JIPipeProjectBackupServiceComponent(this);
         aiService = new JIPipeAIServiceComponent(this);
+        serverService = new JIPipeServerServiceComponent(this);
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[] {
                 recentProjects, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService, serverService
         };
     }
 
     @Override
     public void dispose() {
         super.dispose();
+
+        // Stop all server instances before disposing plugins
+        serverService.releaseAll();
 
         // Unload all plugins
         for (String activatedPluginId : getPlugins().getActivatedPlugins()) {
@@ -258,6 +263,10 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public JIPipeAIServiceComponent getAiService() {
         return aiService;
+    }
+
+    public JIPipeServerServiceComponent getServerService() {
+        return serverService;
     }
 
     public JIPipeProgressInfo getProgressInfo() {

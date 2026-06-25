@@ -441,7 +441,15 @@ public final class JIPipe {
         }
 
         Timer timer = new Timer(500, e -> {
-//            System.exit(exitCode);
+            // Stop all server instances before halting the JVM
+            // halt() bypasses shutdown hooks, so we must explicitly clean up
+            try {
+                if (instance != null) {
+                    instance.getServerService().releaseAll();
+                }
+            } catch (Exception ex) {
+                // Best effort during shutdown
+            }
             // Context introduces a shutdown hook that causes a deadlock
             Runtime.getRuntime().halt(exitCode);
         });

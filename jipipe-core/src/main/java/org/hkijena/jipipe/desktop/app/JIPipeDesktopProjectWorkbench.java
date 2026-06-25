@@ -72,6 +72,7 @@ import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectOverviewUI;
 import org.hkijena.jipipe.desktop.app.settings.JIPipeDesktopProjectSettingsUI;
 import org.hkijena.jipipe.desktop.commons.components.SplitButton;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAIStatusControl;
+import org.hkijena.jipipe.desktop.commons.components.servers.JIPipeDesktopServerStatusControl;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopAccelerationOptionsControl;
 import org.hkijena.jipipe.desktop.commons.components.project.JIPipeDesktopArtifactsOptionsControl;
@@ -551,6 +552,9 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
             // AI control
             statusBar.add(new JIPipeDesktopAIStatusControl(this));
         }
+
+        // Server control
+        statusBar.add(new JIPipeDesktopServerStatusControl(this));
 
         // Memory meter
         statusBar.add(new JIPipeDesktopMemoryStatusUI());

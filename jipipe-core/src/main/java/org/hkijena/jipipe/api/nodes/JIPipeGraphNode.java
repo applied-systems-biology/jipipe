@@ -34,6 +34,8 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurator;
+import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
+import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -1432,6 +1434,51 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
      */
     public <T extends JIPipeEnvironment> T getEnvironment(Class<T> klass, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         return getEnvironmentConfigurator(klass, runContext.getEnvironmentConfigurationCache()).get(progressInfo);
+    }
+
+    /**
+     * Convenience method to acquire a server instance lease.
+     * The method:
+     * 1. Looks up the factory for the given instance class
+     * 2. Gets the associated environment class
+     * 3. Resolves the environment via {@link JIPipeEnvironmentConfigurator}
+     * 4. Acquires a lease from {@link org.hkijena.jipipe.api.service.components.JIPipeServerServiceComponent}
+     * 5. Returns the lease
+     *
+     * <p>Usage:</p>
+     * <pre>
+     * try (JIPipeServerLease<MyServerInstance> lease = getServerInstance(MyServerInstance.class)) {
+     *     lease.getInstance().doSomething();
+     * }
+     * </pre>
+     *
+     * @param instanceClass the server instance class
+     * @param <TInst>       the server instance type
+     * @return a lease for the server instance
+     * @throws IllegalArgumentException if no factory is registered for the instance class
+     */
+    public <TInst extends JIPipeServerInstance<?>> JIPipeServerLease<TInst> getServerInstance(Class<TInst> instanceClass) {
+        org.hkijena.jipipe.api.service.components.JIPipeServerServiceComponent serverService =
+                org.hkijena.jipipe.JIPipe.getInstance().getServerService();
+
+        // Find the factory that produces this instance class
+        for (String factoryId : serverService.getFactoryIds()) {
+            org.hkijena.jipipe.api.service.components.JIPipeServerServiceComponent.FactoryEntry<?, ?> entry =
+                    serverService.getFactory(factoryId);
+            if (entry.getInstClass().equals(instanceClass)) {
+                // Resolve the environment
+                Class<? extends JIPipeEnvironment> envClass = entry.getEnvClass();
+                JIPipeEnvironment environment = getEnvironment(envClass, new JIPipeEnvironmentConfigurationCache(), new JIPipeProgressInfo());
+                if (environment == null) {
+                    throw new IllegalStateException("Unable to resolve environment of type " + envClass.getName() +
+                            " for server instance " + instanceClass.getName());
+                }
+                @SuppressWarnings("unchecked")
+                JIPipeServerLease<TInst> lease = serverService.acquireLease(factoryId, instanceClass, environment);
+                return lease;
+            }
+        }
+        throw new IllegalArgumentException("No server instance factory registered for class: " + instanceClass.getName());
     }
 
     @SetJIPipeDocumentation(name = "Override connected services", description = "Allows to configure service connectors for this specific node")

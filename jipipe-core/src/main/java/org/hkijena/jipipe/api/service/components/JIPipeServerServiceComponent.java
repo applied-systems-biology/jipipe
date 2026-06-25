@@ -1,0 +1,497 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.api.service.components;
+
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.servers.*;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.api.servers.ManagedInstanceEntry;
+import org.hkijena.jipipe.api.servers.PortManager;
+
+import javax.swing.*;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Central service component that manages the lifecycle of external server instances.
+ *
+ * <p>Responsibilities:</p>
+ * <ul>
+ *     <li>Registry of server instance factories (mapping environment types to server types)</li>
+ *     <li>Lifecycle management: start, stop, health check, auto-shutdown</li>
+ *     <li>Lease acquisition and release with reference counting</li>
+ *     <li>Port assignment via {@link PortManager}</li>
+ *     <li>Event-driven state change notifications</li>
+ * </ul>
+ *
+ * <p>Follows the pattern of {@link JIPipeAIServiceComponent} with a
+ * {@link JIPipeRunnableQueue} for serialized lifecycle operations.</p>
+ */
+public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
+
+    private final Map<String, FactoryEntry<?, ?>> factories = new ConcurrentHashMap<>();
+    private final Map<String, ManagedInstanceEntry> activeInstances = new ConcurrentHashMap<>();
+    private final JIPipeServerInstanceManager appWideManager;
+    private final PortManager portManager = new PortManager();
+    private final JIPipeRunnableQueue lifecycleQueue = new JIPipeRunnableQueue("Server Lifecycle");
+    private final JIPipeServerEventEmitter stateChangedEventEmitter = new JIPipeServerEventEmitter();
+
+    /**
+     * Default startup timeout in milliseconds.
+     */
+    private static final long DEFAULT_STARTUP_TIMEOUT_MS = 120_000;
+
+    /**
+     * Default health check interval in milliseconds during startup.
+     */
+    private static final long HEALTH_CHECK_INTERVAL_MS = 500;
+
+    public JIPipeServerServiceComponent(JIPipeService service) {
+        super(service);
+        this.lifecycleQueue.setSilent(true);
+        this.appWideManager = new JIPipeServerInstanceManager(this);
+    }
+
+    // ===== Factory Registration =====
+
+    /**
+     * Registers a server instance factory.
+     *
+     * @param factoryId the unique factory ID (e.g., "ipython-server")
+     * @param envClass  the environment class this factory accepts
+     * @param instClass the server instance class this factory produces
+     * @param factory   the factory function
+     * @param icon      the icon for this server type
+     * @param <TEnv>    the environment type
+     * @param <TInst>   the server instance type
+     */
+    public <TEnv extends JIPipeEnvironment, TInst extends JIPipeServerInstance<TEnv>>
+    void registerServerInstanceFactory(String factoryId, Class<TEnv> envClass,
+                                       Class<TInst> instClass,
+                                       ServerInstanceFactory<TEnv, TInst> factory,
+                                       Icon icon) {
+        factories.put(factoryId, new FactoryEntry<>(factoryId, envClass, instClass, factory, icon));
+    }
+
+    /**
+     * Returns the factory entry for the given factory ID.
+     *
+     * @param factoryId the factory ID
+     * @return the factory entry, or null if not found
+     */
+    public FactoryEntry<?, ?> getFactory(String factoryId) {
+        return factories.get(factoryId);
+    }
+
+    /**
+     * Returns all registered factory IDs.
+     *
+     * @return unmodifiable set of factory IDs
+     */
+    public Set<String> getFactoryIds() {
+        return Collections.unmodifiableSet(factories.keySet());
+    }
+
+    // ===== Lease Acquisition =====
+
+    /**
+     * Acquires a lease for a server instance. If an instance for the given environment
+     * already exists and is running, increments the reference count and returns a new lease.
+     * If not, creates a new instance, starts it, and returns a lease.
+     *
+     * @param factoryId   the server instance factory ID
+     * @param instClass   the expected server instance class
+     * @param environment the environment to configure the server
+     * @param <TInst>     the server instance type
+     * @return a lease for the server instance
+     * @throws IllegalArgumentException if the factory is not registered or the instance class doesn't match
+     * @throws ServerStartException     if the server fails to start
+     */
+    public <TInst extends JIPipeServerInstance<?>>
+    JIPipeServerLease<TInst> acquireLease(String factoryId, Class<TInst> instClass, JIPipeEnvironment environment) {
+        FactoryEntry<?, ?> entry = factories.get(factoryId);
+        if (entry == null) {
+            throw new IllegalArgumentException("No server instance factory registered for ID: " + factoryId);
+        }
+
+        String instanceKey = createInstanceKey(factoryId, environment);
+
+        ManagedInstanceEntry managedEntry = activeInstances.computeIfAbsent(instanceKey, k -> {
+            // Create new instance
+            int port = resolvePort(environment);
+            @SuppressWarnings("unchecked")
+            ServerInstanceFactory<JIPipeEnvironment, JIPipeServerInstance<JIPipeEnvironment>> typedFactory =
+                    (ServerInstanceFactory<JIPipeEnvironment, JIPipeServerInstance<JIPipeEnvironment>>) entry.factory;
+            JIPipeServerInstance<JIPipeEnvironment> instance = typedFactory.create(environment, port);
+            return new ManagedInstanceEntry(instance);
+        });
+
+        @SuppressWarnings("unchecked")
+        TInst instance = (TInst) managedEntry.getInstance();
+
+        // Validate type
+        if (!instClass.isInstance(instance)) {
+            throw new IllegalArgumentException("Factory '" + factoryId + "' produces " +
+                    instance.getClass().getName() + " but " + instClass.getName() + " was requested");
+        }
+
+        // Start the instance if not running
+        JIPipeServerState state = instance.getState();
+        if (state == JIPipeServerState.NotRunning || state == JIPipeServerState.Failed) {
+            startInstance(instance);
+        }
+
+        // Wait for instance to be running (with timeout)
+        waitForInstanceRunning(instance);
+
+        // Increment reference count
+        managedEntry.acquire();
+
+        // Update state to Busy if appropriate
+        if (instance.getState() == JIPipeServerState.Idle || instance.getState() == JIPipeServerState.Running) {
+            JIPipeServerState oldState = instance.getState();
+            instance.setState(JIPipeServerState.Busy);
+            fireStateChanged(instance, oldState, JIPipeServerState.Busy);
+        }
+
+        return new JIPipeServerLease<>(instance, this);
+    }
+
+    /**
+     * Releases a lease. Called by {@link JIPipeServerLease#close()}.
+     * Decrements the reference count and updates the instance state.
+     *
+     * @param lease the lease to release
+     */
+    public void releaseLease(JIPipeServerLease<?> lease) {
+        JIPipeServerInstance<?> instance = lease.getInstanceUnchecked();
+        String instanceKey = findInstanceKey(instance);
+        if (instanceKey == null) {
+            return; // Instance no longer tracked
+        }
+
+        ManagedInstanceEntry managedEntry = activeInstances.get(instanceKey);
+        if (managedEntry == null) {
+            return;
+        }
+
+        int newCount = managedEntry.release();
+        if (newCount <= 0) {
+            // No more leases - transition to Idle
+            JIPipeServerState oldState = instance.getState();
+            if (oldState == JIPipeServerState.Busy) {
+                instance.setState(JIPipeServerState.Idle);
+                fireStateChanged(instance, oldState, JIPipeServerState.Idle);
+            }
+        }
+    }
+
+    // ===== Lifecycle =====
+
+    /**
+     * Starts a server instance. Blocks until the instance is running or fails.
+     *
+     * @param instance the instance to start
+     * @throws ServerStartException if the server fails to start
+     */
+    private void startInstance(JIPipeServerInstance<?> instance) {
+        JIPipeServerState oldState = instance.getState();
+        instance.setState(JIPipeServerState.Starting);
+        fireStateChanged(instance, oldState, JIPipeServerState.Starting);
+
+        try {
+            instance.start();
+        } catch (ServerStartException e) {
+            instance.setState(JIPipeServerState.Failed);
+            fireStateChanged(instance, JIPipeServerState.Starting, JIPipeServerState.Failed);
+            throw e;
+        } catch (Exception e) {
+            instance.setState(JIPipeServerState.Failed);
+            fireStateChanged(instance, JIPipeServerState.Starting, JIPipeServerState.Failed);
+            throw new ServerStartException("Server failed to start: " + e.getMessage(),
+                    ServerStartException.Reason.Unknown, e);
+        }
+    }
+
+    /**
+     * Waits for a server instance to reach Running/Idle/Busy state.
+     * Polls health check at regular intervals.
+     *
+     * @param instance the instance to wait for
+     * @throws ServerStartException if the server doesn't become healthy within the timeout
+     */
+    private void waitForInstanceRunning(JIPipeServerInstance<?> instance) {
+        JIPipeServerState state = instance.getState();
+        if (state == JIPipeServerState.Running || state == JIPipeServerState.Idle ||
+                state == JIPipeServerState.Busy) {
+            return; // Already running
+        }
+
+        if (state != JIPipeServerState.Starting) {
+            throw new ServerStartException("Server is in state " + state + ", expected Starting",
+                    ServerStartException.Reason.Unknown);
+        }
+
+        long deadline = System.currentTimeMillis() + DEFAULT_STARTUP_TIMEOUT_MS;
+        while (System.currentTimeMillis() < deadline) {
+            if (instance.isHealthy()) {
+                JIPipeServerState oldState = instance.getState();
+                instance.setState(JIPipeServerState.Running);
+                fireStateChanged(instance, oldState, JIPipeServerState.Running);
+                return;
+            }
+            try {
+                Thread.sleep(HEALTH_CHECK_INTERVAL_MS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new ServerStartException("Interrupted while waiting for server to start",
+                        ServerStartException.Reason.Timeout);
+            }
+        }
+
+        // Timeout - stop the instance and throw
+        stopInstance(instance);
+        throw new ServerStartException("Server did not become healthy within " + DEFAULT_STARTUP_TIMEOUT_MS + "ms",
+                ServerStartException.Reason.Timeout);
+    }
+
+    /**
+     * Stops a server instance.
+     *
+     * @param instance the instance to stop
+     */
+    public void stopInstance(JIPipeServerInstance<?> instance) {
+        JIPipeServerState oldState = instance.getState();
+        if (oldState == JIPipeServerState.NotRunning) {
+            return;
+        }
+        instance.setState(JIPipeServerState.Stopping);
+        fireStateChanged(instance, oldState, JIPipeServerState.Stopping);
+
+        try {
+            instance.stop();
+            instance.setState(JIPipeServerState.NotRunning);
+            fireStateChanged(instance, JIPipeServerState.Stopping, JIPipeServerState.NotRunning);
+        } catch (Exception e) {
+            instance.setState(JIPipeServerState.Failed);
+            fireStateChanged(instance, JIPipeServerState.Stopping, JIPipeServerState.Failed);
+        }
+
+        // Release the port
+        portManager.releasePort(instance.getPort());
+
+        // Remove from active instances
+        String key = findInstanceKey(instance);
+        if (key != null) {
+            activeInstances.remove(key);
+        }
+    }
+
+    /**
+     * Stops all active server instances. Called during application shutdown.
+     */
+    public void releaseAll() {
+        List<JIPipeServerInstance<?>> instancesToStop = new ArrayList<>();
+        for (ManagedInstanceEntry entry : activeInstances.values()) {
+            instancesToStop.add(entry.getInstance());
+        }
+
+        // Stop in reverse order (LIFO)
+        for (int i = instancesToStop.size() - 1; i >= 0; i--) {
+            try {
+                stopInstance(instancesToStop.get(i));
+            } catch (Exception e) {
+                // Best effort during shutdown
+            }
+        }
+        activeInstances.clear();
+    }
+
+    // ===== Queries =====
+
+    /**
+     * Returns all active server instances.
+     *
+     * @return unmodifiable list of active instances
+     */
+    public List<JIPipeServerInstance<?>> getActiveInstances() {
+        List<JIPipeServerInstance<?>> instances = new ArrayList<>();
+        for (ManagedInstanceEntry entry : activeInstances.values()) {
+            instances.add(entry.getInstance());
+        }
+        return Collections.unmodifiableList(instances);
+    }
+
+    /**
+     * Returns the state of the instance identified by the given key.
+     *
+     * @param instanceKey the instance key
+     * @return the state, or null if no such instance exists
+     */
+    public JIPipeServerState getState(String instanceKey) {
+        ManagedInstanceEntry entry = activeInstances.get(instanceKey);
+        return entry != null ? entry.getInstance().getState() : null;
+    }
+
+    /**
+     * Returns the port manager.
+     *
+     * @return the port manager
+     */
+    public PortManager getPortManager() {
+        return portManager;
+    }
+
+    /**
+     * Returns the app-wide server instance manager.
+     *
+     * @return the app-wide manager
+     */
+    public JIPipeServerInstanceManager getAppWideManager() {
+        return appWideManager;
+    }
+
+    /**
+     * Returns the lifecycle queue.
+     *
+     * @return the lifecycle queue
+     */
+    public JIPipeRunnableQueue getLifecycleQueue() {
+        return lifecycleQueue;
+    }
+
+    // ===== Event System =====
+
+    /**
+     * Returns the event emitter for server state changes.
+     *
+     * @return the event emitter
+     */
+    public JIPipeServerEventEmitter getStateChangedEventEmitter() {
+        return stateChangedEventEmitter;
+    }
+
+    private void fireStateChanged(JIPipeServerInstance<?> instance,
+                                  JIPipeServerState oldState,
+                                  JIPipeServerState newState) {
+        stateChangedEventEmitter.emit(new JIPipeServerEvent(this, instance, oldState, newState));
+    }
+
+    // ===== Internal Helpers =====
+
+    /**
+     * Creates an instance key from the factory ID and environment.
+     */
+    private String createInstanceKey(String factoryId, JIPipeEnvironment environment) {
+        return factoryId + ":" + environment.getClass().getName() + ":" + environment.getName();
+    }
+
+    /**
+     * Finds the instance key for a given instance.
+     */
+    private String findInstanceKey(JIPipeServerInstance<?> instance) {
+        for (Map.Entry<String, ManagedInstanceEntry> entry : activeInstances.entrySet()) {
+            if (entry.getValue().getInstance() == instance) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Resolves the port for a server instance from the environment.
+     * If the environment has an OptionalIntegerParameter port field that is enabled,
+     * uses that port. Otherwise, auto-assigns via PortManager.
+     *
+     * <p>This method uses the parameter collection API to look for a "port" parameter
+     * of type {@link OptionalIntegerParameter} in the environment. If found and enabled,
+     * the specified port is used. Otherwise, a free port is auto-assigned.</p>
+     *
+     * @param environment the environment
+     * @return the resolved port number
+     * @throws ServerStartException if the requested port is unavailable
+     */
+    private int resolvePort(JIPipeEnvironment environment) {
+        // Try to find an OptionalIntegerParameter named "port" via the parameter collection
+        try {
+            JIPipeParameterAccess portAccess = environment.getParameterAccess("port");
+            if (portAccess != null) {
+                OptionalIntegerParameter optionalPort = portAccess.get(OptionalIntegerParameter.class);
+                if (optionalPort != null && optionalPort.isEnabled()) {
+                    int requestedPort = optionalPort.getContent();
+                    if (portManager.isPortAvailable(requestedPort)) {
+                        portManager.reservePort(requestedPort);
+                        return requestedPort;
+                    } else {
+                        throw new ServerStartException("Requested port " + requestedPort + " is not available",
+                                ServerStartException.Reason.PortUnavailable);
+                    }
+                }
+            }
+        } catch (ServerStartException e) {
+            throw e;
+        } catch (Exception e) {
+            // No port parameter found, fall through to auto-assignment
+        }
+
+        return portManager.assignFreePort();
+    }
+
+    // ===== Factory Entry =====
+
+    /**
+     * Holds metadata about a registered server instance factory.
+     */
+    public static class FactoryEntry<TEnv extends JIPipeEnvironment, TInst extends JIPipeServerInstance<TEnv>> {
+        private final String factoryId;
+        private final Class<TEnv> envClass;
+        private final Class<TInst> instClass;
+        private final ServerInstanceFactory<TEnv, TInst> factory;
+        private final Icon icon;
+
+        public FactoryEntry(String factoryId, Class<TEnv> envClass, Class<TInst> instClass,
+                            ServerInstanceFactory<TEnv, TInst> factory, Icon icon) {
+            this.factoryId = factoryId;
+            this.envClass = envClass;
+            this.instClass = instClass;
+            this.factory = factory;
+            this.icon = icon;
+        }
+
+        public String getFactoryId() {
+            return factoryId;
+        }
+
+        public Class<TEnv> getEnvClass() {
+            return envClass;
+        }
+
+        public Class<TInst> getInstClass() {
+            return instClass;
+        }
+
+        public ServerInstanceFactory<TEnv, TInst> getFactory() {
+            return factory;
+        }
+
+        public Icon getIcon() {
+            return icon;
+        }
+    }
+}
