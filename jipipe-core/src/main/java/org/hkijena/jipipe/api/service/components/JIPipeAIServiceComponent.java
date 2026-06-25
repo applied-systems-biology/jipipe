@@ -14,10 +14,13 @@ import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
+import org.hkijena.jipipe.plugins.ai.EmbeddingModelType;
 import org.hkijena.jipipe.plugins.ai.environments.EmbeddingModelEnvironment;
+import org.hkijena.jipipe.plugins.embeddingserver.EmbeddingServerInstance;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,6 +38,11 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     private final JIPipeRunnableQueue taskQueue = new JIPipeRunnableQueue("AI Service");
     private volatile JIPipeEmbeddingAIModelRunner embeddingModelRunner;
+    /**
+     * Holds the active lease for the LocalOnnx scenario, where embedding is performed
+     * via a spawned server process managed by {@link org.hkijena.jipipe.api.service.components.JIPipeServerServiceComponent}.
+     */
+    private volatile JIPipeServerLease<EmbeddingServerInstance> embeddingLease;
     private volatile JIPipeAIModelRunnerStatus currentStatus = JIPipeAIModelRunnerStatus.Unloaded;
     private String embeddingModelError;
     private final StatusChangedEventEmitter statusChangedEventEmitter = new StatusChangedEventEmitter();
@@ -70,51 +78,99 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     /**
      * Blocking start of the embedding model.
-     * Creates a runner from current settings and starts it.
+     * <p>
+     * Branches on the configured {@link EmbeddingModelType}:
+     * <ul>
+     *     <li>{@link EmbeddingModelType#LocalOnnx} → starts a spawned server process via the server service</li>
+     *     <li>{@link EmbeddingModelType#OpenAIAPI} → starts a direct in-process runner</li>
+     * </ul>
      * Must only be called from the queue thread.
      *
      * @param progressInfo the progress info
      */
     public void startEmbeddingModelNow(JIPipeProgressInfo progressInfo) {
-        // If already loaded and idle, skip
-        if (embeddingModelRunner != null && embeddingModelRunner.getStatus() == JIPipeAIModelRunnerStatus.Idle) {
-            return;
-        }
-
         progressInfo.log("Starting embedding model ...");
 
-        // If a runner exists in any state, shut it down first
-        if (embeddingModelRunner != null) {
-            try {
-                embeddingModelRunner.shutdown();
-            } catch (Exception e) {
-                e.printStackTrace();
-                progressInfo.log("Error during existing model shutdown: " + e.getMessage());
-            }
-            embeddingModelRunner = null;
-        }
-
-        // Create new runner from settings
         AIApplicationSettings settings = AIApplicationSettings.getInstance();
         EmbeddingModelEnvironment environment = settings.getEmbeddingModelEnvironment();
         embeddingModelError = null;
 
-        // Emit status change to Loading
+        if (environment.getModelType() == EmbeddingModelType.LocalOnnx) {
+            startEmbeddingServer(environment, progressInfo);
+        } else {
+            startEmbeddingDirectRunner(environment, progressInfo);
+        }
+    }
+
+    /**
+     * Starts the embedding model via a spawned server process (LocalOnnx scenario).
+     * Acquires a lease from the server service, which spawns and waits for the
+     * embedding server to become healthy.
+     *
+     * @param env          the embedding model environment
+     * @param progressInfo the progress info
+     */
+    private void startEmbeddingServer(EmbeddingModelEnvironment env, JIPipeProgressInfo progressInfo) {
+        releaseExistingEmbeddingResources(progressInfo);
+
         JIPipeAIModelRunnerStatus oldStatus = getEmbeddingModelStatus();
         fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Loading);
 
         try {
-            // Ensure artifact is downloaded and configuration is applied before creating the runner
-            if (environment.isLoadFromArtifact()) {
-                resolveAndApplyArtifactConfiguration(environment, progressInfo);
+            // If configured from an artifact, resolve/download it and apply the local model/tokenizer paths
+            if (env.isLoadFromArtifact()) {
+                resolveAndApplyArtifactConfiguration(env, progressInfo);
             } else {
-                if (!environment.isValid()) {
+                if (!env.isValid()) {
                     throw new IllegalStateException("Embedding model environment is not valid. " +
                             "Please configure a local model or remote API in the AI settings.");
                 }
             }
 
-            JIPipeEmbeddingAIModelRunner runner = environment.toRunner();
+            // Acquire a lease for a spawned embedding server instance
+            JIPipeServerServiceComponent serverService = getService().getServerService();
+            embeddingLease = serverService.acquireLease(
+                    EmbeddingServerInstance.FACTORY_ID, EmbeddingServerInstance.class, env);
+
+            // The server instance is Busy while a lease is held, but at the server level
+            // "Busy" means "lease held", not "actively processing". The model is now loaded
+            // and ready, so report Idle from the AI service's perspective.
+            fireStatusChanged(JIPipeAIModelRunnerStatus.Loading,
+                    JIPipeAIModelRunnerStatus.Idle);
+        } catch (Exception e) {
+            e.printStackTrace();
+            progressInfo.log(e);
+            embeddingModelError = ExceptionUtils.getMessage(e);
+            embeddingLease = null;
+            fireStatusChanged(JIPipeAIModelRunnerStatus.Loading, JIPipeAIModelRunnerStatus.Failed);
+        }
+    }
+
+    /**
+     * Starts the embedding model via a direct in-process runner (OpenAIAPI scenario).
+     * This preserves the legacy behavior where a runner is created from the environment
+     * and started directly within this process.
+     *
+     * @param env          the embedding model environment
+     * @param progressInfo the progress info
+     */
+    private void startEmbeddingDirectRunner(EmbeddingModelEnvironment env, JIPipeProgressInfo progressInfo) {
+        releaseExistingEmbeddingResources(progressInfo);
+
+        JIPipeAIModelRunnerStatus oldStatus = getEmbeddingModelStatus();
+        fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Loading);
+
+        try {
+            if (env.isLoadFromArtifact()) {
+                resolveAndApplyArtifactConfiguration(env, progressInfo);
+            } else {
+                if (!env.isValid()) {
+                    throw new IllegalStateException("Embedding model environment is not valid. " +
+                            "Please configure a local model or remote API in the AI settings.");
+                }
+            }
+
+            JIPipeEmbeddingAIModelRunner runner = env.toRunner();
             embeddingModelRunner = runner;  // Assign BEFORE start() so UI can see Loading state
             runner.start();
             fireStatusChanged(JIPipeAIModelRunnerStatus.Loading, runner.getStatus());
@@ -124,7 +180,34 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             embeddingModelError = ExceptionUtils.getMessage(e);
             embeddingModelRunner = null;
             fireStatusChanged(JIPipeAIModelRunnerStatus.Loading, JIPipeAIModelRunnerStatus.Failed);
-            return;
+        }
+    }
+
+    /**
+     * Best-effort cleanup of any currently held embedding resources.
+     * Releases an active server lease and/or shuts down a direct runner,
+     * swallowing exceptions so that a failed cleanup does not abort a start/stop sequence.
+     *
+     * @param progressInfo the progress info
+     */
+    private void releaseExistingEmbeddingResources(JIPipeProgressInfo progressInfo) {
+        if (embeddingLease != null) {
+            try {
+                embeddingLease.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                progressInfo.log("Error during existing embedding server lease release: " + e.getMessage());
+            }
+            embeddingLease = null;
+        }
+        if (embeddingModelRunner != null) {
+            try {
+                embeddingModelRunner.shutdown();
+            } catch (Exception e) {
+                e.printStackTrace();
+                progressInfo.log("Error during existing model shutdown: " + e.getMessage());
+            }
+            embeddingModelRunner = null;
         }
     }
 
@@ -178,12 +261,13 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     /**
      * Blocking shutdown of the embedding model.
+     * Releases both the spawned server lease (if any) and the direct runner (if any).
      * Must only be called from the queue thread.
      *
      * @param progressInfo the progress info
      */
     public void stopEmbeddingModelNow(JIPipeProgressInfo progressInfo) {
-        if (embeddingModelRunner == null) {
+        if (embeddingLease == null && embeddingModelRunner == null) {
             return;
         }
 
@@ -193,8 +277,22 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Unloading);
 
         try {
-            embeddingModelRunner.shutdown();
-            embeddingModelRunner = null;
+            if (embeddingLease != null) {
+                try {
+                    embeddingLease.close();
+                } catch (Exception e) {
+                    progressInfo.log("Error during embedding server lease release: " + e.getMessage());
+                }
+                embeddingLease = null;
+            }
+            if (embeddingModelRunner != null) {
+                try {
+                    embeddingModelRunner.shutdown();
+                } catch (Exception e) {
+                    progressInfo.log("Error during model shutdown: " + e.getMessage());
+                }
+                embeddingModelRunner = null;
+            }
             embeddingModelError = null;
             fireStatusChanged(JIPipeAIModelRunnerStatus.Unloading, JIPipeAIModelRunnerStatus.Unloaded);
         } catch (Exception e) {
@@ -221,7 +319,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return;
         }
 
-        if (embeddingModelRunner != null) {
+        if (hasEmbeddingModel()) {
             taskQueue.enqueue(new UnloadEmbeddingModelTask());
         }
         taskQueue.enqueue(new LoadEmbeddingModelTask());
@@ -237,20 +335,22 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
-     * Synchronous embed. Must only be called when model is Idle.
-     * Must only be called from the queue thread.
+     * Synchronous embed. Must only be called from the queue thread.
+     * <p>
+     * Branches on the active resource:
+     * <ul>
+     *     <li>If a server lease is held, performs an HTTP POST against the spawned server.</li>
+     *     <li>Otherwise, if a direct runner is loaded, uses it.</li>
+     *     <li>Otherwise throws {@link IllegalStateException}.</li>
+     * </ul>
      *
      * @param text the text to embed
      * @return the embedding vector
-     * @throws IllegalStateException if no model is loaded or model is not idle
+     * @throws IllegalStateException if no embedding model is loaded
      */
     public float[] embedNow(String text) {
-        if (embeddingModelRunner == null) {
+        if (embeddingLease == null && embeddingModelRunner == null) {
             throw new IllegalStateException("No embedding model loaded");
-        }
-        if (embeddingModelRunner.getStatus() != JIPipeAIModelRunnerStatus.Idle) {
-            throw new IllegalStateException("Embedding model is not idle (status: "
-                    + embeddingModelRunner.getStatus() + ")");
         }
 
         embeddingProgressInfo.log("Embedding: " + text);
@@ -259,14 +359,32 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         fireStatusChanged(oldStatus, JIPipeAIModelRunnerStatus.Busy);
 
         try {
-            float[] result = embeddingModelRunner.embed(text);
-            fireStatusChanged(JIPipeAIModelRunnerStatus.Busy, embeddingModelRunner.getStatus());
-            return result;
-        } catch (Exception e) {
+            if (embeddingLease != null && embeddingLease.isOpen()) {
+                float[] result = embeddingLease.getInstance().embed(text);
+                // The embed finished. The server instance stays Busy because the lease is still
+                // held (the model remains loaded), but the AI is no longer processing an embed.
+                fireStatusChanged(JIPipeAIModelRunnerStatus.Busy,
+                        JIPipeAIModelRunnerStatus.Idle);
+                return result;
+            } else if (embeddingModelRunner != null) {
+                float[] result = embeddingModelRunner.embed(text);
+                fireStatusChanged(JIPipeAIModelRunnerStatus.Busy, embeddingModelRunner.getStatus());
+                return result;
+            } else {
+                throw new IllegalStateException("No embedding model loaded");
+            }
+        } catch (RuntimeException e) {
             embeddingModelError = ExceptionUtils.getMessage(e);
             embeddingProgressInfo.error(embeddingModelError);
             fireStatusChanged(JIPipeAIModelRunnerStatus.Busy, JIPipeAIModelRunnerStatus.Failed);
             throw e;
+        } catch (Exception e) {
+            // Wrap checked exceptions (e.g., IOException from the spawned server) so the
+            // public signature stays unchanged (no checked throws clause).
+            embeddingModelError = ExceptionUtils.getMessage(e);
+            embeddingProgressInfo.error(embeddingModelError);
+            fireStatusChanged(JIPipeAIModelRunnerStatus.Busy, JIPipeAIModelRunnerStatus.Failed);
+            throw new RuntimeException(e);
         }
     }
 
@@ -285,12 +403,15 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return null;
         }
 
-        // If model is not loaded, enqueue a load first
-        if (embeddingModelRunner == null
-                || embeddingModelRunner.getStatus() == JIPipeAIModelRunnerStatus.Unloaded
-                || embeddingModelRunner.getStatus() == JIPipeAIModelRunnerStatus.Failed) {
+        // If model is not loaded, enqueue a load first.
+        // Use hasEmbeddingModel() so both the server-lease path and the direct-runner path
+        // are covered; the status checks use currentStatus, which is maintained for both.
+        JIPipeAIModelRunnerStatus status = getEmbeddingModelStatus();
+        if (!hasEmbeddingModel()
+                || status == JIPipeAIModelRunnerStatus.Unloaded
+                || status == JIPipeAIModelRunnerStatus.Failed) {
             // Only enqueue if not already loading (avoid duplicate load tasks)
-            if (getEmbeddingModelStatus() != JIPipeAIModelRunnerStatus.Loading) {
+            if (status != JIPipeAIModelRunnerStatus.Loading) {
                 taskQueue.enqueue(new LoadEmbeddingModelTask());
             }
         }
@@ -303,7 +424,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     // ===== Status Query Methods =====
 
     public boolean hasEmbeddingModel() {
-        return embeddingModelRunner != null;
+        return (embeddingLease != null && embeddingLease.isOpen()) || embeddingModelRunner != null;
     }
 
     public JIPipeAIModelRunnerStatus getEmbeddingModelStatus() {
@@ -311,6 +432,9 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     public String getEmbeddingModelError() {
+        if (embeddingLease != null) {
+            return embeddingModelError;
+        }
         if (embeddingModelRunner != null) {
             return embeddingModelRunner.getLastError();
         }
@@ -318,12 +442,15 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
-     * Get the model ID of the currently loaded embedding model runner.
+     * Get the model ID of the currently loaded embedding model.
      * Returns null if no model is loaded.
      *
      * @return the model ID, or null if no model is loaded
      */
     public String getModelId() {
+        if (embeddingLease != null && embeddingLease.isOpen()) {
+            return embeddingLease.getInstance().getEnvironment().deriveModelId();
+        }
         if (embeddingModelRunner != null) {
             return embeddingModelRunner.getModelId();
         }

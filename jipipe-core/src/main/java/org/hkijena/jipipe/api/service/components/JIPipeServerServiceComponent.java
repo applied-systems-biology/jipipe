@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.servers.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.servers.ManagedInstanceEntry;
-import org.hkijena.jipipe.servers.PortManager;
+import org.hkijena.jipipe.api.servers.ManagedInstanceEntry;
+import org.hkijena.jipipe.api.servers.PortManager;
 
 import javax.swing.*;
 import java.util.*;
@@ -436,6 +436,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
                 if (optionalPort != null && optionalPort.isEnabled()) {
                     int requestedPort = optionalPort.getContent();
                     if (portManager.isPortAvailable(requestedPort)) {
+                        portManager.reservePort(requestedPort);
                         return requestedPort;
                     } else {
                         throw new ServerStartException("Requested port " + requestedPort + " is not available",

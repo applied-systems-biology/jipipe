@@ -161,7 +161,7 @@ public class BuildAIEmbeddingIndexTool extends JIPipeDesktopMenuExtension {
 
     @Override
     public String getMenuPath() {
-        return "AI";
+        return "Development\nAI";
     }
 
     /**

@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.servers;
+package org.hkijena.jipipe.api.servers;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
