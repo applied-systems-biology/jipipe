@@ -11,12 +11,15 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -157,34 +160,56 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
     /**
      * Builds the command used to spawn the embedding server process.
      *
+     * <p>To avoid exceeding the operating system's command-line length limit (notably
+     * Windows' ~32,768 character limit, which the full {@code java.class.path} can
+     * easily surpass), all JVM arguments are written to a temporary argument file that
+     * is referenced via Java's {@code @argfile} syntax. The {@code @argfile} feature
+     * (available since Java 9) expands the file contents as if the arguments were
+     * passed on the command line.</p>
+     *
      * @param env the embedding model environment
      * @return the command and arguments
+     * @throws IOException if the temporary argument file cannot be created or written
      */
-    private List<String> buildSpawnCommand(EmbeddingModelEnvironment env) {
-        List<String> command = new ArrayList<>();
-        command.add(System.getProperty("java.home") + "/bin/java");
-        command.add("-cp");
-        command.add(System.getProperty("java.class.path"));
-        command.add(EmbeddingServerProcess.class.getName());
-        command.add("--model");
-        command.add(env.getLocalModelFile().toString());
-        command.add("--tokenizer");
-        command.add(env.getLocalTokenizerFile().toString());
-        command.add("--port");
-        command.add(String.valueOf(getPort()));
-        command.add("--model-id");
-
+    private List<String> buildSpawnCommand(EmbeddingModelEnvironment env) throws IOException {
+        String javaHome = System.getProperty("java.home");
+        String javaExecutable = javaHome + File.separator + "bin" + File.separator + "java";
+        String classPath = System.getProperty("java.class.path");
         String modelId = env.deriveModelId();
         if (modelId == null) {
             modelId = "unknown";
         }
-        command.add(modelId);
+
+        // Write all JVM arguments to a temporary argfile to avoid command-line length
+        // limits (e.g. Windows "File name or extension too long" when the classpath is
+        // very long). Each argument is written on its own line.
+        Path argFile = Files.createTempFile("embedding-server-args", ".txt");
+        argFile.toFile().deleteOnExit();
+
+        List<String> jvmArgs = new ArrayList<>();
+        jvmArgs.add("-cp");
+        jvmArgs.add(classPath);
+        jvmArgs.add(EmbeddingServerProcess.class.getName());
+        jvmArgs.add("--model");
+        jvmArgs.add(env.getLocalModelFile().toString());
+        jvmArgs.add("--tokenizer");
+        jvmArgs.add(env.getLocalTokenizerFile().toString());
+        jvmArgs.add("--port");
+        jvmArgs.add(String.valueOf(getPort()));
+        jvmArgs.add("--model-id");
+        jvmArgs.add(modelId);
 
         // Pass the current JVM's PID so the spawned server can self-terminate
         // if this parent process is killed (e.g., via SIGKILL).
-        command.add("--parent-pid");
-        command.add(String.valueOf(ProcessHandle.current().pid()));
+        jvmArgs.add("--parent-pid");
+        jvmArgs.add(String.valueOf(ProcessHandle.current().pid()));
 
+        // Write the arguments to the file, one per line
+        Files.write(argFile, jvmArgs, StandardCharsets.UTF_8);
+
+        List<String> command = new ArrayList<>();
+        command.add(javaExecutable);
+        command.add("@" + argFile.toString());
         return command;
     }
 
