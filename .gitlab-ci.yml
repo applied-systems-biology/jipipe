@@ -105,6 +105,28 @@ upload_to_package_registry:
       echo "Publishing $OUTDIR as $PKG/$VERSION"
       echo "Base API URL: $BASE_API"
 
+      test -n "${PACKAGE_UPLOAD_TOKEN:-}" || {
+        echo "PACKAGE_UPLOAD_TOKEN is not set. Create a masked CI/CD variable containing a GitLab project access token with api scope."
+        exit 1
+      }
+
+      echo "Testing PACKAGE_UPLOAD_TOKEN against project API ..."
+      token_test_code="$(
+        curl \
+          --silent \
+          --show-error \
+          --output /tmp/package-token-test-body.txt \
+          --write-out "%{http_code}" \
+          --header "PRIVATE-TOKEN: $PACKAGE_UPLOAD_TOKEN" \
+          "$CI_API_V4_URL/projects/$CI_PROJECT_ID"
+      )"
+      echo "Token test HTTP status: $token_test_code"
+      if [ "$token_test_code" != "200" ]; then
+        echo "PACKAGE_UPLOAD_TOKEN could not access this project via the GitLab API."
+        cat /tmp/package-token-test-body.txt || true
+        exit 1
+      fi
+
     - |
       SNAPSHOT_SUFFIX="${VERSION#${VERSION_BASE}-}"
 
@@ -142,7 +164,7 @@ upload_to_package_registry:
         headers="$(mktemp)"
 
         http_code="$(
-        curl \
+          curl \
             --retry 3 \
             --retry-delay 5 \
             --retry-all-errors \
@@ -153,7 +175,8 @@ upload_to_package_registry:
             --dump-header "$headers" \
             --output "$body" \
             --write-out "%{http_code}" \
-            --user "gitlab-ci-token:${CI_JOB_TOKEN}" \
+            --header "PRIVATE-TOKEN: $PACKAGE_UPLOAD_TOKEN" \
+            --header "Expect:" \
             "$url"
         )"
 
@@ -192,9 +215,8 @@ upload_to_package_registry:
         curl \
           --silent \
           --show-error \
-          --fail \
-          --location \
-          --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+          --fail-with-body \
+          --header "PRIVATE-TOKEN: $PACKAGE_UPLOAD_TOKEN" \
           "$package_lookup_url"
       )"
 
@@ -214,9 +236,8 @@ upload_to_package_registry:
         curl \
           --silent \
           --show-error \
-          --fail \
-          --location \
-          --header "JOB-TOKEN: $CI_JOB_TOKEN" \
+          --fail-with-body \
+          --header "PRIVATE-TOKEN: $PACKAGE_UPLOAD_TOKEN" \
           "$package_files_url"
       )"
 
