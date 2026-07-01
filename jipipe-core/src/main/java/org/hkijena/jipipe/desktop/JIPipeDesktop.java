@@ -144,7 +144,11 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(false);
             ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> fileChooser.getSelectedFile().toPath();
+                case OK -> {
+                    Path path = fileChooser.getSelectedFile().toPath();
+                    instance.setLastDirectoryBy(key, path.getParent());
+                    yield path;
+                }
                 case Cancelled -> null;
                 case Error ->
                         openFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
@@ -261,7 +265,13 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(false);
             ModernNativeFileChooserResponse response = fileChooser.showSaveDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> addExtensionIfNeeded(extensionFilters, fileChooser.getSelectedFile().toPath());
+                case OK -> {
+                    Path path = addExtensionIfNeeded(extensionFilters, fileChooser.getSelectedFile().toPath());
+                    if (path != null) {
+                        instance.setLastDirectoryBy(key, path.getParent());
+                    }
+                    yield path;
+                }
                 case Cancelled -> null;
                 case Error ->
                         saveFile(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
@@ -557,7 +567,11 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(false);
             ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> fileChooser.getSelectedFile().toPath();
+                case OK -> {
+                    Path path = fileChooser.getSelectedFile().toPath();
+                    instance.setLastDirectoryBy(key, path);
+                    yield path;
+                }
                 case Cancelled -> null;
                 case Error ->
                         openDirectory(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType());
@@ -784,7 +798,13 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(true);
             ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+                case OK -> {
+                    List<Path> paths = Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+                    if (!paths.isEmpty()) {
+                        instance.setLastDirectoryBy(key, paths.getFirst().getParent());
+                    }
+                    yield paths;
+                }
                 case Cancelled -> null;
                 case Error ->
                         openFiles(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType(), extensionFilters);
@@ -879,7 +899,13 @@ public class JIPipeDesktop {
             fileChooser.setMultiSelectionEnabled(true);
             ModernNativeFileChooserResponse response = fileChooser.showOpenDialog(UIUtils.getWindowOrWindowAncestor(parent));
             return switch (response) {
-                case OK -> Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+                case OK -> {
+                    List<Path> paths = Arrays.stream(fileChooser.getSelectedFiles()).map(File::toPath).collect(Collectors.toList());
+                    if (!paths.isEmpty()) {
+                        instance.setLastDirectoryBy(key, paths.getFirst());
+                    }
+                    yield paths;
+                }
                 case Cancelled -> Collections.emptyList();
                 case Error ->
                         openDirectories(parent, workbench, key, title, description, instance.getSafeFallbackFileChooserType());
