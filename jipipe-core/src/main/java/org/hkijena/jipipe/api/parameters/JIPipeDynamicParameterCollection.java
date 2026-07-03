@@ -268,20 +268,22 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      */
     @Override
     public void fromJson(JsonNode node) {
-        dynamicParameters.clear();
+        BiMap<String, JIPipeMutableParameterAccess> newParameters = HashBiMap.create();
         JsonNode parametersNode = node.get("parameters");
-        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(parametersNode.fields())) {
-            try {
-                JIPipeMutableParameterAccess parameterAccess = JsonUtils.getObjectMapper().readerFor(JIPipeMutableParameterAccess.class).readValue(entry.getValue());
-                parameterAccess.setKey(entry.getKey());
-                parameterAccess.setSource(this);
-                dynamicParameters.put(entry.getKey(), parameterAccess);
-            } catch (IOException e) {
-                throw new JIPipeValidationRuntimeException(e, "Unable to read parameter from JSON!",
-                        "There is essential information missing in the JSON data.",
-                        "Please check if the JSON data is valid.");
+        if (parametersNode != null) {
+            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(parametersNode.fields())) {
+                try {
+                    JIPipeMutableParameterAccess parameterAccess = JsonUtils.getObjectMapper().readerFor(JIPipeMutableParameterAccess.class).readValue(entry.getValue());
+                    parameterAccess.setKey(entry.getKey());
+                    parameterAccess.setSource(this);
+                    newParameters.put(entry.getKey(), parameterAccess);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
+        dynamicParameters.clear();
+        dynamicParameters.putAll(newParameters);
     }
 
     /**

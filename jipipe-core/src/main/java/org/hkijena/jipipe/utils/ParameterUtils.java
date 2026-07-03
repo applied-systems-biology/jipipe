@@ -58,7 +58,20 @@ public class ParameterUtils {
         };
         target.getParameterStructureChangedEventEmitter().subscribe(listener);
 
-        JIPipeParameterTree parameterCollection = new JIPipeParameterTree(target);
+        JIPipeParameterTree parameterCollection;
+        try {
+            parameterCollection = new JIPipeParameterTree(target);
+        } catch (Exception | Error e) {
+            e.printStackTrace();
+            issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    context,
+                    "Could not build parameter tree!",
+                    "The parameter tree could not be built, likely due to a missing plugin or incompatible class.",
+                    "Please check if all required plugins are installed and activated.",
+                    e.toString()));
+            target.getParameterStructureChangedEventEmitter().unsubscribe(listener);
+            return;
+        }
         Stack<JIPipeParameterTree.Node> stack = new Stack<>();
 
         // Load all collection-type parameters
@@ -66,7 +79,18 @@ public class ParameterUtils {
         while (changedStructure.get()) {
             changedStructure.set(false);
 
-            parameterCollection = new JIPipeParameterTree(target);
+            try {
+                parameterCollection = new JIPipeParameterTree(target);
+            } catch (Exception | Error e) {
+                e.printStackTrace();
+                issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                        context,
+                        "Could not rebuild parameter tree!",
+                        "The parameter tree could not be rebuilt after a structure change, likely due to a missing plugin or incompatible class.",
+                        "Please check if all required plugins are installed and activated.",
+                        e.toString()));
+                break;
+            }
             stack.clear();
             stack.push(parameterCollection.getRoot());
 
@@ -125,7 +149,17 @@ public class ParameterUtils {
                 if (!objectNode.isMissingNode()) {
                     JIPipeParameterCollection collection = top.getCollection();
                     if (collection instanceof JsonDeserializable) {
-                        ((JsonDeserializable) collection).fromJson(objectNode);
+                        try {
+                            ((JsonDeserializable) collection).fromJson(objectNode);
+                        } catch (Exception | Error e) {
+                            e.printStackTrace();
+                            issues.add(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                                    context,
+                                    "Could not load parameter collection '" + String.join("/", top.getPath()) + "'!",
+                                    "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
+                                    "Please check if all required plugins are installed and activated.",
+                                    e.toString()));
+                        }
                     } else {
                         throw new RuntimeException("Cannot deserialize object-like persistence into non-Json-deserializable target!");
                     }
