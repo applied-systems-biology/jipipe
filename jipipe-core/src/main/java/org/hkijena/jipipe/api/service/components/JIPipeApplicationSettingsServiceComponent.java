@@ -226,13 +226,14 @@ public final class JIPipeApplicationSettingsServiceComponent extends JIPipeServi
                 if (objectNode.has(entry.getKey())) {
                     try {
                         entry.getValue().deserializeFromJsonNode(objectNode.get(entry.getKey()));
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         IJ.handleException(e);
                         e.printStackTrace();
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            IJ.handleException(e);
             e.printStackTrace();
         } finally {
             changedEventEmitter.emit(new ChangedEvent(this));

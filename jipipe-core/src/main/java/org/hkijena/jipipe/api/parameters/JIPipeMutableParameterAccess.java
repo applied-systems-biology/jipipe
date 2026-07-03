@@ -238,7 +238,11 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
     @JsonSetter("field-class-id")
     public void setFieldClassInfoId(String id) {
-        setFieldClass(JIPipe.getParameterTypes().getInfoById(id).getFieldClass());
+        JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoById(id);
+        if (info == null) {
+            throw new IllegalArgumentException("Unknown parameter type ID: " + id);
+        }
+        setFieldClass(info.getFieldClass());
     }
 
     @JsonGetter("value")
