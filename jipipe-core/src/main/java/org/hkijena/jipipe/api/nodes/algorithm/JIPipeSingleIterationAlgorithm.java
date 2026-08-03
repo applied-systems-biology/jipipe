@@ -182,6 +182,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
             } else {
                 runIteration(iterationStep, new JIPipeMutableIterationContext(row, 1), runContext, slotProgress);
             }
+            restoreAdaptiveParameters(tree, parameterBackups);
             return;
         }
 
@@ -192,8 +193,10 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
 
         // There should be only one batch, but we iterate anyway
         for (int i = 0; i < iterationSteps.size(); i++) {
-            if (progressInfo.isCancelled())
+            if (progressInfo.isCancelled()) {
+                restoreAdaptiveParameters(tree, parameterBackups);
                 return;
+            }
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
             uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
@@ -202,6 +205,8 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 runIteration(iterationSteps.get(i), new JIPipeMutableIterationContext(i, iterationSteps.size()), runContext, slotProgress);
             }
         }
+
+        restoreAdaptiveParameters(tree, parameterBackups);
     }
 
     private void uploadAdaptiveParameters(JIPipeMultiIterationStep iterationStep, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
@@ -243,6 +248,17 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(iterationStep, key, target, newValue);
+                }
+            }
+        }
+    }
+
+    private void restoreAdaptiveParameters(JIPipeParameterTree tree, Map<String, Object> parameterBackups) {
+        if (tree != null) {
+            for (Map.Entry<String, Object> entry : parameterBackups.entrySet()) {
+                JIPipeParameterAccess access = tree.getParameters().get(entry.getKey());
+                if (access != null) {
+                    access.set(entry.getValue());
                 }
             }
         }
