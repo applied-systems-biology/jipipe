@@ -339,8 +339,10 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
         if (!doParallelization) {
             for (int i = 0; i < iterationSteps.size(); i++) {
-                if (progressInfo.isCancelled())
+                if (progressInfo.isCancelled()) {
+                    restoreAdaptiveParameters(tree, parameterBackups);
                     return;
+                }
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
                 uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
                 if (isPassThrough()) {
@@ -398,6 +400,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 }
             }
         }
+
+        restoreAdaptiveParameters(tree, parameterBackups);
     }
 
     private boolean shouldDoParallelization(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeSingleIterationStep> iterationSteps, boolean hasAdaptiveParameters, JIPipeRuntimePartition partition) {
@@ -462,6 +466,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(iterationStep, key, target, newValue);
+                }
+            }
+        }
+    }
+
+    private void restoreAdaptiveParameters(JIPipeParameterTree tree, Map<String, Object> parameterBackups) {
+        if (tree != null) {
+            for (Map.Entry<String, Object> entry : parameterBackups.entrySet()) {
+                JIPipeParameterAccess access = tree.getParameters().get(entry.getKey());
+                if (access != null) {
+                    access.set(entry.getValue());
                 }
             }
         }

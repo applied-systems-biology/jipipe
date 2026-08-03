@@ -166,8 +166,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             for (int i = 0; i < getFirstInputSlot().getRowCount(); i++) {
                 if (withLimit && !allowedIndices.contains(i))
                     continue;
-                if (progressInfo.isCancelled())
+                if (progressInfo.isCancelled()) {
+                    restoreAdaptiveParameters(tree, parameterBackups);
                     return;
+                }
                 JIPipeSingleIterationStep iterationStep = new JIPipeSingleIterationStep(this);
                 iterationStep.setInputData(getFirstInputSlot(), i);
                 iterationStep.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
@@ -216,8 +218,10 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
         if (!doParallelization) {
             for (int i = 0; i < iterationSteps.size(); i++) {
-                if (progressInfo.isCancelled())
+                if (progressInfo.isCancelled()) {
+                    restoreAdaptiveParameters(tree, parameterBackups);
                     return;
+                }
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, iterationSteps.size());
                 uploadAdaptiveParameters(iterationSteps.get(i), tree, parameterBackups, progressInfo);
                 if (isPassThrough()) {
@@ -275,6 +279,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
             }
         }
 
+        restoreAdaptiveParameters(tree, parameterBackups);
     }
 
     private boolean shouldDoParallelization(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo, List<JIPipeSingleIterationStep> iterationSteps, boolean hasAdaptiveParameters, JIPipeRuntimePartition partition) {
@@ -339,6 +344,17 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 target.set(newValue);
                 if (getAdaptiveParameterSettings().isAttachParameterAnnotations()) {
                     annotateWithParameter(iterationStep, key, target, newValue);
+                }
+            }
+        }
+    }
+
+    private void restoreAdaptiveParameters(JIPipeParameterTree tree, Map<String, Object> parameterBackups) {
+        if (tree != null) {
+            for (Map.Entry<String, Object> entry : parameterBackups.entrySet()) {
+                JIPipeParameterAccess access = tree.getParameters().get(entry.getKey());
+                if (access != null) {
+                    access.set(entry.getValue());
                 }
             }
         }

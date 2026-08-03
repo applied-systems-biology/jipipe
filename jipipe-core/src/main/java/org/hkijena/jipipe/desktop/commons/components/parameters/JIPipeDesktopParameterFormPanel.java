@@ -674,8 +674,12 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = ((JIPipeGraphNode) displayedParameters).getInfo().newInstance();
                     JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
-                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
-                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                    String uniqueKey = editorUI.getParameterTree().getUniqueKey(editorUI.getParameterAccess());
+                    String lookupKey = uniqueKey != null ? uniqueKey : editorUI.getParameterAccess().getKey();
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(lookupKey, null);
+                    if (otherAccess != null) {
+                        editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                    }
                 });
                 optionsMenu.addSeparator();
                 optionsMenu.add(restoreDefaultItem);
@@ -684,8 +688,12 @@ public class JIPipeDesktopParameterFormPanel extends JIPipeDesktopFormPanel impl
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(displayedParameters.getClass());
                     JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
-                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
-                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                    String uniqueKey = editorUI.getParameterTree().getUniqueKey(editorUI.getParameterAccess());
+                    String lookupKey = uniqueKey != null ? uniqueKey : editorUI.getParameterAccess().getKey();
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(lookupKey, null);
+                    if (otherAccess != null) {
+                        editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                    }
                 });
                 optionsMenu.addSeparator();
                 optionsMenu.add(restoreDefaultItem);

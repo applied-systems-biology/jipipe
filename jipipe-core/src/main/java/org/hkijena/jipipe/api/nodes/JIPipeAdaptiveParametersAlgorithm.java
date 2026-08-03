@@ -44,7 +44,8 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
 
             menu.addSeparator();
 
-            String key = parameterEditorUI.getParameterAccess().getKey();
+            String uniqueKey = parameterEditorUI.getParameterTree().getUniqueKey(parameterEditorUI.getParameterAccess());
+            String key = uniqueKey != null ? uniqueKey : parameterEditorUI.getParameterAccess().getKey();
             JIPipeExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
 
             if (adaptiveParameter != null) {
@@ -67,7 +68,8 @@ public interface JIPipeAdaptiveParametersAlgorithm extends JIPipeParameterCollec
     default JComponent installUIOverrideParameterEditor(JIPipeDesktopParameterFormPanel parameterPanel, JIPipeDesktopParameterEditorUI parameterEditorUI) {
 
         if (getAdaptiveParameterSettings().isEnabled()) {
-            String key = parameterEditorUI.getParameterAccess().getKey();
+            String uniqueKey = parameterEditorUI.getParameterTree().getUniqueKey(parameterEditorUI.getParameterAccess());
+            String key = uniqueKey != null ? uniqueKey : parameterEditorUI.getParameterAccess().getKey();
             JIPipeExpressionParameter adaptiveParameter = getAdaptiveParameterSettings().getAdaptiveParameter(key);
 
             if (adaptiveParameter != null) {
