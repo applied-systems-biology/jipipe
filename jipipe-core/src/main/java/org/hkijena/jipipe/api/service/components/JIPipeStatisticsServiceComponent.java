@@ -8,10 +8,15 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsRegistry;
+import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
+import org.hkijena.jipipe.plugins.statistics.StatisticsReporter;
+import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.function.Consumer;
 
 import javax.swing.*;
 import java.nio.file.Files;
@@ -28,6 +33,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
     private final JIPipeStatisticsRegistry registry = new JIPipeStatisticsRegistry();
     private ObjectNode statisticsData;
     private final Timer saveLaterTimer;
+    private Timer reportingTimer;
 
     public JIPipeStatisticsServiceComponent(JIPipeService service) {
         super(service);
@@ -147,5 +153,35 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         for (var item : registry.getItems()) {
             item.initialize(this);
         }
+
+        // Start daily reporting timer (1-hour tick)
+        reportingTimer = new Timer(60 * 60 * 1000, e -> checkAndSend());
+        reportingTimer.setRepeats(true);
+        reportingTimer.start();
+
+        // Check on startup
+        checkAndSend();
+    }
+
+    private void checkAndSend() {
+        var settings = JIPipeStatisticsApplicationSettings.getInstance();
+        if (!settings.isEnabled() || settings.getPrivacyLevel() == StatisticsPrivacyLevel.None) {
+            return;
+        }
+
+        LocalDateTime lastSent = getLastSentTimestamp();
+        if (lastSent == null || lastSent.plusHours(24).isBefore(LocalDateTime.now())) {
+            StatisticsReporter.sendNow(success -> {
+                if (success) {
+                    logger.info("Statistics sent successfully");
+                } else {
+                    logger.info("Failed to send statistics (will retry later)");
+                }
+            });
+        }
+    }
+
+    public void sendNow(Consumer<Boolean> callback) {
+        StatisticsReporter.sendNow(callback);
     }
 }
