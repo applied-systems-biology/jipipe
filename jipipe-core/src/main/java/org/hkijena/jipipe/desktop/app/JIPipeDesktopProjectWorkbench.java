@@ -89,6 +89,8 @@ import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.*;
+import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
+import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsButton;
 import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -535,6 +537,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JIPipeDesktopAuthorProfileButton authorProfileButton = new JIPipeDesktopAuthorProfileButton(this);
         authorProfileButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
         statusBar.add(authorProfileButton);
+
+        // Statistics button (only shown on first launch)
+        JIPipeStatisticsApplicationSettings statsSettings = JIPipeStatisticsApplicationSettings.getInstance();
+        if (statsSettings.isShowFirstTimePrompt() && statsSettings.isEnabled()) {
+            JIPipeDesktopStatisticsButton statisticsButton = new JIPipeDesktopStatisticsButton(this);
+            statisticsButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+            statusBar.add(statisticsButton);
+        }
 
         // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
