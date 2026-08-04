@@ -62,11 +62,10 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
             max = Math.max(max, currentMax);
             avg = sum / count;
         }
-        if (min == Double.MAX_VALUE) min = 0;
 
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         ObjectNode node = mapper.createObjectNode();
-        node.put("min", min);
+        node.put("min", min == Double.MAX_VALUE ? 0 : min);
         node.put("avg", avg);
         node.put("max", max);
         return node;
