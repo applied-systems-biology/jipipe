@@ -1,0 +1,151 @@
+package org.hkijena.jipipe.api.service.components;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.JIPipeService;
+import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsRegistry;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.UUID;
+
+public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
+    private static final Logger logger = LoggerFactory.getLogger(JIPipeStatisticsServiceComponent.class);
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+    private final JIPipeStatisticsRegistry registry = new JIPipeStatisticsRegistry();
+    private ObjectNode statisticsData;
+    private final Timer saveLaterTimer;
+
+    public JIPipeStatisticsServiceComponent(JIPipeService service) {
+        super(service);
+        this.saveLaterTimer = new Timer(250, e -> save());
+        this.saveLaterTimer.setRepeats(false);
+    }
+
+    public JIPipeStatisticsRegistry getRegistry() {
+        return registry;
+    }
+
+    public Path getStatisticsFile() {
+        return JIPipe.getJIPipeUserDir(false).resolve("statistics.json");
+    }
+
+    public Path getLockFile() {
+        return JIPipe.getJIPipeUserDir(false).resolve("statistics.lock");
+    }
+
+    public String getMachineId() {
+        if (statisticsData != null && statisticsData.has("machineId")) {
+            return statisticsData.get("machineId").asText();
+        }
+        return null;
+    }
+
+    public void rerollMachineId() {
+        if (statisticsData != null) {
+            statisticsData.put("machineId", UUID.randomUUID().toString());
+            save();
+        }
+    }
+
+    public LocalDateTime getFirstLaunchTimestamp() {
+        if (statisticsData != null && statisticsData.has("firstLaunchTimestamp")) {
+            return LocalDateTime.parse(statisticsData.get("firstLaunchTimestamp").asText(), FORMATTER);
+        }
+        return null;
+    }
+
+    public LocalDateTime getLastSentTimestamp() {
+        if (statisticsData != null && statisticsData.has("lastSentTimestamp") && !statisticsData.get("lastSentTimestamp").isNull()) {
+            return LocalDateTime.parse(statisticsData.get("lastSentTimestamp").asText(), FORMATTER);
+        }
+        return null;
+    }
+
+    public void setLastSentTimestamp(LocalDateTime timestamp) {
+        if (statisticsData != null) {
+            statisticsData.put("lastSentTimestamp", timestamp.format(FORMATTER));
+            saveLater();
+        }
+    }
+
+    public void saveLater() {
+        saveLaterTimer.restart();
+    }
+
+    public void save() {
+        save(getStatisticsFile(), statisticsData);
+    }
+
+    public static void save(Path file, ObjectNode data) {
+        try {
+            PathUtils.ensureParentDirectoriesExist(file);
+            Path tmpFile = file.resolveSibling(file.getFileName() + ".tmp");
+            JsonUtils.getObjectMapper().writeValue(tmpFile.toFile(), data);
+            Files.move(tmpFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+        } catch (Exception e) {
+            logger.error("Failed to save statistics to {}", file, e);
+        }
+    }
+
+    public static ObjectNode loadOrCreate(Path file, JIPipeStatisticsRegistry registry) {
+        ObjectMapper mapper = JsonUtils.getObjectMapper();
+        ObjectNode root;
+        if (Files.isRegularFile(file)) {
+            try {
+                root = (ObjectNode) mapper.readTree(file.toFile());
+            } catch (Exception e) {
+                logger.error("Failed to load statistics from {}, creating new", file, e);
+                root = mapper.createObjectNode();
+            }
+        } else {
+            root = mapper.createObjectNode();
+        }
+
+        if (!root.has("machineId") || root.get("machineId").asText().isEmpty()) {
+            root.put("machineId", UUID.randomUUID().toString());
+        }
+        if (!root.has("firstLaunchTimestamp")) {
+            root.put("firstLaunchTimestamp", LocalDateTime.now().format(FORMATTER));
+        }
+        if (!root.has("lastSentTimestamp")) {
+            root.putNull("lastSentTimestamp");
+        }
+        if (!root.has("items")) {
+            root.putObject("items");
+        }
+
+        JsonNode itemsNode = root.get("items");
+        for (var item : registry.getItems()) {
+            JsonNode itemData = itemsNode.get(item.getId());
+            if (itemData != null) {
+                item.deserialize(itemData);
+            }
+        }
+
+        save(file, root);
+
+        return root;
+    }
+
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        statisticsData = loadOrCreate(getStatisticsFile(), registry);
+        for (var item : registry.getItems()) {
+            item.initialize(this);
+        }
+    }
+}
