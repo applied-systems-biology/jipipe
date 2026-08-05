@@ -145,17 +145,13 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     private JComponent createCenterPanel() {
         cardsRow = new JIPipeDesktopRow(16);
         cardsRow.setBackground(UIManager.getColor("Panel.background"));
+        cardsRow.setAlignmentX(0.5f);
 
-        JPanel centeringWrapper = new JPanel(new GridBagLayout());
+        JPanel centeringWrapper = new JPanel();
+        centeringWrapper.setLayout(new BoxLayout(centeringWrapper, BoxLayout.Y_AXIS));
         centeringWrapper.setOpaque(false);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.weightx = 1.0;
-        gbc.weighty = 1.0;
-        gbc.anchor = GridBagConstraints.NORTH;
-        centeringWrapper.add(cardsRow, gbc);
+        centeringWrapper.add(cardsRow);
+        centeringWrapper.add(Box.createVerticalGlue());
 
         JScrollPane scrollPane = new JScrollPane(centeringWrapper);
         scrollPane.setOpaque(false);

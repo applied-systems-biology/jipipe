@@ -251,8 +251,14 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             item.initialize(this);
         }
 
-        // Start reporting timer (15-minute tick for retry-friendly polling)
-        reportingTimer = new Timer(15 * 60 * 1000, e -> checkAndSend());
+        // Sample history on startup so charts have data even if the server is unreachable
+        SwingUtilities.invokeLater(this::sampleHistory);
+
+        // Start reporting timer (15-minute tick for retry-friendly polling + history sampling)
+        reportingTimer = new Timer(15 * 60 * 1000, e -> {
+            sampleHistory();
+            checkAndSend();
+        });
         reportingTimer.setRepeats(true);
         reportingTimer.start();
 
