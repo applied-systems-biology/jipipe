@@ -33,6 +33,8 @@ public class JIPipeDesktopModernThemeStyle {
     private Color dangerColor = new Color(0xE55765);
     @JsonProperty("warning")
     private Color warningColor = new Color(0xE58457);
+    @JsonProperty("info")
+    private Color infoColor = new Color(0x17A2B8);
 
     /*
      * Font sizes
@@ -212,6 +214,7 @@ public class JIPipeDesktopModernThemeStyle {
         this.successColor = other.successColor;
         this.dangerColor = other.dangerColor;
         this.warningColor = other.warningColor;
+        this.infoColor = other.infoColor;
         this.fontSizeHuge = other.fontSizeHuge;
         this.fontSizeLarge = other.fontSizeLarge;
         this.fontSizeNormal = other.fontSizeNormal;
@@ -428,6 +431,14 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setWarningColor(Color warningColor) {
         this.warningColor = warningColor;
+    }
+
+    public Color getInfoColor() {
+        return infoColor;
+    }
+
+    public void setInfoColor(Color infoColor) {
+        this.infoColor = infoColor;
     }
 
     public Color getTextForeground() {
