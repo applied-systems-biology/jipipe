@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.statistics.ui;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.desktop.api.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 
 public class ShowStatisticsTool extends JIPipeDesktopMenuExtension {
@@ -30,7 +31,8 @@ public class ShowStatisticsTool extends JIPipeDesktopMenuExtension {
         setToolTipText("View collected usage statistics");
         setIcon(JIPipe.RESOURCES.getIcon16("actions/chart-bar.png"));
         addActionListener(e -> {
-            // Implemented in Task 14
+            JIPipeDesktopStatisticsUI dialog = new JIPipeDesktopStatisticsUI((JIPipeDesktopProjectWorkbench) workbench);
+            dialog.setVisible(true);
         });
     }
 
