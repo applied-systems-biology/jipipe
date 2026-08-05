@@ -8,6 +8,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDe
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeControlPointUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.plugins.statistics.items.NodeMoveDistanceStatisticsItem;
 
 import java.awt.*;
 import java.awt.event.MouseEvent;
@@ -18,6 +19,7 @@ import java.util.Objects;
 public class JIPipeDesktopGraphCanvasDragManagerMove {
     private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final Map<JIPipeDesktopGraphInteractiveObjectUI, Point> currentlyDraggedOffsets = new HashMap<>();
+    private final Map<JIPipeDesktopGraphNodeUI, Point> preDragPositions = new HashMap<>();
     private boolean hasDragSnapshot = false;
     private long lastTimeExpandedNegative = 0;
 
@@ -40,6 +42,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
     public boolean startDragCurrentNodeSelection(MouseEvent mouseEvent) {
         if (canvasUI.getToolManager().currentToolAllowsNodeDragging() || canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
             this.hasDragSnapshot = false;
+            preDragPositions.clear();
             canvasUI.getDragManagerConnect().cancelDragging();
             for (JIPipeDesktopGraphInteractiveObjectUI interactiveObjectUI : canvasUI.getSelectionManager().getSelection()) {
                 if (interactiveObjectUI instanceof JIPipeDesktopGraphNodeUI nodeUI) {
@@ -53,6 +56,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
                     offset.x = nodeUI.getX() - mouseEvent.getX();
                     offset.y = nodeUI.getY() - mouseEvent.getY();
                     currentlyDraggedOffsets.put(nodeUI, offset);
+                    preDragPositions.put(nodeUI, nodeUI.getStoredGridLocation());
                 } else if (interactiveObjectUI instanceof JIPipeDesktopGraphEdgeControlPointUI edgeControlPointUI) {
                     if (!canvasUI.getToolManager().currentToolAllowsEdgeControlPointDragging()) {
                         continue;
@@ -197,6 +201,22 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
         return false;
     }
 
+    public void mouseReleased(MouseEvent mouseEvent) {
+        if (isCurrentlyDraggingNode()) {
+            for (Map.Entry<JIPipeDesktopGraphNodeUI, Point> entry : preDragPositions.entrySet()) {
+                JIPipeDesktopGraphNodeUI nodeUI = entry.getKey();
+                Point before = entry.getValue();
+                Point after = nodeUI.getStoredGridLocation();
+                if (before != null && after != null) {
+                    double dist = Math.sqrt(Math.pow(after.x - before.x, 2) + Math.pow(after.y - before.y, 2));
+                    NodeMoveDistanceStatisticsItem.addDistance(dist,
+                            () -> JIPipe.getInstance().getStatistics().saveLater());
+                }
+            }
+            preDragPositions.clear();
+        }
+    }
+
     public Map<JIPipeDesktopGraphInteractiveObjectUI, Point> getCurrentlyDraggedOffsets() {
         return currentlyDraggedOffsets;
     }
@@ -208,6 +228,7 @@ public class JIPipeDesktopGraphCanvasDragManagerMove {
     public void cancelDragging() {
         // Node dragging
         currentlyDraggedOffsets.clear();
+        preDragPositions.clear();
         hasDragSnapshot = false;
     }
 

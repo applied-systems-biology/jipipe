@@ -1177,10 +1177,12 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
         }
 
         if (mouseEvent.getButton() != MouseEvent.BUTTON1) {
+            dragManagerMove.mouseReleased(mouseEvent);
             cancelAllDraggingOperations();
         } else {
             // Handle dragging
             dragManagerConnect.mouseReleased(mouseEvent);
+            dragManagerMove.mouseReleased(mouseEvent);
             cancelAllDraggingOperations();
 
             // Selection box

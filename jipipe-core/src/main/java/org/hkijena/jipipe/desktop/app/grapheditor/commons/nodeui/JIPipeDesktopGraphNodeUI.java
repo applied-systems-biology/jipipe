@@ -49,6 +49,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.Up
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
+import org.hkijena.jipipe.plugins.statistics.items.LongestNodeWidthStatisticsItem;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
@@ -626,6 +627,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
         // Update the active areas
         updateActiveAreas();
+    }
+
+    @Override
+    public void setBounds(int x, int y, int width, int height) {
+        super.setBounds(x, y, width, height);
+        if (width > 0) {
+            LongestNodeWidthStatisticsItem.reportWidth(width);
+        }
     }
 
     protected int getOutputSlotYLocation() {

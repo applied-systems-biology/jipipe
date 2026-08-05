@@ -89,6 +89,9 @@ import org.hkijena.jipipe.plugins.cef.JIPipeCefClientService;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.settings.application.*;
+import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
+import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsButton;
+import org.hkijena.jipipe.plugins.statistics.ui.JIPipeDesktopStatisticsUI;
 import org.hkijena.jipipe.utils.*;
 import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
@@ -122,6 +125,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     public static final String TAB_PLUGIN_VALIDITY_CHECK = "PLUGIN_VALIDITY_CHECK";
     public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
     public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
+    public static final String TAB_STATISTICS = "STATISTICS";
     public static final String TAB_LOG = "LOG";
     private final JIPipeDesktopProjectWindow window;
     private final JIPipeProject project;
@@ -401,6 +405,11 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
                 JIPipe.RESOURCES.getIcon16("emblems/warning.png"),
                 () -> new JIPipeDesktopWorkbenchNotificationInboxUI(this),
                 JIPipeDesktopTabPane.SingletonTabMode.Hidden);
+        documentTabPane.registerSingletonTab(TAB_STATISTICS,
+                "Statistics",
+                JIPipe.RESOURCES.getIcon16("actions/chart-bar.png"),
+                () -> new JIPipeDesktopStatisticsUI(this),
+                JIPipeDesktopTabPane.SingletonTabMode.Hidden);
         add(documentTabPane, BorderLayout.CENTER);
 
         initializeMenu();
@@ -535,6 +544,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JIPipeDesktopAuthorProfileButton authorProfileButton = new JIPipeDesktopAuthorProfileButton(this);
         authorProfileButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
         statusBar.add(authorProfileButton);
+
+        // Statistics button (only shown on first launch)
+        JIPipeStatisticsApplicationSettings statsSettings = JIPipeStatisticsApplicationSettings.getInstance();
+        if (statsSettings.isShowFirstTimePrompt() && statsSettings.isEnabled()) {
+            JIPipeDesktopStatisticsButton statisticsButton = new JIPipeDesktopStatisticsButton(this);
+            statisticsButton.setBorder(BorderFactory.createEmptyBorder(2, 8, 2, 8));
+            statusBar.add(statisticsButton);
+        }
 
         // Memory control
         JButton optionsButton = memoryOptionsControl.createOptionsButton();
