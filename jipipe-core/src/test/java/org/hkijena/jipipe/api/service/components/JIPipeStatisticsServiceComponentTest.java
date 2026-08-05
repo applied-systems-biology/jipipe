@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsRegistry;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,6 @@ class JIPipeStatisticsServiceComponentTest {
             @Override public String getId() { return id; }
             @Override public String getName() { return id; }
             @Override public String getDescription() { return id; }
-            @Override public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Usage; }
             @Override public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
             @Override public JsonNode serialize() { return JsonNodeFactory.instance.numberNode(value); }
             @Override public void deserialize(JsonNode node) { if (node != null && !node.isNull()) value = node.asInt(); }

@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponen
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -31,8 +30,6 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Popular nodes"; }
     @Override
     public String getDescription() { return "Top 5 most used node types"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Fun; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
 

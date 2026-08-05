@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class RecentProjectsCountStatisticsItem implements JIPipeStatisticsItem {
@@ -14,8 +13,6 @@ public class RecentProjectsCountStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Recent projects"; }
     @Override
     public String getDescription() { return "Number of projects in the recent projects list"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Usage; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
     @Override

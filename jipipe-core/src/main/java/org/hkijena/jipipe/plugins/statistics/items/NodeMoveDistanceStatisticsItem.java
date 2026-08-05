@@ -3,7 +3,6 @@ package org.hkijena.jipipe.plugins.statistics.items;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.DoubleNode;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
@@ -16,8 +15,6 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Node move distance"; }
     @Override
     public String getDescription() { return "Total distance nodes have been moved by the user (pixels)"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Fun; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
 

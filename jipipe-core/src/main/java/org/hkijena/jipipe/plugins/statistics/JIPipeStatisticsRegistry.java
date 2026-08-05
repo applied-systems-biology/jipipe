@@ -26,9 +26,4 @@ public class JIPipeStatisticsRegistry {
                 .filter(item -> item.getRequiredPrivacyLevel().getLevel() <= level.getLevel())
                 .collect(Collectors.toList());
     }
-
-    public Map<JIPipeStatisticsItemCategory, List<JIPipeStatisticsItem>> getItemsByCategory() {
-        return registeredItems.values().stream()
-                .collect(Collectors.groupingBy(JIPipeStatisticsItem::getCategory, LinkedHashMap::new, Collectors.toList()));
-    }
 }

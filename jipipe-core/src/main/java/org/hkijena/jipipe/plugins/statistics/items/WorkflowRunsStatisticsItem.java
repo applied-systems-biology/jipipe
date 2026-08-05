@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
@@ -20,8 +19,6 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Workflow runs"; }
     @Override
     public String getDescription() { return "Number of times the user ran a workflow"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Usage; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
     @Override

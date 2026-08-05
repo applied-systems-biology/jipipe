@@ -15,7 +15,6 @@ class StatisticsReporterTest {
             @Override public String getId() { return id; }
             @Override public String getName() { return id; }
             @Override public String getDescription() { return id; }
-            @Override public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Machine; }
             @Override public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return level; }
             @Override public JsonNode serialize() { return IntNode.valueOf(value); }
             @Override public void deserialize(JsonNode node) {}

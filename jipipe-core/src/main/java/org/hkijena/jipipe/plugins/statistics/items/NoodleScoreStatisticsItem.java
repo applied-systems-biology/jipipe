@@ -10,7 +10,6 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEdit
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.edgeui.JIPipeDesktopGraphEdgeUI;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -25,8 +24,6 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Noodle score"; }
     @Override
     public String getDescription() { return "Edge path lengths (min/avg/max) across all opened graph editors"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Fun; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
 

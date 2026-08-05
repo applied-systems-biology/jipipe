@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class RoCratesCreatedStatisticsItem implements JIPipeStatisticsItem {
@@ -20,8 +19,6 @@ public class RoCratesCreatedStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "RO-Crates created"; }
     @Override
     public String getDescription() { return "Number of RO-Crates created by the user"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Usage; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.RoughProjects; }
     @Override

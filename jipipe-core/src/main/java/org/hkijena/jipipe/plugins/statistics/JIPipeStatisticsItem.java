@@ -10,8 +10,6 @@ public interface JIPipeStatisticsItem {
 
     String getDescription();
 
-    JIPipeStatisticsItemCategory getCategory();
-
     StatisticsPrivacyLevel getRequiredPrivacyLevel();
 
     JsonNode serialize();

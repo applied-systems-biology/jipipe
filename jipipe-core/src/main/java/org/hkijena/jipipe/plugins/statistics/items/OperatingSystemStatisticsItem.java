@@ -3,7 +3,6 @@ package org.hkijena.jipipe.plugins.statistics.items;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 public class OperatingSystemStatisticsItem implements JIPipeStatisticsItem {
@@ -13,8 +12,6 @@ public class OperatingSystemStatisticsItem implements JIPipeStatisticsItem {
     public String getName() { return "Operating system"; }
     @Override
     public String getDescription() { return "The operating system name and version"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Machine; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Installation; }
     @Override

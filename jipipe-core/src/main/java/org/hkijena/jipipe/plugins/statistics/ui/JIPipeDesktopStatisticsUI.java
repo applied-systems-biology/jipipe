@@ -4,7 +4,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsReporter;
 import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -16,7 +15,6 @@ import java.awt.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 
 public class JIPipeDesktopStatisticsUI extends JDialog {
     private final JIPipeDesktopProjectWorkbench workbench;
@@ -82,24 +80,11 @@ public class JIPipeDesktopStatisticsUI extends JDialog {
         cardsPanel.setLayout(new BoxLayout(cardsPanel, BoxLayout.Y_AXIS));
         cardsPanel.setBackground(UIManager.getColor("Panel.background"));
 
-        Map<JIPipeStatisticsItemCategory, List<JIPipeStatisticsItem>> grouped = service.getRegistry().getItemsByCategory();
-        for (JIPipeStatisticsItemCategory category : JIPipeStatisticsItemCategory.values()) {
-            List<JIPipeStatisticsItem> items = grouped.get(category);
-            if (items == null || items.isEmpty()) continue;
-
-            JLabel categoryLabel = new JLabel(category.getCategory());
-            categoryLabel.setFont(categoryLabel.getFont().deriveFont(Font.BOLD, 14f));
-            categoryLabel.setIcon(category.getIcon());
-            categoryLabel.setBorder(BorderFactory.createEmptyBorder(8, 4, 4, 4));
-            categoryLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
-            cardsPanel.add(categoryLabel);
-
-            for (JIPipeStatisticsItem item : items) {
-                JPanel card = createCard(item);
-                card.setAlignmentX(Component.LEFT_ALIGNMENT);
-                cardsPanel.add(card);
-                cardsPanel.add(Box.createVerticalStrut(4));
-            }
+        for (JIPipeStatisticsItem item : service.getRegistry().getItems()) {
+            JPanel card = createCard(item);
+            card.setAlignmentX(Component.LEFT_ALIGNMENT);
+            cardsPanel.add(card);
+            cardsPanel.add(Box.createVerticalStrut(4));
         }
 
         JScrollPane scrollPane = new JScrollPane(cardsPanel);
@@ -139,9 +124,6 @@ public class JIPipeDesktopStatisticsUI extends JDialog {
         ));
         card.setBackground(UIManager.getColor("TextField.background"));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 60));
-
-        JLabel iconLabel = new JLabel(item.getCategory().getIcon());
-        card.add(iconLabel, BorderLayout.WEST);
 
         JPanel textPanel = new JPanel();
         textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));

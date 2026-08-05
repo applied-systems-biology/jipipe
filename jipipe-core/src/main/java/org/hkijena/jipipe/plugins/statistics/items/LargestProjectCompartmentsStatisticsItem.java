@@ -7,7 +7,6 @@ import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponen
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
-import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
 import javax.swing.*;
@@ -22,8 +21,6 @@ public class LargestProjectCompartmentsStatisticsItem implements JIPipeStatistic
     public String getName() { return "Largest project (compartments)"; }
     @Override
     public String getDescription() { return "Maximum number of compartments in any opened project"; }
-    @Override
-    public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Fun; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
     @Override

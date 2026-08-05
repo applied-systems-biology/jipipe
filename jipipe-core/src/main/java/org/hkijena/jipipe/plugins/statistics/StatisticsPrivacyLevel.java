@@ -5,7 +5,7 @@ public enum StatisticsPrivacyLevel {
     Installation(1, "Machine ID and JIPipe version (sent once)"),
     ActiveInstallation(2, "Daily ping to prove installation is still active"),
     RoughProjects(3, "Project count, workflow runs, RO-Crates created"),
-    Everything(4, "All statistics including fun items");
+    Everything(4, "All available statistics");
 
     private final int level;
     private final String description;
