@@ -57,4 +57,33 @@ class JIPipeStatisticsRegistryTest {
         assertThrows(IllegalArgumentException.class, () ->
                 registry.registerItem(createItem("dup", StatisticsPrivacyLevel.Installation)));
     }
+
+    @Test
+    void itemsHaveValidIconAndVariant() {
+        JIPipeStatisticsRegistry registry = new JIPipeStatisticsRegistry();
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.MachineIdStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.JIPipeVersionStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.OperatingSystemStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.AccelerationStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuModelStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuVramStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.TotalRamStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RecentProjectsCountStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.WorkflowRunsStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RoCratesCreatedStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LargestProjectNodesStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LargestProjectCompartmentsStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.PopularNodesStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.NodeMoveDistanceStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LongestNodeWidthStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.NoodleScoreStatisticsItem());
+
+        for (JIPipeStatisticsItem item : registry.getItems()) {
+            assertNotNull(item.getIcon32(), "Icon must not be null for " + item.getId());
+            assertFalse(item.getIcon32().isEmpty(), "Icon must not be empty for " + item.getId());
+            assertNotNull(item.getCardVariant(), "Variant must not be null for " + item.getId());
+            assertTrue(item.getDefaultColumnSpan() > 0 && item.getDefaultColumnSpan() <= 12,
+                    "Span must be 1-12 for " + item.getId());
+        }
+    }
 }

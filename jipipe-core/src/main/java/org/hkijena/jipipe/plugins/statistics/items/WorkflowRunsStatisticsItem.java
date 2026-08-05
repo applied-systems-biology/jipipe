@@ -42,4 +42,13 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
             if (service != null) service.saveLater();
         }
     }
+
+    @Override
+    public String getIcon32() { return "actions/debug-run.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Success;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 6; }
 }

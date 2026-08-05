@@ -41,4 +41,7 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
         accumulatedDistance += delta;
         if (onSave != null) onSave.run();
     }
+
+    @Override
+    public String getIcon32() { return "actions/transform-move.png"; }
 }

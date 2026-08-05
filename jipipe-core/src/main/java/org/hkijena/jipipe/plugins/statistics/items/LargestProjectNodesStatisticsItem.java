@@ -57,4 +57,13 @@ public class LargestProjectNodesStatisticsItem implements JIPipeStatisticsItem {
             }
         }
     }
+
+    @Override
+    public String getIcon32() { return "actions/network-server-database.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 6; }
 }

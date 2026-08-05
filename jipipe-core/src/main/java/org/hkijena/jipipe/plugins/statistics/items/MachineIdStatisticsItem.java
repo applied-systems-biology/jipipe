@@ -30,4 +30,7 @@ public class MachineIdStatisticsItem implements JIPipeStatisticsItem {
     public void initialize(JIPipeStatisticsServiceComponent service) {
         this.service = service;
     }
+
+    @Override
+    public String getIcon32() { return "status/dialog-password.png"; }
 }

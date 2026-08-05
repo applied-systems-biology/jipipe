@@ -26,4 +26,11 @@ public class TotalRamStatisticsItem implements JIPipeStatisticsItem {
     public void reset() { }
     @Override
     public boolean isTimeTracked() { return true; }
+
+    @Override
+    public String getIcon32() { return "actions/memory.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Info;
+    }
 }

@@ -31,4 +31,11 @@ public class AccelerationStatisticsItem implements JIPipeStatisticsItem {
     public void deserialize(JsonNode node) { }
     @Override
     public void reset() { }
+
+    @Override
+    public String getIcon32() { return "actions/gears.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;
+    }
 }

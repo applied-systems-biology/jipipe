@@ -37,4 +37,7 @@ public class LongestNodeWidthStatisticsItem implements JIPipeStatisticsItem {
     public static void reportWidth(int width) {
         maxWidthSeen = Math.max(maxWidthSeen, width);
     }
+
+    @Override
+    public String getIcon32() { return "actions/resizecol.png"; }
 }

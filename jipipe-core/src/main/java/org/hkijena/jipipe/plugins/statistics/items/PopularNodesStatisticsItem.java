@@ -95,4 +95,13 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
         nodeCounts.merge(id, 1, Integer::sum);
         if (service != null) service.saveLater();
     }
+
+    @Override
+    public String getIcon32() { return "actions/starred.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Secondary;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 12; }
 }

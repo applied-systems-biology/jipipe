@@ -42,4 +42,13 @@ public class RoCratesCreatedStatisticsItem implements JIPipeStatisticsItem {
             if (service != null) service.saveLater();
         }
     }
+
+    @Override
+    public String getIcon32() { return "actions/document-export.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Warning;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 6; }
 }

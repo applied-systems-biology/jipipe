@@ -23,4 +23,7 @@ public class JIPipeVersionStatisticsItem implements JIPipeStatisticsItem {
     public void deserialize(JsonNode node) { }
     @Override
     public void reset() { }
+
+    @Override
+    public String getIcon32() { return "actions/help-about.png"; }
 }

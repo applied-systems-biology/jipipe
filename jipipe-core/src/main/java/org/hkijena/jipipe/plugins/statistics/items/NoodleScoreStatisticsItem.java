@@ -81,4 +81,13 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
     public void reset() { min = Double.MAX_VALUE; avg = 0; max = 0; }
     @Override
     public boolean isTimeTracked() { return true; }
+
+    @Override
+    public String getIcon32() { return "actions/bezier-curve.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Default;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 6; }
 }

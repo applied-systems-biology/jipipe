@@ -57,4 +57,13 @@ public class LargestProjectCompartmentsStatisticsItem implements JIPipeStatistic
             }
         }
     }
+
+    @Override
+    public String getIcon32() { return "actions/window.png"; }
+    @Override
+    public org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Primary;
+    }
+    @Override
+    public int getDefaultColumnSpan() { return 6; }
 }
