@@ -29,6 +29,8 @@ public class LargestProjectCompartmentsStatisticsItem implements JIPipeStatistic
     public void deserialize(JsonNode node) { if (node != null && !node.isNull()) maxCompartments = node.asInt(); }
     @Override
     public void reset() { maxCompartments = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {

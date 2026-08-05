@@ -54,6 +54,8 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
 
     @Override
     public void reset() { nodeCounts.clear(); }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {

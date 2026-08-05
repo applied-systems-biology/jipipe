@@ -79,4 +79,6 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
 
     @Override
     public void reset() { min = Double.MAX_VALUE; avg = 0; max = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 }

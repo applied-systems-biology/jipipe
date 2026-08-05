@@ -31,6 +31,8 @@ public class LongestNodeWidthStatisticsItem implements JIPipeStatisticsItem {
 
     @Override
     public void reset() { maxWidth = 0; maxWidthSeen = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     public static void reportWidth(int width) {
         maxWidthSeen = Math.max(maxWidthSeen, width);

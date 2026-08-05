@@ -27,6 +27,8 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
     public void deserialize(JsonNode node) { if (node != null && !node.isNull()) count = node.asInt(); }
     @Override
     public void reset() { count = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {

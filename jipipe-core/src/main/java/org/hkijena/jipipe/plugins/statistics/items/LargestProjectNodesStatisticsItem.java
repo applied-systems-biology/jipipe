@@ -29,6 +29,8 @@ public class LargestProjectNodesStatisticsItem implements JIPipeStatisticsItem {
     public void deserialize(JsonNode node) { if (node != null && !node.isNull()) maxNodes = node.asInt(); }
     @Override
     public void reset() { maxNodes = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {

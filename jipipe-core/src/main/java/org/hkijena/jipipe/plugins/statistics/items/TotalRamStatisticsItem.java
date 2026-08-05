@@ -24,4 +24,6 @@ public class TotalRamStatisticsItem implements JIPipeStatisticsItem {
     public void deserialize(JsonNode node) { }
     @Override
     public void reset() { }
+    @Override
+    public boolean isTimeTracked() { return true; }
 }

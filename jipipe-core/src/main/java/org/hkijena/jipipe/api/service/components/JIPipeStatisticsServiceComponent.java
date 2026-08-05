@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.service.components;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -136,6 +137,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
                 if (statisticsData.has("firstLaunchTimestamp")) {
                     currentOnDisk.put("firstLaunchTimestamp", statisticsData.get("firstLaunchTimestamp").asText());
                 }
+                if (statisticsData.has("history")) {
+                    currentOnDisk.set("history", statisticsData.get("history"));
+                }
 
                 statisticsData = currentOnDisk;
 
@@ -189,6 +193,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         if (!root.has("items")) {
             root.putObject("items");
         }
+        if (!root.has("history")) {
+            root.putObject("history");
+        }
 
         JsonNode itemsNode = root.get("items");
         for (var item : registry.getItems()) {
@@ -232,11 +239,53 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             StatisticsReporter.sendNow(success -> {
                 if (success) {
                     logger.info("Statistics sent successfully");
+                    sampleHistory();
                 } else {
                     logger.info("Failed to send statistics (will retry later)");
                 }
             });
         }
+    }
+
+    public ObjectNode getHistory() {
+        if (statisticsData == null) {
+            return null;
+        }
+        if (!statisticsData.has("history")) {
+            statisticsData.putObject("history");
+        }
+        return (ObjectNode) statisticsData.get("history");
+    }
+
+    public void sampleHistory() {
+        if (statisticsData == null) {
+            return;
+        }
+        ObjectNode history = getHistory();
+        String timestamp = LocalDateTime.now().format(FORMATTER);
+
+        for (var item : registry.getItems()) {
+            if (!item.isTimeTracked()) {
+                continue;
+            }
+            JsonNode value = item.serialize();
+            ArrayNode itemHistory;
+            if (history.has(item.getId())) {
+                itemHistory = (ArrayNode) history.get(item.getId());
+            } else {
+                itemHistory = history.putArray(item.getId());
+            }
+            ObjectNode dataPoint = itemHistory.addObject();
+            dataPoint.put("timestamp", timestamp);
+            dataPoint.set("value", value);
+
+            while (itemHistory.size() > 90) {
+                itemHistory.remove(0);
+            }
+        }
+
+        statisticsData.set("history", history);
+        saveLater();
     }
 
     public void sendNow(Consumer<Boolean> callback) {

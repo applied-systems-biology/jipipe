@@ -34,6 +34,8 @@ public class NodeMoveDistanceStatisticsItem implements JIPipeStatisticsItem {
 
     @Override
     public void reset() { distance = 0; accumulatedDistance = 0; }
+    @Override
+    public boolean isTimeTracked() { return true; }
 
     public static void addDistance(double delta, Runnable onSave) {
         accumulatedDistance += delta;

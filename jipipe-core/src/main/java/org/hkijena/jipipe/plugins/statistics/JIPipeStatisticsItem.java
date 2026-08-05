@@ -20,4 +20,8 @@ public interface JIPipeStatisticsItem {
 
     default void initialize(JIPipeStatisticsServiceComponent service) {
     }
+
+    default boolean isTimeTracked() {
+        return false;
+    }
 }
