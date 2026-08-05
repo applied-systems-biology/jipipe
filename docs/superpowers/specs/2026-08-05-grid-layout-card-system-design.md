@@ -98,11 +98,10 @@ new JIPipeDesktopColumnLayout(int gutter)  // gutter in pixels
 
 2. **Span/offset resolution:** For each child, resolve the effective span and offset for the active breakpoint via the child's `JIPipeDesktopColumnConstraints` (obtained from the `LayoutManager2` constraints object).
 
-3. **Column width calculation:** Standard Bootstrap gutter math:
-   ```
-   columnWidth = (containerWidth - gutter * 13) / 12 * span + gutter * (span - 1)
-   ```
-   Gutter between columns, half-gutter at edges.
+3. **Column width calculation:** Standard Bootstrap gutter math with half-gutter at edges and full gutter between columns:
+   - Total horizontal spacing = `gutter/2 + 11*gutter + gutter/2 = 12*gutter`
+   - Column unit width = `(containerWidth - 12*gutter) / 12`
+   - Span N width = `N * columnUnitWidth + (N-1) * gutter`
 
 4. **Wrapping:** Lay out children left-to-right. Track current column position. When a child's span would exceed column 12, wrap to the next row. Offsets consume column space. Items that individually exceed 12 columns are clamped to 12.
 
@@ -308,11 +307,11 @@ default int getDefaultColumnSpan() { return 3; }
 | Workflow runs | `actions/debug-run.png` | Success | 6 |
 | RO-Crates created | `actions/document-export.png` | Warning | 6 |
 | Largest project (nodes) | `actions/network-server-database.png` | Primary | 6 |
-| Largest project (compartments) | `actions/window-flow.png` | Primary | 6 |
+| Largest project (compartments) | `actions/window.png` | Primary | 6 |
 | Popular nodes | `actions/starred.png` | Secondary | 12 |
 | Node move distance | `actions/transform-move.png` | Default | 3 |
-| Longest node width | `actions/resize.png` | Default | 3 |
-| Noodle score | `actions/spline.png` | Default | 6 |
+| Longest node width | `actions/resizecol.png` | Default | 3 |
+| Noodle score | `actions/bezier-curve.png` | Default | 6 |
 
 Items with `isTimeTracked() == true` get a history chart in the card body. Items with `isTimeTracked() == false` get a text representation of their serialized value.
 
