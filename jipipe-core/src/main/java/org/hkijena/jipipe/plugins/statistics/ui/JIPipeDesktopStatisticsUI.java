@@ -30,6 +30,7 @@ import java.util.Map;
 public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPanel {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private JPanel cardsPanel;
+    private JPanel headerPanel;
 
     public JIPipeDesktopStatisticsUI(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);
@@ -40,7 +41,8 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     private void initialize() {
         setLayout(new BorderLayout());
 
-        add(createHeaderPanel(), BorderLayout.NORTH);
+        headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
         add(createCenterPanel(), BorderLayout.CENTER);
         add(createToolbar(), BorderLayout.SOUTH);
     }
@@ -126,6 +128,10 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     }
 
     public void refresh() {
+        remove(headerPanel);
+        headerPanel = createHeaderPanel();
+        add(headerPanel, BorderLayout.NORTH);
+
         cardsPanel.removeAll();
         cardsPanel.add(Box.createVerticalStrut(8));
 
@@ -138,6 +144,8 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         cardsPanel.add(Box.createVerticalGlue());
         cardsPanel.revalidate();
         cardsPanel.repaint();
+        revalidate();
+        repaint();
     }
 
     private JPanel createCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
