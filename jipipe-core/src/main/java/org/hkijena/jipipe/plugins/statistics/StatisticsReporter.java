@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.function.Consumer;
 
+import javax.swing.SwingUtilities;
+
 public class StatisticsReporter {
     private static final Logger logger = LoggerFactory.getLogger(StatisticsReporter.class);
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
@@ -67,7 +69,7 @@ public class StatisticsReporter {
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 boolean success = response.statusCode() >= 200 && response.statusCode() < 300;
                 if (success) {
-                    service.setLastSentTimestamp(LocalDateTime.now());
+                    SwingUtilities.invokeLater(() -> service.setLastSentTimestamp(LocalDateTime.now()));
                 }
                 if (callback != null) callback.accept(success);
             } catch (Exception e) {

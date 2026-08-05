@@ -10,6 +10,7 @@ import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicatio
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -150,7 +151,8 @@ public class JIPipeDesktopStatisticsUI extends JDialog {
         nameLabel.setFont(nameLabel.getFont().deriveFont(Font.BOLD, 12f));
         textPanel.add(nameLabel);
 
-        String valueStr = StringUtils.nullToEmpty(item.serialize() != null ? item.serialize().toString() : "");
+        JsonNode serialized = item.serialize();
+        String valueStr = StringUtils.nullToEmpty(serialized != null ? serialized.toString() : "");
         JLabel valueLabel = new JLabel(valueStr);
         valueLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         textPanel.add(valueLabel);

@@ -105,40 +105,43 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             }
             try (FileChannel channel = FileChannel.open(lockFile, StandardOpenOption.WRITE);
                  FileLock lock = channel.tryLock()) {
-                if (lock != null) {
-                    ObjectMapper mapper = JsonUtils.getObjectMapper();
-                    ObjectNode currentOnDisk;
-                    if (Files.isRegularFile(file)) {
-                        currentOnDisk = (ObjectNode) mapper.readTree(file.toFile());
-                    } else {
-                        currentOnDisk = mapper.createObjectNode();
-                    }
-
-                    ObjectNode itemsOnDisk = currentOnDisk.has("items")
-                            ? (ObjectNode) currentOnDisk.get("items")
-                            : currentOnDisk.putObject("items");
-                    ObjectNode ourItems = statisticsData.has("items")
-                            ? (ObjectNode) statisticsData.get("items")
-                            : statisticsData.putObject("items");
-                    ourItems.fields().forEachRemaining(entry -> itemsOnDisk.set(entry.getKey(), entry.getValue()));
-                    currentOnDisk.set("items", itemsOnDisk);
-
-                    if (statisticsData.has("machineId")) {
-                        currentOnDisk.put("machineId", statisticsData.get("machineId").asText());
-                    }
-                    if (statisticsData.has("lastSentTimestamp")) {
-                        currentOnDisk.set("lastSentTimestamp", statisticsData.get("lastSentTimestamp"));
-                    }
-                    if (statisticsData.has("firstLaunchTimestamp")) {
-                        currentOnDisk.put("firstLaunchTimestamp", statisticsData.get("firstLaunchTimestamp").asText());
-                    }
-
-                    statisticsData = currentOnDisk;
-
-                    Path tmpFile = file.resolveSibling(file.getFileName() + ".tmp");
-                    mapper.writeValue(tmpFile.toFile(), currentOnDisk);
-                    Files.move(tmpFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
+                if (lock == null) {
+                    logger.warn("Could not acquire statistics lock — save skipped, will retry");
+                    saveLaterTimer.restart();
+                    return;
                 }
+                ObjectMapper mapper = JsonUtils.getObjectMapper();
+                ObjectNode currentOnDisk;
+                if (Files.isRegularFile(file)) {
+                    currentOnDisk = (ObjectNode) mapper.readTree(file.toFile());
+                } else {
+                    currentOnDisk = mapper.createObjectNode();
+                }
+
+                ObjectNode itemsOnDisk = currentOnDisk.has("items")
+                        ? (ObjectNode) currentOnDisk.get("items")
+                        : currentOnDisk.putObject("items");
+                ObjectNode ourItems = statisticsData.has("items")
+                        ? (ObjectNode) statisticsData.get("items")
+                        : statisticsData.putObject("items");
+                ourItems.fields().forEachRemaining(entry -> itemsOnDisk.set(entry.getKey(), entry.getValue()));
+                currentOnDisk.set("items", itemsOnDisk);
+
+                if (statisticsData.has("machineId")) {
+                    currentOnDisk.put("machineId", statisticsData.get("machineId").asText());
+                }
+                if (statisticsData.has("lastSentTimestamp")) {
+                    currentOnDisk.set("lastSentTimestamp", statisticsData.get("lastSentTimestamp"));
+                }
+                if (statisticsData.has("firstLaunchTimestamp")) {
+                    currentOnDisk.put("firstLaunchTimestamp", statisticsData.get("firstLaunchTimestamp").asText());
+                }
+
+                statisticsData = currentOnDisk;
+
+                Path tmpFile = file.resolveSibling(file.getFileName() + ".tmp");
+                mapper.writeValue(tmpFile.toFile(), currentOnDisk);
+                Files.move(tmpFile, file, StandardCopyOption.ATOMIC_MOVE, StandardCopyOption.REPLACE_EXISTING);
             }
         } catch (Exception e) {
             logger.error("Failed to save statistics to {}", file, e);
@@ -170,13 +173,17 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             root = mapper.createObjectNode();
         }
 
-        if (!root.has("machineId") || root.get("machineId").asText().isEmpty()) {
+        boolean createdMachineId = !root.has("machineId") || root.get("machineId").asText().isEmpty();
+        boolean createdFirstLaunch = !root.has("firstLaunchTimestamp");
+        boolean createdLastSent = !root.has("lastSentTimestamp");
+
+        if (createdMachineId) {
             root.put("machineId", UUID.randomUUID().toString());
         }
-        if (!root.has("firstLaunchTimestamp")) {
+        if (createdFirstLaunch) {
             root.put("firstLaunchTimestamp", LocalDateTime.now().format(FORMATTER));
         }
-        if (!root.has("lastSentTimestamp")) {
+        if (createdLastSent) {
             root.putNull("lastSentTimestamp");
         }
         if (!root.has("items")) {
@@ -191,7 +198,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             }
         }
 
-        save(file, root);
+        if (createdMachineId || createdFirstLaunch || createdLastSent) {
+            save(file, root);
+        }
 
         return root;
     }

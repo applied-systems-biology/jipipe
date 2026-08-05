@@ -16,10 +16,13 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     private final Map<String, Integer> nodeCounts = new HashMap<>();
+    private final Set<JIPipeDesktopProjectWindow> attachedWindows = new HashSet<>();
     private JIPipeStatisticsServiceComponent service;
 
     @Override
@@ -71,6 +74,9 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     }
 
     private void attachToWindow(JIPipeDesktopProjectWindow window) {
+        if (!attachedWindows.add(window)) {
+            return;
+        }
         JIPipeProject project = window.getProject();
         if (project != null) {
             JIPipeGraph graph = project.getGraph();
