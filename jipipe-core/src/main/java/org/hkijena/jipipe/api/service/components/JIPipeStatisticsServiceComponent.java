@@ -239,7 +239,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             StatisticsReporter.sendNow(success -> {
                 if (success) {
                     logger.info("Statistics sent successfully");
-                    sampleHistory();
+                    SwingUtilities.invokeLater(this::sampleHistory);
                 } else {
                     logger.info("Failed to send statistics (will retry later)");
                 }
