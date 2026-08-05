@@ -45,7 +45,11 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         setLayout(new BorderLayout());
 
         initializeHeaderPanel();
-        add(createCenterPanel(), BorderLayout.CENTER);
+        JComponent centerPanel = createCenterPanel();
+        JPanel panel = UIUtils.wrapInEmptyBorder(centerPanel, 8);
+        panel.setOpaque(true);
+        panel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        add(panel, BorderLayout.CENTER);
     }
 
     private void initializeHeaderPanel() {
@@ -69,13 +73,13 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         titleField.setBorder(UIUtils.createEmptyBorder(4));
         nameAndIdPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(titleField)), null);
 
-        machineIdField = UIUtils.createReadonlyBorderlessTextField(StringUtils.nullToEmpty(service.getMachineId()));
+        machineIdField = UIUtils.createReadonlyBorderlessTextField("Machine ID " + StringUtils.nullToEmpty(service.getMachineId()));
         machineIdField.setOpaque(false);
         machineIdField.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         nameAndIdPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(machineIdField,
-                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/dice-one.png"), () -> {
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/random.png"), () -> {
                     service.rerollMachineId();
-                    machineIdField.setText(StringUtils.nullToEmpty(service.getMachineId()));
+                    machineIdField.setText("Machine ID " + StringUtils.nullToEmpty(service.getMachineId()));
                     refresh();
                 })))), null);
 
@@ -142,27 +146,6 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private JComponent createCenterPanel() {
-        JPanel islandPanel = new JPanel(new BorderLayout());
-        islandPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(16, 16, 16, 16),
-                new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
-        ));
-
-        JLabel titleLabel = new JLabel("Collected statistics", JIPipe.RESOURCES.getIcon32("status/starred.png"), JLabel.LEFT);
-        titleLabel.setBorder(UIUtils.createEmptyBorder(8));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
-
-        JToolBar titleBar = new JToolBar();
-        titleBar.setFloatable(false);
-        titleBar.add(titleLabel);
-        titleBar.add(Box.createHorizontalGlue());
-        titleBar.add(Box.createHorizontalStrut(8));
-        titleBar.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIUtils.getControlBorderColor()));
-        titleBar.setBackground(ColorUtils.mix(ThemeUtils.getCurrentStyle().getPrimaryColor(),
-                ColorUtils.scaleHSV(UIManager.getColor("Panel.background"), 1, 1, 0.98f), 0.92));
-
-        islandPanel.add(titleBar, BorderLayout.NORTH);
-
         cardsContainer = new JPanel();
         cardsContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 8, 8));
         cardsContainer.setBackground(UIManager.getColor("Panel.background"));
@@ -172,11 +155,9 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         scrollPane.setMinimumSize(new Dimension(300, 300));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
+        scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        islandPanel.add(scrollPane, BorderLayout.CENTER);
-
-        return islandPanel;
+        return UIUtils.wrapInIslandPanelIfNeeded(cardsContainer);
     }
 
     public void refresh() {
