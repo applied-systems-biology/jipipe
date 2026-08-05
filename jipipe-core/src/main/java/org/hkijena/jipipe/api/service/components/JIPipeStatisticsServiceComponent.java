@@ -100,6 +100,20 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         }
     }
 
+    public LocalDateTime getLastSendAttemptTimestamp() {
+        if (statisticsData != null && statisticsData.has("lastSendAttemptTimestamp") && !statisticsData.get("lastSendAttemptTimestamp").isNull()) {
+            return LocalDateTime.parse(statisticsData.get("lastSendAttemptTimestamp").asText(), FORMATTER);
+        }
+        return null;
+    }
+
+    public void setLastSendAttemptTimestamp(LocalDateTime timestamp) {
+        if (statisticsData != null) {
+            statisticsData.put("lastSendAttemptTimestamp", timestamp.format(FORMATTER));
+            saveLater();
+        }
+    }
+
     public void saveLater() {
         saveLaterTimer.restart();
     }
@@ -141,6 +155,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
                 }
                 if (statisticsData.has("lastSentTimestamp")) {
                     currentOnDisk.set("lastSentTimestamp", statisticsData.get("lastSentTimestamp"));
+                }
+                if (statisticsData.has("lastSendAttemptTimestamp")) {
+                    currentOnDisk.set("lastSendAttemptTimestamp", statisticsData.get("lastSendAttemptTimestamp"));
                 }
                 if (statisticsData.has("firstLaunchTimestamp")) {
                     currentOnDisk.put("firstLaunchTimestamp", statisticsData.get("firstLaunchTimestamp").asText());
@@ -202,6 +219,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
         if (createdLastSent) {
             root.putNull("lastSentTimestamp");
         }
+        if (!root.has("lastSendAttemptTimestamp")) {
+            root.putNull("lastSendAttemptTimestamp");
+        }
         if (!root.has("items")) {
             root.putObject("items");
         }
@@ -231,8 +251,8 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             item.initialize(this);
         }
 
-        // Start daily reporting timer (1-hour tick)
-        reportingTimer = new Timer(60 * 60 * 1000, e -> checkAndSend());
+        // Start reporting timer (15-minute tick for retry-friendly polling)
+        reportingTimer = new Timer(15 * 60 * 1000, e -> checkAndSend());
         reportingTimer.setRepeats(true);
         reportingTimer.start();
 
@@ -246,14 +266,27 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
             return;
         }
 
+        LocalDateTime now = LocalDateTime.now();
         LocalDateTime lastSent = getLastSentTimestamp();
-        if (lastSent == null || lastSent.plusHours(24).isBefore(LocalDateTime.now())) {
+        LocalDateTime lastAttempt = getLastSendAttemptTimestamp();
+
+        boolean shouldSend;
+        if (lastSent == null) {
+            shouldSend = lastAttempt == null || lastAttempt.plusMinutes(15).isBefore(now);
+        } else {
+            boolean dayPassed = lastSent.plusHours(24).isBefore(now);
+            boolean retryReady = lastAttempt == null || lastAttempt.plusMinutes(15).isBefore(now);
+            shouldSend = dayPassed && retryReady;
+        }
+
+        if (shouldSend) {
+            setLastSendAttemptTimestamp(now);
             StatisticsReporter.sendNow(success -> {
                 if (success) {
                     logger.info("Statistics sent successfully");
                     SwingUtilities.invokeLater(this::sampleHistory);
                 } else {
-                    logger.info("Failed to send statistics (will retry later)");
+                    logger.info("Failed to send statistics (will retry in 15 minutes)");
                 }
             });
         }
