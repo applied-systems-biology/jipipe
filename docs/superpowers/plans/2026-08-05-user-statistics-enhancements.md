@@ -20,7 +20,7 @@
 
 ---
 
-### Task E1: Port HardwareDetector and Replace GPU Info Items
+### Task 20: Port HardwareDetector and Replace GPU Info Items
 
 **Files:**
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/utils/HardwareDetector.java`
@@ -63,7 +63,7 @@ git add -A && git commit -m "Port HardwareDetector and replace GPU info with det
 
 ---
 
-### Task E2: Remove Categories, Use Neutral Language
+### Task 21: Remove Categories, Use Neutral Language
 
 **Files:**
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeStatisticsItemCategory.java` — delete or deprecate
@@ -97,7 +97,7 @@ git add -A && git commit -m "Remove statistics categories, use neutral language 
 
 ---
 
-### Task E3: Add Time-Tracking Infrastructure
+### Task 22: Add Time-Tracking Infrastructure
 
 **Files:**
 - Create: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/JIPipeTimeTrackedStatisticsItem.java`
@@ -160,7 +160,7 @@ git add -A && git commit -m "Add time-tracking infrastructure for statistics (#1
 
 ---
 
-### Task E4: Convert Statistics Viewer to Tab with Redesigned UI
+### Task 23: Convert Statistics Viewer to Tab with Redesigned UI
 
 **Files:**
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsUI.java` — convert from `JDialog` to `JIPipeDesktopProjectWorkbenchPanel`, redesign with project overview tips pattern
@@ -269,7 +269,7 @@ git add -A && git commit -m "Convert statistics viewer to tab with redesigned UI
 
 ---
 
-### Task E5: Update Configuration Dialog (Remove Category References)
+### Task 24: Update Configuration Dialog (Remove Category References)
 
 **Files:**
 - Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/plugins/statistics/ui/JIPipeDesktopStatisticsConfigurationUI.java` — update description text to neutral language
@@ -285,7 +285,7 @@ git add -A && git commit -m "Update statistics UI text to neutral language (#130
 
 ---
 
-### Task E6: Final Verification
+### Task 25: Final Verification
 
 - [ ] **Step 1: Full compilation**
 
