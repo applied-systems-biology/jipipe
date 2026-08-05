@@ -7,13 +7,15 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCard;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopBreakpoint;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopColumnConstraints;
-import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFluidRow;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopRow;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import org.jfree.chart.ChartFactory;
@@ -34,7 +36,7 @@ import java.util.Map;
 public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPanel {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private JPanel headerPanel;
-    private JIPipeDesktopFluidRow cardsRow;
+    private JIPipeDesktopRow cardsRow;
     private JTextField machineIdField;
 
     public JIPipeDesktopStatisticsUI(JIPipeDesktopProjectWorkbench workbench) {
@@ -141,10 +143,21 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private JComponent createCenterPanel() {
-        cardsRow = new JIPipeDesktopFluidRow(16);
+        cardsRow = new JIPipeDesktopRow(16);
         cardsRow.setBackground(UIManager.getColor("Panel.background"));
 
-        JScrollPane scrollPane = new JScrollPane(cardsRow);
+        JPanel centeringWrapper = new JPanel(new GridBagLayout());
+        centeringWrapper.setOpaque(false);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.weightx = 1.0;
+        gbc.weighty = 1.0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        centeringWrapper.add(cardsRow, gbc);
+
+        JScrollPane scrollPane = new JScrollPane(centeringWrapper);
         scrollPane.setOpaque(false);
         scrollPane.setMinimumSize(new Dimension(300, 300));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
@@ -152,7 +165,7 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
         JPanel wrapper = new JPanel(new BorderLayout());
-        wrapper.setOpaque(false);
+        wrapper.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
         wrapper.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         wrapper.add(UIUtils.wrapInIslandPanelIfNeeded(scrollPane), BorderLayout.CENTER);
 
@@ -167,8 +180,16 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
 
         JIPipeStatisticsServiceComponent service = JIPipe.getInstance().getStatistics();
         for (JIPipeStatisticsItem item : service.getRegistry().getItems()) {
-            JIPipeDesktopCard card = createCard(item, service);
+            JComponent card;
             int span = item.getDefaultColumnSpan();
+
+            if (item.isTimeTracked()) {
+                card = createProminentCard(item, service);
+            } else {
+                card = createInfoCard(item);
+                span = 3;
+            }
+
             JIPipeDesktopColumnConstraints constraints = new JIPipeDesktopColumnConstraints(span)
                     .withSpan(JIPipeDesktopBreakpoint.MD, Math.min(span * 2, 12))
                     .withSpan(JIPipeDesktopBreakpoint.SM, 12);
@@ -181,26 +202,73 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         repaint();
     }
 
-    private JIPipeDesktopCard createCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
+    private JComponent createInfoCard(JIPipeStatisticsItem item) {
+        JPanel card = new JPanel(new BorderLayout(8, 0));
+        card.setOpaque(true);
+        card.setBackground(UIManager.getColor("Panel.background"));
+        card.setBorder(new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 6));
+
+        JLabel iconLabel = new JLabel(JIPipe.RESOURCES.getIcon32(item.getIcon32()));
+        iconLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 0));
+
+        JLabel titleLabel = new JLabel(item.getName());
+        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
+        titleLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
+
+        JsonNode serialized = item.serialize();
+        String valueStr = formatValue(serialized);
+        if (valueStr.isEmpty() || "N/A".equals(valueStr) || "null".equals(valueStr)) {
+            valueStr = "No data available";
+        }
+        JLabel valueLabel = new JLabel(valueStr);
+        valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+
+        JPanel textPanel = new JPanel();
+        textPanel.setLayout(new BoxLayout(textPanel, BoxLayout.Y_AXIS));
+        textPanel.setOpaque(false);
+        textPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 8, 8));
+        textPanel.add(titleLabel);
+        textPanel.add(Box.createVerticalStrut(2));
+        textPanel.add(valueLabel);
+
+        card.add(iconLabel, BorderLayout.WEST);
+        card.add(textPanel, BorderLayout.CENTER);
+
+        return card;
+    }
+
+    private JComponent createProminentCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
         JIPipeDesktopCard card = new JIPipeDesktopCard(item.getName(),
                 JIPipe.RESOURCES.getIcon32(item.getIcon32()));
         card.setVariant(item.getCardVariant());
 
         JsonNode serialized = item.serialize();
         String valueStr = formatValue(serialized);
-        card.setBody(UIUtils.createReadonlyBorderlessTextArea(valueStr));
-
-        if (item.isTimeTracked()) {
-            ChartPanel chartPanel = createHistoryChart(item, service);
-            if (chartPanel != null) {
-                chartPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
-                JPanel bodyPanel = new JPanel(new BorderLayout());
-                bodyPanel.setOpaque(false);
-                bodyPanel.add(UIUtils.createReadonlyBorderlessTextArea(valueStr), BorderLayout.NORTH);
-                bodyPanel.add(chartPanel, BorderLayout.CENTER);
-                card.setBody(bodyPanel);
-            }
+        if (valueStr.isEmpty() || "N/A".equals(valueStr) || "null".equals(valueStr)) {
+            valueStr = "No data available";
         }
+
+        JLabel valueLabel = new JLabel(valueStr);
+        valueLabel.setFont(valueLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
+        valueLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 4, 8));
+
+        JPanel bodyPanel = new JPanel(new BorderLayout());
+        bodyPanel.setOpaque(false);
+        bodyPanel.add(valueLabel, BorderLayout.NORTH);
+
+        ChartPanel chartPanel = createHistoryChart(item, service);
+        if (chartPanel != null) {
+            chartPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+            bodyPanel.add(chartPanel, BorderLayout.CENTER);
+        } else {
+            JLabel placeholder = new JLabel("No history data yet");
+            placeholder.setFont(placeholder.getFont().deriveFont(Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
+            placeholder.setForeground(UIManager.getColor("Label.disabledForeground"));
+            placeholder.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+            bodyPanel.add(placeholder, BorderLayout.CENTER);
+        }
+
+        card.setBody(bodyPanel);
 
         return card;
     }
@@ -213,15 +281,19 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
             return node.toString();
         }
         if (node.isTextual()) {
-            return node.asText();
+            String text = node.asText();
+            return text.isEmpty() ? "N/A" : text;
         }
         if (node.isObject()) {
+            if (node.isEmpty()) {
+                return "No data available";
+            }
             StringBuilder sb = new StringBuilder();
             Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> entry = fields.next();
-                if (sb.length() > 0) sb.append("\n");
-                sb.append(entry.getKey()).append(": ").append(entry.getValue().toString());
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(entry.getKey()).append(": ").append(entry.getValue().asText());
             }
             return sb.toString();
         }

@@ -54,8 +54,12 @@ public class JIPipeDesktopCard extends JPanel {
     }
 
     private void updateBorder() {
-        int radius = ThemeUtils.getCurrentStyle().getIslandsCornerRadius();
-        setBorder(new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, radius));
+        setBorder(new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 6));
+    }
+
+    @Override
+    public Insets getInsets() {
+        return new Insets(1, 1, 1, 1);
     }
 
     private void initializeHeader() {

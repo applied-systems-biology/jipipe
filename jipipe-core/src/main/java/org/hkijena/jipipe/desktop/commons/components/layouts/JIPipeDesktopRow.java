@@ -40,4 +40,13 @@ public class JIPipeDesktopRow extends JPanel {
     public Dimension getMaximumSize() {
         return new Dimension(maxWidth, Integer.MAX_VALUE);
     }
+
+    @Override
+    public Dimension getPreferredSize() {
+        Dimension pref = super.getPreferredSize();
+        if (pref.width > maxWidth) {
+            pref.width = maxWidth;
+        }
+        return pref;
+    }
 }
