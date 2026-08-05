@@ -77,7 +77,7 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
             Insets insets = target.getInsets();
             int innerWidth = width - insets.left - insets.right;
             JIPipeDesktopBreakpoint bp = JIPipeDesktopBreakpoint.fromWidth(innerWidth);
-            int availableWidth = Math.max(0, innerWidth - gutter);
+            int columnUnit = Math.max(0, (innerWidth - (COLUMNS - 1) * gutter) / COLUMNS);
 
             int totalHeight = 0;
             int currentCol = 0;
@@ -98,7 +98,7 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
 
                 currentCol += offset;
 
-                int compWidth = (span * availableWidth) / COLUMNS;
+                int compWidth = span * columnUnit + (span - 1) * gutter;
                 Dimension d = preferred ? comp.getPreferredSize() : comp.getMinimumSize();
                 if (d.width > 0 && d.height > 0) {
                     int compHeight = d.height;
@@ -122,7 +122,7 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
             Insets insets = target.getInsets();
             int innerWidth = target.getWidth() - insets.left - insets.right;
             JIPipeDesktopBreakpoint bp = JIPipeDesktopBreakpoint.fromWidth(innerWidth);
-            int availableWidth = Math.max(0, innerWidth - gutter);
+            int columnUnit = Math.max(0, (innerWidth - (COLUMNS - 1) * gutter) / COLUMNS);
 
             int startX = insets.left;
             int startY = insets.top;
@@ -146,8 +146,8 @@ public class JIPipeDesktopColumnLayout implements LayoutManager2 {
 
                 currentCol += offset;
 
-                int compWidth = (span * availableWidth) / COLUMNS;
-                int compX = startX + (currentCol * availableWidth) / COLUMNS;
+                int compWidth = span * columnUnit + (span - 1) * gutter;
+                int compX = startX + currentCol * (columnUnit + gutter);
                 Dimension pref = comp.getPreferredSize();
                 int compHeight = pref.height;
                 rowHeight = Math.max(rowHeight, compHeight);

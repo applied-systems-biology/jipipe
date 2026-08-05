@@ -44,7 +44,7 @@ class JIPipeDesktopColumnLayoutTest {
         JPanel container = createContainer(1000, 16);
         Component c = addLabel(container, new JIPipeDesktopColumnConstraints(12));
         container.doLayout();
-        assertEquals(1000 - 16, c.getWidth());
+        assertEquals(992, c.getWidth());
     }
 
     @Test
@@ -80,7 +80,7 @@ class JIPipeDesktopColumnLayoutTest {
         Component c = addLabel(container, new JIPipeDesktopColumnConstraints(3)
                 .withSpan(JIPipeDesktopBreakpoint.SM, 12));
         container.doLayout();
-        assertEquals(600 - 16, c.getWidth(), "At 600px width (SM breakpoint), span should be 12");
+        assertEquals(596, c.getWidth(), "At 600px width (SM breakpoint), span should be 12");
     }
 
     @Test
@@ -90,7 +90,7 @@ class JIPipeDesktopColumnLayoutTest {
         label.setPreferredSize(new Dimension(50, 30));
         container.add(label);
         container.doLayout();
-        assertEquals(1000 - 16, label.getWidth(), "Default should be full width (12 columns)");
+        assertEquals(992, label.getWidth(), "Default should be full width (12 columns)");
     }
 
     @Test
