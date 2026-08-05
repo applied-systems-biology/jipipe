@@ -24,4 +24,16 @@ public interface JIPipeStatisticsItem {
     default boolean isTimeTracked() {
         return false;
     }
+
+    default String getIcon32() {
+        return "status/starred.png";
+    }
+
+    default org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant getCardVariant() {
+        return org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant.Default;
+    }
+
+    default int getDefaultColumnSpan() {
+        return 3;
+    }
 }
