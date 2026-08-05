@@ -44,90 +44,86 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     private void initialize() {
         setLayout(new BorderLayout());
 
-        headerPanel = createHeaderPanel();
-        add(headerPanel, BorderLayout.NORTH);
+        initializeHeaderPanel();
         add(createCenterPanel(), BorderLayout.CENTER);
     }
 
-    private JPanel createHeaderPanel() {
+    private void initializeHeaderPanel() {
         JIPipeStatisticsServiceComponent service = JIPipe.getInstance().getStatistics();
         JIPipeStatisticsApplicationSettings settings = JIPipeStatisticsApplicationSettings.getInstance();
 
-        JPanel header = new JPanel();
-        header.setBorder(BorderFactory::getCompoundBorder);
-        header.setBorder(BorderFactory.createCompoundBorder(
+        headerPanel = new JPanel();
+        headerPanel.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createEmptyBorder(0, 0, 16, 0),
                 BorderFactory.createMatteBorder(1, 0, 1, 0, ThemeUtils.getCurrentStyle().getBorderColor())));
-        header.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        header.setLayout(new BorderLayout());
-        header.setPreferredSize(new Dimension(header.getPreferredSize().width, 150));
+        headerPanel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
+        headerPanel.setLayout(new BorderLayout());
+        headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 150));
 
-        JIPipeDesktopFormPanel leftPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
-        leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
+        JIPipeDesktopFormPanel nameAndIdPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
+        nameAndIdPanel.setLayout(new BoxLayout(nameAndIdPanel, BoxLayout.Y_AXIS));
 
         JTextField titleField = UIUtils.createReadonlyBorderlessTextField("Statistics");
         titleField.setOpaque(false);
         titleField.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeHuge()));
         titleField.setBorder(UIUtils.createEmptyBorder(4));
+        nameAndIdPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(titleField)), null);
 
         machineIdField = UIUtils.createReadonlyBorderlessTextField(StringUtils.nullToEmpty(service.getMachineId()));
         machineIdField.setOpaque(false);
         machineIdField.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
-
-        JButton rerollButton = UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/dice-one.png"), () -> {
-            service.rerollMachineId();
-            machineIdField.setText(StringUtils.nullToEmpty(service.getMachineId()));
-            refresh();
-        });
-        rerollButton.setToolTipText("Generate a new machine ID");
-
-        leftPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(titleField)), null);
-        leftPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(machineIdField,
-                UIUtils.makeButtonTransparent(rerollButton))), null);
+        nameAndIdPanel.addWideToForm(UIUtils.makeNonOpaque(UIUtils.boxHorizontal(machineIdField,
+                UIUtils.makeButtonTransparent(UIUtils.createButton("", JIPipe.RESOURCES.getIcon16("actions/dice-one.png"), () -> {
+                    service.rerollMachineId();
+                    machineIdField.setText(StringUtils.nullToEmpty(service.getMachineId()));
+                    refresh();
+                })))), null);
 
         LocalDateTime idCreated = service.getMachineIdCreatedTimestamp();
         JLabel idDateLabel = new JLabel("ID created: " + (idCreated != null ? idCreated.format(FORMATTER) : "Unknown"));
         idDateLabel.setFont(idDateLabel.getFont().deriveFont(Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeSmall()));
         idDateLabel.setForeground(UIManager.getColor("Label.disabledForeground"));
         idDateLabel.setBorder(UIUtils.createEmptyBorder(4));
-        leftPanel.addWideToForm(UIUtils.makeNonOpaque(idDateLabel), null);
+        nameAndIdPanel.addWideToForm(UIUtils.makeNonOpaque(idDateLabel), null);
 
-        leftPanel.addVerticalGlue();
-        header.add(leftPanel, BorderLayout.WEST);
+        nameAndIdPanel.addVerticalGlue();
+        headerPanel.add(nameAndIdPanel, BorderLayout.WEST);
 
-        JIPipeDesktopFormPanel rightPanel = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
+        JIPipeDesktopFormPanel technicalInfo = new JIPipeDesktopFormPanel(null, JIPipeDesktopFormPanel.TRANSPARENT_BACKGROUND);
 
         LocalDateTime firstLaunch = service.getFirstLaunchTimestamp();
         JTextField firstLaunchField = UIUtils.createReadonlyBorderlessTextField(firstLaunch != null ? firstLaunch.format(FORMATTER) : "Unknown");
-        rightPanel.addToForm(firstLaunchField, new JLabel("First launch"), null);
+        technicalInfo.addToForm(firstLaunchField, new JLabel("First launch"), null);
 
         LocalDateTime lastSent = service.getLastSentTimestamp();
         JTextField lastSentField = UIUtils.createReadonlyBorderlessTextField(lastSent != null ? lastSent.format(FORMATTER) : "Never");
-        rightPanel.addToForm(lastSentField, new JLabel("Last sent"), null);
+        technicalInfo.addToForm(lastSentField, new JLabel("Last sent"), null);
 
         JTextField privacyField = UIUtils.createReadonlyBorderlessTextField(settings.getPrivacyLevel().toString());
-        rightPanel.addToForm(privacyField, new JLabel("Privacy level"), null);
+        technicalInfo.addToForm(privacyField, new JLabel("Privacy level"), null);
 
-        rightPanel.addVerticalGlue();
-        header.add(rightPanel, BorderLayout.EAST);
+        technicalInfo.addVerticalGlue();
+        headerPanel.add(technicalInfo, BorderLayout.EAST);
 
-        initializeHeaderToolbar(header);
+        initializeToolbar(headerPanel);
 
-        return header;
+        add(headerPanel, BorderLayout.NORTH);
     }
 
-    private void initializeHeaderToolbar(JPanel header) {
+    private void initializeToolbar(JPanel topPanel) {
         JPanel toolBar = new JPanel();
         toolBar.setBorder(UIUtils.createEmptyBorder(4));
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
 
+        toolBar.add(Box.createHorizontalGlue());
+
         JButton reloadButton = new JButton("Reload", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
         reloadButton.addActionListener(e -> refresh());
         reloadButton.setOpaque(false);
         reloadButton.setBackground(new Color(0, 0, 0, 0));
+        reloadButton.setToolTipText("Updates the contents of this page.");
         toolBar.add(reloadButton);
-        toolBar.add(Box.createHorizontalStrut(4));
 
         JButton configureButton = new JButton("Configure", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureButton.addActionListener(e -> {
@@ -139,16 +135,16 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         });
         configureButton.setOpaque(false);
         configureButton.setBackground(new Color(0, 0, 0, 0));
+        configureButton.setToolTipText("Configure statistics privacy settings.");
         toolBar.add(configureButton);
-        toolBar.add(Box.createHorizontalStrut(4));
 
-        header.add(toolBar, BorderLayout.SOUTH);
+        topPanel.add(toolBar, BorderLayout.SOUTH);
     }
 
     private JComponent createCenterPanel() {
         JPanel islandPanel = new JPanel(new BorderLayout());
         islandPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(8, 8, 8, 8),
+                BorderFactory.createEmptyBorder(16, 16, 16, 16),
                 new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
         ));
 
@@ -172,7 +168,9 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         cardsContainer.setBackground(UIManager.getColor("Panel.background"));
 
         JScrollPane scrollPane = new JScrollPane(cardsContainer);
-        scrollPane.setBorder(BorderFactory::getEmptyBorder);
+        scrollPane.setOpaque(false);
+        scrollPane.setMinimumSize(new Dimension(300, 300));
+        scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.getHorizontalScrollBar().setUnitIncrement(16);
 
@@ -183,8 +181,7 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
 
     public void refresh() {
         remove(headerPanel);
-        headerPanel = createHeaderPanel();
-        add(headerPanel, BorderLayout.NORTH);
+        initializeHeaderPanel();
 
         cardsContainer.removeAll();
 
@@ -202,7 +199,10 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
 
     private JPanel createCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
         JPanel card = new JPanel(new BorderLayout());
-        card.setBorder(new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4));
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createEmptyBorder(0, 0, 0, 16),
+                new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
+        ));
 
         JLabel titleLabel = new JLabel(item.getName());
         titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("status/starred.png"));
@@ -210,13 +210,12 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
         card.add(titleLabel, BorderLayout.NORTH);
 
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
-
         JsonNode serialized = item.serialize();
         String valueStr = formatValue(serialized);
-        JLabel valueLabel = new JLabel("<html>" + valueStr + "</html>");
-        contentPanel.add(valueLabel, BorderLayout.NORTH);
+
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+        contentPanel.add(UIUtils.createReadonlyBorderlessTextArea(valueStr), BorderLayout.NORTH);
 
         if (item.isTimeTracked()) {
             ChartPanel chartPanel = createHistoryChart(item, service);
@@ -249,7 +248,7 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
             Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
             while (fields.hasNext()) {
                 Map.Entry<String, JsonNode> entry = fields.next();
-                if (sb.length() > 0) sb.append("<br>");
+                if (sb.length() > 0) sb.append("\n");
                 sb.append(entry.getKey()).append(": ").append(entry.getValue().toString());
             }
             return sb.toString();
