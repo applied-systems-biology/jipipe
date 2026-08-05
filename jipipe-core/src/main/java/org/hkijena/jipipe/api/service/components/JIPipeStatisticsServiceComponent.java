@@ -67,8 +67,16 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
     public void rerollMachineId() {
         if (statisticsData != null) {
             statisticsData.put("machineId", UUID.randomUUID().toString());
+            statisticsData.put("machineIdCreatedTimestamp", LocalDateTime.now().format(FORMATTER));
             save();
         }
+    }
+
+    public LocalDateTime getMachineIdCreatedTimestamp() {
+        if (statisticsData != null && statisticsData.has("machineIdCreatedTimestamp")) {
+            return LocalDateTime.parse(statisticsData.get("machineIdCreatedTimestamp").asText(), FORMATTER);
+        }
+        return getFirstLaunchTimestamp();
     }
 
     public LocalDateTime getFirstLaunchTimestamp() {
@@ -137,6 +145,9 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
                 if (statisticsData.has("firstLaunchTimestamp")) {
                     currentOnDisk.put("firstLaunchTimestamp", statisticsData.get("firstLaunchTimestamp").asText());
                 }
+                if (statisticsData.has("machineIdCreatedTimestamp")) {
+                    currentOnDisk.put("machineIdCreatedTimestamp", statisticsData.get("machineIdCreatedTimestamp").asText());
+                }
                 if (statisticsData.has("history")) {
                     currentOnDisk.set("history", statisticsData.get("history"));
                 }
@@ -183,6 +194,7 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
 
         if (createdMachineId) {
             root.put("machineId", UUID.randomUUID().toString());
+            root.put("machineIdCreatedTimestamp", LocalDateTime.now().format(FORMATTER));
         }
         if (createdFirstLaunch) {
             root.put("firstLaunchTimestamp", LocalDateTime.now().format(FORMATTER));
