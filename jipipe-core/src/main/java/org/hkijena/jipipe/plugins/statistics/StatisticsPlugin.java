@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.statistics;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -66,5 +67,24 @@ public class StatisticsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerApplicationSettingsSheet(new JIPipeStatisticsApplicationSettings());
 
         registerMenuExtension(ShowStatisticsTool.class);
+
+        // Register statistics items
+        var statsService = JIPipe.getInstance().getStatistics();
+        var registry = statsService.getRegistry();
+
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.MachineIdStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.OperatingSystemStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.TotalRamStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.JIPipeVersionStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuInfoStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RecentProjectsCountStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.WorkflowRunsStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RoCratesCreatedStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.PopularNodesStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LargestProjectNodesStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LargestProjectCompartmentsStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.NodeMoveDistanceStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.NoodleScoreStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.LongestNodeWidthStatisticsItem());
     }
 }
