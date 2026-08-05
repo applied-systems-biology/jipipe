@@ -31,8 +31,8 @@ public class ShowStatisticsTool extends JIPipeDesktopMenuExtension {
         setToolTipText("View collected usage statistics");
         setIcon(JIPipe.RESOURCES.getIcon16("actions/chart-bar.png"));
         addActionListener(e -> {
-            JIPipeDesktopStatisticsUI dialog = new JIPipeDesktopStatisticsUI((JIPipeDesktopProjectWorkbench) workbench);
-            dialog.setVisible(true);
+            JIPipeDesktopProjectWorkbench projectWorkbench = (JIPipeDesktopProjectWorkbench) workbench;
+            projectWorkbench.getDocumentTabPane().selectSingletonTab(JIPipeDesktopProjectWorkbench.TAB_STATISTICS);
         });
     }
 
