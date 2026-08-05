@@ -67,7 +67,8 @@ public class JIPipeDesktopStatisticsButton extends JButton implements JIPipeDesk
         JButton closeButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/window-close.png"));
         closeButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         closeButton.setOpaque(false);
-        balloonTip.setCloseButton(closeButton, false);
+        closeButton.addActionListener(e -> dismiss());
+        balloonTip.setCloseButton(closeButton);
     }
 
     private void showStatisticsBalloon() {
