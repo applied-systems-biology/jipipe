@@ -4,6 +4,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
+import org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCard;
+import org.hkijena.jipipe.desktop.commons.components.cards.JIPipeDesktopCardVariant;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopBreakpoint;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopColumnConstraints;
+import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopFluidRow;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.settings.JIPipeStatisticsApplicationSettings;
@@ -32,7 +37,7 @@ import java.util.Map;
 public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPanel {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
     private JPanel headerPanel;
-    private JPanel cardsContainer;
+    private JIPipeDesktopFluidRow cardsRow;
     private JTextField machineIdField;
 
     public JIPipeDesktopStatisticsUI(JIPipeDesktopProjectWorkbench workbench) {
@@ -43,13 +48,8 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
 
     private void initialize() {
         setLayout(new BorderLayout());
-
         initializeHeaderPanel();
-        JComponent centerPanel = createCenterPanel();
-        JPanel panel = UIUtils.wrapInEmptyBorder(centerPanel, 8);
-        panel.setOpaque(true);
-        panel.setBackground(ThemeUtils.getCurrentStyle().getWindowBackground());
-        add(panel, BorderLayout.CENTER);
+        add(createCenterPanel(), BorderLayout.CENTER);
     }
 
     private void initializeHeaderPanel() {
@@ -110,7 +110,6 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         headerPanel.add(technicalInfo, BorderLayout.EAST);
 
         initializeToolbar(headerPanel);
-
         add(headerPanel, BorderLayout.NORTH);
     }
 
@@ -119,7 +118,6 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
         toolBar.setBorder(UIUtils.createEmptyBorder(4));
         toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
         toolBar.setOpaque(false);
-
         toolBar.add(Box.createHorizontalGlue());
 
         JButton reloadButton = new JButton("Reload", JIPipe.RESOURCES.getIcon16("actions/view-refresh.png"));
@@ -146,70 +144,66 @@ public class JIPipeDesktopStatisticsUI extends JIPipeDesktopProjectWorkbenchPane
     }
 
     private JComponent createCenterPanel() {
-        cardsContainer = new JPanel();
-        cardsContainer.setLayout(new FlowLayout(FlowLayout.LEFT, 8, 8));
-        cardsContainer.setBackground(UIManager.getColor("Panel.background"));
+        cardsRow = new JIPipeDesktopFluidRow(16);
+        cardsRow.setBackground(UIManager.getColor("Panel.background"));
 
-        JScrollPane scrollPane = new JScrollPane(cardsContainer);
+        JScrollPane scrollPane = new JScrollPane(cardsRow);
         scrollPane.setOpaque(false);
         scrollPane.setMinimumSize(new Dimension(300, 300));
         scrollPane.setBorder(BorderFactory.createEmptyBorder());
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-        return UIUtils.wrapInIslandPanelIfNeeded(cardsContainer);
+        JPanel wrapper = new JPanel(new BorderLayout());
+        wrapper.setOpaque(false);
+        wrapper.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        wrapper.add(UIUtils.wrapInIslandPanelIfNeeded(scrollPane), BorderLayout.CENTER);
+
+        return wrapper;
     }
 
     public void refresh() {
         remove(headerPanel);
         initializeHeaderPanel();
 
-        cardsContainer.removeAll();
+        cardsRow.removeAll();
 
         JIPipeStatisticsServiceComponent service = JIPipe.getInstance().getStatistics();
         for (JIPipeStatisticsItem item : service.getRegistry().getItems()) {
-            JPanel card = createCard(item, service);
-            cardsContainer.add(card);
+            JIPipeDesktopCard card = createCard(item, service);
+            int span = item.getDefaultColumnSpan();
+            JIPipeDesktopColumnConstraints constraints = new JIPipeDesktopColumnConstraints(span)
+                    .withSpan(JIPipeDesktopBreakpoint.MD, Math.min(span * 2, 12))
+                    .withSpan(JIPipeDesktopBreakpoint.SM, 12);
+            cardsRow.add(card, constraints);
         }
 
-        cardsContainer.revalidate();
-        cardsContainer.repaint();
+        cardsRow.revalidate();
+        cardsRow.repaint();
         revalidate();
         repaint();
     }
 
-    private JPanel createCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
-        JPanel card = new JPanel(new BorderLayout());
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0, 0, 0, 16),
-                new RoundedLineBorder(UIUtils.getControlBorderColor(), 1, 4)
-        ));
-
-        JLabel titleLabel = new JLabel(item.getName());
-        titleLabel.setIcon(JIPipe.RESOURCES.getIcon32("status/starred.png"));
-        titleLabel.setFont(titleLabel.getFont().deriveFont(Font.BOLD, ThemeUtils.getCurrentStyle().getFontSizeLarge()));
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 0, 16, 0));
-        card.add(titleLabel, BorderLayout.NORTH);
+    private JIPipeDesktopCard createCard(JIPipeStatisticsItem item, JIPipeStatisticsServiceComponent service) {
+        JIPipeDesktopCard card = new JIPipeDesktopCard(item.getName(),
+                JIPipe.RESOURCES.getIcon32(item.getIcon32()));
+        card.setVariant(item.getCardVariant());
 
         JsonNode serialized = item.serialize();
         String valueStr = formatValue(serialized);
-
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        contentPanel.setOpaque(false);
-        contentPanel.add(UIUtils.createReadonlyBorderlessTextArea(valueStr), BorderLayout.NORTH);
+        card.setBody(UIUtils.createReadonlyBorderlessTextArea(valueStr));
 
         if (item.isTimeTracked()) {
             ChartPanel chartPanel = createHistoryChart(item, service);
             if (chartPanel != null) {
                 chartPanel.setBorder(BorderFactory.createEmptyBorder(8, 0, 0, 0));
-                contentPanel.add(chartPanel, BorderLayout.CENTER);
+                JPanel bodyPanel = new JPanel(new BorderLayout());
+                bodyPanel.setOpaque(false);
+                bodyPanel.add(UIUtils.createReadonlyBorderlessTextArea(valueStr), BorderLayout.NORTH);
+                bodyPanel.add(chartPanel, BorderLayout.CENTER);
+                card.setBody(bodyPanel);
             }
         }
-
-        card.add(contentPanel, BorderLayout.CENTER);
-
-        card.setPreferredSize(new Dimension(300, 250));
-        card.setMaximumSize(new Dimension(300, 300));
 
         return card;
     }
