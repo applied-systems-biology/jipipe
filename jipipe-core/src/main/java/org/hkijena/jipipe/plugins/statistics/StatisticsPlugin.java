@@ -76,7 +76,9 @@ public class StatisticsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.OperatingSystemStatisticsItem());
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.TotalRamStatisticsItem());
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.JIPipeVersionStatisticsItem());
-        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuInfoStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuModelStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.GpuVramStatisticsItem());
+        registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.AccelerationStatisticsItem());
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RecentProjectsCountStatisticsItem());
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.WorkflowRunsStatisticsItem());
         registry.registerItem(new org.hkijena.jipipe.plugins.statistics.items.RoCratesCreatedStatisticsItem());

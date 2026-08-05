@@ -5,30 +5,22 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
+import org.hkijena.jipipe.utils.HardwareDetector;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-
-public class GpuInfoStatisticsItem implements JIPipeStatisticsItem {
+public class GpuModelStatisticsItem implements JIPipeStatisticsItem {
     @Override
-    public String getId() { return "gpu-info"; }
+    public String getId() { return "gpu-model"; }
     @Override
-    public String getName() { return "GPU information"; }
+    public String getName() { return "GPU model"; }
     @Override
-    public String getDescription() { return "Available graphics devices"; }
+    public String getDescription() { return "The GPU model name"; }
     @Override
     public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Machine; }
     @Override
     public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
     @Override
     public JsonNode serialize() {
-        GraphicsDevice[] devices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices();
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < devices.length; i++) {
-            if (i > 0) sb.append("; ");
-            sb.append(devices[i].getIDstring());
-        }
-        return TextNode.valueOf(sb.toString());
+        return TextNode.valueOf(HardwareDetector.detect().getGpuType());
     }
     @Override
     public void deserialize(JsonNode node) { }

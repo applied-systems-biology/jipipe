@@ -7,21 +7,20 @@ import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItemCategory;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.hkijena.jipipe.utils.HardwareDetector;
 
-public class TotalRamStatisticsItem implements JIPipeStatisticsItem {
+public class GpuVramStatisticsItem implements JIPipeStatisticsItem {
     @Override
-    public String getId() { return "total-ram-mb"; }
+    public String getId() { return "gpu-vram-total-mb"; }
     @Override
-    public String getName() { return "Total RAM (MB)"; }
+    public String getName() { return "GPU VRAM total (MB)"; }
     @Override
-    public String getDescription() { return "Total system RAM in megabytes"; }
+    public String getDescription() { return "Total GPU VRAM in megabytes"; }
     @Override
     public JIPipeStatisticsItemCategory getCategory() { return JIPipeStatisticsItemCategory.Machine; }
     @Override
-    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Installation; }
+    public StatisticsPrivacyLevel getRequiredPrivacyLevel() { return StatisticsPrivacyLevel.Everything; }
     @Override
     public JsonNode serialize() {
-        long ramMb = HardwareDetector.detect().getSystemRamTotalMB();
-        return IntNode.valueOf((int) ramMb);
+        return IntNode.valueOf((int) HardwareDetector.detect().getGpuVramTotalMB());
     }
     @Override
     public void deserialize(JsonNode node) { }
