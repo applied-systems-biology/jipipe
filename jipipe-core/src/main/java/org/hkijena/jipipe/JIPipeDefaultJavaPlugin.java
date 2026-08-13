@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironmentArchetype;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopGraphEditorTool;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.instrumentation.InstrumentationOperation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -1070,6 +1071,16 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerFileChooserKnownDirectoryType(String name, String icon16Name, String extension, String... otherExtensions) {
         JIPipeDesktopFileChooserNext.registerKnownDirectoryType(name, JIPipe.RESOURCES.getIcon16(icon16Name), extension, otherExtensions);
+    }
+
+    /**
+     * Registers an instrumentation operation.
+     *
+     * @param id        the operation ID (e.g. "query_compartments")
+     * @param operation the operation
+     */
+    public void registerInstrumentationOperation(String id, InstrumentationOperation operation) {
+        getService().getInstrumentation().getOperationRegistry().register(id, operation);
     }
 
     @Override

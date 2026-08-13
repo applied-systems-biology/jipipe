@@ -68,6 +68,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     private final JIPipeAIServiceComponent aiService;
     private final JIPipeServerServiceComponent serverService;
     private final JIPipeStatisticsServiceComponent statistics;
+    private final JIPipeInstrumentationServiceComponent instrumentation;
     private final JIPipeDatatypeRegisteredEventEmitter datatypeRegisteredEventEmitter = new JIPipeDatatypeRegisteredEventEmitter();
     private final JIPipePluginDiscoveredEventEmitter extensionDiscoveredEventEmitter = new JIPipePluginDiscoveredEventEmitter();
     private final JIPipePluginRegisteredEventEmitter extensionRegisteredEventEmitter = new JIPipePluginRegisteredEventEmitter();
@@ -106,11 +107,12 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
         aiService = new JIPipeAIServiceComponent(this);
         serverService = new JIPipeServerServiceComponent(this);
         statistics = new JIPipeStatisticsServiceComponent(this);
+        instrumentation = new JIPipeInstrumentationServiceComponent(this);
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[] {
                 recentProjects, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
-                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService, serverService, statistics
+                environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService, serverService, statistics, instrumentation
         };
     }
 
@@ -274,6 +276,11 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeStatisticsServiceComponent getStatistics() {
         ensureInitialized();
         return statistics;
+    }
+
+    public JIPipeInstrumentationServiceComponent getInstrumentation() {
+        ensureInitialized();
+        return instrumentation;
     }
 
     public JIPipeProgressInfo getProgressInfo() {
