@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
+import org.hkijena.jipipe.desktop.app.quickrun.JIPipeDesktopQuickRun;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 
@@ -37,7 +38,8 @@ public class WorkflowRunsStatisticsItem implements JIPipeStatisticsItem {
     }
 
     private void onRunFinished(JIPipeRunnable.FinishedEvent event) {
-        if (event.getRun() instanceof JIPipeGraphRun run && run.getParent() == null) {
+        if ((event.getRun() instanceof JIPipeGraphRun run && run.getParent() == null)
+                || event.getRun() instanceof JIPipeDesktopQuickRun) {
             count++;
             if (service != null) service.saveLater();
         }
