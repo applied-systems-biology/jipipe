@@ -80,9 +80,6 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
         if (project != null) {
             JIPipeGraph graph = project.getGraph();
             graph.getNodeAddedEventEmitter().subscribe(this::onNodeAdded);
-            for (JIPipeGraphNode existingNode : graph.getGraphNodes()) {
-                countNode(existingNode);
-            }
         }
     }
 
