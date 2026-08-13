@@ -525,4 +525,8 @@ public final class JIPipe {
     public static JIPipeEnvironmentsServiceComponent getEnvironments() {
         return getInstance().getEnvironments();
     }
+
+    public static JIPipeInstrumentationServiceComponent getInstrumentation() {
+        return instance.getInstrumentation();
+    }
 }
