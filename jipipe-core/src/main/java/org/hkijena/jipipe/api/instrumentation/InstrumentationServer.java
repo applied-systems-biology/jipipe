@@ -15,8 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -26,12 +26,15 @@ public class InstrumentationServer extends WebSocketServer {
     private static final Logger logger = LoggerFactory.getLogger(InstrumentationServer.class);
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private volatile JIPipeProject selectedProject;
-    private volatile String selectedProjectId;
-    private volatile InstrumentationEventBus eventBus;
-    private volatile InstrumentationJobManager jobManager;
-    private final List<Runnable> activeSubscriptions = new ArrayList<>();
+    private final Map<WebSocket, ConnectionContext> connections = new ConcurrentHashMap<>();
     private final CountDownLatch startLatch = new CountDownLatch(1);
+
+    private static class ConnectionContext {
+        JIPipeProject selectedProject;
+        String selectedProjectId;
+        InstrumentationEventBus eventBus;
+        InstrumentationJobManager jobManager;
+    }
 
     public InstrumentationServer(int port) {
         super(new InetSocketAddress(
@@ -46,11 +49,16 @@ public class InstrumentationServer extends WebSocketServer {
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         logger.info("Instrumentation client connected: {}", conn.getRemoteSocketAddress());
+        connections.put(conn, new ConnectionContext());
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         logger.info("Instrumentation client disconnected: {}", conn.getRemoteSocketAddress());
+        ConnectionContext cc = connections.remove(conn);
+        if (cc != null && cc.eventBus != null) {
+            cc.eventBus.clear();
+        }
     }
 
     @Override
@@ -77,25 +85,26 @@ public class InstrumentationServer extends WebSocketServer {
 
     private void handleSelectProject(WebSocket conn, JsonNode msg, String requestId) {
         String projectId = msg.has("projectId") ? msg.get("projectId").asText() : null;
-        unsubscribeFromProject();
+        ConnectionContext cc = connections.computeIfAbsent(conn, k -> new ConnectionContext());
+        unsubscribeFromProject(cc);
 
         JIPipeDesktopProjectWindow window = findWindow(projectId);
         if (window == null) {
             sendError(conn, requestId, "Project not found: " + projectId);
             return;
         }
-        selectedProject = window.getProject();
-        selectedProjectId = projectId;
-        eventBus = new InstrumentationEventBus();
-        jobManager = new InstrumentationJobManager(eventBus, projectId);
-        subscribeToProject();
+        cc.selectedProject = window.getProject();
+        cc.selectedProjectId = projectId;
+        cc.eventBus = new InstrumentationEventBus();
+        cc.jobManager = new InstrumentationJobManager(cc.eventBus, projectId);
+        subscribeToProject(conn, cc);
 
         ObjectNode response = mapper.createObjectNode();
         response.put("type", InstrumentationProtocol.EVENT_PROJECT_CHANGED);
         response.put("projectId", projectId);
-        response.put("name", selectedProject.getMetadata().getName());
+        response.put("name", cc.selectedProject.getMetadata().getName());
         if (requestId != null) response.put("requestId", requestId);
-        broadcast(response.toString());
+        conn.send(response.toString());
     }
 
     private void handleGetJobStatus(WebSocket conn, JsonNode msg, String requestId) {
@@ -103,8 +112,9 @@ public class InstrumentationServer extends WebSocketServer {
         ObjectNode response = mapper.createObjectNode();
         response.put("type", InstrumentationProtocol.EVENT_OPERATION_RESULT);
         if (requestId != null) response.put("requestId", requestId);
-        if (jobManager != null) {
-            InstrumentationJob job = jobManager.getJob(jobId);
+        ConnectionContext cc = connections.get(conn);
+        if (cc != null && cc.jobManager != null) {
+            InstrumentationJob job = cc.jobManager.getJob(jobId);
             if (job != null) {
                 ObjectNode data = response.putObject("data");
                 data.put("jobId", job.getId());
@@ -126,8 +136,9 @@ public class InstrumentationServer extends WebSocketServer {
         ObjectNode response = mapper.createObjectNode();
         response.put("type", InstrumentationProtocol.EVENT_OPERATION_RESULT);
         if (requestId != null) response.put("requestId", requestId);
-        if (jobManager != null) {
-            boolean cancelled = jobManager.cancelJob(jobId);
+        ConnectionContext cc = connections.get(conn);
+        if (cc != null && cc.jobManager != null) {
+            boolean cancelled = cc.jobManager.cancelJob(jobId);
             response.put("data", mapper.createObjectNode().put("success", cancelled));
         } else {
             response.put("error", "No project selected");
@@ -142,16 +153,22 @@ public class InstrumentationServer extends WebSocketServer {
             sendError(conn, requestId, "Unknown command: " + type);
             return;
         }
-        if (selectedProject == null && !isProjectManagementOp(type)) {
+        ConnectionContext cc = connections.get(conn);
+        if ((cc == null || cc.selectedProject == null) && !isProjectManagementOp(type)) {
             sendError(conn, requestId, "No project selected. Call list_projects and select_project first.");
             return;
         }
         try {
+            String projectId = cc != null ? cc.selectedProjectId : null;
+            JIPipeProject project = cc != null ? cc.selectedProject : null;
+            InstrumentationEventBus eventBus = cc != null && cc.eventBus != null ? cc.eventBus : new InstrumentationEventBus();
+            InstrumentationJobManager jobManager = cc != null && cc.jobManager != null ? cc.jobManager : new InstrumentationJobManager(eventBus, projectId);
+
             InstrumentationContext ctx = new InstrumentationContext(
-                    selectedProject, selectedProjectId,
+                    project, projectId,
                     new JIPipeProgressInfo(),
-                    eventBus != null ? eventBus : new InstrumentationEventBus(),
-                    jobManager != null ? jobManager : new InstrumentationJobManager(new InstrumentationEventBus(), selectedProjectId));
+                    eventBus,
+                    jobManager);
 
             if (op instanceof AsyncInstrumentationOperation asyncOp) {
                 InstrumentationJob job = asyncOp.executeAsync(ctx, msg);
@@ -188,40 +205,37 @@ public class InstrumentationServer extends WebSocketServer {
         conn.send(response.toString());
     }
 
-    private void subscribeToProject() {
-        if (eventBus == null) return;
-        subscribe(NodeAddedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_NODE_ADDED, serializeEvent(e)));
-        subscribe(NodeRemovedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_NODE_REMOVED, serializeEvent(e)));
-        subscribe(ConnectionChangedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_CONNECTION_CHANGED, serializeEvent(e)));
-        subscribe(ParameterChangedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_PARAMETER_CHANGED, serializeEvent(e)));
-        subscribe(CompartmentChangedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_COMPARTMENT_CHANGED, serializeEvent(e)));
-        subscribe(JobStartedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_JOB_STARTED, serializeEvent(e)));
-        subscribe(JobProgressEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_JOB_PROGRESS, serializeEvent(e)));
-        subscribe(JobCompletedEvent.class, e -> broadcastEvent(InstrumentationProtocol.EVENT_JOB_COMPLETED, serializeEvent(e)));
+    private void subscribeToProject(WebSocket conn, ConnectionContext cc) {
+        if (cc.eventBus == null) return;
+        subscribe(cc, NodeAddedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_NODE_ADDED, serializeEvent(e)));
+        subscribe(cc, NodeRemovedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_NODE_REMOVED, serializeEvent(e)));
+        subscribe(cc, ConnectionChangedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_CONNECTION_CHANGED, serializeEvent(e)));
+        subscribe(cc, ParameterChangedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_PARAMETER_CHANGED, serializeEvent(e)));
+        subscribe(cc, CompartmentChangedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_COMPARTMENT_CHANGED, serializeEvent(e)));
+        subscribe(cc, JobStartedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_JOB_STARTED, serializeEvent(e)));
+        subscribe(cc, JobProgressEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_JOB_PROGRESS, serializeEvent(e)));
+        subscribe(cc, JobCompletedEvent.class, e -> sendEvent(conn, InstrumentationProtocol.EVENT_JOB_COMPLETED, serializeEvent(e)));
     }
 
-    private <T extends InstrumentationEvent> void subscribe(Class<T> type, Consumer<T> listener) {
-        eventBus.subscribe(type, listener);
-        activeSubscriptions.add(() -> {
-        });
+    private <T extends InstrumentationEvent> void subscribe(ConnectionContext cc, Class<T> type, Consumer<T> listener) {
+        cc.eventBus.subscribe(type, listener);
     }
 
-    private void unsubscribeFromProject() {
-        if (eventBus != null) {
-            eventBus.clear();
+    private void unsubscribeFromProject(ConnectionContext cc) {
+        if (cc.eventBus != null) {
+            cc.eventBus.clear();
         }
-        activeSubscriptions.clear();
     }
 
     private JsonNode serializeEvent(InstrumentationEvent event) {
         return mapper.valueToTree(event);
     }
 
-    private void broadcastEvent(String eventType, JsonNode event) {
+    private void sendEvent(WebSocket conn, String eventType, JsonNode event) {
         ObjectNode msg = mapper.createObjectNode();
         msg.put("type", eventType);
         msg.set("data", event);
-        broadcast(msg.toString());
+        conn.send(msg.toString());
     }
 
     private JIPipeDesktopProjectWindow findWindow(String windowId) {

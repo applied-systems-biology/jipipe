@@ -117,7 +117,18 @@ public class InstrumentationRunEngine {
         }
 
         job.setStatus(InstrumentationJobStatus.RUNNING);
-        run.run();
+        JIPipeProgressInfo.StatusUpdatedEventListener progressListener = event -> {
+            double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
+            job.updateProgress(fraction, event.getMessage());
+        };
+        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
+        try {
+            job.updateProgress(0.0, "Starting...");
+            run.run();
+            job.updateProgress(1.0, "Done");
+        } finally {
+            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
+        }
 
         // Clear data
         for (JIPipeGraphNode node : run.getGraph().getGraphNodes()) {
@@ -149,7 +160,18 @@ public class InstrumentationRunEngine {
         run.setProgressInfo(progressInfo);
 
         job.setStatus(InstrumentationJobStatus.RUNNING);
-        run.run();
+        JIPipeProgressInfo.StatusUpdatedEventListener progressListener = event -> {
+            double fraction = event.getMaxProgress() > 0 ? (double) event.getProgress() / event.getMaxProgress() : 0.0;
+            job.updateProgress(fraction, event.getMessage());
+        };
+        progressInfo.getStatusUpdatedEventEmitter().subscribe(progressListener);
+        try {
+            job.updateProgress(0.0, "Starting...");
+            run.run();
+            job.updateProgress(1.0, "Done");
+        } finally {
+            progressInfo.getStatusUpdatedEventEmitter().unsubscribe(progressListener);
+        }
     }
 
     private Set<JIPipeGraphNode> findPredecessorsWithoutCache(JIPipeGraphRun run, List<JIPipeGraphNode> targetNodeCopies) {

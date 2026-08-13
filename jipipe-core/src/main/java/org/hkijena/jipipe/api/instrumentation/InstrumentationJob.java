@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.instrumentation;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.instrumentation.events.JobCompletedEvent;
 import org.hkijena.jipipe.api.instrumentation.events.JobProgressEvent;
 
@@ -25,16 +26,16 @@ public class InstrumentationJob {
     private volatile Instant completedAt;
     private final InstrumentationEventBus eventBus;
     private final String projectId;
-    private final Thread thread;
+    private final JIPipeProgressInfo progressInfo;
 
-    InstrumentationJob(String operation, String description, InstrumentationEventBus eventBus, String projectId) {
+    InstrumentationJob(String operation, String description, InstrumentationEventBus eventBus, String projectId, JIPipeProgressInfo progressInfo) {
         this.id = "job-" + UUID.randomUUID().toString().substring(0, 8);
         this.operation = operation;
         this.description = description;
         this.createdAt = Instant.now();
         this.eventBus = eventBus;
         this.projectId = projectId;
-        this.thread = Thread.currentThread();
+        this.progressInfo = progressInfo != null ? progressInfo : new JIPipeProgressInfo();
     }
 
     public String getId() { return id; }
@@ -79,6 +80,6 @@ public class InstrumentationJob {
         this.completedAt = Instant.now();
         status.set(InstrumentationJobStatus.CANCELLED);
         eventBus.publish(new JobCompletedEvent(projectId, id, InstrumentationJobStatus.CANCELLED, null, "Cancelled by user"));
-        thread.interrupt();
+        progressInfo.cancel("Cancelled by user");
     }
 }

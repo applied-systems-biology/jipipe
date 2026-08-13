@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.api.instrumentation;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.instrumentation.events.JobStartedEvent;
 
 import java.util.Collection;
@@ -20,7 +21,11 @@ public class InstrumentationJobManager {
     }
 
     public InstrumentationJob createJob(String operation, String description) {
-        InstrumentationJob job = new InstrumentationJob(operation, description, eventBus, projectId);
+        return createJob(operation, description, new JIPipeProgressInfo());
+    }
+
+    public InstrumentationJob createJob(String operation, String description, JIPipeProgressInfo progressInfo) {
+        InstrumentationJob job = new InstrumentationJob(operation, description, eventBus, projectId, progressInfo);
         jobs.put(job.getId(), job);
         eventBus.publish(new JobStartedEvent(projectId, job.getId(), operation, description));
         return job;

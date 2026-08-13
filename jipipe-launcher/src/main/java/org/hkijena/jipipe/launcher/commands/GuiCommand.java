@@ -3,6 +3,7 @@ package org.hkijena.jipipe.launcher.commands;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeGUICommand;
+import org.hkijena.jipipe.api.instrumentation.InstrumentationApplicationSettings;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationServer;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -19,6 +20,7 @@ public class GuiCommand {
 
     private static InstrumentationServer instrumentationServer;
     private static int pendingInstrumentationPort = -1;
+    private static boolean instrumentationFlag = false;
 
     public static InstrumentationServer getInstrumentationServer() {
         return instrumentationServer;
@@ -28,16 +30,16 @@ public class GuiCommand {
         List<String> remainingArgs = new ArrayList<>();
         for (int i = 0; i < argsList.size(); i++) {
             if ("--instrumentation".equals(argsList.get(i))) {
+                instrumentationFlag = true;
                 if (i + 1 < argsList.size()) {
                     try {
                         pendingInstrumentationPort = Integer.parseInt(argsList.get(i + 1));
                         i++;
                     } catch (NumberFormatException e) {
-                        pendingInstrumentationPort = 8780;
+                        // Port will be resolved from settings in onWindowOpened()
                     }
-                } else {
-                    pendingInstrumentationPort = 8780;
                 }
+                // else: port will be resolved from settings in onWindowOpened()
             } else {
                 remainingArgs.add(argsList.get(i));
             }
@@ -76,16 +78,24 @@ public class GuiCommand {
 
         @Override
         public void onWindowOpened(WindowOpenedEvent event) {
-            if (instrumentationServer == null && pendingInstrumentationPort > 0) {
-                instrumentationServer = new InstrumentationServer(pendingInstrumentationPort);
-                try {
-                    instrumentationServer.start();
-                    System.err.println("Instrumentation server started on port " + pendingInstrumentationPort);
-                } catch (Exception e) {
-                    System.err.println("Failed to start instrumentation server: " + e.getMessage());
-                    instrumentationServer = null;
+            if (instrumentationServer == null) {
+                int port = -1;
+                if (pendingInstrumentationPort > 0) {
+                    port = pendingInstrumentationPort;
+                } else if (instrumentationFlag || InstrumentationApplicationSettings.getInstance().isAutoStart()) {
+                    port = InstrumentationApplicationSettings.getInstance().getPort();
                 }
-                pendingInstrumentationPort = -1;
+                if (port > 0) {
+                    instrumentationServer = new InstrumentationServer(port);
+                    try {
+                        instrumentationServer.start();
+                        System.err.println("Instrumentation server started on port " + port);
+                    } catch (Exception e) {
+                        System.err.println("Failed to start instrumentation server: " + e.getMessage());
+                        instrumentationServer = null;
+                    }
+                    pendingInstrumentationPort = -1;
+                }
             }
             if (instrumentationServer != null) {
                 SwingUtilities.invokeLater(() -> instrumentationServer.onProjectWindowsChanged());

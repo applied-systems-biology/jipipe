@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.instrumentation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.awt.Point;
+import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -182,7 +184,7 @@ public final class InstrumentationAPI {
         if (project == null) throw new IllegalStateException("No project available");
         JIPipeGraphNode node = project.getGraph().findNode(nodeId);
         if (node == null) throw new IllegalArgumentException("No node found for ID '" + nodeId + "'");
-        InstrumentationJob job = ctx.getJobManager().createJob("run_node", "Run: " + node.getName());
+        InstrumentationJob job = ctx.getJobManager().createJob("run_node", "Run: " + node.getName(), ctx.getProgressInfo());
         Thread runThread = new Thread(() -> {
             try {
                 InstrumentationRunEngine engine = new InstrumentationRunEngine(project, ctx.getProgressInfo());
@@ -204,7 +206,7 @@ public final class InstrumentationAPI {
         if (compartment == null) throw new IllegalArgumentException("Compartment not found: " + compartmentId);
         List<JIPipeGraphNode> outputNodes = project.getGraph().getNodesWithinCompartment(compartment.getProjectCompartmentUUID())
                 .stream().filter(n -> n.getInfo() != null && n.getInfo().isRunnable()).toList();
-        InstrumentationJob job = ctx.getJobManager().createJob("run_compartment", "Run compartment: " + compartment.getName());
+        InstrumentationJob job = ctx.getJobManager().createJob("run_compartment", "Run compartment: " + compartment.getName(), ctx.getProgressInfo());
         Thread runThread = new Thread(() -> {
             try {
                 InstrumentationRunEngine engine = new InstrumentationRunEngine(project, ctx.getProgressInfo());
@@ -222,7 +224,7 @@ public final class InstrumentationAPI {
     public static InstrumentationJob runPipeline(InstrumentationContext ctx, RunMode mode) {
         JIPipeProject project = ctx.getProject();
         if (project == null) throw new IllegalStateException("No project available");
-        InstrumentationJob job = ctx.getJobManager().createJob("run_pipeline", "Run pipeline");
+        InstrumentationJob job = ctx.getJobManager().createJob("run_pipeline", "Run pipeline", ctx.getProgressInfo());
         Thread runThread = new Thread(() -> {
             try {
                 InstrumentationRunEngine engine = new InstrumentationRunEngine(project, ctx.getProgressInfo());
@@ -291,7 +293,8 @@ public final class InstrumentationAPI {
         if (node == null) throw new IllegalArgumentException("Node not found: " + nodeId);
         JIPipeParameterAccess access = JIPipeParameterTree.getParameters(node).get(key);
         if (access == null) throw new IllegalArgumentException("Parameter not found: " + key);
-        access.set(value);
+        Object converted = convertParameterValue(value, access.getFieldClass());
+        access.set(converted);
         ctx.getEventBus().publish(new ParameterChangedEvent(ctx.getProjectId(), nodeId, key, value));
     }
 
@@ -381,6 +384,57 @@ public final class InstrumentationAPI {
     }
 
     // ── Helpers ──
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private static Object convertParameterValue(String value, Class<?> fieldClass) {
+        if (fieldClass == String.class) {
+            return value;
+        }
+        if (fieldClass == int.class || fieldClass == Integer.class) {
+            try {
+                return Integer.parseInt(value.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid integer value: '" + value + "'");
+            }
+        }
+        if (fieldClass == long.class || fieldClass == Long.class) {
+            try {
+                return Long.parseLong(value.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid long value: '" + value + "'");
+            }
+        }
+        if (fieldClass == double.class || fieldClass == Double.class) {
+            try {
+                return Double.parseDouble(value.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid double value: '" + value + "'");
+            }
+        }
+        if (fieldClass == float.class || fieldClass == Float.class) {
+            try {
+                return Float.parseFloat(value.trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("Invalid float value: '" + value + "'");
+            }
+        }
+        if (fieldClass == boolean.class || fieldClass == Boolean.class) {
+            return Boolean.parseBoolean(value);
+        }
+        if (Enum.class.isAssignableFrom(fieldClass)) {
+            try {
+                return Enum.valueOf((Class<Enum>) fieldClass, value.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException(
+                        "Invalid enum value '" + value + "'. Valid values: " +
+                                Arrays.toString(fieldClass.getEnumConstants()));
+            }
+        }
+        if (Path.class.isAssignableFrom(fieldClass)) {
+            return Path.of(value);
+        }
+        return value;
+    }
 
     private static UUID resolveCompartmentUUID(InstrumentationContext ctx, String compartmentId) {
         if (compartmentId == null || compartmentId.isBlank()) return null;
