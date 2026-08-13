@@ -14,9 +14,6 @@ import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
-    private double min = Double.MAX_VALUE;
-    private double avg = 0;
-    private double max = 0;
 
     @Override
     public String getId() { return "noodle-score"; }
@@ -54,31 +51,27 @@ public class NoodleScoreStatisticsItem implements JIPipeStatisticsItem {
             }
         }
 
-        if (count > 0) {
-            min = Math.min(min, currentMin);
-            max = Math.max(max, currentMax);
-            avg = sum / count;
-        }
-
         ObjectMapper mapper = JsonUtils.getObjectMapper();
         ObjectNode node = mapper.createObjectNode();
-        node.put("min", min == Double.MAX_VALUE ? 0 : min);
-        node.put("avg", avg);
-        node.put("max", max);
+        if (count > 0) {
+            node.put("min", currentMin == Double.MAX_VALUE ? 0 : currentMin);
+            node.put("avg", sum / count);
+            node.put("max", currentMax);
+        } else {
+            node.put("min", 0);
+            node.put("avg", 0);
+            node.put("max", 0);
+        }
         return node;
     }
 
     @Override
     public void deserialize(JsonNode node) {
-        if (node != null && node.isObject()) {
-            min = node.has("min") ? node.get("min").asDouble() : Double.MAX_VALUE;
-            avg = node.has("avg") ? node.get("avg").asDouble() : 0;
-            max = node.has("max") ? node.get("max").asDouble() : 0;
-        }
     }
 
     @Override
-    public void reset() { min = Double.MAX_VALUE; avg = 0; max = 0; }
+    public void reset() {
+    }
     @Override
     public boolean isTimeTracked() { return true; }
 
