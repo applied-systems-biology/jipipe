@@ -328,7 +328,8 @@ verify_ro_crate:
         /test-data/kidney_with_user_dirs.jip
     - |
       sleep 5
-      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip
+      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
+      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |

@@ -9,24 +9,24 @@ from pathlib import Path
 
 import websockets
 
-WS_URL = "ws://127.0.0.1:8780/"
+DEFAULT_WS_URL = "ws://127.0.0.1:8780/"
 
 
-async def connect_with_retry(max_wait: int = 60, interval: int = 2):
+async def connect_with_retry(ws_url: str, max_wait: int = 60, interval: int = 2):
     """Retry WebSocket connection every `interval` seconds for up to `max_wait` seconds."""
     deadline = time.time() + max_wait
     last_error = None
     while time.time() < deadline:
         try:
-            return await websockets.connect(WS_URL, max_size=50 * 1024 * 1024)
+            return await websockets.connect(ws_url, max_size=50 * 1024 * 1024)
         except Exception as e:
             last_error = e
             await asyncio.sleep(interval)
-    raise RuntimeError(f"Could not connect to {WS_URL} within {max_wait}s: {last_error}")
+    raise RuntimeError(f"Could not connect to {ws_url} within {max_wait}s: {last_error}")
 
 
-async def create_ro_crate(container_output_path: str, timeout: int = 120) -> dict:
-    ws = await connect_with_retry()
+async def create_ro_crate(container_output_path: str, ws_url: str = DEFAULT_WS_URL, timeout: int = 120) -> dict:
+    ws = await connect_with_retry(ws_url)
     try:
         # Actively request the project list instead of waiting for a broadcast
         await ws.send(json.dumps({"type": "list_projects", "requestId": "list"}))
@@ -90,10 +90,12 @@ async def create_ro_crate(container_output_path: str, timeout: int = 120) -> dic
 async def main():
     container_output_path = sys.argv[1]  # Path inside the container (sent to server)
     host_output_path = sys.argv[2]       # Path on the CI runner (via volume mount)
+    ws_url = sys.argv[3] if len(sys.argv) > 3 else DEFAULT_WS_URL  # WebSocket URL (optional)
 
     print(f"Creating RO-Crate -> {container_output_path}")
     print(f"Expecting output file at {host_output_path}")
-    result = await create_ro_crate(container_output_path)
+    print(f"Connecting to {ws_url}")
+    result = await create_ro_crate(container_output_path, ws_url)
     print(f"RO-Crate created: {result}")
 
     # Verify the zip exists on the CI runner

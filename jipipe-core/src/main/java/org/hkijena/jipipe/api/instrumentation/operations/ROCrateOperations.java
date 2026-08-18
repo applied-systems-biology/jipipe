@@ -1,8 +1,6 @@
 package org.hkijena.jipipe.api.instrumentation.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationAPI;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationContext;
 import org.hkijena.jipipe.api.instrumentation.InstrumentationOperation;
