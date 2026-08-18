@@ -409,7 +409,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         RoCrate.RoCrateBuilder builder = new RoCrate.RoCrateBuilder(getProject().getMetadata().getName(),
                 getProject().getMetadata().getSummary().toPlainText(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
-                getProject().getMetadata().getLicense());
+                toSpdxLicenseUri(getProject().getMetadata().getLicense()));
         builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
 
         // CWL ComputerLanguage contextual entity
@@ -435,6 +435,16 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         builder.addContextualEntity(bioschemasGuide);
 
         return builder;
+    }
+
+    private static String toSpdxLicenseUri(String license) {
+        if (StringUtils.isNullOrEmpty(license)) {
+            return "https://spdx.org/licenses/MIT";
+        }
+        if (license.startsWith("http://") || license.startsWith("https://")) {
+            return license;
+        }
+        return "https://spdx.org/licenses/" + license;
     }
 
     private void addROCrateAuthors(RoCrate.RoCrateBuilder builder) {
