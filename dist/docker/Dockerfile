@@ -32,7 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 ARG PACKAGE_PATH
 
-ADD ${PACKAGE_PATH} /tmp/jipipe.tar.gz
+COPY ${PACKAGE_PATH} /tmp/jipipe.tar.gz
 RUN mkdir -p /opt/jipipe && \
     tar -xzf /tmp/jipipe.tar.gz -C /opt/jipipe --strip-components=1 && \
     rm /tmp/jipipe.tar.gz && \
