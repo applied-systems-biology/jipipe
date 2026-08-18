@@ -159,3 +159,27 @@ When debugging in IDE, add these VM arguments:
 
 ### Internal Dependencies
 The project uses a multi-module Maven structure with careful dependency management. Core plugins depend on each other in a specific order during initialization.
+
+## Instrumentation System
+
+JIPipe includes a WebSocket-based instrumentation API for external automation and diagnostics (used by the AI agent and test harnesses). The server runs on `127.0.0.1:8780` by default and is started by the GUI launcher with `--instrumentation [port]` or when auto-start is enabled in settings.
+
+### Key Classes
+- **[`InstrumentationServer`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationServer.java)** - WebSocket server (extends `WebSocketServer`), handles client connections and message dispatch
+- **[`InstrumentationProtocol`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationProtocol.java)** - Message type constants (commands and events)
+- **[`InstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperation.java)** - Core operation interface: `getId()`, `getDescription()`, `execute()`
+- **[`AsyncInstrumentationOperation`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/AsyncInstrumentationOperation.java)** - Extension for long-running operations; returns a job ID immediately
+- **[`InstrumentationAPI`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationAPI.java)** - Stateless service class with all business logic; shared between the WebSocket layer and the internal AI agent
+- **[`InstrumentationOperationRegistry`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationOperationRegistry.java)** - `ConcurrentHashMap`-backed registry mapping string IDs to operations
+- **[`InstrumentationContext`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationContext.java)** - Immutable context passed to operations (project, progress info, event bus, job manager)
+- **[`InstrumentationApplicationSettings`](jipipe-core/src/main/java/org/hkijena/jipipe/api/instrumentation/InstrumentationApplicationSettings.java)** - Settings: enable/disable, port (default 8780), auto-start
+
+### Protocol
+All messages are JSON objects with a `"type"` field. Clients send commands; the server responds with `operation_result` (sync) or `job_started`/`job_progress`/`job_completed` (async). Clients must call `select_project` before most operations. Key commands: `list_projects`, `select_project`, `query_graph`, `query_node`, `run_node`, `run_compartment`, `run_pipeline`, `add_node`, `remove_node`, `add_connection`, `remove_connection`, `set_parameter`, `set_project_metadata`, `add_compartment`, `rename_compartment`, `get_pipeline_map`, `search_nodes`, `list_operations`, `get_job_status`, `cancel_job`.
+
+### Adding a New Operation
+1. Create a static inner class implementing `InstrumentationOperation` (or `AsyncInstrumentationOperation` for long-running tasks) in a file under `api/instrumentation/operations/`
+2. Register it in [`InstrumentationPlugin.register()`](jipipe-core/src/main/java/org/hkijena/jipipe/plugins/instrumentation/InstrumentationPlugin.java) via `registerInstrumentationOperation(id, operation)`
+3. Delegate business logic to `InstrumentationAPI` static methods so it's reusable by the AI agent
+4. Fire events via `ctx.getEventBus().publish(...)` so connected clients are notified of changes
+5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI agent's stage system

@@ -23,6 +23,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.publish.JIPipeDesktopPublisherAssistant;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.pairs.StringAndStringPairParameterList;
 import org.hkijena.jipipe.plugins.publish.conditions.*;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -98,7 +99,8 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
             return new CreateROCrateRun(getProject(),
                     getDesktopProjectWorkbench().getProjectWindow().getProjectSavePath(),
                     crateFile,
-                    projectDirectorySettings);
+                    projectDirectorySettings,
+                    settings.getDockerSettings());
         }
         return null;
     }
@@ -146,11 +148,25 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
 
     public static class Settings extends AbstractJIPipeParameterCollection {
         private final JIPipeDynamicParameterCollection userDirectories = new JIPipeDynamicParameterCollection();
+        private final ROCrateDockerSettings dockerSettings = new ROCrateDockerSettings();
+
+        public Settings() {
+            ROCrateApplicationSettings appSettings = ROCrateApplicationSettings.getInstance();
+            dockerSettings.setDockerImage(appSettings.getDockerImage());
+            dockerSettings.setDockerTag(appSettings.getDockerTag());
+            dockerSettings.setDockerEnvVars(new StringAndStringPairParameterList(appSettings.getDockerEnvVars()));
+        }
 
         @SetJIPipeDocumentation(name = "Project user paths", description = "Each path must be either an input or an output.")
         @JIPipeParameter("user-directories")
         public JIPipeDynamicParameterCollection getUserDirectories() {
             return userDirectories;
+        }
+
+        @SetJIPipeDocumentation(name = "Advanced Docker settings", description = "Configure the Docker image, tag, and environment variables used in the generated CWL.")
+        @JIPipeParameter(value = "docker-settings", collapsed = true, uiOrder = 100)
+        public ROCrateDockerSettings getDockerSettings() {
+            return dockerSettings;
         }
     }
 }

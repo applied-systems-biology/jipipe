@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
+import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.ContextualEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.JsonDescriptor;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.OrganizationEntity;
 import org.hkijena.jipipe.contrib.ro_crate.entities.contextual.PersonEntity;
@@ -38,7 +39,6 @@ import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRun;
 import org.hkijena.jipipe.plugins.pipelinerender.RenderPipelineRunSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.FileNotFoundException;
@@ -56,12 +56,22 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     private final Path projectFile;
     private final Path roCrateFile;
     private final Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths;
+    private final ROCrateDockerSettings dockerSettings;
 
-    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile, Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths) {
+    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile,
+                            Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths,
+                            ROCrateDockerSettings dockerSettings) {
         this.project = project;
         this.projectFile = projectFile;
         this.roCrateFile = roCrateFile;
         this.archivedProjectUserPaths = archivedProjectUserPaths;
+        this.dockerSettings = dockerSettings;
+    }
+
+    public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile,
+                            Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths) {
+        this(project, projectFile, roCrateFile, archivedProjectUserPaths,
+                ROCrateApplicationSettings.getInstance().toDockerSettings());
     }
 
     @Override
@@ -102,6 +112,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
 
         // Compress the container
         RoCrate crate = builder.build();
+        crate.getRootDataEntity().addProperty("keywords", "JIPipe");
         addROCrateMainEntity(crate);
         try {
             Writers.newZipPathWriter().withAutomaticProvenance(null).save(crate, roCrateFile.toAbsolutePath().toString());
@@ -135,6 +146,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
             builder.addDataEntity(new FileEntity.FileEntityBuilder()
                     .setId("./project.jip")
                     .setLocation(tmpPath.resolve("project.jip"))
+                    .addProperty("encodingFormat", "application/json")
                     .build());
 
         } catch (IOException e) {
@@ -223,6 +235,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         builder.addDataEntity(new FileEntity.FileEntityBuilder()
                 .setId("project-user-paths.json")
                 .setLocation(tmpPath.resolve("project-user-paths.json"))
+                .addProperty("encodingFormat", "application/json")
                 .build());
 
         return projectUserPathsRedirect;
@@ -248,6 +261,8 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 .addType("SoftwareSourceCode")
                 .addType("ComputationalWorkflow")
                 .addIdProperty("programmingLanguage", "https://w3id.org/workflowhub/workflow-ro-crate#cwl")
+                .addIdProperty("conformsTo", "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE")
+                .addProperty("encodingFormat", "application/x-yaml")
                 .addProperty("name", "CWL wrapper workflow");
         if (Files.isRegularFile(tmpPath.resolve("diagram.png"))) {
             entityBuilder.addIdProperty("image", "diagram.png");
@@ -265,8 +280,6 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         getProgressInfo().log("Creating workflow CWL");
         Path out = tmpPath.resolve("workflow.cwl");
 
-        String version = String.valueOf(VersionUtils.getJIPipeVersion());
-
         Map<String, Object> root = new LinkedHashMap<>();
         root.put("cwlVersion", "v1.2");
         root.put("class", "CommandLineTool");
@@ -277,7 +290,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         // Use the JIPipe docker releases
         Map<String, Object> dockerReq = new LinkedHashMap<>();
         dockerReq.put("class", "DockerRequirement");
-        dockerReq.put("dockerPull", "appsysbiohkijena/jipipe:" + version);
+        dockerReq.put("dockerPull", dockerSettings.getDockerImage() + ":" + dockerSettings.getDockerTag());
         requirements.add(dockerReq);
 
         // Stage all inputs and the project itself
@@ -299,10 +312,9 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         Map<String, Object> envReq = new LinkedHashMap<>();
         envReq.put("class", "EnvVarRequirement");
         Map<String, Object> envDef = new LinkedHashMap<>();
-        envDef.put("JAVA_TOOL_OPTIONS", "-Duser.home=/tmp -Djava.util.prefs.userRoot=/tmp/.java");
-        envDef.put("XDG_CACHE_HOME", "/tmp/.cache");
-        envDef.put("XDG_CONFIG_HOME", "/tmp/.config");
-        envDef.put("XDG_DATA_HOME", "/tmp/.local/share");
+        for (Map.Entry<String, String> entry : dockerSettings.getEnvVarsAsMap().entrySet()) {
+            envDef.put(entry.getKey(), entry.getValue());
+        }
         envReq.put("envDef", envDef);
         requirements.add(envReq);
 
@@ -384,6 +396,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                     .setLocation(diagramPath)
                     .addType("File")
                     .addType("ImageObject")
+                    .addProperty("encodingFormat", "image/png")
                     .addProperty("about", "./")
                     .build());
         } catch (Exception e) {
@@ -395,11 +408,43 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     private RoCrate.RoCrateBuilder createROCrateBuilder() {
         RoCrate.RoCrateBuilder builder = new RoCrate.RoCrateBuilder(getProject().getMetadata().getName(),
                 getProject().getMetadata().getSummary().toPlainText(),
-                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE),
-                getProject().getMetadata().getLicense());
+                LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
+                toSpdxLicenseUri(getProject().getMetadata().getLicense()));
         builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
 
+        // CWL ComputerLanguage contextual entity
+        ContextualEntity cwlLanguage = new ContextualEntity.ContextualEntityBuilder()
+                .setId("https://w3id.org/workflowhub/workflow-ro-crate#cwl")
+                .addType("ComputerLanguage")
+                .addProperty("name", "Common Workflow Language")
+                .addProperty("alternateName", "CWL")
+                .addIdProperty("identifier", "https://w3id.org/cwl/v1.2/")
+                .addIdProperty("url", "https://www.commonwl.org/")
+                .addProperty("version", "1.2")
+                .build();
+        builder.addContextualEntity(cwlLanguage);
+
+        // Bioschemas ComputationalWorkflow profile guide
+        ContextualEntity bioschemasGuide = new ContextualEntity.ContextualEntityBuilder()
+                .setId("https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE")
+                .addType("Guide")
+                .addProperty("name", "ComputationalWorkflow Profile")
+                .addProperty("version", "1.0-RELEASE")
+                .addProperty("description", "Bioschemas specification for describing a Computational Workflow")
+                .build();
+        builder.addContextualEntity(bioschemasGuide);
+
         return builder;
+    }
+
+    private static String toSpdxLicenseUri(String license) {
+        if (StringUtils.isNullOrEmpty(license)) {
+            return "https://spdx.org/licenses/MIT";
+        }
+        if (license.startsWith("http://") || license.startsWith("https://")) {
+            return license;
+        }
+        return "https://spdx.org/licenses/" + license;
     }
 
     private void addROCrateAuthors(RoCrate.RoCrateBuilder builder) {

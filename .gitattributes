@@ -6,7 +6,6 @@
 *.dll           binary
 *.so            binary
 *.dylib         binary
-
 # --- Image formats ---
 *.png           -text
 *.jpg           -text
@@ -16,19 +15,16 @@
 *.ico           -text
 *.svg           -text
 *.webp          -text
-
 # --- Audio/video assets (e.g. for UI feedback) ---
 *.wav           -text
 *.mp3           -text
 *.ogg           -text
 *.flac          -text
-
 # --- Fonts ---
 *.ttf           -text
 *.otf           -text
 *.woff          -text
 *.woff2         -text
-
 # --- Misc binary data (e.g., serialized or embedded resources) ---
 *.dat           -text
 *.bin           -text
@@ -37,7 +33,10 @@
 *.gz            -text
 *.7z            -text
 *.tar           -text
-
 # --- Don't normalize line endings on shell or batch scripts ---
 *.sh            text eol=lf
 *.bat           text eol=crlf
+
+# --- Git-LFS: Docker test data (large images and results) ---
+dist/docker/test-data/raw/**     filter=lfs diff=lfs merge=lfs -text
+dist/docker/test-data/results/** filter=lfs diff=lfs merge=lfs -text

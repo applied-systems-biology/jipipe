@@ -267,6 +267,103 @@ upload_to_package_registry:
     paths:
       - urls-*.txt
 
+docker_build_push:
+  stage: publish
+  needs:
+    - job: upload_to_package_registry
+      artifacts: true
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - apk add --no-cache curl jq bash
+  script:
+    - set -euo pipefail
+    - |
+      OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
+      test -n "$OUTDIR" || { echo "Snapshot outdir not found"; exit 1; }
+    - |
+      TAR_GZ="$(ls "$OUTDIR"/JIPipe-*-Prepackaged-Linux64.tar.gz | head -n 1)"
+      test -n "$TAR_GZ" || { echo "Linux64 tar.gz not found"; ls -lah "$OUTDIR"; exit 1; }
+    - |
+      BASE="$(basename "$TAR_GZ")"
+      BASE="${BASE#JIPipe-}"
+      VERSION_BASE="${BASE%-Prepackaged-Linux64.tar.gz}"
+      VERSION="${VERSION_BASE%-snapshot*}"
+      echo "JIPipe version: ${VERSION}"
+    - |
+      docker build \
+        --build-arg PACKAGE_PATH="$TAR_GZ" \
+        -t appsysbiohkijena/jipipe:${VERSION} \
+        -t appsysbiohkijena/jipipe:latest \
+        -f dist/docker/Dockerfile \
+        .
+    - |
+      echo "$DOCKER_HUB_TOKEN" | docker login -u "$DOCKER_HUB_USERNAME" --password-stdin
+      docker push appsysbiohkijena/jipipe:${VERSION}
+      docker push appsysbiohkijena/jipipe:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
+verify_ro_crate:
+  stage: publish
+  needs:
+    - job: docker_build_push
+  image: docker:24
+  services:
+    - docker:24-dind
+  before_script:
+    - apk add --no-cache python3 py3-pip curl jq bash
+  script:
+    - set -euo pipefail
+    - |
+      pip install --break-system-packages websockets cwltool
+    - |
+      docker run -d --name jipipe-verify \
+        -p 8780:8780 \
+        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v /tmp/jipipe-output:/output \
+        appsysbiohkijena/jipipe:latest \
+        --instrumentation 8780 \
+        /test-data/kidney_with_user_dirs.jip
+    - |
+      sleep 5
+      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
+      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+    - |
+      cwltool --validate /tmp/crate-extracted/workflow.cwl
+    - |
+      echo "RO-Crate validation passed for kidney_with_user_dirs.jip"
+    - |
+      docker stop jipipe-verify || true
+      docker rm jipipe-verify || true
+    - |
+      docker run -d --name jipipe-verify-2 \
+        -p 8780:8780 \
+        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v /tmp/jipipe-output-2:/output \
+        appsysbiohkijena/jipipe:latest \
+        --instrumentation 8780 \
+        /test-data/kidney.jip
+    - |
+      sleep 5
+      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)
+      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+    - |
+      cwltool --validate /tmp/crate-extracted/workflow.cwl
+    - |
+      echo "RO-Crate validation passed for kidney.jip"
+    - |
+      docker stop jipipe-verify-2 || true
+      docker rm jipipe-verify-2 || true
+  after_script:
+    - docker stop jipipe-verify || true
+    - docker rm jipipe-verify || true
+    - docker stop jipipe-verify-2 || true
+    - docker rm jipipe-verify-2 || true
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 build_feature_branch:
   stage: build
   interruptible: true

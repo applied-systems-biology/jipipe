@@ -14,14 +14,20 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.instrumentation.events.*;
 import org.hkijena.jipipe.api.instrumentation.pipeline_map.PipelineMap;
 import org.hkijena.jipipe.api.instrumentation.pipeline_map.SegmentNode;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
+import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateDockerSettings;
 
 import java.awt.Point;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -381,6 +387,44 @@ public final class InstrumentationAPI {
             }
         }
         return data;
+    }
+
+    // ── RO-Crate ──
+
+    public static JsonNode createROCrate(InstrumentationContext ctx, String outputPath,
+                                         ROCrateDockerSettings dockerSettings,
+                                         Map<String, JIPipeProjectUserPaths.Role> userPathOverrides) {
+        JIPipeProject project = ctx.getProject();
+        if (project == null) {
+            throw new RuntimeException("No project selected");
+        }
+
+        Path roCrateFile = Path.of(outputPath);
+        Path projectFile = getProjectSavePath(ctx);
+
+        CreateROCrateRun run = new CreateROCrateRun(project, projectFile, roCrateFile,
+                userPathOverrides != null ? userPathOverrides : new HashMap<>(),
+                dockerSettings);
+        run.setProgressInfo(ctx.getProgressInfo().resolveAndLog("Create RO-Crate"));
+        run.run();
+
+        ObjectNode result = mapper.createObjectNode();
+        result.put("path", roCrateFile.toAbsolutePath().toString());
+        try {
+            result.put("sizeBytes", Files.size(roCrateFile));
+        } catch (IOException e) {
+            result.put("sizeBytes", -1);
+        }
+        return result;
+    }
+
+    private static Path getProjectSavePath(InstrumentationContext ctx) {
+        org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow window =
+                org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow.getWindowFor(ctx.getProject());
+        if (window != null) {
+            return window.getProjectSavePath();
+        }
+        return null;
     }
 
     // ── Helpers ──

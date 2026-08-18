@@ -23,6 +23,7 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.publish.rocrate.ROCrateApplicationSettings;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -73,6 +74,7 @@ public class PublishPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerMenuExtension(PublishProjectReportMenuExtension.class);
         registerMenuExtension(PublishLegacyArchiveMenuExtension.class);
         registerMenuExtension(PublishROCrateMenuExtension.class);
+        registerApplicationSettingsSheet(new ROCrateApplicationSettings());
     }
 
     @Override
