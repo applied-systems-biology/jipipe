@@ -270,6 +270,8 @@ upload_to_package_registry:
 docker_build_push:
   stage: publish
   needs:
+    - job: distribution_package
+      artifacts: true
     - job: upload_to_package_registry
       artifacts: true
   image: docker:24
