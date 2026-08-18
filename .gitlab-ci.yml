@@ -320,13 +320,15 @@ verify_ro_crate:
       pip install --break-system-packages websockets cwltool
     - |
       docker run -d --name jipipe-verify \
+        -p 8780:8780 \
         -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
         -v /tmp/jipipe-output:/output \
         appsysbiohkijena/jipipe:latest \
-        --instrumentation 8780
+        --instrumentation 8780 \
+        /test-data/kidney_with_user_dirs.jip
     - |
       sleep 30
-      python3 dist/docker/verify_ro_crate.py /test-data/kidney_with_user_dirs.jip /output/kidney.crate.zip
+      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |

@@ -12,35 +12,24 @@ import websockets
 WS_URL = "ws://127.0.0.1:8780/"
 
 
-async def create_ro_crate(project_path: str, output_path: str, timeout: int = 120) -> dict:
+async def create_ro_crate(container_output_path: str, timeout: int = 120) -> dict:
     async with websockets.connect(WS_URL, max_size=50 * 1024 * 1024) as ws:
-        # Wait for project_list
-        msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=30))
-        assert msg["type"] == "project_list", f"Expected project_list, got {msg['type']}"
-
-        # Open the project
-        await ws.send(json.dumps({
-            "type": "open_project",
-            "path": project_path,
-            "forceCurrentWindow": False,
-        }))
-
-        # Wait for the project to appear
+        # Wait for project_list (project is auto-opened via CLI arg)
         project_id = None
-        for _ in range(60):
-            try:
-                msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=5))
-                if msg["type"] == "project_list":
-                    for p in msg.get("projects", []):
-                        project_id = p["id"]
-                        break
-                    if project_id:
-                        break
-            except asyncio.TimeoutError:
-                continue
+        deadline = time.time() + 60
+        while time.time() < deadline:
+            msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=deadline - time.time()))
+            if msg["type"] == "project_list":
+                projects = msg.get("projects", [])
+                if projects:
+                    project_id = projects[0]["id"]
+                    break
+            # Ignore other message types while waiting
 
         if not project_id:
-            raise RuntimeError("Project did not open")
+            raise RuntimeError("No project found in project_list — was it opened via CLI arg?")
+
+        print(f"Found project: {project_id}")
 
         # Select the project
         await ws.send(json.dumps({
@@ -50,16 +39,19 @@ async def create_ro_crate(project_path: str, output_path: str, timeout: int = 12
         }))
 
         # Wait for project_changed
-        for _ in range(20):
-            msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=5))
+        deadline = time.time() + 30
+        while time.time() < deadline:
+            msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=deadline - time.time()))
             if msg["type"] == "project_changed":
                 break
+
+        print("Project selected, creating RO-Crate ...")
 
         # Create RO-Crate
         await ws.send(json.dumps({
             "type": "create_ro_crate",
             "requestId": "create",
-            "outputPath": output_path,
+            "outputPath": container_output_path,
         }))
 
         # Wait for operation_result
@@ -77,20 +69,21 @@ async def create_ro_crate(project_path: str, output_path: str, timeout: int = 12
 
 
 async def main():
-    project_path = sys.argv[1]
-    output_path = sys.argv[2]
+    container_output_path = sys.argv[1]  # Path inside the container (sent to server)
+    host_output_path = sys.argv[2]       # Path on the CI runner (via volume mount)
 
-    print(f"Creating RO-Crate from {project_path} -> {output_path}")
-    result = await create_ro_crate(project_path, output_path)
+    print(f"Creating RO-Crate -> {container_output_path}")
+    print(f"Expecting output file at {host_output_path}")
+    result = await create_ro_crate(container_output_path)
     print(f"RO-Crate created: {result}")
 
-    # Verify the zip exists
-    crate_file = Path(output_path)
+    # Verify the zip exists on the CI runner
+    crate_file = Path(host_output_path)
     if not crate_file.exists():
         print(f"ERROR: Output file {crate_file} does not exist")
         sys.exit(1)
 
-    # Extract the crate
+    # Extract the crate on the CI runner
     extract_dir = Path("/tmp/crate-extracted")
     extract_dir.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(crate_file, 'r') as z:
