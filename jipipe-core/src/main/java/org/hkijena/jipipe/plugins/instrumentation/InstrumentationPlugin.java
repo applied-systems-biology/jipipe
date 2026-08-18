@@ -83,6 +83,9 @@ public class InstrumentationPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerInstrumentationOperation("get_pipeline_map", new PipelineMapOperations.GetPipelineMap());
         registerInstrumentationOperation("get_segment_detail", new PipelineMapOperations.GetSegmentDetail());
         registerInstrumentationOperation("search_nodes", new PipelineMapOperations.SearchNodes());
+
+        // RO-Crate operations
+        registerInstrumentationOperation("create_ro_crate", new ROCrateOperations.CreateROCrate());
     }
 
     @Override
