@@ -12,22 +12,39 @@ import websockets
 WS_URL = "ws://127.0.0.1:8780/"
 
 
+async def connect_with_retry(max_wait: int = 60, interval: int = 2):
+    """Retry WebSocket connection every `interval` seconds for up to `max_wait` seconds."""
+    deadline = time.time() + max_wait
+    last_error = None
+    while time.time() < deadline:
+        try:
+            return await websockets.connect(WS_URL, max_size=50 * 1024 * 1024)
+        except Exception as e:
+            last_error = e
+            await asyncio.sleep(interval)
+    raise RuntimeError(f"Could not connect to {WS_URL} within {max_wait}s: {last_error}")
+
+
 async def create_ro_crate(container_output_path: str, timeout: int = 120) -> dict:
-    async with websockets.connect(WS_URL, max_size=50 * 1024 * 1024) as ws:
-        # Wait for project_list (project is auto-opened via CLI arg)
+    ws = await connect_with_retry()
+    try:
+        # Actively request the project list instead of waiting for a broadcast
+        await ws.send(json.dumps({"type": "list_projects", "requestId": "list"}))
+
         project_id = None
         deadline = time.time() + 60
         while time.time() < deadline:
             msg = json.loads(await asyncio.wait_for(ws.recv(), timeout=deadline - time.time()))
-            if msg["type"] == "project_list":
-                projects = msg.get("projects", [])
+            if msg["type"] == "operation_result" and msg.get("requestId") == "list":
+                projects = msg.get("data", {}).get("projects", [])
                 if projects:
                     project_id = projects[0]["id"]
                     break
-            # Ignore other message types while waiting
+            elif msg["type"] == "error":
+                raise RuntimeError(f"Server error: {msg.get('message', 'unknown')}")
 
         if not project_id:
-            raise RuntimeError("No project found in project_list — was it opened via CLI arg?")
+            raise RuntimeError("No project found — was it opened via CLI arg?")
 
         print(f"Found project: {project_id}")
 
@@ -66,6 +83,8 @@ async def create_ro_crate(container_output_path: str, timeout: int = 120) -> dic
                 raise RuntimeError(f"Server error: {msg.get('message', 'unknown')}")
 
         raise RuntimeError("Timeout waiting for RO-Crate creation")
+    finally:
+        await ws.close()
 
 
 async def main():

@@ -327,7 +327,7 @@ verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney_with_user_dirs.jip
     - |
-      sleep 30
+      sleep 5
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl

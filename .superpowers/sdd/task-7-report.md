@@ -78,3 +78,11 @@ The following issues identified in the self-review (and by Task 7 review) have b
 ### Remaining open items (not fixed — depend on other tasks)
 - **Test data**: Task 8 creates `dist/docker/test-data/kidney_with_user_dirs.jip`.
 - **Docker Hub credentials**: `$DOCKER_HUB_USERNAME` and `$DOCKER_HUB_TOKEN` must be configured as CI/CD variables.
+
+### Fix 5: Passive `project_list` wait replaced with active `list_projects` command
+- **Problem**: The script passively waited for a `project_list` broadcast message. The instrumentation server only broadcasts this when project windows change (i.e., when the project is opened), which happens *before* the Python client connects. The client never receives the broadcast and times out.
+- **Fix**: Replaced the passive wait with an active `list_projects` command (`{"type": "list_projects", "requestId": "list"}`). The server responds with `{"type": "operation_result", "requestId": "list", "data": {"projects": [...]}}`. The script extracts the first project ID from the response `data.projects` array.
+
+### Fix 6: WebSocket connection retry loop
+- **Problem**: The script used `websockets.connect()` without retry. If the instrumentation server wasn't ready yet, the connection failed immediately. The CI job relied on `sleep 30` to give the server time to start.
+- **Fix**: Added `connect_with_retry()` function that retries the WebSocket connection every 2 seconds for up to 60 seconds. The CI job's `sleep 30` was reduced to `sleep 5` since the script now handles connection retries internally.
