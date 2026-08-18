@@ -164,7 +164,7 @@ public final class ROCratePublisherAssistant extends JIPipeDesktopPublisherAssis
         }
 
         @SetJIPipeDocumentation(name = "Advanced Docker settings", description = "Configure the Docker image, tag, and environment variables used in the generated CWL.")
-        @JIPipeParameter("docker-settings")
+        @JIPipeParameter(value = "docker-settings", collapsed = true, uiOrder = 100)
         public ROCrateDockerSettings getDockerSettings() {
             return dockerSettings;
         }
