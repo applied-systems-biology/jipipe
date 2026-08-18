@@ -410,7 +410,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                 getProject().getMetadata().getSummary().toPlainText(),
                 LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME),
                 getProject().getMetadata().getLicense());
-        builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/ro/crate/1.1").addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
+        builder.addContextualEntity(new JsonDescriptor.Builder().addConformsTo("https://w3id.org/workflowhub/workflow-ro-crate/1.0").build());
 
         // CWL ComputerLanguage contextual entity
         ContextualEntity cwlLanguage = new ContextualEntity.ContextualEntityBuilder()
