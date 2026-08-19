@@ -312,11 +312,12 @@ verify_ro_crate:
   stage: publish
   needs:
     - job: docker_build_push
-  image: python:3.12-alpine
+  image: ubuntu:24.04
   services:
     - docker:24-dind
   before_script:
-    - apk add --no-cache docker curl jq bash
+    - apt-get update
+    - apt-get install -y docker.io python3 python3-pip curl jq bash
   script:
     - set -euo pipefail
     - |
