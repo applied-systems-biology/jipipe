@@ -312,12 +312,14 @@ verify_ro_crate:
   stage: publish
   needs:
     - job: docker_build_push
-  image: ubuntu:24.04
+  image: python:3.12-slim
   services:
     - docker:24-dind
   before_script:
     - apt-get update
-    - apt-get install -y docker.io python3 python3-pip curl jq bash
+    - apt-get install -y curl jq bash
+    - curl -fsSL https://download.docker.com/linux/static/stable/x86_64/docker-24.0.9.tgz | tar xz -C /tmp
+    - mv /tmp/docker/docker /usr/local/bin/docker
   script:
     - set -euo pipefail
     - |
