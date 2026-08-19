@@ -19,6 +19,7 @@ variables:
   GIT_DEPTH: "1"
   GIT_CLEAN_FLAGS: "-ffdx -e .m2/"
   MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  DOCKER_TLS_CERTDIR: ""
 
 .default_build_template:
   interruptible: true
