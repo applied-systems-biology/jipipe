@@ -420,7 +420,7 @@ feature_branch_package:
     - test -n "$OUTDIR" || { echo "Snapshot output dir not found"; ls -lah; exit 1; }
     - TAR_GZ="$(ls "$OUTDIR"/JIPipe-*-Prepackaged-Linux64.tar.gz | head -n 1)"
     - test -n "$TAR_GZ" || { echo "Linux64 tar.gz not found"; ls -lah "$OUTDIR"; exit 1; }
-    - echo "Linux64 package: $TAR_GZ"
+    - 'echo "Linux64 package: $TAR_GZ"'
     - ls -lah "$OUTDIR"
   rules:
     - if: $CI_COMMIT_BRANCH != "master"
