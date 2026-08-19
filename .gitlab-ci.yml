@@ -315,6 +315,8 @@ verify_ro_crate:
   image: python:3.12-slim
   services:
     - docker:24-dind
+  variables:
+    DOCKER_HOST: tcp://docker:2375
   before_script:
     - apt-get update
     - apt-get install -y curl jq bash
