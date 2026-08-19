@@ -328,6 +328,7 @@ verify_ro_crate:
       pip install --break-system-packages websockets cwltool
     - |
       docker run -d --name jipipe-verify \
+        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
         -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
         -v /tmp/jipipe-output:/output \
@@ -347,6 +348,7 @@ verify_ro_crate:
       docker rm jipipe-verify || true
     - |
       docker run -d --name jipipe-verify-2 \
+        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
         -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
         -v /tmp/jipipe-output-2:/output \
@@ -462,6 +464,7 @@ feature_branch_verify_ro_crate:
         .
     - |
       docker run -d --name jipipe-verify \
+        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
         -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
         -v /tmp/jipipe-output:/output \
@@ -481,6 +484,7 @@ feature_branch_verify_ro_crate:
       docker rm jipipe-verify || true
     - |
       docker run -d --name jipipe-verify-2 \
+        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
         -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
         -v /tmp/jipipe-output-2:/output \
