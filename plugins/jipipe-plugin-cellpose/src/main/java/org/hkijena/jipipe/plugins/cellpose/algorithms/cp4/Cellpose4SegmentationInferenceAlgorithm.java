@@ -212,6 +212,9 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             JIPipeInputDataSlot modelSlot = getInputSlot("Model");
             for (int row = 0; row < modelSlot.getRowCount(); row++) {
                 CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
+                if (!modelData.isPretrained()) {
+                    continue;
+                }
                 String modelId = modelData.getPretrainedModelName();
                 if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
                     JIPipeValidationReportContext context = new GraphNodeValidationReportContext(this);
@@ -241,6 +244,9 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
             JIPipeInputDataSlot modelSlot = getInputSlot("Model");
             for (int row = 0; row < modelSlot.getRowCount(); row++) {
                 CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
+                if (!modelData.isPretrained()) {
+                    continue;
+                }
                 String modelId = modelData.getPretrainedModelName();
                 if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
                     GraphNodeValidationReportContext context = new GraphNodeValidationReportContext(this);

@@ -291,6 +291,9 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
         JIPipeInputDataSlot modelSlot = getInputSlot("Pretrained model");
         for (int row = 0; row < modelSlot.getRowCount(); row++) {
             CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
+            if (!modelData.isPretrained()) {
+                continue;
+            }
             String modelId = modelData.getPretrainedModelName();
             if (modelId != null && !modelId.equals("cpsam") && !modelId.equals("None")) {
                 reportContext.warning()
@@ -355,7 +358,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
 
         // Aggressive error for non-cpsam models
         for (CellposeModelInfo modelInfo : modelInfos) {
-            if (modelInfo.getModelNameOrPath() != null && !modelInfo.getModelNameOrPath().equals("cpsam") && !modelInfo.getModelNameOrPath().equals("None")) {
+            if (modelInfo.isModelPretrained() && modelInfo.getModelNameOrPath() != null && !modelInfo.getModelNameOrPath().equals("cpsam") && !modelInfo.getModelNameOrPath().equals("None")) {
                 progressInfo.aggressiveError("WARNING: Only the 'cpsam' model is recommended for training. Using '" + modelInfo.getModelNameOrPath() + "' may produce suboptimal results.");
             }
         }
