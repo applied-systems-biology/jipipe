@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
 import org.hkijena.jipipe.desktop.commons.events.WindowOpenedEvent;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
 import org.hkijena.jipipe.plugins.statistics.StatisticsPrivacyLevel;
@@ -61,6 +62,7 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
     public void initialize(JIPipeStatisticsServiceComponent service) {
         this.service = service;
         JIPipeDesktopProjectWindow.WINDOW_OPENED_EVENT_EMITTER.subscribe(this::onWindowOpened);
+        JIPipeDesktopProjectWindow.WINDOW_CLOSED_EVENT_EMITTER.subscribe(this::onWindowClosed);
         for (JIPipeDesktopProjectWindow window : JIPipeDesktopProjectWindow.getOpenWindows()) {
             attachToWindow(window);
         }
@@ -72,6 +74,12 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
         }
     }
 
+    private void onWindowClosed(WindowClosedEvent event) {
+        if (event.getWindow() instanceof JIPipeDesktopProjectWindow window) {
+            attachedWindows.remove(window);
+        }
+    }
+
     private void attachToWindow(JIPipeDesktopProjectWindow window) {
         if (!attachedWindows.add(window)) {
             return;
@@ -80,6 +88,9 @@ public class PopularNodesStatisticsItem implements JIPipeStatisticsItem {
         if (project != null) {
             JIPipeGraph graph = project.getGraph();
             graph.getNodeAddedEventEmitter().subscribe(this::onNodeAdded);
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                countNode(node);
+            }
         }
     }
 

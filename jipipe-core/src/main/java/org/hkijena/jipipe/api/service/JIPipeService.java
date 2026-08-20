@@ -120,6 +120,8 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public void dispose() {
         super.dispose();
 
+        statistics.dispose();
+
         // Stop all server instances before disposing plugins
         serverService.releaseAll();
 
