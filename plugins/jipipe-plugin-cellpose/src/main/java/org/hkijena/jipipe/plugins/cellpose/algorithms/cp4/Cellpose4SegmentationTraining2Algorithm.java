@@ -603,8 +603,8 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
                 Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
                 Path maskFile = dir.resolve("i" + imageCounter + "_masks.tif");
                 imageCounter.getAndIncrement();
-                IJ.saveAs(maskSliceImage, "TIFF", imageFile.toString());
-                IJ.saveAs(imageSliceImage, "TIFF", maskFile.toString());
+                IJ.saveAs(imageSliceImage, "TIFF", imageFile.toString());
+                IJ.saveAs(maskSliceImage, "TIFF", maskFile.toString());
             }, rowProgress);
         } else {
             // Save as-is
