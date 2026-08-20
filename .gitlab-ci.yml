@@ -472,7 +472,7 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney_with_user_dirs.jip
     - |
-      sleep 15
+      sleep 30
       echo "=== Container logs ==="
       docker logs jipipe-verify 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
@@ -494,7 +494,7 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney.jip
     - |
-      sleep 15
+      sleep 30
       echo "=== Container 2 logs ==="
       docker logs jipipe-verify-2 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)

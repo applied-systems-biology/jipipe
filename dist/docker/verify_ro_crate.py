@@ -12,7 +12,7 @@ import websockets
 DEFAULT_WS_URL = "ws://127.0.0.1:8780/"
 
 
-async def connect_with_retry(ws_url: str, max_wait: int = 60, interval: int = 2):
+async def connect_with_retry(ws_url: str, max_wait: int = 180, interval: int = 3):
     """Retry WebSocket connection every `interval` seconds for up to `max_wait` seconds."""
     deadline = time.time() + max_wait
     last_error = None
