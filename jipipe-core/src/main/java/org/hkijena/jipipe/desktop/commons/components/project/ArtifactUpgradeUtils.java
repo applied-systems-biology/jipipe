@@ -88,15 +88,21 @@ public class ArtifactUpgradeUtils {
                             if (candidate.isCompatible()) {
                                 String candidateBaseVersion = candidate.getVersionWithoutRevision();
                                 int candidateRevision = candidate.getVersionRevision();
+                                boolean isUpgrade = false;
                                 if (StringUtils.compareVersions(candidateBaseVersion, baseVersion) == 0) {
                                     if (candidateRevision > revisionVersion && !candidate.getFullId().equals(current.getFullId())) {
-                                        JIPipeArtifact candidate1 = new JIPipeArtifact(candidate);
-                                        candidate1.setClassifier("*");
-                                        String candidate1Query = candidate1.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
-                                        if (!alreadyAdded.contains(candidate1Query)) {
-                                            revisionUpgrades.add(candidate1);
-                                            alreadyAdded.add(candidate1Query);
-                                        }
+                                        isUpgrade = true;
+                                    }
+                                } else if (StringUtils.compareVersions(candidateBaseVersion, baseVersion) > 0) {
+                                    isUpgrade = true;
+                                }
+                                if (isUpgrade) {
+                                    JIPipeArtifact candidate1 = new JIPipeArtifact(candidate);
+                                    candidate1.setClassifier("*");
+                                    String candidate1Query = candidate1.getFullId(JIPipeArtifact.ResolutionStatus.GroupNameVersion);
+                                    if (!alreadyAdded.contains(candidate1Query)) {
+                                        revisionUpgrades.add(candidate1);
+                                        alreadyAdded.add(candidate1Query);
                                     }
                                 }
                             }
