@@ -136,7 +136,12 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
                 ObjectMapper mapper = JsonUtils.getObjectMapper();
                 ObjectNode currentOnDisk;
                 if (Files.isRegularFile(file)) {
-                    currentOnDisk = (ObjectNode) mapper.readTree(file.toFile());
+                    try {
+                        currentOnDisk = (ObjectNode) mapper.readTree(file.toFile());
+                    } catch (Exception e) {
+                        logger.warn("Statistics file corrupted, creating new", e);
+                        currentOnDisk = mapper.createObjectNode();
+                    }
                 } else {
                     currentOnDisk = mapper.createObjectNode();
                 }
@@ -147,6 +152,12 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
                 ObjectNode ourItems = statisticsData.has("items")
                         ? (ObjectNode) statisticsData.get("items")
                         : statisticsData.putObject("items");
+                for (var item : registry.getItems()) {
+                    JsonNode itemData = item.serialize();
+                    if (itemData != null) {
+                        ourItems.set(item.getId(), itemData);
+                    }
+                }
                 ourItems.fields().forEachRemaining(entry -> itemsOnDisk.set(entry.getKey(), entry.getValue()));
                 currentOnDisk.set("items", itemsOnDisk);
 
@@ -341,5 +352,14 @@ public class JIPipeStatisticsServiceComponent extends JIPipeServiceComponent {
 
     public void sendNow(Consumer<Boolean> callback) {
         StatisticsReporter.sendNow(callback);
+    }
+
+    @Override
+    public void dispose() {
+        if (reportingTimer != null) {
+            reportingTimer.stop();
+        }
+        saveLaterTimer.stop();
+        save();
     }
 }

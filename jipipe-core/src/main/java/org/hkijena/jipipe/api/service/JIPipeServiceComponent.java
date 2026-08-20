@@ -28,4 +28,8 @@ public abstract class JIPipeServiceComponent {
     public void postprocess(JIPipeProgressInfo progressInfo) {
 
     }
+
+    public void dispose() {
+
+    }
 }
