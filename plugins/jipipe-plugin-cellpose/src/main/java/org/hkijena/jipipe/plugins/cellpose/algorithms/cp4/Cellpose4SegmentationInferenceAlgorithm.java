@@ -206,7 +206,7 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
         JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
-        Cellpose4Environment environment = getEnvironment(Cellpose4Environment.class, configurationCache, progressInfo);
+        Cellpose4Environment environment = getEnvironmentConfigurator(Cellpose4Environment.class, configurationCache).getBaseEnvironment();
         String version = CellposeVersionUtils.getInstalledVersion(environment);
         if (version != null) {
             JIPipeInputDataSlot modelSlot = getInputSlot("Model");

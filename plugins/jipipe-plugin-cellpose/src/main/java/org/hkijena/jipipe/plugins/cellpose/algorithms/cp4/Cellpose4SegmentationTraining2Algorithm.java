@@ -303,7 +303,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
 
         // Version check
         JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
-        Cellpose4Environment environment = getEnvironment(Cellpose4Environment.class, configurationCache, progressInfo);
+        Cellpose4Environment environment = getEnvironmentConfigurator(Cellpose4Environment.class, configurationCache).getBaseEnvironment();
         String version = CellposeVersionUtils.getInstalledVersion(environment);
         if (version != null && StringUtils.compareVersions(version, "4.2") < 0) {
             JIPipeValidationReportContext context = new GraphNodeValidationReportContext(this);
