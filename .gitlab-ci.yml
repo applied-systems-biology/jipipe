@@ -330,7 +330,7 @@ verify_ro_crate:
       docker run -d --name jipipe-verify \
         -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
-        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output:/output \
         appsysbiohkijena/jipipe:latest \
         --instrumentation 8780 \
@@ -350,7 +350,7 @@ verify_ro_crate:
       docker run -d --name jipipe-verify-2 \
         -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
-        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output-2:/output \
         appsysbiohkijena/jipipe:latest \
         --instrumentation 8780 \
@@ -466,7 +466,7 @@ feature_branch_verify_ro_crate:
       docker run -d --name jipipe-verify \
         -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
-        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output:/output \
         jipipe-verify:latest \
         --instrumentation 8780 \
@@ -488,7 +488,7 @@ feature_branch_verify_ro_crate:
       docker run -d --name jipipe-verify-2 \
         -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
         -p 8780:8780 \
-        -v "$(pwd)/dist/docker/test-data:/test-data:ro" \
+        -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output-2:/output \
         jipipe-verify:latest \
         --instrumentation 8780 \

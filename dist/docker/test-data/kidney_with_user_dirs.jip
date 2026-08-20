@@ -4029,18 +4029,7 @@
         "ui-shape" : "Elbow"
       }
     } ],
-    "additional-metadata" : {
-      "node-hotkeys" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-        "data" : {
-          "hotkeys" : { }
-        }
-      },
-      "jipipe:graph:view-mode" : {
-        "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-        "data" : "VerticalCompact"
-      }
-    }
+    "additional-metadata" : { }
   },
   "compartments" : {
     "compartment-graph" : {
@@ -4322,18 +4311,7 @@
           "ui-shape" : "Elbow"
         }
       } ],
-      "additional-metadata" : {
-        "node-hotkeys" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage",
-          "data" : {
-            "hotkeys" : { }
-          }
-        },
-        "jipipe:graph:view-mode" : {
-          "jipipe:type" : "org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode",
-          "data" : "VerticalCompact"
-        }
-      }
+      "additional-metadata" : { }
     }
   }
 }
