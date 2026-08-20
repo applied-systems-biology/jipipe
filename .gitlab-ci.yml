@@ -325,52 +325,38 @@ verify_ro_crate:
   script:
     - set -euo pipefail
     - |
-      pip install --break-system-packages websockets cwltool
+      pip install --break-system-packages cwltool
     - |
-      docker run -d --name jipipe-verify \
-        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
-        -p 8780:8780 \
+      docker run --rm \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output:/output \
         appsysbiohkijena/jipipe:latest \
-        --instrumentation 8780 \
-        /test-data/kidney_with_user_dirs.jip
+        create-ro-crate \
+        --project /test-data/kidney_with_user_dirs.jip \
+        --output /output/kidney.crate.zip
     - |
-      sleep 5
-      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
-      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+      mkdir -p /tmp/crate-extracted
+      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney_with_user_dirs.jip"
     - |
-      docker stop jipipe-verify || true
-      docker rm jipipe-verify || true
-    - |
-      docker run -d --name jipipe-verify-2 \
-        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
-        -p 8780:8780 \
+      docker run --rm \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output-2:/output \
         appsysbiohkijena/jipipe:latest \
-        --instrumentation 8780 \
-        /test-data/kidney.jip
+        create-ro-crate \
+        --project /test-data/kidney.jip \
+        --output /output/kidney.crate.zip
     - |
-      sleep 5
-      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)
-      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+      rm -rf /tmp/crate-extracted
+      mkdir -p /tmp/crate-extracted
+      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output-2/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney.jip"
-    - |
-      docker stop jipipe-verify-2 || true
-      docker rm jipipe-verify-2 || true
-  after_script:
-    - docker stop jipipe-verify || true
-    - docker rm jipipe-verify || true
-    - docker stop jipipe-verify-2 || true
-    - docker rm jipipe-verify-2 || true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
@@ -449,7 +435,7 @@ feature_branch_verify_ro_crate:
     - mv /tmp/docker/docker /usr/local/bin/docker
   script:
     - set -euo pipefail
-    - pip install --break-system-packages websockets cwltool
+    - pip install --break-system-packages cwltool
     - |
       OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
       test -n "$OUTDIR" || { echo "Snapshot outdir not found"; exit 1; }
@@ -463,53 +449,35 @@ feature_branch_verify_ro_crate:
         -f dist/docker/Dockerfile \
         .
     - |
-      docker run -d --name jipipe-verify \
-        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
-        -p 8780:8780 \
+      docker run --rm \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output:/output \
         jipipe-verify:latest \
-        --instrumentation 8780 \
-        /test-data/kidney_with_user_dirs.jip
+        create-ro-crate \
+        --project /test-data/kidney_with_user_dirs.jip \
+        --output /output/kidney.crate.zip
     - |
-      sleep 30
-      echo "=== Container logs ==="
-      docker logs jipipe-verify 2>&1 || true
-      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
-      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+      mkdir -p /tmp/crate-extracted
+      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney_with_user_dirs.jip"
     - |
-      docker stop jipipe-verify || true
-      docker rm jipipe-verify || true
-    - |
-      docker run -d --name jipipe-verify-2 \
-        -e JAVA_TOOL_OPTIONS=-Djipipe.instrumentation.bind=0.0.0.0 \
-        -p 8780:8780 \
+      docker run --rm \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
         -v /tmp/jipipe-output-2:/output \
         jipipe-verify:latest \
-        --instrumentation 8780 \
-        /test-data/kidney.jip
+        create-ro-crate \
+        --project /test-data/kidney.jip \
+        --output /output/kidney.crate.zip
     - |
-      sleep 30
-      echo "=== Container 2 logs ==="
-      docker logs jipipe-verify-2 2>&1 || true
-      CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)
-      python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
+      rm -rf /tmp/crate-extracted
+      mkdir -p /tmp/crate-extracted
+      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output-2/kidney.crate.zip
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney.jip"
-    - |
-      docker stop jipipe-verify-2 || true
-      docker rm jipipe-verify-2 || true
-  after_script:
-    - docker stop jipipe-verify || true
-    - docker rm jipipe-verify || true
-    - docker stop jipipe-verify-2 || true
-    - docker rm jipipe-verify-2 || true
   rules:
     - if: $CI_COMMIT_BRANCH != "master"

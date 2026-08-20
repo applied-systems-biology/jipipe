@@ -1,7 +1,6 @@
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    xvfb \
     libxrender1 \
     libxtst6 \
     libxi6 \
@@ -38,7 +37,4 @@ RUN mkdir -p /opt/jipipe && \
     rm /tmp/jipipe.tar.gz && \
     chmod +x /opt/jipipe/jipipe-linux-x64
 
-RUN printf '#!/bin/bash\nXvfb :99 -screen 0 1280x1024x24 -nolisten tcp &\nsleep 1\nexport DISPLAY=:99\nexec /opt/jipipe/jipipe-linux-x64 "$@"\n' > /opt/jipipe/entrypoint.sh && \
-    chmod +x /opt/jipipe/entrypoint.sh
-
-ENTRYPOINT ["/opt/jipipe/entrypoint.sh"]
+ENTRYPOINT ["/opt/jipipe/jipipe-linux-x64"]
