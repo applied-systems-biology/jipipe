@@ -49,7 +49,7 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp4.Cellpose4Environment;
 import org.hkijena.jipipe.plugins.cellpose.parameters.cp2.Cellpose2GPUSettings;
-import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationTrainingTweaksSettings;
+import org.hkijena.jipipe.plugins.cellpose.parameters.cp4.Cellpose4SegmentationTrainingTweaksSettings;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeVersionUtils;
@@ -98,7 +98,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
     public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", true);
 
     private final Cellpose2GPUSettings gpuSettings;
-    private final Cellpose3SegmentationTrainingTweaksSettings tweaksSettings;
+    private final Cellpose4SegmentationTrainingTweaksSettings tweaksSettings;
     private int numEpochs = 100;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -113,10 +113,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
     public Cellpose4SegmentationTraining2Algorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new Cellpose2GPUSettings();
-        this.tweaksSettings = new Cellpose3SegmentationTrainingTweaksSettings();
-        this.tweaksSettings.setLearningRate(0.00001);
-        this.tweaksSettings.setWeightDecay(0.1);
-        this.tweaksSettings.setBatchSize(1);
+        this.tweaksSettings = new Cellpose4SegmentationTrainingTweaksSettings();
         updateSlots();
 
         registerSubParameter(gpuSettings);
@@ -127,7 +124,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
         super(other);
 
         this.gpuSettings = new Cellpose2GPUSettings(other.gpuSettings);
-        this.tweaksSettings = new Cellpose3SegmentationTrainingTweaksSettings(other.tweaksSettings);
+        this.tweaksSettings = new Cellpose4SegmentationTrainingTweaksSettings(other.tweaksSettings);
         this.suppressLogs = other.suppressLogs;
 
         this.numEpochs = other.numEpochs;
@@ -257,7 +254,7 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
 
     @SetJIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, icon = "apps/cellpose.png")
-    public Cellpose3SegmentationTrainingTweaksSettings getTweaksSettings() {
+    public Cellpose4SegmentationTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
