@@ -48,6 +48,7 @@
     "tokenizers-0.36.0.jar": "https://repo1.maven.org/maven2/ai/djl/huggingface/tokenizers/0.36.0/tokenizers-0.36.0.jar",
     "api-0.36.0.jar": "https://repo1.maven.org/maven2/ai/djl/api/0.36.0/api-0.36.0.jar",
     "onnxruntime-1.25.1.jar": "https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime/1.25.1/onnxruntime-1.25.1.jar",
+    "Java-WebSocket-1.5.7.jar": "https://repo1.maven.org/maven2/org/java-websocket/Java-WebSocket/1.5.7/Java-WebSocket-1.5.7.jar",
     "LICENSE_Javaluator.html": "https://opensource.org/licenses/lgpl-3.0.html",
     "LICENSE_JGraphT.txt": "https://raw.githubusercontent.com/jgrapht/jgrapht/master/license-EPL.txt",
     "LICENSE_OpenHTMLToPDF.txt": "https://raw.githubusercontent.com/danfickle/openhtmltopdf/open-dev-v1/LICENSE",
