@@ -45,18 +45,6 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         }
     }
 
-    private void removeSubscriber(Subscriber<Event, Listener> subscriber) {
-        if (disposed) {
-            throw new UnsupportedOperationException("Event emitter is disposed!");
-        }
-        long stamp = stampedLock.writeLock();
-        try {
-            subscribers.remove(subscriber);
-        } finally {
-            stampedLock.unlock(stamp);
-        }
-    }
-
     public void subscribe(Listener listener) {
         Subscriber<Event, Listener> subscriber = new StrongObjectSubscriber<>(listener);
         addSubscriber(subscriber);
