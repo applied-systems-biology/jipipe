@@ -451,9 +451,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         if (diameter.isEnabled()) {
             arguments.add("--diameter");
             arguments.add(diameter.getContent() + "");
-        } else {
-            arguments.add("--diameter");
-            arguments.add("0");
         }
         if (with3D) {
             arguments.add("--do_3D");
