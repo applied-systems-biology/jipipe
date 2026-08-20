@@ -82,10 +82,27 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Cellpose segmentation training (4.x)", description =
-        "Trains a segmentation model with Cellpose 4.2+. You start from the cpsam model or train from scratch. " +
+        "Trains a segmentation model with Cellpose 4.2+. Cellpose 4 uses transformer-based architectures (SAM-ViTL for cpsam, DINOv3 for cpdino) that are pre-trained on large datasets and converge faster than the U-Net-based Cellpose 2/3. " +
+                "<h3>Recommended workflow</h3>" +
+                "<ul>" +
+                "<li><b>Start from cpsam:</b> Only the built-in <code>cpsam</code> model is recommended as a starting point for fine-tuning. Starting from other models can produce suboptimal results.</li>" +
+                "<li><b>Low learning rate:</b> The default learning rate of 1e-5 is critical. Higher rates can destabilize the pre-trained transformer backbone and lead to poor results.</li>" +
+                "<li><b>Fewer epochs:</b> Transformer models converge in 100 epochs (default), unlike U-Net-based Cellpose 2/3 which typically need 500. Monitor the training loss — if it stops decreasing, fewer epochs are sufficient.</li>" +
+                "<li><b>Batch size 1:</b> Transformer models require significant GPU memory. Use a batch size of 1 unless you have a high-memory GPU.</li>" +
+                "<li><b>Weight decay 0.1:</b> Helps prevent overfitting on small datasets, which is especially important for transformer fine-tuning.</li>" +
+                "</ul>" +
+                "<h3>Data preparation</h3>" +
                 "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
                 "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. " +
-                "Does not support the training of image restoration models.")
+                "Does not support the training of image restoration models. " +
+                "<h3>Troubleshooting</h3>" +
+                "If you get blank outputs or poor segmentation after training:" +
+                "<ul>" +
+                "<li>Ensure you are starting from <code>cpsam</code>, not a custom or previously fine-tuned model</li>" +
+                "<li>Verify that your label images have enough masks per image (minimum 5 by default)</li>" +
+                "<li>Check that the learning rate is 1e-5 — higher values can destroy the pre-trained weights</li>" +
+                "<li>Ensure training images have a similar diameter distribution to what you expect at inference time</li>" +
+                "</ul>")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Pretrained model", create = true, description = "The pretrained model. If you want to train from scratch, provide a pretrained model 'None'. Only cpsam is recommended for training.", role = JIPipeDataSlotRole.ParametersLooping)
@@ -597,7 +614,10 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
         }
     }
 
-    @SetJIPipeDocumentation(name = "Epochs", description = "Number of epochs that should be trained.")
+    @SetJIPipeDocumentation(name = "Epochs", description = "Number of training epochs. Default is 100, which matches the official Cellpose 4.2 recommendation for fine-tuning transformer-based models (cpsam, cpdino). " +
+            "Transformer models converge faster than the U-Net-based Cellpose 2/3 (which typically need 500 epochs). " +
+            "Monitor the training loss — if it plateaus before 100 epochs, fewer epochs are sufficient. " +
+            "Using too many epochs risks overfitting, especially on small datasets.")
     @JIPipeParameter("epochs")
     public int getNumEpochs() {
         return numEpochs;

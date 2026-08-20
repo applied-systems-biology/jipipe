@@ -79,7 +79,10 @@ import java.util.stream.Collectors;
         "Trains a segmentation model with Cellpose. You start from an existing model or train from scratch. " +
                 "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
                 "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters. " +
-                "Does not support the training of image restoration models.")
+                "Does not support the training of image restoration models. " +
+                "<h3>Deprecated</h3>" +
+                "This node uses Cellpose 3-era training defaults (learning rate 0.2, weight decay 1e-5, 500 epochs) that are not optimized for Cellpose 4's transformer-based architecture. " +
+                "Use the non-deprecated 'Cellpose segmentation training (4.x)' node instead, which has correct defaults for fine-tuning transformer models (learning rate 1e-5, weight decay 0.1, 100 epochs).")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Pretrained model", create = true, description = "The pretrained model. If you want to train from scratch, provide a pretrained model 'None'.", role = JIPipeDataSlotRole.ParametersLooping)
