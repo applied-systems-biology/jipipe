@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.contexts.*;
@@ -280,6 +281,7 @@ public abstract class JIPipeValidationReportContext {
         private String explanation;
         private String solution;
         private String details;
+        private final List<JIPipeNotificationAction> actions = new ArrayList<>();
 
         private ValidationEntryBuilder(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context) {
             this.level = level;
@@ -331,13 +333,23 @@ public abstract class JIPipeValidationReportContext {
         }
 
         /**
+         * Adds an action to the validation report entry
+         *
+         * @param action the action
+         * @return builder instance for chaining
+         */
+        public ValidationEntryBuilder action(JIPipeNotificationAction action) {
+            this.actions.add(action);
+            return this;
+        }
+
+        /**
          * Creates and adds a validation report entry to the provided report
          *
          * @param report the report to add the entry to
          */
         public JIPipeValidationReportEntry report(JIPipeValidationReport report) {
-            // The entry is created and added by the builder pattern
-            JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
+            JIPipeValidationReportEntry entry = new JIPipeValidationReportEntry(level, context, title, explanation, solution, details, actions);
             report.add(entry);
             return entry;
         }
@@ -348,8 +360,7 @@ public abstract class JIPipeValidationReportContext {
          * @return the created validation report entry
          */
         public JIPipeValidationReportEntry build() {
-            // The entry is created using the builder pattern
-            return new JIPipeValidationReportEntry(level, context, title, explanation, solution, details);
+            return new JIPipeValidationReportEntry(level, context, title, explanation, solution, details, actions);
         }
 
         /**
