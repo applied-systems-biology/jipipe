@@ -13,9 +13,13 @@
 
 package org.hkijena.jipipe.api.validation;
 
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -28,6 +32,26 @@ public class JIPipeValidationReportEntry {
     private final String explanation;
     private final String solution;
     private final String details;
+    private final List<JIPipeNotificationAction> actions;
+
+    /**
+     * @param level       the level of this entry
+     * @param context     the object that caused the problem
+     * @param title       explanation what happened
+     * @param explanation explanation why it happened
+     * @param solution    explanation how to solve the issue
+     * @param details     optional details
+     * @param actions     optional actions that can be taken to resolve the issue
+     */
+    public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution, String details, List<JIPipeNotificationAction> actions) {
+        this.level = level;
+        this.context = context != null ? context : new UnspecifiedValidationReportContext();
+        this.title = title;
+        this.explanation = explanation;
+        this.solution = solution;
+        this.details = details;
+        this.actions = actions != null ? new ArrayList<>(actions) : new ArrayList<>();
+    }
 
     /**
      * @param level       the level of this entry
@@ -38,12 +62,7 @@ public class JIPipeValidationReportEntry {
      * @param details     optional details
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution, String details) {
-        this.level = level;
-        this.context = context != null ? context : new UnspecifiedValidationReportContext();
-        this.title = title;
-        this.explanation = explanation;
-        this.solution = solution;
-        this.details = details;
+        this(level, context, title, explanation, solution, details, null);
     }
 
     /**
@@ -54,7 +73,7 @@ public class JIPipeValidationReportEntry {
      * @param solution    explanation how to solve the issue
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation, String solution) {
-        this(level, context, title, explanation, solution, null);
+        this(level, context, title, explanation, solution, null, null);
     }
 
     /**
@@ -64,7 +83,7 @@ public class JIPipeValidationReportEntry {
      * @param explanation explanation why it happened
      */
     public JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel level, JIPipeValidationReportContext context, String title, String explanation) {
-        this(level, context, title, explanation, null, null);
+        this(level, context, title, explanation, null, null, null);
     }
 
     public JIPipeValidationReportEntryLevel getLevel() {
@@ -119,6 +138,10 @@ public class JIPipeValidationReportEntry {
 
     public String getDetails() {
         return details;
+    }
+
+    public List<JIPipeNotificationAction> getActions() {
+        return Collections.unmodifiableList(actions);
     }
 
     @Override

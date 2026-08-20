@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.validation;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 
 public class JIPipeValidationRuntimeException extends RuntimeException {
@@ -56,10 +57,20 @@ public class JIPipeValidationRuntimeException extends RuntimeException {
         for (JIPipeValidationReportEntry entry : otherReport) {
             if (applicableAlternative && entry.getContext().traverseNavigable().isEmpty()) {
                 switch (entry.getLevel()) {
-                    case Error ->
-                            alternativeContext.error().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
-                    case Warning ->
-                            alternativeContext.warning().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails()).report(report);
+                    case Error -> {
+                        JIPipeValidationReportContext.ValidationEntryBuilder builder = alternativeContext.error().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails());
+                        for (JIPipeNotificationAction action : entry.getActions()) {
+                            builder.action(action);
+                        }
+                        builder.report(report);
+                    }
+                    case Warning -> {
+                        JIPipeValidationReportContext.ValidationEntryBuilder builder = alternativeContext.warning().title(entry.getTitle()).explanation(entry.getExplanation()).solution(entry.getSolution()).details(entry.getDetails());
+                        for (JIPipeNotificationAction action : entry.getActions()) {
+                            builder.action(action);
+                        }
+                        builder.report(report);
+                    }
                 }
             } else {
                 report.add(entry);

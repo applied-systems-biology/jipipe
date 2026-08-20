@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.cellpose.algorithms.cp4;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,6 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironmentConfigurationCache;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
@@ -33,10 +35,14 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
+import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.environments.cp4.Cellpose4Environment;
@@ -47,6 +53,7 @@ import org.hkijena.jipipe.plugins.cellpose.parameters.cp3.Cellpose3SegmentationT
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeImageInfo;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeModelInfo;
 import org.hkijena.jipipe.plugins.cellpose.utils.CellposeUtils;
+import org.hkijena.jipipe.plugins.cellpose.utils.CellposeVersionUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
@@ -198,6 +205,31 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     @Override
     public void reportValidity(JIPipeValidationReportContext reportContext, JIPipeValidationReportSettings reportSettings, JIPipeValidationReport report, JIPipeProgressInfo progressInfo) {
         super.reportValidity(reportContext, reportSettings, report, progressInfo);
+        JIPipeEnvironmentConfigurationCache configurationCache = new JIPipeEnvironmentConfigurationCache();
+        Cellpose4Environment environment = getEnvironmentConfigurator(Cellpose4Environment.class, configurationCache).getBaseEnvironment();
+        String version = CellposeVersionUtils.getInstalledVersion(environment);
+        if (version != null) {
+            JIPipeInputDataSlot modelSlot = getInputSlot("Model");
+            for (int row = 0; row < modelSlot.getRowCount(); row++) {
+                CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
+                if (!modelData.isPretrained()) {
+                    continue;
+                }
+                String modelId = modelData.getPretrainedModelName();
+                if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
+                    JIPipeValidationReportContext context = new GraphNodeValidationReportContext(this);
+                    context.warning()
+                            .title("Cellpose version may be too old")
+                            .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
+                            .solution("Update to Cellpose 4.2 or later by clicking the 'Update Cellpose' button.")
+                            .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                                    JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                                    wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                            .report(report);
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -205,6 +237,30 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Get environment
         Cellpose4Environment environment = getEnvironment(Cellpose4Environment.class, runContext, progressInfo);
+
+        // Runtime version guard
+        String version = CellposeVersionUtils.getInstalledVersion(environment);
+        if (version != null) {
+            JIPipeInputDataSlot modelSlot = getInputSlot("Model");
+            for (int row = 0; row < modelSlot.getRowCount(); row++) {
+                CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
+                if (!modelData.isPretrained()) {
+                    continue;
+                }
+                String modelId = modelData.getPretrainedModelName();
+                if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
+                    GraphNodeValidationReportContext context = new GraphNodeValidationReportContext(this);
+                    throw new JIPipeValidationRuntimeException(context.error()
+                            .title("Cellpose version too old for selected model")
+                            .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
+                            .solution("Update to Cellpose 4.2 or later.")
+                            .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                                    JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                                    wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                            .build());
+                }
+            }
+        }
 
         Path workDirectory = getNewScratch();
         progressInfo.log("Work directory is " + workDirectory);
@@ -420,6 +476,14 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         // Model
         arguments.add("--pretrained_model");
         arguments.add(modelNameOrPath);
+
+        // Tile size for DINO models
+        if (modelNameOrPath != null && (modelNameOrPath.equals("cpdino") || modelNameOrPath.equals("cpdino-vitb"))) {
+            if (segmentationTweaksSettings.getBsize().isEnabled()) {
+                arguments.add("--bsize");
+                arguments.add(String.valueOf(segmentationTweaksSettings.getBsize().getContent()));
+            }
+        }
 
         // Tweaks
         if (!segmentationTweaksSettings.isNormalize()) {

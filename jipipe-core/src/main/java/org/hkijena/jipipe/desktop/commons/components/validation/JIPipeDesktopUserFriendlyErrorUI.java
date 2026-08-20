@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.validation;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -281,6 +282,17 @@ public class JIPipeDesktopUserFriendlyErrorUI extends JIPipeDesktopFormPanel imp
                     }
                 });
                 actionBar.add(navigateButton);
+            }
+
+            for (JIPipeNotificationAction action : entry.getActions()) {
+                JButton actionButton = new JButton(action.getLabel(), action.getIcon());
+                actionButton.setOpaque(false);
+                actionButton.setToolTipText(action.getTooltip());
+                JIPipeNotificationAction finalAction = action;
+                actionButton.addActionListener(e -> {
+                    finalAction.getAction().accept(getDesktopWorkbench());
+                });
+                actionBar.add(actionButton);
             }
 
             actionBar.add(Box.createHorizontalGlue());

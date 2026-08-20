@@ -131,6 +131,14 @@ When debugging in IDE, add these VM arguments:
 
 ## Code Style Guidelines
 
+### Git Branch Naming
+
+Follow GitLab branch naming conventions: `<issue-id>-<name-in-kebab-case>`
+
+Examples:
+- `1310-cellpose-42-models-actionable-errors`
+- `1308-ro-crate-improvements`
+
 ### General Principles
 1. **Follow existing patterns** - The codebase has consistent patterns for plugin registration and algorithm implementation
 2. **Use the provided convenience methods** from `JIPipeDefaultJavaPlugin` rather than direct registry access when possible

@@ -32,6 +32,7 @@ import org.hkijena.jipipe.plugins.cellpose.algorithms.cp2.ImportPretrainedCellpo
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp3.*;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationInferenceAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationTrainingAlgorithm;
+import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.Cellpose4SegmentationTraining2Algorithm;
 import org.hkijena.jipipe.plugins.cellpose.algorithms.cp4.ImportPretrainedCellpose4SegmentationModelAlgorithm;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -228,6 +229,7 @@ public class CellposePlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("import-cellpose-4.x-pretrained-segmentation-model", ImportPretrainedCellpose4SegmentationModelAlgorithm.class);
         registerNodeType("cellpose-segmentation-inference-4.x", Cellpose4SegmentationInferenceAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/cellpose.png"));
         registerNodeType("cellpose-segmentation-training-4.x", Cellpose4SegmentationTrainingAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/cellpose.png"));
+        registerNodeType("cellpose-segmentation-training-4.x-v2", Cellpose4SegmentationTraining2Algorithm.class, JIPipe.RESOURCES.getIcon16URL("apps/cellpose.png"));
 
         // Legacy nodes and data types
         registerEnumParameterType("cellpose-model", PretrainedLegacyCellpose2InferenceModel.class, "Cellpose model (deprecated)", "A Cellpose model");

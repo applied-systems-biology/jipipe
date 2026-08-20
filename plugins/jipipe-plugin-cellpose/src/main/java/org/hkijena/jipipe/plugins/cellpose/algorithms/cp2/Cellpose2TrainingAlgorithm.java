@@ -73,7 +73,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @SetJIPipeDocumentation(name = "Cellpose segmentation training (2.x)", description =
-        "Trains a segmentation model with Cellpose. You start from an existing model or train from scratch. " +
+        "Trains a segmentation model with Cellpose 2. Cellpose 2 uses a U-Net-based architecture that typically requires more epochs (500 by default) to converge. " +
                 "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
                 "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
@@ -525,7 +525,8 @@ public class Cellpose2TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
     }
 
-    @SetJIPipeDocumentation(name = "Epochs", description = "Number of epochs that should be trained.")
+    @SetJIPipeDocumentation(name = "Epochs", description = "Number of training epochs. Default is 500, which is typical for the U-Net-based Cellpose 2 architecture. " +
+            "U-Net models need more epochs to converge than transformer-based models (Cellpose 4). Monitor the training loss to determine if fewer epochs are sufficient.")
     @JIPipeParameter("epochs")
     public int getNumEpochs() {
         return numEpochs;
