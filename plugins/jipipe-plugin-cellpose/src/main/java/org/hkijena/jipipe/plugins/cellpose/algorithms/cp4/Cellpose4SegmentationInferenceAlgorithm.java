@@ -42,7 +42,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgrade;
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 import org.hkijena.jipipe.plugins.cellpose.CellposePlugin;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
@@ -215,24 +214,15 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
                 CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
                 String modelId = modelData.getPretrainedModelName();
                 if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
-                    List<ArtifactUpgrade> upgrades = ArtifactUpgradeUtils.findAvailableUpgrades(environment);
                     JIPipeValidationReportContext context = new GraphNodeValidationReportContext(this);
-                    if (!upgrades.isEmpty()) {
-                        context.warning()
-                                .title("Cellpose version may be too old")
-                                .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
-                                .solution("Update to Cellpose 4.2 or later by clicking the 'Update Cellpose' button.")
-                                .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
-                                        JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
-                                        wb -> ArtifactUpgradeUtils.showUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, upgrades)))
-                                .report(report);
-                    } else {
-                        context.warning()
-                                .title("Cellpose version may be too old")
-                                .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
-                                .solution("Please install a newer Cellpose artifact manually.")
-                                .report(report);
-                    }
+                    context.warning()
+                            .title("Cellpose version may be too old")
+                            .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
+                            .solution("Update to Cellpose 4.2 or later by clicking the 'Update Cellpose' button.")
+                            .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                                    JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                                    wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                            .report(report);
                     break;
                 }
             }
@@ -253,24 +243,15 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
                 CellposeModelData modelData = modelSlot.getData(row, CellposeModelData.class, progressInfo);
                 String modelId = modelData.getPretrainedModelName();
                 if (!CellposeVersionUtils.isModelSupported(modelId, version)) {
-                    List<ArtifactUpgrade> upgrades = ArtifactUpgradeUtils.findAvailableUpgrades(environment);
                     GraphNodeValidationReportContext context = new GraphNodeValidationReportContext(this);
-                    if (!upgrades.isEmpty()) {
-                        throw new JIPipeValidationRuntimeException(context.error()
-                                .title("Cellpose version too old for selected model")
-                                .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
-                                .solution("Update to Cellpose 4.2 or later.")
-                                .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
-                                        JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
-                                        wb -> ArtifactUpgradeUtils.showUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, upgrades)))
-                                .build());
-                    } else {
-                        throw new JIPipeValidationRuntimeException(context.error()
-                                .title("Cellpose version too old for selected model")
-                                .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
-                                .solution("Please install a newer Cellpose artifact manually.")
-                                .build());
-                    }
+                    throw new JIPipeValidationRuntimeException(context.error()
+                            .title("Cellpose version too old for selected model")
+                            .explanation("The selected model '" + modelId + "' requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
+                            .solution("Update to Cellpose 4.2 or later.")
+                            .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                                    JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                                    wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                            .build());
                 }
             }
         }

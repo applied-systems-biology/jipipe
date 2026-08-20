@@ -44,7 +44,6 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.api.validation.contexts.GraphNodeValidationReportContext;
-import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgrade;
 import org.hkijena.jipipe.desktop.commons.components.project.ArtifactUpgradeUtils;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeSizeModelData;
@@ -307,24 +306,15 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
         Cellpose4Environment environment = getEnvironment(Cellpose4Environment.class, configurationCache, progressInfo);
         String version = CellposeVersionUtils.getInstalledVersion(environment);
         if (version != null && StringUtils.compareVersions(version, "4.2") < 0) {
-            List<ArtifactUpgrade> upgrades = ArtifactUpgradeUtils.findAvailableUpgrades(environment);
             JIPipeValidationReportContext context = new GraphNodeValidationReportContext(this);
-            if (!upgrades.isEmpty()) {
-                context.warning()
-                        .title("Cellpose version may be too old")
-                        .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
-                        .solution("Update to Cellpose 4.2 or later by clicking the 'Update Cellpose' button.")
-                        .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
-                                JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
-                                wb -> ArtifactUpgradeUtils.showUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, upgrades)))
-                        .report(report);
-            } else {
-                context.warning()
-                        .title("Cellpose version may be too old")
-                        .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
-                        .solution("Please install a newer Cellpose artifact manually.")
-                        .report(report);
-            }
+            context.warning()
+                    .title("Cellpose version may be too old")
+                    .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ".")
+                    .solution("Update to Cellpose 4.2 or later by clicking the 'Update Cellpose' button.")
+                    .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                            JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                            wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                    .report(report);
         }
     }
 
@@ -336,24 +326,15 @@ public class Cellpose4SegmentationTraining2Algorithm extends JIPipeSingleIterati
         // Runtime version guard
         String version = CellposeVersionUtils.getInstalledVersion(environment);
         if (version != null && StringUtils.compareVersions(version, "4.2") < 0) {
-            List<ArtifactUpgrade> upgrades = ArtifactUpgradeUtils.findAvailableUpgrades(environment);
             GraphNodeValidationReportContext context = new GraphNodeValidationReportContext(this);
-            if (!upgrades.isEmpty()) {
-                throw new JIPipeValidationRuntimeException(context.error()
-                        .title("Cellpose version too old for training")
-                        .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
-                        .solution("Update to Cellpose 4.2 or later.")
-                        .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
-                                JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
-                                wb -> ArtifactUpgradeUtils.showUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, upgrades)))
-                        .build());
-            } else {
-                throw new JIPipeValidationRuntimeException(context.error()
-                        .title("Cellpose version too old for training")
-                        .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
-                        .solution("Please install a newer Cellpose artifact manually.")
-                        .build());
-            }
+            throw new JIPipeValidationRuntimeException(context.error()
+                    .title("Cellpose version too old for training")
+                    .explanation("This training node requires Cellpose 4.2 or later, but the current environment uses Cellpose " + version + ". Execution was aborted.")
+                    .solution("Update to Cellpose 4.2 or later.")
+                    .action(new JIPipeNotificationAction("Update Cellpose", "Update to a newer Cellpose version",
+                            JIPipe.RESOURCES.getIcon16("actions/list-check.png"),
+                            wb -> ArtifactUpgradeUtils.findAndShowUpgradeDialog((org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench) wb, this, Cellpose4Environment.class)))
+                    .build());
         }
 
         // Prepare folders

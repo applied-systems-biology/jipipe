@@ -16,9 +16,17 @@ package org.hkijena.jipipe.desktop.commons.components.project;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.artifacts.JIPipeArtifact;
 import org.hkijena.jipipe.api.environments.JIPipeArtifactEnvironment;
+import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParameter;
 import org.hkijena.jipipe.plugins.parameters.library.jipipe.JIPipeArtifactQueryParameter;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeDefaultEnvironmentsApplicationSettings;
+import org.hkijena.jipipe.plugins.settings.project.JIPipeDefaultEnvironmentsProjectSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -68,6 +76,77 @@ public class ArtifactUpgradeUtils {
                 JOptionPane.showMessageDialog(workbench.getWindow(), StringUtils.wrapHtml(StringUtils.formatPluralS(numSuccesses, "artifact") + " were updated.<br/>JIPipe will automatically take care of downloading and setting up the artifacts."));
             }
         }
+    }
+
+    public static void findAndShowUpgradeDialog(JIPipeDesktopWorkbench workbench, JIPipeGraphNode node, Class<? extends JIPipeArtifactEnvironment> environmentClass) {
+        JIPipeArtifactEnvironment environment = resolveActualEnvironment(node, environmentClass);
+        if (environment == null) {
+            JOptionPane.showMessageDialog(workbench.getWindow(),
+                    "Could not find the environment in the project settings.\nPlease update the Cellpose artifact manually.",
+                    "Update Cellpose", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        List<ArtifactUpgrade> upgrades = findAvailableUpgrades(environment);
+        if (upgrades.isEmpty()) {
+            JOptionPane.showMessageDialog(workbench.getWindow(),
+                    "No newer Cellpose artifacts were found.\nPlease install a newer Cellpose artifact manually.",
+                    "Update Cellpose", JOptionPane.INFORMATION_MESSAGE);
+            return;
+        }
+        showUpgradeDialog(workbench, upgrades);
+    }
+
+    private static JIPipeArtifactEnvironment resolveActualEnvironment(JIPipeGraphNode node, Class<? extends JIPipeArtifactEnvironment> environmentClass) {
+        JIPipeEnvironmentsServiceComponent.EnvironmentInfo info = JIPipe.getInstance().getEnvironments().getInfoByClass(environmentClass);
+        if (info == null) {
+            return null;
+        }
+
+        // 1. Node-level override
+        if (node != null) {
+            JIPipeParameterAccess access = node.getEnvironmentOverrides().get(info.getId());
+            if (access != null) {
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
+                if (parameter != null && parameter.isEnabled()
+                        && parameter.getContent() instanceof JIPipeArtifactEnvironment env
+                        && environmentClass.isAssignableFrom(env.getClass())) {
+                    return env;
+                }
+            }
+        }
+
+        // 2. Project-level override
+        JIPipeProject project = node != null ? node.getProject() : null;
+        if (project != null) {
+            JIPipeDefaultEnvironmentsProjectSettings settings = project.getSettingsSheet(JIPipeDefaultEnvironmentsProjectSettings.class);
+            if (settings != null) {
+                JIPipeParameterAccess access = settings.get(info.getId());
+                if (access != null) {
+                    JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
+                    if (parameter != null && parameter.isEnabled()
+                            && parameter.getContent() instanceof JIPipeArtifactEnvironment env
+                            && environmentClass.isAssignableFrom(env.getClass())) {
+                        return env;
+                    }
+                }
+            }
+        }
+
+        // 3. Application-level override
+        JIPipeDefaultEnvironmentsApplicationSettings appSettings = JIPipe.getSettings().getByType(JIPipeDefaultEnvironmentsApplicationSettings.class);
+        if (appSettings != null) {
+            JIPipeParameterAccess access = appSettings.get(info.getId());
+            if (access != null) {
+                JIPipeOptionalParameter<?> parameter = access.get(JIPipeOptionalParameter.class);
+                if (parameter != null && parameter.isEnabled()
+                        && parameter.getContent() instanceof JIPipeArtifactEnvironment env
+                        && environmentClass.isAssignableFrom(env.getClass())) {
+                    return env;
+                }
+            }
+        }
+
+        return null;
     }
 
     public static List<ArtifactUpgrade> findAvailableUpgrades(JIPipeArtifactEnvironment environment) {
