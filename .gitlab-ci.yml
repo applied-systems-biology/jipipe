@@ -416,7 +416,7 @@ feature_branch_package:
     - cd jipipe-distribution-files/scripts
     - ./step1-publish-snapshot-ci.sh "" "${CI_PIPELINE_IID}"
     - ./step2-create-zip.sh
-    - ./step3-build-packages.sh || true
+    - ./step3-build-packages-linux64.sh
     - cd ..
     - OUTDIR="$(ls -d *-snapshot${CI_PIPELINE_IID} | head -n 1)"
     - test -n "$OUTDIR" || { echo "Snapshot output dir not found"; ls -lah; exit 1; }
