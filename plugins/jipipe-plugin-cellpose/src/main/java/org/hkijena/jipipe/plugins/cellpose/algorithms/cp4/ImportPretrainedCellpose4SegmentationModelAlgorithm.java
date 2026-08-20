@@ -44,7 +44,7 @@ public class ImportPretrainedCellpose4SegmentationModelAlgorithm extends JIPipeS
 
     public ImportPretrainedCellpose4SegmentationModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        models.add(PretrainedCellpose4SegmentationModel.cpsam);
+        models.add(PretrainedCellpose4SegmentationModel.cpsam_v2);
     }
 
     public ImportPretrainedCellpose4SegmentationModelAlgorithm(ImportPretrainedCellpose4SegmentationModelAlgorithm other) {
