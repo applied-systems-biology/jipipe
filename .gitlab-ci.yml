@@ -479,16 +479,10 @@ feature_branch_verify_ro_crate:
       docker logs jipipe-verify 2>&1 || true
       echo "=== Processes inside container ==="
       docker exec jipipe-verify ps aux 2>&1 || true
-      echo "=== Jaunch binary ==="
-      docker exec jipipe-verify ls -la /opt/jipipe/jipipe-linux-x64 2>&1 || true
-      docker exec jipipe-verify file /opt/jipipe/jipipe-linux-x64 2>&1 || true
-      echo "=== Java directory ==="
-      docker exec jipipe-verify ls -la /opt/jipipe/java/ 2>&1 || true
-      docker exec jipipe-verify ls -la /opt/jipipe/java/linux64/ 2>&1 || true
-      echo "=== Try running jaunch directly ==="
-      docker exec jipipe-verify /opt/jipipe/jipipe-linux-x64 --help 2>&1 || true
-      echo "=== Jaunch config ==="
-      docker exec jipipe-verify cat /opt/jipipe/config/jaunch/jipipe.toml 2>&1 | head -20 || true
+      echo "=== Jaunch dry-run ==="
+      docker exec -e DISPLAY=:99 jipipe-verify /opt/jipipe/jipipe-linux-x64 --debug --dry-run --instrumentation 8780 /test-data/kidney_with_user_dirs.jip 2>&1 || true
+      echo "=== Jaunch direct run (5s timeout) ==="
+      docker exec -e DISPLAY=:99 jipipe-verify timeout 15 /opt/jipipe/jipipe-linux-x64 --debug --instrumentation 8780 /test-data/kidney_with_user_dirs.jip 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
