@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.OptionalVector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.Vector2iParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.vectors.VectorParameterSettings;
@@ -29,6 +30,7 @@ public class Cellpose3SegmentationTweaksSettings extends AbstractJIPipeParameter
     private int niter = 0;
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
     private double flow3DSmoothing = 0;
+    private OptionalIntegerParameter bsize = new OptionalIntegerParameter(true, 384);
 
     public Cellpose3SegmentationTweaksSettings() {
     }
@@ -40,6 +42,7 @@ public class Cellpose3SegmentationTweaksSettings extends AbstractJIPipeParameter
         this.normalizePercentile = new OptionalVector2iParameter(other.normalizePercentile);
         this.niter = other.niter;
         this.flow3DSmoothing = other.flow3DSmoothing;
+        this.bsize = new OptionalIntegerParameter(other.bsize);
     }
 
     @SetJIPipeDocumentation(name = "Niter dynamics (elongated objects)", description = "Number of iterations for dynamics for mask creation, default of 0 means it is proportional to diameter, set to a larger number like 2000 for very long ROIs")
@@ -120,5 +123,16 @@ public class Cellpose3SegmentationTweaksSettings extends AbstractJIPipeParameter
     @JIPipeParameter("resample")
     public void setResample(boolean resample) {
         this.resample = resample;
+    }
+
+    @SetJIPipeDocumentation(name = "Tile size (DINO models only)", description = "Block size for tiles when using DINO models (cpdino, cpdino-vitb). Default is 384. SAM models use a fixed tile size of 256 and this parameter is ignored.")
+    @JIPipeParameter(value = "bsize", uiOrder = 50)
+    public OptionalIntegerParameter getBsize() {
+        return bsize;
+    }
+
+    @JIPipeParameter("bsize")
+    public void setBsize(OptionalIntegerParameter bsize) {
+        this.bsize = bsize;
     }
 }

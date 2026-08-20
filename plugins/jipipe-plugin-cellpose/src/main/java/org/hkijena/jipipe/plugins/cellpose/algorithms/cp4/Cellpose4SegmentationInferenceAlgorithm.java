@@ -37,8 +37,6 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -63,7 +61,6 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.plugins.python.utils.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -121,7 +118,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     private boolean cleanUpAfterwards = true;
     private boolean suppressLogs = false;
     private boolean enableMultiChannel = true;
-    private OptionalIntegerParameter bsize = new OptionalIntegerParameter(true, 384);
 
 //    private OptionalDataAnnotationNameParameter sizeModelAnnotationName = new OptionalDataAnnotationNameParameter("Size model", true);
 
@@ -154,7 +150,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
         this.enable3D = other.enable3D;
         this.enableMultiChannel = other.enableMultiChannel;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
-        this.bsize = new OptionalIntegerParameter(other.bsize);
 
         updateOutputSlots();
 
@@ -497,9 +492,9 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
 
         // Tile size for DINO models
         if (modelNameOrPath != null && (modelNameOrPath.equals("cpdino") || modelNameOrPath.equals("cpdino-vitb"))) {
-            if (bsize.isEnabled()) {
+            if (segmentationTweaksSettings.getBsize().isEnabled()) {
                 arguments.add("--bsize");
-                arguments.add(String.valueOf(bsize.getContent()));
+                arguments.add(String.valueOf(segmentationTweaksSettings.getBsize().getContent()));
             }
         }
 
@@ -617,29 +612,6 @@ public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterati
     @JIPipeParameter(value = "gpu-parameters", collapsed = true, icon = "apps/cellpose.png")
     public Cellpose2GPUSettings getGpuSettings() {
         return gpuSettings;
-    }
-
-    @SetJIPipeDocumentation(name = "Tile size (DINO models only)", description = "Block size for tiles when using DINO models (cpdino, cpdino-vitb). Default is 384. SAM models use a fixed tile size of 256 and this parameter is ignored.")
-    @JIPipeParameter(value = "bsize", uiOrder = 50)
-    public OptionalIntegerParameter getBsize() {
-        return bsize;
-    }
-
-    @JIPipeParameter("bsize")
-    public void setBsize(OptionalIntegerParameter bsize) {
-        this.bsize = bsize;
-    }
-
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if ("bsize".equals(access.getKey())) {
-            return isDinoModelSelected();
-        }
-        return super.isParameterUIVisible(tree, access);
-    }
-
-    private boolean isDinoModelSelected() {
-        return true;
     }
 
     private void updateOutputSlots() {
