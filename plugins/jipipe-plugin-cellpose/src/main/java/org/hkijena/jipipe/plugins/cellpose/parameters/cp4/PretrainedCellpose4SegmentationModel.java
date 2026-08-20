@@ -20,6 +20,9 @@ import org.hkijena.jipipe.plugins.parameters.api.enums.EnumParameterSettings;
 @AddJIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
 @EnumParameterSettings(itemInfo = PretrainedCellposeModelEnumItemInfo.class)
 public enum PretrainedCellpose4SegmentationModel {
+    cpsam_v2("cpsam_v2", "Cellpose SAM v2"),
+    cpdino("cpdino", "Cellpose DINO (ViT-L)"),
+    cpdino_vitb("cpdino-vitb", "Cellpose DINO (ViT-B)"),
     cpsam("cpsam", "Cellpose SAM"),
     None(null, "None (only training)");
 
