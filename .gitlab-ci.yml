@@ -472,11 +472,15 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney_with_user_dirs.jip
     - |
-      sleep 10
+      sleep 30
       echo "=== Container status ==="
       docker ps -a --filter name=jipipe-verify
       echo "=== Container logs ==="
       docker logs jipipe-verify 2>&1 || true
+      echo "=== Processes inside container ==="
+      docker exec jipipe-verify ps aux 2>&1 || true
+      echo "=== Listening ports inside container ==="
+      docker exec jipipe-verify ss -tlnp 2>&1 || docker exec jipipe-verify netstat -tlnp 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
@@ -496,11 +500,15 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney.jip
     - |
-      sleep 10
+      sleep 30
       echo "=== Container 2 status ==="
       docker ps -a --filter name=jipipe-verify-2
       echo "=== Container 2 logs ==="
       docker logs jipipe-verify-2 2>&1 || true
+      echo "=== Processes inside container 2 ==="
+      docker exec jipipe-verify-2 ps aux 2>&1 || true
+      echo "=== Listening ports inside container 2 ==="
+      docker exec jipipe-verify-2 ss -tlnp 2>&1 || docker exec jipipe-verify-2 netstat -tlnp 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
