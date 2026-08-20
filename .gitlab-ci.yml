@@ -472,7 +472,11 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney_with_user_dirs.jip
     - |
-      sleep 5
+      sleep 10
+      echo "=== Container status ==="
+      docker ps -a --filter name=jipipe-verify
+      echo "=== Container logs ==="
+      docker logs jipipe-verify 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify)
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
@@ -492,7 +496,11 @@ feature_branch_verify_ro_crate:
         --instrumentation 8780 \
         /test-data/kidney.jip
     - |
-      sleep 5
+      sleep 10
+      echo "=== Container 2 status ==="
+      docker ps -a --filter name=jipipe-verify-2
+      echo "=== Container 2 logs ==="
+      docker logs jipipe-verify-2 2>&1 || true
       CONTAINER_IP=$(docker inspect -f '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' jipipe-verify-2)
       python3 dist/docker/verify_ro_crate.py /output/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip "ws://${CONTAINER_IP}:8780/"
     - |
