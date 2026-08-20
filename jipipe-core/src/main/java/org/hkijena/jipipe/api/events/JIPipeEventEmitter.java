@@ -18,8 +18,6 @@ import org.scijava.Disposable;
 
 import java.lang.ref.WeakReference;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.BiConsumer;
 
@@ -33,9 +31,6 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
 
     private final StampedLock stampedLock = new StampedLock();
     private final List<Subscriber<Event, Listener>> subscribers = new ArrayList<>();
-    private final Map<Listener, Subscriber<Event, Listener>> listenerSubscriberMap = new IdentityHashMap<>();
-    private final AtomicInteger emittingDepth = new AtomicInteger(0);
-    private final AtomicBoolean copyOnWriteActive = new AtomicBoolean();
     private boolean disposed = false;
 
     private void addSubscriber(Subscriber<Event, Listener> subscriber) {
@@ -45,18 +40,6 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         long stamp = stampedLock.writeLock();
         try {
             subscribers.add(subscriber);
-        } finally {
-            stampedLock.unlock(stamp);
-        }
-    }
-
-    private void removeSubscriber(Subscriber<Event, Listener> subscriber) {
-        if (disposed) {
-            throw new UnsupportedOperationException("Event emitter is disposed!");
-        }
-        long stamp = stampedLock.writeLock();
-        try {
-            subscribers.remove(subscriber);
         } finally {
             stampedLock.unlock(stamp);
         }
@@ -83,9 +66,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
     }
 
     public void unsubscribe(Listener listener) {
-        Subscriber<Event, Listener> subscriber = listenerSubscriberMap.getOrDefault(listener, null);
-        if (subscriber != null) {
-            removeSubscriber(subscriber);
+        long stamp = stampedLock.writeLock();
+        try {
+            subscribers.removeIf(s -> s.matchesListener(listener));
+        } finally {
+            stampedLock.unlock(stamp);
         }
     }
 
@@ -138,7 +123,6 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
     public void dispose() {
         disposed = true;
         subscribers.clear();
-        listenerSubscriberMap.clear();
     }
 
     public interface Subscriber<Event extends JIPipeEvent, Listener> {
@@ -147,6 +131,8 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         boolean isPresent();
 
         boolean requestGCImmediatelyAfterCall();
+
+        boolean matchesListener(Listener listener);
     }
 
     public static class StrongObjectSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
@@ -169,6 +155,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         @Override
         public boolean requestGCImmediatelyAfterCall() {
             return false;
+        }
+
+        @Override
+        public boolean matchesListener(Listener listener) {
+            return this.listener == listener;
         }
     }
 
@@ -196,6 +187,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         public boolean requestGCImmediatelyAfterCall() {
             return false;
         }
+
+        @Override
+        public boolean matchesListener(Listener listener) {
+            return this.listener.get() == listener;
+        }
     }
 
     public static class LambdaSubscriber<Event extends JIPipeEvent, Listener> implements Subscriber<Event, Listener> {
@@ -222,6 +218,11 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         @Override
         public boolean requestGCImmediatelyAfterCall() {
             return once;
+        }
+
+        @Override
+        public boolean matchesListener(Listener listener) {
+            return false;
         }
     }
 }
