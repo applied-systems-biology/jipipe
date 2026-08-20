@@ -64,6 +64,17 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource {
     public Path downloadArchive(JIPipeArtifactOperationContext context, Path tmpPath, JIPipeProgressInfo progressInfo) {
         OrasEnvironment orasEnvironment = JIPipe.getArtifacts().getOrasEnvironment(context, progressInfo.resolveAndLog("Configure ORAS"));
 
+        // Clear stale credentials for the registry host to allow anonymous access to public packages
+        String registryHost = extractRegistryHost(ociReference);
+        if (registryHost != null) {
+            progressInfo.log("Clearing stale ORAS credentials for " + registryHost + " ...");
+            orasEnvironment.runExecutable(List.of("logout", registryHost),
+                    Collections.emptyMap(),
+                    false,
+                    Collections.emptyList(),
+                    progressInfo.resolveAndLog("ORAS logout"));
+        }
+
         // Query the OCI manifest to get the total size
         progressInfo.log("Querying ORAS manifest " + ociReference + " ...");
         Path manifestFile = tmpPath.resolve("manifest.json");
@@ -95,6 +106,21 @@ public class JIPipeOrasRemoteArtifactSource extends JIPipeRemoteArtifactSource {
 
     public void setOciReference(String ociReference) {
         this.ociReference = ociReference;
+    }
+
+    private static String extractRegistryHost(String ociReference) {
+        if (ociReference == null) {
+            return null;
+        }
+        int slashIndex = ociReference.indexOf('/');
+        if (slashIndex <= 0) {
+            return null;
+        }
+        String host = ociReference.substring(0, slashIndex);
+        if (host.contains(".") || host.contains(":") || host.equals("localhost")) {
+            return host;
+        }
+        return null;
     }
 
     public static class DownloadProgressSidecarTask extends PeriodicProcessSidecarTask {
