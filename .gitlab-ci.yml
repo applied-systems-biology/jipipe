@@ -327,14 +327,17 @@ verify_ro_crate:
     - |
       pip install --break-system-packages cwltool
     - |
-      docker run --rm \
+      docker run --name jipipe-verify \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
-        -v /tmp/jipipe-output:/output \
         appsysbiohkijena/jipipe:latest \
         create-ro-crate \
         --skip-diagram \
         --project /test-data/kidney_with_user_dirs.jip \
-        --output /output/kidney.crate.zip
+        --output /tmp/kidney.crate.zip
+    - |
+      mkdir -p /tmp/jipipe-output
+      docker cp jipipe-verify:/tmp/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip
+      docker rm jipipe-verify
     - |
       mkdir -p /tmp/crate-extracted
       python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output/kidney.crate.zip').extractall('/tmp/crate-extracted')"
@@ -343,14 +346,17 @@ verify_ro_crate:
     - |
       echo "RO-Crate validation passed for kidney_with_user_dirs.jip"
     - |
-      docker run --rm \
+      docker run --name jipipe-verify-2 \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
-        -v /tmp/jipipe-output-2:/output \
         appsysbiohkijena/jipipe:latest \
         create-ro-crate \
         --skip-diagram \
         --project /test-data/kidney.jip \
-        --output /output/kidney.crate.zip
+        --output /tmp/kidney.crate.zip
+    - |
+      mkdir -p /tmp/jipipe-output-2
+      docker cp jipipe-verify-2:/tmp/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip
+      docker rm jipipe-verify-2
     - |
       rm -rf /tmp/crate-extracted
       mkdir -p /tmp/crate-extracted
@@ -359,6 +365,9 @@ verify_ro_crate:
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney.jip"
+  after_script:
+    - docker rm jipipe-verify || true
+    - docker rm jipipe-verify-2 || true
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
@@ -451,14 +460,17 @@ feature_branch_verify_ro_crate:
         -f dist/docker/Dockerfile \
         .
     - |
-      docker run --rm \
+      docker run --name jipipe-verify \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
-        -v /tmp/jipipe-output:/output \
         jipipe-verify:latest \
         create-ro-crate \
         --skip-diagram \
         --project /test-data/kidney_with_user_dirs.jip \
-        --output /output/kidney.crate.zip
+        --output /tmp/kidney.crate.zip
+    - |
+      mkdir -p /tmp/jipipe-output
+      docker cp jipipe-verify:/tmp/kidney.crate.zip /tmp/jipipe-output/kidney.crate.zip
+      docker rm jipipe-verify
     - |
       mkdir -p /tmp/crate-extracted
       python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output/kidney.crate.zip').extractall('/tmp/crate-extracted')"
@@ -467,14 +479,17 @@ feature_branch_verify_ro_crate:
     - |
       echo "RO-Crate validation passed for kidney_with_user_dirs.jip"
     - |
-      docker run --rm \
+      docker run --name jipipe-verify-2 \
         -v "$(pwd)/dist/docker/test-data:/test-data" \
-        -v /tmp/jipipe-output-2:/output \
         jipipe-verify:latest \
         create-ro-crate \
         --skip-diagram \
         --project /test-data/kidney.jip \
-        --output /output/kidney.crate.zip
+        --output /tmp/kidney.crate.zip
+    - |
+      mkdir -p /tmp/jipipe-output-2
+      docker cp jipipe-verify-2:/tmp/kidney.crate.zip /tmp/jipipe-output-2/kidney.crate.zip
+      docker rm jipipe-verify-2
     - |
       rm -rf /tmp/crate-extracted
       mkdir -p /tmp/crate-extracted
@@ -483,5 +498,8 @@ feature_branch_verify_ro_crate:
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
       echo "RO-Crate validation passed for kidney.jip"
+  after_script:
+    - docker rm jipipe-verify || true
+    - docker rm jipipe-verify-2 || true
   rules:
     - if: $CI_COMMIT_BRANCH != "master"
