@@ -34,6 +34,7 @@ public class CreateROCrateCommand {
         Path outputFile = null;
         boolean verbose = false;
         boolean fastInit = false;
+        boolean skipDiagram = false;
         Path overrideProfileDir = null;
         Map<String, JIPipeProjectUserPaths.Role> userPathOverrides = new HashMap<>();
 
@@ -45,6 +46,9 @@ public class CreateROCrateCommand {
                 success = true;
             } else if (arg.equals("--verbose")) {
                 verbose = true;
+                success = true;
+            } else if (arg.equals("--skip-diagram")) {
+                skipDiagram = true;
                 success = true;
             }
             if (success) {
@@ -116,6 +120,7 @@ public class CreateROCrateCommand {
 
         ROCrateDockerSettings dockerSettings = ROCrateApplicationSettings.getInstance().toDockerSettings();
         CreateROCrateRun run = new CreateROCrateRun(project, projectFile, outputFile, userPathOverrides, dockerSettings);
+        run.setSkipDiagram(skipDiagram);
         run.setProgressInfo(JIPipeProgressInfo.STDOUT.resolveAndLog("Create RO-Crate"));
         run.run();
 

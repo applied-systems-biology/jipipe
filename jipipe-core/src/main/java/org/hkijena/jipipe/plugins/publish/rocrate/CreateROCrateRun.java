@@ -57,6 +57,7 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
     private final Path roCrateFile;
     private final Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths;
     private final ROCrateDockerSettings dockerSettings;
+    private boolean skipDiagram = false;
 
     public CreateROCrateRun(JIPipeProject project, Path projectFile, Path roCrateFile,
                             Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths,
@@ -72,6 +73,14 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
                             Map<String, JIPipeProjectUserPaths.Role> archivedProjectUserPaths) {
         this(project, projectFile, roCrateFile, archivedProjectUserPaths,
                 ROCrateApplicationSettings.getInstance().toDockerSettings());
+    }
+
+    public boolean isSkipDiagram() {
+        return skipDiagram;
+    }
+
+    public void setSkipDiagram(boolean skipDiagram) {
+        this.skipDiagram = skipDiagram;
     }
 
     @Override
@@ -101,7 +110,9 @@ public class CreateROCrateRun extends DefaultJIPipeRunnable {
         addROCrateCwlWorkflow(builder, tmpPath);
         addROCrateInputsDir(builder, tmpPath);
         createReadme(tmpPath, builder);
-        createDiagram(tmpPath, builder);
+        if (!skipDiagram) {
+            createDiagram(tmpPath, builder);
+        }
 
         // Ensure that the input directory exists
         if (!Files.isDirectory(tmpPath.resolve("inputs"))) {

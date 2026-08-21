@@ -332,11 +332,12 @@ verify_ro_crate:
         -v /tmp/jipipe-output:/output \
         appsysbiohkijena/jipipe:latest \
         create-ro-crate \
+        --skip-diagram \
         --project /test-data/kidney_with_user_dirs.jip \
         --output /output/kidney.crate.zip
     - |
       mkdir -p /tmp/crate-extracted
-      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output/kidney.crate.zip
+      python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output/kidney.crate.zip').extractall('/tmp/crate-extracted')"
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
@@ -347,12 +348,13 @@ verify_ro_crate:
         -v /tmp/jipipe-output-2:/output \
         appsysbiohkijena/jipipe:latest \
         create-ro-crate \
+        --skip-diagram \
         --project /test-data/kidney.jip \
         --output /output/kidney.crate.zip
     - |
       rm -rf /tmp/crate-extracted
       mkdir -p /tmp/crate-extracted
-      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output-2/kidney.crate.zip
+      python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output-2/kidney.crate.zip').extractall('/tmp/crate-extracted')"
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
@@ -454,11 +456,12 @@ feature_branch_verify_ro_crate:
         -v /tmp/jipipe-output:/output \
         jipipe-verify:latest \
         create-ro-crate \
+        --skip-diagram \
         --project /test-data/kidney_with_user_dirs.jip \
         --output /output/kidney.crate.zip
     - |
       mkdir -p /tmp/crate-extracted
-      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output/kidney.crate.zip
+      python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output/kidney.crate.zip').extractall('/tmp/crate-extracted')"
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
@@ -469,12 +472,13 @@ feature_branch_verify_ro_crate:
         -v /tmp/jipipe-output-2:/output \
         jipipe-verify:latest \
         create-ro-crate \
+        --skip-diagram \
         --project /test-data/kidney.jip \
         --output /output/kidney.crate.zip
     - |
       rm -rf /tmp/crate-extracted
       mkdir -p /tmp/crate-extracted
-      cd /tmp/crate-extracted && unzip -o /tmp/jipipe-output-2/kidney.crate.zip
+      python3 -c "import zipfile; zipfile.ZipFile('/tmp/jipipe-output-2/kidney.crate.zip').extractall('/tmp/crate-extracted')"
     - |
       cwltool --validate /tmp/crate-extracted/workflow.cwl
     - |
