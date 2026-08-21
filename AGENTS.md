@@ -191,3 +191,17 @@ All messages are JSON objects with a `"type"` field. Clients send commands; the 
 3. Delegate business logic to `InstrumentationAPI` static methods so it's reusable by the AI agent
 4. Fire events via `ctx.getEventBus().publish(...)` so connected clients are notified of changes
 5. Use `ctx.getGraph()` (not `ctx.getProject().getGraph()`) to respect the graph override mechanism used by the AI agent's stage system
+
+## Distribution Build Scripts
+
+The ZIP build scripts (`dist/zip/build.sh`, `dist/zip/build-release.sh`, `dist/zip/build-no-dependencies.sh`) are **generated files** — do not edit them directly.
+
+### How to add or update an external dependency
+
+1. Add the dependency to [`dist/dist-info.json`](dist/dist-info.json) under the `"dependencies"` object, mapping the jar filename to its Maven Central download URL
+2. Run `python3 dist/generate-dist-scripts.py` (from the `dist/` directory) to regenerate all build scripts
+3. If the dependency is also needed in the `jipipe-distribution-files` repo, add the jar to `scripts/plugin-dependencies/` in that repo
+
+### Key files
+- **[`dist/dist-info.json`](dist/dist-info.json)** - Source of truth for external dependencies, contrib modules, and JIPipe modules
+- **[`dist/generate-dist-scripts.py`](dist/generate-dist-scripts.py)** - Generator script that produces the build shell scripts from `dist-info.json`

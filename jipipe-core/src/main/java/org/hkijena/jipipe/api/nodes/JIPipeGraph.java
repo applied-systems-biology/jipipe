@@ -1031,7 +1031,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     }
                 }
             } catch (Throwable e) {
-                e.printStackTrace();
+                System.err.println("Unable to load additional metadata '" + metadataEntry.getKey() + "' (type '" + metadataEntry.getValue().path("jipipe:type").asText("?") + "'): " + e.getMessage());
             }
         }
     }

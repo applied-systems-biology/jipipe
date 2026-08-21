@@ -1222,7 +1222,7 @@ public class JIPipeProject implements JIPipeValidatable {
 //                                    .report(report);
                         }
                     } catch (Throwable e) {
-                        e.printStackTrace();
+                        progressInfo.log("Unable to load settings sheet '" + entry.getKey() + "': " + e.getMessage());
 //                        new UnspecifiedValidationReportContext().error()
 //                                .title("Unable to load settings")
 //                                .explanation("The project settings for the sheet with the ID '" + entry.getKey() + "' could not be loaded.")
@@ -1255,7 +1255,7 @@ public class JIPipeProject implements JIPipeValidatable {
                         }
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    progressInfo.log("Unable to load additional metadata '" + metadataEntry.getKey() + "' (type '" + metadataEntry.getValue().path("jipipe:type").asText("?") + "'): " + e.getMessage());
                 }
             }
 

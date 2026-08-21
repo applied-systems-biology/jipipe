@@ -34,6 +34,9 @@ public class JIPipeLauncher {
             } else if (argsList.contains("run")) {
                 preprocessArgsListForSubCommand(argsList, "run");
                 HeadlessRunCommand.doRunPipeline(argsList);
+            } else if (argsList.contains("create-ro-crate")) {
+                preprocessArgsListForSubCommand(argsList, "create-ro-crate");
+                CreateROCrateCommand.doCreateROCrate(argsList);
             } else if (argsList.contains("render")) {
                 preprocessArgsListForSubCommand(argsList, "render");
                 RenderPipelineCommand.doRenderPipeline(argsList);

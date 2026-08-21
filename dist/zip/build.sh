@@ -199,6 +199,10 @@ if [ ! -e "./dependencies/onnxruntime-1.25.1.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/onnxruntime-1.25.1.jar https://repo1.maven.org/maven2/com/microsoft/onnxruntime/onnxruntime/1.25.1/onnxruntime-1.25.1.jar || exit 1
 fi
+if [ ! -e "./dependencies/Java-WebSocket-1.5.7.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/Java-WebSocket-1.5.7.jar https://repo1.maven.org/maven2/org/java-websocket/Java-WebSocket/1.5.7/Java-WebSocket-1.5.7.jar || exit 1
+fi
 if [ ! -e "./dependencies/LICENSE_Javaluator.html" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_Javaluator.html https://opensource.org/licenses/lgpl-3.0.html || exit 1

@@ -1,7 +1,6 @@
 FROM ubuntu:24.04
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    xvfb \
     libxrender1 \
     libxtst6 \
     libxi6 \
@@ -38,4 +37,4 @@ RUN mkdir -p /opt/jipipe && \
     rm /tmp/jipipe.tar.gz && \
     chmod +x /opt/jipipe/jipipe-linux-x64
 
-ENTRYPOINT ["xvfb-run", "-a", "/opt/jipipe/jipipe-linux-x64"]
+ENTRYPOINT ["/opt/jipipe/jipipe-linux-x64"]
