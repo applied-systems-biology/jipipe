@@ -172,6 +172,14 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
                 Path parent = path.getParent();
                 String fileName = path.getFileName() != null ? path.getFileName().toString() : "";
                 
+                Path root = path.getRoot();
+                if(root != null) {
+                    Entry rootEntry = new Entry();
+                    rootEntry.sourceType = EntrySourceType.Custom;
+                    rootEntry.content = normalizeRootString(root);
+                    newDirectoryEntries.add(rootEntry);
+                }
+                
                 if(parent != null) {
                     for(Path component : parent) {
                         Entry entry = new Entry();
@@ -741,8 +749,15 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
         Path parent = p.getParent();
         String fileName = p.getFileName() != null ? p.getFileName().toString() : "";
 
+        Path root = p.getRoot();
+        if(root != null) {
+            Entry rootEntry = new Entry();
+            rootEntry.sourceType = EntrySourceType.Custom;
+            rootEntry.content = normalizeRootString(root);
+            newDirectoryEntries.add(rootEntry);
+        }
+
         if (parent != null) {
-            // Add each parent component as a Custom entry
             for (Path component : parent) {
                 Entry entry = new Entry();
                 entry.sourceType = EntrySourceType.Custom;
@@ -992,6 +1007,14 @@ public class DataExportExpressionParameterEditorPathChooserUI extends JDialog {
             return JIPipeExpressionEvaluator.unescapeString(quotedString);
         }
         return null;
+    }
+
+    private static String normalizeRootString(Path root) {
+        String rootStr = root.toString().replace('\\', '/');
+        while (rootStr.length() > 1 && rootStr.endsWith("/")) {
+            rootStr = rootStr.substring(0, rootStr.length() - 1);
+        }
+        return rootStr;
     }
 
     private static class Entry {
