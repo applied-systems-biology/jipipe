@@ -270,6 +270,7 @@ upload_to_package_registry:
 
 upload_to_github_prerelease:
   stage: publish
+  retry: 1
   needs:
     - job: distribution_package
       artifacts: true
