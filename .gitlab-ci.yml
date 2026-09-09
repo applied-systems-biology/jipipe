@@ -288,7 +288,11 @@ sync_github_repo:
     - git remote add github "https://x-access-token:${GH_TOKEN}@github.com/applied-systems-biology/jipipe.git"
     - |
       git fetch --tags origin
-    - git push --force github master
+    - |
+      # GitLab CI checks out a detached HEAD (GIT_DEPTH=1, no local 'master'
+      # branch exists). Push the checked-out commit (master tip) to GitHub's
+      # master ref explicitly via the HEAD:master refspec.
+      git push --force github HEAD:master
     - git push --force --tags github
     - echo "Synced master and tags to GitHub"
   rules:
