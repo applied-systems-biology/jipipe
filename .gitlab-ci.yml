@@ -268,6 +268,129 @@ upload_to_package_registry:
     paths:
       - urls-*.txt
 
+upload_to_github_prerelease:
+  stage: publish
+  retry: 1
+  needs:
+    - job: distribution_package
+      artifacts: true
+  image: alpine:3.19
+  before_script:
+    - apk add --no-cache github-cli bash curl jq
+  script:
+    - set -euo pipefail
+    - |
+      OUTDIR="$(ls -d jipipe-distribution-files/*-snapshot${CI_PIPELINE_IID} | head -n 1)"
+      test -n "$OUTDIR" || {
+        echo "Snapshot outdir not found"
+        ls -lah jipipe-distribution-files || true
+        exit 1
+      }
+    - |
+      ONE="$(
+        ls "$OUTDIR"/JIPipe-*-snapshot${CI_PIPELINE_IID}.zip 2>/dev/null \
+          | grep -v Prepackaged \
+          | head -n 1 \
+          || true
+      )"
+      if [ -z "$ONE" ]; then
+        echo "Could not find the plugins zip JIPipe-*-snapshot${CI_PIPELINE_IID}.zip to infer version"
+        ls -lah "$OUTDIR"
+        exit 1
+      fi
+    - |
+      BASE="$(basename "$ONE")"
+      BASE="${BASE#JIPipe-}"
+      VERSION_BASE="${BASE%-snapshot${CI_PIPELINE_IID}.zip}"
+      VERSION="${VERSION_BASE}-snapshot${CI_PIPELINE_IID}"
+      SNAPSHOT_SUFFIX="${VERSION#${VERSION_BASE}-}"
+      echo "Publishing GitHub prerelease for $VERSION"
+    - |
+      test -n "${GH_TOKEN:-}" || {
+        echo "GH_TOKEN is not set. Create a masked CI/CD variable containing a GitHub fine-grained PAT with 'Contents: Read and write' on applied-systems-biology/jipipe."
+        exit 1
+      }
+    - |
+      FILES="$(
+        find "$OUTDIR" -maxdepth 1 -type f -size +0c \( \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Installer-Win64.exe" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-Win64.zip" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-macOS.zip" -o \
+          -name "JIPipe-*-${SNAPSHOT_SUFFIX}-Prepackaged-Linux64.tar.gz" -o \
+          -name "JIPipe-${VERSION}.zip" \
+        \) | sort
+      )"
+      if [ -z "$FILES" ]; then
+        echo "No matching package files found"
+        echo "Expected files for version: $VERSION"
+        ls -lah "$OUTDIR"
+        exit 1
+      fi
+      echo "Files selected for GitHub upload:"
+      echo "$FILES" | sed 's/^/  - /'
+    - |
+      # Delete-and-recreate for idempotent re-runs
+      if gh release view "$VERSION" --repo applied-systems-biology/jipipe >/dev/null 2>&1; then
+        echo "Existing release $VERSION found; deleting before recreate"
+        gh release delete "$VERSION" --repo applied-systems-biology/jipipe --yes
+      fi
+    - |
+      # Build the GitLab package-registry mirror URLs directly (deterministic
+      # generic-package format) rather than reading the urls-*.txt artifact,
+      # because this job runs in parallel with upload_to_package_registry and
+      # that file may not exist yet.
+      GENERIC_BASE="$CI_API_V4_URL/projects/$CI_PROJECT_ID/packages/generic/jipipe/$VERSION"
+      NOTES="JIPipe $VERSION snapshot build.
+
+      GitLab package registry mirror (may be throttled to ~2 MB/s):
+      "
+      while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        name="$(basename "$f")"
+        NOTES="$NOTES
+      - $GENERIC_BASE/$name"
+      done < <(echo "$FILES")
+      NOTES="$NOTES
+      "
+    - |
+      gh release create "$VERSION" \
+        --repo applied-systems-biology/jipipe \
+        --prerelease \
+        --title "JIPipe $VERSION" \
+        --notes "$NOTES" \
+        $FILES
+    - |
+      echo "Verifying uploaded GitHub release assets ..."
+      expected="$FILES"
+      count=0
+      while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        count=$((count+1))
+      done < <(echo "$expected")
+      found="$(
+        gh release view "$VERSION" --repo applied-systems-biology/jipipe \
+          --json assets --jq '.assets[].name' | sort
+      )"
+      ok=1
+      while IFS= read -r f; do
+        [ -n "$f" ] || continue
+        name="$(basename "$f")"
+        if ! echo "$found" | grep -qx "$name"; then
+          echo "Missing GitHub release asset: $name"
+          ok=0
+        fi
+      done < <(echo "$expected")
+      if [ "$ok" != "1" ]; then
+        echo "Asset verification failed."
+        echo "Assets on GitHub:"
+        echo "$found"
+        exit 1
+      fi
+      echo "All $count expected assets verified on the GitHub prerelease."
+    - 'echo "Done. GitHub prerelease created: https://github.com/applied-systems-biology/jipipe/releases/tag/$VERSION"'
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 docker_build_push:
   stage: publish
   needs:
