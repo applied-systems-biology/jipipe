@@ -9,12 +9,12 @@ registry (`asb-git.hki-jena.de`). IT restrictions throttle download speed
 from that GitLab instance to ~2 MB/s, which is too slow for large package
 archives (Windows installers, prepackaged zips/tar.gz, plugins zip). We want
 to also publish each master-branch snapshot as a **GitHub prerelease** on
-`appsysbio/jipipe` so users can download fast.
+`applied-systems-biology/jipipe` so users can download fast.
 
 ## Goal
 
 For every `master` pipeline that builds a snapshot distribution, create one
-GitHub **prerelease** on `appsysbio/jipipe`, tagged with the snapshot version,
+GitHub **prerelease** on `applied-systems-biology/jipipe`, tagged with the snapshot version,
 uploading **all** package assets, so release downloads bypass the GitLab
 throttle.
 
@@ -82,7 +82,7 @@ Release identity:
 - **Body:** auto-generated summary plus the GitLab package-registry download
   URLs (from `urls-*.txt`) as a fallback for users with restricted GitLab
   access.
-- **Repo:** `appsysbio/jipipe`.
+- **Repo:** `applied-systems-biology/jipipe`.
 
 ### 2. Job implementation
 
@@ -105,7 +105,7 @@ Script steps:
 6. Create + upload:
    ```
    gh release create "<VERSION>" \
-     --repo appsysbio/jipipe \
+     --repo applied-systems-biology/jipipe \
      --prerelease \
      --title "JIPipe <VERSION>" \
      --notes "<body>" \
@@ -127,11 +127,11 @@ New CI/CD variable (GitLab → Settings → CI/CD → Variables, masked):
 
 | Name | Masked | Value |
 |------|--------|-------|
-| `GH_TOKEN` | yes | GitHub **fine-grained** PAT with `Contents: Read and write` on `appsysbio/jipipe` only |
+| `GH_TOKEN` | yes | GitHub **fine-grained** PAT with `Contents: Read and write` on `applied-systems-biology/jipipe` only |
 
 Token guidance:
 
-- Prefer a **fine-grained** PAT scoped to only the `appsysbio/jipipe`
+- Prefer a **fine-grained** PAT scoped to only the `applied-systems-biology/jipipe`
   repository with only `Contents: Read and write` — enough for
   `GET /repos/.../releases`, `POST /repos/.../releases`, and asset upload.
 - Do not use a broad classic PAT.
@@ -167,7 +167,7 @@ Verification is intrinsic to the CI job (no JUnit applies to CI YAML):
   (Delete-and-recreate means a re-run recovers.)
 - Confirm the release is queryable after creation.
 - **Manual smoke test** on first master merge: inspect
-  `https://github.com/appsysbio/jipipe/releases` — confirm the "Pre-release"
+  `https://github.com/applied-systems-biology/jipipe/releases` — confirm the "Pre-release"
   badge, all 5 assets present and downloadable, and that download speed from
   GitHub exceeds the ~2 MB/s GitLab limit.
 
