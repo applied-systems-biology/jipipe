@@ -268,12 +268,39 @@ upload_to_package_registry:
     paths:
       - urls-*.txt
 
+sync_github_repo:
+  stage: publish
+  retry: 1
+  needs:
+    - job: distribution_package
+  image: alpine:3.19
+  before_script:
+    - apk add --no-cache git bash
+  script:
+    - set -euo pipefail
+    - |
+      test -n "${GH_TOKEN:-}" || {
+        echo "GH_TOKEN is not set. Create a masked CI/CD variable containing a GitHub fine-grained PAT with 'Contents: Read and write' on applied-systems-biology/jipipe."
+        exit 1
+      }
+    - git config user.name "JIPipe CI"
+    - git config user.email "ci@jipipe.hki-jena.de"
+    - git remote add github "https://x-access-token:${GH_TOKEN}@github.com/applied-systems-biology/jipipe.git"
+    - |
+      git fetch --tags origin
+    - git push --force github master
+    - git push --force --tags github
+    - echo "Synced master and tags to GitHub"
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 upload_to_github_prerelease:
   stage: publish
   retry: 1
   needs:
     - job: distribution_package
       artifacts: true
+    - job: sync_github_repo
   image: alpine:3.19
   before_script:
     - apk add --no-cache github-cli bash curl jq
