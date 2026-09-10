@@ -273,9 +273,14 @@ sync_github_repo:
   retry: 1
   needs:
     - job: distribution_package
+  variables:
+    # Full clone: a shallow (GIT_DEPTH=1) client cannot push master to a
+    # remote that does not already share its ancestry ("remote unpack
+    # failed: index-pack failed" - the pack would miss parent objects).
+    GIT_DEPTH: "0"
   image: alpine:3.19
   before_script:
-    - apk add --no-cache git bash
+    - apk add --no-cache git git-lfs bash
   script:
     - set -euo pipefail
     - |
@@ -283,18 +288,29 @@ sync_github_repo:
         echo "GH_TOKEN is not set. Create a masked CI/CD variable containing a GitHub fine-grained PAT with 'Contents: Read and write' on applied-systems-biology/jipipe."
         exit 1
       }
+    - git lfs install
     - git config user.name "JIPipe CI"
     - git config user.email "ci@jipipe.hki-jena.de"
     - git remote add github "https://x-access-token:${GH_TOKEN}@github.com/applied-systems-biology/jipipe.git"
     - |
+      # Defense in depth: if the runner reuses a previously shallow clone,
+      # unshallow it before pushing (a shallow client cannot push master to
+      # a remote that does not share its ancestry).
+      if [ -f .git/shallow ]; then
+        git fetch --unshallow origin
+      fi
       git fetch --tags origin
     - |
-      # GitLab CI checks out a detached HEAD (GIT_DEPTH=1, no local 'master'
-      # branch exists). Push the checked-out commit (master tip) to GitHub's
+      # GitLab CI checks out a detached HEAD (no local 'master' branch
+      # exists). Push the checked-out commit (master tip) to GitHub's
       # master ref explicitly via the HEAD:master refspec.
       git push --force github HEAD:master
     - git push --force --tags github
-    - echo "Synced master and tags to GitHub"
+    - |
+      # Push Git LFS objects so the mirror's 37 LFS files are real objects,
+      # not broken pointers.
+      git lfs push github --all
+    - echo "Synced master, tags and LFS objects to GitHub"
   rules:
     - if: $CI_COMMIT_BRANCH == "master"
 
