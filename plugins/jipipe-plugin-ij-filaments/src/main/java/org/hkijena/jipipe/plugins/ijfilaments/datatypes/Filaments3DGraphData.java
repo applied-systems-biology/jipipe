@@ -208,7 +208,7 @@ public class Filaments3DGraphData extends SimpleGraph<FilamentVertex, FilamentEd
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        try (OutputStream stream = storage.write("graph.json")) {
+        try (OutputStream stream = storage.write(StringUtils.orElse(name, "graph") + ".json")) {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(stream, this);
         } catch (IOException e) {
             throw new RuntimeException(e);
