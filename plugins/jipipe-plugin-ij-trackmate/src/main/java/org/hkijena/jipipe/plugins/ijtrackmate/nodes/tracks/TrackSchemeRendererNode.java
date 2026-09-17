@@ -38,7 +38,6 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
 
 @SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
@@ -57,26 +56,17 @@ public class TrackSchemeRendererNode extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         TrackCollectionData trackCollectionData = iterationStep.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
-        try {
-            TrackScheme[] buffer = new TrackScheme[1];
-            SwingUtilities.invokeAndWait(() -> {
+        SwingUtilities.invokeLater(() -> {
+            try {
                 TrackScheme trackScheme = new TrackScheme(trackCollectionData.getModel(), new SelectionModel(trackCollectionData.getModel()), new DisplaySettings());
                 trackScheme.render();
                 trackScheme.getGUI().setVisible(false);
-                buffer[0] = trackScheme;
-            });
-            Thread.sleep(500);
-            SwingUtilities.invokeAndWait(() -> {
-                TrackScheme trackScheme = buffer[0];
                 TrackSchemeGraphComponent graphComponent = (TrackSchemeGraphComponent) ReflectionUtils.getDeclaredFieldValue("graphComponent", trackScheme.getGUI());
-//                graphComponent.zoom(5);
-//                graphComponent.setSize(graphComponent.getHorizontalScrollBar().getMaximum(), graphComponent.getVerticalScrollBar().getMaximum());
                 BufferedImage image = mxCellRenderer.createBufferedImage(graphComponent.getGraph(), null, 1, Color.WHITE, graphComponent.isAntiAlias(), null, graphComponent.getCanvas());
-//                BufferedImage image1 = ScreenImage.createImage(graphComponent);
                 iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus("Track Scheme", image)), progressInfo);
-            });
-        } catch (InterruptedException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 }

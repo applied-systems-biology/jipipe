@@ -20,6 +20,7 @@ import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
@@ -37,6 +38,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
 
     public static final int ANIMATION_DELAY = 80;
     public static final double ANIMATION_SPEED = 0.05;
+    public static final int SEARCH_DEBOUNCE_DELAY = 150;
     private final JTextField textField = new JTextField();
     private final JPanel buttonPanel = new JPanel();
     private final Timer attentionAnimationTimer;
@@ -47,6 +49,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     private String[] searchStrings = new String[0];
     private double attentionAnimationStatus = 1;
     private boolean isProgrammaticFocusChange = false;
+    private StaticDebouncer searchDebouncer;
 
     public JIPipeDesktopSearchTextField() {
         this(null);
@@ -169,11 +172,14 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
      * @param listener the listener
      */
     public void addActionListener(ActionListener listener) {
+        searchDebouncer = new StaticDebouncer(SEARCH_DEBOUNCE_DELAY, () ->
+                listener.actionPerformed(new ActionEvent(this, 1, "search-text-changed")));
+
         textField.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
                 updateSearchStrings();
-                listener.actionPerformed(new ActionEvent(this, 1, "search-text-changed"));
+                searchDebouncer.debounce();
             }
         });
 

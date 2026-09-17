@@ -208,6 +208,7 @@ public abstract class JIPipeEventEmitter<Event extends JIPipeEvent, Listener> im
         @Override
         public void call(JIPipeEventEmitter<Event, Listener> emitter, Event event) {
             function.accept(emitter, event);
+            triggered = true;
         }
 
         @Override

@@ -29,7 +29,6 @@ import java.awt.image.BufferedImage;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -217,22 +216,19 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                 continue;
             int trueWidth = Math.max(component.getWidth(), size.width);
             int trueHeight = Math.max(component.getHeight(), size.height);
-            try {
-                SwingUtilities.invokeAndWait(() -> {
-                    component.setSize(trueWidth, trueHeight);
-                    BufferedImage image = new BufferedImage(trueWidth, trueHeight, BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D g = (Graphics2D) image.getGraphics();
-                    component.print(g);
-                    try (OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
-                        ImageIO.write(image, "PNG", stream);
-                        metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Paths.get(size.width + "x" + size.height + ".png"), new ArrayList<>()));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-            } catch (InterruptedException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            final Dimension sizeFinal = size;
+            SwingUtilities.invokeLater(() -> {
+                component.setSize(trueWidth, trueHeight);
+                BufferedImage image = new BufferedImage(trueWidth, trueHeight, BufferedImage.TYPE_INT_ARGB);
+                Graphics2D g = (Graphics2D) image.getGraphics();
+                component.print(g);
+                try (OutputStream stream = storage.write(sizeFinal.width + "x" + sizeFinal.height + ".png")) {
+                    ImageIO.write(image, "PNG", stream);
+                    metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(sizeFinal.width + "x" + sizeFinal.height, sizeFinal, Paths.get(sizeFinal.width + "x" + sizeFinal.height + ".png"), new ArrayList<>()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
         }
         if (!metadata.getThumbnails().isEmpty()) {
             storage.writeJSON(Paths.get("thumbnails.json"), metadata);

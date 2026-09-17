@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color.ImagePlus2D
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.InvocationTargetException;
+import java.util.concurrent.CountDownLatch;
 
 @SetJIPipeDocumentation(name = "Data to preview", description = "Converts any data into preview image. Does not generate a result if no previews are supported.")
 @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
@@ -60,8 +60,9 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         JIPipeData data = iterationStep.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
         Component preview = data.createThumbnail(previewWidth, previewHeight, progressInfo).renderToComponent(previewWidth, previewHeight);
         if (preview != null) {
-            try {
-                SwingUtilities.invokeAndWait(() -> {
+            CountDownLatch latch = new CountDownLatch(1);
+            SwingUtilities.invokeLater(() -> {
+                try {
                     preview.setSize(previewWidth, previewHeight);
                     BufferedImage image = new BufferedImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = (Graphics2D) image.getGraphics();
@@ -69,9 +70,14 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     g.fillRect(0, 0, previewWidth, previewHeight);
                     preview.print(g);
                     iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Preview of " + data, image)), progressInfo);
-                });
-            } catch (InterruptedException | InvocationTargetException e) {
-                throw new RuntimeException(e);
+                } finally {
+                    latch.countDown();
+                }
+            });
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
             }
         }
     }

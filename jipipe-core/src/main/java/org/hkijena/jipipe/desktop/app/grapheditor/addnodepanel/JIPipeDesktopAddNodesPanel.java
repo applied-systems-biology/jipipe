@@ -55,7 +55,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -893,17 +892,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 model.addElement(entry);
             }
 
-            try {
-                SwingUtilities.invokeAndWait(() -> toolBox.nodeList.setModel(model));
-            } catch (InterruptedException | InvocationTargetException ignored) {
-                return;
-            }
-            if (!model.isEmpty()) {
-                SwingUtilities.invokeLater(() -> {
+            SwingUtilities.invokeLater(() -> {
+                toolBox.nodeList.setModel(model);
+                if (!model.isEmpty()) {
                     toolBox.nodeList.setSelectedIndex(0);
                     toolBox.scrollPane.getVerticalScrollBar().setValue(0);
-                });
-            }
+                }
+            });
         }
     }
 

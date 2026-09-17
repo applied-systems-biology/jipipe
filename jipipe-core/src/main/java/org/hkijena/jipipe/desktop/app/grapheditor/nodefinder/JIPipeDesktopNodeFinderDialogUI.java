@@ -42,7 +42,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -406,17 +405,13 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 }
             }
 
-            try {
-                SwingUtilities.invokeAndWait(() -> dialogUI.nodeList.setModel(model));
-            } catch (InterruptedException | InvocationTargetException ignored) {
-                return;
-            }
-            if (!model.isEmpty()) {
-                SwingUtilities.invokeLater(() -> {
+            SwingUtilities.invokeLater(() -> {
+                dialogUI.nodeList.setModel(model);
+                if (!model.isEmpty()) {
                     dialogUI.nodeList.setSelectedIndex(0);
                     dialogUI.scrollPane.getVerticalScrollBar().setValue(0);
-                });
-            }
+                }
+            });
         }
     }
 }
