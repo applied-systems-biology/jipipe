@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.*;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -67,7 +67,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private static boolean AI_SEARCH = false;
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Node toolbox");
     private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
     private final boolean isCompartmentsEditor;
     private final JPanel mainCategoriesPanel = new JPanel();

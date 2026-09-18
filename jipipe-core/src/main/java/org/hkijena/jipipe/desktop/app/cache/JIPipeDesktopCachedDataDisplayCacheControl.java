@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -46,9 +46,9 @@ public class JIPipeDesktopCachedDataDisplayCacheControl implements Disposable,
         this.toolBar = toolBar;
         this.node = node;
         initialize();
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getStartedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getStartedEventEmitter().subscribeWeak(this);
         node.getParameterChangedEventEmitter().subscribeWeak(this);
         updateRunnerQueueStatus();
     }
@@ -70,9 +70,9 @@ public class JIPipeDesktopCachedDataDisplayCacheControl implements Disposable,
 
     @Override
     public void dispose() {
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().unsubscribe(this);
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().unsubscribe(this);
-        JIPipeRunnableQueue.getInstance().getStartedEventEmitter().unsubscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().unsubscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().unsubscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getStartedEventEmitter().unsubscribe(this);
         node.getParameterChangedEventEmitter().unsubscribe(this);
     }
 
@@ -87,7 +87,7 @@ public class JIPipeDesktopCachedDataDisplayCacheControl implements Disposable,
     }
 
     private void updateRunnerQueueStatus() {
-        if (JIPipeRunnableQueue.getInstance().isEmpty()) {
+        if (JIPipeQueuedRunnableExecutor.getInstance().isEmpty()) {
             updateCacheButton.setVisible(true);
             runnerQueue.setVisible(false);
         } else {

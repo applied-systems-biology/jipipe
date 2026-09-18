@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
 import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchAccess;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -76,12 +76,12 @@ public class JIPipeDesktopCacheManagerUI extends JButton implements JIPipeDeskto
             JMenuItem clearOutdated = new JMenuItem("Clear outdated", JIPipe.RESOURCES.getIcon16("actions/clock.png"));
             clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                     "This includes items where the algorithm parameters have been changed.");
-            clearOutdated.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
+            clearOutdated.addActionListener(e -> JIPipeQueuedRunnableExecutor.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
             menu.add(clearOutdated);
 
             JMenuItem clearAll = new JMenuItem("Clear all", JIPipe.RESOURCES.getIcon16("actions/delete.png"));
             clearAll.setToolTipText("Removes all cached items.");
-            clearAll.addActionListener(e -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
+            clearAll.addActionListener(e -> JIPipeQueuedRunnableExecutor.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
             menu.add(clearAll);
         }
 

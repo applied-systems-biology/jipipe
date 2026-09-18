@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -41,8 +41,8 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
         this.nodeUI = nodeUI;
         this.dockPanel = dockPanel;
         this.allowChangePanels = allowChangePanels;
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     public void run(boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {
@@ -72,17 +72,17 @@ public abstract class JIPipeDesktopGraphEditorRunManager implements JIPipeRunnab
 
         // Create an enqueue the run
         run = createRun(saveToDisk, storeIntermediateResults, excludeSelected);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
     }
 
     private boolean alreadyHasRunEnqueued() {
-        JIPipeRunnable currentRun = JIPipeRunnableQueue.getInstance().getCurrentRun();
+        JIPipeRunnable currentRun = JIPipeQueuedRunnableExecutor.getInstance().getCurrentRun();
         if (currentRun instanceof JIPipeDesktopQuickRun) {
             if (((JIPipeDesktopQuickRun) currentRun).getProject() == project) {
                 return true;
             }
         }
-        for (JIPipeRunnableWorker worker : JIPipeRunnableQueue.getInstance().getQueue()) {
+        for (JIPipeRunnableWorker worker : JIPipeQueuedRunnableExecutor.getInstance().getQueue()) {
             if (worker.getRun() instanceof JIPipeDesktopQuickRun && ((JIPipeDesktopQuickRun) worker.getRun()).getProject() == project) {
                 return true;
             }

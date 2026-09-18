@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.commons;
 
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel;
@@ -16,7 +16,7 @@ public class JIPipeDesktopGraphEditorLogPanel extends JIPipeDesktopWorkbenchPane
 
     public JIPipeDesktopGraphEditorLogPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench);
-        this.loggerPanel = new JIPipeDesktopRunQueueLoggerPanel(workbench, JIPipeRunnableQueue.getInstance());
+        this.loggerPanel = new JIPipeDesktopRunQueueLoggerPanel(workbench, JIPipeQueuedRunnableExecutor.getInstance());
         initialize();
     }
 

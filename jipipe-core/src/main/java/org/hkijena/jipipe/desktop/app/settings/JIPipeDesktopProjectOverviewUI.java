@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.project.JIPipeProjectRunSetsConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.settings.JIPipeProjectSettingsSheet;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -126,8 +126,8 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         initialize();
         refreshAll();
 
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     public JIPipeDesktopDockPanel getDockPanel() {

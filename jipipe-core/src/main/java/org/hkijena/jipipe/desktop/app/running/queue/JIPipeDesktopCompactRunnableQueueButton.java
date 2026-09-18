@@ -16,7 +16,8 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -32,7 +33,7 @@ import java.awt.*;
 public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeRunnable.StartedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
-    private final JIPipeRunnableQueue runnerQueue;
+    private final JIPipeRunnableExecutor runnerQueue;
     private final Icon iconInactive;
     private final Icon iconActive;
     private final JPopupMenu menu = new JPopupMenu();
@@ -42,18 +43,18 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
     private int lastMaxProgress;
 
     public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, String iconName) {
-        this(desktopWorkbench, JIPipeRunnableQueue.getInstance(), JIPipe.RESOURCES.getIcon16Inverted(iconName), JIPipe.RESOURCES.getIcon16(iconName));
+        this(desktopWorkbench, JIPipeQueuedRunnableExecutor.getInstance(), JIPipe.RESOURCES.getIcon16Inverted(iconName), JIPipe.RESOURCES.getIcon16(iconName));
     }
 
-    public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableQueue runnerQueue, String iconName) {
+    public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor runnerQueue, String iconName) {
         this(desktopWorkbench, runnerQueue, JIPipe.RESOURCES.getIcon16Inverted(iconName), JIPipe.RESOURCES.getIcon16(iconName));
     }
 
     public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, Icon iconInactive, Icon iconActive) {
-        this(desktopWorkbench, JIPipeRunnableQueue.getInstance(), iconInactive, iconActive);
+        this(desktopWorkbench, JIPipeQueuedRunnableExecutor.getInstance(), iconInactive, iconActive);
     }
 
-    public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableQueue runnerQueue, Icon iconInactive, Icon iconActive) {
+    public JIPipeDesktopCompactRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor runnerQueue, Icon iconInactive, Icon iconActive) {
         this.desktopWorkbench = desktopWorkbench;
         this.runnerQueue = runnerQueue;
         this.iconInactive = iconInactive;
@@ -80,7 +81,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
         UIUtils.addReloadablePopupMenuToButton(this, menu, this::reloadMenu);
     }
 
-    public JIPipeRunnableQueue getRunnerQueue() {
+    public JIPipeRunnableExecutor getRunnerQueue() {
         return runnerQueue;
     }
 
@@ -93,9 +94,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
             cancelAllItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             cancelAllItem.setToolTipText("Cancels all running and queued tasks");
             cancelAllItem.addActionListener(e -> {
-                runnerQueue.clearQueue();
-                JIPipeRunnable currentRun = runnerQueue.getCurrentRun();
-                runnerQueue.cancel(currentRun);
+                runnerQueue.cancelAll();
             });
             menu.add(cancelAllItem);
 
@@ -104,7 +103,9 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
                 cancelQueuedItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
                 cancelQueuedItem.setToolTipText("Cancels enqueued tasks. Currently running operations are not cancelled.");
                 cancelQueuedItem.addActionListener(e -> {
-                    runnerQueue.clearQueue();
+                    for (JIPipeRunnableWorker worker : runnerQueue.getQueue()) {
+                        runnerQueue.cancel(worker.getRun());
+                    }
                 });
                 menu.add(cancelQueuedItem);
             }
@@ -134,7 +135,7 @@ public class JIPipeDesktopCompactRunnableQueueButton extends JButton implements 
     }
 
     private boolean isOnGlobalRunnerQueue() {
-        return runnerQueue == JIPipeRunnableQueue.getInstance();
+        return runnerQueue == JIPipeQueuedRunnableExecutor.getInstance();
     }
 
     /**

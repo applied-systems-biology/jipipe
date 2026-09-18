@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOu
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -43,7 +43,7 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
         settings.setStoreIntermediateResults(false);
         settings.setExcludeSelected(false);
         JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(project, node, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
     }
 
     @Override

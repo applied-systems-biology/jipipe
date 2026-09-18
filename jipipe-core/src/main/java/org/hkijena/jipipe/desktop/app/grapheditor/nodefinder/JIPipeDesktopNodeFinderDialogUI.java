@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -57,7 +57,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JToggleButton findExistingNodesToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/find.png"));
     private final JToggleButton createNodesToggle = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/add.png"));
     private final JList<JIPipeNodeDatabaseEntry> nodeList = new JList<>();
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node finder");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Node finder");
     private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
     private JIPipeDesktopSearchTextField searchField;
     private JScrollPane scrollPane;

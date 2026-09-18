@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.search;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -43,7 +43,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     private final JPanel buttonPanel = new JPanel();
     private final Timer attentionAnimationTimer;
     private final JButton searchButton = new JButton();
-    private final JIPipeRunnableQueue queue;
+    private final JIPipeRunnableExecutor queue;
     private final Icon readyIcon = JIPipe.RESOURCES.getIcon16Inverted("actions/search.png");
     private final SpinnerIcon busyIcon = new SpinnerIcon(searchButton);
     private String[] searchStrings = new String[0];
@@ -55,7 +55,7 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
         this(null);
     }
 
-    public JIPipeDesktopSearchTextField(JIPipeRunnableQueue queue) {
+    public JIPipeDesktopSearchTextField(JIPipeRunnableExecutor queue) {
         this.queue = queue;
         this.attentionAnimationTimer = new Timer(ANIMATION_DELAY, e -> updateAttentionAnimation());
         this.attentionAnimationTimer.setRepeats(true);

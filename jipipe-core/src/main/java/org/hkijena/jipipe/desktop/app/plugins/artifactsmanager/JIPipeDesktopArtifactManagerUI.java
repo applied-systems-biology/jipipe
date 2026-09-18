@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.artifacts.sources.JIPipeHttpRemoteArtifactSource;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeLocalRemoteArtifactSource;
 import org.hkijena.jipipe.api.artifacts.sources.JIPipeOrasRemoteArtifactSource;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipeArtifactsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -70,7 +70,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
     public JIPipeDesktopArtifactManagerUI(JIPipeDesktopWorkbench desktopWorkbench) {
         super(desktopWorkbench);
         initialize();
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this);
         artifactsRegistry.enqueueUpdateCachedArtifacts();
         updateSelectionPanel();
     }
@@ -113,7 +113,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         onlyCompatibleToggle.setToolTipText("Only show compatible artifacts");
         onlyCompatibleToggle.addActionListener(e -> updateArtifactsList());
 
-        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipeRunnableQueue.getInstance()));
+        toolbar.add(new JIPipeDesktopRunnableQueueButton(getDesktopWorkbench(), JIPipeQueuedRunnableExecutor.getInstance()));
         add(toolbar, BorderLayout.NORTH);
 
         artifactListScrollPane = new JScrollPane(artifactEntryJList);
@@ -313,7 +313,7 @@ public class JIPipeDesktopArtifactManagerUI extends JIPipeDesktopWorkbenchPanel 
         message.append("\nDo you want to continue?");
         if (JOptionPane.showConfirmDialog(this, message.toString(), "Apply changes", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             JIPipeArtifactRepositoryApplyInstallUninstallRun run = new JIPipeArtifactRepositoryApplyInstallUninstallRun(toInstall, toUninstall);
-            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeRunnableQueue.getInstance(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, run, JIPipeQueuedRunnableExecutor.getInstance(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
         }
     }
 

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipePlugin;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.plugins.artifactsmanager.JIPipeDesktopApplyPluginManagerRun;
@@ -62,8 +62,8 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         updatePluginsList();
         updateSelectionPanel();
         switchToManager();
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     public static void show(JIPipeDesktopWorkbench desktopWorkbench) {
@@ -281,7 +281,7 @@ public class JIPipeDesktopPluginManagerUI extends JIPipeDesktopWorkbenchPanel im
         revalidate();
         repaint();
         SwingUtilities.invokeLater(() -> {
-            JIPipeRunnableQueue.getInstance().enqueue(run);
+            JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         });
     }
 

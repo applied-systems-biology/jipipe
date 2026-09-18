@@ -38,7 +38,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
@@ -76,7 +76,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
     private final JIPipeDesktopMessagePanel messagePanel = new JIPipeDesktopMessagePanel();
     private final JIPipeDesktopDataBatchAssistantBatchPanel batchPanel;
     private final JIPipeDesktopDataBatchAssistantInputPreviewPanel inputPreviewPanel;
-    private final JIPipeRunnableQueue calculatePreviewQueue = new JIPipeRunnableQueue("Iteration step preview calculation");
+    private final JIPipeQueuedRunnableExecutor calculatePreviewQueue = new JIPipeQueuedRunnableExecutor("Iteration step preview calculation");
     private final StaticDebouncer updateStatusDebouncer;
     JIPipeDesktopSplitPane splitPane = new JIPipeDesktopSplitPane(JSplitPane.VERTICAL_SPLIT, 0.5);
     private JIPipeGraphNode batchesNodeCopy;
@@ -441,7 +441,7 @@ public class JIPipeDesktopDataBatchAssistantUI extends JIPipeDesktopProjectWorkb
         }
     }
 
-    public JIPipeRunnableQueue getCalculatePreviewQueue() {
+    public JIPipeQueuedRunnableExecutor getCalculatePreviewQueue() {
         return calculatePreviewQueue;
     }
 

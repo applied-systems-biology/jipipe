@@ -15,7 +15,7 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeNotificationUIApplicationSettings;
@@ -33,8 +33,8 @@ public class JIPipeDesktopRunnableQueueNotifier implements JIPipeRunnable.Finish
 
     private JIPipeDesktopRunnableQueueNotifier() {
         this.settings = JIPipeNotificationUIApplicationSettings.getInstance();
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     /**

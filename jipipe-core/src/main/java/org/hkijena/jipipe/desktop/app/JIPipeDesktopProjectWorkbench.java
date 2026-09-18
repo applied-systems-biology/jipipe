@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -434,7 +434,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
         JIPipeDesktopQuickRun testBench = new JIPipeDesktopQuickRun(getProject(), algorithm, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(testBench);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(testBench);
     }
 
     public void runUpdateCache(JIPipeGraphNode algorithm) {
@@ -445,7 +445,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
         JIPipeDesktopQuickRun testBench = new JIPipeDesktopQuickRun(getProject(), algorithm, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(testBench);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(testBench);
     }
 
     /**

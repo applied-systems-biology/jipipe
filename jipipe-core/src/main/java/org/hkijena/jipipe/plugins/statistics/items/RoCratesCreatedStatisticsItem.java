@@ -3,7 +3,7 @@ package org.hkijena.jipipe.plugins.statistics.items;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.IntNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipeStatisticsServiceComponent;
 import org.hkijena.jipipe.plugins.publish.rocrate.CreateROCrateRun;
 import org.hkijena.jipipe.plugins.statistics.JIPipeStatisticsItem;
@@ -33,7 +33,7 @@ public class RoCratesCreatedStatisticsItem implements JIPipeStatisticsItem {
     @Override
     public void initialize(JIPipeStatisticsServiceComponent service) {
         this.service = service;
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this::onRunFinished);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this::onRunFinished);
     }
 
     private void onRunFinished(JIPipeRunnable.FinishedEvent event) {

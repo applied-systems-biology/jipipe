@@ -15,7 +15,8 @@ package org.hkijena.jipipe.desktop.app.running;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
@@ -32,21 +33,21 @@ import java.awt.*;
  */
 public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener {
     private static final Logger log = LoggerFactory.getLogger(JIPipeDesktopRunExecuteUI.class);
-    private final JIPipeRunnableQueue queue;
+    private final JIPipeRunnableExecutor queue;
     private final JIPipeRunnable run;
     private final JIPipeDesktopRunQueueLoggerPanel loggerPanel;
     private JButton closeButton;
     private JDialog dialog;
 
     public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run) {
-        this(workbench, run, JIPipeRunnableQueue.getInstance());
+        this(workbench, run, JIPipeQueuedRunnableExecutor.getInstance());
     }
 
     /**
      * @param workbench the workbench
      * @param run       The runnable
      */
-    public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run, JIPipeRunnableQueue queue) {
+    public JIPipeDesktopRunExecuteUI(JIPipeDesktopWorkbench workbench, JIPipeRunnable run, JIPipeRunnableExecutor queue) {
         super(workbench);
         this.run = run;
         this.queue = queue;
@@ -58,10 +59,10 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
     }
 
     public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run) {
-        runInDialog(workbench, parent, run, JIPipeRunnableQueue.getInstance(), GlobalLogMode.OnlyFailures);
+        runInDialog(workbench, parent, run, JIPipeQueuedRunnableExecutor.getInstance(), GlobalLogMode.OnlyFailures);
     }
 
-    public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run, JIPipeRunnableQueue queue, GlobalLogMode logMode) {
+    public static void runInDialog(JIPipeDesktopWorkbench workbench, Component parent, JIPipeRunnable run, JIPipeRunnableExecutor queue, GlobalLogMode logMode) {
         JDialog dialog = new JDialog();
         dialog.setTitle(run.getTaskLabel());
         dialog.setIconImage(UIUtils.getJIPipeIcon128());
@@ -79,7 +80,7 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         dialog.setModal(true);
         queue.getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             if (event.getRun() == run) {
-                if (logMode == GlobalLogMode.Everything && queue != JIPipeRunnableQueue.getInstance()) {
+                if (logMode == GlobalLogMode.Everything && queue != JIPipeQueuedRunnableExecutor.getInstance()) {
                     JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, true);
                 }
                 dialog.setVisible(false);
@@ -87,7 +88,7 @@ public class JIPipeDesktopRunExecuteUI extends JIPipeDesktopWorkbenchPanel imple
         });
         if(logMode == GlobalLogMode.Everything || logMode == GlobalLogMode.OnlyFailures) {
             queue.getInterruptedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
-                if (queue != JIPipeRunnableQueue.getInstance()) {
+                if (queue != JIPipeQueuedRunnableExecutor.getInstance()) {
                     JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
                 }
             });

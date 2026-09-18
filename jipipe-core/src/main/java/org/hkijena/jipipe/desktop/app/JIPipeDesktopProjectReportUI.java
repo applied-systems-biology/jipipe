@@ -33,7 +33,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectUserPaths;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunnableQueueButton;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
@@ -53,7 +53,7 @@ public class JIPipeDesktopProjectReportUI extends JIPipeDesktopProjectWorkbenchP
 
     private final ReportSettings reportSettings = new ReportSettings();
     private final JIPipeDesktopMarkdownReader markdownReader = new JIPipeDesktopMarkdownReader(true, new MarkdownText());
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Report");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Report");
 
     public JIPipeDesktopProjectReportUI(JIPipeDesktopProjectWorkbench workbench) {
         super(workbench);

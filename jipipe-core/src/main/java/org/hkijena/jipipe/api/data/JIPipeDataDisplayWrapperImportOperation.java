@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.browser.JIPipeLocalDataTableBrowser;
 import org.hkijena.jipipe.api.data.serialization.JIPipeDataTableRowInfo;
 import org.hkijena.jipipe.api.data.sources.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.api.dataviewer.JIPipeDesktopDataViewerWindow;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -47,7 +47,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeLegacyData
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableRowInfo row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeDesktopWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImportDataRun run = new ImportDataRun(rowStorageFolder, slot.getAcceptedDataType(), row);
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
             if (event.getRun() == run) {
                 JIPipeDataTable outputTable = run.getOutputTable();
                 run.setOutputTable(null);
@@ -58,7 +58,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeLegacyData
                 window.browseDataTable(new JIPipeLocalDataTableBrowser(source.getDataTable()), source.getRow(), source.getDataAnnotation(), displayName);
             }
         });
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         return null;
     }
 

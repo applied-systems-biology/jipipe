@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.ai.monitor;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.running.queue.JIPipeDesktopRunQueueLoggerPanel;
 
@@ -39,7 +39,7 @@ public class JIPipeDesktopAIMonitorLogPage extends JIPipeDesktopAIMonitorPage {
 
     private void initialize() {
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-        JIPipeRunnableQueue queue = aiService.getQueue();
+        JIPipeQueuedRunnableExecutor queue = aiService.getQueue();
 
         loggerPanel = new JIPipeDesktopRunQueueLoggerPanel(getDesktopWorkbench(), queue);
         loggerPanel.addDefaultCancelButton();

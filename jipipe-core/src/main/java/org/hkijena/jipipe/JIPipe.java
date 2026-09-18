@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceInitializationSettings;
 import org.hkijena.jipipe.api.service.components.*;
@@ -298,7 +298,7 @@ public final class JIPipe {
      * @param project      the project
      * @param outputFolder the output folder
      * @param threads      the number of threads (set to zero for using the default value)
-     * @return the future result. You have to check the {@link JIPipeRunnableQueue} to see if the run is finished.
+     * @return the future result. You have to check the {@link JIPipeQueuedRunnableExecutor} to see if the run is finished.
      */
     public static JIPipeGraphRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeGraphRunConfiguration settings = new JIPipeGraphRunConfiguration();
@@ -306,7 +306,7 @@ public final class JIPipe {
         if (threads > 0)
             settings.setNumThreads(threads);
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         return run;
     }
 
@@ -316,11 +316,11 @@ public final class JIPipe {
      *
      * @param project  the project
      * @param settings settings for the run
-     * @return the future result. You have to check the {@link JIPipeRunnableQueue} to see if the run is finished.
+     * @return the future result. You have to check the {@link JIPipeQueuedRunnableExecutor} to see if the run is finished.
      */
     public static JIPipeGraphRun enqueueProject(JIPipeProject project, JIPipeGraphRunConfiguration settings) {
         JIPipeGraphRun run = new JIPipeGraphRun(project, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         return run;
     }
 

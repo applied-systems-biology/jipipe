@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 
@@ -36,7 +36,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     public static final Object FLAG_USE_AI_SEARCH = new Object();
 
     private static JIPipeNodeDatabase INSTANCE;
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node database");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Node database");
     private final JIPipeProject project;
     private final JIPipeNodeDatabaseUpdater updater;
     //    private final JIPipeLuceneNodeDatabaseSearch luceneSearch;
@@ -80,7 +80,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         aiSearch.setEntries(entries);
     }
 
-    public JIPipeRunnableQueue getQueue() {
+    public JIPipeQueuedRunnableExecutor getQueue() {
         return queue;
     }
 

@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.InlinedJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -61,7 +61,7 @@ public class OpenInNapariDataDisplayOperation implements JIPipeDesktopDataDispla
         }
         image.setTitle(displayName);
 
-        JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Export");
+        JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Export");
         queue.runInDialog(desktopWorkbench, desktopWorkbench.getWindow(), new InlinedJIPipeRunnable("Exporting for Napari", (progressInfo) -> {
             Path tmpDir = desktopWorkbench.newTempDirectory("napari");
             List<Path> exportFiles = new ArrayList<>();

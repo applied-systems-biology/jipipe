@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.data.serialization.JIPipeMergedDataTableInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -219,7 +219,7 @@ public class JIPipeDesktopMergedResultDataSlotTableUI extends JIPipeDesktopProje
     private void exportFilesByMetadata() {
         JIPipeResultCopyFilesByMetadataExporterRun run = new JIPipeResultCopyFilesByMetadataExporterRun(getDesktopWorkbench(), slots, true);
         if (run.setup()) {
-            JIPipeRunnableQueue.getInstance().enqueue(run);
+            JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         }
     }
 

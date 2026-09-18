@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.service.components;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.utils.FileLocker;
@@ -21,14 +21,14 @@ import java.util.regex.Pattern;
  */
 public class JIPipeCleanupServiceComponent extends JIPipeServiceComponent {
 
-    private final JIPipeRunnableQueue cleanupQueue = new JIPipeRunnableQueue("Cleanup");
+    private final JIPipeQueuedRunnableExecutor cleanupQueue = new JIPipeQueuedRunnableExecutor("Cleanup");
     private final Set<Path> cleanedTemporaryFileRoots =  new HashSet<>();
 
     public JIPipeCleanupServiceComponent(JIPipeService service) {
         super(service);
     }
 
-    public JIPipeRunnableQueue getCleanupQueue() {
+    public JIPipeQueuedRunnableExecutor getCleanupQueue() {
         return cleanupQueue;
     }
 

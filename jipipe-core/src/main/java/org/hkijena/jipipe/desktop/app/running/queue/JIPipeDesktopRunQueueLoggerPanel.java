@@ -2,7 +2,7 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -17,11 +17,11 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Unified component that displays the status of a {@link JIPipeRunnableQueue}
+ * Unified component that displays the status of a {@link JIPipeRunnableExecutor}
  */
 public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
-    private final JIPipeRunnableQueue queue;
+    private final JIPipeRunnableExecutor queue;
 
     private final JLabel titleLabel = new JLabel();
     private final JButton queueButton = new JButton("Queue", JIPipe.RESOURCES.getIcon16("actions/list-check.png"));
@@ -43,7 +43,7 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     private int batchedProgressCurrent = 0;
     private int batchedProgressMax = 0;
 
-    public JIPipeDesktopRunQueueLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableQueue queue) {
+    public JIPipeDesktopRunQueueLoggerPanel(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor queue) {
         super(desktopWorkbench);
         this.queue = queue;
         this.progressDebouncer = new StaticDebouncer(250, this::updateProgress);
@@ -127,7 +127,9 @@ public class JIPipeDesktopRunQueueLoggerPanel extends JIPipeDesktopWorkbenchPane
     }
 
     private void clearQueue() {
-        queue.clearQueue();
+        for (JIPipeRunnableWorker worker : queue.getQueue()) {
+            queue.cancel(worker.getRun());
+        }
     }
 
     private void cancelAllRuns() {

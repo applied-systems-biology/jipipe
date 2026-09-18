@@ -14,34 +14,35 @@
 package org.hkijena.jipipe.desktop.commons.components.icons;
 
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 
 import java.awt.*;
 
 public class JIPipeDesktopRunnableQueueSpinnerIcon extends SpinnerIcon implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener {
 
     public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent) {
-        this(parent, JIPipeRunnableQueue.getInstance());
+        this(parent, JIPipeQueuedRunnableExecutor.getInstance());
     }
 
-    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableQueue runnerQueue) {
+    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableExecutor runnerQueue) {
         this(parent, runnerQueue, 16);
     }
 
-    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableQueue runnerQueue, int size) {
+    public JIPipeDesktopRunnableQueueSpinnerIcon(Component parent, JIPipeRunnableExecutor runnerQueue, int size) {
         super(parent, size);
 
         runnerQueue.getFinishedEventEmitter().subscribeWeak(this);
         runnerQueue.getStartedEventEmitter().subscribeWeak(this);
         runnerQueue.getInterruptedEventEmitter().subscribeWeak(this);
-        if (!JIPipeRunnableQueue.getInstance().isEmpty()) {
+        if (!JIPipeQueuedRunnableExecutor.getInstance().isEmpty()) {
             start();
         }
     }
 
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
-        if (JIPipeRunnableQueue.getInstance().isEmpty()) {
+        if (JIPipeQueuedRunnableExecutor.getInstance().isEmpty()) {
             stop();
         }
     }
@@ -53,7 +54,7 @@ public class JIPipeDesktopRunnableQueueSpinnerIcon extends SpinnerIcon implement
 
     @Override
     public void onRunnableInterrupted(JIPipeRunnable.InterruptedEvent event) {
-        if (JIPipeRunnableQueue.getInstance().isEmpty()) {
+        if (JIPipeQueuedRunnableExecutor.getInstance().isEmpty()) {
             stop();
         }
     }

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.api.service.components;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.servers.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -41,7 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * </ul>
  *
  * <p>Follows the pattern of {@link JIPipeAIServiceComponent} with a
- * {@link JIPipeRunnableQueue} for serialized lifecycle operations.</p>
+ * {@link JIPipeQueuedRunnableExecutor} for serialized lifecycle operations.</p>
  */
 public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
 
@@ -49,7 +49,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
     private final Map<String, ManagedInstanceEntry> activeInstances = new ConcurrentHashMap<>();
     private final JIPipeServerInstanceManager appWideManager;
     private final PortManager portManager = new PortManager();
-    private final JIPipeRunnableQueue lifecycleQueue = new JIPipeRunnableQueue("Server Lifecycle");
+    private final JIPipeQueuedRunnableExecutor lifecycleQueue = new JIPipeQueuedRunnableExecutor("Server Lifecycle");
     private final JIPipeServerEventEmitter stateChangedEventEmitter = new JIPipeServerEventEmitter();
 
     /**
@@ -372,7 +372,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
      *
      * @return the lifecycle queue
      */
-    public JIPipeRunnableQueue getLifecycleQueue() {
+    public JIPipeQueuedRunnableExecutor getLifecycleQueue() {
         return lifecycleQueue;
     }
 

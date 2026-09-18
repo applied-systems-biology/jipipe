@@ -21,7 +21,7 @@ import ij.process.ImageProcessor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -89,7 +89,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
     });
     private final Map<ImageSliceIndex, ImageViewer2DSliceStatistics> statisticsMap = new HashMap<>();
     private final JPanel viewerPanel = new JPanel(new BorderLayout());
-    private final JIPipeRunnableQueue viewerRunnerQueue = new JIPipeRunnableQueue("Image Viewer 2D");
+    private final JIPipeQueuedRunnableExecutor viewerRunnerQueue = new JIPipeQueuedRunnableExecutor("Image Viewer 2D");
     private final List<CompositeLayer> orderedCompositeBlendLayers = new ArrayList<>();
     private final Map<Integer, CompositeLayer> compositeBlendLayers = new HashMap<>();
     private ImagePlusData image;
@@ -168,7 +168,7 @@ public class JIPipeDesktopLegacyImageViewerPanel2D extends JPanel implements JIP
         }
     }
 
-    public JIPipeRunnableQueue getViewerRunnerQueue() {
+    public JIPipeQueuedRunnableExecutor getViewerRunnerQueue() {
         return viewerRunnerQueue;
     }
 

@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.artifacts.JIPipeLocalArtifact;
 import org.hkijena.jipipe.api.artifacts.JIPipeRemoteArtifact;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.servers.JIPipeServerLease;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -29,14 +29,14 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Service component that manages AI model lifecycle and provides a task queue for serialized execution of AI operations.
  * <p>
- * The component owns a {@link JIPipeRunnableQueue} that serializes all AI operations, ensuring:
+ * The component owns a {@link JIPipeQueuedRunnableExecutor} that serializes all AI operations, ensuring:
  * - No concurrent access to model runners (which are not thread-safe)
  * - Natural deferred-unload semantics: an unload task queued while an embed is running will execute after the embed completes
  * - Simple reasoning about state transitions
  */
 public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
-    private final JIPipeRunnableQueue taskQueue = new JIPipeRunnableQueue("AI Service");
+    private final JIPipeQueuedRunnableExecutor taskQueue = new JIPipeQueuedRunnableExecutor("AI Service");
     private volatile JIPipeEmbeddingAIModelRunner embeddingModelRunner;
     /**
      * Holds the active lease for the LocalOnnx scenario, where embedding is performed
@@ -491,7 +491,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
 
     // ===== Queue Access =====
 
-    public JIPipeRunnableQueue getQueue() {
+    public JIPipeQueuedRunnableExecutor getQueue() {
         return taskQueue;
     }
 

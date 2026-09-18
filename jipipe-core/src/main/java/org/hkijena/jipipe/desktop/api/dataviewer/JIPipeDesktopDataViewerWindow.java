@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -63,7 +63,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
 
     private static boolean HOTKEYS_ENABLED = false;
 
-    private final JIPipeRunnableQueue downloaderQueue = new JIPipeRunnableQueue("Data download");
+    private final JIPipeQueuedRunnableExecutor downloaderQueue = new JIPipeQueuedRunnableExecutor("Data download");
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopRibbon ribbon = new JIPipeDesktopRibbon();
@@ -384,7 +384,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(getWorkbench().getProject(), node, settings);
                 JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
 
-                JIPipeRunnableQueue.getInstance().enqueue(run);
+                JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
             }
         }
     }
@@ -405,7 +405,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
                 JIPipeDesktopQuickRun run = new JIPipeDesktopQuickRun(getWorkbench().getProject(), node, settings);
                 JIPipeRuntimeApplicationSettings.getInstance().setDefaultQuickRunThreads(settings.getNumThreads());
 
-                JIPipeRunnableQueue.getInstance().enqueue(run);
+                JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
             }
         }
     }
@@ -486,7 +486,7 @@ public class JIPipeDesktopDataViewerWindow extends JFrame implements JIPipeDeskt
         }
     }
 
-    public JIPipeRunnableQueue getDownloaderQueue() {
+    public JIPipeQueuedRunnableExecutor getDownloaderQueue() {
         return downloaderQueue;
     }
 

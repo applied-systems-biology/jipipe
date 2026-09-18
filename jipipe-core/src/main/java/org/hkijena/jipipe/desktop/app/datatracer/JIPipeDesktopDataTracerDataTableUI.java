@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -249,7 +249,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                             String name = path.getFileName().toString();
                             JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeQueuedRunnableExecutor("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                         }
                     }));
 
@@ -263,7 +263,7 @@ public class JIPipeDesktopDataTracerDataTableUI extends JIPipeDesktopWorkbenchPa
                                 String name = path.getFileName().toString();
                                 JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeQueuedRunnableExecutor("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                             }
                         }));
             }
