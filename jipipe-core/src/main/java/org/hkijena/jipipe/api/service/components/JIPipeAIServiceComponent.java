@@ -25,6 +25,7 @@ import org.hkijena.jipipe.plugins.embeddingserver.EmbeddingServerInstance;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
 
 /**
  * Service component that manages AI model lifecycle and provides a task queue for serialized execution of AI operations.
@@ -421,6 +422,44 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         return embedTask.getFuture();
     }
 
+    /**
+     * Submit a function that can perform multiple synchronous embeddings on the queue thread.
+     * <p>
+     * This is the preferred API for callers that need to embed multiple texts (e.g., the AI search
+     * which needs to embed all node entries plus the query). Instead of enqueuing one task per
+     * text (which floods the serial queue and prevents cancellation from propagating), a single
+     * task is enqueued that receives a {@link Function} backed by {@link #embedNow(String)}.
+     * <p>
+     * The function will be called on the queue worker thread, where {@code embedNow} is safe.
+     * The caller receives a {@link CompletableFuture} that completes with whatever the function
+     * returns.
+     * <p>
+     * If the model is not loaded, a load task is enqueued first.
+     *
+     * @param fn   the function to execute on the queue thread; receives an embed function and returns a result
+     * @param <T>  the result type
+     * @return a future that completes with the function's result, or null if AI is disabled
+     */
+    public <T> CompletableFuture<T> submitEmbedFunction(Function<java.util.function.Function<String, float[]>, T> fn) {
+        AIApplicationSettings settings = AIApplicationSettings.getInstance();
+        if (!settings.isEnableAI()) {
+            return null;
+        }
+
+        JIPipeAIModelRunnerStatus status = getEmbeddingModelStatus();
+        if (!hasEmbeddingModel()
+                || status == JIPipeAIModelRunnerStatus.Unloaded
+                || status == JIPipeAIModelRunnerStatus.Failed) {
+            if (status != JIPipeAIModelRunnerStatus.Loading) {
+                taskQueue.enqueue(new LoadEmbeddingModelTask());
+            }
+        }
+
+        EmbedFunctionTask<T> task = new EmbedFunctionTask<>(fn);
+        taskQueue.enqueue(task);
+        return task.getFuture();
+    }
+
     // ===== Status Query Methods =====
 
     public boolean hasEmbeddingModel() {
@@ -599,6 +638,40 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         public void run() {
             try {
                 float[] result = embedNow(text);
+                future.complete(result);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        }
+    }
+
+    /**
+     * Task that executes a function on the queue thread, providing it with
+     * a synchronous embed function backed by {@link #embedNow(String)}.
+     * This allows batch embedding without flooding the queue with individual tasks.
+     */
+    private class EmbedFunctionTask<T> extends DefaultJIPipeRunnable {
+        private final CompletableFuture<T> future = new CompletableFuture<>();
+        private final Function<java.util.function.Function<String, float[]>, T> fn;
+
+        public EmbedFunctionTask(Function<java.util.function.Function<String, float[]>, T> fn) {
+            this.fn = fn;
+        }
+
+        public CompletableFuture<T> getFuture() {
+            return future;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "Batch embedding operation";
+        }
+
+        @Override
+        public void run() {
+            try {
+                java.util.function.Function<String, float[]> embedFn = text -> embedNow(text);
+                T result = fn.apply(embedFn);
                 future.complete(result);
             } catch (Exception e) {
                 future.completeExceptionally(e);

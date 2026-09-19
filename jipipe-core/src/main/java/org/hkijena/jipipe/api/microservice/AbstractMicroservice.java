@@ -16,12 +16,12 @@ package org.hkijena.jipipe.api.microservice;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Base implementation of {@link Microservice} that manages state transitions,
@@ -151,7 +151,7 @@ public abstract class AbstractMicroservice implements Microservice {
 
     @Override
     public List<Microservice> getDependencies() {
-        return new java.util.ArrayList<>(dependencies);
+        return new ArrayList<>(dependencies);
     }
 
     @Override

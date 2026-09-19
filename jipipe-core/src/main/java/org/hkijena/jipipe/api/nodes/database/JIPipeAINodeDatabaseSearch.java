@@ -35,6 +35,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -61,22 +62,10 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeAINodeDatabaseSearch.class);
 
     /**
-     * Timeout for embedding the search query text (seconds).
-     * This is the time allowed for the embedding computation itself,
-     * after the model is already loaded and idle.
+     * Timeout for the entire AI search operation (seconds).
+     * This includes model loading, embedding all entries, embedding the query, and scoring.
      */
-    private static final long QUERY_EMBED_TIMEOUT_SECONDS = 30;
-
-    /**
-     * Timeout for waiting for the embedding model to load (seconds).
-     * ONNX models can take significant time to load, so this is generous.
-     */
-    private static final long MODEL_LOAD_TIMEOUT_SECONDS = 120;
-
-    /**
-     * Polling interval when waiting for the model to load (milliseconds).
-     */
-    private static final long MODEL_LOAD_POLL_INTERVAL_MS = 500;
+    private static final long SEARCH_TOTAL_TIMEOUT_SECONDS = 300;
 
     /**
      * Maximum type distance to include entries when a target slot type is specified.
@@ -312,6 +301,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * <p>
      * Returns {@code null} if AI is unavailable or the search fails,
      * allowing the caller to fall back to the standard search.
+     * <p>
+     * The entire AI search operation (ensure embeddings + query embedding + scoring)
+     * is submitted as a single task on the AI service queue via
+     * {@link JIPipeAIServiceComponent#submitEmbedFunction}. This avoids flooding
+     * the serial AI queue with individual embed tasks (which caused freezes when
+     * the search was cancelled/superseded but the enqueued tasks remained).
      */
     private List<JIPipeNodeDatabaseEntry> internalQuery(String text,
                                                          JIPipeNodeDatabasePipelineVisibility role,
@@ -365,110 +360,127 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 currentModelId = modelId;
             }
 
-            // Get the AI service and ensure the embedding model is loaded before computing anything.
-            // This is critical: tryEmbed() auto-starts the model, but the CompletableFuture it returns
-            // won't complete until the model finishes loading AND the embedding is computed.
-            // If the model isn't loaded yet, the 30s embed timeout expires before loading finishes,
-            // causing InterruptedException. We must wait for the model to be ready first.
-            if (Thread.currentThread().isInterrupted()) {
-                LOGGER.debug("AI search was interrupted/cancelled before waiting for model");
-                return null;
-            }
+            // Capture the search text for use inside the queue task
+            final String searchText = text;
+            final List<JIPipeNodeDatabaseEntry> candidatesFinal = candidates;
+            final String modelIdFinal = modelId;
+            final JIPipeProgressInfo progressInfoFinal = progressInfo;
+            final Set<String> pinnedIdsFinal = pinnedIds;
+
+            // Submit the entire embedding + scoring operation as a single task on the AI service queue.
+            // This runs on the queue thread where embedNow() is safe, and avoids enqueuing
+            // hundreds of individual embed tasks that would clog the serial queue.
             JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-            if (!waitForEmbeddingModelReady(aiService, progressInfo)) {
-                progressInfo.warn("AI model failed to load within timeout, falling back to standard search");
-                return null;
-            }
 
-            // Split entries into global and local tiers
-            EntrySplit split = splitEntries(candidates);
+            CompletableFuture<List<JIPipeNodeDatabaseEntry>> searchFuture = aiService.submitEmbedFunction(embedFn -> {
+                // === This code runs on the AI service queue thread ===
 
-            // Ensure embeddings for global entries via the singleton
-            if (Thread.currentThread().isInterrupted()) {
-                LOGGER.debug("AI search was interrupted/cancelled before ensuring global embeddings");
-                return null;
-            }
-            globalEmbeddingSearch.ensureEmbeddingsForEntries(
-                    split.global, modelId, aiService, progressInfo);
-
-            // Ensure embeddings for local entries via the local database
-            if (Thread.currentThread().isInterrupted()) {
-                LOGGER.debug("AI search was interrupted/cancelled before ensuring local embeddings");
-                return null;
-            }
-            localEmbeddingDatabase.ensureEmbeddingsForEntries(
-                    split.local, modelId, aiService, progressInfo);
-
-            // Embed the search query text
-            CompletableFuture<float[]> queryFuture = aiService.tryEmbed(text);
-            if (queryFuture == null) {
-                progressInfo.warn("AI service returned null future, returning null");
-                return null;
-            }
-
-            if (Thread.currentThread().isInterrupted()) {
-                LOGGER.debug("AI search was interrupted/cancelled before getting query embedding");
-                return null;
-            }
-            float[] queryEmbedding = queryFuture.get(QUERY_EMBED_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            if (queryEmbedding == null) {
-                progressInfo.warn("Query embedding is null, returning null");
-                return null;
-            }
-
-            // Score each candidate by cosine similarity using the appropriate tier
-            List<ScoredEntry> scored = new ArrayList<>(candidates.size());
-            for (JIPipeNodeDatabaseEntry entry : candidates) {
-                String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
-                float[] entryEmbedding;
-
-                if (isGlobalEntry(entry)) {
-                    entryEmbedding = globalEmbeddingSearch.getVerifiedEmbedding(
-                            modelId, nodeId, entry);
-                } else {
-                    String entryText = JIPipeEmbeddingDatabase.entryToText(entry);
-                    entryEmbedding = localEmbeddingDatabase.getVerifiedEmbedding(
-                            modelId, nodeId, entryText);
+                // The model should already be loaded at this point, because submitEmbedFunction
+                // enqueues a LoadEmbeddingModelTask before this task (if needed), and the queue
+                // is serial, so the load completes before this task starts.
+                // We still check the status for safety, but do NOT call tryStartEmbeddingModel()
+                // from here (that would enqueue a load task after this task on the serial queue,
+                // creating a deadlock).
+                JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
+                if (status != JIPipeAIModelRunnerStatus.Idle && status != JIPipeAIModelRunnerStatus.Busy) {
+                    progressInfoFinal.warn("Embedding model not ready (status=" + status + ") when embed function started");
+                    return null;
                 }
 
-                double similarity;
-                if (entryEmbedding != null) {
-                    similarity = cosineSimilarity(queryEmbedding, entryEmbedding);
-                } else {
-                    // No embedding available for this entry, assign low score
-                    similarity = -1.0;
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled inside embed function");
+                    return null;
                 }
 
-                // Apply classification penalty
-                JIPipeNodeClassification classification = entry.getNodeClassification();
-                if (classification == JIPipeNodeClassification.AutoImport) {
-                    similarity *= 0.85;
-                } else if (classification == JIPipeNodeClassification.EdgeCase) {
-                    similarity *= 0.7;
+                // Split entries into global and local tiers
+                EntrySplit split = splitEntries(candidatesFinal);
+
+                // Ensure embeddings for global entries via the singleton
+                globalEmbeddingSearch.ensureEmbeddingsForEntriesWithEmbedder(
+                        split.global, modelIdFinal, embedFn, progressInfoFinal);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled after global embeddings");
+                    return null;
                 }
 
-                boolean isPinned = pinnedIds != null && pinnedIds.contains(entry.getId());
-                scored.add(new ScoredEntry(entry, similarity, isPinned));
+                // Ensure embeddings for local entries via the local database
+                localEmbeddingDatabase.ensureEmbeddingsForEntriesWithEmbedder(
+                        split.local, modelIdFinal, embedFn, progressInfoFinal);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled after local embeddings");
+                    return null;
+                }
+
+                // Embed the search query text synchronously
+                float[] queryEmbedding = embedFn.apply(searchText);
+                if (queryEmbedding == null) {
+                    progressInfoFinal.warn("Query embedding is null, returning null");
+                    return null;
+                }
+
+                // Score each candidate by cosine similarity using the appropriate tier
+                List<ScoredEntry> scored = new ArrayList<>(candidatesFinal.size());
+                for (JIPipeNodeDatabaseEntry entry : candidatesFinal) {
+                    String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
+                    float[] entryEmbedding;
+
+                    if (isGlobalEntry(entry)) {
+                        entryEmbedding = globalEmbeddingSearch.getVerifiedEmbedding(
+                                modelIdFinal, nodeId, entry);
+                    } else {
+                        String entryText = JIPipeEmbeddingDatabase.entryToText(entry);
+                        entryEmbedding = localEmbeddingDatabase.getVerifiedEmbedding(
+                                modelIdFinal, nodeId, entryText);
+                    }
+
+                    double similarity;
+                    if (entryEmbedding != null) {
+                        similarity = cosineSimilarity(queryEmbedding, entryEmbedding);
+                    } else {
+                        similarity = -1.0;
+                    }
+
+                    // Apply classification penalty
+                    JIPipeNodeClassification classification = entry.getNodeClassification();
+                    if (classification == JIPipeNodeClassification.AutoImport) {
+                        similarity *= 0.85;
+                    } else if (classification == JIPipeNodeClassification.EdgeCase) {
+                        similarity *= 0.7;
+                    }
+
+                    boolean isPinned = pinnedIdsFinal != null && pinnedIdsFinal.contains(entry.getId());
+                    scored.add(new ScoredEntry(entry, similarity, isPinned));
+                }
+
+                // Sort: pinned first, then by similarity (descending), then by usage, then by name
+                scored.sort(Comparator
+                        .comparing((ScoredEntry se) -> !se.pinned)
+                        .thenComparing((ScoredEntry se) -> -se.similarity)
+                        .thenComparing((ScoredEntry se) -> -USAGE_COUNTS.getOrDefault(se.entry.getId(), 0L))
+                        .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
+
+                return scored.stream()
+                        .map(se -> se.entry)
+                        .collect(Collectors.toList());
+            });
+
+            if (searchFuture == null) {
+                progressInfo.warn("AI service returned null future (AI disabled?), returning null");
+                return null;
             }
 
-            // Sort: pinned first, then by similarity (descending), then by usage, then by name
-            scored.sort(Comparator
-                    .comparing((ScoredEntry se) -> !se.pinned)
-                    .thenComparing((ScoredEntry se) -> -se.similarity)
-                    .thenComparing((ScoredEntry se) -> -USAGE_COUNTS.getOrDefault(se.entry.getId(), 0L))
-                    .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
-
-            // Extract entries from scored results
-            return scored.stream()
-                    .map(se -> se.entry)
-                    .collect(Collectors.toList());
+            // Block on the result with a generous timeout (model load + all embeddings + query)
+            List<JIPipeNodeDatabaseEntry> result = searchFuture.get(SEARCH_TOTAL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            return result;
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             LOGGER.debug("AI search was interrupted/cancelled");
             return null;
         } catch (TimeoutException e) {
-            progressInfo.warn("Timeout embedding search query, returning null");
+            progressInfo.warn("Timeout during AI search, returning null");
             return null;
         } catch (Exception e) {
             progressInfo.warn("AI search failed, returning null");
@@ -497,65 +509,6 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
             LOGGER.debug("Error checking AI availability", e);
             return false;
         }
-    }
-
-    /**
-     * Wait for the embedding model to be ready (Idle or Busy status).
-     * <p>
-     * If the model is not currently loaded, this method triggers the model start
-     * via {@link JIPipeAIServiceComponent#tryStartEmbeddingModel()} and then polls
-     * the model status until it reaches {@link JIPipeAIModelRunnerStatus#Idle} or
-     * {@link JIPipeAIModelRunnerStatus#Busy}, or until the timeout expires.
-     * <p>
-     * This is safe to call from a background thread (which is where
-     * {@link #internalQuery} runs via {@code JIPipeRunnableWorker}).
-     *
-     * @param aiService the AI service component
-     * @return true if the model is ready, false if it failed to load or timed out
-     */
-    private boolean waitForEmbeddingModelReady(JIPipeAIServiceComponent aiService, JIPipeProgressInfo progressInfo) {
-        JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
-
-        // Already ready?
-        if (status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy) {
-            return true;
-        }
-
-        if (status != JIPipeAIModelRunnerStatus.Loading && status != JIPipeAIModelRunnerStatus.Unloading) {
-            progressInfo.log("Embedding model not loaded (status=" + status + "), starting it now");
-            aiService.tryStartEmbeddingModel();
-        } else {
-            progressInfo.log("Embedding model is " + status + ", waiting for it to become ready");
-        }
-
-        // Poll until ready, failed, or timeout
-        long deadline = System.currentTimeMillis() + MODEL_LOAD_TIMEOUT_SECONDS * 1000;
-        while (System.currentTimeMillis() < deadline) {
-            status = aiService.getEmbeddingModelStatus();
-
-            if (status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy) {
-                progressInfo.log("Embedding model is now ready (status=" + status + ")");
-                return true;
-            }
-
-            if (status == JIPipeAIModelRunnerStatus.Failed) {
-                String error = aiService.getEmbeddingModelError();
-                progressInfo.warn("Embedding model failed to load: " + error);
-                return false;
-            }
-
-            // Still loading or unloading — wait and retry
-            try {
-                Thread.sleep(MODEL_LOAD_POLL_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                LOGGER.debug("Interrupted while waiting for embedding model to load");
-                return false;
-            }
-        }
-
-        progressInfo.warn("Embedding model did not become ready within " + MODEL_LOAD_TIMEOUT_SECONDS + " seconds (status=" + aiService.getEmbeddingModelStatus() + ")");
-        return false;
     }
 
     /**
