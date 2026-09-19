@@ -18,14 +18,14 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 
 import javax.swing.*;
 import java.lang.ref.WeakReference;
 
 public class JIPipeThumbnailGenerationQueue {
     private static JIPipeThumbnailGenerationQueue INSTANCE;
-    private final JIPipeRunnableQueue runnerQueue = new JIPipeRunnableQueue("Thumbnails");
+    private final JIPipeQueuedRunnableExecutor runnerQueue = new JIPipeQueuedRunnableExecutor("Thumbnails");
     private final ThumbnailGeneratedEventEmitter thumbnailGeneratedEventEmitter = new ThumbnailGeneratedEventEmitter();
 
     public JIPipeThumbnailGenerationQueue() {
@@ -60,7 +60,7 @@ public class JIPipeThumbnailGenerationQueue {
         runnerQueue.enqueue(run);
     }
 
-    public JIPipeRunnableQueue getRunnerQueue() {
+    public JIPipeQueuedRunnableExecutor getRunnerQueue() {
         return runnerQueue;
     }
 

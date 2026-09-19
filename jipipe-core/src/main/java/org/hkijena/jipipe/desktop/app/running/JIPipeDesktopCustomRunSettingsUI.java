@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -66,8 +66,8 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
     public JIPipeDesktopCustomRunSettingsUI(JIPipeDesktopProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {

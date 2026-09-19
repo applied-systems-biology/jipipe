@@ -26,7 +26,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -261,7 +261,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             JIPipeExtractTemplateZipFileRun run = new JIPipeExtractTemplateZipFileRun(template, loadZipTarget);
             Path finalLoadZipTarget = loadZipTarget;
 
-            JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
+            JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeLambda((emitter, event) -> {
                 if (event.getRun() == run) {
                     SwingUtilities.invokeLater(() -> {
                         Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
@@ -355,7 +355,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     }
                 }
 
-                JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+                JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project loading");
                 JIPipeDesktopProjectWindow currentWindow = this;
                 JIPipeRunnable run = new DefaultJIPipeRunnable() {
                     @Override
@@ -621,7 +621,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     project.close(getProgressInfo());
                 }
             };
-            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeRunnableQueue("Project cleanup"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+            JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, runnable, new JIPipeQueuedRunnableExecutor("Project cleanup"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
         }
     }
 
@@ -793,7 +793,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
         if (extractPath != null) {
             Path finalExtractPath = extractPath;
-            JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+            JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project loading");
             var run = new DefaultJIPipeRunnable() {
                 @Override
                 public void run() {
@@ -837,7 +837,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     public void importURL(String url, boolean forceCurrentWindow) {
         // as default explicity no file name to leave it to ZIP detection
         String fileName = WebUtils.extractFileName(url, "project");
-        JIPipeRunnableQueue localQueue = new JIPipeRunnableQueue("Project loading");
+        JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project loading");
         var run = new DefaultJIPipeRunnable() {
             @Override
             public String getTaskLabel() {

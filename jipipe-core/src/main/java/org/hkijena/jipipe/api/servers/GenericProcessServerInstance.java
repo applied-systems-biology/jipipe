@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.servers;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
-import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
-import org.hkijena.jipipe.api.servers.JIPipeServerState;
 import org.hkijena.jipipe.api.servers.ServerStartException;
 
 import java.io.BufferedReader;
@@ -76,20 +74,14 @@ public class GenericProcessServerInstance extends JIPipeServerInstance<JIPipeEnv
     }
 
     @Override
-    public void start() throws ServerStartException {
+    protected void startProcess() throws ServerStartException {
         // The actual process spawning is handled by subclasses or by the environment's
-        // runExecutable method. This base implementation just validates the state.
-        JIPipeServerState state = getState();
-        if (state == JIPipeServerState.Running || state == JIPipeServerState.Idle || state == JIPipeServerState.Busy) {
-            return; // Already running
-        }
-        // For generic instances, the process should be spawned before calling start()
-        // The service component will call start() and then waitForInstanceRunning()
-        // which polls isHealthy()
+        // runExecutable method. This base implementation does nothing — subclasses
+        // are expected to override and spawn the process before returning.
     }
 
     @Override
-    public void stop() {
+    protected void stopProcess() {
         Process process = getProcess();
         if (process != null && process.isAlive()) {
             processSupervisor.stopProcess(process, new JIPipeProgressInfo());

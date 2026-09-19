@@ -28,9 +28,11 @@ import java.util.stream.Collectors;
 /**
  * Local queue for {@link JIPipeRunnable}
  */
-public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.ProgressEventListener {
+public class JIPipeQueuedRunnableExecutor implements JIPipeRunnableExecutor,
+        JIPipeRunnable.FinishedEventListener, JIPipeRunnable.InterruptedEventListener,
+        JIPipeRunnable.ProgressEventListener {
 
-    private static JIPipeRunnableQueue instance;
+    private static JIPipeQueuedRunnableExecutor instance;
     private final String name;
     private final Queue<JIPipeRunnableWorker> queue = new ArrayDeque<>();
     private final Map<JIPipeRunnable, JIPipeRunnableWorker> assignedWorkers = new HashMap<>();
@@ -42,19 +44,20 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
     private JIPipeRunnableWorker currentlyRunningWorker = null;
     private boolean silent;
 
-    public JIPipeRunnableQueue(String name) {
+    public JIPipeQueuedRunnableExecutor(String name) {
         this.name = name;
     }
 
     /**
      * @return Singleton instance
      */
-    public static JIPipeRunnableQueue getInstance() {
+    public static JIPipeQueuedRunnableExecutor getInstance() {
         if (instance == null)
-            instance = new JIPipeRunnableQueue("");
+            instance = new JIPipeQueuedRunnableExecutor("");
         return instance;
     }
 
+    @Override
     public String getName() {
         return name;
     }
@@ -65,6 +68,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
      * @param runnable the runnable
      * @return if a runnable is enqueued or running
      */
+    @Override
     public boolean isRunningOrEnqueued(JIPipeRunnable runnable) {
         if (currentlyRunningWorker != null && currentlyRunningWorker.getRun() == runnable)
             return true;
@@ -76,34 +80,42 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
         return false;
     }
 
+    @Override
     public JIPipeRunnable.EnqueuedEventEmitter getEnqueuedEventEmitter() {
         return enqueuedEventEmitter;
     }
 
+    @Override
     public JIPipeRunnable.FinishedEventEmitter getFinishedEventEmitter() {
         return finishedEventEmitter;
     }
 
+    @Override
     public JIPipeRunnable.InterruptedEventEmitter getInterruptedEventEmitter() {
         return interruptedEventEmitter;
     }
 
+    @Override
     public JIPipeRunnable.ProgressEventEmitter getProgressEventEmitter() {
         return progressEventEmitter;
     }
 
+    @Override
     public JIPipeRunnable.StartedEventEmitter getStartedEventEmitter() {
         return startedEventEmitter;
     }
 
+    @Override
     public Queue<JIPipeRunnableWorker> getQueue() {
         return new ArrayDeque<>(queue);
     }
 
+    @Override
     public boolean isSilent() {
         return silent;
     }
 
+    @Override
     public void setSilent(boolean silent) {
         this.silent = silent;
     }
@@ -111,6 +123,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
     /**
      * @return true if nothing is running and the queue is empty
      */
+    @Override
     public boolean isEmpty() {
         return currentlyRunningWorker == null && queue.isEmpty();
     }
@@ -120,6 +133,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
      *
      * @return the size
      */
+    @Override
     public int size() {
         return (currentlyRunningWorker != null ? 1 : 0) + queue.size();
     }
@@ -130,6 +144,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
      * @param run The runnable
      * @return The worker associated to the run
      */
+    @Override
     public JIPipeRunnableWorker enqueue(JIPipeRunnable run) {
         JIPipeRunnableWorker worker = new JIPipeRunnableWorker(run, silent);
         registerWorkerEvents(worker);
@@ -158,6 +173,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
      * @param run The runnable
      * @return The associated worker
      */
+    @Override
     public JIPipeRunnableWorker findWorkerOf(JIPipeRunnable run) {
         return assignedWorkers.getOrDefault(run, null);
     }
@@ -178,6 +194,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
      *
      * @param run The runnable
      */
+    @Override
     public void cancel(JIPipeRunnable run) {
         if (run == null)
             return;
@@ -267,6 +284,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
     /**
      * @return The current run
      */
+    @Override
     public JIPipeRunnableWorker getCurrentRunWorker() {
         return currentlyRunningWorker;
     }
@@ -274,6 +292,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
     /**
      * @return The current run
      */
+    @Override
     public JIPipeRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
     }
@@ -287,6 +306,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
         }
     }
 
+    @Override
     public void cancelAll() {
         clearQueue();
         if (currentlyRunningWorker != null) {
@@ -294,6 +314,7 @@ public class JIPipeRunnableQueue implements JIPipeRunnable.FinishedEventListener
         }
     }
 
+    @Override
     public void cancelIf(Predicate<JIPipeRunnable> predicate) {
         for (JIPipeRunnableWorker toCancel : queue.stream().filter(rw -> predicate.test(rw.getRun())).collect(Collectors.toList())) {
             cancel(toCancel.getRun());

@@ -16,7 +16,8 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -33,7 +34,7 @@ import java.awt.*;
 public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeDesktopWorkbenchAccess, JIPipeRunnable.StartedEventListener, JIPipeRunnable.ProgressEventListener, JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
     private final JIPipeDesktopWorkbench desktopWorkbench;
-    private final JIPipeRunnableQueue runnerQueue;
+    private final JIPipeRunnableExecutor runnerQueue;
     private final JPopupMenu menu = new JPopupMenu();
     private boolean processAlreadyQueued;
     private JIPipeDesktopRunnableQueueSpinnerIcon throbberIcon;
@@ -48,10 +49,10 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
     private String taskSingleEnqueuedRunningLabel = "1 task running (+ %d enqueued)";
 
     public JIPipeDesktopRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench) {
-        this(desktopWorkbench, JIPipeRunnableQueue.getInstance());
+        this(desktopWorkbench, JIPipeQueuedRunnableExecutor.getInstance());
     }
 
-    public JIPipeDesktopRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableQueue runnerQueue) {
+    public JIPipeDesktopRunnableQueueButton(JIPipeDesktopWorkbench desktopWorkbench, JIPipeRunnableExecutor runnerQueue) {
         this.desktopWorkbench = desktopWorkbench;
         this.runnerQueue = runnerQueue;
         initialize();
@@ -119,7 +120,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
         return this;
     }
 
-    public JIPipeRunnableQueue getRunnerQueue() {
+    public JIPipeRunnableExecutor getRunnerQueue() {
         return runnerQueue;
     }
 
@@ -132,9 +133,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
             cancelAllItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             cancelAllItem.setToolTipText("Cancels all running and queued tasks");
             cancelAllItem.addActionListener(e -> {
-                runnerQueue.clearQueue();
-                JIPipeRunnable currentRun = runnerQueue.getCurrentRun();
-                runnerQueue.cancel(currentRun);
+                runnerQueue.cancelAll();
             });
             menu.add(cancelAllItem);
 
@@ -143,7 +142,9 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
                 cancelQueuedItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
                 cancelQueuedItem.setToolTipText("Cancels enqueued tasks. Currently running operations are not cancelled.");
                 cancelQueuedItem.addActionListener(e -> {
-                    runnerQueue.clearQueue();
+                    for (JIPipeRunnableWorker worker : runnerQueue.getQueue()) {
+                        runnerQueue.cancel(worker.getRun());
+                    }
                 });
                 menu.add(cancelQueuedItem);
             }
@@ -173,7 +174,7 @@ public class JIPipeDesktopRunnableQueueButton extends JButton implements JIPipeD
     }
 
     private boolean isOnGlobalRunnerQueue() {
-        return runnerQueue == JIPipeRunnableQueue.getInstance();
+        return runnerQueue == JIPipeQueuedRunnableExecutor.getInstance();
     }
 
     /**

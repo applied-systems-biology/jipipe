@@ -24,15 +24,15 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-
 import javax.swing.*;
+
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopProjectTemplateDownloaderRun extends DefaultJIPipeRunnable {
@@ -107,9 +107,18 @@ public class JIPipeDesktopProjectTemplateDownloaderRun extends DefaultJIPipeRunn
     private void executeUserConfiguration() {
         JIPipeProgressInfo progressInfo = getProgressInfo();
         progressInfo.log("Waiting for user input ...");
+        CountDownLatch latch = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> {
+            try {
+                runSetupDialog();
+            } finally {
+                latch.countDown();
+            }
+        });
         try {
-            SwingUtilities.invokeAndWait(this::runSetupDialog);
-        } catch (InterruptedException | InvocationTargetException e) {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             throw new RuntimeException(e);
         }
 

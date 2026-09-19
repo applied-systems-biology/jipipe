@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbenchPanel;
@@ -81,8 +81,8 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         initialize();
 
         getProject().getCache().getModifiedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeWeak(this);
 
         // Show all data slots
         refreshTable();
@@ -178,7 +178,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
 
         JIPipeDesktopRibbon.Band cacheManageBand = cacheTask.addBand("Data");
         cacheManageBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear all", "Clears all cached data of this node", JIPipe.RESOURCES.getIcon16("actions/clear-brush.png"), () -> getProject().getCache().clearAll(this.graphNode.getUUIDInParentGraph(), false, new JIPipeProgressInfo())));
-        cacheManageBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", JIPipe.RESOURCES.getIcon16("actions/document-open-recent.png"), () -> JIPipeRunnableQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache()))));
+        cacheManageBand.add(new JIPipeDesktopSmallButtonRibbonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", JIPipe.RESOURCES.getIcon16("actions/document-open-recent.png"), () -> JIPipeQueuedRunnableExecutor.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache()))));
 
         // Export task
         JIPipeDesktopRibbon.Band exportCacheBand = exportTask.addBand("Cache");
@@ -221,7 +221,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
         settings.setSaveToDisk(false);
         settings.setStoreToCache(true);
         JIPipeDesktopQuickRun testBench = new JIPipeDesktopQuickRun(getProject(), graphNode, settings);
-        JIPipeRunnableQueue.getInstance().enqueue(testBench);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(testBench);
     }
 
     private void exportCache() {
@@ -332,7 +332,7 @@ public class JIPipeDesktopAlgorithmCacheBrowserUI extends JIPipeDesktopProjectWo
     public void onCacheModified(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
-        if (JIPipeRunnableQueue.getInstance().getCurrentRun() == null) {
+        if (JIPipeQueuedRunnableExecutor.getInstance().getCurrentRun() == null) {
             refreshTableDebouncer.debounce();
         }
     }

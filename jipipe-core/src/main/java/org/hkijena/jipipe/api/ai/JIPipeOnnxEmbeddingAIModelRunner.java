@@ -6,9 +6,9 @@ import ai.onnxruntime.OnnxTensor;
 import ai.onnxruntime.OrtEnvironment;
 import ai.onnxruntime.OrtException;
 import ai.onnxruntime.OrtSession;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.utils.AIUtils;
 import org.hkijena.jipipe.utils.MathUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.nio.LongBuffer;
 import java.nio.file.Path;
@@ -21,7 +21,7 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     private final Path modelPath;
     private final Path tokenizerPath;
     private final String modelId;
-    private JIPipeAIModelRunnerStatus status = JIPipeAIModelRunnerStatus.Unloaded;
+    private MicroserviceState status = MicroserviceState.Stopped;
     private String lastError = null;
 
     private OrtEnvironment env;
@@ -98,7 +98,7 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     }
 
     @Override
-    public JIPipeAIModelRunnerStatus getStatus() {
+    public MicroserviceState getStatus() {
         return status;
     }
 
@@ -110,10 +110,10 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     @Override
     public void start() {
         lock.readLock().lock();
-        if (status == JIPipeAIModelRunnerStatus.Unloaded) {
+        if (status == MicroserviceState.Stopped) {
             lock.readLock().unlock();
             lock.writeLock().lock();
-            status = JIPipeAIModelRunnerStatus.Loading;
+            status = MicroserviceState.Starting;
             try {
                 this.env = OrtEnvironment.getEnvironment();
                 OrtSession.SessionOptions options = new OrtSession.SessionOptions();
@@ -132,9 +132,9 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
                         tokenizerPath
                 );
 
-                status = JIPipeAIModelRunnerStatus.Idle;
+                status = MicroserviceState.Ready;
             } catch (Exception e) {
-                status = JIPipeAIModelRunnerStatus.Failed;
+                status = MicroserviceState.Failed;
             } finally {
                 lock.writeLock().unlock();
             }
@@ -147,10 +147,10 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
     public void shutdown() {
         lock.writeLock().lock();
         try {
-            if (status == JIPipeAIModelRunnerStatus.Unloaded) {
+            if (status == MicroserviceState.Stopped) {
                 return;
             }
-            status = JIPipeAIModelRunnerStatus.Unloading;
+            status = MicroserviceState.Stopping;
             try {
                 if (session != null) {
                     session.close();
@@ -158,10 +158,10 @@ public class JIPipeOnnxEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelR
                 }
                 // Do NOT close env - it's shared/singleton
                 tokenizer = null;
-                status = JIPipeAIModelRunnerStatus.Unloaded;
+                status = MicroserviceState.Stopped;
             } catch (Exception e) {
                 lastError = e.getMessage();
-                status = JIPipeAIModelRunnerStatus.Failed;
+                status = MicroserviceState.Failed;
             }
         } finally {
             lock.writeLock().unlock();

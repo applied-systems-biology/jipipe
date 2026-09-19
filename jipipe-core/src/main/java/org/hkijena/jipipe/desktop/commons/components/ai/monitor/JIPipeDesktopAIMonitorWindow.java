@@ -15,6 +15,8 @@ package org.hkijena.jipipe.desktop.commons.components.ai.monitor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
@@ -38,10 +40,10 @@ import java.util.List;
  *     <li><b>Embedding log</b> — displays the embedding model operation log via {@link org.hkijena.jipipe.desktop.commons.components.JIPipeDesktopProgressLoggerPanel}</li>
  * </ul>
  * <p>
- * Subscribes to {@link JIPipeAIServiceComponent.StatusChangedEventEmitter} for event-driven
- * status updates and auto-refreshes on a timer.
+ * Subscribes to {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} on the
+ * {@link JIPipeAIServiceComponent.EmbeddingModelService} for event-driven status updates and auto-refreshes on a timer.
  */
-public class JIPipeDesktopAIMonitorWindow extends JFrame implements JIPipeAIServiceComponent.StatusChangedEventListener, JIPipeDesktopWorkbenchAccess {
+public class JIPipeDesktopAIMonitorWindow extends JFrame implements MicroserviceStateChangeListener, JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
@@ -64,8 +66,8 @@ public class JIPipeDesktopAIMonitorWindow extends JFrame implements JIPipeAIServ
         refresh();
         refreshTimer.start();
 
-        // Subscribe to status change events
-        JIPipe.getInstance().getAiService().getStatusChangedEventEmitter().subscribe(this);
+        // Subscribe to state change events
+        JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateChangeEventEmitter().subscribe(this);
     }
 
     private void initialize() {
@@ -99,9 +101,9 @@ public class JIPipeDesktopAIMonitorWindow extends JFrame implements JIPipeAIServ
     }
 
     @Override
-    public void onAIStatusChanged(JIPipeAIServiceComponent.StatusChangedEvent event) {
+    public void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
         if (!isDisplayable()) {
-            JIPipe.getInstance().getAiService().getStatusChangedEventEmitter().unsubscribe(this);
+            JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateChangeEventEmitter().unsubscribe(this);
             return;
         }
         SwingUtilities.invokeLater(this::refresh);
@@ -120,7 +122,7 @@ public class JIPipeDesktopAIMonitorWindow extends JFrame implements JIPipeAIServ
     @Override
     public void dispose() {
         refreshTimer.stop();
-        JIPipe.getInstance().getAiService().getStatusChangedEventEmitter().unsubscribe(this);
+        JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateChangeEventEmitter().unsubscribe(this);
         super.dispose();
     }
 }

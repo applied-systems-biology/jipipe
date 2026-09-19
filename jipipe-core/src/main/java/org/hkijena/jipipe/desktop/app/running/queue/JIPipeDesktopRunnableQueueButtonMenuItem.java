@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.running.queue;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -26,7 +26,7 @@ import java.awt.*;
 public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implements JIPipeRunnable.StartedEventListener, JIPipeRunnable.InterruptedEventListener,
         JIPipeRunnable.ProgressEventListener, JIPipeRunnable.FinishedEventListener, JIPipeRunnable.EnqeuedEventListener {
 
-    private final JIPipeRunnableQueue runnerQueue;
+    private final JIPipeRunnableExecutor runnerQueue;
     private final JLabel titleLabel = new JLabel("Status");
     private final JLabel iconLabel = new JLabel();
     private final JLabel statusLabel = new JLabel();
@@ -34,7 +34,7 @@ public class JIPipeDesktopRunnableQueueButtonMenuItem extends JMenuItem implemen
     private final JButton cancelButton = new JButton(JIPipe.RESOURCES.getIcon32("actions/cancel.png"));
     private JIPipeRunnableWorker worker;
 
-    public JIPipeDesktopRunnableQueueButtonMenuItem(JIPipeRunnableQueue runnerQueue, JIPipeRunnableWorker worker) {
+    public JIPipeDesktopRunnableQueueButtonMenuItem(JIPipeRunnableExecutor runnerQueue, JIPipeRunnableWorker worker) {
         this.runnerQueue = runnerQueue;
         this.worker = worker;
         initialize();

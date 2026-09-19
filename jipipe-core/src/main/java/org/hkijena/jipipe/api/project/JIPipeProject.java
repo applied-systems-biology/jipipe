@@ -46,7 +46,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
@@ -92,7 +92,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private final BiMap<UUID, JIPipeProjectCompartment> compartments = HashBiMap.create();
     private final JIPipeLocalProjectMemoryCache cache;
     private final JIPipeProjectHistoryJournal historyJournal;
-    private final JIPipeRunnableQueue snapshotQueue = new JIPipeRunnableQueue("History");
+    private final JIPipeQueuedRunnableExecutor snapshotQueue = new JIPipeQueuedRunnableExecutor("History");
     private final CompartmentAddedEventEmitter compartmentAddedEventEmitter = new CompartmentAddedEventEmitter();
     private final CompartmentRemovedEventEmitter compartmentRemovedEventEmitter = new CompartmentRemovedEventEmitter();
     private final JIPipeGraphNode.BaseDirectoryChangedEventEmitter baseDirectoryChangedEventEmitter = new JIPipeGraphNode.BaseDirectoryChangedEventEmitter();
@@ -389,7 +389,7 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
-    public JIPipeRunnableQueue getSnapshotQueue() {
+    public JIPipeQueuedRunnableExecutor getSnapshotQueue() {
         return snapshotQueue;
     }
 

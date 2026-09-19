@@ -2,7 +2,7 @@ package org.hkijena.jipipe.desktop.commons.components.servers.monitor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
-import org.hkijena.jipipe.api.servers.JIPipeServerState;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
@@ -154,8 +154,8 @@ public class JIPipeDesktopServerMonitorOverviewPage extends JIPipeDesktopServerM
      * @return true if a stop can be issued
      */
     private static boolean isRunning(JIPipeServerInstance<?> instance) {
-        JIPipeServerState state = instance.getState();
-        return state != JIPipeServerState.NotRunning && state != JIPipeServerState.Stopping;
+        MicroserviceState state = instance.getState();
+        return state != MicroserviceState.Stopped && state != MicroserviceState.Stopping;
     }
 
     /**

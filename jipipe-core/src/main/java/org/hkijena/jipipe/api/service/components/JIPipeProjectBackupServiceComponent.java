@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
 import org.hkijena.jipipe.api.backups.ThinBackupsRun;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter;
  */
 public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent implements JIPipeParameterCollection.ParameterChangedEventListener {
     private Timer backupTimer;
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Backups");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Backups");
 
     public JIPipeProjectBackupServiceComponent(JIPipeService service) {
         super(service);
@@ -114,7 +114,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
     }
 
     public void scheduleCleanup() {
-        JIPipeRunnableQueue cleanupQueue = getService().getCleanup().getCleanupQueue();
+        JIPipeQueuedRunnableExecutor cleanupQueue = getService().getCleanup().getCleanupQueue();
         cleanupQueue.enqueue(new ThinBackupsRun(false));
     }
 
@@ -134,7 +134,7 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
         }
     }
 
-    public JIPipeRunnableQueue getQueue() {
+    public JIPipeQueuedRunnableExecutor getQueue() {
         return queue;
     }
 

@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeRunnableLogEntry;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 
@@ -34,15 +35,15 @@ public class JIPipeDesktopRunnableLogsCollection implements JIPipeRunnable.Finis
     private final Set<UUID> addedLogs = new HashSet<>();
 
     public JIPipeDesktopRunnableLogsCollection() {
-        registerQueue(JIPipeRunnableQueue.getInstance());
+        registerQueue(JIPipeQueuedRunnableExecutor.getInstance());
     }
 
-    public void registerQueue(JIPipeRunnableQueue queue) {
+    public void registerQueue(JIPipeRunnableExecutor queue) {
         queue.getFinishedEventEmitter().subscribe(this);
         queue.getInterruptedEventEmitter().subscribe(this);
     }
 
-    public void unregisterQueue(JIPipeRunnableQueue queue) {
+    public void unregisterQueue(JIPipeRunnableExecutor queue) {
         queue.getFinishedEventEmitter().unsubscribe(this);
         queue.getInterruptedEventEmitter().unsubscribe(this);
     }

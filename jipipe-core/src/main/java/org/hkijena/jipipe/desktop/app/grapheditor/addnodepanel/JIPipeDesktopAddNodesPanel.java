@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.*;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -55,7 +55,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -68,7 +67,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     private static boolean AI_SEARCH = false;
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeNodeDatabase database;
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Node toolbox");
+    private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node toolbox");
     private final JIPipeGraphEditorUIApplicationSettings graphEditorSettings;
     private final boolean isCompartmentsEditor;
     private final JPanel mainCategoriesPanel = new JPanel();
@@ -393,8 +392,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
     }
 
     private void reloadList() {
-        queue.cancelAll();
-        queue.enqueue(new ReloadListRun(this));
+        executor.enqueue(new ReloadListRun(this));
     }
 
     public JToolBar getToolBar() {
@@ -627,7 +625,7 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 0,
                 0));
 
-        searchField = new JIPipeDesktopSearchTextField(queue);
+        searchField = new JIPipeDesktopSearchTextField(executor);
         searchField.addActionListener(e -> reloadList());
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
@@ -893,17 +891,13 @@ public class JIPipeDesktopAddNodesPanel extends JIPipeDesktopWorkbenchPanel {
                 model.addElement(entry);
             }
 
-            try {
-                SwingUtilities.invokeAndWait(() -> toolBox.nodeList.setModel(model));
-            } catch (InterruptedException | InvocationTargetException ignored) {
-                return;
-            }
-            if (!model.isEmpty()) {
-                SwingUtilities.invokeLater(() -> {
+            SwingUtilities.invokeLater(() -> {
+                toolBox.nodeList.setModel(model);
+                if (!model.isEmpty()) {
                     toolBox.nodeList.setSelectedIndex(0);
                     toolBox.scrollPane.getVerticalScrollBar().setValue(0);
-                });
-            }
+                }
+            });
         }
     }
 

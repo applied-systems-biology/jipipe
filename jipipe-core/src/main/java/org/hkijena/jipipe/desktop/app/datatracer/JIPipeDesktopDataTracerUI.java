@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.contexts.InternalErrorValidationReportContext;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class JIPipeDesktopDataTracerUI extends JIPipeDesktopProjectWorkbenchPanel implements JIPipeRunnable.InterruptedEventListener, JIPipeRunnable.FinishedEventListener, Disposable, JIPipeCache.ModifiedEventListener {
-    private final JIPipeRunnableQueue queue = new JIPipeRunnableQueue("Data tracer");
+    private final JIPipeQueuedRunnableExecutor queue = new JIPipeQueuedRunnableExecutor("Data tracer");
     private final JIPipeGraphNode targetNode;
 
     private final String targetSlotName;

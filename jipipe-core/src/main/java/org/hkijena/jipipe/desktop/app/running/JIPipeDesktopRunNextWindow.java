@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.api.validation.contexts.UnspecifiedValidationReportContext;
@@ -80,8 +80,8 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         initializeRunOptions();
         initializeEvents();
 
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribe(this);
-        JIPipeRunnableQueue.getInstance().getInterruptedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribe(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getInterruptedEventEmitter().subscribe(this);
     }
 
     private void initializeEvents() {
@@ -335,7 +335,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         JIPipeDesktopRunExecuteUI executeUI = new JIPipeDesktopRunExecuteUI(workbench, run);
         activatePage(executeUI);
 
-        JIPipeRunnableQueue.getInstance().enqueue(run);
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
     }
 
     private JIPipeDesktopQuickRun createRun(boolean saveToCache, boolean saveToDisk, boolean storeIntermediateResults, boolean excludeSelected) {

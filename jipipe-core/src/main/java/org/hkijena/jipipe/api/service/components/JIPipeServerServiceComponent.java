@@ -13,16 +13,17 @@
 
 package org.hkijena.jipipe.api.service.components;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.servers.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.api.servers.ManagedInstanceEntry;
-import org.hkijena.jipipe.api.servers.PortManager;
 
 import javax.swing.*;
 import java.util.*;
@@ -37,11 +38,13 @@ import java.util.concurrent.ConcurrentHashMap;
  *     <li>Lifecycle management: start, stop, health check, auto-shutdown</li>
  *     <li>Lease acquisition and release with reference counting</li>
  *     <li>Port assignment via {@link PortManager}</li>
- *     <li>Event-driven state change notifications</li>
+ *     <li>Event-driven state change notifications (via each instance's own emitter)</li>
  * </ul>
  *
- * <p>Follows the pattern of {@link JIPipeAIServiceComponent} with a
- * {@link JIPipeRunnableQueue} for serialized lifecycle operations.</p>
+ * <p>Server instances now extend {@link org.hkijena.jipipe.api.microservice.AbstractMicroservice},
+ * so lifecycle state transitions (Starting → Ready → Stopping → Stopped) are handled
+ * internally by {@code start()}/{@code stop()}. The service component simply delegates
+ * to those methods and uses {@code setStateDetail()} for Busy/Idle nuance.</p>
  */
 public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
 
@@ -49,18 +52,8 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
     private final Map<String, ManagedInstanceEntry> activeInstances = new ConcurrentHashMap<>();
     private final JIPipeServerInstanceManager appWideManager;
     private final PortManager portManager = new PortManager();
-    private final JIPipeRunnableQueue lifecycleQueue = new JIPipeRunnableQueue("Server Lifecycle");
-    private final JIPipeServerEventEmitter stateChangedEventEmitter = new JIPipeServerEventEmitter();
-
-    /**
-     * Default startup timeout in milliseconds.
-     */
-    private static final long DEFAULT_STARTUP_TIMEOUT_MS = 120_000;
-
-    /**
-     * Default health check interval in milliseconds during startup.
-     */
-    private static final long HEALTH_CHECK_INTERVAL_MS = 500;
+    private final JIPipeQueuedRunnableExecutor lifecycleQueue = new JIPipeQueuedRunnableExecutor("Server Lifecycle");
+    private final MicroserviceStateChangeEventEmitter stateChangedEventEmitter = new MicroserviceStateChangeEventEmitter();
 
     public JIPipeServerServiceComponent(JIPipeService service) {
         super(service);
@@ -139,6 +132,9 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
             ServerInstanceFactory<JIPipeEnvironment, JIPipeServerInstance<JIPipeEnvironment>> typedFactory =
                     (ServerInstanceFactory<JIPipeEnvironment, JIPipeServerInstance<JIPipeEnvironment>>) entry.factory;
             JIPipeServerInstance<JIPipeEnvironment> instance = typedFactory.create(environment, port);
+            // Relay state change events from this instance to the service-level emitter
+            instance.getStateChangeEventEmitter().subscribeLambda((emitter, event) ->
+                    stateChangedEventEmitter.emit(event));
             return new ManagedInstanceEntry(instance);
         });
 
@@ -151,31 +147,27 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
                     instance.getClass().getName() + " but " + instClass.getName() + " was requested");
         }
 
-        // Start the instance if not running
-        JIPipeServerState state = instance.getState();
-        if (state == JIPipeServerState.NotRunning || state == JIPipeServerState.Failed) {
-            startInstance(instance);
+        // Start the instance if not ready (AbstractMicroservice.start() blocks until Ready/Failed)
+        if (!instance.isReady()) {
+            instance.start();
+            if (!instance.isReady()) {
+                throw new ServerStartException("Server failed to start: " + instance.getStateDetail(),
+                        ServerStartException.Reason.Unknown);
+            }
         }
-
-        // Wait for instance to be running (with timeout)
-        waitForInstanceRunning(instance);
 
         // Increment reference count
         managedEntry.acquire();
 
-        // Update state to Busy if appropriate
-        if (instance.getState() == JIPipeServerState.Idle || instance.getState() == JIPipeServerState.Running) {
-            JIPipeServerState oldState = instance.getState();
-            instance.setState(JIPipeServerState.Busy);
-            fireStateChanged(instance, oldState, JIPipeServerState.Busy);
-        }
+        // Update state detail to indicate busy
+        instance.updateStateDetail("Busy (port " + instance.getPort() + ")");
 
         return new JIPipeServerLease<>(instance, this);
     }
 
     /**
      * Releases a lease. Called by {@link JIPipeServerLease#close()}.
-     * Decrements the reference count and updates the instance state.
+     * Decrements the reference count and updates the instance state detail.
      *
      * @param lease the lease to release
      */
@@ -193,113 +185,32 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
 
         int newCount = managedEntry.release();
         if (newCount <= 0) {
-            // No more leases - transition to Idle
-            JIPipeServerState oldState = instance.getState();
-            if (oldState == JIPipeServerState.Busy) {
-                instance.setState(JIPipeServerState.Idle);
-                fireStateChanged(instance, oldState, JIPipeServerState.Idle);
-            }
+            // No more leases — update state detail to idle
+            instance.updateStateDetail("Idle (port " + instance.getPort() + ")");
         }
     }
 
     // ===== Lifecycle =====
 
     /**
-     * Starts a server instance. Blocks until the instance is running or fails.
-     *
-     * @param instance the instance to start
-     * @throws ServerStartException if the server fails to start
-     */
-    private void startInstance(JIPipeServerInstance<?> instance) {
-        JIPipeServerState oldState = instance.getState();
-        instance.setState(JIPipeServerState.Starting);
-        fireStateChanged(instance, oldState, JIPipeServerState.Starting);
-
-        try {
-            instance.start();
-        } catch (ServerStartException e) {
-            instance.setState(JIPipeServerState.Failed);
-            fireStateChanged(instance, JIPipeServerState.Starting, JIPipeServerState.Failed);
-            throw e;
-        } catch (Exception e) {
-            instance.setState(JIPipeServerState.Failed);
-            fireStateChanged(instance, JIPipeServerState.Starting, JIPipeServerState.Failed);
-            throw new ServerStartException("Server failed to start: " + e.getMessage(),
-                    ServerStartException.Reason.Unknown, e);
-        }
-    }
-
-    /**
-     * Waits for a server instance to reach Running/Idle/Busy state.
-     * Polls health check at regular intervals.
-     *
-     * @param instance the instance to wait for
-     * @throws ServerStartException if the server doesn't become healthy within the timeout
-     */
-    private void waitForInstanceRunning(JIPipeServerInstance<?> instance) {
-        JIPipeServerState state = instance.getState();
-        if (state == JIPipeServerState.Running || state == JIPipeServerState.Idle ||
-                state == JIPipeServerState.Busy) {
-            return; // Already running
-        }
-
-        if (state != JIPipeServerState.Starting) {
-            throw new ServerStartException("Server is in state " + state + ", expected Starting",
-                    ServerStartException.Reason.Unknown);
-        }
-
-        long deadline = System.currentTimeMillis() + DEFAULT_STARTUP_TIMEOUT_MS;
-        while (System.currentTimeMillis() < deadline) {
-            if (instance.isHealthy()) {
-                JIPipeServerState oldState = instance.getState();
-                instance.setState(JIPipeServerState.Running);
-                fireStateChanged(instance, oldState, JIPipeServerState.Running);
-                return;
-            }
-            try {
-                Thread.sleep(HEALTH_CHECK_INTERVAL_MS);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new ServerStartException("Interrupted while waiting for server to start",
-                        ServerStartException.Reason.Timeout);
-            }
-        }
-
-        // Timeout - stop the instance and throw
-        stopInstance(instance);
-        throw new ServerStartException("Server did not become healthy within " + DEFAULT_STARTUP_TIMEOUT_MS + "ms",
-                ServerStartException.Reason.Timeout);
-    }
-
-    /**
-     * Stops a server instance.
+     * Stops a server instance. Delegates to {@link JIPipeServerInstance#stop()},
+     * which is the {@link org.hkijena.jipipe.api.microservice.AbstractMicroservice}
+     * lifecycle method (handles Stopping → Stopped transitions internally).
      *
      * @param instance the instance to stop
      */
     public void stopInstance(JIPipeServerInstance<?> instance) {
-        JIPipeServerState oldState = instance.getState();
-        if (oldState == JIPipeServerState.NotRunning) {
+        if (instance.getState() == MicroserviceState.Stopped) {
             return;
         }
-        instance.setState(JIPipeServerState.Stopping);
-        fireStateChanged(instance, oldState, JIPipeServerState.Stopping);
-
         try {
             instance.stop();
-            instance.setState(JIPipeServerState.NotRunning);
-            fireStateChanged(instance, JIPipeServerState.Stopping, JIPipeServerState.NotRunning);
-        } catch (Exception e) {
-            instance.setState(JIPipeServerState.Failed);
-            fireStateChanged(instance, JIPipeServerState.Stopping, JIPipeServerState.Failed);
-        }
-
-        // Release the port
-        portManager.releasePort(instance.getPort());
-
-        // Remove from active instances
-        String key = findInstanceKey(instance);
-        if (key != null) {
-            activeInstances.remove(key);
+        } finally {
+            portManager.releasePort(instance.getPort());
+            String key = findInstanceKey(instance);
+            if (key != null) {
+                activeInstances.remove(key);
+            }
         }
     }
 
@@ -344,7 +255,7 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
      * @param instanceKey the instance key
      * @return the state, or null if no such instance exists
      */
-    public JIPipeServerState getState(String instanceKey) {
+    public MicroserviceState getState(String instanceKey) {
         ManagedInstanceEntry entry = activeInstances.get(instanceKey);
         return entry != null ? entry.getInstance().getState() : null;
     }
@@ -372,25 +283,21 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
      *
      * @return the lifecycle queue
      */
-    public JIPipeRunnableQueue getLifecycleQueue() {
+    public JIPipeQueuedRunnableExecutor getLifecycleQueue() {
         return lifecycleQueue;
     }
 
     // ===== Event System =====
 
     /**
-     * Returns the event emitter for server state changes.
+     * Returns the service-level event emitter that relays state change events
+     * from all managed server instances. UI components can subscribe to this
+     * emitter to receive notifications when any instance changes state.
      *
-     * @return the event emitter
+     * @return the relay event emitter
      */
-    public JIPipeServerEventEmitter getStateChangedEventEmitter() {
+    public MicroserviceStateChangeEventEmitter getStateChangedEventEmitter() {
         return stateChangedEventEmitter;
-    }
-
-    private void fireStateChanged(JIPipeServerInstance<?> instance,
-                                  JIPipeServerState oldState,
-                                  JIPipeServerState newState) {
-        stateChangedEventEmitter.emit(new JIPipeServerEvent(this, instance, oldState, newState));
     }
 
     // ===== Internal Helpers =====

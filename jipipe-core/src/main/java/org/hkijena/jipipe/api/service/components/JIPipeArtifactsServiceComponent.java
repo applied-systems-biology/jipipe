@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.environments.sources.JIPipeEnvironmentConfigurator
 import org.hkijena.jipipe.api.environments.sources.JIPipeEnvironmentConfiguratorFallbackSource;
 import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.artifacts.JIPipeArtifactApplicationSettings;
@@ -393,7 +393,7 @@ public final class JIPipeArtifactsServiceComponent extends JIPipeServiceComponen
     }
 
     public void enqueueUpdateCachedArtifacts() {
-        JIPipeRunnableQueue.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
+        JIPipeQueuedRunnableExecutor.getInstance().enqueue(new JIPipeArtifactRepositoryUpdateCachedArtifactsRun());
     }
 
     public JIPipeArtifact queryPreferredCachedArtifact(String filter) {

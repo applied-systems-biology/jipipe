@@ -21,7 +21,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.Closeable;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 
 /**
  * Takes control of the log in {@link ij.IJ} and pumps its messages into a {@link org.hkijena.jipipe.api.JIPipeProgressInfo}
@@ -55,19 +54,13 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
             target.log("Unable to hook into IJ.log(): " + e);
             return;
         }
-        try {
-            SwingUtilities.invokeAndWait(() -> {
-                logStart = logTextPanel.getText().length();
-//                target.log("IJ.Log() starts at " + logStart);
-                Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
-                if (windowAncestor != null) {
-                    windowAncestor.setVisible(false);
-                }
-            });
-        } catch (InterruptedException | InvocationTargetException e) {
-            target.log("Unable to close IJ.log() window: " + e);
-            return;
-        }
+        logStart = logTextPanel.getText().length();
+        SwingUtilities.invokeLater(() -> {
+            Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
+            if (windowAncestor != null) {
+                windowAncestor.setVisible(false);
+            }
+        });
 
         timer.start();
     }
@@ -93,18 +86,13 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
     public void close() {
         if (timer.isRunning())
             copyLog();
-//        target.log("Ending IJ.log() hook");
         timer.stop();
 
-        try {
-            SwingUtilities.invokeAndWait(() -> {
-                Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
-                if (windowAncestor != null) {
-                    windowAncestor.setVisible(false);
-                }
-            });
-        } catch (Throwable e) {
-            target.log("Unable to close IJ.log() window: " + e);
-        }
+        SwingUtilities.invokeLater(() -> {
+            Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
+            if (windowAncestor != null) {
+                windowAncestor.setVisible(false);
+            }
+        });
     }
 }

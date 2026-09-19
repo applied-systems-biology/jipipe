@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.api.data.JIPipeDesktopDataDisplayOperation;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -357,7 +357,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
                             String name = path.getFileName().toString();
                             JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataTable.getData(modelRow, JIPipeData.class, new JIPipeProgressInfo()),
                                     directory, name);
-                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+                            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeQueuedRunnableExecutor("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                         }
                     }));
 
@@ -371,7 +371,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
                                 String name = path.getFileName().toString();
                                 JIPipeDesktopDataExporterRun run = new JIPipeDesktopDataExporterRun(dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo()),
                                         directory, name);
-                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeRunnableQueue("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
+                                JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), SwingUtilities.getWindowAncestor(this), run, new JIPipeQueuedRunnableExecutor("Export"), JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
                             }
                         }));
             }
@@ -400,7 +400,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
     private void exportByMetadataExporter() {
         JIPipeDesktopDataTableToFilesByMetadataExporterRun run = new JIPipeDesktopDataTableToFilesByMetadataExporterRun(getDesktopWorkbench(), Collections.singletonList(dataTable), false);
         if (run.setup()) {
-            JIPipeRunnableQueue.getInstance().enqueue(run);
+            JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         }
     }
 
@@ -421,7 +421,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
                     Collections.singletonList(dataTable),
                     false,
                     true);
-            JIPipeRunnableQueue.getInstance().enqueue(run);
+            JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         }
     }
 
@@ -439,7 +439,7 @@ public class JIPipeDesktopLegacyDataBatchAssistantDataTableUI extends JIPipeDesk
             JIPipeDesktopDataTableToZIPExporterRun run = new JIPipeDesktopDataTableToZIPExporterRun(getDesktopWorkbench(),
                     outputZipFile,
                     dataTable);
-            JIPipeRunnableQueue.getInstance().enqueue(run);
+            JIPipeQueuedRunnableExecutor.getInstance().enqueue(run);
         }
     }
 

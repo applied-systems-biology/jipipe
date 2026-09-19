@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeHistoryJournalApplicationSettings;
 
 import javax.swing.*;
@@ -29,13 +29,13 @@ import java.util.UUID;
 public class JIPipeProjectHistoryJournal implements JIPipeHistoryJournal {
     private final HistoryChangedEventEmitter historyChangedEventEmitter = new HistoryChangedEventEmitter();
     private final JIPipeProject project;
-    private final JIPipeRunnableQueue snapshotQueue;
+    private final JIPipeQueuedRunnableExecutor snapshotQueue;
     private final JIPipeHistoryJournalApplicationSettings settings;
     private final List<Snapshot> undoStack = new ArrayList<>();
     private final List<Snapshot> redoStack = new ArrayList<>();
     private Snapshot currentSnapshot;
 
-    public JIPipeProjectHistoryJournal(JIPipeProject project, JIPipeRunnableQueue snapshotQueue) {
+    public JIPipeProjectHistoryJournal(JIPipeProject project, JIPipeQueuedRunnableExecutor snapshotQueue) {
         this.project = project;
         this.snapshotQueue = snapshotQueue;
         this.settings = JIPipeHistoryJournalApplicationSettings.getInstance();

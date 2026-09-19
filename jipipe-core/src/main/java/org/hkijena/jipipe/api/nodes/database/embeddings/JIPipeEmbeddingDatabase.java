@@ -37,6 +37,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -491,6 +492,75 @@ public class JIPipeEmbeddingDatabase {
                 }
             } catch (TimeoutException e) {
                 progressInfo.warn("Timeout computing embedding for node: " + nodeId);
+            } catch (Exception e) {
+                progressInfo.warn("Failed to compute embedding for node: " + nodeId);
+                LOGGER.debug("Failed to compute embedding for node: {}", nodeId, e);
+            }
+        }
+
+        // Auto-save after JIT computation
+        if (computedCount > 0) {
+            try {
+                saveUserCache(modelId);
+                LOGGER.debug("Auto-saved {} new embeddings for model {}", computedCount, modelId);
+            } catch (Exception e) {
+                LOGGER.warn("Failed to auto-save embedding cache for model {}", modelId, e);
+            }
+        }
+    }
+
+    /**
+     * For each entry that doesn't have a verified embedding, compute one JIT using the provided
+     * embed function. The embed function is called synchronously and should be backed by
+     * {@link JIPipeAIServiceComponent#embedNow(String)} on the queue thread.
+     * <p>
+     * This variant avoids flooding the AI service queue with individual embed tasks, which
+     * was the root cause of search freezes when the search was cancelled/superseded.
+     *
+     * @param entries      the list of node database entries to ensure embeddings for
+     * @param modelId      the model ID to use
+     * @param embedFn      synchronous embed function (text -> embedding vector)
+     * @param progressInfo the progress info for logging
+     */
+    public void ensureEmbeddingsForEntriesWithEmbedder(List<JIPipeNodeDatabaseEntry> entries, String modelId,
+                                                        Function<String, float[]> embedFn, JIPipeProgressInfo progressInfo) {
+        Objects.requireNonNull(entries, "Entries must not be null");
+        Objects.requireNonNull(modelId, "Model ID must not be null");
+        Objects.requireNonNull(embedFn, "Embed function must not be null");
+        Objects.requireNonNull(progressInfo, "Progress info must not be null");
+
+        // Ensure the cache (bundled resource + user disk) is loaded before computing any embeddings.
+        if (!cacheLoadedModels.contains(modelId)) {
+            if (persistent) {
+                loadUserCache(modelId, progressInfo);
+            } else {
+                cacheLoadedModels.add(modelId);
+            }
+        }
+
+        int computedCount = 0;
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if (Thread.currentThread().isInterrupted()) {
+                LOGGER.debug("Interrupted while ensuring embeddings");
+                break;
+            }
+
+            String nodeId = entryToId(entry);
+            String text = entryToText(entry);
+
+            // Use verified access to detect and invalidate stale embeddings
+            float[] existing = getVerifiedEmbedding(modelId, nodeId, text);
+            if (existing != null) {
+                continue;
+            }
+
+            try {
+                float[] embedding = embedFn.apply(text);
+                if (embedding != null) {
+                    setEmbeddingWithHash(modelId, nodeId, embedding, text);
+                    computedCount++;
+                    LOGGER.debug("Computed embedding for node: {}", nodeId);
+                }
             } catch (Exception e) {
                 progressInfo.warn("Failed to compute embedding for node: " + nodeId);
                 LOGGER.debug("Failed to compute embedding for node: {}", nodeId, e);

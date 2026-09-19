@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * Application-wide singleton that holds one {@link JIPipeEmbeddingDatabase} for
@@ -99,6 +100,22 @@ public class JIPipeGlobalEmbeddingSearch {
                                            JIPipeProgressInfo progressInfo) {
         initialize(modelId, progressInfo);
         embeddingDatabase.ensureEmbeddingsForEntries(entries, modelId, aiService, progressInfo);
+    }
+
+    /**
+     * Ensure embeddings exist for the given global entries using a synchronous embed function.
+     * Initializes the database if not already done.
+     *
+     * @param entries      global entries to ensure embeddings for
+     * @param modelId      the model ID
+     * @param embedFn      synchronous embed function (text -> embedding vector)
+     * @param progressInfo the progress info for logging
+     */
+    public void ensureEmbeddingsForEntriesWithEmbedder(List<JIPipeNodeDatabaseEntry> entries, String modelId,
+                                                       Function<String, float[]> embedFn,
+                                                       JIPipeProgressInfo progressInfo) {
+        initialize(modelId, progressInfo);
+        embeddingDatabase.ensureEmbeddingsForEntriesWithEmbedder(entries, modelId, embedFn, progressInfo);
     }
 
     /**

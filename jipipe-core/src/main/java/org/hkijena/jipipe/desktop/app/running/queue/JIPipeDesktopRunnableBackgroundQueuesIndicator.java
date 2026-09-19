@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.desktop.app.running.queue;
 
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -26,7 +26,7 @@ public class JIPipeDesktopRunnableBackgroundQueuesIndicator extends JPanel imple
         setOpaque(false);
     }
 
-    public void addQueue(JIPipeRunnableQueue queue, Icon icon) {
+    public void addQueue(JIPipeRunnableExecutor queue, Icon icon) {
         if (queues.stream().anyMatch(e -> e.queue == queue)) {
             return;
         }
@@ -88,7 +88,7 @@ public class JIPipeDesktopRunnableBackgroundQueuesIndicator extends JPanel imple
         rebuild();
     }
 
-    private record Entry(JIPipeRunnableQueue queue, Icon icon) {
+    private record Entry(JIPipeRunnableExecutor queue, Icon icon) {
 
     }
 }

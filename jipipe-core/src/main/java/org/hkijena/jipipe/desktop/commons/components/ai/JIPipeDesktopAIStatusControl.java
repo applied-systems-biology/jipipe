@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.desktop.commons.components.ai;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.monitor.JIPipeDesktopAIMonitorWindow;
@@ -17,17 +19,17 @@ import java.util.concurrent.TimeUnit;
  * Status bar button that displays the current AI model status and provides controls
  * to load/unload the embedding model.
  * <p>
- * Subscribes to {@link JIPipeAIServiceComponent.StatusChangedEventEmitter} for event-driven
- * updates instead of polling.
+ * Subscribes to {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} on the
+ * {@link JIPipeAIServiceComponent.EmbeddingModelService} for event-driven updates instead of polling.
  * <p>
- * The Busy→Idle transition is debounced to prevent UI flickering when
+ * The Busy→Idle transition (within the Ready state) is debounced to prevent UI flickering when
  * the model rapidly alternates between busy and idle states during batched
  * embedding requests.
  */
-public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAIServiceComponent.StatusChangedEventListener {
+public class JIPipeDesktopAIStatusControl extends JButton implements MicroserviceStateChangeListener {
 
     /**
-     * Debounce delay for the Busy→Idle transition (milliseconds).
+     * Debounce delay for the Ready(busy)→Ready(idle) transition (milliseconds).
      */
     private static final long IDLE_DEBOUNCE_MS = 500;
 
@@ -38,14 +40,15 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     private final SpinnerIcon busyIcon;
 
     /**
-     * Tracks the last status that was applied to the UI, used to detect Busy→Idle transitions.
+     * Tracks the last status that was applied to the UI, used to detect busy→idle transitions.
      */
-    private JIPipeAIModelRunnerStatus displayedStatus = null;
+    private MicroserviceState displayedStatus = null;
+    private String displayedDetail = null;
 
     /**
-     * Debouncer for the Busy→Idle transition. If the status changes back to Busy
-     * before the debouncer fires, the pending Idle update is effectively cancelled
-     * because the next {@link #onAIStatusChanged} call will apply Busy immediately.
+     * Debouncer for the busy→idle transition. If the state detail changes back to "Busy"
+     * before the debouncer fires, the pending idle update is effectively cancelled
+     * because the next state-change call will apply busy immediately.
      */
     private final StaticDebouncer idleDebouncer;
 
@@ -58,8 +61,8 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
         initialize();
         updateStatus();
 
-        // Subscribe to status change events (event-driven, no polling)
-        JIPipe.getInstance().getAiService().getStatusChangedEventEmitter().subscribeWeak(this);
+        // Subscribe to state change events (event-driven, no polling)
+        JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateChangeEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -70,19 +73,22 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     }
 
     @Override
-    public void onAIStatusChanged(JIPipeAIServiceComponent.StatusChangedEvent event) {
-        // Status changes arrive from the queue worker thread; must update UI on EDT
-        SwingUtilities.invokeLater(() -> handleStatusChange(event.getNewStatus()));
+    public void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
+        // State changes arrive from the service thread; must update UI on EDT
+        SwingUtilities.invokeLater(() -> handleStatusChange(event.getNewState()));
     }
 
     /**
-     * Handles a status change with debouncing for the Busy→Idle transition.
+     * Handles a status change with debouncing for the busy→idle transition.
      * All other transitions are applied immediately.
      */
-    private void handleStatusChange(JIPipeAIModelRunnerStatus newStatus) {
-        if (newStatus == JIPipeAIModelRunnerStatus.Idle
-                && displayedStatus == JIPipeAIModelRunnerStatus.Busy) {
-            // Debounce the Busy→Idle transition to prevent flickering
+    private void handleStatusChange(MicroserviceState newStatus) {
+        String detail = JIPipe.getInstance().getAiService().getEmbeddingModelService().getStateDetail();
+        if (newStatus == MicroserviceState.Ready
+                && "Idle".equals(detail)
+                && displayedStatus == MicroserviceState.Ready
+                && "Busy".equals(displayedDetail)) {
+            // Debounce the busy→idle transition to prevent flickering
             idleDebouncer.debounce();
         } else {
             // Apply all other transitions immediately
@@ -91,37 +97,38 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
     }
 
     /**
-     * Applies the Idle status to the UI. Called by the debouncer after the
+     * Applies the idle status to the UI. Called by the debouncer after the
      * debounce delay, or directly if no debouncing is needed.
      */
     private void applyIdleStatus() {
         // Re-read the current status in case it changed during the debounce window
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-        JIPipeAIModelRunnerStatus currentStatus = aiService.getEmbeddingModelStatus();
-        if (currentStatus == JIPipeAIModelRunnerStatus.Idle) {
+        MicroserviceState currentStatus = aiService.getEmbeddingModelStatus();
+        String detail = aiService.getEmbeddingModelService().getStateDetail();
+        if (currentStatus == MicroserviceState.Ready && "Idle".equals(detail)) {
             updateStatus();
         }
-        // If status is no longer Idle (e.g., went back to Busy), do nothing —
-        // the next onAIStatusChanged call will handle it
     }
 
     private void reloadMenu() {
         popupMenu.removeAll();
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-        JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
+        MicroserviceState status = aiService.getEmbeddingModelStatus();
+        String detail = aiService.getEmbeddingModelService().getStateDetail();
+        boolean isBusy = status == MicroserviceState.Ready && "Busy".equals(detail);
 
-        // Load embedding model (available when unloaded or failed)
-        if (status == JIPipeAIModelRunnerStatus.Unloaded || status == JIPipeAIModelRunnerStatus.Failed) {
+        // Load embedding model (available when stopped or failed)
+        if (status == MicroserviceState.Stopped || status == MicroserviceState.Failed) {
             popupMenu.add(UIUtils.createMenuItem("Load embedding model", "Loads the embedding model",
                     JIPipe.RESOURCES.getIcon16("actions/circle-play.png"), this::startEmbeddingModel));
         }
 
-        // Unload embedding model (available when idle or busy; busy defers unload until task completes)
-        if (status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy) {
-            String text = status == JIPipeAIModelRunnerStatus.Busy
+        // Unload embedding model (available when ready; busy defers unload until task completes)
+        if (status == MicroserviceState.Ready) {
+            String text = isBusy
                     ? "Unload embedding model (after current task)"
                     : "Unload embedding model";
-            String tooltip = status == JIPipeAIModelRunnerStatus.Busy
+            String tooltip = isBusy
                     ? "Unloads the embedding model after the current task completes"
                     : "Unloads the current embedding model";
             popupMenu.add(UIUtils.createMenuItem(text, tooltip,
@@ -129,7 +136,7 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
         }
 
         // Show error details if failed
-        if (status == JIPipeAIModelRunnerStatus.Failed) {
+        if (status == MicroserviceState.Failed) {
             String error = aiService.getEmbeddingModelError();
             if (error != null && !error.isEmpty()) {
                 popupMenu.add(UIUtils.createMenuItem("Show error details", "Shows the error that occurred",
@@ -147,31 +154,34 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
 
     private void updateStatus() {
         JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
-        JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
+        MicroserviceState status = aiService.getEmbeddingModelStatus();
+        String detail = aiService.getEmbeddingModelService().getStateDetail();
         displayedStatus = status;
+        displayedDetail = detail;
 
         switch (status) {
-            case Unloaded:
+            case Stopped:
                 setText("AI offline");
                 setIcon(defaultIcon);
                 busyIcon.stop();
                 break;
-            case Loading:
+            case Starting:
                 setText("AI loading...");
                 setIcon(busyIcon);
                 busyIcon.start();
                 break;
-            case Idle:
-                setText("AI ready");
-                setIcon(defaultIcon);
-                busyIcon.stop();
+            case Ready:
+                if ("Busy".equals(detail)) {
+                    setText("AI busy");
+                    setIcon(busyIcon);
+                    busyIcon.start();
+                } else {
+                    setText("AI ready");
+                    setIcon(defaultIcon);
+                    busyIcon.stop();
+                }
                 break;
-            case Busy:
-                setText("AI busy");
-                setIcon(busyIcon);
-                busyIcon.start();
-                break;
-            case Unloading:
+            case Stopping:
                 setText("AI shutting down...");
                 setIcon(busyIcon);
                 busyIcon.start();
@@ -187,17 +197,16 @@ public class JIPipeDesktopAIStatusControl extends JButton implements JIPipeAISer
         setToolTipText(getToolTipTextForStatus(status, aiService));
     }
 
-    private String getToolTipTextForStatus(JIPipeAIModelRunnerStatus status, JIPipeAIServiceComponent aiService) {
+    private String getToolTipTextForStatus(MicroserviceState status, JIPipeAIServiceComponent aiService) {
         switch (status) {
-            case Unloaded:
+            case Stopped:
                 return "AI model is not loaded. Click to load.";
-            case Loading:
+            case Starting:
                 return "AI model is loading...";
-            case Idle:
-                return "AI model is ready";
-            case Busy:
-                return "AI model is processing a task";
-            case Unloading:
+            case Ready:
+                String detail = aiService.getEmbeddingModelService().getStateDetail();
+                return "Busy".equals(detail) ? "AI model is processing a task" : "AI model is ready";
+            case Stopping:
                 return "AI model is shutting down...";
             case Failed:
                 String error = aiService.getEmbeddingModelError();

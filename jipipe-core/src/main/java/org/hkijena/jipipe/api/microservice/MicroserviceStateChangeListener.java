@@ -11,16 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.servers;
+package org.hkijena.jipipe.api.microservice;
 
-import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
+import java.util.EventListener;
 
 /**
- * Event emitter for server state changes.
+ * Listener for {@link MicroserviceStateChangeEvent}s.
  */
-public class JIPipeServerEventEmitter extends JIPipeEventEmitter<JIPipeServerEvent, JIPipeServerEventListener> {
-    @Override
-    protected void call(JIPipeServerEventListener listener, JIPipeServerEvent event) {
-        listener.onServerStateChanged(event);
-    }
+public interface MicroserviceStateChangeListener extends EventListener {
+    void onMicroserviceStateChanged(MicroserviceStateChangeEvent event);
 }

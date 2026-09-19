@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.api.ai;
 
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
+
 public interface JIPipeAIModelRunner {
-    JIPipeAIModelRunnerStatus getStatus();
+    MicroserviceState getStatus();
     void start();
     void shutdown();
     String getModelId();

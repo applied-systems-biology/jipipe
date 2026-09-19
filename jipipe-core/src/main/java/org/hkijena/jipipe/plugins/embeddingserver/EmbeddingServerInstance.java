@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A spawned-process embedding server instance.
  *
- * <p>{@link #start()} spawns a Java process running {@link EmbeddingServerProcess} via a
+ * <p>{@link #startProcess()} spawns a Java process running {@link EmbeddingServerProcess} via a
  * {@link ProcessSupervisor}. The {@link #embed(String)} and {@link #embedBatch(List)} methods
  * perform HTTP POST requests against the spawned server's OpenAI-compatible
  * {@code /v1/embeddings} endpoint.</p>
@@ -58,7 +58,7 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
      * @throws ServerStartException if the process cannot be spawned
      */
     @Override
-    public void start() throws ServerStartException {
+    protected void startProcess() throws ServerStartException {
         try {
             List<String> command = buildSpawnCommand(getEnvironment());
             Process process = processSupervisor.spawnProcess(command, Collections.emptyMap(),
@@ -74,7 +74,7 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
      * Stops the embedding server process.
      */
     @Override
-    public void stop() {
+    protected void stopProcess() {
         Process process = getProcess();
         if (process != null && process.isAlive()) {
             processSupervisor.stopProcess(process, new JIPipeProgressInfo());

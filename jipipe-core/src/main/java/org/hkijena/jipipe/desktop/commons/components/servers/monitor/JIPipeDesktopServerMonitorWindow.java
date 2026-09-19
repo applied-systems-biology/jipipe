@@ -2,8 +2,8 @@ package org.hkijena.jipipe.desktop.commons.components.servers.monitor;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
-import org.hkijena.jipipe.api.servers.JIPipeServerEvent;
-import org.hkijena.jipipe.api.servers.JIPipeServerEventListener;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchAccess;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
@@ -19,11 +19,12 @@ import java.util.List;
  * Monitor window for external server instances, following a page-based design pattern
  * inspired by the AI and cache monitors.
  *
- * <p>Subscribes to {@link org.hkijena.jipipe.api.servers.JIPipeServerEventEmitter} for
+ * <p>Subscribes to the service-level
+ * {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter} for
  * event-driven status updates and auto-refreshes on a timer.</p>
  */
 public class JIPipeDesktopServerMonitorWindow extends JFrame
-        implements JIPipeServerEventListener, JIPipeDesktopWorkbenchAccess {
+        implements MicroserviceStateChangeListener, JIPipeDesktopWorkbenchAccess {
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
@@ -80,7 +81,7 @@ public class JIPipeDesktopServerMonitorWindow extends JFrame
     }
 
     @Override
-    public void onServerStateChanged(JIPipeServerEvent event) {
+    public void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
         if (!isDisplayable()) {
             JIPipe.getInstance().getServerService()
                     .getStateChangedEventEmitter().unsubscribe(this);

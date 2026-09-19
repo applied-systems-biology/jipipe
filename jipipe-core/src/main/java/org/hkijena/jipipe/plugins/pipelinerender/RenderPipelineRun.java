@@ -38,11 +38,11 @@ import java.awt.*;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CountDownLatch;
 
 public class RenderPipelineRun extends DefaultJIPipeRunnable {
     private final JIPipeProject project;
@@ -364,8 +364,9 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
     }
 
     private void calculateCompartmentBounds(JIPipeGraph compartmentGraph, Map<UUID, Rectangle> compartmentBounds) {
-        try {
-            SwingUtilities.invokeAndWait(() -> {
+        CountDownLatch latch = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> {
+            try {
                 JIPipeDesktopGraphCanvasUI canvasUI = new JIPipeDesktopGraphCanvasUI(new JIPipeDesktopDummyWorkbench(), null, compartmentGraph, null, new JIPipeDummyGraphHistoryJournal());
                 canvasUI.setRenderCursor(false);
                 canvasUI.revalidate();
@@ -374,9 +375,14 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
                 for (Map.Entry<JIPipeGraphNode, JIPipeDesktopGraphNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
                     compartmentBounds.put(entry.getKey().getUUIDInParentGraph(), entry.getValue().getBounds());
                 }
-            });
-        } catch (InterruptedException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            } finally {
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
     }
 
@@ -393,8 +399,9 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
 
     private BufferedImage renderCompartment(JIPipeGraph copyGraph, UUID compartment) {
         BufferedImage[] result = new BufferedImage[1];
-        try {
-            SwingUtilities.invokeAndWait(() -> {
+        CountDownLatch latch = new CountDownLatch(1);
+        SwingUtilities.invokeLater(() -> {
+            try {
                 JIPipeDesktopGraphCanvasUI canvasUI = new JIPipeDesktopGraphCanvasUI(new JIPipeDesktopDummyWorkbench(), null, copyGraph, compartment, new JIPipeDummyGraphHistoryJournal());
                 canvasUI.setRenderCursor(false);
                 canvasUI.setRenderOutsideEdges(false);
@@ -403,9 +410,14 @@ public class RenderPipelineRun extends DefaultJIPipeRunnable {
                 canvasUI.revalidate();
                 BufferedImage image = ScreenImage.createImage(canvasUI);
                 result[0] = image;
-            });
-        } catch (InterruptedException | InvocationTargetException e) {
-            throw new RuntimeException(e);
+            } finally {
+                latch.countDown();
+            }
+        });
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
         }
         return result[0];
     }

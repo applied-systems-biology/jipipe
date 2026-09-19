@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironmentSetupTool;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
-import org.hkijena.jipipe.api.run.JIPipeRunnableQueue;
+import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipeEnvironmentsServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
@@ -49,7 +49,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
         super(JIPipeEnvironment.class, parameters);
         initialize();
         reload();
-        JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().subscribeWeak(this);
+        JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().subscribeWeak(this);
     }
 
     private void initialize() {
@@ -238,7 +238,7 @@ public class JIPipeDesktopExternalEnvironmentParameterEditorUI extends JIPipeDes
     @Override
     public void onRunnableFinished(JIPipeRunnable.FinishedEvent event) {
         if (!isDisplayable()) {
-            JIPipeRunnableQueue.getInstance().getFinishedEventEmitter().unsubscribe(this);
+            JIPipeQueuedRunnableExecutor.getInstance().getFinishedEventEmitter().unsubscribe(this);
         }
     }
 }
