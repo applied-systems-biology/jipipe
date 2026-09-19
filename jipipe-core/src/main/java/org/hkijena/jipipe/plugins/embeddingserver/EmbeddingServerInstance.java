@@ -58,7 +58,7 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
      * @throws ServerStartException if the process cannot be spawned
      */
     @Override
-    public void start() throws ServerStartException {
+    protected void startProcess() throws ServerStartException {
         try {
             List<String> command = buildSpawnCommand(getEnvironment());
             Process process = processSupervisor.spawnProcess(command, Collections.emptyMap(),
@@ -74,7 +74,7 @@ public class EmbeddingServerInstance extends JIPipeServerInstance<EmbeddingModel
      * Stops the embedding server process.
      */
     @Override
-    public void stop() {
+    protected void stopProcess() {
         Process process = getProcess();
         if (process != null && process.isAlive()) {
             processSupervisor.stopProcess(process, new JIPipeProgressInfo());

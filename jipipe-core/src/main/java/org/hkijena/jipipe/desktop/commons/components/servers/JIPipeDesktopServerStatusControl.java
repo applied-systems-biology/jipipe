@@ -1,10 +1,10 @@
 package org.hkijena.jipipe.desktop.commons.components.servers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.servers.JIPipeServerEvent;
-import org.hkijena.jipipe.api.servers.JIPipeServerEventListener;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEvent;
+import org.hkijena.jipipe.api.microservice.MicroserviceStateChangeListener;
 import org.hkijena.jipipe.api.servers.JIPipeServerInstance;
-import org.hkijena.jipipe.api.servers.JIPipeServerState;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.components.servers.monitor.JIPipeDesktopServerMonitorWindow;
@@ -17,11 +17,11 @@ import java.util.List;
  * Status bar button that displays the current external server instance status and provides
  * controls to stop individual instances or open the server monitor.
  *
- * <p>Subscribes to {@link org.hkijena.jipipe.api.servers.JIPipeServerEventEmitter} for
- * event-driven updates instead of polling.</p>
+ * <p>Subscribes to the service-level {@link org.hkijena.jipipe.api.microservice.MicroserviceStateChangeEventEmitter}
+ * for event-driven updates instead of polling.</p>
  */
 public class JIPipeDesktopServerStatusControl extends JButton
-        implements JIPipeServerEventListener {
+        implements MicroserviceStateChangeListener {
 
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JPopupMenu popupMenu = new JPopupMenu();
@@ -45,7 +45,7 @@ public class JIPipeDesktopServerStatusControl extends JButton
     }
 
     @Override
-    public void onServerStateChanged(JIPipeServerEvent event) {
+    public void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
         SwingUtilities.invokeLater(this::updateStatus);
     }
 
@@ -53,8 +53,8 @@ public class JIPipeDesktopServerStatusControl extends JButton
         List<JIPipeServerInstance<?>> instances = JIPipe.getInstance().getServerService().getActiveInstances();
         int count = instances.size();
         boolean anyStarting = instances.stream().anyMatch(i ->
-                i.getState() == JIPipeServerState.Starting || i.getState() == JIPipeServerState.Stopping);
-        boolean anyFailed = instances.stream().anyMatch(i -> i.getState() == JIPipeServerState.Failed);
+                i.getState() == MicroserviceState.Starting || i.getState() == MicroserviceState.Stopping);
+        boolean anyFailed = instances.stream().anyMatch(i -> i.getState() == MicroserviceState.Failed);
 
         if (anyStarting) {
             setIcon(busyIcon);
@@ -87,7 +87,7 @@ public class JIPipeDesktopServerStatusControl extends JButton
             for (JIPipeServerInstance<?> instance : instances) {
                 String label = instance.getDisplayName() + " — " + instance.getState().name() + " (port " + instance.getPort() + ")";
                 popupMenu.add(UIUtils.createMenuItem(label,
-                        instance.getState().getDescription(),
+                        instance.getStateDetail(),
                         JIPipe.RESOURCES.getIcon16("actions/server.png"),
                         () -> stopInstance(instance)));
             }

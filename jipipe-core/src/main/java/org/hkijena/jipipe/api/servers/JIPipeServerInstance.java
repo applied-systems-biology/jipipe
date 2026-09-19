@@ -14,26 +14,27 @@
 package org.hkijena.jipipe.api.servers;
 
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.microservice.AbstractMicroservice;
 
 import java.time.Instant;
 
 /**
  * Abstract base class for a managed server instance.
- * 
+ *
  * <p>A server instance represents a live connection to a running external process.
  * It is typed on the environment class that configured it, enabling strongly-typed
  * domain-specific APIs in subclasses.</p>
- * 
- * <p>Lifecycle: {@link JIPipeServerState#NotRunning} → {@link JIPipeServerState#Starting}
- * → {@link JIPipeServerState#Running} → {@link JIPipeServerState#Stopping}
- * → {@link JIPipeServerState#NotRunning}.</p>
- * 
+ *
+ * <p>Lifecycle is managed by {@link AbstractMicroservice}: {@code Stopped → Starting → Ready → Stopping → Stopped}.
+ * Subclasses implement {@link #startProcess()} and {@link #stopProcess()} for actual
+ * process management. The {@link #onStart()} hook calls {@code startProcess()} and
+ * performs a health check before transitioning to {@code Ready}.</p>
+ *
  * @param <TEnv> the environment type that configures this instance
  */
-public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> {
+public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> extends AbstractMicroservice {
     private final TEnv environment;
     private final int port;
-    private volatile JIPipeServerState state = JIPipeServerState.NotRunning;
     private Instant startedAt;
     private Process process;
 
@@ -42,28 +43,57 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> {
      * @param port        the port the server is (or will be) listening on
      */
     protected JIPipeServerInstance(TEnv environment, int port) {
+        super(environment.getName() + " (port " + port + ")");
         this.environment = environment;
         this.port = port;
     }
 
+    @Override
+    protected void onStart() throws Exception {
+        setStateDetail("Starting on port " + port + "...");
+        startProcess();
+        setStateDetail("Waiting for health check...");
+        if (!waitForHealth()) {
+            throw new ServerStartException("Health check failed for " + getServerTypeId() + " on port " + port,
+                    ServerStartException.Reason.HealthCheckFailed);
+        }
+        startedAt = Instant.now();
+        setStateDetail("Running on port " + port);
+    }
+
+    @Override
+    protected void onStop() throws Exception {
+        setStateDetail("Stopping...");
+        stopProcess();
+        startedAt = null;
+    }
+
+    private boolean waitForHealth() {
+        long deadline = System.currentTimeMillis() + 120_000;
+        while (System.currentTimeMillis() < deadline) {
+            if (Thread.currentThread().isInterrupted()) return false;
+            if (isHealthy()) return true;
+            try { Thread.sleep(500); } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                return false;
+            }
+        }
+        return false;
+    }
+
     /**
-     * Starts the server process.
-     * Implementations should:
-     * 1. Set state to Starting
-     * 2. Spawn the process
-     * 3. Wait for health check to pass
-     * 4. Set state to Running
+     * Spawns the server process.
      *
      * @throws ServerStartException if the server fails to start
      */
-    public abstract void start() throws ServerStartException;
+    protected abstract void startProcess() throws ServerStartException;
 
     /**
      * Stops the server process.
      * Implementations should attempt graceful shutdown first,
      * then force-kill if the process does not terminate within a timeout.
      */
-    public abstract void stop();
+    protected abstract void stopProcess();
 
     /**
      * Checks if the server is healthy and responsive.
@@ -95,34 +125,6 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> {
      */
     public int getPort() {
         return port;
-    }
-
-    /**
-     * Returns the current lifecycle state.
-     *
-     * @return the state
-     */
-    public JIPipeServerState getState() {
-        return state;
-    }
-
-    /**
-     * Sets the lifecycle state. Public: the service component needs to
-     * manage state transitions from a different package.
-     *
-     * @param state the new state
-     */
-    public void setState(JIPipeServerState state) {
-        JIPipeServerState oldState = this.state;
-        this.state = state;
-        if (state == JIPipeServerState.Running || state == JIPipeServerState.Idle || state == JIPipeServerState.Busy) {
-            if (startedAt == null) {
-                startedAt = Instant.now();
-            }
-        }
-        if (state == JIPipeServerState.NotRunning) {
-            startedAt = null;
-        }
     }
 
     /**
@@ -159,5 +161,17 @@ public abstract class JIPipeServerInstance<TEnv extends JIPipeEnvironment> {
      */
     protected void setProcess(Process process) {
         this.process = process;
+    }
+
+    /**
+     * Updates the state detail string for this instance.
+     * Public wrapper around {@link AbstractMicroservice#setStateDetail(String)}
+     * so the service component (in a different package) can convey
+     * Busy/Idle nuance via the detail string.
+     *
+     * @param detail the new detail string
+     */
+    public void updateStateDetail(String detail) {
+        setStateDetail(detail);
     }
 }
