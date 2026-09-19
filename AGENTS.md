@@ -27,7 +27,10 @@ mvn test -pl contrib/jipipe-ro-crate-java-2.1.0
 mvn javadoc:javadoc
 
 # Build with ImageJ integration (recommended for development)
-mvn clean compile -Dimagej.enabled=true
+mvn clean compile
+
+# NOTE: Do NOT use -Dimagej.enabled=true — it is a legacy flag that is not
+# applicable for modern SciJava-based ImageJ and is no longer used.
 ```
 
 ## Project Structure
