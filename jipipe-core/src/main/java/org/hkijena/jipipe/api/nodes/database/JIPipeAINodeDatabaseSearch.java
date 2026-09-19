@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -35,7 +35,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -62,10 +61,11 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     private static final Logger LOGGER = LoggerFactory.getLogger(JIPipeAINodeDatabaseSearch.class);
 
     /**
-     * Timeout for the entire AI search operation (seconds).
-     * This includes model loading, embedding all entries, embedding the query, and scoring.
+     * Timeout for blocking on the search future (seconds).
+     * The ephemeral executor handles cancellation of superseded tasks;
+     * this is just a safety net for unexpected hangs.
      */
-    private static final long SEARCH_TOTAL_TIMEOUT_SECONDS = 300;
+    private static final long SEARCH_TIMEOUT_SECONDS = 300;
 
     /**
      * Maximum type distance to include entries when a target slot type is specified.
@@ -303,10 +303,12 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
      * allowing the caller to fall back to the standard search.
      * <p>
      * The entire AI search operation (ensure embeddings + query embedding + scoring)
-     * is submitted as a single task on the AI service queue via
-     * {@link JIPipeAIServiceComponent#submitEmbedFunction}. This avoids flooding
-     * the serial AI queue with individual embed tasks (which caused freezes when
-     * the search was cancelled/superseded but the enqueued tasks remained).
+     * is enqueued as a single {@link SearchRun} task on the AI service's
+     * {@link org.hkijena.jipipe.api.microservice.ServiceAwareEphemeralExecutor}.
+     * The ephemeral executor is latest-wins: if a new search arrives while an old
+     * one is running, the old one is cancelled. The executor gates on
+     * {@code Microservice.isReady()}, so the task is held until the embedding
+     * model becomes Ready.
      */
     private List<JIPipeNodeDatabaseEntry> internalQuery(String text,
                                                          JIPipeNodeDatabasePipelineVisibility role,
@@ -360,120 +362,17 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 currentModelId = modelId;
             }
 
-            // Capture the search text for use inside the queue task
-            final String searchText = text;
-            final List<JIPipeNodeDatabaseEntry> candidatesFinal = candidates;
-            final String modelIdFinal = modelId;
-            final JIPipeProgressInfo progressInfoFinal = progressInfo;
-            final Set<String> pinnedIdsFinal = pinnedIds;
-
-            // Submit the entire embedding + scoring operation as a single task on the AI service queue.
-            // This runs on the queue thread where embedNow() is safe, and avoids enqueuing
-            // hundreds of individual embed tasks that would clog the serial queue.
             JIPipeAIServiceComponent aiService = JIPipe.getInstance().getAiService();
 
-            CompletableFuture<List<JIPipeNodeDatabaseEntry>> searchFuture = aiService.submitEmbedFunction(embedFn -> {
-                // === This code runs on the AI service queue thread ===
-
-                // The model should already be loaded at this point, because submitEmbedFunction
-                // calls embeddingModelService.start() (blocking) before enqueuing this task,
-                // so the model is Ready by the time this runs.
-                // We still check the status for safety, but do NOT call tryStartEmbeddingModel()
-                // from here (that would enqueue a load task after this task on the serial queue,
-                // creating a deadlock).
-                MicroserviceState status = aiService.getEmbeddingModelStatus();
-                if (status != MicroserviceState.Ready) {
-                    progressInfoFinal.warn("Embedding model not ready (status=" + status + ") when embed function started");
-                    return null;
-                }
-
-                if (Thread.currentThread().isInterrupted()) {
-                    LOGGER.debug("AI search was interrupted/cancelled inside embed function");
-                    return null;
-                }
-
-                // Split entries into global and local tiers
-                EntrySplit split = splitEntries(candidatesFinal);
-
-                // Ensure embeddings for global entries via the singleton
-                globalEmbeddingSearch.ensureEmbeddingsForEntriesWithEmbedder(
-                        split.global, modelIdFinal, embedFn, progressInfoFinal);
-
-                if (Thread.currentThread().isInterrupted()) {
-                    LOGGER.debug("AI search was interrupted/cancelled after global embeddings");
-                    return null;
-                }
-
-                // Ensure embeddings for local entries via the local database
-                localEmbeddingDatabase.ensureEmbeddingsForEntriesWithEmbedder(
-                        split.local, modelIdFinal, embedFn, progressInfoFinal);
-
-                if (Thread.currentThread().isInterrupted()) {
-                    LOGGER.debug("AI search was interrupted/cancelled after local embeddings");
-                    return null;
-                }
-
-                // Embed the search query text synchronously
-                float[] queryEmbedding = embedFn.apply(searchText);
-                if (queryEmbedding == null) {
-                    progressInfoFinal.warn("Query embedding is null, returning null");
-                    return null;
-                }
-
-                // Score each candidate by cosine similarity using the appropriate tier
-                List<ScoredEntry> scored = new ArrayList<>(candidatesFinal.size());
-                for (JIPipeNodeDatabaseEntry entry : candidatesFinal) {
-                    String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
-                    float[] entryEmbedding;
-
-                    if (isGlobalEntry(entry)) {
-                        entryEmbedding = globalEmbeddingSearch.getVerifiedEmbedding(
-                                modelIdFinal, nodeId, entry);
-                    } else {
-                        String entryText = JIPipeEmbeddingDatabase.entryToText(entry);
-                        entryEmbedding = localEmbeddingDatabase.getVerifiedEmbedding(
-                                modelIdFinal, nodeId, entryText);
-                    }
-
-                    double similarity;
-                    if (entryEmbedding != null) {
-                        similarity = cosineSimilarity(queryEmbedding, entryEmbedding);
-                    } else {
-                        similarity = -1.0;
-                    }
-
-                    // Apply classification penalty
-                    JIPipeNodeClassification classification = entry.getNodeClassification();
-                    if (classification == JIPipeNodeClassification.AutoImport) {
-                        similarity *= 0.85;
-                    } else if (classification == JIPipeNodeClassification.EdgeCase) {
-                        similarity *= 0.7;
-                    }
-
-                    boolean isPinned = pinnedIdsFinal != null && pinnedIdsFinal.contains(entry.getId());
-                    scored.add(new ScoredEntry(entry, similarity, isPinned));
-                }
-
-                // Sort: pinned first, then by similarity (descending), then by usage, then by name
-                scored.sort(Comparator
-                        .comparing((ScoredEntry se) -> !se.pinned)
-                        .thenComparing((ScoredEntry se) -> -se.similarity)
-                        .thenComparing((ScoredEntry se) -> -USAGE_COUNTS.getOrDefault(se.entry.getId(), 0L))
-                        .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
-
-                return scored.stream()
-                        .map(se -> se.entry)
-                        .collect(Collectors.toList());
-            });
-
-            if (searchFuture == null) {
-                progressInfo.warn("AI service returned null future (AI disabled?), returning null");
-                return null;
-            }
+            // Enqueue the search as a single task on the ephemeral (latest-wins) executor.
+            // The executor gates on isReady(), so the task is held until the model is Ready.
+            SearchRun searchRun = new SearchRun(
+                    aiService, candidates, text, modelId, progressInfo, pinnedIds,
+                    globalEmbeddingSearch, localEmbeddingDatabase);
+            aiService.getSearchQueue().enqueue(searchRun);
 
             // Block on the result with a generous timeout (model load + all embeddings + query)
-            List<JIPipeNodeDatabaseEntry> result = searchFuture.get(SEARCH_TOTAL_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            return result;
+            return searchRun.getFuture().get(SEARCH_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -598,6 +497,143 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
     }
 
     // ===== Inner Classes =====
+
+    /**
+     * Runnable task that performs the full AI search: ensure embeddings, embed query,
+     * score, and sort. Runs on the search ephemeral executor's worker thread.
+     * <p>
+     * Uses {@link JIPipeAIServiceComponent#embedNow(String)} for embedding, which is
+     * safe because this runs on the search queue worker thread (separate from the
+     * embed queue). The embed queue is a separate {@link ServiceAwareQueuedExecutor}
+     * that serializes embed operations.
+     */
+    private static class SearchRun extends DefaultJIPipeRunnable {
+        private final CompletableFuture<List<JIPipeNodeDatabaseEntry>> future = new CompletableFuture<>();
+        private final JIPipeAIServiceComponent aiService;
+        private final List<JIPipeNodeDatabaseEntry> candidates;
+        private final String searchText;
+        private final String modelId;
+        private final JIPipeProgressInfo progressInfo;
+        private final Set<String> pinnedIds;
+        private final JIPipeGlobalEmbeddingSearch globalEmbeddingSearch;
+        private final JIPipeEmbeddingDatabase localEmbeddingDatabase;
+
+        SearchRun(JIPipeAIServiceComponent aiService,
+                  List<JIPipeNodeDatabaseEntry> candidates,
+                  String searchText,
+                  String modelId,
+                  JIPipeProgressInfo progressInfo,
+                  Set<String> pinnedIds,
+                  JIPipeGlobalEmbeddingSearch globalEmbeddingSearch,
+                  JIPipeEmbeddingDatabase localEmbeddingDatabase) {
+            this.aiService = aiService;
+            this.candidates = candidates;
+            this.searchText = searchText;
+            this.modelId = modelId;
+            this.progressInfo = progressInfo;
+            this.pinnedIds = pinnedIds;
+            this.globalEmbeddingSearch = globalEmbeddingSearch;
+            this.localEmbeddingDatabase = localEmbeddingDatabase;
+        }
+
+        public CompletableFuture<List<JIPipeNodeDatabaseEntry>> getFuture() {
+            return future;
+        }
+
+        @Override
+        public String getTaskLabel() {
+            return "AI node database search";
+        }
+
+        @Override
+        public void run() {
+            try {
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled before starting");
+                    future.complete(null);
+                    return;
+                }
+
+                // Split entries into global and local tiers
+                EntrySplit split = splitEntries(candidates);
+
+                // Ensure embeddings for global entries via the singleton
+                globalEmbeddingSearch.ensureEmbeddingsForEntriesWithEmbedder(
+                        split.global, modelId, aiService::embedNow, progressInfo);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled after global embeddings");
+                    future.complete(null);
+                    return;
+                }
+
+                // Ensure embeddings for local entries via the local database
+                localEmbeddingDatabase.ensureEmbeddingsForEntriesWithEmbedder(
+                        split.local, modelId, aiService::embedNow, progressInfo);
+
+                if (Thread.currentThread().isInterrupted()) {
+                    LOGGER.debug("AI search was interrupted/cancelled after local embeddings");
+                    future.complete(null);
+                    return;
+                }
+
+                // Embed the search query text synchronously
+                float[] queryEmbedding = aiService.embedNow(searchText);
+                if (queryEmbedding == null) {
+                    progressInfo.warn("Query embedding is null, returning null");
+                    future.complete(null);
+                    return;
+                }
+
+                // Score each candidate by cosine similarity using the appropriate tier
+                List<ScoredEntry> scored = new ArrayList<>(candidates.size());
+                for (JIPipeNodeDatabaseEntry entry : candidates) {
+                    String nodeId = JIPipeEmbeddingDatabase.entryToId(entry);
+                    float[] entryEmbedding;
+
+                    if (isGlobalEntry(entry)) {
+                        entryEmbedding = globalEmbeddingSearch.getVerifiedEmbedding(
+                                modelId, nodeId, entry);
+                    } else {
+                        String entryText = JIPipeEmbeddingDatabase.entryToText(entry);
+                        entryEmbedding = localEmbeddingDatabase.getVerifiedEmbedding(
+                                modelId, nodeId, entryText);
+                    }
+
+                    double similarity;
+                    if (entryEmbedding != null) {
+                        similarity = cosineSimilarity(queryEmbedding, entryEmbedding);
+                    } else {
+                        similarity = -1.0;
+                    }
+
+                    // Apply classification penalty
+                    JIPipeNodeClassification classification = entry.getNodeClassification();
+                    if (classification == JIPipeNodeClassification.AutoImport) {
+                        similarity *= 0.85;
+                    } else if (classification == JIPipeNodeClassification.EdgeCase) {
+                        similarity *= 0.7;
+                    }
+
+                    boolean isPinned = pinnedIds != null && pinnedIds.contains(entry.getId());
+                    scored.add(new ScoredEntry(entry, similarity, isPinned));
+                }
+
+                // Sort: pinned first, then by similarity (descending), then by usage, then by name
+                scored.sort(Comparator
+                        .comparing((ScoredEntry se) -> !se.pinned)
+                        .thenComparing((ScoredEntry se) -> -se.similarity)
+                        .thenComparing((ScoredEntry se) -> -USAGE_COUNTS.getOrDefault(se.entry.getId(), 0L))
+                        .thenComparing(se -> se.entry.getName(), String.CASE_INSENSITIVE_ORDER));
+
+                future.complete(scored.stream()
+                        .map(se -> se.entry)
+                        .collect(Collectors.toList()));
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        }
+    }
 
     /**
      * Helper to hold split entry lists.

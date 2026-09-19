@@ -126,31 +126,6 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         return embedTask.getFuture();
     }
 
-    /**
-     * Submit a function that can perform multiple synchronous embeddings on the embed queue thread.
-     * <p>
-     * This is a temporary compatibility method. Task 13 will migrate callers to use the
-     * search queue (ephemeral executor) directly.
-     *
-     * @param fn   the function to execute on the embed queue thread; receives an embed function and returns a result
-     * @param <T>  the result type
-     * @return a future that completes with the function's result, or null if AI is disabled
-     */
-    public <T> CompletableFuture<T> submitEmbedFunction(java.util.function.Function<java.util.function.Function<String, float[]>, T> fn) {
-        AIApplicationSettings settings = AIApplicationSettings.getInstance();
-        if (!settings.isEnableAI()) {
-            return null;
-        }
-
-        if (!embeddingModelService.isReady()) {
-            embeddingModelService.start();
-        }
-
-        EmbedFunctionRun<T> task = new EmbedFunctionRun<>(fn);
-        embedQueue.enqueue(task);
-        return task.getFuture();
-    }
-
     // ===== Status Query Methods =====
 
     public boolean hasEmbeddingModel() {
@@ -517,40 +492,6 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
         public void run() {
             try {
                 float[] result = embedNow(text);
-                future.complete(result);
-            } catch (Exception e) {
-                future.completeExceptionally(e);
-            }
-        }
-    }
-
-    /**
-     * Task that executes a function on the embed queue thread, providing it with
-     * a synchronous embed function backed by {@link #embedNow(String)}.
-     * Temporary compatibility class — Task 13 will migrate callers to the ephemeral executor.
-     */
-    private class EmbedFunctionRun<T> extends DefaultJIPipeRunnable {
-        private final CompletableFuture<T> future = new CompletableFuture<>();
-        private final java.util.function.Function<java.util.function.Function<String, float[]>, T> fn;
-
-        public EmbedFunctionRun(java.util.function.Function<java.util.function.Function<String, float[]>, T> fn) {
-            this.fn = fn;
-        }
-
-        public CompletableFuture<T> getFuture() {
-            return future;
-        }
-
-        @Override
-        public String getTaskLabel() {
-            return "Batch embedding operation";
-        }
-
-        @Override
-        public void run() {
-            try {
-                java.util.function.Function<String, float[]> embedFn = text -> embedNow(text);
-                T result = fn.apply(embedFn);
                 future.complete(result);
             } catch (Exception e) {
                 future.completeExceptionally(e);
