@@ -130,12 +130,6 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
         }
     }
 
-    private void registerWorkerEvents(JIPipeRunnableWorker worker) {
-        worker.getFinishedEventEmitter().subscribe(this);
-        worker.getInterruptedEventEmitter().subscribe(this);
-        worker.getProgressEventEmitter().subscribe(this);
-    }
-
     private void unregisterWorkerEvents(JIPipeRunnableWorker worker) {
         worker.getFinishedEventEmitter().unsubscribe(this);
         worker.getInterruptedEventEmitter().unsubscribe(this);
@@ -232,6 +226,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
                 unregisterWorkerEvents(worker);
             } else {
                 queue.remove(worker);
+                assignedWorkers.remove(worker.getRun());
                 interruptedEventEmitter.emit(new JIPipeRunnable.InterruptedEvent(worker,
                         new InterruptedException("Operation was cancelled.")));
                 unregisterWorkerEvents(worker);

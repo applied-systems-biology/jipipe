@@ -19,8 +19,9 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableWorker;
 
 import java.util.ArrayDeque;
 import java.util.Queue;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Predicate;
+
+import javax.swing.SwingWorker;
 
 /**
  * Latest-wins {@link JIPipeRunnableExecutor} that gates on {@link Microservice#isReady()}.
@@ -35,7 +36,6 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor,
 
     private final String name;
     private final Microservice service;
-    private final AtomicLong generation = new AtomicLong(0);
     private volatile JIPipeRunnableWorker currentWorker = null;
     private volatile boolean silent = false;
 
@@ -58,8 +58,6 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor,
 
     @Override
     public JIPipeRunnableWorker enqueue(JIPipeRunnable run) {
-        long myGeneration = generation.incrementAndGet();
-
         // Cancel previous worker if running
         JIPipeRunnableWorker previous = currentWorker;
         if (previous != null) {
@@ -115,7 +113,7 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor,
             JIPipeRunnableWorker worker = currentWorker;
             if (worker != null && !worker.isDone()) {
                 // Check if it hasn't been started yet (state is PENDING)
-                if (worker.getState() == javax.swing.SwingWorker.StateValue.PENDING) {
+                if (worker.getState() == SwingWorker.StateValue.PENDING) {
                     startedEventEmitter.emit(new JIPipeRunnable.StartedEvent(worker.getRun(), worker));
                     worker.execute();
                 }
@@ -125,7 +123,6 @@ public class ServiceAwareEphemeralExecutor implements JIPipeRunnableExecutor,
 
     @Override
     public void cancelAll() {
-        generation.incrementAndGet();
         JIPipeRunnableWorker worker = currentWorker;
         if (worker != null) {
             worker.getRun().getProgressInfo().cancel();
