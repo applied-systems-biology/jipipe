@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.desktop.commons.components.ai.monitor;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.service.components.JIPipeAIServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
@@ -102,10 +102,11 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
         // Refresh embedding model section
         if (!modelSections.isEmpty()) {
             ModelSection embeddingSection = modelSections.get(0);
-            JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
+            MicroserviceState status = aiService.getEmbeddingModelStatus();
+            String detail = aiService.getEmbeddingModelService().getStateDetail();
 
             // Update status
-            embeddingSection.statusLabel.setText(renderStatus(status));
+            embeddingSection.statusLabel.setText(renderStatus(status, detail));
 
             // Update model type
             AIApplicationSettings settings = AIApplicationSettings.getInstance();
@@ -129,26 +130,26 @@ public class JIPipeDesktopAIMonitorOverviewPage extends JIPipeDesktopAIMonitorPa
             }
 
             // Update button states
-            embeddingSection.startButton.setEnabled(status == JIPipeAIModelRunnerStatus.Unloaded || status == JIPipeAIModelRunnerStatus.Failed);
-            embeddingSection.stopButton.setEnabled(status == JIPipeAIModelRunnerStatus.Idle || status == JIPipeAIModelRunnerStatus.Busy);
+            embeddingSection.startButton.setEnabled(status == MicroserviceState.Stopped || status == MicroserviceState.Failed);
+            embeddingSection.stopButton.setEnabled(status == MicroserviceState.Ready);
         }
 
         // TODO: Refresh LLM model sections here when available
     }
 
     /**
-     * Renders a model status enum to a human-readable string.
+     * Renders a model state to a human-readable string.
      *
-     * @param status the model runner status
+     * @param status the microservice state
+     * @param detail the state detail (e.g., "Idle" or "Busy")
      * @return human-readable status text
      */
-    private static String renderStatus(JIPipeAIModelRunnerStatus status) {
+    private static String renderStatus(MicroserviceState status, String detail) {
         return switch (status) {
-            case Unloaded -> "Not loaded";
-            case Loading -> "Loading...";
-            case Idle -> "Ready";
-            case Busy -> "Busy";
-            case Unloading -> "Shutting down...";
+            case Stopped -> "Not loaded";
+            case Starting -> "Loading...";
+            case Ready -> "Busy".equals(detail) ? "Busy" : "Ready";
+            case Stopping -> "Shutting down...";
             case Failed -> "Error";
         };
     }

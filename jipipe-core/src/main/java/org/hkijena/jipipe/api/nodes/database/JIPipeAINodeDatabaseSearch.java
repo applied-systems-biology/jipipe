@@ -15,7 +15,7 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.ai.JIPipeAIModelRunnerStatus;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
@@ -381,8 +381,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 // We still check the status for safety, but do NOT call tryStartEmbeddingModel()
                 // from here (that would enqueue a load task after this task on the serial queue,
                 // creating a deadlock).
-                JIPipeAIModelRunnerStatus status = aiService.getEmbeddingModelStatus();
-                if (status != JIPipeAIModelRunnerStatus.Idle && status != JIPipeAIModelRunnerStatus.Busy) {
+                MicroserviceState status = aiService.getEmbeddingModelStatus();
+                if (status != MicroserviceState.Ready) {
                     progressInfoFinal.warn("Embedding model not ready (status=" + status + ") when embed function started");
                     return null;
                 }

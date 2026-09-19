@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.ai;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hkijena.jipipe.api.microservice.MicroserviceState;
 
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -15,7 +16,7 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
     private final String apiBase;
     private final String apiModel;
     private final String apiKey;
-    private JIPipeAIModelRunnerStatus status = JIPipeAIModelRunnerStatus.Unloaded;
+    private MicroserviceState status = MicroserviceState.Stopped;
     private String lastError = null;
     private HttpClient httpClient;
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -28,10 +29,9 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
 
     @Override
     public float[] embed(String text) {
-        if (status != JIPipeAIModelRunnerStatus.Idle) {
-            throw new RuntimeException("Model runner is not idle. Current status: " + status);
+        if (status != MicroserviceState.Ready) {
+            throw new RuntimeException("Model runner is not ready. Current status: " + status);
         }
-        status = JIPipeAIModelRunnerStatus.Busy;
         try {
             String requestBody = objectMapper.writeValueAsString(new java.util.HashMap<>() {{
                 put("model", apiModel);
@@ -63,7 +63,6 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
                             result[i] = (float) embeddingNode.get(i).asDouble();
                         }
 
-                        status = JIPipeAIModelRunnerStatus.Idle;
                         return result;
                     }
 
@@ -84,13 +83,13 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
             throw new RuntimeException("API request failed after " + MAX_RETRIES + " retries: " + (lastException != null ? lastException.getMessage() : "unknown error"));
         } catch (Exception e) {
             lastError = e.getMessage();
-            status = JIPipeAIModelRunnerStatus.Failed;
+            status = MicroserviceState.Failed;
             throw new RuntimeException("Embedding failed: " + e.getMessage(), e);
         }
     }
 
     @Override
-    public JIPipeAIModelRunnerStatus getStatus() {
+    public MicroserviceState getStatus() {
         return status;
     }
 
@@ -108,12 +107,12 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
             if (apiModel == null || apiModel.isBlank()) {
                 throw new IllegalStateException("API model is not configured");
             }
-            status = JIPipeAIModelRunnerStatus.Loading;
+            status = MicroserviceState.Starting;
             httpClient = HttpClient.newHttpClient();
-            status = JIPipeAIModelRunnerStatus.Idle;
+            status = MicroserviceState.Ready;
         } catch (Exception e) {
             lastError = e.getMessage();
-            status = JIPipeAIModelRunnerStatus.Failed;
+            status = MicroserviceState.Failed;
         }
     }
 
@@ -132,12 +131,12 @@ public class JIPipeAPIEmbeddingAIModelRunner implements JIPipeEmbeddingAIModelRu
     @Override
     public void shutdown() {
         try {
-            status = JIPipeAIModelRunnerStatus.Unloading;
+            status = MicroserviceState.Stopping;
             httpClient = null;
-            status = JIPipeAIModelRunnerStatus.Unloaded;
+            status = MicroserviceState.Stopped;
         } catch (Exception e) {
             lastError = e.getMessage();
-            status = JIPipeAIModelRunnerStatus.Failed;
+            status = MicroserviceState.Failed;
         }
     }
 
