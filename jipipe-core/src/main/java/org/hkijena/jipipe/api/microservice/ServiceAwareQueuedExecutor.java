@@ -65,7 +65,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
     }
 
     @Override
-    public JIPipeRunnableWorker enqueue(JIPipeRunnable run) {
+    public synchronized JIPipeRunnableWorker enqueue(JIPipeRunnable run) {
         JIPipeRunnableWorker worker = new JIPipeRunnableWorker(run, silent);
         worker.getFinishedEventEmitter().subscribe(this);
         worker.getInterruptedEventEmitter().subscribe(this);
@@ -77,7 +77,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
         return worker;
     }
 
-    private void tryDequeue() {
+    private synchronized void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             if (!service.isReady()) {
                 return;
@@ -98,9 +98,6 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
             event.getRun().onFinished(event);
         }
         finishedEventEmitter.emit(event);
-        if (currentlyRunningWorker == null && !queue.isEmpty()) {
-            tryDequeue();
-        }
     }
 
     @Override
@@ -113,9 +110,6 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
             event.getRun().onInterrupted(event);
         }
         interruptedEventEmitter.emit(event);
-        if (currentlyRunningWorker == null && !queue.isEmpty()) {
-            tryDequeue();
-        }
     }
 
     @Override
@@ -124,7 +118,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
     }
 
     @Override
-    public void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
+    public synchronized void onMicroserviceStateChanged(MicroserviceStateChangeEvent event) {
         if (event.getNewState() == MicroserviceState.Ready) {
             tryDequeue();
         }
@@ -213,7 +207,7 @@ public class ServiceAwareQueuedExecutor implements JIPipeRunnableExecutor,
     }
 
     @Override
-    public void cancel(JIPipeRunnable run) {
+    public synchronized void cancel(JIPipeRunnable run) {
         if (run == null) return;
         JIPipeRunnableWorker worker = findWorkerOf(run);
         if (worker != null) {

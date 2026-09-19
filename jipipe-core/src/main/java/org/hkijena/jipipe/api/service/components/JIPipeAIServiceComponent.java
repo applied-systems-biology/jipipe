@@ -102,9 +102,9 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
     }
 
     /**
-     * Asynchronous embed. Safe to call from UI thread.
+     * Asynchronous embed. Must not be called from the EDT — blocks until the model is ready.
      * Enqueues an embed task and returns a CompletableFuture.
-     * If no model is loaded, auto-starts it first.
+     * If no model is loaded, auto-starts it first (blocking).
      * Returns null if AI is disabled in settings.
      *
      * @param text the text to embed

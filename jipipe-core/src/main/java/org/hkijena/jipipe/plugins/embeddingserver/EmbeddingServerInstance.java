@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * A spawned-process embedding server instance.
  *
- * <p>{@link #start()} spawns a Java process running {@link EmbeddingServerProcess} via a
+ * <p>{@link #startProcess()} spawns a Java process running {@link EmbeddingServerProcess} via a
  * {@link ProcessSupervisor}. The {@link #embed(String)} and {@link #embedBatch(List)} methods
  * perform HTTP POST requests against the spawned server's OpenAI-compatible
  * {@code /v1/embeddings} endpoint.</p>
