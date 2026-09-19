@@ -78,7 +78,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
      * If a model is currently loaded, it will be stopped first (unload+load = replace).
      */
     public void tryStartEmbeddingModel() {
-        embeddingModelService.start();
+        new Thread(() -> embeddingModelService.start(), "AI-Embedding-Model-Start").start();
     }
 
     /**
@@ -87,7 +87,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
      * (because the embed queue serializes operations).
      */
     public void tryStopEmbeddingModel() {
-        embeddingModelService.stop();
+        new Thread(() -> embeddingModelService.stop(), "AI-Embedding-Model-Stop").start();
     }
 
     /**
@@ -116,7 +116,7 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             return null;
         }
 
-        // If model is not ready, start it first
+        // If model is not ready, start it first (blocking — caller should be off-EDT)
         if (!embeddingModelService.isReady()) {
             embeddingModelService.start();
         }
@@ -453,12 +453,12 @@ public class JIPipeAIServiceComponent extends JIPipeServiceComponent {
             } catch (RuntimeException e) {
                 embeddingModelError = ExceptionUtils.getMessage(e);
                 embeddingProgressInfo.error(embeddingModelError);
-                markFailed(embeddingModelError);
+                setStateDetail("Idle");
                 throw e;
             } catch (Exception e) {
                 embeddingModelError = ExceptionUtils.getMessage(e);
                 embeddingProgressInfo.error(embeddingModelError);
-                markFailed(embeddingModelError);
+                setStateDetail("Idle");
                 throw new RuntimeException(e);
             }
         }

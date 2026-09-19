@@ -376,8 +376,8 @@ public class JIPipeAINodeDatabaseSearch implements JIPipeNodeDatabaseSearch {
                 // === This code runs on the AI service queue thread ===
 
                 // The model should already be loaded at this point, because submitEmbedFunction
-                // enqueues a LoadEmbeddingModelTask before this task (if needed), and the queue
-                // is serial, so the load completes before this task starts.
+                // calls embeddingModelService.start() (blocking) before enqueuing this task,
+                // so the model is Ready by the time this runs.
                 // We still check the status for safety, but do NOT call tryStartEmbeddingModel()
                 // from here (that would enqueue a load task after this task on the serial queue,
                 // creating a deadlock).
