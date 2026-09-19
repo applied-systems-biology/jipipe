@@ -203,15 +203,14 @@ public class JIPipeServerServiceComponent extends JIPipeServiceComponent {
         if (instance.getState() == MicroserviceState.Stopped) {
             return;
         }
-        instance.stop();
-
-        // Release the port
-        portManager.releasePort(instance.getPort());
-
-        // Remove from active instances
-        String key = findInstanceKey(instance);
-        if (key != null) {
-            activeInstances.remove(key);
+        try {
+            instance.stop();
+        } finally {
+            portManager.releasePort(instance.getPort());
+            String key = findInstanceKey(instance);
+            if (key != null) {
+                activeInstances.remove(key);
+            }
         }
     }
 
