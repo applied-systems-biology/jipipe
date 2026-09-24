@@ -107,4 +107,17 @@ class AutoThreshold2D16UAlgorithmTest {
         node.runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), new JIPipeGraphNodeRunContext(), new JIPipeProgressInfo());
         assertBrightHalfIsForeground(node);
     }
+
+    /**
+     * Percentile threshold (default 50) on the bimodal 16-bit image must produce a mask
+     * with exactly the bright pixels set, in true 8-bit output.
+     */
+    @Test
+    void testPercentileThreshold16U() {
+        PercentileThreshold16U2DAlgorithm node = JIPipe.createNode(PercentileThreshold16U2DAlgorithm.class);
+        assertEquals(50, node.getPercentile(), 1e-9, "Default percentile must be 50");
+        JIPipeSingleIterationStep iterationStep = wireSingleInput(node, bimodalImage());
+        node.runIteration(iterationStep, new JIPipeMutableIterationContext(0, 1), new JIPipeGraphNodeRunContext(), new JIPipeProgressInfo());
+        assertBrightHalfIsForeground(node);
+    }
 }

@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class HistogramThresholdFunctionTest {
 
@@ -27,6 +28,47 @@ class HistogramThresholdFunctionTest {
         List<Number> list = new ArrayList<>();
         for (int value : values) list.add(value);
         return list;
+    }
+
+    private List<Number> zeroHistogram(int size) {
+        List<Number> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) list.add(0);
+        return list;
+    }
+
+    /**
+     * The 8-bit variant must reject histograms with more than 256 bins instead of
+     * silently truncating them.
+     */
+    @Test
+    void test8BitVariantRejectsOversizedHistogram() {
+        HistogramThreshold8BitOtsu function = new HistogramThreshold8BitOtsu();
+        List<Number> oversized = zeroHistogram(300);
+        assertThrows(IllegalArgumentException.class,
+                () -> function.evaluate(List.of(oversized), new JIPipeExpressionVariablesMap()));
+    }
+
+    /**
+     * The 16-bit variant must reject histograms with more than 65536 bins instead of
+     * silently truncating them.
+     */
+    @Test
+    void test16BitVariantRejectsOversizedHistogram() {
+        HistogramThreshold16BitOtsu function = new HistogramThreshold16BitOtsu();
+        List<Number> oversized = zeroHistogram(65537);
+        assertThrows(IllegalArgumentException.class,
+                () -> function.evaluate(List.of(oversized), new JIPipeExpressionVariablesMap()));
+    }
+
+    /**
+     * The generic function must validate nbins: values below 2 are rejected.
+     */
+    @Test
+    void testNbinsValidation() {
+        HistogramThresholdOtsu function = new HistogramThresholdOtsu();
+        List<Number> histo = histogram(0, 0, 100, 200);
+        assertThrows(IllegalArgumentException.class,
+                () -> function.evaluate(List.of(histo, 1), new JIPipeExpressionVariablesMap()));
     }
 
     /**
@@ -58,5 +100,22 @@ class HistogramThresholdFunctionTest {
         Object result = function.evaluate(List.of(histo, 16), new JIPipeExpressionVariablesMap());
         int threshold = ((Number) result).intValue();
         assertEquals(true, threshold >= 3 && threshold <= 10, "Threshold between modes, got " + threshold);
+    }
+
+    /**
+     * With nbins=16 a 300-bin histogram is truncated to the first 16 bins.
+     */
+    @Test
+    void testNbinsParameterTruncates() {
+        HistogramThresholdOtsu function = new HistogramThresholdOtsu();
+        List<Number> large = zeroHistogram(300);
+        large.set(2, 100);
+        large.set(3, 200);
+        large.set(12, 200);
+        large.set(13, 100);
+        int truncated = ((Number) function.evaluate(List.of(large, 16), new JIPipeExpressionVariablesMap())).intValue();
+        List<Number> first16 = new ArrayList<>(large.subList(0, 16));
+        int expected = ((Number) function.evaluate(List.of(first16, 16), new JIPipeExpressionVariablesMap())).intValue();
+        assertEquals(expected, truncated, "300-bin input with nbins=16 must truncate to the first 16 bins");
     }
 }

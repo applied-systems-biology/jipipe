@@ -13,8 +13,11 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -29,6 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 
 
 /**
@@ -72,7 +76,14 @@ public class PercentileThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgo
     protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        ImageJIterationUtils.forEachSlice(img, ip -> {
+        ImagePlus outputImage = IJ.createHyperStack(img.getTitle() + " Thresholded",
+                img.getWidth(),
+                img.getHeight(),
+                img.getNChannels(),
+                img.getNSlices(),
+                img.getNFrames(),
+                8);
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
             short[] pixels = (short[]) ip.getPixels();
             int[] histogram = new int[65536];
             for (short p : pixels)
@@ -91,9 +102,24 @@ public class PercentileThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgo
                     break;
                 }
             }
-            ip.threshold(thresh);
+            ByteProcessor targetProcessor = getTargetProcessor(outputImage, index);
+            applyThreshold((ShortProcessor) ip, targetProcessor, thresh);
         }, progressInfo);
-        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
+    }
+
+    private void applyThreshold(ShortProcessor source, ByteProcessor target, int threshold) {
+        short[] src = (short[]) source.getPixels();
+        byte[] dst = (byte[]) target.getPixels();
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = Short.toUnsignedInt(src[i]) > threshold ? (byte) 255 : 0;
+        }
+    }
+
+    private ByteProcessor getTargetProcessor(ImagePlus outputImage, ImageSliceIndex index) {
+        return (ByteProcessor) (outputImage.hasImageStack() ?
+                outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
+                : outputImage.getProcessor());
     }
 
     @SetJIPipeDocumentation(name = "Percentile", description = "Percentile from 0-100.")

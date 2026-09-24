@@ -37,6 +37,9 @@ public abstract class HistogramThreshold16BitFunction extends ExpressionFunction
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         Collection<Number> numbers = (Collection<Number>) parameters.get(0);
+        if (numbers.size() > 65536)
+            throw new IllegalArgumentException(getName() + ": the histogram has " + numbers.size()
+                    + " bins, but at most 65536 bins are allowed for this function");
         int[] histogram = new int[65536];
         int i = 0;
         for (Number number : numbers) {
