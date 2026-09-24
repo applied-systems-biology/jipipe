@@ -1091,6 +1091,12 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-local-auto2d-sauvola", SauvolaLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-phansalkar", PhansalkarLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u", LocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-bernsen", BernsenLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-contrast", ContrastLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-niblack", NiblackLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-phansalkar", PhansalkarLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-sauvola", SauvolaLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
