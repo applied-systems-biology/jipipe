@@ -57,9 +57,26 @@ depends on ImageJ1, and existing expression functions already import
 Components:
 
 - **`AutoThresholdMethod`** — enum mirroring `ij.process.AutoThresholder.Method`'s
-  17 values (Default, Huang, Intermodes, IsoData, IJ_IsoData, Li, MaxEntropy,
-  Mean, MinError, Minimum, Moments, Otsu, Percentile, RenyiEntropy, Shanbhag,
-  Triangle, Yen).
+  17 values. **The enum constant names must be exactly identical to ImageJ's**
+  (`Default, Huang, Intermodes, IsoData, IJ_IsoData, Li, MaxEntropy, Mean,
+  MinError, Minimum, Moments, Otsu, Percentile, RenyiEntropy, Shanbhag,
+  Triangle, Yen`): enum parameters are deserialized via Jackson
+  `readerFor(fieldClass)`, which matches by constant `name()` — renamed
+  constants would break deserialization of existing projects.
+  The code base is ported to the new enum: all existing usages of
+  `AutoThresholder.Method` as a parameter type (e.g.
+  `AutoThreshold2DAlgorithm.getMethod()`,
+  `NucleiSegmentation3DAlgorithm.autoThresholdMethod`) are switched to
+  `AutoThresholdMethod`, and the existing enum parameter registration
+  `registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), ...)`
+  in `ImageJAlgorithmsPlugin.registerThresholdAlgorithms()` is changed to
+  register the new class (same registration pattern).
+  The enum leverages JIPipe's enum item rendering for enhanced documentation:
+  `@EnumParameterSettings(itemInfo = AutoThresholdMethodEnumItemInfo.class)`
+  with a `JIPipeEnumParameterItemInfo` implementation providing per-method
+  labels (`getLabel`) and per-method documentation tooltips (`getTooltip`),
+  each describing the method's algorithm and its binning behavior.
+
 
 - **`NBinsAutoThresholder`** — public entry point. Static method
   `getThreshold(AutoThresholdMethod method, int[] histogram)` where histogram
@@ -226,6 +243,22 @@ Tests:
 
 - Old projects: all existing node IDs, parameter IDs, and function IDs
   unchanged; serialized projects load identically. Only display names change.
+- **Enum migration:** all production usages of `AutoThresholder.Method` are
+  ported to the new `AutoThresholdMethod` enum:
+  - `AutoThreshold2DAlgorithm` (field, getter/setter, `runIteration`)
+  - `NucleiSegmentation3DAlgorithm` (jipipe-plugin-ij-3d; field
+    `autoThresholdMethod`, getter/setter)
+  - `ImageJAlgorithmsPlugin.registerThresholdAlgorithms()` — the
+    `registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), ...)`
+    registration is changed to register `AutoThresholdMethod` (new ID, e.g.
+    its canonical name); the per-method `registerNodeExample` loop follows.
+  - The 17 `HistogramThreshold*` expression function subclasses switch from
+    `AutoThresholder.Method.X` to `AutoThresholdMethod.X`.
+  Because the constant `name()`s are identical, stored values like
+  `"method": "Otsu"` deserialize identically after the type switch
+  (deserialization goes through
+  `JsonUtils.getObjectMapper().readerFor(fieldClass)` at ParameterUtils.java:114,
+  which matches by constant name).
 - Existing expressions calling `HISTOGRAM_THRESHOLD_X(h)` behave identically
   (nbins defaults to 256 with truncation).
 - New nodes/functions are additive.
