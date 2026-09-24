@@ -1063,6 +1063,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-manual2d-color-lab", ManualLABThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-percentile2d-16u", PercentileThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
