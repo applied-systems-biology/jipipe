@@ -1069,6 +1069,10 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
             registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method));
         }
+        registerNodeType("ij1-threshold-auto2d-16u", AutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
+            registerNodeExample(AutoThreshold2D16UAlgorithm.class, method.name(), node -> node.setMethod(method));
+        }
         registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-32f", CustomAutoThreshold2D32FAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
