@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.plugins.expressions.functions.statistics;
 
-import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 
 @SetJIPipeDocumentation(name = "Histogram threshold (Minimum)", description = "Calculates a threshold from a " +
         "histogram using the Minium algorithm.")
@@ -26,9 +24,7 @@ public class HistogramThresholdMinimum extends HistogramThresholdFunction {
     }
 
     @Override
-    protected int calculateThreshold(int[] histogram) {
-        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(new JIPipeProgressInfo())) {
-            return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.Minimum, histogram);
-        }
+    protected AutoThresholdMethod getMethod() {
+        return AutoThresholdMethod.Minimum;
     }
 }

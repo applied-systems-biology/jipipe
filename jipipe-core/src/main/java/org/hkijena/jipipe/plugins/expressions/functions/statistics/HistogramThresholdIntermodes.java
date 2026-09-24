@@ -13,10 +13,8 @@
 
 package org.hkijena.jipipe.plugins.expressions.functions.statistics;
 
-import ij.process.AutoThresholder;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 
 @SetJIPipeDocumentation(name = "Histogram threshold (Intermodes)", description = "Calculates a threshold from a " +
         "histogram using the Intermodes algorithm.")
@@ -26,9 +24,7 @@ public class HistogramThresholdIntermodes extends HistogramThresholdFunction {
     }
 
     @Override
-    protected int calculateThreshold(int[] histogram) {
-        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(new JIPipeProgressInfo())) {
-            return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.Intermodes, histogram);
-        }
+    protected AutoThresholdMethod getMethod() {
+        return AutoThresholdMethod.Intermodes;
     }
 }
