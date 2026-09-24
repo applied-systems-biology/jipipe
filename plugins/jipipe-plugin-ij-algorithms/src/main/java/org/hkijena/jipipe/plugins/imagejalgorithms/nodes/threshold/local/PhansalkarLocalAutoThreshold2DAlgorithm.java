@@ -41,9 +41,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
  * Segmenter node that thresholds via an auto threshold
  * Based on code from {@link fiji.threshold.Auto_Local_Threshold}
  */
-@SetJIPipeDocumentation(name = "Local auto threshold 2D (Phansalkar)", description = "Applies a local auto-thresholding algorithm. " +
+@SetJIPipeDocumentation(name = "Local auto threshold 2D (Phansalkar, 8-bit)", description = "Applies a local auto-thresholding algorithm. " +
         "The threshold is calculated as <code>t = mean * (1 + p * exp(-q * mean) + k * ((stdev / r) - 1))</code>.\n\n" +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice." +
+        " This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth.")
 @ConfigureJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
