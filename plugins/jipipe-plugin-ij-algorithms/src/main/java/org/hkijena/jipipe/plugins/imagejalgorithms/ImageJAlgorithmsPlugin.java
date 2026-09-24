@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms;
 
 import com.google.common.collect.Sets;
 import de.biomedical_imaging.ij.steger.OverlapOption;
-import ij.process.AutoThresholder;
 import inra.ijpb.binary.ChamferWeights;
 import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.color.ColorMaps;
@@ -177,6 +176,7 @@ import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import sc.fiji.coloc.algorithms.AutoThresholdRegression;
@@ -1066,7 +1066,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
-        for (AutoThresholder.Method method : AutoThresholder.Method.values()) {
+        for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
             registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method));
         }
         registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
@@ -1090,7 +1090,7 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
 
-        registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
+        registerEnumParameterType(AutoThresholdMethod.class.getCanonicalName(), AutoThresholdMethod.class,
                 "Auto threshold method", "Available methods");
         registerEnumParameterType("slice-threshold-mode", AutoThreshold2DAlgorithm.SliceThresholdMode.class,
                 "Slice thresholding mode", "How multi-slice images are thresholded");
