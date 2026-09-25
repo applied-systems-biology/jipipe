@@ -119,6 +119,19 @@ mvn test -Dtest=MyTestClass
 ### Adding Tests
 For new modules, add JUnit 5 dependencies and create `src/test/java` structure following the contrib module pattern.
 
+### ImageJ Legacy Patcher Constraint (IMPORTANT)
+The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2 cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**
+
+- Any test that touches `ij.*` classes (e.g. `new ij.process.AutoThresholder()`, `ShortProcessor`, `IJ.*`) loads them **unpatched** if the patcher has not run yet.
+- If a *later* test then creates the SciJava context (`JIPipe.ensureInstance()` → `new net.imagej.ImageJ()`), `LegacyService` fails with `No _hooks field found in ij.IJ` — **an order-dependent failure** (passes locally in one order, fails in CI in another).
+- **Protection already in place:** [`ImageJLegacyPatcherLauncherSessionListener`](jipipe-core/src/test/java/org/hkijena/jipipe/ImageJLegacyPatcherLauncherSessionListener.java) is a JUnit 5 `LauncherSessionListener` (registered via `jipipe-core/src/test/resources/META-INF/services/`) that calls `LegacyInjector.preinit()` at launcher-session start, before any test class is loaded. Do not remove it or its service-file registration.
+- **Rules for new tests:**
+  - Do NOT call `LegacyInjector.preinit()` yourself, and do NOT add `--add-opens`/javaagent workarounds — the listener already handles this for the whole suite.
+  - If you add a test that initializes ImageJ1 classes *before* any `JIPipe.ensureInstance()` test runs, keep the listener intact; if you observe `No _hooks field found in ij.IJ`, the listener registration or ordering is broken — check the service file first.
+  - When adding a new module with tests that use `ij.*` or `JIPipe.ensureInstance()`, mirror the jipipe-core setup: `junit-platform-launcher` test dependency + a `LauncherSessionListener` service registration (or extend the core listener's module).
+  - Regression guard: [`ImageJ1ClassLoadingOrderTest`](jipipe-core/src/test/java/org/hkijena/jipipe/utils/threshold/ImageJ1ClassLoadingOrderTest.java) loads ImageJ1 classes before `JIPipe.ensureInstance()` to catch ordering regressions.
+- **Never "fix" this by excluding the failing test** — the underlying patcher ordering is the actual contract.
+
 ## IDE Development
 
 ### Main Class for Debugging
