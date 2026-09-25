@@ -37,6 +37,15 @@ public final class NBinsAutoThresholder {
 
     /**
      * Calculates a threshold for a histogram of arbitrary bin count.
+     * <p>
+     * ImageJ parity: for histograms with at most 256 bins the call is delegated to
+     * ImageJ's {@link AutoThresholder} (including its bilevel short-circuit), so
+     * results are bit-identical to classic 8-bit thresholding. For larger histograms
+     * the populated sub-range (first to last non-zero bin) is extracted once, the
+     * ImageJ bilevel short-circuit is applied (as ImageJ does for any histogram
+     * length), then the matching n-bin implementation from
+     * {@link NBinsThresholdMethods} runs on the compact array, and the result is
+     * offset back.
      *
      * @param method    the method
      * @param histogram the histogram; its length is the bin count
@@ -59,12 +68,49 @@ public final class NBinsAutoThresholder {
         }
         if (minbin < 0)
             return 0; // empty histogram
+
+        // ImageJ applies its bilevel short-circuit (AutoThresholder.bilevel, with the
+        // default bilevelSubractOne=true) to histograms of any length: a histogram with
+        // one or two populated bins is degenerate and returns immediately.
+        int bilevel = bilevel(histogram, minbin, maxbin);
+        if (bilevel >= 0)
+            return bilevel;
+
         int[] compact = Arrays.copyOfRange(histogram, minbin, maxbin + 1);
 
         int threshold = invokePorted(method, compact);
         if (threshold < 0)
             threshold = 0;
         return threshold + minbin;
+    }
+
+    /**
+     * Port of ImageJ's {@code AutoThresholder.bilevel} short-circuit (default
+     * {@code bilevelSubractOne=true}): returns {@code firstNonZero - 1} if the
+     * histogram has exactly one populated bin, {@code secondNonZero - 1} if it has
+     * exactly two, and -1 otherwise.
+     */
+    private static int bilevel(int[] histogram, int minbin, int maxbin) {
+        int firstNonZero = -1;
+        int secondNonZero = -1;
+        int nonZeroCount = 0;
+        for (int i = minbin; i <= maxbin; i++) {
+            if (histogram[i] > 0) {
+                nonZeroCount++;
+                if (nonZeroCount > 2)
+                    return -1;
+                if (firstNonZero == -1)
+                    firstNonZero = i;
+                else
+                    secondNonZero = i;
+            }
+        }
+        if (nonZeroCount == 1)
+            return firstNonZero - 1;
+        else if (nonZeroCount == 2)
+            return secondNonZero - 1;
+        else
+            return -1;
     }
 
     /**
