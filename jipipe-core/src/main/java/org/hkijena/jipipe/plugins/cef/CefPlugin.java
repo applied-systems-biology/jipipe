@@ -30,7 +30,6 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -95,7 +94,11 @@ public class CefPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         try {
             app = builder.build();
-        } catch (IOException | UnsupportedPlatformException | InterruptedException | CefInitializationException e) {
+        } catch (Throwable e) {
+            // Catch Throwable, not just checked exceptions: JCEF native-library initialization can fail with
+            // UnsatisfiedLinkError/LinkageError (e.g. headless systems without X11) or NoSuchMethodError
+            // (dependency conflicts). Re-throwing would abort the registration of all remaining plugins,
+            // as LinkageError escapes the initializer's NoClassDefFoundError|Exception catch.
             progressInfo.log(e);
             progressInfo.log("Error: Unable to initialize CEF");
         }
