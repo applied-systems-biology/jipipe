@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 
 @SetJIPipeDocumentation(name = "IJ3D nuclei segmentation", description = "This plugin is designed to segment nuclei from cell culture (not from tissues). " +
         "The method is based on a maximum Z-projection followed by a 2D Segmentation. " +
@@ -42,7 +43,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private AutoThresholder.Method autoThresholdMethod = AutoThresholder.Method.Default;
+    private AutoThresholdMethod autoThresholdMethod = AutoThresholdMethod.Default;
 
     private OptionalIntegerParameter customThreshold = new OptionalIntegerParameter(false, 0);
 
@@ -64,7 +65,7 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
         ImagePlus inputImage = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ImagePlus outputImage = IJ3DUtils.forEach3DIn5DGenerate(inputImage, (ih, index, ctProgress) -> {
             Segment3DNuclei segment3DNuclei = new Segment3DNuclei(ih);
-            segment3DNuclei.setMethod(autoThresholdMethod);
+            segment3DNuclei.setMethod(AutoThresholder.Method.valueOf(autoThresholdMethod.name()));
             if (customThreshold.isEnabled()) {
                 segment3DNuclei.setManual(customThreshold.getContent());
             } else {
@@ -78,12 +79,12 @@ public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @SetJIPipeDocumentation(name = "Auto threshold method", description = "The auto threshold method (if auto thresholding is enabled)")
     @JIPipeParameter("auto-threshold-method")
-    public AutoThresholder.Method getAutoThresholdMethod() {
+    public AutoThresholdMethod getAutoThresholdMethod() {
         return autoThresholdMethod;
     }
 
     @JIPipeParameter("auto-threshold-method")
-    public void setAutoThresholdMethod(AutoThresholder.Method autoThresholdMethod) {
+    public void setAutoThresholdMethod(AutoThresholdMethod autoThresholdMethod) {
         this.autoThresholdMethod = autoThresholdMethod;
     }
 

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.plugins.imagejalgorithms;
 
 import com.google.common.collect.Sets;
 import de.biomedical_imaging.ij.steger.OverlapOption;
-import ij.process.AutoThresholder;
 import inra.ijpb.binary.ChamferWeights;
 import inra.ijpb.binary.ChamferWeights3D;
 import inra.ijpb.color.ColorMaps;
@@ -177,6 +176,7 @@ import org.hkijena.jipipe.plugins.strings.StringsPlugin;
 import org.hkijena.jipipe.plugins.tables.TablesPlugin;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import sc.fiji.coloc.algorithms.AutoThresholdRegression;
@@ -1063,11 +1063,20 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-manual2d-color-lab", ManualLABThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-8u", ManualThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-percentile2d-8u", PercentileThreshold8U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-percentile2d-16u", PercentileThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-16u", ManualThreshold16U2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-manual2d-32f", ManualThreshold32F2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-auto2d", AutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
-        for (AutoThresholder.Method method : AutoThresholder.Method.values()) {
+        for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
             registerNodeExample(AutoThreshold2DAlgorithm.class, method.name(), node -> node.setMethod(method));
+        }
+        registerNodeType("ij1-threshold-auto2d-16u", AutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
+            registerNodeExample(AutoThreshold2D16UAlgorithm.class, method.name(), node -> node.setMethod(method));
+        }
+        registerNodeType("ij1-threshold-auto2d-nbins", AutoThreshold2DNBinsAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        for (AutoThresholdMethod method : AutoThresholdMethod.values()) {
+            registerNodeExample(AutoThreshold2DNBinsAlgorithm.class, method.name(), node -> node.setMethod(method));
         }
         registerNodeType("ij1-threshold-expression2d-8u", CustomAutoThreshold2D8UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-expression2d-16u", CustomAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
@@ -1082,6 +1091,12 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-threshold-local-auto2d-sauvola", SauvolaLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-phansalkar", PhansalkarLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u", LocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-bernsen", BernsenLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-contrast", ContrastLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-niblack", NiblackLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-phansalkar", PhansalkarLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
+        registerNodeType("ij1-threshold-local-auto2d-16u-sauvola", SauvolaLocalAutoThreshold2D16UAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
@@ -1090,11 +1105,15 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
 
-        registerEnumParameterType(AutoThresholder.Method.class.getCanonicalName(), AutoThresholder.Method.class,
+        registerEnumParameterType("ij.process.AutoThresholder$Method", AutoThresholdMethod.class,
                 "Auto threshold method", "Available methods");
         registerEnumParameterType("slice-threshold-mode", AutoThreshold2DAlgorithm.SliceThresholdMode.class,
                 "Slice thresholding mode", "How multi-slice images are thresholded");
-        registerEnumParameterType(LocalAutoThreshold2DAlgorithm.Method.class.getCanonicalName(), LocalAutoThreshold2DAlgorithm.Method.class,
+        registerEnumParameterType("org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local.LocalAutoThreshold2DAlgorithm$Method",
+                LocalAutoThreshold2DAlgorithm.Method.class,
+                "Local auto threshold method", "Available methods");
+        registerEnumParameterType("ij1-threshold-local-auto2d-16u:method",
+                LocalAutoThreshold2D16UAlgorithm.Method.class,
                 "Local auto threshold method", "Available methods");
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
@@ -1301,7 +1320,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
         registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
 
-        registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
+        registerEnumParameterType("org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm$Method",
+                HistogramContrastEnhancerAlgorithm.Method.class,
                 "Histogram contrast enhancer method", "Available methods");
     }
 

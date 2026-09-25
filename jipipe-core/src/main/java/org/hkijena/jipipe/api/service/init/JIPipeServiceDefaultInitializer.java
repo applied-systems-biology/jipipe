@@ -235,7 +235,9 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
                 report.getRegisteredExtensions().add(extension);
                 report.getRegisteredExtensionIds().add(extension.getDependencyId());
                 getService().getExtensionRegisteredEventEmitter().emit(new JIPipePluginRegisteredEvent(getService(), extension));
-            } catch (NoClassDefFoundError | Exception e) {
+            } catch (LinkageError | Exception e) {
+                // LinkageError (incl. NoClassDefFoundError, NoSuchMethodError, UnsatisfiedLinkError):
+                // a failing plugin must not abort the registration of the remaining plugins
                 getProgressInfo().log("[!] ERROR: Unable to instantiate extension " + info);
                 e.printStackTrace();
                 getProgressInfo().log(e.toString());

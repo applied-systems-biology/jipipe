@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.plugins.expressions.functions.statistics;
 
-import ij.process.AutoThresholder;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
 
 @SetJIPipeDocumentation(name = "Histogram threshold (Renyi Entropy)", description = "Calculates a threshold from a " +
         "histogram using the Renyi entropy algorithm.")
@@ -24,7 +24,7 @@ public class HistogramThresholdRenyi extends HistogramThresholdFunction {
     }
 
     @Override
-    protected int calculateThreshold(int[] histogram) {
-        return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.RenyiEntropy, histogram);
+    protected AutoThresholdMethod getMethod() {
+        return AutoThresholdMethod.RenyiEntropy;
     }
 }

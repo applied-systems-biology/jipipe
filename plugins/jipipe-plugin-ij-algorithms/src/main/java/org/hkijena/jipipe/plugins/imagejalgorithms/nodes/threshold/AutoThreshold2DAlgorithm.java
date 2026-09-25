@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
 import ij.ImagePlus;
-import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -41,6 +40,8 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalTextAnnotationNameParameter;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
+import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
+import org.hkijena.jipipe.utils.threshold.NBinsAutoThresholder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,15 +50,16 @@ import java.util.List;
 /**
  * Thresholding node that thresholds via an auto threshold
  */
-@SetJIPipeDocumentation(name = "Auto threshold 2D", description = "Applies an auto-thresholding algorithm. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@SetJIPipeDocumentation(name = "Auto threshold 2D (8-bit)", description = "Applies an auto-thresholding algorithm. " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice. " +
+        "This node requires 8-bit images and uses 256 bins (one per pixel value). Use 'Auto threshold 2D (16-bit)' or 'Auto threshold 2D (custom bins)' for images with a higher bit depth.")
 @ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto Threshold")
 public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private AutoThresholder.Method method = AutoThresholder.Method.Default;
+    private AutoThresholdMethod method = AutoThresholdMethod.Default;
     private boolean darkBackground = true;
     private OptionalTextAnnotationNameParameter thresholdAnnotation = new OptionalTextAnnotationNameParameter("Threshold", false);
     private SliceThresholdMode thresholdMode = SliceThresholdMode.ApplyPerSlice;
@@ -103,7 +105,6 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             ImagePlus img = inputData.getDuplicateImage();
             Roi2dListData roiInput = null;
             ImagePlus maskInput = null;
-            AutoThresholder autoThresholder = new AutoThresholder();
 
             switch (sourceArea) {
                 case InsideRoi:
@@ -131,7 +132,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     if (!darkBackground)
                         ip.invert();
                     int[] histogram = getHistogram(ip, mask);
-                    int threshold = autoThresholder.getThreshold(method, histogram);
+                    int threshold = NBinsAutoThresholder.getThreshold(method, histogram);
                     ip.threshold(threshold);
                     thresholds.add(threshold);
                 }, progressInfo);
@@ -163,7 +164,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                         combinedHistogram[i] += histogram[i];
                     }
                 }, progressInfo.resolve("Finding histograms"));
-                int threshold = autoThresholder.getThreshold(method, combinedHistogram);
+                int threshold = NBinsAutoThresholder.getThreshold(method, combinedHistogram);
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (thresholdAnnotation.isEnabled()) {
                     annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
@@ -188,7 +189,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     if (!darkBackground)
                         ip.invert();
                     int[] histogram = getHistogram(ip, mask);
-                    int threshold = autoThresholder.getThreshold(method, histogram);
+                    int threshold = NBinsAutoThresholder.getThreshold(method, histogram);
                     thresholds.add(threshold);
                 }, progressInfo.resolve("Finding thresholds"));
 
@@ -226,12 +227,12 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeParameter(value = "method", important = true)
     @SetJIPipeDocumentation(name = "Method")
-    public AutoThresholder.Method getMethod() {
+    public AutoThresholdMethod getMethod() {
         return method;
     }
 
     @JIPipeParameter("method")
-    public void setMethod(AutoThresholder.Method method) {
+    public void setMethod(AutoThresholdMethod method) {
         this.method = method;
     }
 

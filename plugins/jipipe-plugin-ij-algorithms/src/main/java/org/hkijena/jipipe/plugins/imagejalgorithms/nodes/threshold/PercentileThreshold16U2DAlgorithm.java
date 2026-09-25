@@ -1,0 +1,136 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ImageProcessor;
+import ij.process.ShortProcessor;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
+import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndex;
+
+
+/**
+ * Wrapper around {@link ImageProcessor}
+ */
+@SetJIPipeDocumentation(name = "Percentile threshold 2D (16-bit)", description = "Thresholds the image with a threshold calculated from the image pixel values (percentile of the 65536-bin histogram). " +
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
+@AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
+@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust")
+public class PercentileThreshold16U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+
+    private double percentile = 50;
+
+    /**
+     * Instantiates a new node type.
+     *
+     * @param info the info
+     */
+    public PercentileThreshold16U2DAlgorithm(JIPipeNodeInfo info) {
+        super(info);
+    }
+
+    /**
+     * Instantiates a new node type.
+     *
+     * @param other the other
+     */
+    public PercentileThreshold16U2DAlgorithm(PercentileThreshold16U2DAlgorithm other) {
+        super(other);
+        this.percentile = other.percentile;
+    }
+
+    @Override
+    public boolean supportsParallelization() {
+        return true;
+    }
+
+    @Override
+    protected void runIteration(JIPipeSingleIterationStep iterationStep, JIPipeIterationContext iterationContext, JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        ImagePlusData inputData = iterationStep.getInputData(getFirstInputSlot(), ImagePlusGreyscale16UData.class, progressInfo);
+        ImagePlus img = inputData.getDuplicateImage();
+        ImagePlus outputImage = IJ.createHyperStack(img.getTitle() + " Thresholded",
+                img.getWidth(),
+                img.getHeight(),
+                img.getNChannels(),
+                img.getNSlices(),
+                img.getNFrames(),
+                8);
+        ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            short[] pixels = (short[]) ip.getPixels();
+            int[] histogram = new int[65536];
+            for (short p : pixels)
+                histogram[p & 0xFFFF]++;
+            double sum = 0;
+            for (int i = 0; i < histogram.length; i++) {
+                sum += histogram[i];
+            }
+            double percentileThresh = sum * percentile / 100.0;
+            int thresh = 0;
+            sum = 0;
+            for (int i = 0; i < histogram.length; i++) {
+                sum += histogram[i];
+                if (sum >= percentileThresh) {
+                    thresh = i;
+                    break;
+                }
+            }
+            ByteProcessor targetProcessor = getTargetProcessor(outputImage, index);
+            applyThreshold((ShortProcessor) ip, targetProcessor, thresh);
+        }, progressInfo);
+        iterationStep.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(outputImage), progressInfo);
+    }
+
+    private void applyThreshold(ShortProcessor source, ByteProcessor target, int threshold) {
+        short[] src = (short[]) source.getPixels();
+        byte[] dst = (byte[]) target.getPixels();
+        for (int i = 0; i < src.length; i++) {
+            dst[i] = Short.toUnsignedInt(src[i]) > threshold ? (byte) 255 : 0;
+        }
+    }
+
+    private ByteProcessor getTargetProcessor(ImagePlus outputImage, ImageSliceIndex index) {
+        return (ByteProcessor) (outputImage.hasImageStack() ?
+                outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
+                : outputImage.getProcessor());
+    }
+
+    @SetJIPipeDocumentation(name = "Percentile", description = "Percentile from 0-100.")
+    @JIPipeParameter("percentile")
+    public double getPercentile() {
+        return percentile;
+    }
+
+    @JIPipeParameter("percentile")
+    public void setPercentile(double percentile) {
+        this.percentile = percentile;
+
+    }
+}
