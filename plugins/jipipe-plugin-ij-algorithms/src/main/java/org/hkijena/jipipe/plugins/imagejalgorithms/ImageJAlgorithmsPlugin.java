@@ -1105,11 +1105,15 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
         registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/segment.png"));
 
-        registerEnumParameterType(AutoThresholdMethod.class.getCanonicalName(), AutoThresholdMethod.class,
+        registerEnumParameterType("ij.process.AutoThresholder$Method", AutoThresholdMethod.class,
                 "Auto threshold method", "Available methods");
         registerEnumParameterType("slice-threshold-mode", AutoThreshold2DAlgorithm.SliceThresholdMode.class,
                 "Slice thresholding mode", "How multi-slice images are thresholded");
-        registerEnumParameterType(LocalAutoThreshold2DAlgorithm.Method.class.getCanonicalName(), LocalAutoThreshold2DAlgorithm.Method.class,
+        registerEnumParameterType("org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local.LocalAutoThreshold2DAlgorithm$Method",
+                LocalAutoThreshold2DAlgorithm.Method.class,
+                "Local auto threshold method", "Available methods");
+        registerEnumParameterType("ij1-threshold-local-auto2d-16u:method",
+                LocalAutoThreshold2D16UAlgorithm.Method.class,
                 "Local auto threshold method", "Available methods");
         registerEnumParameterType("ij1:eigenvalue-selection-2d", EigenvalueSelection2D.class,
                 "Eigenvalue selection (2D)", "Determines whether to choose the smallest or largest Eigenvalue");
@@ -1316,7 +1320,8 @@ public class ImageJAlgorithmsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
         registerNodeType("ij1-contrast-apply-ij-per-slice", ImageJContrastEnhancerAlgorithm.class, JIPipe.RESOURCES.getIcon16URL("actions/contrast.png"));
 
-        registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
+        registerEnumParameterType("org.hkijena.jipipe.plugins.imagejalgorithms.nodes.contrast.HistogramContrastEnhancerAlgorithm$Method",
+                HistogramContrastEnhancerAlgorithm.Method.class,
                 "Histogram contrast enhancer method", "Available methods");
     }
 

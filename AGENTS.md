@@ -161,6 +161,13 @@ Examples:
 3. **Implement proper metadata** - All plugins should define name, description, authors, etc.
 4. **Handle dependencies gracefully** - Use the scheduling system for node registration
 
+### Registered IDs Must Be Stable String Literals (IMPORTANT)
+Registration IDs (node types, data types, parameter types, expression functions, ...) are **persisted in saved projects and pipelines** (e.g. as `field-class-id` in project JSON). They must never be derived from code:
+- **Never** use `SomeClass.class.getCanonicalName()`, `.getName()`, or any other code-derived value as a registration ID. A rename/refactor would silently break every saved project that uses the ID.
+- **Always** use an explicit string literal ID (e.g. `"ij1-threshold-local-auto2d-16u:method"`).
+- **Exception:** IDs for third-party features that are integrated automatically (e.g. discovered ImageJ plugins) may be generated from the third-party's own identifiers — never from JIPipe's Java code.
+- If you inherit a legacy code-derived ID, freeze its current value as a string literal (projects contain it verbatim) and keep it unchanged.
+
 ### Plugin Development Best Practices
 1. **Extend `JIPipePrepackagedDefaultJavaPlugin`** for internal core plugins (preconfigured authors)
 2. **Extend `JIPipeDefaultJavaPlugin`** for custom development
