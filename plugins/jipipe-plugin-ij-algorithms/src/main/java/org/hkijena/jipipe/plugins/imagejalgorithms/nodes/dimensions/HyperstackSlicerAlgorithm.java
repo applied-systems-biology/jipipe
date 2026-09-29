@@ -28,7 +28,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndices;
@@ -134,6 +136,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-z")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesZ() {
         return indicesZ;
     }
@@ -145,6 +148,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Indices (Channel)", description = "Array of channel/C indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-c")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesC() {
         return indicesC;
     }
@@ -156,6 +160,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Indices (Frames)", description = "Array of frame/T indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-t")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesT() {
         return indicesT;
     }

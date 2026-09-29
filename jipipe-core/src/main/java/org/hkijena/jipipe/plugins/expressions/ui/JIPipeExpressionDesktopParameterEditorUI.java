@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
@@ -154,10 +155,14 @@ public class JIPipeExpressionDesktopParameterEditorUI extends JIPipeDesktopParam
     }
 
     private JIPipeGraphNode searchForNodeInParents() {
-        for (JIPipeParameterCollection source : getParameterTree().getRegisteredSources()) {
-            if (source instanceof JIPipeGraphNode) {
-                return (JIPipeGraphNode) source;
+        JIPipeParameterTree tree = getParameterTree();
+        while (tree != null) {
+            for (JIPipeParameterCollection source : tree.getRegisteredSources()) {
+                if (source instanceof JIPipeGraphNode) {
+                    return (JIPipeGraphNode) source;
+                }
             }
+            tree = tree.getParent();
         }
         return null;
     }

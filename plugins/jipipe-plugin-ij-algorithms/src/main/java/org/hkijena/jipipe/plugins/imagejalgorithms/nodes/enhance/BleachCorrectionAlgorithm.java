@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
@@ -495,6 +496,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("channel-filter")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
     @AddJIPipeExpressionParameterVariable(key = "channel", name = "Current channel", description = "The currently processed channel")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per channel")
     public OptionalJIPipeExpressionParameter getChannelFilter() {
         return channelFilter;
