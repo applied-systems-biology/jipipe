@@ -158,7 +158,7 @@ public class FilterRoi2dByOverlapOldAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void applyFiltering(Roi2dListData first, Roi2dListData second, String firstPrefix, String secondPrefix, JIPipeOutputDataSlot outputSlot, ImagePlus referenceImage, ROIFilterSettings settings, JIPipeSingleIterationStep iterationStep, JIPipeProgressInfo progressInfo) {
         boolean withFiltering = settings.getOverlapFilter().isEnabled() && !settings.getOverlapFilter().getContent().isEmpty();
-        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
+        JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
         Roi2dListData temp = new Roi2dListData();
         Roi2dListData result = new Roi2dListData();
 

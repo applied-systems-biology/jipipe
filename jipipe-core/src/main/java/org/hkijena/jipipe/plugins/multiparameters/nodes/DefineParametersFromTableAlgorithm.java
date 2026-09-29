@@ -71,7 +71,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
         Map<String, List<Object>> valueMap = new HashMap<>();
         int nRow = 0;
         for (Column column : columns.mapToCollection(Column.class)) {
-            TableColumnData tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap());
+            TableColumnData tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap(iterationStep));
             List<Object> values = new ArrayList<>();
             for (int i = 0; i < tableColumn.getRows(); i++) {
                 values.add(parseColumnValue(tableColumn.getRowAsObject(i), column));

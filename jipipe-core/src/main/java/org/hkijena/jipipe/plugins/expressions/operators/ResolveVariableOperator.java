@@ -14,6 +14,10 @@
 package org.hkijena.jipipe.plugins.expressions.operators;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.ExpressionOperator;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
@@ -30,7 +34,16 @@ public class ResolveVariableOperator extends ExpressionOperator {
     @Override
     public Object evaluate(Iterator<Object> operands, JIPipeExpressionVariablesMap variables) {
         String right = operands.next() + "";
-        return ((JIPipeExpressionVariablesMap) variables).get(right);
+        Object value = variables.get(right);
+        if (value == null) {
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext("Expression"),
+                    "Unable to find variable '" + right + "' in expression",
+                    "Your expression has a variable '" + right + "', but it does not exist",
+                    "Check if the variable exists. Annotate the input data or check the variable name for typos. " +
+                            "Use 'name' EXISTS or IS_VARIABLE(\"name\") to check for optional variables."));
+        }
+        return value;
     }
 
     @Override

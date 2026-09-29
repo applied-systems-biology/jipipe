@@ -430,12 +430,13 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
             greyscaleImage = ImageJUtils.duplicate(originalImage);
         }
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         Image5DExpressionParameterVariablesInfo2.writeToVariables(originalImage, variablesMap);
 
         Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
         Roi finalCurROI = curROI;
         ImageJIterationUtils.forEachIndexedCHyperStack(greyscaleImage, (imp, index, channelProgress) -> {
+            variablesMap.set("channel", index.getC());
             if (!channelFilter.isEnabled() || channelFilter.getContent().test(variablesMap)) {
                 switch (method) {
                     case SimpleRatio:

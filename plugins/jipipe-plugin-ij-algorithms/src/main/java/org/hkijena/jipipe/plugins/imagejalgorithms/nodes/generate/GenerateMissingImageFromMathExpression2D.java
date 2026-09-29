@@ -117,12 +117,12 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
-            variableSet.set("width", overwriteWidth);
-            variableSet.set("height", overwriteHeight);
-            variableSet.set("num_z", overwriteSizeZ);
-            variableSet.set("num_c", overwriteSizeC);
-            variableSet.set("num_t", overwriteSizeT);
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
+            variableSet.set("width", width);
+            variableSet.set("height", height);
+            variableSet.set("num_z", sizeZ);
+            variableSet.set("num_c", sizeC);
+            variableSet.set("num_t", sizeT);
 
             ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 for (int y = 0; y < ip.getHeight(); y++) {
