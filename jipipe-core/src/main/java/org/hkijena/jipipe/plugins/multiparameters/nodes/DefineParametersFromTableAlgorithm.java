@@ -27,8 +27,10 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.plugins.parameters.api.collections.JIPipeParameterCollectionList;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollectionListTemplate;
@@ -71,7 +73,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
         Map<String, List<Object>> valueMap = new HashMap<>();
         int nRow = 0;
         for (Column column : columns.mapToCollection(Column.class)) {
-            TableColumnData tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap());
+            TableColumnData tableColumn = column.getTableColumn().pickOrGenerateColumn(inputData, new JIPipeExpressionVariablesMap(iterationStep));
             List<Object> values = new ArrayList<>();
             for (int i = 0; i < tableColumn.getRows(); i++) {
                 values.add(parseColumnValue(tableColumn.getRowAsObject(i), column));
@@ -163,6 +165,7 @@ public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlg
         @SetJIPipeDocumentation(name = "Table column", description = "The table column")
         @JIPipeParameter("table-column")
         @ParameterCollectionListTemplate(Column.class)
+        @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
         public TableColumnSourceExpressionParameter getTableColumn() {
             return tableColumn;
         }

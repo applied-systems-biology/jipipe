@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
@@ -430,12 +431,13 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
             greyscaleImage = ImageJUtils.duplicate(originalImage);
         }
 
-        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap();
+        JIPipeExpressionVariablesMap variablesMap = new JIPipeExpressionVariablesMap(iterationStep);
         Image5DExpressionParameterVariablesInfo2.writeToVariables(originalImage, variablesMap);
 
         Map<ImageSliceIndex, ImageProcessor> resultMap = new HashMap<>();
         Roi finalCurROI = curROI;
         ImageJIterationUtils.forEachIndexedCHyperStack(greyscaleImage, (imp, index, channelProgress) -> {
+            variablesMap.set("channel", index.getC());
             if (!channelFilter.isEnabled() || channelFilter.getContent().test(variablesMap)) {
                 switch (method) {
                     case SimpleRatio:
@@ -494,6 +496,7 @@ public class BleachCorrectionAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("channel-filter")
     @AddJIPipeExpressionParameterVariable(fromClass = Image5DExpressionParameterVariablesInfo2.class)
     @AddJIPipeExpressionParameterVariable(key = "channel", name = "Current channel", description = "The currently processed channel")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     @JIPipeExpressionParameterSettings(hint = "per channel")
     public OptionalJIPipeExpressionParameter getChannelFilter() {
         return channelFilter;

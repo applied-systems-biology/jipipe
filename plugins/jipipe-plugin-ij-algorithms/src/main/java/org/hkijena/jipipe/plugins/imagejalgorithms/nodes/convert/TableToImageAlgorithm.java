@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.TableColumnSourceExpressionParameter;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -86,11 +87,11 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData table = iterationStep.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         progressInfo.log("Determining image properties");
-        int width = findSizeFromTableOrParameter(table, customWidth, "x");
-        int height = findSizeFromTableOrParameter(table, customHeight, "y");
-        int sizeZ = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeZ, "z") : 1;
-        int sizeC = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeC, "c") : 1;
-        int sizeT = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeT, "t") : 1;
+        int width = findSizeFromTableOrParameter(table, customWidth, "x", iterationStep);
+        int height = findSizeFromTableOrParameter(table, customHeight, "y", iterationStep);
+        int sizeZ = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeZ, "z", iterationStep) : 1;
+        int sizeC = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeC, "c", iterationStep) : 1;
+        int sizeT = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeT, "t", iterationStep) : 1;
 
         // Collect data and create image
 
@@ -192,16 +193,16 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         iterationStep.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
-    private int findSizeFromTableOrParameter(ResultsTableData table, OptionalIntegerParameter parameter, String key) {
+    private int findSizeFromTableOrParameter(ResultsTableData table, OptionalIntegerParameter parameter, String key, JIPipeSingleIterationStep iterationStep) {
         if (parameter.isEnabled()) {
             return parameter.getContent();
         } else {
-            return findSizeFromTable(table, columnAssignment.getValue(key, TableColumnSourceExpressionParameter.class));
+            return findSizeFromTable(table, columnAssignment.getValue(key, TableColumnSourceExpressionParameter.class), iterationStep);
         }
     }
 
-    private int findSizeFromTable(ResultsTableData table, TableColumnSourceExpressionParameter columnSource) {
-        TableColumnData tableColumn = columnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap(this));
+    private int findSizeFromTable(ResultsTableData table, TableColumnSourceExpressionParameter columnSource, JIPipeSingleIterationStep iterationStep) {
+        TableColumnData tableColumn = columnSource.pickOrGenerateColumn(table, new JIPipeExpressionVariablesMap(iterationStep));
         int max = 0;
         for (int i = 0; i < tableColumn.getRows(); i++) {
             max = Math.max(max, (int) tableColumn.getRowAsDouble(i));
@@ -294,42 +295,49 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             columnAssignment.addParameter("x",
                     TableColumnSourceExpressionParameter.class,
                     "X",
-                    "The pixel x coordinate");
+                    "The pixel x coordinate",
+                    JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
             columnAssignment.get("x").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"x\""));
             columnAssignment.addParameter("y",
                     TableColumnSourceExpressionParameter.class,
                     "Y",
-                    "The pixel y coordinate");
+                    "The pixel y coordinate",
+                    JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
             columnAssignment.get("y").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"y\""));
             if (wantsZCT) {
                 columnAssignment.addParameter("z",
                         TableColumnSourceExpressionParameter.class,
                         "Z",
-                        "The pixel z coordinate");
+                        "The pixel z coordinate",
+                        JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
                 columnAssignment.get("z").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"z\""));
                 columnAssignment.addParameter("c",
                         TableColumnSourceExpressionParameter.class,
                         "c",
-                        "The pixel channel coordinate");
+                        "The pixel channel coordinate",
+                        JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
                 columnAssignment.get("c").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"c\""));
                 columnAssignment.addParameter("t",
                         TableColumnSourceExpressionParameter.class,
                         "T",
-                        "The pixel frame (T) coordinate");
+                        "The pixel frame (T) coordinate",
+                        JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
                 columnAssignment.get("t").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"t\""));
             }
             if (colorSpace instanceof GreyscaleColorSpace) {
                 columnAssignment.addParameter("value",
                         TableColumnSourceExpressionParameter.class,
                         "Value",
-                        "The greyscale value");
+                        "The greyscale value",
+                        JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
                 columnAssignment.get("value").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"value\""));
             } else {
                 for (int i = 0; i < colorSpace.getNChannels(); i++) {
                     columnAssignment.addParameter(colorSpace.getChannelName(i),
                             TableColumnSourceExpressionParameter.class,
                             colorSpace.getChannelName(i),
-                            "The values for the channel '" + colorSpace.getChannelName(i) + "'");
+                            "The values for the channel '" + colorSpace.getChannelName(i) + "'",
+                            JIPipeTextAnnotationsExpressionParameterVariablesInfo.ANNOTATION_VARIABLE);
                     columnAssignment.get(colorSpace.getChannelName(i)).set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn,
                             "\"" + colorSpace.getChannelShortName(i) + "\""));
                 }

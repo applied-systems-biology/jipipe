@@ -34,7 +34,7 @@ public class JIPipeDesktopParameterCollectionParameterEditorUI extends JIPipeDes
     private void initialize() {
         setLayout(new BorderLayout());
         setBorder(UIUtils.createControlBorder());
-        parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), null, null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS);
+        parameterPanel = new JIPipeDesktopParameterFormPanel(getDesktopWorkbench(), null, getParameterTree(), null, JIPipeDesktopParameterFormPanel.NO_GROUP_HEADERS);
         add(parameterPanel, BorderLayout.CENTER);
     }
 

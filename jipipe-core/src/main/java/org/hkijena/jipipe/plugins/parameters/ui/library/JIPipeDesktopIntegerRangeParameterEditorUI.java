@@ -17,7 +17,6 @@ import org.fife.ui.rsyntaxtextarea.AbstractTokenMaker;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.desktop.api.JIPipeDesktopParameterEditorUI;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.plugins.expressions.*;
@@ -90,7 +89,7 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
             add(expressionModeToggle, BorderLayout.WEST);
             expressionModeToggle.setSelected(rangeString.isUseExpression());
             if (rangeString.isUseExpression()) {
-                JIPipeManualParameterAccess access = JIPipeManualParameterAccess.builder()
+                JIPipeManualParameterAccess.Builder accessBuilder = JIPipeManualParameterAccess.builder()
                         .setSource(new JIPipeDummyParameterCollection())
                         .setFieldClass(JIPipeExpressionParameter.class)
                         .setGetter(rangeString::getExpression)
@@ -99,8 +98,14 @@ public class JIPipeDesktopIntegerRangeParameterEditorUI extends JIPipeDesktopPar
                             rangeString.setExpression((JIPipeExpressionParameter) expression);
                             setParameter(rangeString, false);
                             checkParameter();
-                        }).build();
-                add(JIPipe.getParameterTypes().createEditorInstance(access, getDesktopWorkbench(), new JIPipeParameterTree(access), null), BorderLayout.CENTER);
+                        });
+                // Forward variable declarations (e.g. annotations) from the surrounding parameter
+                for (AddJIPipeExpressionParameterVariable variable : getParameterAccess().getAnnotationsOfType(AddJIPipeExpressionParameterVariable.class)) {
+                    accessBuilder.addAnnotation(variable);
+                }
+                // Reuse the surrounding parameter tree, so the expression editor can find the node
+                // and its variables (custom variables, project directories, annotations, ...)
+                add(JIPipe.getParameterTypes().createEditorInstance(accessBuilder.build(), getDesktopWorkbench(), getParameterTree(), null), BorderLayout.CENTER);
             } else {
                 rangeStringEditor.setText(rangeString.getValue());
                 add(rangeStringEditor, BorderLayout.CENTER);

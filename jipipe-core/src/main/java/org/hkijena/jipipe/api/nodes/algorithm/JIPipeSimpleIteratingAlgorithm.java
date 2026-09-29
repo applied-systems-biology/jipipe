@@ -158,7 +158,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
             boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new JIPipeExpressionVariablesMap(this))) : null;
 
 
             iterationSteps = new ArrayList<>();
@@ -478,7 +478,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         JIPipeDataSlot slot = slots.get(0);
         boolean withLimit = iterationStepGenerationSettings.getLimit().isEnabled();
         IntegerRange limit = iterationStepGenerationSettings.getLimit().getContent();
-        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new JIPipeExpressionVariablesMap())) : null;
+        TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, slot.getRowCount(), new JIPipeExpressionVariablesMap(this))) : null;
         for (int i = 0; i < slot.getRowCount(); i++) {
             if (withLimit && !allowedIndices.contains(i))
                 continue;

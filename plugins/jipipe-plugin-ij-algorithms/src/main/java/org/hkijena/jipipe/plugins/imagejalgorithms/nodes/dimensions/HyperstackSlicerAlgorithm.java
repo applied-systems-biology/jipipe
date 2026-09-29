@@ -28,7 +28,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageSliceIndices;
@@ -72,9 +74,9 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Collect indices
         ImageSliceIndices indices = new ImageSliceIndices();
-        extractZ(indices, img.getNSlices());
-        extractC(indices, img.getNChannels());
-        extractT(indices, img.getNFrames());
+        extractZ(indices, img.getNSlices(), iterationStep);
+        extractC(indices, img.getNChannels(), iterationStep);
+        extractT(indices, img.getNFrames(), iterationStep);
 
         int numZ = indices.getZ().size();
         int numC = indices.getC().size();
@@ -120,20 +122,21 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         return x % w;
     }
 
-    private void extractZ(ImageSliceIndices indices, int maxZ) {
-        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new JIPipeExpressionVariablesMap(this)));
+    private void extractZ(ImageSliceIndices indices, int maxZ, JIPipeSingleIterationStep iterationStep) {
+        indices.getZ().addAll(indicesZ.getIntegers(0, maxZ, new JIPipeExpressionVariablesMap(iterationStep)));
     }
 
-    private void extractC(ImageSliceIndices indices, int maxC) {
-        indices.getC().addAll(indicesC.getIntegers(0, maxC, new JIPipeExpressionVariablesMap(this)));
+    private void extractC(ImageSliceIndices indices, int maxC, JIPipeSingleIterationStep iterationStep) {
+        indices.getC().addAll(indicesC.getIntegers(0, maxC, new JIPipeExpressionVariablesMap(iterationStep)));
     }
 
-    private void extractT(ImageSliceIndices indices, int maxT) {
-        indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap(this)));
+    private void extractT(ImageSliceIndices indices, int maxT, JIPipeSingleIterationStep iterationStep) {
+        indices.getT().addAll(indicesT.getIntegers(0, maxT, new JIPipeExpressionVariablesMap(iterationStep)));
     }
 
     @SetJIPipeDocumentation(name = "Indices (Z)", description = "Array of Z indices to be included in the final image. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-z")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesZ() {
         return indicesZ;
     }
@@ -145,6 +148,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Indices (Channel)", description = "Array of channel/C indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-c")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesC() {
         return indicesC;
     }
@@ -156,6 +160,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @SetJIPipeDocumentation(name = "Indices (Frames)", description = "Array of frame/T indices to be included in the final image.. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("indices-t")
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public IntegerRange getIndicesT() {
         return indicesT;
     }

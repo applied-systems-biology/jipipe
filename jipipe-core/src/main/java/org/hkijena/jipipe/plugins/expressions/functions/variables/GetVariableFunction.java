@@ -14,6 +14,10 @@
 package org.hkijena.jipipe.plugins.expressions.functions.variables;
 
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
+import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
+import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
+import org.hkijena.jipipe.api.validation.contexts.CustomValidationReportContext;
 import org.hkijena.jipipe.plugins.expressions.ExpressionFunction;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.ParameterInfo;
@@ -40,9 +44,19 @@ public class GetVariableFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
-        Object defaultValue = null;
-        if (parameters.size() > 1)
-            defaultValue = parameters.get(1);
-        return variables.getOrDefault("" + parameters.get(0), defaultValue);
+        String key = "" + parameters.get(0);
+        if (parameters.size() > 1) {
+            return variables.getOrDefault(key, parameters.get(1));
+        }
+        Object value = variables.get(key);
+        if (value == null) {
+            throw new JIPipeValidationRuntimeException(new JIPipeValidationReportEntry(JIPipeValidationReportEntryLevel.Error,
+                    new CustomValidationReportContext("Expression"),
+                    "Unable to find variable '" + key + "' in expression",
+                    "Your expression has a variable '" + key + "', but it does not exist",
+                    "Check if the variable exists. Annotate the input data or check the variable name for typos. " +
+                            "Provide a default value as second parameter to handle missing variables."));
+        }
+        return value;
     }
 }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.expressions.variables;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterVariableInfo;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesInfo;
@@ -26,6 +27,40 @@ import java.util.*;
  * Adds the indication that annotations are available
  */
 public class JIPipeTextAnnotationsExpressionParameterVariablesInfo implements JIPipeExpressionVariablesInfo {
+
+    /**
+     * Reusable annotation instance that advertises annotation variables.
+     * Intended for parameters that are created dynamically (e.g. via
+     * {@link org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection#addParameter})
+     * and therefore cannot be annotated at a getter.
+     */
+    public static final AddJIPipeExpressionParameterVariable ANNOTATION_VARIABLE = new AddJIPipeExpressionParameterVariable() {
+        @Override
+        public Class<? extends java.lang.annotation.Annotation> annotationType() {
+            return AddJIPipeExpressionParameterVariable.class;
+        }
+
+        @Override
+        public String name() {
+            return "";
+        }
+
+        @Override
+        public String description() {
+            return "";
+        }
+
+        @Override
+        public String key() {
+            return "";
+        }
+
+        @Override
+        public Class<? extends JIPipeExpressionVariablesInfo> fromClass() {
+            return JIPipeTextAnnotationsExpressionParameterVariablesInfo.class;
+        }
+    };
+
     @Override
     public Set<JIPipeExpressionParameterVariableInfo> getVariables(JIPipeWorkbench workbench, JIPipeParameterTree parameterTree, JIPipeParameterAccess parameterAccess) {
         Map<UUID, Map<String, JIPipeDataTable>> predecessorNodeCache = JIPipeExpressionVariablesInfo.findPredecessorNodeCache(parameterTree, parameterAccess);

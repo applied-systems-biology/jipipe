@@ -28,9 +28,11 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMissingDataGeneratorAlgorith
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameterSettings;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
+import org.hkijena.jipipe.plugins.expressions.variables.JIPipeTextAnnotationsExpressionParameterVariablesInfo;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
@@ -117,12 +119,12 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
                 bitDepth = overwriteOutputBitDepth.getBitDepth();
 
             ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth);
-            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(this);
-            variableSet.set("width", overwriteWidth);
-            variableSet.set("height", overwriteHeight);
-            variableSet.set("num_z", overwriteSizeZ);
-            variableSet.set("num_c", overwriteSizeC);
-            variableSet.set("num_t", overwriteSizeT);
+            JIPipeExpressionVariablesMap variableSet = new JIPipeExpressionVariablesMap(iterationStep);
+            variableSet.set("width", width);
+            variableSet.set("height", height);
+            variableSet.set("num_z", sizeZ);
+            variableSet.set("num_c", sizeC);
+            variableSet.set("num_t", sizeT);
 
             ImageJIterationUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 for (int y = 0; y < ip.getHeight(); y++) {
@@ -173,6 +175,7 @@ public class GenerateMissingImageFromMathExpression2D extends JIPipeMissingDataG
     @SetJIPipeDocumentation(name = "Function", description = "The function that is applied to each pixel. The expression should return a number.")
     @JIPipeParameter("function")
     @JIPipeExpressionParameterSettings(variableSource = PixelCoordinate5DExpressionParameterVariablesInfo.class)
+    @AddJIPipeExpressionParameterVariable(fromClass = JIPipeTextAnnotationsExpressionParameterVariablesInfo.class)
     public JIPipeExpressionParameter getFunction() {
         return function;
     }
