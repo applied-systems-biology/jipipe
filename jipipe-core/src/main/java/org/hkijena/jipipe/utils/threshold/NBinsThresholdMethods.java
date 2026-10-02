@@ -115,8 +115,13 @@ public final class NBinsThresholdMethods {
         int ih, it;
         int first_bin;
         int last_bin;
-        int sum_pix;
-        int num_pix;
+        // NOTE: unlike the ImageJ 1.54p original, sum_pix accumulates in double. The
+        // original's 32-bit int accumulator overflows once the weighted sum
+        // (sum of bin*count) exceeds 2^31 — reachable on n-bin histograms with large
+        // pixel counts — and silently corrupts the running means and the resulting
+        // threshold.
+        double sum_pix;
+        double num_pix;
         double term;
         double ent;  // entropy
         double min_ent; // min entropy
@@ -143,19 +148,19 @@ public final class NBinsThresholdMethods {
         double[] mu_0 = new double[data.length];
         sum_pix = num_pix = 0;
         for (ih = first_bin; ih < data.length; ih++) {
-            sum_pix += ih * data[ih];
+            sum_pix += (double) ih * data[ih];
             num_pix += data[ih];
             /* NUM_PIX cannot be zero ! */
-            mu_0[ih] = sum_pix / (double) num_pix;
+            mu_0[ih] = sum_pix / num_pix;
         }
 
         double[] mu_1 = new double[data.length];
         sum_pix = num_pix = 0;
         for (ih = last_bin; ih > 0; ih--) {
-            sum_pix += ih * data[ih];
+            sum_pix += (double) ih * data[ih];
             num_pix += data[ih];
             /* NUM_PIX cannot be zero ! */
-            mu_1[ih - 1] = sum_pix / (double) num_pix;
+            mu_1[ih - 1] = sum_pix / num_pix;
         }
 
         /* Determine the threshold that minimizes the fuzzy entropy */
@@ -328,13 +333,20 @@ public final class NBinsThresholdMethods {
         //    Electronic Imaging, 13(1): 146-165
         //    http://citeseer.ist.psu.edu/sezgin04survey.html
         // Ported to ImageJ plugin by G.Landini from E Celebi's fourier_0.8 routines
+        // NOTE: unlike the ImageJ 1.54p original, the weighted sums are accumulated in
+        // double. The original accumulates ih * data[ih] in 32-bit ints, which overflows
+        // for histograms with large pixel counts (sum of bin*count > 2^31, e.g. an
+        // ~8-megapixel image binned into 500 bins): the wrapped mean becomes negative,
+        // the iteration yields a negative threshold, and the pixel-sum loops throw an
+        // ArrayIndexOutOfBoundsException (or silently return a corrupted threshold when
+        // the wrapped value stays in range).
         int threshold;
         int ih;
-        int num_pixels;
-        int sum_back; /* sum of the background pixels at a given threshold */
-        int sum_obj;  /* sum of the object pixels at a given threshold */
-        int num_back; /* number of background pixels at a given threshold */
-        int num_obj;  /* number of object pixels at a given threshold */
+        double num_pixels;
+        double sum_back; /* sum of the background pixels at a given threshold */
+        double sum_obj;  /* sum of the object pixels at a given threshold */
+        double num_back; /* number of background pixels at a given threshold */
+        double num_obj;  /* number of object pixels at a given threshold */
         double old_thresh;
         double new_thresh;
         double mean_back; /* mean of the background pixels at a given threshold */
@@ -350,8 +362,8 @@ public final class NBinsThresholdMethods {
 
         /* Calculate the mean gray-level */
         mean = 0.0;
-        for (ih = 0; ih < data.length; ih++) //0 + 1?
-            mean += ih * data[ih];
+        for (ih = 0; ih < data.length; ih++)
+            mean += (double) ih * data[ih];
         mean /= num_pixels;
         /* Initial estimate */
         new_thresh = mean;
@@ -364,18 +376,18 @@ public final class NBinsThresholdMethods {
             sum_back = 0;
             num_back = 0;
             for (ih = 0; ih <= threshold; ih++) {
-                sum_back += ih * data[ih];
+                sum_back += (double) ih * data[ih];
                 num_back += data[ih];
             }
-            mean_back = (num_back == 0 ? 0.0 : (sum_back / (double) num_back));
+            mean_back = (num_back == 0 ? 0.0 : (sum_back / num_back));
             /* Object */
             sum_obj = 0;
             num_obj = 0;
             for (ih = threshold + 1; ih < data.length; ih++) {
-                sum_obj += ih * data[ih];
+                sum_obj += (double) ih * data[ih];
                 num_obj += data[ih];
             }
-            mean_obj = (num_obj == 0 ? 0.0 : (sum_obj / (double) num_obj));
+            mean_obj = (num_obj == 0 ? 0.0 : (sum_obj / num_obj));
 
             /* Calculate the new threshold: Equation (7) in Ref. 2 */
             temp = (mean_back - mean_obj) / (Math.log(mean_back) - Math.log(mean_obj));

@@ -20,6 +20,7 @@ import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NBinsAutoThresholderTest {
 
@@ -190,6 +191,85 @@ class NBinsAutoThresholderTest {
         histogram[13] = 100;
         int threshold = NBinsAutoThresholder.getThreshold(AutoThresholdMethod.Otsu, histogram);
         assertEquals(true, threshold >= 3 && threshold <= 12, "Threshold between modes, got " + threshold);
+    }
+
+    /**
+     * Regression test for the int-overflow bug in Li's Minimum Cross Entropy
+     * (upstream ImageJ 1.54p has the identical bug): the method accumulates
+     * {@code bin * count} products in 32-bit ints. For histograms whose total
+     * weighted sum exceeds 2^31 (e.g. a ~8-megapixel image compressed into
+     * 500 bins), the wrapped mean becomes negative, the iteration produces a
+     * negative threshold, and the pixel-sum loops throw
+     * {@link ArrayIndexOutOfBoundsException} (see work item 1330:
+     * "Index -63 out of bounds for length 500").
+     * The same overflow silently corrupts thresholds without crashing when
+     * the wrap-around value stays in range.
+     */
+    @Test
+    void testLiDoesNotOverflowOnLargeCountHistograms() {
+        // Case A: the user's crash shape — 500 bins, ~8 million pixels, one dominant
+        // high bin (473 * 7990637 wraps past 2^31 in the int mean accumulation).
+        int[] caseA = new int[500];
+        caseA[0] = 3;
+        caseA[250] = 9;
+        caseA[473] = 7990637;
+        int thresholdA = NBinsAutoThresholder.getThreshold(AutoThresholdMethod.Li, caseA);
+        assertTrue(thresholdA >= 0 && thresholdA < caseA.length,
+                "Li must stay in range on a 500-bin histogram with ~8M pixels, got " + thresholdA);
+        assertEquals(0, thresholdA,
+                "Li on 500-bin histogram with dominant high bin must return the exact double-precision result");
+
+        // Case B: full 16-bit range (65536 bins) with a dark background and a large
+        // saturated peak: weighted sum > 6.6e9, the int version throws
+        // ArrayIndexOutOfBoundsException with a huge negative index.
+        int[] caseB = new int[65536];
+        caseB[0] = 100;
+        caseB[1] = 90;
+        caseB[2] = 80;
+        caseB[65520] = 700;
+        caseB[65530] = 500;
+        caseB[65535] = 100000;
+        int thresholdB = NBinsAutoThresholder.getThreshold(AutoThresholdMethod.Li, caseB);
+        assertTrue(thresholdB >= 0 && thresholdB < caseB.length,
+                "Li must stay in range on a saturated 16-bit histogram, got " + thresholdB);
+        assertEquals(5868, thresholdB,
+                "Li on dark-background/saturated-peak histogram must return the exact double-precision result");
+
+        // Case C: realistic bimodal 1024-bin histogram (550k + 3.3M pixels) where the int
+        // version does not crash but returns a threshold far outside the bimodal valley.
+        int[] caseC = new int[1024];
+        caseC[10] = 1;
+        caseC[500] = 1;
+        for (int i = 100; i <= 110; i++) caseC[i] = 50000;    // 550k pixels at bins 100-110
+        for (int i = 900; i <= 910; i++) caseC[i] = 300000;   // 3.3M pixels at bins 900-910
+        int thresholdC = NBinsAutoThresholder.getThreshold(AutoThresholdMethod.Li, caseC);
+        assertTrue(thresholdC > 110 && thresholdC < 900,
+                "Li threshold must lie between the bimodal peaks, got " + thresholdC);
+        assertEquals(367, thresholdC,
+                "Li on the 1024-bin bimodal histogram must return the exact double-precision result");
+    }
+
+    /**
+     * Regression test for the same int-overflow class in Huang's fuzzy
+     * thresholding: {@code sum_pix} accumulates {@code bin * count} products
+     * in a 32-bit int, corrupting the running means (and thus the entropy
+     * criterion) once the weighted sum exceeds 2^31 — again only possible on
+     * the n-bin paths with large pixel counts, never on 8-bit 256-bin input.
+     */
+    @Test
+    void testHuangDoesNotOverflowOnLargeCountHistograms() {
+        // 1024 bins with two large modes (1.01M pixels at 200-300, 10.1M at 800-900);
+        // weighted sum ~8.8e9 overflows the int accumulator.
+        int[] histogram = new int[1024];
+        histogram[10] = 1;
+        histogram[500] = 1;
+        for (int i = 200; i <= 300; i++) histogram[i] = 10000;    // 1.01M pixels
+        for (int i = 800; i <= 900; i++) histogram[i] = 100000;   // 10.1M pixels
+        int threshold = NBinsAutoThresholder.getThreshold(AutoThresholdMethod.Huang, histogram);
+        assertTrue(threshold > 300 && threshold < 800,
+                "Huang threshold must lie between the bimodal peaks, got " + threshold);
+        assertEquals(500, threshold,
+                "Huang on the 1024-bin bimodal histogram must return the exact double-precision result");
     }
 
     private int[] randomHistogram(Random random, int bins, int trial) {
