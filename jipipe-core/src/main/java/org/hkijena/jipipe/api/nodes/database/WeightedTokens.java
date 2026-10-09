@@ -24,6 +24,43 @@ import java.util.Locale;
 public class WeightedTokens {
 
     public static final int WEIGHT_NAME = 8;
+
+    /**
+     * The weight of the primary function leaf and each secondary
+     * function name in the taxonomy function path (the node's main
+     * search term alongside the node name).
+     */
+    public static final int WEIGHT_FUNCTION_LEAF = 6;
+
+    /**
+     * The weight of the direct parent of a taxonomy function
+     * (depth 1 of the {@code getParent()} chain walked up from a leaf).
+     * Each ancestor level walks down by 2, floored at
+     * {@link #WEIGHT_FUNCTION_TOP}.
+     */
+    public static final int WEIGHT_FUNCTION_PARENT = 4;
+
+    /**
+     * The floor weight of a taxonomy function ancestor
+     * (grandparent and deeper in the {@code getParent()} chain).
+     */
+    public static final int WEIGHT_FUNCTION_TOP = 2;
+
+    /**
+     * The weight of the taxonomy framework's display name.
+     */
+    public static final int WEIGHT_FRAMEWORK = 6;
+
+    /**
+     * The weight of the taxonomy framework's abbreviation.
+     */
+    public static final int WEIGHT_FRAMEWORK_ABBREV = 5;
+
+    /**
+     * The weight of each taxonomy tag.
+     */
+    public static final int WEIGHT_TAG = 6;
+
     public static final int WEIGHT_MENU = 2;
     public static final int WEIGHT_DESCRIPTION = 1;
 
@@ -54,6 +91,16 @@ public class WeightedTokens {
 
     public int getWeight(int index) {
         return weights.get(index);
+    }
+
+    /**
+     * Checks whether a token with the given (already lowercased) text is present.
+     *
+     * @param token the token text
+     * @return true if the token is present
+     */
+    public boolean contains(String token) {
+        return tokens.contains(token);
     }
 
     public int size() {

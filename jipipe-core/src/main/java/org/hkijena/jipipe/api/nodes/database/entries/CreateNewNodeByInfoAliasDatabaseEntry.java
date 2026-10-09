@@ -95,6 +95,9 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
         }
         tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
+        // Task 18: feed the new taxonomy into the search tokens ADDITIVELY
+        // (same node as the base entry: same taxonomy tokens)
+        CreateNewNodeByInfoDatabaseEntry.addTaxonomyTokens(tokens, nodeInfo);
     }
 
     @Override
