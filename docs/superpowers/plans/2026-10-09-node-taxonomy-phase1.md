@@ -84,17 +84,18 @@ The legacy system is untouched (its annotation fields become `@Deprecated`). Eve
 **Interfaces:**
 - Produces:
   - `interface JIPipeNodeTaxonomyFunction` — `String getId()`, `String getName()`, `JIPipeNodeTaxonomyFunction getParent()`, `@Nullable Float getColorHue()` (top-level only; sub-branches return null and inherit), `String getDescription()`, `Icon getIcon()`, `Set<String> getTags()`, `boolean isVisibleInPipeline()`, `boolean isVisibleInCompartments()`, and the four carried-over defaults `canExtract()/userCanCreate()/userCanDelete()/isRunnable()` (all `true`).
-  - `class FunctionRegistry` — `register(JIPipeNodeTaxonomyFunction)`, `JIPipeNodeTaxonomyFunction byId(String)`, `Set<…> all()`, `Set<…> topLevel()`, `List<…> children(JIPipeNodeTaxonomyFunction parent)`, `float effectiveHue(JIPipeNodeTaxonomyFunction f)` (walks up to the nearest non-null hue, shades by depth — fixed rule below), `Set<String> validate()` (human-readable error strings; empty = OK).
+  - `class FunctionRegistry` — `register(JIPipeNodeTaxonomyFunction)`, `JIPipeNodeTaxonomyFunction byId(String)`, `Set<…> all()`, `Set<…> topLevel()`, `List<…> children(JIPipeNodeTaxonomyFunction parent)`, `float baseHue(JIPipeNodeTaxonomyFunction f)` (nearest ancestor's non-null hue; the function's own if it has one), `int shadeDepth(JIPipeNodeTaxonomyFunction f)` (number of tree edges below that ancestor; 0 for the hue owner itself), `static float[] shadeHsb(float hue, float sat, float bri, int depth)` (implements the fixed shading rule below, verbatim, and returns `{hue, shadedSat, shadedBri}` — a pure function so the registry stays theme-independent; Task 21 composes it with the current theme style's sat/bri), `Set<String> validate()` (human-readable error strings; empty = OK).
+  - **Corrected contract (controller ruling, pre-dispatch):** the original plan pinned `float effectiveHue(f)` whose pinned rule changes brightness/saturation — a hue-only float cannot carry it. `baseHue` + `shadeDepth` + `shadeHsb` replace it; the shading rule text is unchanged.
 - Consumes: nothing.
 
 - [ ] **Step 1: Write the failing tests** in `FunctionRegistryTest`:
   - `registerAndLookup`: 3-node chain (top "seg" → "cell" → "leaf"); `byId`/`children`/`topLevel` correct.
   - `cycleRejected`: two functions whose parent chain cycles ⇒ `validate()` non-empty, mentions the ids (Review Focus #2).
   - `unreachableLeafRejected`: a function whose ancestor chain ends at a function whose own parent is not registered ⇒ `validate()` non-empty. (Top-level = `getParent() == null`.)
-  - `effectiveHueTopLevel`: hue 0.5 ⇒ `effectiveHue` = 0.5.
-  - `effectiveHueShadesDown`: child of a 0.5-hue top ⇒ in (0.4,0.6); depth-2 grandchild ≠ depth-1 child (deterministic, monotonic lightness).
+  - `baseHueAndDepthTopLevel`: top with hue 0.5 ⇒ `baseHue` = 0.5, `shadeDepth` = 0.
+  - `shadingByDepth`: child of a 0.5-hue top ⇒ `shadeDepth` = 1; depth-2 grandchild ⇒ `shadeDepth` = 2; `shadeHsb(0.5f, 0.5f, 0.5f, 1)` ≠ `shadeHsb(0.5f, 0.5f, 0.5f, 2)` (deterministic, monotonic lightness), and `shadeHsb(…, 0)` is the identity (sat/bri unchanged, hue unchanged).
   - `duplicateTopHuesReported`: two top-levels, same hue ⇒ `validate()` non-empty (Review Focus #3).
-  - **Shading rule (implement exactly, do not vary):** `effectiveHue` walks up collecting `hue` and the depth `d` below it; result = hue with HSB brightness `+0.06*d` (cap 0.95), saturation `−0.04*d` (floor 0.05).
+  - **Shading rule (implement exactly, do not vary):** walk up collecting the nearest ancestor's non-null `hue` and the depth `d` below it; `shadeHsb` = hue unchanged, brightness `+0.06*d` (cap 0.95), saturation `−0.04*d` (floor 0.05).
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement** (a plain class over `HashMap<String, JIPipeNodeTaxonomyFunction>`; validation walks parent chains with a visited set).
 - [ ] **Step 4: Run** → PASS.
@@ -283,7 +284,7 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
 | `GraphFunction` | `jipipe:function:graph` | Graph / Project | null |
 | `MiscellaneousFunction` | `jipipe:function:misc` | Miscellaneous | 50 |
 
-`GraphFunction.getColorHue()` returns `null` and `isVisibleInCompartments()` false — matching legacy `InternalNodeTypeCategory`'s transparent behavior via the `effectiveHue` fallback (document in the class javadoc).
+`GraphFunction.getColorHue()` returns `null` and `isVisibleInCompartments()` false — matching legacy `InternalNodeTypeCategory`'s transparent behavior; consumers render it using the theme's panel background (the legacy negative-hue case) — document this in the class javadoc.
 
 - [ ] **Step 1: Write the failing test** — instantiate all 13 via a test `all()` list; assert unique literal ids; names as above; hues exactly per the table (null for Graph); **pairwise hue uniqueness** among the 12 colored branches (Review Focus #3); all `getParent()==null`; after a register loop, all in a `FunctionRegistry`.
 - [ ] **Step 2: Run** → FAIL.
@@ -589,7 +590,7 @@ Frameworks: weka/ilastik/omnipose→`JIPipeDLFramework`; python/r→`NoFramework
 - Modify: `…/api/nodes/JIPipeGraphNode.java`, `JIPipeGraph.java` (behavior flags: `canExtract`/`isVisibleInPipeline`/etc.)
 - Modify: all 7 `…/api/nodes/database/entries/*DatabaseEntry.java` (`getCategoryIds()` impls)
 - Modify: `…/api/nodes/database/JIPipeEnhancedNodeDatabaseSearch.java` (L259 category-id indexing)
-- Modify: `…/utils/ThemeUtils.java` — `getNodeFillColor(JIPipeNodeInfo)`/`getNodeBorderColor(JIPipeNodeInfo)` (L289-331) currently read `info.getCategory().getColorHue()`; change to: if the info has a primary function ⇒ hue = `FunctionRegistry.effectiveHue(function)` (looked up via `JIPipe.getNodes().getFunctions()`; unregistered function ⇒ 0.5 + WARN), else fall back to the legacy `info.getCategory().getColorHue()` (unconverted nodes keep today's color). This is what makes converted nodes get their new tree-derived color on the canvas **during the 1b conversion** (Review Focus #7).
+- Modify: `…/utils/ThemeUtils.java` — `getNodeFillColor(JIPipeNodeInfo)`/`getNodeBorderColor(JIPipeNodeInfo)` (L289-331) currently read `info.getCategory().getColorHue()`; change to: if the info has a primary function ⇒ `FunctionRegistry baseHue` + `shadeDepth` (looked up via `JIPipe.getNodes().getFunctions()`; function with no hue in its chain ⇒ theme panel background, like the legacy negative-hue case; unregistered function ⇒ 0.5 base + depth 0 + WARN), then compose the fill/border via `FunctionRegistry.shadeHsb(baseHue, style.getNodeFillSaturation()/getNodeBorderSaturation(), style.getNodeFillBrightness()/getNodeBorderBrightness(), shadeDepth)` (see the Task 2 corrected contract), else fall back to the legacy `info.getCategory().getColorHue()` (unconverted nodes keep today's color). This is what makes converted nodes get their new tree-derived color on the canvas **during the 1b conversion** (Review Focus #7).
 - Create: `…/api/nodes/taxonomy/TaxonomyView.java` (the transition helper)
 - Test: `…/api/nodes/taxonomy/TaxonomyViewTest.java`, `…/utils/ThemeUtilsFunctionColorTest.java`
 
