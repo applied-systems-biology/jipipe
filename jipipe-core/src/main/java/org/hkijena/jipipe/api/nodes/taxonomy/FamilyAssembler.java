@@ -295,6 +295,37 @@ public class FamilyAssembler {
     }
 
     /**
+     * The ids of the families that have a registered step for the given
+     * node id, in family registration order.
+     * <p>
+     * This is the inverse of {@link #siblingNodeIds(String)}: instead of
+     * returning the node ids inside one family, it returns the family ids
+     * that contain a step for {@code nodeId}. It lets a UI caller resolve
+     * "which workflow family(ies) does this node belong to?" and then look
+     * each family up (e.g. in the node registry's family map) to inspect
+     * its {@link JIPipeNodeTaxonomyFamily#getTemplate() template} and
+     * {@link JIPipeNodeTaxonomyFamily#getExample() example}.
+     *
+     * @param nodeId the node id
+     * @return the family ids of every family that has a step for
+     *         {@code nodeId}, in family registration order; empty if the
+     *         node holds no steps
+     */
+    public Set<String> familyIdsOf(String nodeId) {
+        Set<String> familyIds = new LinkedHashSet<>();
+        for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
+            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+            if (familyEntry.getValue().containsKey(nodeId)) {
+                String familyId = familyIdByClass.get(familyEntry.getKey());
+                if (familyId != null) {
+                    familyIds.add(familyId);
+                }
+            }
+        }
+        return familyIds;
+    }
+
+    /**
      * Checks that every registered step refers to a node id the caller
      * has in its set of registered node ids.
      *
