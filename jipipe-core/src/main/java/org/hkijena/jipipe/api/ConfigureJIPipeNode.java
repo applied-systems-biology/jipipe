@@ -20,6 +20,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -39,6 +43,7 @@ public @interface ConfigureJIPipeNode {
      *
      * @return The menu path
      */
+    @Deprecated
     String menuPath() default "";
 
     /**
@@ -49,6 +54,7 @@ public @interface ConfigureJIPipeNode {
      *
      * @return the category
      */
+    @Deprecated
     Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
 
     /**
@@ -66,4 +72,27 @@ public @interface ConfigureJIPipeNode {
      * @return the node classification
      */
     JIPipeNodeClassification nodeClassification() default JIPipeNodeClassification.Standard;
+
+    /**
+     * The taxonomy functions this node appears under.
+     * The first entry is the node's primary function; any further entries are
+     * secondary locations where the node is additionally listed.
+     *
+     * @return the functions, in order; empty if the node is not yet assigned to the taxonomy
+     */
+    Class<? extends JIPipeNodeTaxonomyFunction>[] function() default {};
+
+    /**
+     * The spatial dimensions this node operates in.
+     *
+     * @return the declared spatial dimensions; empty if none are declared
+     */
+    JIPipeNodeTaxonomySpatialDimension[] spatialDimensions() default {};
+
+    /**
+     * The framework (external software or research project) this node implements.
+     *
+     * @return the framework; defaults to {@link NoFramework} when not set
+     */
+    Class<? extends JIPipeNodeTaxonomyFramework> framework() default NoFramework.class;
 }
