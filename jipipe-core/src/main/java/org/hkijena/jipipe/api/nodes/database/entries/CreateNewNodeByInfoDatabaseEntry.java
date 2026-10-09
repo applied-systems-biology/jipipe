@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -56,6 +57,34 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
         initializeTokens();
         initializeCategoryIds();
         initializeLocationInfos();
+        initializeTaxonomyFacets(this, nodeInfo);
+    }
+
+    /**
+     * Populates the taxonomy facets from the given node info: the
+     * function ids (primary first, then secondary, in declaration order),
+     * the framework, the spatial dimensions, the derived input profile,
+     * and the merged tag set (node-level tags plus the tags of every
+     * taxonomy function the node appears under).
+     *
+     * @param nodeInfo the node info to read the facets from
+     */
+    static void initializeTaxonomyFacets(DefaultJIPipeNodeDatabaseEntry entry, JIPipeNodeInfo nodeInfo) {
+        Set<String> functionIds = new LinkedHashSet<>();
+        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
+        if (primary != null) {
+            functionIds.add(primary.getId());
+        }
+        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+            if (secondary != null) {
+                functionIds.add(secondary.getId());
+            }
+        }
+        entry.setFunctionIds(functionIds);
+        entry.setFramework(nodeInfo.getFramework());
+        entry.setSpatialDimensions(nodeInfo.getSpatialDimensions());
+        entry.setInputProfile(nodeInfo.getInputProfile());
+        entry.setTags(nodeInfo.getMergedTags());
     }
 
     private void initializeLocationInfos() {
@@ -210,5 +239,10 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     @Override
     public JIPipeNodeClassification getNodeClassification() {
         return nodeInfo.getNodeClassification();
+    }
+
+    @Override
+    public String getOriginNodeId() {
+        return nodeInfo.getId();
     }
 }

@@ -57,6 +57,8 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
         initializeTokens();
         initializeCategoryIds();
         initializeLocationInfos();
+        // Same node as the base entry: same taxonomy facets
+        CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, nodeInfo);
     }
 
     private void initializeLocationInfos() {
@@ -197,5 +199,10 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
     @Override
     public boolean isDeprecatedOrUnstable() {
         return nodeInfo.isDeprecated() || nodeInfo.isUnstable();
+    }
+
+    @Override
+    public String getOriginNodeId() {
+        return nodeInfo.getId();
     }
 }

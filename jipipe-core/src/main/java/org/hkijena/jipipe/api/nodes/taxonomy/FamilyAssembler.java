@@ -268,6 +268,33 @@ public class FamilyAssembler {
     }
 
     /**
+     * @param nodeId the node id
+     * @return the node ids of the <em>other</em> steps of every family
+     * that has a registered step for {@code nodeId} (its workflow
+     * siblings), in family registration order, then step registration
+     * order; {@code nodeId} itself is excluded and the result is empty
+     * if the node holds no steps. The ids of a node's follow-ups are a
+     * subset of the returned ids (a follow-up is a sibling); callers
+     * that must exclude follow-ups do so with
+     * {@link #followUps(String)}.
+     */
+    public Set<String> siblingNodeIds(String nodeId) {
+        Set<String> siblings = new LinkedHashSet<>();
+        for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
+            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+            if (!familyEntry.getValue().containsKey(nodeId)) {
+                continue;
+            }
+            for (String otherNodeId : stepOrder.getOrDefault(familyEntry.getKey(), List.of())) {
+                if (!otherNodeId.equals(nodeId) && familyEntry.getValue().containsKey(otherNodeId)) {
+                    siblings.add(otherNodeId);
+                }
+            }
+        }
+        return siblings;
+    }
+
+    /**
      * Checks that every registered step refers to a node id the caller
      * has in its set of registered node ids.
      *

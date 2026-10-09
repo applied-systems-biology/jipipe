@@ -16,14 +16,22 @@ package org.hkijena.jipipe.api.nodes.database;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
+import org.hkijena.jipipe.api.nodes.taxonomy.FamilyAssembler;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 
 /**
  * Allows to query nodes
@@ -44,6 +52,14 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     private final JIPipeEnhancedNodeDatabaseSearch enhancedSearch;
     private final JIPipeAINodeDatabaseSearch aiSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
+    /**
+     * Cache of {@link #related(JIPipeNodeDatabaseEntry, int)} results,
+     * keyed by the entry's id and the requested {@code max}. Invalidated
+     * whenever the entry list is replaced ({@link #setEntries(List)}) or
+     * a rebuild is scheduled ({@link #rebuildImmediately()}), i.e. on
+     * every rebuild.
+     */
+    private final Map<String, List<JIPipeNodeDatabaseEntry>> relatedCache = new LinkedHashMap<>();
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -68,7 +84,220 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public void rebuildImmediately() {
         queue.cancelAll();
+        relatedCache.clear();
         queue.enqueue(new JIPipeNodeDatabaseBuilderRun(this));
+    }
+
+    /**
+     * The direct workflow successors (follow-ups) of the given entry:
+     * the entries whose origin node id is a direct successor of the
+     * entry's origin node in the taxonomy family workflow graphs
+     * (see {@link org.hkijena.jipipe.api.nodes.taxonomy.FamilyAssembler#followUps(String)}).
+     * <p>
+     * Successor node ids are mapped back to database entries; the first
+     * entry (in entry order) whose origin node id matches wins. The
+     * result preserves the assembler's order and is never {@code null}.
+     *
+     * @param e the entry whose follow-ups are requested
+     * @return the follow-up entries, ordered; empty if the entry does not
+     * wrap a node type or the node has no successors (or the successor
+     * is not present in the database)
+     */
+    public List<JIPipeNodeDatabaseEntry> followUps(JIPipeNodeDatabaseEntry e) {
+        String originNodeId = e.getOriginNodeId();
+        if (originNodeId == null) {
+            return Collections.emptyList();
+        }
+        List<String> successorNodeIds = JIPipe.getNodes().getFamilyAssembler().followUps(originNodeId);
+        if (successorNodeIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>(successorNodeIds.size());
+        for (String successorNodeId : successorNodeIds) {
+            JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(successorNodeId);
+            if (entry != null) {
+                result.add(entry);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Entries related to the given entry, ranked by how strongly they
+     * belong to its workflow neighborhood:
+     * <ol>
+     * <li><b>same-family siblings</b> — entries whose origin node is a
+     * step in any family that the entry's origin node is a step in,
+     * <i>excluding the entry's follow-ups</i> (those are surfaced by
+     * {@link #followUps(JIPipeNodeDatabaseEntry)});</li>
+     * <li><b>same framework</b> — entries whose
+     * {@link JIPipeNodeDatabaseEntry#getFramework() framework id} equals
+     * the entry's (the {@code NoFramework} sentinel never matches);</li>
+     * <li><b>shared tags</b> — entries sharing taxonomy tags with the
+     * entry; candidates sharing at least two tags rank before those
+     * sharing exactly one.</li>
+     * </ol>
+     * The entry itself, and other entries representing the same node
+     * (e.g. alias entries of a "create node by info" entry), are
+     * excluded from the candidates. Candidates are de-duplicated (an
+     * entry qualifies for several tiers at once and appears in the
+     * highest one), and capped at {@code max}.
+     * <p>
+     * <b>Down-ranking.</b> Within each tier, entries whose
+     * {@link JIPipeNodeClassification} is not {@link JIPipeNodeClassification#Standard}
+     * (i.e. {@link JIPipeNodeClassification#AutoImport AutoImport} and
+     * {@link JIPipeNodeClassification#EdgeCase EdgeCase}, mirroring the
+     * search ranking) are sorted to the end of their tier, preserving
+     * entry order otherwise.
+     * <p>
+     * The result is cached per entry and {@code max}: a second call with
+     * the same arguments returns the same list instance. The cache is
+     * invalidated whenever the entries are replaced
+     * ({@link #setEntries(List)}) or a rebuild is scheduled
+     * ({@link #rebuildImmediately()}).
+     *
+     * @param e   the entry to find related entries for
+     * @param max the maximum number of results to return
+     * @return the related entries, ordered by rank; empty if {@code e}
+     * wraps no node type or no entry qualifies
+     */
+    public List<JIPipeNodeDatabaseEntry> related(JIPipeNodeDatabaseEntry e, int max) {
+        if (max <= 0) {
+            return Collections.emptyList();
+        }
+        String cacheKey = e.getId() + ":" + max;
+        List<JIPipeNodeDatabaseEntry> cached = relatedCache.get(cacheKey);
+        if (cached != null) {
+            return cached;
+        }
+
+        String originNodeId = e.getOriginNodeId();
+        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
+        if (originNodeId == null) {
+            List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
+            relatedCache.put(cacheKey, immutable);
+            return immutable;
+        }
+
+        FamilyAssembler assembler = JIPipe.getNodes().getFamilyAssembler();
+        String selfId = e.getId();
+        // Entries representing the same node (e.g. alias entries of
+        // "create node by info") are never "related": a node is not
+        // related to itself under a different menu path
+        Predicate<JIPipeNodeDatabaseEntry> sameNode =
+            entry -> selfId.equals(entry.getId()) || originNodeId.equals(entry.getOriginNodeId());
+        Set<String> added = new LinkedHashSet<>();
+
+        // Tier 1: same-family siblings, excluding follow-ups (a follow-up
+        // is also a sibling, so it is removed here and surfaced by
+        // followUps() instead)
+        Set<String> siblingNodeIds = new LinkedHashSet<>(assembler.siblingNodeIds(originNodeId));
+        siblingNodeIds.removeAll(assembler.followUps(originNodeId));
+        List<JIPipeNodeDatabaseEntry> tier1 = new ArrayList<>();
+        for (String siblingNodeId : siblingNodeIds) {
+            JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(siblingNodeId);
+            if (entry != null && !sameNode.test(entry) && added.add(entry.getId())) {
+                tier1.add(entry);
+            }
+        }
+
+        // Tier 2: same framework (the NoFramework sentinel never matches:
+        // it would make every framework-less entry a "sibling")
+        List<JIPipeNodeDatabaseEntry> tier2 = new ArrayList<>();
+        String frameworkId = e.getFramework().getId();
+        if (!NoFramework.ID.equals(frameworkId)) {
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                if (frameworkId.equals(entry.getFramework().getId())
+                    && !sameNode.test(entry) && added.add(entry.getId())) {
+                    tier2.add(entry);
+                }
+            }
+        }
+
+        // Tier 3: shared tags (>=2 shared before exactly 1)
+        List<JIPipeNodeDatabaseEntry> tier3 = new ArrayList<>();
+        Set<String> myTags = e.getTags();
+        if (!myTags.isEmpty()) {
+            List<JIPipeNodeDatabaseEntry> twoShared = new ArrayList<>();
+            List<JIPipeNodeDatabaseEntry> oneShared = new ArrayList<>();
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                if (sameNode.test(entry)) {
+                    continue;
+                }
+                int shared = 0;
+                for (String tag : entry.getTags()) {
+                    if (myTags.contains(tag)) {
+                        shared++;
+                    }
+                }
+                if (shared >= 2) {
+                    twoShared.add(entry);
+                } else if (shared == 1) {
+                    oneShared.add(entry);
+                }
+            }
+            for (JIPipeNodeDatabaseEntry entry : twoShared) {
+                if (added.add(entry.getId())) {
+                    tier3.add(entry);
+                }
+            }
+            for (JIPipeNodeDatabaseEntry entry : oneShared) {
+                if (added.add(entry.getId())) {
+                    tier3.add(entry);
+                }
+            }
+        }
+
+        // Merge the tiers in priority order; within each tier,
+        // down-ranked (non-Standard) entries are sorted to the end
+        for (List<JIPipeNodeDatabaseEntry> tier : List.of(tier1, tier2, tier3)) {
+            if (result.size() >= max) {
+                break;
+            }
+            for (JIPipeNodeDatabaseEntry entry : standardFirst(tier)) {
+                if (result.size() >= max) {
+                    break;
+                }
+                result.add(entry);
+            }
+        }
+
+        List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
+        relatedCache.put(cacheKey, immutable);
+        return immutable;
+    }
+
+    /**
+     * Stably partitions the given tier so that the down-ranked
+     * (non-{@link JIPipeNodeClassification#Standard}) entries come after
+     * the Standard ones, preserving the candidate order within both
+     * groups.
+     */
+    private static List<JIPipeNodeDatabaseEntry> standardFirst(List<JIPipeNodeDatabaseEntry> tier) {
+        List<JIPipeNodeDatabaseEntry> standard = new ArrayList<>(tier.size());
+        List<JIPipeNodeDatabaseEntry> downRanked = new ArrayList<>();
+        for (JIPipeNodeDatabaseEntry entry : tier) {
+            if (entry.getNodeClassification() == JIPipeNodeClassification.Standard) {
+                standard.add(entry);
+            } else {
+                downRanked.add(entry);
+            }
+        }
+        standard.addAll(downRanked);
+        return standard;
+    }
+
+    /**
+     * The first entry (in entry order) whose origin node id equals the
+     * given node id, or {@code null} if no such entry exists.
+     */
+    private JIPipeNodeDatabaseEntry entryByOriginNodeId(String originNodeId) {
+        for (JIPipeNodeDatabaseEntry entry : entries) {
+            if (originNodeId.equals(entry.getOriginNodeId())) {
+                return entry;
+            }
+        }
+        return null;
     }
 
     public List<JIPipeNodeDatabaseEntry> getEntries() {
@@ -77,6 +306,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
         this.entries = entries;
+        relatedCache.clear();
         aiSearch.setEntries(entries);
     }
 
