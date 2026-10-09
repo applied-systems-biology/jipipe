@@ -315,12 +315,12 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
   - **plotting**: `PlotScatterFunction`, `PlotLineFunction`, `PlotBarFunction`, `PlotHeatmapFunction`, `PlotMiscFunction`
   - **export**: `ExportFileFormatsFunction`, `ExportArchiveFunction`
   - **graph**: `GraphCompartmentOutputsFunction`, `GraphWrappersFunction`, `GraphDebugFunction`
-  (39 files. Seed tags: `TrackingDetectionFunction` → `{"spot-detection"}`, `DeepLearningInferenceFunction` → `{"inference"}`, `SegmentationCellBasedFunction` → `{"cell-segmentation"}`; all others empty.)
+  (48 leaf classes total: 5 data + 9 images + 4 rois + 3 filaments + 5 tables + 3 statistics + 4 tracking + 2 annotations + 3 deeplearning + 5 plotting + 2 export + 3 graph. The earlier "39" count was an arithmetic slip — the named list above is the contract. Seed tags: `TrackingDetectionFunction` → `{"spot-detection"}`, `DeepLearningInferenceFunction` → `{"inference"}`, `SegmentationCellBasedFunction` → `{"cell-segmentation"}`; all others empty.)
 - Consumes: Task 9.
 
 - [ ] **Step 1: Write the failing test** — helper listing all 39; assert unique literal ids; each parent is a Task-9 top-level (or `SegmentationFunction` for the cell-based leaf); every leaf reachable via `topLevel()→…→leaf` (Review Focus #2); full set registered ⇒ `FunctionRegistry.validate()` empty.
 - [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement** the 39 classes.
+- [ ] **Step 3: Implement** the 48 leaf classes.
 - [ ] **Step 4: Run** → PASS.
 - [ ] **Step 5: Commit** `git commit -m "feat: add seed taxonomy function leaves"`.
 
@@ -368,11 +368,11 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
 
 **Interfaces:**
 - Produces:
-  - `TaxonomyPlugin.register()` registers all 13 top-levels + 39 leaves + 12 frameworks into `JIPipe.getNodes()` registries.
+  - `TaxonomyPlugin.register()` registers all 13 top-levels + 48 leaves + 12 frameworks into `JIPipe.getNodes()` registries.
   - `ImageTypeInfoInputProfileProvider implements InputProfileProvider` — `getProfile(Class)`: reads `@ImageTypeInfo`; unannotated ⇒ `NA`.
 - Consumes: Tasks 7, 9, 10, 11.
 
-- [ ] **Step 1: Write the failing tests** — `providerMapsNumDimensions`: stub classes `@ImageTypeInfo(numDimensions=2/3/-1)` ⇒ `PLANE_2D`/`VOLUME_3D`/`ANY`; unannotated ⇒ `NA`. `allTaxonomyRegistered`: after a `TaxonomyPlugin` register against the test service component (or full `JIPipe` init, per existing JIPipe-test precedent) ⇒ `getFunctions()` has 52 ids, `getFrameworks()` has 12, `validate()` empty.
+- [ ] **Step 1: Write the failing tests** — `providerMapsNumDimensions`: stub classes `@ImageTypeInfo(numDimensions=2/3/-1)` ⇒ `PLANE_2D`/`VOLUME_3D`/`ANY`; unannotated ⇒ `NA`. `allTaxonomyRegistered`: after a `TaxonomyPlugin` register against the test service component (or full `JIPipe` init, per existing JIPipe-test precedent) ⇒ `getFunctions()` has 61 ids (13 top-levels + 48 leaves), `getFrameworks()` has 12, `validate()` empty.
 - [ ] **Step 2: Run** → FAIL.
 - [ ] **Step 3: Implement.**
 - [ ] **Step 4: Run** → PASS.
