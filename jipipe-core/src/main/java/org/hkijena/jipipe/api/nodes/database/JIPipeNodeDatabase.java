@@ -58,8 +58,22 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * whenever the entry list is replaced ({@link #setEntries(List)}) or
      * a rebuild is scheduled ({@link #rebuildImmediately()}), i.e. on
      * every rebuild.
+     * <p>
+     * <b>Concurrency contract.</b> This is a best-effort cache read from
+     * the UI thread and written/invalidated from several threads (UI,
+     * the SwingWorker builder, the updater's Swing timer). It is
+     * therefore a {@code volatile} reference to an <em>immutable</em>
+     * map that is never mutated in place: invalidation swaps in a fresh
+     * empty map, and a cache miss publishes its result via a
+     * copy-on-write swap of a new map (see
+     * {@link #cacheRelated(String, List)}). A concurrent miss may thus
+     * lose another thread's just-published entry — that is acceptable:
+     * a lost or momentarily stale entry is at worst recomputed, and
+     * correctness never depends on the cache. What matters is
+     * visibility: every thread observes either the pre-swap or the
+     * post-swap map, never a half-built one.
      */
-    private final Map<String, List<JIPipeNodeDatabaseEntry>> relatedCache = new LinkedHashMap<>();
+    private volatile Map<String, List<JIPipeNodeDatabaseEntry>> relatedCache = Collections.emptyMap();
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -84,7 +98,9 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public void rebuildImmediately() {
         queue.cancelAll();
-        relatedCache.clear();
+        // Invalidate by swapping in a fresh empty map (see the field's
+        // concurrency contract); never mutate the current map in place.
+        relatedCache = Collections.emptyMap();
         queue.enqueue(new JIPipeNodeDatabaseBuilderRun(this));
     }
 
@@ -99,9 +115,9 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * result preserves the assembler's order and is never {@code null}.
      *
      * @param e the entry whose follow-ups are requested
-     * @return the follow-up entries, ordered; empty if the entry does not
-     * wrap a node type or the node has no successors (or the successor
-     * is not present in the database)
+     * @return an unmodifiable list of the follow-up entries, ordered;
+     * empty if the entry does not wrap a node type or the node has no
+     * successors (or the successor is not present in the database)
      */
     public List<JIPipeNodeDatabaseEntry> followUps(JIPipeNodeDatabaseEntry e) {
         String originNodeId = e.getOriginNodeId();
@@ -119,7 +135,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
                 result.add(entry);
             }
         }
-        return result;
+        return Collections.unmodifiableList(result);
     }
 
     /**
@@ -166,7 +182,10 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             return Collections.emptyList();
         }
         String cacheKey = e.getId() + ":" + max;
-        List<JIPipeNodeDatabaseEntry> cached = relatedCache.get(cacheKey);
+        // Read the volatile cache reference once: this thread then works
+        // with a single immutable map snapshot.
+        Map<String, List<JIPipeNodeDatabaseEntry>> cache = relatedCache;
+        List<JIPipeNodeDatabaseEntry> cached = cache.get(cacheKey);
         if (cached != null) {
             return cached;
         }
@@ -175,7 +194,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
         if (originNodeId == null) {
             List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
-            relatedCache.put(cacheKey, immutable);
+            cacheRelated(cacheKey, immutable);
             return immutable;
         }
 
@@ -263,8 +282,22 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         }
 
         List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
-        relatedCache.put(cacheKey, immutable);
+        cacheRelated(cacheKey, immutable);
         return immutable;
+    }
+
+    /**
+     * Publishes a computed {@link #related(JIPipeNodeDatabaseEntry, int)}
+     * result into the cache by swapping in a copy of the current map plus
+     * the new entry (copy-on-write; see the {@link #relatedCache}
+     * concurrency contract — a concurrent miss may lose one of the two
+     * entries, which is harmless for a best-effort cache).
+     */
+    private void cacheRelated(String cacheKey, List<JIPipeNodeDatabaseEntry> result) {
+        Map<String, List<JIPipeNodeDatabaseEntry>> current = relatedCache;
+        Map<String, List<JIPipeNodeDatabaseEntry>> updated = new LinkedHashMap<>(current);
+        updated.put(cacheKey, result);
+        relatedCache = Collections.unmodifiableMap(updated);
     }
 
     /**
@@ -306,7 +339,9 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
         this.entries = entries;
-        relatedCache.clear();
+        // Invalidate by swapping in a fresh empty map (see the field's
+        // concurrency contract); never mutate the current map in place.
+        relatedCache = Collections.emptyMap();
         aiSearch.setEntries(entries);
     }
 
