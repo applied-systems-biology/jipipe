@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntry;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportEntryLevel;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -37,6 +39,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots", purpose = "Detect the spots that are linked into tracks")
 @SetJIPipeDocumentation(name = "Detect spots", description = "Detect spots using TrackMate")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where the spots should be detected", create = true)

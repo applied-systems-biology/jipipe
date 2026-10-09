@@ -28,8 +28,11 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
+import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.TrackingNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
@@ -41,6 +44,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert spots to RGB", after = {TrackingNode.class}, purpose = "Render the spots and their tracks as RGB images")
 @SetJIPipeDocumentation(name = "Convert spots to RGB", description = "Visualizes spots")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", create = true)

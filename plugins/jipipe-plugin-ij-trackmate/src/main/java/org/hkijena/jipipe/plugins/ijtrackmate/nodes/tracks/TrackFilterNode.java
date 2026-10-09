@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
@@ -39,6 +41,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter tracks", after = {TrackingNode.class}, purpose = "Remove tracks that do not match the selection criteria")
 @SetJIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)

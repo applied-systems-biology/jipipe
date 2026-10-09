@@ -23,11 +23,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Measure edges", after = {TrackingNode.class}, purpose = "Measure the track edges into a results table")
 @SetJIPipeDocumentation(name = "Measure edges", description = "Measures the edges and outputs the results into a table")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)

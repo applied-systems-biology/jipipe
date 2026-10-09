@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
@@ -39,6 +41,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Render track scheme", after = {MeasureTracksNode.class}, purpose = "Render the track scheme as an image")
 @SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)

@@ -27,6 +27,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
@@ -41,6 +43,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert tracks to RGB", after = {MeasureTracksNode.class}, purpose = "Render the measured tracks as RGB images")
 @SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nVisualize")
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)

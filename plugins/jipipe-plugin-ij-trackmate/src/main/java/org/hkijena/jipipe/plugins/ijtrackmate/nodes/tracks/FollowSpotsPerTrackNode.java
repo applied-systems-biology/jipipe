@@ -31,6 +31,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
@@ -44,6 +46,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Visualize tracked spots", after = {TrackingNode.class}, purpose = "Generate images that follow each tracked spot over time")
 @SetJIPipeDocumentation(name = "Visualize tracked spots", description = "For each track, generates an image that follows the spot over time")
 @ConfigureJIPipeNode(menuPath = "Tracking\nVisualize", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)

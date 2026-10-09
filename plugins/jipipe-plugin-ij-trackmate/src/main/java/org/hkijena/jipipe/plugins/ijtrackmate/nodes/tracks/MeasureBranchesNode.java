@@ -26,11 +26,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Branch analysis", after = {TrackingNode.class}, purpose = "Analyze the branches of all tracks")
 @SetJIPipeDocumentation(name = "Branch analysis", description = "Analyzes each branch of all "
         + "tracks, and outputs in an ImageJ results "
         + "table the number of its predecessors, of "

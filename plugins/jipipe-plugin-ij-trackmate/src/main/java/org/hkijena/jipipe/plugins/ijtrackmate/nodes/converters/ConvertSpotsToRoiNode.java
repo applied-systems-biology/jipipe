@@ -27,6 +27,9 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
+import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
@@ -41,6 +44,7 @@ import java.awt.*;
 import java.util.Map;
 import java.util.Optional;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert spots to ROI", after = {MeasureSpotsNode.class}, purpose = "Convert the measured spots into ROIs for downstream analysis")
 @SetJIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
 @ConfigureJIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)

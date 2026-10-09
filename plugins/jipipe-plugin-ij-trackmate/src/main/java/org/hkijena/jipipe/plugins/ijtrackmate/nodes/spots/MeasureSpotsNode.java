@@ -25,12 +25,16 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
+import org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.TrackingNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
 import java.util.Map;
 
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Measure spots", after = {TrackingNode.class}, purpose = "Measure the tracked spots into a results table")
 @SetJIPipeDocumentation(name = "Measure spots", description = "Measures the spots and outputs the results into a table. If tracked spots are provided, the track ID will also be added.")
 @ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
