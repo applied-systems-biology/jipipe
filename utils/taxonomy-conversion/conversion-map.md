@@ -64,6 +64,25 @@ non-obvious per-node decision in the per-module notes table at the bottom.
   lives in jipipe-core and MUST be copy-pasted into plugin modules (core's test
   classpath only registers core's nodes).
 
+## Transition note (read before any 19.x batch)
+
+When a node is converted (its `nodeTypeCategory`/`menuPath` removed and
+`function`/`framework` added), `JIPipeJavaNodeInfo.getCategoryOf(nodeClass)`
+falls back to `new InternalNodeTypeCategory()` (the no-annotation default),
+whose `isVisibleInPipeline()` is `false`. The **old** node panel is still the
+mounted UI until **Task 24** and only lists `isVisibleInPipeline()` categories,
+so a converted node is *absent from the old panel's per-category buttons* for
+the 19.x→24 window (it stays findable via search and still insertable). This
+is **intended and accepted**: 6.0.0 is a breaking change on an unmerged feature
+branch with no backwards-compat requirement, the approved architecture builds
+the new browser in parallel (1a) → converts (19.x) → swaps panels at Task 24,
+and the branch is never released mid-conversion. Do NOT "fix" it by keeping
+`menuPath`/`nodeTypeCategory` on converted nodes — that would defeat the
+conversion. Task 21 rewires the non-visibility consumers (node color,
+location-info text, compendium grouping) to `TaxonomyView`, so converted nodes
+render correctly everywhere except the old panel's category buttons, which die
+with the panel at Task 24.
+
 ## Known category inventory (from a full grep, 2026-10-09)
 
 The brief names 11 old categories. A repo-wide grep of `nodeTypeCategory =`
