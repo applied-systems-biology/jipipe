@@ -298,7 +298,7 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
 ### Task 10: Seed function leaves
 
 **Files:**
-- Create: leaf classes under `…/functions/` in per-branch subpackages `data/ images/ rois/ filaments/ tables/ statistics/ tracking/ annotations/ deeplearning/ plotting/ export/ graph/` (class = `<Branch><Leaf>Function`, id = `jipipe:function:<branch-path-kebab>`, parent = the Task 9 branch).
+- Create: leaf classes under `…/functions/` in per-branch subpackages `data/ images/ rois/ filaments/ tables/ statistics/ tracking/ annotations/ deeplearning/ plotting/ export/ graph/` (class = `<Branch><Leaf>Function`, id = `jipipe:function:<leaf-name-kebab>` — the leaf's own name kebab-cased, NOT the full branch path, e.g. `ImageDataFunction`→`jipipe:function:image-data`; parent = the Task 9 branch).
 - Test: `…/functions/FunctionLeavesTest.java`
 
 **Interfaces:**
