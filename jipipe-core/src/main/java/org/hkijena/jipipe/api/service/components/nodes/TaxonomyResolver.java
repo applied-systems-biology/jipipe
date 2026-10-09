@@ -208,6 +208,23 @@ public class TaxonomyResolver {
     }
 
     /**
+     * Removes a previously seen family from the family registry.
+     * <p>
+     * Families are only ever added (on first node registration) and have no
+     * natural inverse of {@link #recordNodeMembership(JIPipeNodeInfo)}, so
+     * this explicit removal is required to keep the shared registry clean
+     * between tests that register synthetic nodes carrying a
+     * {@code @JIPipeNodeTaxonomyFamilyStepAnnotation}. Does nothing if the
+     * id is not present.
+     *
+     * @param familyId the family id to remove
+     * @return the removed family, or {@code null} if none was registered under that id
+     */
+    public JIPipeNodeTaxonomyFamily unregisterFamily(String familyId) {
+        return familiesById.remove(familyId);
+    }
+
+    /**
      * Registers an input profile provider. Providers are consulted in
      * registration order by {@link #inputProfileFor(Class)}.
      *

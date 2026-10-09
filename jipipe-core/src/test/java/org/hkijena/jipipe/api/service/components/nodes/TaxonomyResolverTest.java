@@ -96,8 +96,12 @@ class TaxonomyResolverTest {
         // Curated registry entries (functions / frameworks)
         nodes.getFunctions().unregister(FUNC_ID);
         nodes.getFrameworks().unregister(FRAMEWORK_ID);
-        // Family step assembled into the shared FamilyAssembler
+        // Family step assembled into the shared FamilyAssembler, and the
+        // synthetic family itself (first-seen via DanglingStepNode's step
+        // annotation). Both must be removed so that later tests observe a
+        // clean family registry (no synthetic families leak across tests).
         nodes.getFamilyAssembler().unregisterStep(DanglingStepNode.class.getSimpleName(), FAMILY_ID);
+        nodes.unregisterFamily(FAMILY_ID);
         // Input profile providers
         nodes.unregisterInputProfileProviders(testProviders);
         // Re-run the (idempotent) registration pipeline so that enrichment

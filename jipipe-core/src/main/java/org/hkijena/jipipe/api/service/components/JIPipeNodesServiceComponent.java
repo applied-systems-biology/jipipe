@@ -469,6 +469,20 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     }
 
     /**
+     * Removes a previously seen family from the family registry. Inverse of
+     * the implicit registration performed by
+     * {@link #recordNodeMembership}; needed to keep the shared registry clean
+     * between tests that register synthetic nodes carrying a
+     * {@code @JIPipeNodeTaxonomyFamilyStepAnnotation}.
+     *
+     * @param familyId the family id to remove
+     * @return the removed family, or {@code null} if none was registered under that id
+     */
+    public JIPipeNodeTaxonomyFamily unregisterFamily(String familyId) {
+        return taxonomyResolver.unregisterFamily(familyId);
+    }
+
+    /**
      * @return the family assembler collecting the nodes' workflow steps
      */
     public FamilyAssembler getFamilyAssembler() {
