@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.plugin.filter.RankFilters;
@@ -23,9 +25,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,12 +45,11 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.\n\n" +
         "Bernsen recommends a radius of 15 and a contrast threshold of 15." +
         " This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth.")
-@ConfigureJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @AddJIPipeCitation("Bernsen J. (1986) \"Dynamic Thresholding of Grey-Level Images\" Proc. of the 8th Int. Conf. on Pattern Recognition, pp. 1251-1255")
 @AddJIPipeCitation("Sezgin M. and Sankur B. (2004) \"Survey over Image Thresholding Techniques and Quantitative Performance Evaluation\" Journal of Electronic Imaging, 13(1): 146-165")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class BernsenLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean darkBackground = true;

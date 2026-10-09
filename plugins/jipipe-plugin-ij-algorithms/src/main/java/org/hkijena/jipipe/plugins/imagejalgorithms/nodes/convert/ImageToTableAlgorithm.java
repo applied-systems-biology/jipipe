@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.convert;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -20,11 +22,12 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,7 +46,7 @@ import java.util.Collections;
 @SetJIPipeDocumentation(name = "Get pixels as table", description = "Extracts the pixel values of an image and puts them into a table. " +
         "The table always includes columns <code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, and <code>t</code>. For greyscale images, the value is stored into a column <code>value</code>. " +
         "For color images, column names depend on the color space.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold.local;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.gui.NewImage;
 import ij.plugin.filter.RankFilters;
@@ -24,9 +26,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,11 +45,10 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 @SetJIPipeDocumentation(name = "Local auto threshold 2D (Sauvola, 8-bit)", description = "Applies a local auto-thresholding algorithm. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice." +
         " This node requires 8-bit images. Use the corresponding 16-bit node for images with a higher bit depth.")
-@ConfigureJIPipeNode(menuPath = "Threshold\nLocal", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscale8UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
 @AddJIPipeCitation("Sauvola J. and Pietaksinen M. (2000) \"Adaptive Document Image Binarization\" Pattern Recognition, 33(2): 225-236")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust\nAuto Local Threshold")
 public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean darkBackground = true;
     private double k = 0.5;

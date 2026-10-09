@@ -13,15 +13,18 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.labels.filter;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import com.google.common.primitives.Ints;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,12 +40,11 @@ import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filter labels by expression 2D", description = "Filters labels with a filter expression. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = { FilteringFunction.class, SegmentationFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 @AddJIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter expression = new JIPipeExpressionParameter("id > 10 AND num_pixels > 50");

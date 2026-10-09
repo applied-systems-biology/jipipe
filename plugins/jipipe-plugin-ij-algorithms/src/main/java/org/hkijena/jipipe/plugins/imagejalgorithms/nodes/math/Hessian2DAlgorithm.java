@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.math;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.ImageStack;
 import imagescience.feature.Hessian;
@@ -21,9 +23,10 @@ import imagescience.image.FloatImage;
 import imagescience.image.Image;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,10 +40,9 @@ import java.util.Vector;
 @SetJIPipeDocumentation(name = "Hessian 2D (FeatureJ, old)", description = "Deprecated: Replace with node with the same name. " +
         "Computes Hessian the eigenvalues of the Hessian, which can be used for example to discriminate locally between plate-like, line-like, and blob-like image structures." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = { FilteringFunction.class, MeasurementsFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Output", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Hessian")
 @AddJIPipeCitation("Y. Sato, S. Nakajima, N. Shiraga, H. Atsumi, S. Yoshida, T. Koller, G. Gerig, R. Kikinis Three-Dimensional Multi-Scale Line Filter for Segmentation and Visualization of Curvilinear Structures in Medical Images Medical Image Analysis, vol. 2, no. 2, June 1998, pp. 143-168")
 @AddJIPipeCitation("A. F. Frangi, W. J. Niessen, R. M. Hoogeveen, T. van Walsum, M. A. Viergever Model-Based Quantitation of 3D Magnetic Resonance Angiographic Images IEEE Transactions on Medical Imaging, vol. 18, no. 10, October 1999, pp. 946-956")
 @AddJIPipeCitation("K. Rohr Landmark-Based Image Analysis using Geometric and Intensity Models Kluwer Academic Publishers, 2001")

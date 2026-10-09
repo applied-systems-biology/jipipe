@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.threshold;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import com.google.common.primitives.Longs;
 import gnu.trove.list.array.TShortArrayList;
 import ij.IJ;
@@ -28,9 +30,9 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -60,10 +62,9 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Custom auto threshold 2D (min+max, 16-bit)", description = "Allows to implement a custom thresholding method via expressions. " +
         "This node supports the calculation of both the minimum and maximum thresholds." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
-@ConfigureJIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscale16UData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nAdjust", aliasName = "Auto threshold (custom, min+max, 16-bit)")
 public class CustomAutoThreshold2D16Uv2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final ThresholdParameters minThresholdParameters;

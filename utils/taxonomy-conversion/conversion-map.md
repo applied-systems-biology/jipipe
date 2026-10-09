@@ -115,7 +115,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | module | node count | status |
 |---|---|---|
 | jipipe-core | 31 | converted |
-| jipipe-plugin-ij-algorithms | 424 | mapping complete (19.2), chunks pending |
+| jipipe-plugin-ij-algorithms | 424 | mapping complete (19.2); **chunk A applied (19.2a, 148 nodes)**; B/C pending |
 | jipipe-plugin-ij | 80 | pending |
 | jipipe-plugin-ij-3d | 62 | pending |
 | jipipe-plugin-filaments + ij-filaments | 51+ | pending |
@@ -429,7 +429,7 @@ because the ROI/table/data/export/annotation families are a naturally smaller, c
 
 | chunk | groups (category — menuPath) | nodes |
 |---|---|---|
-| **19.2a** (Images core) | Images: `Threshold`(20), `Threshold\nLocal`(12), `Threshold\nColor`(4), `Labels`(20), `Labels\nFilter`(6), `Labels\nMeasure`(2), `Labels\nConvert`(3), `Labkit`(1), `Math`(15), `Math\nLocal`(19), `Math\nDistance map`(5), `Morphology`(13), `Binary`(10), `Convert`(18) | **148** |
+| **19.2a** (Images core) — **APPLIED** (148/148 converted; 91 same-leaf alias drops + 20 secondary `function[]` entries; 0 unresolved imports; contract-conformance vs `ij-algorithms-final.json` = 0 mismatches) | Images: `Threshold`(20), `Threshold\nLocal`(12), `Threshold\nColor`(4), `Labels`(20), `Labels\nFilter`(6), `Labels\nMeasure`(2), `Labels\nConvert`(3), `Labkit`(1), `Math`(15), `Math\nLocal`(19), `Math\nDistance map`(5), `Morphology`(13), `Binary`(10), `Convert`(18) | **148** |
 | **19.2b** (Images analysis + ImageJ) | Images: `Dimensions`(17), `Transform`(19), `Colors`(17), `Colors\nConvert`(1), `LUT`(6), `Filter`(6), `Blur`(5), `FFT`(5), `Edges`(3), `Noise`(3), `Sharpen`(2), `Convolve`(2), `Features`(13), `Statistics`(8), `Analyze`(5), `Colocalization`(1), `Calibration`(6), `Contrast`(4), `Background`(1), `Masking`(3), `Montage`(5), `Optical flow`(3), `Registration`(3), `ROI`(8), `Segment`(3), `Detect`(6), `Forms`(2), `Metadata`(3), `Modify`(1), *(no menuPath)*`(3)`, and ImageJ: `Enhance`(1) | **165** |
 | **19.2c** (Roi/Table/DataSource/Export/Annotations/Misc — runs the gate) | Roi: `Convert`(7), `Draw`(4), `Filter`(11), `Measure`(4), `Merge`(5), `Metadata`(4), `Modify`(13), `Outline`(4), `Process`(1), `Register`(1), `Split`(4), `Transform`(2), *(no menuPath)*`(7)` = 67; Table: `Convert`(6), *(no menuPath)*`(1)` = 7; DataSource: `Convolve`(1), *(no menuPath)*`(19)` = 20; Export: `Images`(3), `ROI`(2), `Tables`(4), *(no menuPath)*`(1)` = 10; Annotations: `For ROI`(1), `For all data`(1), `For images`(3) = 5; Miscellaneous: `Convert`(1), `Meta run`(1) = 2 | **111** |
 
