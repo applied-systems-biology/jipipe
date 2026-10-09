@@ -52,6 +52,19 @@ public class FrameworkRegistry {
     }
 
     /**
+     * Unregisters a framework. Does nothing if the id is not registered.
+     *
+     * @param id the id of the framework to remove
+     * @return the removed framework, or {@code null} if none was registered under that id
+     */
+    @Nullable
+    public JIPipeNodeTaxonomyFramework unregister(String id) {
+        JIPipeNodeTaxonomyFramework removed = byId.remove(id);
+        namesPerId.remove(id);
+        return removed;
+    }
+
+    /**
      * @param id the id of the framework to look up
      * @return the registered framework with that id, or {@code null} if none is registered
      */

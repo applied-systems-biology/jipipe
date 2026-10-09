@@ -51,6 +51,17 @@ public class FunctionRegistry {
     }
 
     /**
+     * Unregisters a function. Does nothing if the id is not registered.
+     *
+     * @param id the id of the function to remove
+     * @return the removed function, or {@code null} if none was registered under that id
+     */
+    @Nullable
+    public JIPipeNodeTaxonomyFunction unregister(String id) {
+        return byId.remove(id);
+    }
+
+    /**
      * @param id the id of the function to look up
      * @return the registered function with that id, or {@code null} if none is registered
      */

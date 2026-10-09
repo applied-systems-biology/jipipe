@@ -22,9 +22,11 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.api.service.components.nodes.JIPipeNodeRegistrationTask;
+import org.hkijena.jipipe.api.service.components.nodes.TaxonomyResolver;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipeDatatypeRegisteredEventListener;
 import org.hkijena.jipipe.api.service.events.JIPipeNodeInfoRegisteredEvent;
@@ -50,6 +52,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
     private final List<JIPipeNodeTemplate> scheduledRegisterTemplates = new ArrayList<>();
     private final URL defaultIconURL;
+    private final TaxonomyResolver taxonomyResolver = new TaxonomyResolver();
     private boolean stateChanged;
     private boolean isRunning;
 
@@ -93,6 +96,18 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             }
         }
         isRunning = false;
+        taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
+        enrichNodeTaxonomy();
+        Set<String> taxonomyErrors = taxonomyResolver.validateTaxonomy(registeredNodeInfos);
+        TaxonomyResolver.logErrors(taxonomyErrors, getProgressInfo());
+    }
+
+    /**
+     * Idempotently enriches all registered node infos with the derived
+     * taxonomy fields (input profile, merged tags).
+     */
+    private void enrichNodeTaxonomy() {
+        taxonomyResolver.enrichNodeInfos(registeredNodeInfos.values());
     }
 
     /**
@@ -112,9 +127,17 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
         registeredNodeInfos.put(info.getId(), info);
         registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
+        taxonomyResolver.recordNodeMembership(info);
         getService().getNodeInfoRegisteredEventEmitter().emit(new JIPipeNodeInfoRegisteredEvent(getService(), info));
         getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
+        // Direct registrations (no pending tasks) do not run the settle
+        // loop; enrich now. While the settle loop is running (isRunning),
+        // the loop's final pass covers the enrichment instead.
+        if (!isRunning) {
+            taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
+            enrichNodeTaxonomy();
+        }
     }
 
     public JIPipeNodeTypeCategory getCategory(String id) {
@@ -374,9 +397,14 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     public void unregister(String id) {
         JIPipeNodeInfo info = registeredNodeInfos.get(id);
         registeredNodeInfos.remove(id);
-        registeredNodeClasses.remove(info.getInstanceClass(), info);
+        if (info != null) {
+            registeredNodeClasses.remove(info.getInstanceClass(), info);
+        }
         registeredNodeInfoSources.remove(id);
-        iconURLs.remove(info);
+        if (info != null) {
+            iconURLs.remove(info);
+        }
+        taxonomyResolver.removeNodeMembership(id);
     }
 
     public void scheduleRegisterExample(JIPipeNodeTemplate template) {
@@ -401,5 +429,106 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             registerTemplate(template);
         }
         scheduledRegisterTemplates.clear();
+    }
+
+    // --- Node taxonomy ---
+
+    /**
+     * @return the taxonomy resolver of this component, which holds the
+     * function tree, the frameworks, the family step graph, and the
+     * input profile providers
+     */
+    public TaxonomyResolver getTaxonomyResolver() {
+        return taxonomyResolver;
+    }
+
+    /**
+     * @return the taxonomy function registry. The curated function tree
+     * is registered once by the taxonomy plugin; node registrations only
+     * record their membership and never add functions here
+     */
+    public FunctionRegistry getFunctions() {
+        return taxonomyResolver.getFunctionRegistry();
+    }
+
+    /**
+     * @return the taxonomy framework registry
+     */
+    public FrameworkRegistry getFrameworks() {
+        return taxonomyResolver.getFrameworkRegistry();
+    }
+
+    /**
+     * @return the workflow families first seen through a node's
+     * {@code @JIPipeNodeTaxonomyFamilyStepAnnotation}, keyed by family id
+     */
+    public Map<String, JIPipeNodeTaxonomyFamily> getFamilies() {
+        return taxonomyResolver.getFamilies();
+    }
+
+    /**
+     * @return the family assembler collecting the nodes' workflow steps
+     */
+    public FamilyAssembler getFamilyAssembler() {
+        return taxonomyResolver.getFamilyAssembler();
+    }
+
+    /**
+     * Registers an input profile provider. Providers are consulted in
+     * registration order by {@link #inputProfileFor(Class)}.
+     *
+     * @param provider the provider
+     */
+    public void registerInputProfileProvider(InputProfileProvider provider) {
+        taxonomyResolver.registerInputProfileProvider(provider);
+    }
+
+    /**
+     * Removes previously registered input profile providers.
+     *
+     * @param providers the providers to remove
+     */
+    public void unregisterInputProfileProviders(Iterable<InputProfileProvider> providers) {
+        taxonomyResolver.unregisterInputProfileProviders(providers);
+    }
+
+    /**
+     * Derives the input profile of a data class. The derivation is total:
+     * the first provider that yields a non-{@code NA} profile wins,
+     * failing providers are skipped, and if no provider yields a profile,
+     * {@code NA} is returned. This method never throws.
+     *
+     * @param dataClass the data class
+     * @return the input profile
+     */
+    public JIPipeNodeTaxonomyInputProfile inputProfileFor(Class<?> dataClass) {
+        return taxonomyResolver.inputProfileFor(dataClass);
+    }
+
+    /**
+     * Validates the taxonomy state: the function tree, the frameworks,
+     * the family steps (against the registered node ids), and the
+     * node→function/framework membership of every registered node.
+     * <p>
+     * Nodes with a {@code null} primary function are unconverted (expected
+     * during phase 1b) and are not reported as errors; they are reported
+     * separately by the taxonomy validation guard (Task 8).
+     *
+     * @return human-readable error strings; empty if the taxonomy is valid
+     */
+    public Set<String> validateTaxonomy() {
+        return taxonomyResolver.validateTaxonomy(registeredNodeInfos);
+    }
+
+    /**
+     * Called by the service initializer after all plugins were registered
+     * and postprocessed. Re-runs the idempotent taxonomy enrichment so
+     * that late registrations (e.g. leftover scheduled tasks registered
+     * directly by the initializer) are covered.
+     */
+    @Override
+    public void postprocess(JIPipeProgressInfo progressInfo) {
+        taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
+        enrichNodeTaxonomy();
     }
 }

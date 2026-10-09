@@ -148,6 +148,34 @@ public class FamilyAssembler {
     }
 
     /**
+     * Removes a previously registered step. Does nothing if no step with
+     * the given node id exists in the given family (identified by the
+     * family id literal supplied to {@link #addStep(String, String, JIPipeNodeTaxonomyFamilyStepAnnotation)}).
+     *
+     * @param nodeId   the node id of the step to remove
+     * @param familyId the family id literal of the family the step belongs to
+     */
+    public void unregisterStep(String nodeId, String familyId) {
+        for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
+            Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+            String registeredFamilyId = familyIdByClass.get(familyEntry.getKey());
+            if (!familyId.equals(registeredFamilyId)) {
+                continue;
+            }
+            familyEntry.getValue().remove(nodeId);
+            List<String> order = stepOrder.get(familyEntry.getKey());
+            if (order != null) {
+                order.remove(nodeId);
+            }
+            if (familyEntry.getValue().isEmpty()) {
+                stepsByFamily.remove(familyEntry.getKey());
+                stepOrder.remove(familyEntry.getKey());
+            }
+            return;
+        }
+    }
+
+    /**
      * Resolves an {@code after} node class to a node id: the registered
      * class→node-id mapping wins, otherwise the class's simple name is
      * used (see the class Javadoc for the rationale).
@@ -161,6 +189,21 @@ public class FamilyAssembler {
             return mapped;
         }
         return nodeClass.getSimpleName();
+    }
+
+    /**
+     * Replaces the class→node-id mapping used to resolve {@code after}
+     * classes in future {@link #addStep} calls. Already-registered steps
+     * are not affected: their predecessor step ids were resolved when
+     * they were added.
+     *
+     * @param classToNodeId node class → registered node id; may be empty
+     */
+    public void updateClassToNodeId(Map<Class<?>, String> classToNodeId) {
+        this.classToNodeId.clear();
+        if (classToNodeId != null) {
+            this.classToNodeId.putAll(classToNodeId);
+        }
     }
 
     /**
