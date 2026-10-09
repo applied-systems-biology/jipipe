@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.compartments.algorithms;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -24,6 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -40,6 +43,7 @@ import java.util.List;
  * Its node functionality is structural.
  */
 @SetJIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
 @AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, name = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class)
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {

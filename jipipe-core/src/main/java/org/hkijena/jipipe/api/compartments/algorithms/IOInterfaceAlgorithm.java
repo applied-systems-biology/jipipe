@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 
 import java.util.*;
 
@@ -30,7 +31,7 @@ import java.util.*;
  * Algorithm that passes the input to the output
  */
 @SetJIPipeDocumentation(name = "IO Interface", description = "Passes its input to its output without changes.")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = GraphDebugFunction.class, framework = CoreFramework.class)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
     public IOInterfaceAlgorithm(JIPipeNodeInfo info) {

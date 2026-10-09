@@ -6,11 +6,12 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelExit;
 
 @SetJIPipeDocumentation(name = "Tunnel exit", description = "")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Organization")
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
 @AddJIPipeOutputSlot(name = "T1", value = JIPipeData.class, create = true)
 public class JIPipeDataFlowTunnel1Exit extends JIPipeDataFlowTunnelExit {
     public JIPipeDataFlowTunnel1Exit(JIPipeNodeInfo info) {

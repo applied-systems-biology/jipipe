@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -31,7 +32,7 @@ import java.awt.*;
         "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Comment", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Comment", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = GraphDebugFunction.class, framework = CoreFramework.class)
 public class JIPipeCommentNode extends JIPipeGraphNode {
 
     private Color backgroundColor = new Color(255, 255, 204);

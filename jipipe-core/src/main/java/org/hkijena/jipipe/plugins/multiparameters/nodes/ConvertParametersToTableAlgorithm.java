@@ -21,7 +21,8 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
@@ -30,7 +31,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Convert parameters to table", description = "Converts parameter data into da table")
 @AddJIPipeInputSlot(name = "Input", value = ParametersData.class, create = true)
 @AddJIPipeOutputSlot(name = "Output", value = ResultsTableData.class, create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(function = TableTransformFunction.class, framework = CoreFramework.class)
 public class ConvertParametersToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertParametersToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -22,11 +22,12 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 
 @SetJIPipeDocumentation(name = "Multiply parameters", description = "Provide multiple parameter sets via the inputs to calculate all parameter combinations.")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Parameters")
+@ConfigureJIPipeNode(function = TableJoinSplitFunction.class, framework = CoreFramework.class)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 2", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)

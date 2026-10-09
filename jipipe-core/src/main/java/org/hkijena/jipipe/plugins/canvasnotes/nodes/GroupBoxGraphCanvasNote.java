@@ -17,11 +17,12 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.plugins.parameters.library.roi.Anchor;
 
 @SetJIPipeDocumentation(name = "Group box canvas note", description = "A text box canvas note pre-configured to contain a title at the top left")
-@ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = CoreFramework.class)
 @LabelAsJIPipeHidden
 public class GroupBoxGraphCanvasNote extends TextBoxGraphCanvasNote {
     public GroupBoxGraphCanvasNote(JIPipeNodeInfo info) {

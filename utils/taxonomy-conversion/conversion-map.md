@@ -114,7 +114,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 
 | module | node count | status |
 |---|---|---|
-| jipipe-core | 31 | pending |
+| jipipe-core | 31 | converted |
 | jipipe-plugin-ij-algorithms | 424 | pending |
 | jipipe-plugin-ij | 80 | pending |
 | jipipe-plugin-ij-3d | 62 | pending |
@@ -143,4 +143,105 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 
 ## Per-module notes (append per batch)
 
-- (none yet)
+### jipipe-core (Task 19.1) — converted, gate green
+
+**Scope:** all `@ConfigureJIPipeNode` classes under `jipipe-core/src/main/java` (31) **plus** the
+programmatic `registerNodeType` node classes that lacked an annotation (1: `JIPipeProjectCompartment`).
+Every core node gets `framework = CoreFramework.class` (rule 11). No core node produces image data, so
+**none declares `spatialDimensions`**. No core node carries `@AddJIPipeNodeAlias` (grep: 0 matches), so
+there are no alias→secondary-function conversions in this batch.
+
+**Per-node decision table** (node class → function → framework → spatial → rationale):
+
+| Node class | function | framework | spatial | rationale |
+|---|---|---|---|---|
+| `LoopStartNode` (api/looping) | `GraphDebugFunction` | Core | — | Deprecated loop scaffold (R4: loops→GraphDebug); generic `JIPipeData` in/out slots |
+| `LoopEndNode` (api/looping) | `GraphDebugFunction` | Core | — | Deprecated loop scaffold (R4); generic `JIPipeData` slots |
+| `JIPipeNodeGroup` (api/grouping) | `GraphWrappersFunction` | Core | — | Wraps a sub-pipeline (R4: grouping/wrapper scaffold) |
+| `GraphWrapperAlgorithmInput` (api/grouping) | `GraphWrappersFunction` | Core | — | Input plug of a node group (R4: wrappers) |
+| `GraphWrapperAlgorithmOutput` (api/grouping) | `GraphWrappersFunction` | Core | — | Output plug of a node group (R4: wrappers) |
+| `IOInterfaceAlgorithm` (api/compartments/algorithms) | `GraphDebugFunction` | Core | — | Internal pass-through node used by loops/compartments (R4: truly-internal) |
+| `JIPipeProjectCompartment` (api/compartments/algorithms) | `GraphWrappersFunction` | Core | — | Compartment container; `JIPipeCompartmentOutputData` slots (R4: compartments). **Added** `@ConfigureJIPipeNode` (was programmatic, no annotation) |
+| `JIPipeProjectCompartmentOutput` (api/compartments/algorithms) | `GraphWrappersFunction` | Core | — | Compartment output (R4: compartments) |
+| `JIPipeCommentNode` (plugins/core/nodes) | `GraphDebugFunction` | Core | — | Annotation-less comment node, no workload (R4: internal/debug) |
+| `ArrowGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5: GraphAnnotations→AnnotationsEdit); no data slots |
+| `TextBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5) |
+| `GroupBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5); `@LabelAsJIPipeHidden` |
+| `ImageBoxGraphCanvasNote` (plugins/canvasnotes/nodes) | `AnnotationsEditFunction` | Core | — | Canvas note (rule 5); displays an image but is a graph annotation, not image-processing |
+| `FileDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | DataSource→data leaf by output type (rule 6); emits `FileData`, not image → Misc; no spatial |
+| `FileListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FileData` list → Misc |
+| `FolderDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FolderData` → Misc |
+| `FolderListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `FolderData` list → Misc |
+| `PathDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `PathData` → Misc |
+| `PathListDataSource` (plugins/filesystem/datasources) | `MiscDataFunction` | Core | — | Emits `PathData` list → Misc |
+| `DefineParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (formerly DataSource category) → tables data leaf (R4: parameters are a table type) |
+| `DefineParametersTableAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` → tables data leaf |
+| `DefineParametersFromGlobalParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (built from global params + optional data) → tables data leaf |
+| `GenerateParametersFromExpressionAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (built from expression + optional data) → tables data leaf |
+| `ExtractParametersAlgorithm` (plugins/multiparameters/nodes) | `TableDataFunction` | Core | — | Source of `ParametersData` (extracted from a node) → tables data leaf |
+| `DefineParametersFromTableAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Table→parameters transform (formerly Table menuPath "Convert") → table transform leaf |
+| `ConvertParametersToTableAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Parameters→`ResultsTableData` transform (formerly Misc menuPath "Convert") → table transform leaf |
+| `ParametersToAnnotationsAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Parameters→annotations transform (formerly Annotations menuPath "For parameters"); the node operates on parameter/table data → table transform leaf (judgment call, see concerns) |
+| `AnnotationsToParametersAlgorithm` (plugins/multiparameters/nodes) | `TableTransformFunction` | Core | — | Annotations→parameters transform (formerly Misc menuPath "Parameters") → table transform leaf |
+| `MergeParametersAlgorithm` (plugins/multiparameters/nodes) | `TableJoinSplitFunction` | Core | — | Merges multiple `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf |
+| `MultiplyParametersAlgorithm` (plugins/multiparameters/nodes) | `TableJoinSplitFunction` | Core | — | Cross-joins all `ParametersData` inputs (formerly Misc menuPath "Parameters") → join leaf |
+| `JIPipeDataFlowTunnel1Entrance` (plugins/tunnels/nodes/tunnel1) | `GraphWrappersFunction` | Core | — | Data-flow tunnel endpoint (R4: tunnels→GraphWrappers); generic `JIPipeData` slot |
+| `JIPipeDataFlowTunnel1Exit` (plugins/tunnels/nodes/tunnel1) | `GraphWrappersFunction` | Core | — | Data-flow tunnel endpoint (R4); generic `JIPipeData` slot |
+
+(32 rows: 31 originally-annotated classes + the 1 programmatic `JIPipeProjectCompartment`. Only
+`tunnel1` exists — there are no `tunnel2`/`tunnel3` classes.)
+
+**Non-obvious decisions / judgment calls:**
+- **Multiparameters split into three leaves.** R4 said "`TablesFunction`/`TableTransformFunction` (or the
+  most fitting tables leaf) as appropriate". All 11 operate on `ParametersData` (a table type). I applied
+  the data-vs-transform-vs-join distinction: the 5 pure `ParametersData` *sources* (no table input, formerly
+  `DataSourceNodeTypeCategory`) → `TableDataFunction` (a data source whose output is a table, per rule 6's
+  "table→TableDataFunction" logic); the 4 conversions → `TableTransformFunction`; the 2 combining/cross-join
+  nodes (Merge/Multiply) → `TableJoinSplitFunction`. This is the best fit to the 5 seed table leaves; a flat
+  `TablesFunction` top-level or a single `TableTransformFunction` for all 11 would be coarser.
+- **`ParametersToAnnotationsAlgorithm` → `TableTransformFunction` (not `AnnotationsConvertFunction`).** Its
+  legacy category was `AnnotationsNodeTypeCategory` (menuPath "For parameters"), which rule 5 would map to an
+  `annotations/` leaf. But the node's primary data is parameter/table data that it converts *into* annotations
+  — it is a parameter-side converter, not an annotation-processing node. I placed it with the other
+  parameter converters under `TableTransformFunction` for consistency with its sibling
+  `AnnotationsToParametersAlgorithm`. Flagging for Phase 3 audit (it *could* equally live under
+  `AnnotationsConvertFunction`).
+- **Canvas notes → `AnnotationsEditFunction` (rule 5).** `ImageBoxGraphCanvasNote` displays an image, but it
+  is a graph-canvas annotation (extends `JIPipeGraphCanvasNote`, no data slots), so it belongs in the
+  annotations branch, not images. No spatial (it does not process image data).
+- **No spatial anywhere in core.** No core node's slots are image-typed (`FileData`/`FolderData`/`PathData`/
+  `ParametersData`/`ResultsTableData`/`JIPipeData`/`JIPipeCompartmentOutputData`), so per rule 12 none
+  declares `spatialDimensions`.
+
+**Programmatic nodes handled (R2/R3):** the only core node registered via `registerNodeType` that lacked
+`@ConfigureJIPipeNode` was `JIPipeProjectCompartment` — I added `function = GraphWrappersFunction,
+framework = CoreFramework` (it is a structural compartment container). The other "programmatic" classes
+(`GraphWrapperAlgorithmInput/Output`, `JIPipeProjectCompartmentOutput`) already carried an *empty*
+`@ConfigureJIPipeNode()` which I filled. The loops/tunnels/multiparameters all already had annotations.
+
+**Gate result (R3):** `mvn test -pl jipipe-core -Dtest=TaxonomyConversionReportTest
+-Djipipe.taxonomy.report.module=org.hkijena.jipipe` → **BUILD SUCCESS**, `Tests run: 1, Failures: 0`,
+log line `JIPipeNodesServiceComponent | Node taxonomy validation passed` (zero unassigned, zero errors).
+`mvn -q compile -pl jipipe-core` → exit 0.
+
+**Classpath caveat (affects what the gate covers):** several core-*package* node classes are actually
+*registered* by plugin modules, so they are not on jipipe-core's test classpath and the gate does not
+enumerate them individually — they are still converted and verified by the module-wide `mvn compile`:
+- `JIPipeNodeGroup`, `IOInterfaceAlgorithm`, `JIPipeCommentNode` are registered by **jipipe-plugin-utils**
+  (`UtilitiesPlugin.registerNodeType("node-group"/"io-interface")`).
+- The 6 `plugins/filesystem/datasources` classes are registered by **jipipe-plugin-filesystem**
+  (`FilesystemPlugin.registerNodeType("import-file"/"import-folder"/...)`).
+- `GroupBoxGraphCanvasNote` is not registered by any plugin (orphaned `@LabelAsJIPipeHidden` class); still
+  converted for consistency.
+The gate *does* cover the core-registered nodes (loops, node-group is utils-registered, wrappers,
+compartments, tunnels, multiparameters, canvas notes, filesystem datasources that core itself registers) and
+they all passed with zero unassigned.
+
+**Ripple compile fixes:** none required — removing `nodeTypeCategory`/`menuPath`/`…categories.*` imports from
+core node classes broke no other module (the legacy fields remain present on `@ConfigureJIPipeNode` and on
+`JIPipeNodeTypeCategory` until Task 27, so consumers of core node categories still compile).
+
+**Transition note understood:** converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategory()` (`isVisibleInPipeline` false), so they are absent from the *old* add-node panel's category
+buttons until Task 24 swaps in the new taxonomy browser. This is intended (6.0.0 breaking, unmerged branch).
+No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
