@@ -18,6 +18,11 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -133,14 +138,20 @@ public interface JIPipeNodeInfo {
      * Gets the menu path of this algorithm
      *
      * @return String containing menu entries separated by new-lines
+     * @deprecated replaced by the node taxonomy; kept until the legacy
+     * menu placement is fully replaced by taxonomy functions
      */
+    @Deprecated
     String getMenuPath();
 
     /**
      * Returns the algorithm category
      *
      * @return The category
+     * @deprecated replaced by the node taxonomy; kept until the legacy
+     * node type categories are fully replaced by taxonomy functions
      */
+    @Deprecated
     JIPipeNodeTypeCategory getCategory();
 
     /**
@@ -283,5 +294,85 @@ public interface JIPipeNodeInfo {
      */
     default JIPipeNodeClassification getNodeClassification() {
         return JIPipeNodeClassification.Standard;
+    }
+
+    // --- Node taxonomy ---
+
+    /**
+     * The primary function of this node in the node taxonomy,
+     * i.e. the hierarchical function under which the node is primarily
+     * grouped.
+     * <p>
+     * The default implementation returns {@code null} for node infos that
+     * are not backed by {@link JIPipeMutableNodeInfo}, meaning the node is
+     * not (yet) assigned to a taxonomy function.
+     *
+     * @return the primary function, or {@code null} if the node has none
+     */
+    default JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        return null;
+    }
+
+    /**
+     * The secondary functions of this node in the node taxonomy:
+     * additional hierarchical functions under which the node is listed
+     * besides its primary function.
+     *
+     * @return the secondary functions, possibly empty
+     */
+    default Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The spatial dimensions this node operates in.
+     *
+     * @return the declared spatial dimensions, possibly empty
+     */
+    default Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The framework (external software or research project) this node implements.
+     *
+     * @return the framework, or {@link NoFramework} if the node declares none
+     */
+    default JIPipeNodeTaxonomyFramework getFramework() {
+        return new NoFramework();
+    }
+
+    /**
+     * The node-level taxonomy tags of this node, declared via
+     * {@code @JIPipeNodeTaxonomyTags}.
+     * <p>
+     * These are distinct from the tags of the taxonomy functions the node
+     * appears under; both are combined in {@link #getMergedTags()}.
+     *
+     * @return the node-level tags, possibly empty
+     */
+    default Set<String> getTaxonomyTags() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The merged taxonomy tags of this node: the node-level tags
+     * ({@link #getTaxonomyTags()}) plus the tags of every taxonomy function
+     * the node appears under.
+     *
+     * @return the merged tags, possibly empty
+     */
+    default Set<String> getMergedTags() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The derived input profile of this node, describing what kind of data it consumes.
+     *
+     * @return the input profile; defaults to {@link JIPipeNodeTaxonomyInputProfile#NA}
+     * when the profile cannot be determined
+     */
+    default JIPipeNodeTaxonomyInputProfile getInputProfile() {
+        return JIPipeNodeTaxonomyInputProfile.NA;
     }
 }
