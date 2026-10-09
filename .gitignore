@@ -123,3 +123,9 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 /jcef-bundle/
 /config/
+
+# Taxonomy conversion scratch (19.2 mapping build) — one-off survey data + builder scripts.
+# The committed decision record is utils/taxonomy-conversion/conversion-map.md.
+/utils/taxonomy-conversion/*.json
+/utils/taxonomy-conversion/*_map.py
+/utils/taxonomy-conversion/survey*.py
