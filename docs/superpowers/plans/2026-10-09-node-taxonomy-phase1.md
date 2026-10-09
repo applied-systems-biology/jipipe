@@ -534,15 +534,23 @@ Module node counts (annotated classes): core 31, ij-algorithms 424, ij 80, ij-3d
 - [ ] **Verify:** `mvn -q compile -pl jipipe-core` + module report zero unassigned.
 - [ ] **Commit.**
 
-### Task 19.2: jipipe-plugin-ij-algorithms — batch A (classes 1–140)
-**Files:** first ~140 of the 424 (split by subpackage alphabetically, `algorithms/` up through ~`filters/`).
-- [ ] **Steps 1–7.** (Module still compiles — unconverted B/C use old fields.)
+### Task 19.2: jipipe-plugin-ij-algorithms — BUILD THE COMPLETE MAPPING (no source changes)
+**Controller restructure (mapping-first):** the function mapping for this module depends on the menuPath (the ImageJ operation type), NOT on a class-index chunk. Splitting "classes 1–140 / 141–280 / 281–424" would make each chunk independently re-derive the menuPath→leaf mapping and produce INCONSISTENT leaf decisions for the same path. So the mapping is built ONCE, completely, and committed as the decision record; the later chunks (19.2a/b/c) apply it mechanically.
+**Files:** NO source changes. Produce:
+- `utils/taxonomy-conversion/ij-algorithms-map.tsv` (git-ignored): one row per DISTINCT menuPath-prefix that actually occurs in the module — `<category-class>\t<menuPath-prefix>\t<FunctionLeaf>\t<FrameworkClass>\t<spatial-or-->`. Ordered MOST-SPECIFIC-FIRST (convert.py matches by startswith; a general "Process" row must come after "Process\nFilters"). Build it from a survey of all 424 `@ConfigureJIPipeNode` nodes (their `nodeTypeCategory` + `menuPath` + first image input slot for spatial per rule 12). Cover EVERY node — the TSV must leave no node unmapped (convert.py reports UNMATCHED rows; the bar is zero unmatched).
+- `conversion-map.md` (committed): a "19.2 — ij-algorithms mapping" section: the menuPath-group → leaf table (human-readable, the decision record), the chunk assignment (which menuPath groups form 19.2a / 19.2b / 19.2c, ~140 nodes each), and per non-obvious decision a one-line rationale.
+- **Rules of record:** rule 1 (Images by first menuPath segment), rule 2 (ImageJ → `ImageJ1Framework`, function by menuPath, spatial by name/slot), rules 3/4/6/7/8 (Roi/Table/DataSource/Export/FileSystem leaves). Framework is `ImageJ1Framework` for this whole module unless a node wraps an IJ2 API (check imports → `ImageJ2Framework`, rare). Spatial per rule 12 (3D in name → `SPATIAL_3D`; 2D → `SPATIAL_2D`; unconstrained `ImagePlusData` → both; non-image → absent).
+- [ ] **Steps:** survey all 424 (category+menuPath+input-slot) → build the TSV (most-specific-first, zero unmatched) → write the conversion-map.md section + chunk assignment → `python3` dry-run `convert.py --map ij-algorithms-map.tsv --target <module> --dry-run` to PROVE every node matches a row (report the UNMATCHED count = 0) → commit `docs(conversion-map): ij-algorithms 424-node function mapping (19.2)`. No source files change; no compile needed (nothing changed).
 
-### Task 19.2b: jipipe-plugin-ij-algorithms — batch B (141–280)
-- [ ] **Steps 1–7.**
+### Task 19.2a: jipipe-plugin-ij-algorithms — apply chunk A (~140 nodes, per the 19.2 chunk assignment)
+- [ ] Run `convert.py --map ij-algorithms-map.tsv --target <module>` scoped to chunk A's menuPath groups (or the whole TSV, then verify only chunk A's files changed); fix imports (drop `…categories.*`, add leaf/framework); drop leftover `@AddJIPipeNodeAlias` (→ secondary `function[]`).
+- [ ] `mvn -q compile -pl plugins/jipipe-plugin-ij-algorithms` → success (unconverted B/C still use the old fields). Commit.
 
-### Task 19.2c: jipipe-plugin-ij-algorithms — batch C (281–424) + module completion
-- [ ] **Steps 1–7.** Then `mvn -q compile -pl jipipe-plugin-ij-algorithms -am` full success + module report zero unassigned.
+### Task 19.2b: jipipe-plugin-ij-algorithms — apply chunk B (~141–280)
+- [ ] As 19.2a for chunk B. Compile → success. Commit.
+
+### Task 19.2c: jipipe-plugin-ij-algorithms — apply chunk C (rest) + module completion
+- [ ] As 19.2a for chunk C. Then `mvn -q compile -pl plugins/jipipe-plugin-ij-algorithms -am` full success; copy `TaxonomyConversionReportTest` into the module's `src/test` (add JUnit 5 test deps per Task 12/13 precedent) and run the FULL module gate `-Djipipe.taxonomy.report.module=<module-package-prefix>` → **zero unassigned** (the gate is module-level; it can only pass once all 424 are converted — that's why it runs here, not in 2a/2b). Update `conversion-map.md` status → converted. Commit.
 
 ### Task 19.3: jipipe-plugin-ij (80)
 Data types live here; `ImagePlusData`-based. Framework `ImageJ1Framework` (or `ImageJ2Framework` where a node wraps an IJ2 API — check imports). Spatial per slot types (rule 12).
