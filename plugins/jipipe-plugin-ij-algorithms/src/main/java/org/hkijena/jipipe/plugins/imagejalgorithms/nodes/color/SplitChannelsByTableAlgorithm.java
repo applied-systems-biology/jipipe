@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.color;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -26,9 +28,9 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -53,11 +55,10 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Split channels by table", description = "Splits multichannel images into multiple greyscale images. " +
         "This operation is applied for each 2D image slice. This node uses a reference table as secondary input that matches data to a channel assignment configuration.\n" +
         "To configure this node, setup the set of annotation columns and the set of channel columns. The channel columns must be named according to the real (not labelled!) output slot name.")
-@ConfigureJIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "Contains the image to be split")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Table", create = true, description = "The table that matches images to channel configurations")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels (by table)")
 public class SplitChannelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean ignoreMissingChannels = false;
     private boolean ignoreMissingOutputs = true;

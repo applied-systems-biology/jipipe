@@ -13,15 +13,17 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imagescience.ImageScience;
 import imagescience.image.*;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -39,12 +41,11 @@ import java.util.Vector;
 
 @SetJIPipeDocumentation(name = "Structure 2D/3D (FeatureJ)", description = "Computes for each image element (pixel/voxel) the eigenvalues of the so-called structure tensor, which can be used for example in texture analysis and image enhancement filtering. " +
         "Due to the positive-semi-definiteness of the structure tensor, the eigenvalues are always larger than or equal to zero. If the size of the image is unity in the z-dimension (single slice), the node computes 2D-tensor eigenvalues, otherwise it computes 3D-tensor eigenvalues (for each time frame and channel in a 5D image).")
-@ConfigureJIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Smallest", create = true, description = "The largest eigenvalue of Structure tensor")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Middle", create = true, description = "The middle eigenvalue of Structure tensor. Only for 3D data")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Largest", create = true, description = "The largest eigenvalue of Structure tensor")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Structure")
 @AddJIPipeCitation("A. R. Rao and B. G. Schunck Computing Oriented Texture Fields CVGIP: Graphical Models and Image Processing, vol. 53, no. 2, March 1991, pp. 157-185")
 @AddJIPipeCitation("J. Weickert Coherence-Enhancing Diffusion Filtering International Journal of Computer Vision, vol. 31, no. 2/3, April 1999, pp. 111-127")
 @AddJIPipeCitation("see https://imagescience.org/meijering/software/featurej/structure/")
