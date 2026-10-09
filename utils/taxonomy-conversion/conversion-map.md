@@ -272,14 +272,15 @@ the module-level rule stands. No node imports `net.imagej.*` (the SciJava/ImageJ
 comes from the data class's `@ImageTypeInfo(numDimensions=…)` / package: root-level
 `ImagePlusData`/`ImagePlusGreyscale*Data`/`ImagePlusColor*Data`/`OMEImageData` are **unconstrained**
 (`@ImageTypeInfo` without `numDimensions`) ⇒ both; `d2/…2D…` ⇒ 2D; `d3/…3D…` ⇒ 3D.
-**Result: 350 both · 16 SPATIAL_3D · 8 SPATIAL_2D · 50 absent** (non-image/no-image-input nodes).
-The per-node 2D/3D/absent values live in the per-node table (git-ignored:
-`utils/taxonomy-conversion/ij-algorithms-final.json`, produced by the survey script); the TSV carries the
-**group default** (the value used by the majority of the group) and the exceptions are listed below — the
-chunks apply the per-node values from that table. Nodes taking an **image only as a reference canvas**
-(e.g. `DrawRectangleRoiAlgorithm`, most `Roi/Modify` and `Roi/Filter` nodes, `MaskToRoiAlgorithm`) get the
-spatial of that input — the image is processed (mask/ROI is evaluated against its extent), and rule 12
-names no exclusion.
+**Corrected distribution: both 328 · SPATIAL_3D 16 · SPATIAL_2D 8 · absent 72.** Absent applies exactly
+to the 72 nodes with **no image input slot** (rule 12) — the data/table/ROI-geometry/GUI/export families,
+including the 22 no-image-input ROI nodes fixed in this revision (see (e) for the full bucket list).
+(`StackToDimensionMerger2Algorithm` and `FastImageArithmeticsAlgorithm` carry no
+`@AddJIPipeInputSlot` annotations but create image input slots **programmatically** —
+`restrictInputTo(ImagePlusData.class)` / `addInputSlot(…, ImagePlusGreyscaleData.class)` — so they are
+*not* absent and keep their group default `both`.) The per-node values are authoritative in
+`ij-algorithms-final.json` (git-ignored, produced by the survey script); the TSV carries the **group
+default** and the chunks apply the per-node values from that table (55 deviations, see (e)).
 
 **Tooling constraint (affects the chunks, not the mapping):** `convert.py` matches rows on
 **(category, menuPath-prefix)** only — it cannot express per-node function overrides, and a
@@ -342,13 +343,20 @@ everywhere (omitted). Spatial = group default.
 | `Forms` | 2 | `SegmentationFunction` | both | interactive mask/ROI drawing = manual segmentation (flag) |
 | `Metadata` | 3 | `MiscellaneousFunction` | both | metadata in/out, not measurements (flag) |
 | `Modify` | 1 | `MiscellaneousFunction` | both | set image properties from expressions |
-| *(no menuPath)* | 3 | `MiscellaneousFunction` | both | `RunImageJMacroAlgorithm` (macro runner, no slots), `ImagePlusToGUI` (bridge, override → misc/absent), `MergeImagesAlgorithm` |
+| *(no menuPath)* | 3 | `MiscellaneousFunction` | both | `RunImageJMacroAlgorithm` (macro runner — spatial **absent by deliberate choice**, see note below), `ImagePlusToGUI` (GUI bridge, leaf override → misc; spatial **both** — it has an `ImagePlusData` input, per rule 12), `MergeImagesAlgorithm` |
 | `Enhance` (ImageJ cat.) | 1 | `PreprocessingFunction` | both | `BleachCorrectionAlgorithm`, rule 2 by menuPath |
 
 Images/**Convert** per-node overrides (same group, different operation): `ConvertImageToHSBAlgorithm`,
 `ConvertImageToLABAlgorithm`, `ConvertImageToRGBAlgorithm` → `ColorStackFunction` (color-space
 conversion); `ImageToMatrixAlgorithm`, `ImageToTableColumnAlgorithm` → spatial 2D; `MatrixToImageAlgorithm`,
 `TableToImageAlgorithm`, `OMEMetadataToTableAlgorithm` → spatial absent (no image input).
+
+**Deliberate spatial exception:** `RunImageJMacroAlgorithm` (Images, no menuPath) is a passthrough
+macro runner. It *does* carry an `ImagePlusData` input (positional
+`@AddJIPipeInputSlot(ImagePlusData.class)`), so the letter of rule 12 would assign it `both`; however it
+only shuttles its inputs to/from the ImageJ GUI (runs a macro, re-imports the result) and never
+processes image data itself, so it is deliberately left at spatial **absent**. Revisit in Phase 3 if a
+policy for GUI-passthrough nodes is wanted.
 
 **Roi (67) — rule 3:**
 
@@ -435,7 +443,49 @@ runs only in 19.2c, when all 424 are converted.
 --target plugins/jipipe-plugin-ij-algorithms/src/main/java --dry-run`
 → `Would change 424 file(s); 424 annotation(s) rewritten; 0 unmatched` (nothing was written; `--dry-run`).
 
-#### (e) Flagged for Phase 3 audit
+#### (e) Per-node spatial deviations from the TSV group default (55 total)
+
+convert.py writes the TSV group default; the chunks must apply the per-node values from
+`ij-algorithms-final.json` (authoritative; the list below is a human-readable cross-check).
+**55 nodes** deviate, in four buckets:
+
+- **29 → absent** (no image input slot, rule 12 — including the 22 reviewer-named ROI nodes fixed in
+  this revision): Roi/Filter `FilterRoi2dByNameAlgorithm`, `FilterRoi2dByOverlapAlgorithm`,
+  `FilterRoi2dListsAlgorithm`, `SliceRoi2dListAlgorithm`; Roi/Merge `AppendRectangularRoiAlgorithm`,
+  `MergeRoiListsOrderedAlgorithm`, `MergeRoiListsPairwiseOrAlgorithm`, `MergeRoiListsUnorderedAlgorithm`;
+  Roi/Measure `CountROIAlgorithm`; Roi/Modify `ChangeRoiPropertiesAlgorithm`,
+  `ChangeRoiPropertiesFromAnnotationsAlgorithm`, `ChangeRoiPropertiesFromTableAlgorithm`,
+  `ColorRoiByNameAlgorithm`, `FlattenRoiAlgorithm`, `ReorderRoiDimensionsAlgorithm`,
+  `RoiToCentroidAlgorithm`; Roi/Transform `ScaleRoiAlgorithm`; Roi/Metadata
+  `ExtractROIMetadataAlgorithm`, `RemoveROIMetadataAlgorithm`, `SetROIMetadataFromTableAlgorithm`;
+  Roi/Split `SplitMultiComponentRoi2dAlgorithm`, `SplitRoi2dIntoIndividualListsAlgorithm`; Roi/Convert
+  `ConvertRoiToTableAlgorithm`, `UnreferencedRoiToMaskAlgorithm`, `UnreferencedRoiToRGBAlgorithm`;
+  Images/Convert `MatrixToImageAlgorithm`, `TableToImageAlgorithm`, `OMEMetadataToTableAlgorithm`;
+  plus `RunImageJMacroAlgorithm` (deliberate, see note above).
+- **6 → both** (have an image input where the group default is absent): DataSource
+  `OMEImageFromImagePlus`, `GenerateMissingZeroImage`, `GenerateMissingImageFromMathExpression2D`,
+  `ReferencedDefineRectangularRoiAlgorithm`; Roi/no-menuPath `RoiFloodFillAlgorithm`,
+  `SetRoiImageAlgorithm`.
+- **13 → SPATIAL_3D** (3D-constrained first image input): `AnalyzeSkeleton2D3DAlgorithm`,
+  `ConnectedComponentsLabeling3DAlgorithm`, `StackInverterAlgorithm`,
+  `AnnotateWithOverlapMeasureLabelsAlgorithm`, `OverlapMeasureLabelsAlgorithm`,
+  `FilterLabelsByExpression3DAlgorithm`, `ChamferDistanceMap3DAlgorithm`, `ImposeMaxima3DAlgorithm`,
+  `GrayscaleAttributeFiltering3DAlgorithm`, `MorphologicalReconstruction3DAlgorithm`,
+  `MorphologySkeletonize3DAlgorithm`, `ClassicWatershedSegmentationAlgorithm`,
+  `SeededWatershedSegmentationAlgorithm`. (The 3 `Optical flow` nodes are also 3D, but their group
+  default is already 3D, so no override is needed.)
+- **7 → SPATIAL_2D** (2D-constrained first image input): `ImageToMatrixAlgorithm`,
+  `ImageToTableColumnAlgorithm`, `FFT2DForwardTransform`, `FFT2DInverseTransform`,
+  `FFT2DSwapQuadrants`, `InputImagesToMontage`, `MontageToStackAlgorithm`.
+  (`RegisterRoiToImageByBrightnessAlgorithm` is also 2D, but its group default is already 2D.)
+
+Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D set = 7 overrides +
+1 register = 8; total absent = 29 overrides + 43 group-default-absent = 72; total both =
+328. Leaf (function) overrides total **14 nodes** (3 Images/Convert→`ColorStackFunction`,
+3 DataSource→`TableDataFunction`, 4 DataSource→`RoiDataFunction`, 1 DataSource→`MiscDataFunction`,
+4 GUI bridges→`MiscellaneousFunction`, 1 Export→`ExportArchiveFunction` — all listed in (a)).
+
+#### (f) Flagged for Phase 3 audit
 
 - `Labels\nConvert` → `ColorStackFunction` (label rendering; could be its own leaf).
 - `Labkit` → `DeepLearningInferenceFunction` (no labkit framework exists; framework stays ImageJ1).
