@@ -96,10 +96,12 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             }
         }
         isRunning = false;
+        // The settle loop is invoked on every registration cycle; the
+        // taxonomy enrichment is idempotent and needed per cycle. The
+        // authoritative validation+logging happens once, in
+        // postprocess() (the final initialization pass).
         taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
         enrichNodeTaxonomy();
-        Set<String> taxonomyErrors = taxonomyResolver.validateTaxonomy(registeredNodeInfos);
-        TaxonomyResolver.logErrors(taxonomyErrors, getProgressInfo());
     }
 
     /**
@@ -524,11 +526,46 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
      * Called by the service initializer after all plugins were registered
      * and postprocessed. Re-runs the idempotent taxonomy enrichment so
      * that late registrations (e.g. leftover scheduled tasks registered
-     * directly by the initializer) are covered.
+     * directly by the initializer) are covered, and runs the taxonomy
+     * validation guard (Task 8):
+     * <ul>
+     * <li>hard taxonomy errors (cyclic/dangling function tree, broken
+     * framework set, dangling family step, node pointing at an
+     * unregistered function/framework) are appended to the service's
+     * initialization report, which the initializer then fails on — a
+     * broken-but-partly-converted taxonomy must never ship a wrong
+     * browser;</li>
+     * <li>nodes without a primary function are the expected phase 1a
+     * state (nothing converted yet): they are logged and reported in
+     * the {@link TaxonomyValidationReport} but do NOT fail
+     * initialization, so the conversion can proceed incrementally.</li>
+     * </ul>
      */
     @Override
     public void postprocess(JIPipeProgressInfo progressInfo) {
         taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
         enrichNodeTaxonomy();
+
+        // The single authoritative taxonomy validation+log of the
+        // initialization (the settle loop in run() stays silent so it
+        // can run on every registration cycle without re-logging).
+        TaxonomyValidationReport report = TaxonomyValidationReport.run(
+            taxonomyResolver.getFunctionRegistry(),
+            taxonomyResolver.getFrameworkRegistry(),
+            taxonomyResolver.getFamilies(),
+            registeredNodeInfos);
+        if (!report.errors().isEmpty()) {
+            List<Throwable> errors = new ArrayList<>();
+            for (String error : report.errors()) {
+                errors.add(new IllegalStateException("Node taxonomy validation: " + error));
+                progressInfo.warn("Node taxonomy validation: " + error);
+            }
+            getService().getInitializationReport().getErrors().addAll(errors);
+        } else if (!report.unassignedNodeIds().isEmpty()) {
+            progressInfo.log("Node taxonomy: " + report.unassignedNodeIds().size()
+                + " nodes not yet assigned a taxonomy function — expected during conversion");
+        } else {
+            progressInfo.log("Node taxonomy validation passed");
+        }
     }
 }

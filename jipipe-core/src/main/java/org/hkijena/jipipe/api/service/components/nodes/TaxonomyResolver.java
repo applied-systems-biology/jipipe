@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.api.service.components.nodes;
 
 import com.google.common.collect.Multimap;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -346,18 +345,6 @@ public class TaxonomyResolver {
             }
         }
         return errors;
-    }
-
-    /**
-     * Logs the taxonomy validation errors as warnings.
-     *
-     * @param errors the validation errors
-     * @param progressInfo the progress info to log to
-     */
-    public static void logErrors(Set<String> errors, JIPipeProgressInfo progressInfo) {
-        for (String error : errors) {
-            progressInfo.warn("Node taxonomy: " + error);
-        }
     }
 
     private static Class<?> firstInputSlotDataClass(JIPipeNodeInfo info) {
