@@ -115,7 +115,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | module | node count | status |
 |---|---|---|
 | jipipe-core | 31 | converted |
-| jipipe-plugin-ij-algorithms | 424 | pending |
+| jipipe-plugin-ij-algorithms | 424 | mapping complete (19.2), chunks pending |
 | jipipe-plugin-ij | 80 | pending |
 | jipipe-plugin-ij-3d | 62 | pending |
 | jipipe-plugin-filaments + ij-filaments | 51+ | pending |
@@ -248,3 +248,203 @@ core node classes broke no other module (the legacy fields remain present on `@C
 `getCategory()` (`isVisibleInPipeline` false), so they are absent from the *old* add-node panel's category
 buttons until Task 24 swaps in the new taxonomy browser. This is intended (6.0.0 breaking, unmerged branch).
 No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+### 19.2 — jipipe-plugin-ij-algorithms mapping (424 nodes)
+
+**Status:** mapping complete (decision record below). Application happens in three mechanical chunks,
+19.2a/b/c (assignment at the end of this section). No source files changed in 19.2 itself.
+
+**Primary-category inventory (verified against the exact counts ruled by the controller, R1):**
+Images 312 · Roi 67 · DataSource 20 · Export 10 · Table 7 · Annotations 5 · Miscellaneous 2 · ImageJ 1.
+393 nodes have a `menuPath`; 31 do not (handled by category/role). The 239 `@AddJIPipeNodeAlias` entries
+(e.g. 9 in `Convert`-only nodes aliased under `Image\nType`) are **not** counted — only the primary
+`@ConfigureJIPipeNode` block determines category and menuPath.
+
+**Framework (R2 / rule 11):** `ImageJ1Framework` for **all 424 nodes**. Zero nodes were classified as
+`ImageJ2Framework`: three files import `net.imglib2.*` classes, but only as IJ1→imglib2 adapters
+(`ImageJFunctions.wrap`/`VirtualStackAdapter.wrap` in `LabkitInferenceAlgorithm`, `Coloc2Node`;
+`net.imglib2.RandomAccess` types in `Coloc2Node`) — the processing still runs on IJ1 `ImagePlus` APIs, so
+the module-level rule stands. No node imports `net.imagej.*` (the SciJava/ImageJ2 context API).
+
+**Spatial (R4 / rule 12):** read from each node's **first image input slot** (the first
+`@AddJIPipeInputSlot` whose data class is image-typed; non-image first inputs like `Roi2dListData`,
+`ResultsTableData`, `JIPipeData`, `FolderData`, `OMEXMLData`, `FileData` are skipped). Slot dimensionality
+comes from the data class's `@ImageTypeInfo(numDimensions=…)` / package: root-level
+`ImagePlusData`/`ImagePlusGreyscale*Data`/`ImagePlusColor*Data`/`OMEImageData` are **unconstrained**
+(`@ImageTypeInfo` without `numDimensions`) ⇒ both; `d2/…2D…` ⇒ 2D; `d3/…3D…` ⇒ 3D.
+**Result: 350 both · 16 SPATIAL_3D · 8 SPATIAL_2D · 50 absent** (non-image/no-image-input nodes).
+The per-node 2D/3D/absent values live in the per-node table (git-ignored:
+`utils/taxonomy-conversion/ij-algorithms-final.json`, produced by the survey script); the TSV carries the
+**group default** (the value used by the majority of the group) and the exceptions are listed below — the
+chunks apply the per-node values from that table. Nodes taking an **image only as a reference canvas**
+(e.g. `DrawRectangleRoiAlgorithm`, most `Roi/Modify` and `Roi/Filter` nodes, `MaskToRoiAlgorithm`) get the
+spatial of that input — the image is processed (mask/ROI is evaluated against its extent), and rule 12
+names no exclusion.
+
+**Tooling constraint (affects the chunks, not the mapping):** `convert.py` matches rows on
+**(category, menuPath-prefix)** only — it cannot express per-node function overrides, and a
+`(category, None)` catch-all row is only consulted when no specific prefix matches, so it cannot shadow
+specific groups the way a `-` menuPath could. Consequence: every node inside one `(category, menuPath)`
+group receives the **group row's leaf** from `convert.py`; where the decided per-node leaf differs (the
+overrides table below), the chunk must apply the override **by hand** in the same commit. This is already
+required for step 2 of the per-batch method (dropping `@AddJIPipeNodeAlias` → secondary `function[]`,
+fixing imports).
+
+#### (a) menuPath-group → leaf decision table
+
+`menuPath` shown with real newlines; count = nodes in the group. Framework = `ImageJ1Framework`
+everywhere (omitted). Spatial = group default.
+
+**Images (312) + ImageJ (1) — rules 1/2, by first menuPath segment:**
+
+| menuPath (group) | n | leaf | spatial (group) | rationale for non-obvious |
+|---|---|---|---|---|
+| `Threshold` | 20 | `ThresholdingFunction` | both | |
+| `Threshold\nLocal` | 12 | `ThresholdingFunction` | both | |
+| `Threshold\nColor` | 4 | `ThresholdingFunction` | both | |
+| `Labels` | 20 | `SegmentationFunction` | both | labeling/label editing = object partitioning; CCL is the segmentation primitive |
+| `Labels\nFilter` | 6 | `FilteringFunction` | both | predicate removal of label objects |
+| `Labels\nMeasure` | 2 | `MeasurementsFunction` | both | per-label statistics |
+| `Labels\nConvert` | 3 | `ColorStackFunction` | both | label→mask/RGB/ROI **rendering** of the partition (judgment; flag Phase 3) |
+| `Labkit` | 1 | `DeepLearningInferenceFunction` | both | runs the Labkit ML segmenter (flag Phase 3: no labkit framework exists) |
+| `Math` | 15 | `FilteringFunction` | both | pixel-wise local transforms |
+| `Math\nLocal` | 19 | `FilteringFunction` | both | local min/max/mean/variance filters, maxima/minima extraction |
+| `Math\nDistance map` | 5 | `MeasurementsFunction` | both | distance = geometric measurement field (judgment; flag) |
+| `Morphology` | 13 | `FilteringFunction` | both | binary/gray morphology filters |
+| `Binary` | 10 | `FilteringFunction` | both | |
+| `Filter` | 6 | `FilteringFunction` | both | |
+| `Blur` | 5 | `FilteringFunction` | both | |
+| `FFT` | 5 | `FilteringFunction` | both | frequency-domain filtering (judgment; flag) |
+| `Noise` | 3 | `FilteringFunction` | both | |
+| `Edges` | 3 | `FilteringFunction` | both | |
+| `Sharpen` | 2 | `FilteringFunction` | both | |
+| `Convolve` | 2 | `FilteringFunction` | both | |
+| `Convert` | 18 | `ResamplingFunction` | both | bit-depth/type conversions; 3 overrides below |
+| `Dimensions` | 17 | `ResamplingFunction` | both | resample/split/merge across dimensions |
+| `Transform` | 19 | `ResamplingFunction` | both | crop/rotate/scale/warp = spatial resampling |
+| `Colors` | 17 | `ColorStackFunction` | both | |
+| `Colors\nConvert` | 1 | `ColorStackFunction` | both | |
+| `LUT` | 6 | `ColorStackFunction` | both | |
+| `Features` | 13 | `MeasurementsFunction` | both | vesselness/structure feature maps |
+| `Statistics` | 8 | `MeasurementsFunction` | both | |
+| `Analyze` | 5 | `MeasurementsFunction` | both | |
+| `Colocalization` | 1 | `MeasurementsFunction` | both | |
+| `Calibration` | 6 | `PreprocessingFunction` | both | physical calibration = prep (judgment; flag) |
+| `Contrast` | 4 | `PreprocessingFunction` | both | |
+| `Background` | 1 | `PreprocessingFunction` | both | |
+| `Masking` | 3 | `PreprocessingFunction` | both | |
+| `Montage` | 5 | `MergingSplittingFunction` | both | |
+| `Optical flow` | 3 | `MergingSplittingFunction` | **3D** | aligns 3D+time stacks into one (flag) |
+| `Registration` | 3 | `MergingSplittingFunction` | both | image alignment (flag) |
+| `ROI` | 8 | `MergingSplittingFunction` | both | overlay/extract/ROI-mask ops on images (flag) |
+| `Segment` | 3 | `SegmentationFunction` | both | |
+| `Detect` | 6 | `SegmentationFunction` | both | Hough/corner detector object finding (flag) |
+| `Forms` | 2 | `SegmentationFunction` | both | interactive mask/ROI drawing = manual segmentation (flag) |
+| `Metadata` | 3 | `MiscellaneousFunction` | both | metadata in/out, not measurements (flag) |
+| `Modify` | 1 | `MiscellaneousFunction` | both | set image properties from expressions |
+| *(no menuPath)* | 3 | `MiscellaneousFunction` | both | `RunImageJMacroAlgorithm` (macro runner, no slots), `ImagePlusToGUI` (bridge, override → misc/absent), `MergeImagesAlgorithm` |
+| `Enhance` (ImageJ cat.) | 1 | `PreprocessingFunction` | both | `BleachCorrectionAlgorithm`, rule 2 by menuPath |
+
+Images/**Convert** per-node overrides (same group, different operation): `ConvertImageToHSBAlgorithm`,
+`ConvertImageToLABAlgorithm`, `ConvertImageToRGBAlgorithm` → `ColorStackFunction` (color-space
+conversion); `ImageToMatrixAlgorithm`, `ImageToTableColumnAlgorithm` → spatial 2D; `MatrixToImageAlgorithm`,
+`TableToImageAlgorithm`, `OMEMetadataToTableAlgorithm` → spatial absent (no image input).
+
+**Roi (67) — rule 3:**
+
+| menuPath | n | leaf | spatial (group) | rationale |
+|---|---|---|---|---|
+| `Convert` | 7 | `RoiFiltersFunction` | both | |
+| `Draw` | 4 | `RoiFiltersFunction` | both | |
+| `Filter` | 11 | `RoiFiltersFunction` | both | |
+| `Modify` | 13 | `RoiFiltersFunction` | both | |
+| `Metadata` | 4 | `RoiFiltersFunction` | both | |
+| `Transform` | 2 | `RoiFiltersFunction` | both | |
+| `Process` | 1 | `RoiFiltersFunction` | both | |
+| `Register` | 1 | `RoiFiltersFunction` | **2D** | input `ImagePlus2DData` |
+| `Merge` | 5 | `RoiIntersectionsFunction` | both | set union of ROI lists |
+| `Measure` | 4 | `RoiMeasurementsFunction` | both | |
+| `Outline` | 4 | `RoiMorphologyFunction` | **absent** | ROI-only geometry (outline/hull/band/interpolate) |
+| `Split` | 4 | `RoiMorphologyFunction` | both | decomposition of ROI shapes |
+| *(no menuPath)* | 7 | `RoiFiltersFunction` | **absent** | |
+
+Roi per-node overrides: `ConvertRoiToTableAlgorithm`, `UnreferencedRoiToMaskAlgorithm`,
+`UnreferencedRoiToRGBAlgorithm` → spatial absent (no image input); `RoiFloodFillAlgorithm`,
+`SetRoiImageAlgorithm` → spatial both (image reference input); `ROIToGUI` → `MiscellaneousFunction`
+(GUI bridge, like its Table/Export siblings).
+
+**Table (7) — rule 4:** `Convert` (6) → `TableTransformFunction`, spatial absent (all inputs
+`ResultsTableData`); *(no menuPath)* (1) → group row `TableTransformFunction`, but `ResultsTableToGUI`
+override → `MiscellaneousFunction` (GUI bridge).
+
+**DataSource (20) — rule 6, by output type:** group row `ImageDataFunction` (majority: image-producing
+sources, incl. `ImageFromMatrix2DAlgorithm` under `Convolve`). Overrides by output:
+`GenerateMissingTablesAlgorithm`, `GenerateMissingTablesAlgorithm2`, `ResultsTableFromGUI` →
+`TableDataFunction`; `ROIFromGUI`, `DefineRectangularRoiAlgorithm`, `GenerateMissingRoiListsAlgorithm`,
+`ReferencedDefineRectangularRoiAlgorithm` → `RoiDataFunction`; `RunImageJImporterAlgorithm` →
+`MiscDataFunction` (emits `JIPipeData`). Spatial: absent for all except the three that take an image to
+complete on — `OMEImageFromImagePlus`, `GenerateMissingZeroImage`, `GenerateMissingImageFromMathExpression2D`
+→ both.
+
+**Export (10) — rule 7:** `Images` (3) → `ExportFileFormatsFunction` (spatial both); `Tables` (4) →
+`ExportFileFormatsFunction`; `ROI` (2) → `ExportArchiveFunction` (ROI lists are exported as `.zip` ROI
+archives — `saveToRoiOrZip`); *(no menuPath)* (1) `RunImageJExporterAlgorithm` → `ExportFileFormatsFunction`.
+Spatial absent for ROI/Tables/no-menuPath (no image input); `ExportImageDirectorySlotAlgorithm`
+→ `ExportArchiveFunction` override (bulk directory export incl. AVI).
+
+**Annotations (5) — rule 5:** `For images` (3) → `AnnotationsEditFunction` (spatial both);
+`For ROI` (1) → `AnnotationsEditFunction` (absent); `For all data` (1) → `AnnotationsEditFunction` (absent).
+No annotations node converts *between* annotation types, so `AnnotationsConvertFunction` is unused here.
+
+**Miscellaneous (2) — rule 9:** `Convert` (1) `DataToPreviewAlgorithm` → `MiscellaneousFunction` (renders
+arbitrary data to a preview image); `Meta run` (1) `RenderJIPipeProjectAlgorithm` → `PlotMiscFunction`
+(a rendered visualization of the whole pipeline graph; flag Phase 3).
+
+#### (b) Leaf distribution (all 424)
+
+`FilteringFunction` 89 · `ResamplingFunction` 51 · `RoiFiltersFunction` 49 · `ThresholdingFunction` 36 ·
+`MeasurementsFunction` 34 · `SegmentationFunction` 31 · `ColorStackFunction` 30 · `MergingSplittingFunction` 19 ·
+`PreprocessingFunction` 15 · `ImageDataFunction` 12 · `MiscellaneousFunction` 10 · `RoiMorphologyFunction` 8 ·
+`ExportFileFormatsFunction` 7 · `TableTransformFunction` 6 · `AnnotationsEditFunction` 5 ·
+`RoiIntersectionsFunction` 5 · `RoiDataFunction` 4 · `RoiMeasurementsFunction` 4 · `TableDataFunction` 3 ·
+`ExportArchiveFunction` 3 · `MiscDataFunction` 1 · `DeepLearningInferenceFunction` 1 · `PlotMiscFunction` 1.
+
+#### (c) Chunk assignment (R7)
+
+Split is **category-coherent** so every chunk is a contiguous, independently-compilable unit (groups are
+never split across chunks, and all live in one Maven module sharing the classpath). The three image-free
+categories plus Roi (the bulk of the non-image work) form 19.2c — the chunk that also runs the module gate.
+Images + the single ImageJ node (313) are split into 19.2a (core image processing: thresholding,
+labeling, math, morphology, binary, convert) and 19.2b (all other image analysis + the ImageJ node).
+Sizes are 148 / 165 / 111 (sum 424) — within the "~140 each, close is fine" bar; 19.2c is a little light
+because the ROI/table/data/export/annotation families are a naturally smaller, coherent unit.
+
+| chunk | groups (category — menuPath) | nodes |
+|---|---|---|
+| **19.2a** (Images core) | Images: `Threshold`(20), `Threshold\nLocal`(12), `Threshold\nColor`(4), `Labels`(20), `Labels\nFilter`(6), `Labels\nMeasure`(2), `Labels\nConvert`(3), `Labkit`(1), `Math`(15), `Math\nLocal`(19), `Math\nDistance map`(5), `Morphology`(13), `Binary`(10), `Convert`(18) | **148** |
+| **19.2b** (Images analysis + ImageJ) | Images: `Dimensions`(17), `Transform`(19), `Colors`(17), `Colors\nConvert`(1), `LUT`(6), `Filter`(6), `Blur`(5), `FFT`(5), `Edges`(3), `Noise`(3), `Sharpen`(2), `Convolve`(2), `Features`(13), `Statistics`(8), `Analyze`(5), `Colocalization`(1), `Calibration`(6), `Contrast`(4), `Background`(1), `Masking`(3), `Montage`(5), `Optical flow`(3), `Registration`(3), `ROI`(8), `Segment`(3), `Detect`(6), `Forms`(2), `Metadata`(3), `Modify`(1), *(no menuPath)*`(3)`, and ImageJ: `Enhance`(1) | **165** |
+| **19.2c** (Roi/Table/DataSource/Export/Annotations/Misc — runs the gate) | Roi: `Convert`(7), `Draw`(4), `Filter`(11), `Measure`(4), `Merge`(5), `Metadata`(4), `Modify`(13), `Outline`(4), `Process`(1), `Register`(1), `Split`(4), `Transform`(2), *(no menuPath)*`(7)` = 67; Table: `Convert`(6), *(no menuPath)*`(1)` = 7; DataSource: `Convolve`(1), *(no menuPath)*`(19)` = 20; Export: `Images`(3), `ROI`(2), `Tables`(4), *(no menuPath)*`(1)` = 10; Annotations: `For ROI`(1), `For all data`(1), `For images`(3) = 5; Miscellaneous: `Convert`(1), `Meta run`(1) = 2 | **111** |
+
+Each chunk compiles standalone against the same module classpath; the module gate
+(`TaxonomyConversionReportTest`, `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imagejalgorithms`)
+runs only in 19.2c, when all 424 are converted.
+
+#### (d) Dry-run proof (R6)
+
+`python3 utils/taxonomy-conversion/convert.py --map utils/taxonomy-conversion/ij-algorithms-map.tsv
+--target plugins/jipipe-plugin-ij-algorithms/src/main/java --dry-run`
+→ `Would change 424 file(s); 424 annotation(s) rewritten; 0 unmatched` (nothing was written; `--dry-run`).
+
+#### (e) Flagged for Phase 3 audit
+
+- `Labels\nConvert` → `ColorStackFunction` (label rendering; could be its own leaf).
+- `Labkit` → `DeepLearningInferenceFunction` (no labkit framework exists; framework stays ImageJ1).
+- `Math\nDistance map` → `MeasurementsFunction` (could be `FilteringFunction`).
+- `Calibration` → `PreprocessingFunction` (could be `MeasurementsFunction`).
+- `Optical flow` / `Registration` → `MergingSplittingFunction` (no dedicated registration leaf).
+- `Images/ROI` → `MergingSplittingFunction` (overlay/extract ops; partly ROI-domain).
+- `Detect` / `Forms` → `SegmentationFunction` (detection & interactive drawing; could be `MeasurementsFunction` / manual-annotation leaf).
+- `Images/Metadata` → `MiscellaneousFunction` (could be `MeasurementsFunction` for the extract node).
+- `FFT` → `FilteringFunction` (could be `MeasurementsFunction` for transform-only nodes).
+- `RenderJIPipeProjectAlgorithm` → `PlotMiscFunction` (pipeline rendering; could be `MiscellaneousFunction`).
+
