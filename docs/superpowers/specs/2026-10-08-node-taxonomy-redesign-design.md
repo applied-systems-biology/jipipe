@@ -22,7 +22,8 @@ A fine-grained, low-effort **node taxonomy** that
 - renames "category" to capture its *functional* meaning ("function"),
 - dissolves the `menuPath` hierarchy into a browsable **function tree**,
 - adds **tags** (per function and per node), **framework** (origin: Cellpose 4,
-  TrackMate, JFreeChart, JIPipeDL, …), **dimensionality** (2D/3D/4D/5D), and
+  TrackMate, JFreeChart, JIPipeDL, …), **dimensionality** (declared spatial
+  2D/3D + derived input profile, see below), and
   **workflow families** (groups of nodes that form a setup together),
 - presents the node selection in a modern, adaptive UI with contextual
   *related* and *follow-ups* sections, and
@@ -95,15 +96,49 @@ colors deterministically (shade/tint by tree depth), so **authors never
 assign node colors again**. Hue uniqueness across top branches is a
 validation-checked invariant (contrast separation).
 
-### `JIPipeNodeTaxonomyDimensionality`
+### Dimensionality: two unambiguous items
+
+The original single `D2…D5` enum was rejected as ambiguous: it conflated a
+node's **spatial math** (what it computes) with **how much stack it can be
+fed** (a pipeline property). JIPipe's data model makes this precise:
+spatial is bounded at 3D (x/y/z); "4D"/"5D" images are 3D-or-2D volumes
+plus stack axes — `HyperstackDimension = {Depth (Z), Channel (C), Frame (T)}` —
+and feeding/iteration over T/C is handled by the **iteration layer**
+(`JIPipeMultiIterationStep` solvers, user-configurable at run time). So the
+model splits into:
+
+**1. `spatialDimensions` — declared per node (intrinsic, stable):**
 
 ```java
-public enum JIPipeNodeTaxonomyDimensionality { D2, D3, D4, D5 }
+public enum JIPipeNodeTaxonomySpatialDimension { SPATIAL_2D, SPATIAL_3D }
+
+// on @ConfigureJIPipeNode:
+spatialDimensions = {SPATIAL_2D, SPATIAL_3D}   // Cellpose: adaptive, declares both
 ```
 
-Multi-valued per node (e.g. Cellpose handles 2D and 3D; JIPipe splits 5D
-stacks, so D5 denotes nodes that operate on/accept 5D stacks). Used as a
-filter facet and in search metadata (not as ranking tokens).
+"2D" = operates on an x/y plane; "3D" = operates on an x/y/z volume. There is
+no 4D/5D *spatial* operation, so this set is closed and unambiguous.
+
+**2. `inputProfile` — derived at registration from the node's input slot
+data types (not hand-annotated):**
+
+```java
+public enum JIPipeNodeTaxonomyInputProfile { PLANE_2D, VOLUME_3D, ANY }
+```
+
+A small provider interface (registered per data class, following the existing
+data-type-operation pattern) answers "what is the native input shape of this
+data type?". The ImageJ data-types plugin implements it from the existing
+`@ImageTypeInfo.numDimensions()` (2 → `PLANE_2D`, 3 → `VOLUME_3D`,
+unconstrained `ImagePlusData` → `ANY`). T and C are always iterable by the
+solvers, so the effective maximum feedable dimensionality is: `PLANE_2D` → 4D
+(x/y/T/C), `VOLUME_3D`/`ANY` → 5D (x/y/z/T/C). Non-image data types report
+"N/A" and the facet is hidden for those nodes.
+
+Both are used as **filter facets** and search metadata (filter-only, not
+ranking tokens). Example: the Cellpose 4 inference node = spatial `{2D, 3D}`
+(declared) + input `ANY → up to 5D` (derived) — both statements true at once,
+no ambiguity.
 
 ### `JIPipeNodeTaxonomyFramework`
 
@@ -172,7 +207,7 @@ edges.
     name = "Segment cells (2D)",
     function = {CellSegmentationFunction.class},   // [0] = primary
     framework = Cellpose4Framework.class,
-    dimensionalities = {D2}                        // the 3D variant is a separate node with {D3}
+    spatialDimensions = {SPATIAL_2D}               // the 3D variant declares {SPATIAL_3D}
 )
 @JIPipeNodeTaxonomyFamilyStep(family = TrackMateFamily.class, label = "Detect spots", …)
 @JIPipeNodeTaxonomyTags({"spot-detection", "tracking"})   // repeatable
@@ -195,10 +230,11 @@ public class CellposeSegmentCellsNode extends JIPipeSimpleIteratingAlgorithm { �
 - Registers frameworks and assembles families (deferred step resolution).
 - Exposes `getFunctions()`, `getFrameworks()`, `getFamilies()`,
   `getNodesOfFunction(...)`.
-- **Auto-discovered nodes** (IJ2, CLIJ): function/framework/dimensionality
-  assigned programmatically by heuristics (name keywords → function leaf,
-  e.g. "3D" → D3; source plugin → framework), the one bypass of explicit
-  annotation.
+- **Auto-discovered nodes** (IJ2, CLIJ): function/framework/spatial
+  dimensionality assigned programmatically by heuristics (name keywords →
+  function leaf; "3D"/"2D" in name → spatial set; source plugin →
+  framework). Input profile stays derived from the slot types in all cases,
+  the only thing not subject to heuristics.
 - Legacy `JIPipeNodeTypeCategory` and its 11 implementations are **removed**,
   not shimmed.
 
@@ -206,7 +242,8 @@ public class CellposeSegmentCellsNode extends JIPipeSimpleIteratingAlgorithm { �
 
 Run at startup / in tests:
 - every registered node resolves to a known function leaf, known framework,
-  valid dimensionality;
+  and (if declared) a valid spatial dimensionality; nodes whose input slot
+  data types have no input-profile provider get "N/A" (never a hard error);
 - function tree is acyclic, every leaf reachable from a top-level branch;
 - family graphs contain no dangling step ids;
 - top-branch hues are pairwise distinct (contrast check);
@@ -251,12 +288,13 @@ One new component, `JIPipeDesktopNodeBrowser`, used in two surfaces.
 **Adaptive by width** (single component, three arrangements):
 
 - **< 380px — compact:** single function tree with node leaves (icon,
-  framework badge, dimensionality chips); filters in their own wrapping bar;
+  framework badge, spatial chips); filters in their own wrapping bar;
   related/follow-ups strip at the bottom.
 - **≥ 380px — comfortable:** function tree | filtered node list; filter bar;
   related/follow-ups strip.
 - **Filter bar** (own row, wrapping, room to grow): Framework ▾,
-  Dimensionality (multi) ▾, Tags ▾, plus toggles: ★ pinned, ⊂ selection only
+  Spatial (2D / 3D, multi) ▾, Input (plane / volume / hyperstack, multi) ▾,
+  Tags ▾, plus toggles: ★ pinned, ⊂ selection only
   (nodes whose inputs are compatible with the current selection's outputs),
   deprecated/unstable.
 - **Search** box with the existing AI toggle preserved; typing flips either
@@ -272,7 +310,7 @@ insertion keeps its simpler existing menu.
 ### Node finder dialog (rebuilt `JIPipeDesktopNodeFinderDialogUI`, Ctrl+A)
 
 Always the **three-zone** layout: function tree | result list | **detail
-rail** (description, framework, tags, dimensionality, *related*,
+rail** (description, framework, tags, spatial + input profile, *related*,
 *follow-ups* with ▶ Insert setup + Open example, docs).
 
 ### Related / follow-ups (shared implementation)
@@ -290,7 +328,7 @@ dialog rail, and any future surface share one implementation:
 
 Taxonomy fields feed `WeightedTokens`: function path names at decreasing
 weight (deeper terms weigh more), framework name, tags at full weight;
-dimensionality is filter-only. Structured facets replace fuzzy menuPath
+spatial + input-profile fields are filter-only. Structured facets replace fuzzy menuPath
 substring matching; the AI/embedding search backends index the new fields as
 well.
 
@@ -378,8 +416,10 @@ new function-derived hues). Rendering changes are additive; the existing
 ## Testing
 
 - **Registration guard tests** (core): every registered node resolves to a
-  known function leaf / framework / valid dimensionality; function tree
-  acyclic and fully reachable; family graphs have no dangling step ids.
+  known function leaf / framework / valid spatial set; input-profile
+  derivation is total (no exception for any registered slot type — "N/A"
+  allowed); function tree acyclic and fully reachable; family graphs have no
+  dangling step ids.
 - **Taxonomy content tests:** top-branch hue uniqueness (contrast),
   framework abbreviation length, id stability (literal, not code-derived).
 - **Avatar module tests** (contrib, JUnit 5 per the existing contrib module
@@ -395,8 +435,8 @@ new function-derived hues). Rendering changes are additive; the existing
 
 **Phase 1 — Data model, taxonomy, UI, conversion**
 1. `JIPipeNodeTaxonomy*` API + annotations + registration (function tree,
-   frameworks, families, dimensionality, tags) + IJ2/CLIJ programmatic
-   assignment + validation guards.
+   frameworks, families, spatial dimensionality + derived input profile
+   provider, tags) + IJ2/CLIJ programmatic assignment + validation guards.
 2. Remove legacy category system.
 3. Taxonomy audit + conversion of all registration sites plugin-by-plugin
    (largest task block; mechanical per plugin, reviewed per node).
@@ -431,20 +471,25 @@ Branch per phase, following the `<issue-id>-<name>` convention
 ## Decisions log (from brainstorming)
 
 1. Scope: full architecture spec, three-phase implementation.
-2. Axes: function tree + framework + dimensionality facet + workflow families + tags.
-3. Naming: `JIPipeNodeTaxonomy*` prefix (avoids collisions).
-4. Declaration: annotations referencing classes, instantiated at registration;
+2. Axes: function tree + framework + dimensionality (declared spatial 2D/3D
+   + derived input profile) + workflow families + tags.
+3. Dimensionality: split into `spatialDimensions` (declared, closed set
+   {2D, 3D}) and a *derived* `inputProfile` from the input slot data type —
+   the single `D2…D5` enum was rejected as ambiguous (Cellpose is spatial
+   2D/3D; "5D" is a pipeline/iteration capability, not a node tag).
+4. Naming: `JIPipeNodeTaxonomy*` prefix (avoids collisions).
+5. Declaration: annotations referencing classes, instantiated at registration;
    programmatic assignment path for auto-discovered nodes.
-5. Framework: explicit per-node.
-6. Color: hue per top-level function branch, auto-shaded down the tree.
-7. Families: directed graph of steps, repeatable per-node annotation,
+6. Framework: explicit per-node.
+7. Color: hue per top-level function branch, auto-shaded down the tree.
+8. Families: directed graph of steps, repeatable per-node annotation,
    optional template; programmatic for IJ2/CLIJ.
-8. UI: adaptive panel (compact < 380px / comfortable ≥ 380px), filters in
+9. UI: adaptive panel (compact < 380px / comfortable ≥ 380px), filters in
    their own wrapping bar, Node Finder dialog always three-zone with detail
    rail; DnD + double-click + AI search preserved.
-9. Rendering: full-body pattern + badge (option A), each element
-   user-configurable.
-10. Pattern engine: DiceBear port in a new contrib module (MIT core + CC0
+10. Rendering: full-body pattern + badge (option A), each element
+    user-configurable.
+11. Pattern engine: DiceBear port in a new contrib module (MIT core + CC0
     styles), dist dependencies configured; minimalist styles first, custom
     styles later (judged with the image inspect tool).
-11. Compatibility: 6.0.0 hard break; legacy categories removed, no shims.
+12. Compatibility: 6.0.0 hard break; legacy categories removed, no shims.
