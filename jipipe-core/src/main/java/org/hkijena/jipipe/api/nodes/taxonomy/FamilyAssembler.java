@@ -35,16 +35,14 @@ import java.util.Set;
  * predecessor step to this step, i.e. {@code after = {A, B}} on step S
  * produces the edges A → S and B → S (the "after" relationship).
  * <p>
- * <b>Family ids.</b> {@link #addStep(String, JIPipeNodeTaxonomyFamilyStepAnnotation)}
- * receives the family only as a {@code Class}, so by default the
- * {@code familyId} part of a step id is the <em>simple name</em> of the
- * family class (e.g. {@code TrackMateFamily#detect-spots}). Production
- * callers should instead use
- * {@link #addStep(String, String, JIPipeNodeTaxonomyFamilyStepAnnotation)}
- * to pass the family's stable id literal. Steps are keyed by the family
- * class object, so two classes with the same simple name in different
- * packages do not collide; all registrations for one family class must
- * use the same family id.
+ * <b>Family ids.</b> The {@code familyId} part of a step id is always a
+ * stable string literal supplied by the caller via
+ * {@link #addStep(String, String, JIPipeNodeTaxonomyFamilyStepAnnotation)};
+ * it is never derived from the family class. Per the project's stable-ID
+ * rule, real families use ids of the form {@code "jipipe:family:…"}.
+ * Steps are keyed by the family class object, so two classes with the
+ * same simple name in different packages do not collide; all
+ * registrations for one family class must use the same family id.
  * <p>
  * <b>Resolution of {@code after} node classes.</b> Annotation values are
  * node <em>classes</em>, but steps are keyed by node <em>ids</em>. The
@@ -100,23 +98,10 @@ public class FamilyAssembler {
     /**
      * Registers a step: the node with id {@code nodeId} takes the role
      * described by {@code annotation} inside {@code annotation.family()},
-     * using the family class's simple name as the family id in step ids
-     * (see the class Javadoc).
-     *
-     * @param nodeId     the node id the step refers to
-     * @param annotation the step annotation; its {@code family()} selects
-     *                   the family
-     * @throws IllegalArgumentException if the same node already holds a
-     *                                  step for the same family
-     */
-    public void addStep(String nodeId, JIPipeNodeTaxonomyFamilyStepAnnotation annotation) {
-        addStep(nodeId, annotation.family().getSimpleName(), annotation);
-    }
-
-    /**
-     * Registers a step: the node with id {@code nodeId} takes the role
-     * described by {@code annotation} inside {@code annotation.family()},
-     * using {@code familyId} as the family id part of the step id.
+     * using {@code familyId} as the family id part of the step id. The
+     * family id is a stable string literal supplied by the caller and is
+     * never derived from the family class; real families use ids of the
+     * form {@code "jipipe:family:…"}.
      * <p>
      * The annotation's {@code after} classes are resolved via
      * {@link #resolveNodeId(Class)}; a predecessor that is not registered
@@ -128,7 +113,9 @@ public class FamilyAssembler {
      * the first one wins and a conflicting later one is rejected.
      *
      * @param nodeId     the node id the step refers to
-     * @param familyId   the stable id literal to use in this family's step ids
+     * @param familyId   the stable id literal to use as the family id part
+     *                   of the step ids (e.g. {@code "jipipe:family:trackmate"});
+     *                   never derived from the family class
      * @param annotation the step annotation; its {@code family()} selects
      *                   the family
      * @throws IllegalArgumentException if the same node already holds a
@@ -225,7 +212,7 @@ public class FamilyAssembler {
         Set<String> seen = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
             Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
-            String stepId = stepId(familyIdOf(familyEntry.getKey()), nodeId);
+            String stepId = stepId(familyIdByClass.get(familyEntry.getKey()), nodeId);
             for (String successorNodeId :
                 stepOrder.getOrDefault(familyEntry.getKey(), List.of())) {
                 JIPipeNodeTaxonomyFamilyStep successor = familyEntry.getValue().get(successorNodeId);
@@ -253,7 +240,7 @@ public class FamilyAssembler {
             Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
             for (JIPipeNodeTaxonomyFamilyStep step : familyEntry.getValue().values()) {
                 if (!registeredNodeIds.contains(step.nodeId())) {
-                    errors.add("Workflow family step in family '" + familyIdOf(familyEntry.getKey())
+                    errors.add("Workflow family step in family '" + familyIdByClass.get(familyEntry.getKey())
                         + "' references unregistered node id '" + step.nodeId() + "'");
                 }
             }
@@ -268,16 +255,5 @@ public class FamilyAssembler {
      */
     private static String stepId(String familyId, String nodeId) {
         return familyId + "#" + nodeId;
-    }
-
-    /**
-     * @param familyClass the family class
-     * @return the family id registered for it (falls back to the simple
-     * name before any step has been added, which never happens in
-     * practice because ids are recorded on the first addStep)
-     */
-    private String familyIdOf(Class<? extends JIPipeNodeTaxonomyFamily> familyClass) {
-        String id = familyIdByClass.get(familyClass);
-        return id != null ? id : familyClass.getSimpleName();
     }
 }

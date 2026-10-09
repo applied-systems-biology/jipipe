@@ -36,8 +36,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * through the assembler's injectable class→node-id mapping; the
  * fallback rule (class simple name) is pinned by
  * {@link #afterFallsBackToSimpleName()}.
+ * <p>
+ * Family ids embedded in step ids are always the explicit literals
+ * {@link #TM_FAMILY_ID} and {@link #SM_FAMILY_ID}, mirroring the
+ * stable {@code "jipipe:family:…"} id rule for real families.
  */
 class FamilyAssemblerTest {
+
+    /** Test literal for the TrackMate stub family's stable id. */
+    private static final String TM_FAMILY_ID = "jipipe:family:trackmate";
+
+    /** Test literal for the simple-model stub family's stable id. */
+    private static final String SM_FAMILY_ID = "jipipe:family:simple-model";
 
     // ------------------------------------------------------------------
     // Stub node types
@@ -98,8 +108,8 @@ class FamilyAssemblerTest {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
             DetectSpots.class, "detect",
             TrackSpots.class, "track"));
-        assembler.addStep("detect", step(Tm.class, "Detect spots"));
-        assembler.addStep("track", step(Tm.class, "Track spots", DetectSpots.class));
+        assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
+        assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         return assembler;
     }
 
@@ -118,19 +128,19 @@ class FamilyAssemblerTest {
 
         var graph = assembler.graph(tm);
         assertEquals(2, graph.vertexSet().size(), "expected the two step ids as vertices");
-        assertTrue(graph.containsVertex("Tm#detect"), "expected step id familyId#nodeId for detect");
-        assertTrue(graph.containsVertex("Tm#track"), "expected step id familyId#nodeId for track");
+        assertTrue(graph.containsVertex("jipipe:family:trackmate#detect"), "expected step id familyId#nodeId for detect");
+        assertTrue(graph.containsVertex("jipipe:family:trackmate#track"), "expected step id familyId#nodeId for track");
         assertEquals(1, graph.edgeSet().size(), "expected exactly one predecessor→successor edge");
 
         // Edge direction: predecessor (detect) → successor (track).
         var edge = graph.edgeSet().iterator().next();
         assertNotNull(edge, "expected edge from detect to track");
-        assertEquals("Tm#detect", graph.getEdgeSource(edge));
-        assertEquals("Tm#track", graph.getEdgeTarget(edge));
+        assertEquals("jipipe:family:trackmate#detect", graph.getEdgeSource(edge));
+        assertEquals("jipipe:family:trackmate#track", graph.getEdgeTarget(edge));
 
         assertEquals(2, assembler.steps(tm).size());
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(tm), "track");
-        assertEquals(List.of("Tm#detect"), track.afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#detect"), track.afterIds());
     }
 
     /**
@@ -175,15 +185,15 @@ class FamilyAssemblerTest {
 
         // The "filter" node carries steps in two different families
         // (one repeated annotation per family, as on a real node class).
-        assembler.addStep("filter", step(Tm.class, "Filter (TrackMate)"));
-        assembler.addStep("filter", step(Sm.class, "Filter (simple model)"));
+        assembler.addStep("filter", TM_FAMILY_ID, step(Tm.class, "Filter (TrackMate)"));
+        assembler.addStep("filter", SM_FAMILY_ID, step(Sm.class, "Filter (simple model)"));
 
         assertTrue(assembler.steps(tm).stream().anyMatch(s -> s.nodeId().equals("filter")),
             "filter must appear in the TrackMate family");
         assertTrue(assembler.steps(sm).stream().anyMatch(s -> s.nodeId().equals("filter")),
             "filter must appear in the simple-model family");
-        assertTrue(assembler.graph(tm).containsVertex("Tm#filter"));
-        assertTrue(assembler.graph(sm).containsVertex("Sm#filter"));
+        assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#filter"));
+        assertTrue(assembler.graph(sm).containsVertex("jipipe:family:simple-model#filter"));
     }
 
     /**
@@ -202,7 +212,7 @@ class FamilyAssemblerTest {
         FamilyAssembler assembler = new FamilyAssembler();
         for (JIPipeNodeTaxonomyFamilyStepAnnotation a :
             NoSteps.class.getAnnotationsByType(JIPipeNodeTaxonomyFamilyStepAnnotation.class)) {
-            assembler.addStep("none", a);
+            assembler.addStep("none", "jipipe:family:dummy", a);
         }
         assertEquals(0, assembler.steps(new Tm()).size());
         assertEquals(0, assembler.steps(new Sm()).size());
@@ -219,38 +229,38 @@ class FamilyAssemblerTest {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
             DetectSpots.class, "tm-detect",
             TrackSpots.class, "tm-track"));
-        assembler.addStep("tm-detect", step(Tm.class, "Detect spots"));
-        assembler.addStep("tm-track", step(Tm.class, "Track spots", DetectSpots.class));
+        assembler.addStep("tm-detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
+        assembler.addStep("tm-track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
 
         assertEquals(List.of("tm-track"), assembler.followUps("tm-detect"));
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(tm), "tm-track");
-        assertEquals(List.of("Tm#tm-detect"), track.afterIds());
-        assertTrue(assembler.graph(tm).containsVertex("Tm#tm-detect"));
-        assertTrue(assembler.graph(tm).containsVertex("Tm#tm-track"));
+        assertEquals(List.of("jipipe:family:trackmate#tm-detect"), track.afterIds());
+        assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#tm-detect"));
+        assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#tm-track"));
     }
 
     /**
-     * The explicit-family-id overload (production path) uses the given
-     * id literal in step ids instead of the family class's simple name.
+     * The caller-supplied family id literal is used verbatim in step
+     * ids, and a conflicting id for the same family class is rejected.
      */
     @Test
     void explicitFamilyIdInStepIds() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
             DetectSpots.class, "detect",
             TrackSpots.class, "track"));
-        assembler.addStep("detect", "trackmate", step(Tm.class, "Detect spots"));
-        assembler.addStep("track", "trackmate", step(Tm.class, "Track spots", DetectSpots.class));
+        assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
+        assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
 
-        assertTrue(assembler.graph(tm).containsVertex("trackmate#detect"));
-        assertTrue(assembler.graph(tm).containsVertex("trackmate#track"));
-        assertEquals(List.of("trackmate#detect"), step(assembler.steps(tm), "track").afterIds());
+        assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#detect"));
+        assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#track"));
+        assertEquals(List.of("jipipe:family:trackmate#detect"), step(assembler.steps(tm), "track").afterIds());
         assertEquals(List.of("track"), assembler.followUps("detect"));
 
         // A conflicting family id for the same family class is rejected.
         assertThrows(IllegalArgumentException.class,
-            () -> assembler.addStep("detect", "other-id", step(Tm.class, "Detect spots")));
+            () -> assembler.addStep("detect", "jipipe:family:other", step(Tm.class, "Detect spots")));
     }
 
     /**
@@ -260,11 +270,11 @@ class FamilyAssemblerTest {
     @Test
     void afterFallsBackToSimpleName() {
         FamilyAssembler assembler = new FamilyAssembler();
-        assembler.addStep("DetectSpots", step(Tm.class, "Detect spots"));
-        assembler.addStep("TrackSpots", step(Tm.class, "Track spots", DetectSpots.class));
+        assembler.addStep("DetectSpots", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
+        assembler.addStep("TrackSpots", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
 
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "TrackSpots");
-        assertEquals(List.of("Tm#DetectSpots"), track.afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#DetectSpots"), track.afterIds());
         assertEquals(List.of("TrackSpots"), assembler.followUps("DetectSpots"));
     }
 
