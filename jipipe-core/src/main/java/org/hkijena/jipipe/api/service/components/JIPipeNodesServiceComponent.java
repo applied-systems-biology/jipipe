@@ -548,12 +548,17 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
 
         // The single authoritative taxonomy validation+log of the
         // initialization (the settle loop in run() stays silent so it
-        // can run on every registration cycle without re-logging).
+        // can run on every registration cycle without re-logging). The
+        // FamilyAssembler overload validates ALL error classes — function
+        // tree, framework set, family steps (dangling steps / phantom
+        // predecessors via the FamilyAssembler), and node membership —
+        // so a broken family workflow can never ship a wrong browser.
         TaxonomyValidationReport report = TaxonomyValidationReport.run(
             taxonomyResolver.getFunctionRegistry(),
             taxonomyResolver.getFrameworkRegistry(),
-            taxonomyResolver.getFamilies(),
-            registeredNodeInfos);
+            registeredNodeInfos,
+            taxonomyResolver.getFamilyAssembler(),
+            registeredNodeInfos.keySet());
         if (!report.errors().isEmpty()) {
             List<Throwable> errors = new ArrayList<>();
             for (String error : report.errors()) {

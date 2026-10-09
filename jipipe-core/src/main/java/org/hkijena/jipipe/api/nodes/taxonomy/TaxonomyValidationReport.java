@@ -24,9 +24,9 @@ import java.util.Set;
 
 /**
  * The result of a full taxonomy validation pass: the combined errors of the
- * three registries and the node membership, plus the node ids that are not
- * yet converted to the taxonomy (their primary function is
- * {@code null}).
+ * function tree, the framework set, the family steps, and the
+ * node→function/framework membership, plus the node ids that are not yet
+ * converted to the taxonomy (their primary function is {@code null}).
  * <p>
  * The two kinds of findings have deliberately different consequences
  * (Review Focus #6, the "vanishes from browser" detector):
@@ -45,10 +45,10 @@ import java.util.Set;
  * empty, regardless of {@link #unassignedNodeIds()}.
  * <p>
  * The report is immutable and constructed only through the static
- * {@link #run(FunctionRegistry, FrameworkRegistry, Map, Map)} method,
- * which is pure (no JIPipe service access) and therefore unit-testable
- * with synthetic registries. In production it is invoked exactly once,
- * by the node service component's final initialization pass.
+ * {@code run} methods, which are pure (no JIPipe service access) and
+ * therefore unit-testable with synthetic registries. In production the
+ * {@code run} overload that takes a {@link FamilyAssembler} is invoked
+ * exactly once, by the node service component's final initialization pass.
  */
 public final class TaxonomyValidationReport {
 
@@ -96,8 +96,8 @@ public final class TaxonomyValidationReport {
     }
 
     /**
-     * Runs a full taxonomy validation pass over the given registries and
-     * node infos:
+     * Runs a taxonomy validation pass over the given registries and node
+     * infos:
      * <ul>
      * <li>{@link FunctionRegistry#validate()} — the function tree,</li>
      * <li>{@link FrameworkRegistry#validate()} — the framework set,</li>
@@ -110,27 +110,78 @@ public final class TaxonomyValidationReport {
      * in {@link #unassignedNodeIds()} instead.</li>
      * </ul>
      * <p>
+     * The family steps are <b>not</b> validated here: they are owned by
+     * the {@link FamilyAssembler}, which is stateful (a live
+     * component-owned object, not a pure parameter) and is validated
+     * separately against the node registry — see the {@code run} overload
+     * that takes a {@code FamilyAssembler}, which the node service
+     * component's final initialization pass invokes.
+     * <p>
      * This method is static and pure: it performs no JIPipe service
      * access, so it can be unit-tested with synthetic registries.
      *
-     * @param functions     the function registry (the curated function
-     *                      tree)
-     * @param frameworks    the framework registry
-     * @param families      the known families, id → family; reserved for
-     *                      the family-step validation that the
-     *                      {@code FamilyAssembler} performs against the
-     *                      node set (the assembler owns its steps)
-     * @param nodeInfos     nodeId → node info, the current node registry
+     * @param functions  the function registry (the curated function tree)
+     * @param frameworks the framework registry
+     * @param nodeInfos  nodeId → node info, the current node registry
      * @return the validation report
      */
     public static TaxonomyValidationReport run(FunctionRegistry functions,
                                                FrameworkRegistry frameworks,
-                                               Map<String, JIPipeNodeTaxonomyFamily> families,
                                                Map<String, JIPipeNodeInfo> nodeInfos) {
         Set<String> errors = new LinkedHashSet<>();
         errors.addAll(functions.validate());
         errors.addAll(frameworks.validate());
+        return aggregate(functions, frameworks, errors, nodeInfos);
+    }
 
+    /**
+     * Runs a full taxonomy validation pass over the given registries,
+     * family steps, and node infos: exactly the 3-arg
+     * {@link #run(FunctionRegistry, FrameworkRegistry, Map)} checks
+     * plus {@link FamilyAssembler#validate(Set)} — every assembled
+     * family step must reference a node id present in
+     * {@code registeredNodeIds} (a step whose node was unregistered, or
+     * whose {@code after} predecessor never existed, is a hard error: a
+     * broken family workflow must never ship a wrong browser).
+     * <p>
+     * This is the single entry point the production guard uses, so that
+     * ALL {@code validate()} error classes — function tree, framework
+     * set, family steps, and node membership — reach the startup report.
+     *
+     * @param functions         the function registry (the curated
+     *                          function tree)
+     * @param frameworks        the framework registry
+     * @param nodeInfos         nodeId → node info, the current node
+     *                          registry
+     * @param familyAssembler   the assembler holding the workflow family
+     *                          steps, or {@code null} if there are none
+     * @param registeredNodeIds the set of node ids the steps must resolve
+     *                          to (normally the keys of {@code nodeInfos})
+     * @return the validation report
+     */
+    public static TaxonomyValidationReport run(FunctionRegistry functions,
+                                               FrameworkRegistry frameworks,
+                                               Map<String, JIPipeNodeInfo> nodeInfos,
+                                               FamilyAssembler familyAssembler,
+                                               Set<String> registeredNodeIds) {
+        Set<String> errors = new LinkedHashSet<>();
+        errors.addAll(functions.validate());
+        errors.addAll(frameworks.validate());
+        if (familyAssembler != null) {
+            errors.addAll(familyAssembler.validate(registeredNodeIds));
+        }
+        return aggregate(functions, frameworks, errors, nodeInfos);
+    }
+
+    /**
+     * Shared tail of the {@link #run} overloads: the per-node
+     * function/framework membership checks and the unassigned-node
+     * collection.
+     */
+    private static TaxonomyValidationReport aggregate(FunctionRegistry functions,
+                                                      FrameworkRegistry frameworks,
+                                                      Set<String> errors,
+                                                      Map<String, JIPipeNodeInfo> nodeInfos) {
         List<String> unassignedNodeIds = new ArrayList<>();
         for (Map.Entry<String, JIPipeNodeInfo> entry : nodeInfos.entrySet()) {
             JIPipeNodeInfo info = entry.getValue();
