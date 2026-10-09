@@ -233,9 +233,12 @@ enumerate them individually — they are still converted and verified by the mod
   (`FilesystemPlugin.registerNodeType("import-file"/"import-folder"/...)`).
 - `GroupBoxGraphCanvasNote` is not registered by any plugin (orphaned `@LabelAsJIPipeHidden` class); still
   converted for consistency.
-The gate *does* cover the core-registered nodes (loops, node-group is utils-registered, wrappers,
-compartments, tunnels, multiparameters, canvas notes, filesystem datasources that core itself registers) and
-they all passed with zero unassigned.
+The gate covers the nodes registered by **core's own plugins** on the core test classpath —
+loops, wrappers, compartments, tunnels, multiparameters, and the canvas notes that `CanvasNotesPlugin`
+registers — and all of those passed with zero unassigned. The 10 classes above are registered by **separate
+plugin modules** (not on the core test classpath), so this gate does NOT enumerate them; they are still
+converted + compile-verified here and are re-covered by those modules' own gates (Task 19.6 for
+utils/filesystem).
 
 **Ripple compile fixes:** none required — removing `nodeTypeCategory`/`menuPath`/`…categories.*` imports from
 core node classes broke no other module (the legacy fields remain present on `@ConfigureJIPipeNode` and on
