@@ -361,10 +361,12 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
 ### Task 12: Taxonomy plugin + ImageJ input-profile provider
 
 **Files:**
-- Create: `…/plugins/taxonomy/TaxonomyPlugin.java` (extends `JIPipePrepackagedDefaultJavaPlugin`, id `jipipe:taxonomy`)
-- Modify: the plugin init list where `CorePlugin` is declared (`grep -rn "new CorePlugin(" jipipe-core/src/main/java`) — add `TaxonomyPlugin` **before** node plugins so registries exist when nodes register.
-- Modify: the ImageJ data-types plugin `register(...)` (`plugins/jipipe-plugin-ij/…/imagejdatatypes/` — find its plugin class) to register `ImageTypeInfoInputProfileProvider` reading `@ImageTypeInfo.numDimensions()`: 2→`PLANE_2D`, 3→`VOLUME_3D`, −1/absent→`ANY`; non-image types→`NA`.
-- Test: `…/api/nodes/taxonomy/InputProfileProviderTest.java`
+- Create: `…/plugins/taxonomy/TaxonomyPlugin.java` (extends `JIPipePrepackagedDefaultJavaPlugin`, annotated `@Plugin(type = JIPipeJavaPlugin.class)` exactly like `CorePlugin` and every other core plugin — there is NO manual plugin list to add to).
+- Modify: `plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/ImageJDataTypesPlugin.java` `register(...)` to register `ImageTypeInfoInputProfileProvider` (create it in that plugin's package) reading `@ImageTypeInfo.numDimensions()`: 2→`PLANE_2D`, 3→`VOLUME_3D`, −1/absent→`ANY`; non-image types (no `@ImageTypeInfo`)→`NA`.
+- Test (jipipe-core): `…/api/nodes/taxonomy/TaxonomyPluginTest.java` — the `allTaxonomyRegistered` case.
+- Test (jipipe-plugin-ij): `plugins/jipipe-plugin-ij/src/test/java/org/hkijena/jipipe/plugins/imagejdatatypes/ImageTypeInfoInputProfileProviderTest.java` — the `providerMapsNumDimensions` case.
+
+**Controller notes (binding):** (a) Plugin discovery is via the SciJava `@Plugin(type = JIPipeJavaPlugin.class)` annotation — just like `CorePlugin` — so "add TaxonomyPlugin before node plugins" is NOT a manual ordering step; it is one more `@Plugin` class the service discovers. The ordering concern is moot: node plugins only RECORD function membership at registration (Task 7) and the validation guard runs at end-of-init (Task 8 `postprocess()`), so the tree just needs to be registered somewhere during init. (b) `getFamilies()` will be EMPTY after this task (no node yet carries a `@JIPipeNodeTaxonomyFamilyStepAnnotation` — that lands in Task 13); the `allTaxonomyRegistered` test must assert 61 functions + 12 frameworks + `validate()` empty and must NOT assert any families. (c) `ImageTypeInfo` is at `org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo` (annotation, `numDimensions()` default −1). **(d) TEST MODULE SPLIT (corrects the brief's defect):** `jipipe-core` does NOT depend on `jipipe-plugin-ij` (the reverse is true), so the `@ImageTypeInfo`-based `providerMapsNumDimensions` test CANNOT live in a jipipe-core test — it must live in **jipipe-plugin-ij** (where `@ImageTypeInfo` + the provider are). `jipipe-plugin-ij` has NO test infra today (no `src/test`, no junit deps): add the minimal JUnit 5 setup mirroring jipipe-core per AGENTS.md — `junit-jupiter` + `junit-platform-launcher` test-scope deps in `plugins/jipipe-plugin-ij/pom.xml`. The provider test should be a **pure unit test** (construct `ImageTypeInfoInputProfileProvider` directly, call `getProfile` on `@ImageTypeInfo`-annotated stub classes, assert the enum) that does **NOT** call `JIPipe.ensureInstance()` — if, and only if, it trips the documented ImageJ legacy-patcher ordering error ("No _hooks field found in ij.IJ"), add the `ImageJLegacyPatcherLauncherSessionListener` service registration (`plugins/jipipe-plugin-ij/src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`) mirroring jipipe-core; do not add it speculatively. The `allTaxonomyRegistered` test stays in jipipe-core (TaxonomyPlugin is a core class; it uses `JIPipe.ensureInstance()`, safe under core's existing patcher listener).
 
 **Interfaces:**
 - Produces:
@@ -372,10 +374,10 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
   - `ImageTypeInfoInputProfileProvider implements InputProfileProvider` — `getProfile(Class)`: reads `@ImageTypeInfo`; unannotated ⇒ `NA`.
 - Consumes: Tasks 7, 9, 10, 11.
 
-- [ ] **Step 1: Write the failing tests** — `providerMapsNumDimensions`: stub classes `@ImageTypeInfo(numDimensions=2/3/-1)` ⇒ `PLANE_2D`/`VOLUME_3D`/`ANY`; unannotated ⇒ `NA`. `allTaxonomyRegistered`: after a `TaxonomyPlugin` register against the test service component (or full `JIPipe` init, per existing JIPipe-test precedent) ⇒ `getFunctions()` has 61 ids (13 top-levels + 48 leaves), `getFrameworks()` has 12, `validate()` empty.
-- [ ] **Step 2: Run** → FAIL.
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run** → PASS.
+- [ ] **Step 1: Write the failing tests (two modules, see note (d)).** In **jipipe-plugin-ij** (`ImageTypeInfoInputProfileProviderTest`): `providerMapsNumDimensions` — `@ImageTypeInfo(numDimensions=2/3/-1)` stubs ⇒ `PLANE_2D`/`VOLUME_3D`/`ANY`; unannotated ⇒ `NA` (pure unit test, no `JIPipe.ensureInstance()`). In **jipipe-core** (`TaxonomyPluginTest`): `allTaxonomyRegistered` — after `TaxonomyPlugin` registers (full `JIPipe` init, per existing JIPipe-test precedent) ⇒ `getFunctions()` has 61 ids (13 top-levels + 48 leaves), `getFrameworks()` has 12, `validate()` empty, and `getFamilies()` is empty (no families yet).
+- [ ] **Step 2: Run** both → FAIL (RED: TaxonomyPlugin + provider missing).
+- [ ] **Step 3: Implement** `TaxonomyPlugin` (registers the 61 functions + 12 frameworks via `JIPipe.getNodes().getFunctions().register(...)` / `getFrameworks().register(...)`) and `ImageTypeInfoInputProfileProvider` (wired into `ImageJDataTypesPlugin.register(...)` via `JIPipe.getNodes().registerInputProfileProvider(...)`), plus the jipipe-plugin-ij JUnit 5 test deps.
+- [ ] **Step 4: Run** both → PASS (GREEN).
 - [ ] **Step 5: Commit** `git commit -m "feat: add taxonomy plugin and input profile provider"`.
 
 ---
