@@ -18,11 +18,15 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.FamilyAssembler;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * Allows to query nodes
@@ -398,6 +403,49 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             return aiSearch.query(text, role, allowExisting, allowNew, targetSlotType, targetDataType, flags);
         }
         return getSearch().query(text, role, allowExisting, allowNew, targetSlotType, targetDataType);
+    }
+
+    /**
+     * Queries the database with the given taxonomy facets applied as a
+     * <em>post-filter</em> on the regular query result.
+     * <p>
+     * This overload is intentionally implemented on this concrete class
+     * (not on the {@link JIPipeNodeDatabaseSearch} interface): the three
+     * search implementations are untouched, and the facets are applied by
+     * filtering the entries the underlying search returned, in the same
+     * order.
+     * <p>
+     * An empty facet (a {@code null} framework, or an empty spatial / input /
+     * tags set) imposes no filter on that dimension. The facet predicates
+     * mirror the node browser model's {@code matches(entry)} helper, so the
+     * list render and the database query agree on what "matches" means.
+     *
+     * @param text        the search text
+     * @param role        the pipeline visibility role
+     * @param allowExisting whether existing nodes may be returned
+     * @param allowNew    whether new nodes may be returned
+     * @param pinnedIds   the pinned entry ids (used for ranking)
+     * @param framework   the framework to filter by, or {@code null} for no filter
+     * @param spatial     the spatial dimensions to filter by; empty = no filter
+     * @param input       the input profiles to filter by; empty = no filter
+     * @param tags        the tags to filter by; empty = no filter
+     * @param flags       query flags (e.g. {@link #FLAG_USE_AI_SEARCH})
+     * @return the query result filtered by the active facets, in the
+     * underlying search's order
+     */
+    public List<JIPipeNodeDatabaseEntry> queryWithFacets(String text, JIPipeNodeDatabasePipelineVisibility role,
+                                                         boolean allowExisting, boolean allowNew, Set<String> pinnedIds,
+                                                         @Nullable JIPipeNodeTaxonomyFramework framework,
+                                                         Set<JIPipeNodeTaxonomySpatialDimension> spatial,
+                                                         Set<JIPipeNodeTaxonomyInputProfile> input,
+                                                         Set<String> tags, Object... flags) {
+        List<JIPipeNodeDatabaseEntry> result = query(text, role, allowExisting, allowNew, pinnedIds, flags);
+        return result.stream()
+            .filter(e -> (framework == null || framework.getId().equals(e.getFramework().getId()))
+                && (spatial == null || spatial.isEmpty() || !Collections.disjoint(spatial, e.getSpatialDimensions()))
+                && (input == null || input.isEmpty() || input.contains(e.getInputProfile()))
+                && (tags == null || tags.isEmpty() || !Collections.disjoint(tags, e.getTags())))
+            .collect(Collectors.toList());
     }
 
     public void buildIndex() {
