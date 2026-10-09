@@ -196,9 +196,14 @@ public class FunctionRegistry {
      * <ul>
      * <li>cycles in a parent chain (listing the ids that form the cycle),</li>
      * <li>functions that reference a parent that is not registered (unreachable leaves),</li>
-     * <li>top-level functions without a color hue,</li>
      * <li>top-level functions that share a color hue.</li>
      * </ul>
+     * <p>
+     * A top-level function whose {@link JIPipeNodeTaxonomyFunction#getColorHue() hue}
+     * is {@code null} is a <em>transparent</em> branch (rendered with the theme's
+     * panel background, matching the legacy negative-hue case). It is valid and
+     * does not participate in the hue-uniqueness check; the hue is resolved at
+     * display time by the consumer.
      *
      * @return human-readable error strings; empty if the registry is valid
      */
@@ -224,6 +229,9 @@ public class FunctionRegistry {
             }
         }
 
+        // Among the <em>colored</em> top-level functions, no two may share a hue.
+        // A transparent top-level (hue {@code null}) is valid and skipped here;
+        // consumers render it with the theme's panel background.
         Map<Float, String> hueOwners = new HashMap<>();
         for (JIPipeNodeTaxonomyFunction function : byId.values()) {
             if (function.getParent() != null) {
@@ -231,7 +239,6 @@ public class FunctionRegistry {
             }
             Float hue = function.getColorHue();
             if (hue == null) {
-                errors.add("Top-level taxonomy function " + function.getId() + " has no color hue");
                 continue;
             }
             String previous = hueOwners.putIfAbsent(hue, function.getId());
