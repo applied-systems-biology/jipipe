@@ -285,7 +285,7 @@ Note: this task does NOT break the tree — it only adds fields and deprecates o
 | `GraphFunction` | `jipipe:function:graph` | Graph / Project | null |
 | `MiscellaneousFunction` | `jipipe:function:misc` | Miscellaneous | 50 |
 
-`GraphFunction.getColorHue()` returns `null` and `isVisibleInCompartments()` false — matching legacy `InternalNodeTypeCategory`'s transparent behavior; consumers render it using the theme's panel background (the legacy negative-hue case) — document this in the class javadoc.
+`GraphFunction.getColorHue()` returns `null`, `isVisibleInPipeline()` returns **false**, and `isVisibleInCompartments()` returns **false** — mirroring legacy `InternalNodeTypeCategory` exactly (which is `false`/`false`/hue −1); the Graph/Project leaves are auto-generated scaffolding + debug utilities that the user does not manually insert, so they must NOT appear as an insertable section in the pipeline add-node browser. Consumers render the null hue using the theme's panel background (the legacy negative-hue case) — document this in the class javadoc. (Controller note: a transient "isVisibleInPipeline() stays true" reading was raised in review and retracted — the written plan + legacy precedent both give false.)
 
 - [ ] **Step 1: Write the failing test** — instantiate all 13 via a test `all()` list; assert unique literal ids; names as above; hues exactly per the table (null for Graph); **pairwise hue uniqueness** among the 12 colored branches (Review Focus #3); all `getParent()==null`; after a register loop, all in a `FunctionRegistry`.
 - [ ] **Step 2: Run** → FAIL.
