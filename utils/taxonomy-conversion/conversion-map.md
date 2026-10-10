@@ -2415,7 +2415,7 @@ is forced by the gate's contract, not by judgment.
 | `ConvertTracksToRoiNode` (Tracking\nConvert) | `TrackingAnalysisFunction` | absent | JUDGMENT — tracks ⇒ ROI lists (see (c)) |
 
 **Function distribution (the 18 annotated):** `TrackingFilteringFunction` **6** (2 filter + 2 split +
-2 merge) · `TrackingAnalysisFunction` **8** (4 measure + 4 judgment) · `TrackingDetectionFunction`
+2 merge) · `TrackingAnalysisFunction` **10** (4 measure + 6 judgment) · `TrackingDetectionFunction`
 **1** · `TrackingLinkingFunction` **1**. **0 nodes without a function.**
 
 #### (C) The 6 judgment nodes (render/convert) — no obvious `tracking/` leaf
