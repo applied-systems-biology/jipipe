@@ -19,7 +19,6 @@ import net.haesleinhuepf.clij.macro.AbstractCLIJPlugin;
 import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.haesleinhuepf.clij.macro.documentation.HTMLDocumentationTemplate;
 import net.haesleinhuepf.clij.macro.documentation.OffersDocumentation;
-import net.haesleinhuepf.clij2.utilities.IsCategorized;
 import org.apache.commons.text.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -27,8 +26,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -48,7 +45,6 @@ import java.util.*;
 
 public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
-    private final JIPipeNodeTypeCategory nodeTypeCategory = new ImagesNodeTypeCategory();
     private final String nodeId;
     private final String nodeName;
     private final PluginInfo<CLIJMacroPlugin> pluginInfo;
@@ -63,9 +59,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final Map<String, Boolean> nodeParametersByRef = new HashMap<>();
     private final HTMLText nodeDescription;
     private int numArgs = 0;
-    private String menuPath = "CLIJ";
-
-    private String aliasMenuPath = "Plugins\nImageJ on GPU (CLIJ2)";
 
     public CLIJCommandNodeInfo(Context context, PluginInfo<CLIJMacroPlugin> pluginInfo, JIPipeProgressInfo moduleProgress) {
         this.nodeId = "clij:" + pluginInfo.getIdentifier();
@@ -75,10 +68,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // Information only available to an instance
         try {
             CLIJMacroPlugin pluginInstance = pluginInfo.createInstance();
-            if (pluginInstance instanceof IsCategorized) {
-                menuPath = "CLIJ\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
-                aliasMenuPath += "\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
-            }
             String description = "";
             String availableForDimensions = "";
             if (pluginInstance instanceof OffersDocumentation) {
@@ -93,11 +82,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         } catch (InstantiableException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.emptyList();
     }
 
     public Set<String> getIoInputSlots() {
@@ -321,16 +305,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return nodeDescription;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return nodeTypeCategory;
     }
 
     @Override

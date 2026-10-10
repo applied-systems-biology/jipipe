@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -37,7 +36,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.module.ModuleItem;
 
@@ -53,9 +51,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     private final Context context;
     private final String id;
     private final OpInfo opInfo;
-    private final String menuPath;
     private final String name;
-    private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new IdentityHashMap<>();
@@ -83,22 +79,17 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         this.context = context;
         this.id = "ij2:op:" + opInfo.getName();
         this.opInfo = opInfo;
-        this.nodeTypeCategory = new ImagesNodeTypeCategory();
         String title = opInfo.cInfo().getTitle();
         MenuPath menuPath = opInfo.cInfo().getMenuPath();
         if (menuPath.isEmpty() || title.contains(":")) {
             List<String> strings = Arrays.stream(title.split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
             if (strings.size() > 1) {
                 this.name = "IJ2: " + String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(strings.get(strings.size() - 1)));
-                strings.remove(strings.size() - 1);
-                this.menuPath = "IJ2\n" + String.join("\n", strings);
             } else {
                 this.name = "IJ2: " + title;
-                this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
             }
         } else {
             this.name = "IJ2: " + title;
-            this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
         }
         this.description = new HTMLText(StringUtils.orElse(opInfo.cInfo().getDescription(), "The developer provided no description") + "<br/><br/>This node was automatically imported from ImageJ2. " +
                 "Please be aware that JIPipe cannot guarantee that there are no issues.");
@@ -226,16 +217,6 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return description;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return nodeTypeCategory;
     }
 
     @Override

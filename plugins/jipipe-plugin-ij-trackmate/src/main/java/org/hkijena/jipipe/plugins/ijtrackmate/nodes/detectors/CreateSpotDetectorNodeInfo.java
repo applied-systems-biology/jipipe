@@ -22,7 +22,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
@@ -119,16 +118,6 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return description;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return "";
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return new DataSourceNodeTypeCategory();
     }
 
     @Override

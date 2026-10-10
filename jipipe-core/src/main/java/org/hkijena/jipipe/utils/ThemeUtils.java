@@ -300,8 +300,9 @@ public class ThemeUtils {
             // Converted node: resolve the hue from the taxonomy function tree.
             return functionNodeFillColor(fn, CURRENT_STYLE, JIPipe.getNodes().getFunctions());
         }
-        // Unconverted / defensive node: byte-identical legacy path.
-        return getNodeFillColor(info.getCategory());
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): the legacy negative-hue fill channel.
+        return CURRENT_STYLE.getPanelBackground();
     }
 
     public static Color getNodeFillColor(JIPipeNodeTypeCategory category) {
@@ -331,8 +332,9 @@ public class ThemeUtils {
             // Converted node: resolve the hue from the taxonomy function tree.
             return functionNodeBorderColor(fn, CURRENT_STYLE, JIPipe.getNodes().getFunctions());
         }
-        // Unconverted / defensive node: byte-identical legacy path.
-        return getNodeBorderColor(info.getCategory());
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): the legacy negative-hue border channel.
+        return CURRENT_STYLE.getNodeHighlightBorder();
     }
 
     private static Color getNodeBorderColor(JIPipeNodeTypeCategory category) {

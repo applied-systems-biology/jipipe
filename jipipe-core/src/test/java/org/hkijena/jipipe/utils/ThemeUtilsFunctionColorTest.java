@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
@@ -117,68 +116,13 @@ class ThemeUtilsFunctionColorTest {
         }
     }
 
-    /** Minimal legacy category stub (id/name/hue, default flags). */
-    private static class TestCategory implements JIPipeNodeTypeCategory {
-        private final String id;
-        private final String name;
-        private final float hue;
-
-        private TestCategory(String id, String name, float hue) {
-            this.id = id;
-            this.name = name;
-            this.hue = hue;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String getDescription() {
-            return id;
-        }
-
-        @Override
-        public int getUIOrder() {
-            return 0;
-        }
-
-        @Override
-        public Icon getIcon() {
-            return null;
-        }
-
-        @Override
-        public float getColorHue() {
-            return hue;
-        }
-
-        @Override
-        public boolean isVisibleInPipeline() {
-            return true;
-        }
-
-        @Override
-        public boolean isVisibleInCompartments() {
-            return true;
-        }
-    }
-
     /**
      * Minimal {@link JIPipeNodeInfo} stub whose {@code getPrimaryFunction()}
-     * is {@code null} (unconverted) and whose category carries a known hue.
+     * is {@code null} (the fn-null defensive state, only reachable via
+     * {@code JIPipeEmptyNodeInfo}, never a registered node).
      */
     private static class TestInfo implements JIPipeNodeInfo {
-        private final JIPipeNodeTypeCategory category;
-
-        private TestInfo(JIPipeNodeTypeCategory category) {
-            this.category = category;
+        private TestInfo() {
         }
 
         @Override
@@ -209,16 +153,6 @@ class ThemeUtilsFunctionColorTest {
         @Override
         public HTMLText getDescription() {
             return null;
-        }
-
-        @Override
-        public String getMenuPath() {
-            return "";
-        }
-
-        @Override
-        public JIPipeNodeTypeCategory getCategory() {
-            return category;
         }
 
         @Override
@@ -355,25 +289,15 @@ class ThemeUtilsFunctionColorTest {
     // (d) unconverted node through the PUBLIC facade → byte-identical legacy color
     // ---------------------------------------------------------------------
     @Test
-    void unconvertedInfoPublicFacadeKeepsLegacyColor() {
-        float legacyHue = 0.25f;
-        TestInfo info = new TestInfo(new TestCategory("org.hkijena.jipipe:images", "Images", legacyHue));
-
-        // The facade must take the legacy branch (primary function null) and
-        // produce EXACTLY the legacy HSB color — this path never calls
+    void fnNullInfoPublicFacadeUsesDefensiveDefaults() {
+        // The fn-null defensive state (primary function null; only reachable
+        // via JIPipeEmptyNodeInfo, never a registered node): the facades
+        // resolve to the legacy negative-hue transparent channels — the panel
+        // background fill and the highlight border. This path never calls
         // JIPipe.getNodes(), so the test stays pure.
+        TestInfo info = new TestInfo();
         JIPipeDesktopModernThemeStyle currentStyle = ThemeUtils.getCurrentStyle();
-        Color expectedFill = Color.getHSBColor(legacyHue,
-                currentStyle.getNodeFillSaturation(), currentStyle.getNodeFillBrightness());
-        assertEquals(expectedFill, ThemeUtils.getNodeFillColor(info));
-
-        Color expectedBorder = Color.getHSBColor(legacyHue,
-                currentStyle.getNodeBorderSaturation(), currentStyle.getNodeBorderBrightness());
-        assertEquals(expectedBorder, ThemeUtils.getNodeBorderColor(info));
-
-        // A legacy negative hue must still map to the transparent channels.
-        TestInfo negative = new TestInfo(new TestCategory("org.hkijena.jipipe:internal", "Internal", -1f));
-        assertEquals(currentStyle.getPanelBackground(), ThemeUtils.getNodeFillColor(negative));
-        assertEquals(currentStyle.getNodeHighlightBorder(), ThemeUtils.getNodeBorderColor(negative));
+        assertEquals(currentStyle.getPanelBackground(), ThemeUtils.getNodeFillColor(info));
+        assertEquals(currentStyle.getNodeHighlightBorder(), ThemeUtils.getNodeBorderColor(info));
     }
 }

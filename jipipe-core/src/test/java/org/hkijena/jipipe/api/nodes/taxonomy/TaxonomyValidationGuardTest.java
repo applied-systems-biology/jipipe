@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
@@ -510,16 +509,6 @@ class TaxonomyValidationGuardTest {
         @Override
         public HTMLText getDescription() {
             return new HTMLText();
-        }
-
-        @Override
-        public String getMenuPath() {
-            return "";
-        }
-
-        @Override
-        public JIPipeNodeTypeCategory getCategory() {
-            return null;
         }
 
         @Override

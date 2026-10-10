@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView.BehaviorFlags;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.junit.jupiter.api.Test;
@@ -30,6 +29,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Pure tests for {@link TaxonomyView}: display name, location path,
@@ -130,101 +130,20 @@ class TaxonomyViewTest {
     }
 
     /**
-     * Minimal {@link JIPipeNodeTypeCategory} stub with a controllable id,
-     * name, hue and the four behavior flags.
-     */
-    private static class TestCategory implements JIPipeNodeTypeCategory {
-        private final String id;
-        private final String name;
-        private final float hue;
-        private final boolean pipeline;
-        private final boolean compartments;
-        private final boolean extract;
-        private final boolean runnable;
-
-        private TestCategory(String id, String name, float hue,
-                             boolean pipeline, boolean compartments,
-                             boolean extract, boolean runnable) {
-            this.id = id;
-            this.name = name;
-            this.hue = hue;
-            this.pipeline = pipeline;
-            this.compartments = compartments;
-            this.extract = extract;
-            this.runnable = runnable;
-        }
-
-        @Override
-        public String getId() {
-            return id;
-        }
-
-        @Override
-        public String getName() {
-            return name;
-        }
-
-        @Override
-        public String getDescription() {
-            return id;
-        }
-
-        @Override
-        public int getUIOrder() {
-            return 0;
-        }
-
-        @Override
-        public Icon getIcon() {
-            return null;
-        }
-
-        @Override
-        public float getColorHue() {
-            return hue;
-        }
-
-        @Override
-        public boolean isVisibleInPipeline() {
-            return pipeline;
-        }
-
-        @Override
-        public boolean isVisibleInCompartments() {
-            return compartments;
-        }
-
-        @Override
-        public boolean canExtract() {
-            return extract;
-        }
-
-        @Override
-        public boolean isRunnable() {
-            return runnable;
-        }
-    }
-
-    /**
-     * Minimal {@link JIPipeNodeInfo} stub. All taxonomy-relevant accessors
-     * are injected; the unrelated accessors return harmless defaults so the
-     * class never triggers JIPipe service lookups.
+     * Minimal {@link JIPipeNodeInfo} stub. Only the taxonomy-relevant
+     * accessors are meaningful; the unrelated accessors return harmless
+     * defaults so the class never triggers JIPipe service lookups.
      */
     private static class TestInfo implements JIPipeNodeInfo {
         private final String name;
         private final JIPipeNodeTaxonomyFunction primary;
         private final Set<JIPipeNodeTaxonomyFunction> secondary;
-        private final JIPipeNodeTypeCategory category;
-        private final String menuPath;
 
         private TestInfo(String name, JIPipeNodeTaxonomyFunction primary,
-                         Set<JIPipeNodeTaxonomyFunction> secondary,
-                         JIPipeNodeTypeCategory category, String menuPath) {
+                         Set<JIPipeNodeTaxonomyFunction> secondary) {
             this.name = name;
             this.primary = primary;
             this.secondary = secondary;
-            this.category = category;
-            this.menuPath = menuPath;
         }
 
         @Override
@@ -255,16 +174,6 @@ class TaxonomyViewTest {
         @Override
         public HTMLText getDescription() {
             return null;
-        }
-
-        @Override
-        public String getMenuPath() {
-            return menuPath;
-        }
-
-        @Override
-        public JIPipeNodeTypeCategory getCategory() {
-            return category;
         }
 
         @Override
@@ -316,22 +225,12 @@ class TaxonomyViewTest {
                 root, true, false, true, false);
         TestFunction secondary = new TestFunction("jipipe:function:statistics", "Statistics", 300f / 360f,
                 null, false, false, false, true);
-        // The converted node still carries a legacy category (an
-        // InternalNodeTypeCategory after 1b conversions), but the helper must
-        // prefer the function. We give it a non-null legacy category on
-        // purpose to prove the function branch wins.
-        TestCategory legacy = new TestCategory("org.hkijena.jipipe:internal", "Internal", -1f,
-                false, false, false, false);
-        return new TestInfo("Gaussian Blur", primary, Set.of(secondary), legacy, "");
+        return new TestInfo("Gaussian Blur", primary, Set.of(secondary));
     }
 
-    /** An unconverted info: no primary function, a legacy category + menu path. */
+    /** An unconverted info: no primary function (fn-null defensive state). */
     private static JIPipeNodeInfo unconvertedInfo() {
-        // Distinct flag values from the converted primary to prove the
-        // category branch is read.
-        TestCategory category = new TestCategory("org.hkijena.jipipe:images", "Images", 0.3f,
-                false, true, false, true);
-        return new TestInfo("My Node", null, Collections.emptySet(), category, "Filtering");
+        return new TestInfo("My Node", null, Collections.emptySet());
     }
 
     // ---------------------------------------------------------------------
@@ -344,8 +243,11 @@ class TaxonomyViewTest {
     }
 
     @Test
-    void functionDisplayNameUnconvertedUsesCategoryName() {
-        assertEquals("Images", TaxonomyView.functionDisplayName(unconvertedInfo()));
+    void functionDisplayNameUnconvertedFallsBackToInternal() {
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): the display name is the constant
+        // "Internal", not a legacy category name.
+        assertEquals("Internal", TaxonomyView.functionDisplayName(unconvertedInfo()));
     }
 
     // ---------------------------------------------------------------------
@@ -359,17 +261,10 @@ class TaxonomyViewTest {
     }
 
     @Test
-    void locationPathUnconvertedIsCategoryMenuPathPlusNodeName() {
-        assertEquals("Images > Filtering > My Node",
-                TaxonomyView.locationPath(unconvertedInfo()));
-    }
-
-    @Test
-    void locationPathUnconvertedOmitsEmptyMenuPathSegment() {
-        TestCategory category = new TestCategory("org.hkijena.jipipe:images", "Images", 0.3f,
-                false, true, false, true);
-        JIPipeNodeInfo info = new TestInfo("My Node", null, Collections.emptySet(), category, "");
-        assertEquals("Images > My Node", TaxonomyView.locationPath(info));
+    void locationPathUnconvertedIsNodeNameOnly() {
+        // fn-null defensive state: the location path is just the node name
+        // (no category / menu path branch prefix).
+        assertEquals("My Node", TaxonomyView.locationPath(unconvertedInfo()));
     }
 
     // ---------------------------------------------------------------------
@@ -386,21 +281,11 @@ class TaxonomyViewTest {
     }
 
     @Test
-    void behaviorFlagsUnconvertedReadCategoryFlags() {
+    void behaviorFlagsUnconvertedFallsBackToSafeDefaults() {
+        // fn-null defensive state: the safe defaults (all true) — the
+        // 21a null-category default. canExtract / isRunnable mirror the
+        // taxonomy defaults; the two visibility flags are permissive true.
         BehaviorFlags flags = TaxonomyView.behaviorFlags(unconvertedInfo());
-        assertEquals(false, flags.isVisibleInPipeline());
-        assertEquals(true, flags.isVisibleInCompartments());
-        assertEquals(false, flags.canExtract());
-        assertEquals(true, flags.isRunnable());
-    }
-
-    @Test
-    void behaviorFlagsNullCategoryAndFunctionFallsBackToSafeDefaults() {
-        JIPipeNodeInfo info = new TestInfo("Lonely", null, Collections.emptySet(), null, "");
-        BehaviorFlags flags = TaxonomyView.behaviorFlags(info);
-        // canExtract / isRunnable mirror the JIPipeNodeTypeCategory interface
-        // defaults (both true); the two visibility flags have no interface
-        // default and default to the permissive true.
         assertEquals(true, flags.isVisibleInPipeline());
         assertEquals(true, flags.isVisibleInCompartments());
         assertEquals(true, flags.canExtract());
@@ -418,13 +303,11 @@ class TaxonomyViewTest {
     }
 
     @Test
-    void searchIdsUnconvertedIsExactlyLegacyCategoryId() {
-        // The legacy transition shape: the raw category id, exactly the form
-        // the node database builder historically stored (that categoryIds
-        // facet was removed in task 25 — searchIds keeps the shape until the
-        // legacy fallback itself goes away in tasks 26/27).
+    void searchIdsUnconvertedIsEmpty() {
+        // fn-null defensive state: no legacy category id — the search ids are
+        // empty (the new defensive default).
         Set<String> ids = TaxonomyView.searchIds(unconvertedInfo());
-        assertEquals(Set.of("org.hkijena.jipipe:images"), ids);
+        assertTrue(ids.isEmpty());
     }
 
     @Test
@@ -433,7 +316,7 @@ class TaxonomyViewTest {
                 null, true, true, true, true);
         TestFunction primary = new TestFunction("jipipe:function:images:filtering", "Filtering", null,
                 root, true, false, true, false);
-        JIPipeNodeInfo info = new TestInfo("Solo", primary, Collections.emptySet(), null, "");
+        JIPipeNodeInfo info = new TestInfo("Solo", primary, Collections.emptySet());
         assertEquals(Set.of("jipipe:function:images:filtering"), TaxonomyView.searchIds(info));
     }
 }

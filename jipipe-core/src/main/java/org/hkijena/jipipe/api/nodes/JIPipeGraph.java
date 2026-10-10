@@ -477,7 +477,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @return True if the user can delete the algorithm
      */
     public boolean canUserDelete(JIPipeGraphNode algorithm) {
-        return algorithm.getCategory().userCanDelete();
+        return TaxonomyView.behaviorFlags(algorithm.getInfo()).canExtract();
     }
 
     /**
@@ -536,7 +536,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * @param user if a user triggered the operation. If true, will not remove internal nodes
      */
     public void removeNode(JIPipeGraphNode node, boolean user) {
-        if (user && !node.getCategory().userCanDelete())
+        if (user && !TaxonomyView.behaviorFlags(node.getInfo()).canExtract())
             return;
         ++preventTriggerEvents;
         // Do regular disconnect

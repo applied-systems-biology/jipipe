@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -62,10 +61,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setId(id);
         setName(getNameOf(nodeClass));
         setDescription(getDescriptionOf(nodeClass));
-        setCategory(getCategoryOf(nodeClass));
-        setMenuPath(getMenuPathOf(nodeClass));
         setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
-        setAliases(getAliasesOf(nodeClass));
         setNodeClassification(getClassificationOf(nodeClass));
         setEnvironments(getEnvironmentsOf(nodeClass));
         // Taxonomy: set the functions only if the node is converted (declares at least one);
@@ -127,37 +123,6 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     public static HTMLText getDescriptionOf(Class<? extends JIPipeGraphNode> klass) {
         String rawDescription = DocumentationUtils.getDocumentationDescription(klass);
         return new HTMLText(rawDescription.replace("\n", "<br/>"));
-    }
-
-    /**
-     * Returns the category of an algorithm
-     *
-     * @param klass The algorithm class
-     * @return The category
-     */
-    public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
-        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
-        if (annotations.length > 0) {
-            Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
-            return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
-        } else {
-            return new InternalNodeTypeCategory();
-        }
-    }
-
-    /**
-     * Returns the menu path of the algorithm
-     *
-     * @param klass The algorithm class
-     * @return The menu path
-     */
-    public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
-        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
-        if (annotations.length > 0) {
-            return annotations[0].menuPath();
-        } else {
-            return "";
-        }
     }
 
     /**
@@ -252,20 +217,6 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         Set<String> result = new HashSet<>();
         for (JIPipeNodeTaxonomyTags annotation : klass.getAnnotationsByType(JIPipeNodeTaxonomyTags.class)) {
             result.addAll(Arrays.asList(annotation.value()));
-        }
-        return result;
-    }
-
-    /**
-     * Gets alternative menu locations
-     *
-     * @param klass node class
-     * @return locations
-     */
-    public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
-        List<JIPipeNodeMenuLocation> result = new ArrayList<>();
-        for (AddJIPipeNodeAlias location : klass.getAnnotationsByType(AddJIPipeNodeAlias.class)) {
-            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.aliasName()));
         }
         return result;
     }

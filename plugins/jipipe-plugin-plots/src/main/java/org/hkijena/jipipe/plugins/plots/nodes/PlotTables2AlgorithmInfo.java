@@ -18,11 +18,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
@@ -87,13 +86,14 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getMenuPath() {
-        return "Plot";
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return new TableNodeTypeCategory();
+    public Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
+        // The legacy "Analyze" alias (IJ "Analyze\nPlot (JFreeChart)") implied a
+        // MeasurementsFunction secondary per the 19.11b alias protocol. The
+        // static PlotTablesAlgorithm already declares {PlotMiscFunction,
+        // MeasurementsFunction}; the dynamic PlotTables2 variants lacked it
+        // (Task 20 refined ij2/clij, not plots), so preserve the taxonomy
+        // meaning of the removed alias here.
+        return Set.of(new MeasurementsFunction());
     }
 
     @Override
@@ -118,11 +118,6 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     @Override
     public Set<JIPipeDependency> getDependencies() {
         return Collections.emptySet();
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), "Analyze\nPlot (JFreeChart)", null));
     }
 
     @Override

@@ -14,9 +14,7 @@
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -24,22 +22,18 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Pure transition view over a node's taxonomy, built for the
+ * Pure view over a node's taxonomy, built for the
  * node-taxonomy conversion (Phase 1b).
  * <p>
- * After the 1b conversions every converted node's
- * {@link JIPipeNodeInfo#getCategory() category} resolves to an
- * {@code InternalNodeTypeCategory}, so legacy-reading consumers would see
- * the generic "Internal" hue/flags/name for all of them. This class is the
- * <em>dual read</em>: every accessor prefers the node's
+ * Every accessor prefers the node's
  * {@link JIPipeNodeInfo#getPrimaryFunction() primary taxonomy function} when
- * present (a converted node) and otherwise falls back to the legacy category
- * byte-identically (an unconverted node). It is a set of static, stateless
- * methods over the {@link JIPipeNodeInfo} — no {@code JIPipe} instance or
- * registry is required, because the function objects carry their own parent
- * chain and behavior flags.
+ * present (every registered node, after the 1b conversions). It is a set of
+ * static, stateless methods over the {@link JIPipeNodeInfo} — no {@code
+ * JIPipe} instance or registry is required, because the function objects
+ * carry their own parent chain and behavior flags.
  * <p>
- * All methods are null-safe: a missing category, a missing menu path, or an
+ * All methods are null-safe: an fn-null node (the defensive state, only
+ * reachable via {@code JIPipeEmptyNodeInfo}, never a registered node) or an
  * empty secondary-function set never throws.
  */
 public final class TaxonomyView {
@@ -49,8 +43,7 @@ public final class TaxonomyView {
 
     /**
      * The four behavior flags that gate where and how a node appears and
-     * can be manipulated, read from either the primary taxonomy function
-     * (converted) or the legacy category (unconverted).
+     * can be manipulated, read from the primary taxonomy function.
      *
      * @param isVisibleInPipeline    whether the node shows in the pipeline editor
      * @param isVisibleInCompartments whether the node shows in the compartment editor
@@ -64,10 +57,10 @@ public final class TaxonomyView {
     }
 
     /**
-     * The display name for the node's function/category.
+     * The display name for the node's function.
      * <p>
-     * Converted: the primary function's name. Unconverted: the legacy
-     * category's name, or {@code "Internal"} if the category is null.
+     * A primary function present: its name. Otherwise (the fn-null
+     * defensive state): the constant {@code "Internal"}.
      *
      * @param info the node info
      * @return the display name, never {@code null}
@@ -77,19 +70,20 @@ public final class TaxonomyView {
         if (primary != null) {
             return primary.getName();
         }
-        JIPipeNodeTypeCategory category = info.getCategory();
-        return category != null ? category.getName() : "Internal";
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): no legacy category to read, so the
+        // display name is the constant "Internal".
+        return "Internal";
     }
 
     /**
      * The human-readable location path of the node.
      * <p>
-     * Converted: the function chain from the root down to the primary
-     * function, joined by {@code " > "}, followed by the node name — e.g.
-     * {@code "Images > Filtering > Gaussian Blur"}.
-     * Unconverted: the legacy shape — the category name, plus the legacy
-     * menu path (each {@code \n}-separated entry joined by {@code " > "})
-     * when it is non-empty, followed by the node name.
+     * A primary function present: the function chain from the root down to
+     * the primary function, joined by {@code " > "}, followed by the node
+     * name — e.g. {@code "Images > Filtering > Gaussian Blur"}. Otherwise
+     * (the fn-null defensive state): just the node name, with no branch
+     * prefix.
      *
      * @param info the node info
      * @return the location path, never {@code null}
@@ -109,29 +103,20 @@ public final class TaxonomyView {
             return sb.toString();
         }
 
-        // Legacy shape.
-        StringBuilder sb = new StringBuilder();
-        JIPipeNodeTypeCategory category = info.getCategory();
-        sb.append(category != null ? category.getName() : "Internal");
-        String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-        if (!menuPath.isEmpty()) {
-            for (String entry : menuPath.split("\n")) {
-                sb.append(" > ").append(entry.trim());
-            }
-        }
-        sb.append(" > ").append(info.getName());
-        return sb.toString();
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): no category/menu path to read, so the
+        // location path is just the node name (no branch prefix).
+        return info.getName();
     }
 
     /**
      * The four behavior flags of the node, read from the primary function
-     * when present, else from the legacy category, else the safe defaults.
+     * when present, else the safe defaults.
      * <p>
-     * The safe defaults for a null category mirror the
-     * {@link JIPipeNodeTypeCategory} interface defaults: {@code canExtract()}
-     * and {@code isRunnable()} are both {@code true} in the interface; the two
-     * visibility flags are abstract in the interface (no default) and default
-     * here to the permissive {@code true}.
+     * The safe defaults for an fn-null node (the defensive state, only
+     * reachable via {@code JIPipeEmptyNodeInfo}, never a registered node) are
+     * all {@code true}: {@code canExtract()} and {@code isRunnable()} mirror
+     * the taxonomy defaults; the two visibility flags are permissive.
      *
      * @param info the node info
      * @return the resolved behavior flags, never {@code null}
@@ -145,16 +130,10 @@ public final class TaxonomyView {
                     primary.canExtract(),
                     primary.isRunnable());
         }
-        JIPipeNodeTypeCategory category = info.getCategory();
-        if (category != null) {
-            return new BehaviorFlags(
-                    category.isVisibleInPipeline(),
-                    category.isVisibleInCompartments(),
-                    category.canExtract(),
-                    category.isRunnable());
-        }
-        // Null category: safe defaults mirroring the interface defaults
-        // (canExtract/isRunnable true) + permissive visibility (true).
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): no category to read, so the safe
+        // defaults (all true) — canExtract/isRunnable mirror the taxonomy
+        // defaults; the two visibility flags are permissive true.
         return new BehaviorFlags(true, true, true, true);
     }
 
@@ -207,13 +186,10 @@ public final class TaxonomyView {
      * The search ids for the node's taxonomy functions, in the exact format
      * the node database uses.
      * <p>
-     * Converted (a primary function is present): the primary function's id
-     * plus every secondary function's id. Unconverted (no primary function):
-     * the legacy category id, exactly the form the node database builder
-     * historically used ({@code nodeInfo.getCategory().getId()}) — kept only
-     * for the transition; every node has a function since the 1b conversion,
-     * and this legacy branch is removed in task 27 (when
-     * {@code JIPipeNodeInfo.getCategory()} itself goes away in task 26).
+     * A primary function present: the primary function's id plus every
+     * secondary function's id. No primary function (the fn-null defensive
+     * state, only reachable via {@code JIPipeEmptyNodeInfo}, never a
+     * registered node): empty.
      *
      * @param info the node info
      * @return the search ids, never {@code null}
@@ -232,11 +208,9 @@ public final class TaxonomyView {
             return ids;
         }
 
-        // Legacy shape: exactly the category id the database builder uses.
-        JIPipeNodeTypeCategory category = info.getCategory();
-        if (category != null) {
-            ids.add(category.getId());
-        }
+        // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
+        // never a registered node): no category id to read, so the search
+        // ids are empty.
         return ids;
     }
 

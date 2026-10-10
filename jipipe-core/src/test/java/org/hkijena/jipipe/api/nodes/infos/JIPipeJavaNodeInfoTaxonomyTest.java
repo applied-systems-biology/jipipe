@@ -42,8 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * (functions, framework, spatial dimensions, node-level tags) from
  * {@link ConfigureJIPipeNode} / {@link JIPipeNodeTaxonomyTags} into the
  * new getters on the node info, and that unconverted nodes (legacy
- * {@code nodeTypeCategory} only) report a null primary function while
- * still exposing the legacy category (dual state during transition).
+ * {@code nodeTypeCategory} only) report a null primary function, no
+ * secondary functions, and a {@link NoFramework} framework.
  */
 class JIPipeJavaNodeInfoTaxonomyTest {
 
@@ -268,13 +268,10 @@ class JIPipeJavaNodeInfoTaxonomyTest {
 
         // Merged tags are only computed at registration (Task 7)
         assertTrue(info.getMergedTags().isEmpty());
-
-        // The legacy category is still extracted in dual state
-        assertNotNull(info.getCategory());
     }
 
     @Test
-    void unconvertedNodeHasNoFunctionButKeepsLegacyCategory() {
+    void unconvertedNodeHasNoFunction() {
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo("legacy-node", UnconvertedStub.class);
 
         // Unconverted: no primary function
@@ -289,10 +286,5 @@ class JIPipeJavaNodeInfoTaxonomyTest {
         // No spatial dimensions, no node-level tags
         assertTrue(info.getSpatialDimensions().isEmpty());
         assertTrue(info.getTaxonomyTags().isEmpty());
-
-        // The legacy category is still populated (dual state during transition)
-        assertNotNull(info.getCategory());
-        assertEquals(LegacyCategory.class, info.getCategory().getClass());
-        assertEquals("stub:legacy-category", info.getCategory().getId());
     }
 }

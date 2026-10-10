@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.net.URL;
@@ -35,41 +34,6 @@ import java.util.stream.Collectors;
  * Describes an {@link JIPipeGraphNode}
  */
 public interface JIPipeNodeInfo {
-
-    /**
-     * Gets the registered algorithms, grouped by their menu paths
-     *
-     * @param category the targeted category
-     * @param infos    The infos to group
-     * @return Map from menu path to algorithms with this menu path
-     */
-    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> infos) {
-        Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
-        for (JIPipeNodeInfo info : infos) {
-            if (Objects.equals(info.getCategory().getId(), category.getId())) {
-                String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-                Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-                if (group == null) {
-                    group = new HashSet<>();
-                    result.put(menuPath, group);
-                }
-                group.add(info);
-            }
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if (Objects.equals(location.getCategory().getId(), category.getId())) {
-                    String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
-                    Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-                    if (group == null) {
-                        group = new HashSet<>();
-                        result.put(menuPath, group);
-                    }
-                    group.add(info);
-                }
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Gets a sorted list of algorithms
@@ -133,26 +97,6 @@ public interface JIPipeNodeInfo {
      * @return The description
      */
     HTMLText getDescription();
-
-    /**
-     * Gets the menu path of this algorithm
-     *
-     * @return String containing menu entries separated by new-lines
-     * @deprecated replaced by the node taxonomy; kept until the legacy
-     * menu placement is fully replaced by taxonomy functions
-     */
-    @Deprecated
-    String getMenuPath();
-
-    /**
-     * Returns the algorithm category
-     *
-     * @return The category
-     * @deprecated replaced by the node taxonomy; kept until the legacy
-     * node type categories are fully replaced by taxonomy functions
-     */
-    @Deprecated
-    JIPipeNodeTypeCategory getCategory();
 
     /**
      * Returns general input data.
@@ -265,24 +209,6 @@ public interface JIPipeNodeInfo {
      */
     default URL getIconURL() {
         return JIPipe.getNodes().getIconURLFor(this);
-    }
-
-    /**
-     * A menu location that points towards the primary menu
-     *
-     * @return the primary menu location
-     */
-    default JIPipeNodeMenuLocation getPrimaryMenuLocation() {
-        return new JIPipeNodeMenuLocation(getCategory(), getMenuPath(), "");
-    }
-
-    /**
-     * A list of alternative menu locations
-     *
-     * @return alternative menu locations. might be empty.
-     */
-    default List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.emptyList();
     }
 
     /**

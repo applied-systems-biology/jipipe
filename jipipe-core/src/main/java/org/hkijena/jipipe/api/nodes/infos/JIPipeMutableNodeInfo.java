@@ -38,11 +38,9 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
-    private JIPipeNodeTypeCategory category;
     private List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private Set<Class<? extends JIPipeEnvironment>> environments = new HashSet<>();
-    private String menuPath;
 
     private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
     private boolean hidden = false;
@@ -51,8 +49,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private boolean unstable = false;
     private JIPipeNodeClassification nodeClassification = JIPipeNodeClassification.Standard;
     private List<String> additionalCitations = new ArrayList<>();
-
-    private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
 
     private JIPipeNodeTaxonomyFunction primaryFunction = null;
     private Set<JIPipeNodeTaxonomyFunction> secondaryFunctions = new HashSet<>();
@@ -114,21 +110,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return category;
-    }
-
-    /**
-     * Sets the category
-     *
-     * @param category The category
-     */
-    public void setCategory(JIPipeNodeTypeCategory category) {
-        this.category = category;
-    }
-
-
-    @Override
     public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
@@ -171,20 +152,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    /**
-     * Sets the menu path. Menu items are separated by newlines
-     *
-     * @param menuPath The menu path
-     */
-    public void setMenuPath(String menuPath) {
-        this.menuPath = menuPath;
-    }
-
-    @Override
     public boolean isHidden() {
         return hidden;
     }
@@ -209,15 +176,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setAdditionalCitations(List<String> additionalCitations) {
         this.additionalCitations = additionalCitations;
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(List<JIPipeNodeMenuLocation> aliases) {
-        this.aliases = aliases;
     }
 
     @Override
