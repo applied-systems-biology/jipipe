@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -102,11 +103,10 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
         if (info != null) {
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
-            String menuPath = info.getCategory().getName();
-            menuPath += "\n" + info.getMenuPath();
-            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
-
-            pathLabel.setText(menuPath);
+            // Location (Task 21b): converted ⇒ "function chain > node", unconverted
+            // ⇒ legacy "category [> menuPath] > node". The label keeps its position;
+            // only the value source changes from category/menuPath to the taxonomy.
+            pathLabel.setText(TaxonomyView.locationPath(info));
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 

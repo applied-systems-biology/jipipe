@@ -48,6 +48,8 @@ public class ExistingPipelineNodeDatabaseEntry extends DefaultJIPipeNodeDatabase
         initializeSlots();
         initializeTokens();
         initializeCategoryIds();
+        // Same node as the existing graph node: same taxonomy facets
+        CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, graphNode.getInfo());
     }
 
     private void initializeCategoryIds() {

@@ -256,7 +256,16 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             extra.add(e.getDescription().getHtml().replaceAll("<[^>]*>", " "));
         }
         if (e.getLocationInfos() != null) extra.addAll(e.getLocationInfos());
-        if (e.getCategoryIds() != null) extra.addAll(e.getCategoryIds());
+        // Taxonomy dual-read (Task 21b): converted nodes are searchable by their
+        // taxonomy function ids; unconverted nodes fall back to the legacy
+        // category ids (byte-equivalent to today). Uses the Task-15 functionIds
+        // facet already carried by the entry (no TaxonomyView needed here).
+        Set<String> functionIds = e.getFunctionIds();
+        if (functionIds != null && !functionIds.isEmpty()) {
+            extra.addAll(functionIds);
+        } else if (e.getCategoryIds() != null) {
+            extra.addAll(e.getCategoryIds());
+        }
         return String.join(" ", extra);
     }
 

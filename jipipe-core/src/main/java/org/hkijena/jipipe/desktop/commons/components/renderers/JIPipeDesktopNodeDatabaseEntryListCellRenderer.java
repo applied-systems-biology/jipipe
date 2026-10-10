@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
@@ -107,7 +108,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         if (obj != null) {
             nameLabel.setText(obj.getName());
             nodeColor.setFillColor(obj.getFillColor());
-            pathLabel.setText(obj.getLocationInfos().get(0).replace("\n", " > "));
+            pathLabel.setText(locationOf(obj));
             nodeIcon.setIcon(obj.getIcon());
         }
 
@@ -160,5 +161,31 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         }
 
         return this;
+    }
+
+    /**
+     * The location row for the given entry (Task 21b).
+     * <p>
+     * Node-info-carrying entries that wrap a <em>converted</em> node (a
+     * non-null primary function) show the taxonomy function path
+     * ({@link TaxonomyView#locationPath}). Every other entry — unconverted
+     * node entries, existing pipeline nodes, compartments, and templates —
+     * keeps the stored {@link JIPipeNodeDatabaseEntry#getLocationInfos()
+     * location info} byte-equivalent to before, so no unconverted node's
+     * visible location changes.
+     */
+    private static String locationOf(JIPipeNodeDatabaseEntry obj) {
+        JIPipeNodeInfo info = null;
+        if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
+            info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
+        } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
+            info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
+        } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
+            info = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample().getNodeInfo();
+        }
+        if (info != null && info.getPrimaryFunction() != null) {
+            return TaxonomyView.locationPath(info);
+        }
+        return obj.getLocationInfos().get(0).replace("\n", " > ");
     }
 }

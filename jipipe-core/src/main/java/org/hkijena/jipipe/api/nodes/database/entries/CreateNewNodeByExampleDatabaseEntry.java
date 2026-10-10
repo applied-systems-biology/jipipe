@@ -55,6 +55,8 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
         initializeTokens();
         initializeCategoryIds();
         initializeLocationInfos();
+        // Same node as the example's node info: same taxonomy facets
+        CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, example.getNodeInfo());
     }
 
     private void initializeLocationInfos() {

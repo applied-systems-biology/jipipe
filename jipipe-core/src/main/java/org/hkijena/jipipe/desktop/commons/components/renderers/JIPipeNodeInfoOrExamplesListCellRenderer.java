@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -105,11 +106,9 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
         if (obj instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
-            String menuPath = info.getCategory().getName();
-            menuPath += "\n" + info.getMenuPath();
-            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
-
-            pathLabel.setText(menuPath);
+            // Location (Task 21b): converted ⇒ "function chain > node", unconverted
+            // ⇒ legacy "category [> menuPath] > node".
+            pathLabel.setText(TaxonomyView.locationPath(info));
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
@@ -133,11 +132,9 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
             JIPipeNodeExample example = (JIPipeNodeExample) obj;
             JIPipeNodeInfo info = example.getNodeInfo();
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
-            String menuPath = info.getCategory().getName();
-            menuPath += "\n" + info.getMenuPath();
-            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
-
-            pathLabel.setText(menuPath);
+            // Location (Task 21b): converted ⇒ "function chain > node", unconverted
+            // ⇒ legacy "category [> menuPath] > node".
+            pathLabel.setText(TaxonomyView.locationPath(info));
             nameLabel.setText(example.getNodeTemplate().getName() + ": " + info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 

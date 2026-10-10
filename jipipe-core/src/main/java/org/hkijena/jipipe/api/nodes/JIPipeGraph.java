@@ -41,6 +41,7 @@ import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -1242,7 +1243,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     public JIPipeGraph extract(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
         JIPipeGraph copyGraph = new JIPipeGraph();
         for (JIPipeGraphNode node : nodes) {
-            if (!withInternal && !node.getCategory().canExtract())
+            if (!withInternal && !TaxonomyView.behaviorFlags(node.getInfo()).canExtract())
                 continue;
             if (node.isUiLocked() && skipLocked)
                 continue;
@@ -1294,7 +1295,7 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
     public JIPipeGraph extractShallow(Collection<JIPipeGraphNode> nodes, boolean withInternal, boolean skipLocked) {
         JIPipeGraph graph = new JIPipeGraph();
         for (JIPipeGraphNode node : nodes) {
-            if (!withInternal && !node.getCategory().canExtract())
+            if (!withInternal && !TaxonomyView.behaviorFlags(node.getInfo()).canExtract())
                 continue;
             if (node.isUiLocked() && skipLocked)
                 continue;
