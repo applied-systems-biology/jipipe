@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableFilterModifyFunction;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,7 +24,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterSerializationMode;
@@ -49,7 +49,7 @@ import java.util.List;
         "'data' is a dictionary with the column name as key and values being an array of strings or doubles. " +
         "'nrow' is an integer that contains the number of rows. " +
         "'annotations' is a dictionary from string to string containing all annotations.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {

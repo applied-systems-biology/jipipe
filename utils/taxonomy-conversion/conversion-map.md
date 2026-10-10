@@ -119,6 +119,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij-3d | 62 | **converted (19.4, 62 nodes); module gate zero unassigned** |
 | jipipe-plugin-filaments + ij-filaments | 51+ | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned** |
+| jipipe-plugin-tables | 48 | **converted (19.7, 48 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-filesystem | 39 | **converted (19.6, 39 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-annotations | 29 | pending |
 | jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
@@ -126,7 +127,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-cellpose | 21 | pending |
 | jipipe-plugin-ij-trackmate | 18 | pending |
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-forms | 10 | pending |
+| jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-weka | 9 | pending |
 | jipipe-plugin-python | 9 | pending |
 | jipipe-plugin-ilastik | 8 | pending |
@@ -1380,3 +1381,297 @@ branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
 **Byte-identity check (reviewer contract):** all 82 node files are byte-identical to base after
 stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
 (verified by a line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
+
+### 19.7 — jipipe-plugin-tables + jipipe-plugin-forms (58 nodes)
+
+**Status:** converted — all 58 `@ConfigureJIPipeNode` nodes across the two modules rewritten to
+`function`-only; two module gates green (see (g)). Single-shot combined conversion
+(mapping + apply + 2 gates in one commit), mirroring §19.6. This is the **same class of task as 19.6**:
+these nodes get **only `function`** — **no `framework`, no `spatialDimensions`**.
+
+**Scope / gate prefixes (verified by grep, matches controller R1):**
+- `plugins/jipipe-plugin-tables/src/main` — base pkg `org.hkijena.jipipe.plugins.tables` (GATE PREFIX) — **48** annotated files. `TablesPlugin` registers **48** `registerNodeType` (1:1 with annotations).
+- `plugins/jipipe-plugin-forms/src/main` — base pkg `org.hkijena.jipipe.plugins.forms` (GATE PREFIX) — **10** annotated files. `FormsPlugin` registers **10** `registerNodeType` (1:1 with annotations).
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
+
+| module | Table | DataSource | Annotations | Miscellaneous | total |
+|---|---|---|---|---|---|
+| tables | 42 | 3 | 3 | — | **48** |
+| forms | — | 7 | — | 3 | **10** |
+
+First-menuPath segments (tables): none (22) · Transform (6) · Merge (5) · Filter (4) · Split (3) · Clustering (3) · Append (2) · "For tables" (2, the 2 Annotations ops — see below, the 3rd Annotations node carries "For all data") · "For all data" (1).
+**Note on the tables Annotations split:** the controller's "Annotations 3" = `AnnotateByTablePropertiesAlgorithm` ("For tables"), `AnnotateDataWithTableValues` ("For all data"), `ColumnsToAnnotationsAlgorithm` ("For tables"). So "For tables" (2) + "For all data" (1) covers the 3 Annotations-category nodes; the 42 Table + 3 DataSource = 45, + 3 Annotations = 48. ✓
+
+**Aliases (verified by grep of `@AddJIPipeNodeAlias`):** tables **5 refs in 4 files**
+(`ApplyExpressionToTableByColumnAlgorithm` ×1, `RemoveColumnAlgorithm` ×1, `SortTableColumnsAlgorithm` ×1,
+`GenerateColumnAlgorithm` ×1, `MeltTableAlgorithm` ×1); forms **0**. Total **5** alias references →
+decisions in (d).
+
+---
+
+**⚠️ tables/ vs data/ distinction (the single most-likely mistake — apply as ruled).**
+The `tables/` branch holds exactly **FIVE** *operation* leaves: `TableTransformFunction`,
+`TableFilterModifyFunction`, `TableJoinSplitFunction`, `TableAggregateFunction`,
+`TableExportFileFunction`. The table-**DATA** leaf lives in the **`data/`** branch —
+`data/TableDataFunction` ("Nodes that produce or load table data"). **There is NO
+`TableDataFunction` in `tables/`.** Do not confuse the table-DATA leaf (data/) with the
+table-OP leaves (tables/). The 3 tables `DataSourceNodeTypeCategory` nodes are table **producers**
+(output `ResultsTableData`) → rule 6 by OUTPUT → **`data/TableDataFunction`** (NOT a tables/ op leaf).
+Conversely the 42 `TableNodeTypeCategory` ops are table **operations** → the 5 `tables/` leaves.
+
+**Framework — OMITTED for all 58 (rule 11, deliberate, not an omission).** Neither module is on
+rule 11's named list (cellpose/trackmate/clij/opencv/plots/weka/ilastik/omnipose/ij2-discovered/
+ij/ij-3d/ij-algorithms), and they are **not** "core plugins" (standalone plugin modules, not
+bundled in jipipe-core). Rule 11's final clause — "else leave `NoFramework`" — therefore applies.
+The `@ConfigureJIPipeNode.framework()` default is **already** `NoFramework.class`
+(`jipipe-core/…/api/ConfigureJIPipeNode.java:97`), so the attribute is **omitted entirely** — no node
+writes `framework = NoFramework.class`, and **no** `NoFramework` import is added.
+`grep -rl "framework = " src/main` across both modules → **0**.
+
+**Spatial — ABSENT for all 58 (rule 12, deliberate, not an omission).** None of the 58 nodes has an
+image input slot (controller-verified: zero `ImagePlus*`/`Image*`/`OME*` input values across both
+modules; the slots are `ResultsTableData`/`TableColumnData`/`AnnotationTableData`/`JIPipeData`/
+`FormData`). Rule 12's "non-image ⇒ absent" therefore applies to every node: `spatialDimensions` is
+**omitted entirely** on all 58, and there is **no** `SPATIAL_*` static import anywhere in both modules.
+`grep -rl "spatialDimensions = " src/main` across both modules → **0**.
+
+So every converted node's annotation is exactly `@ConfigureJIPipeNode(function = <Leaf>.class)`, or
+`@ConfigureJIPipeNode(function = { Primary.class, SecondaryLeaf.class })` for the one alias that added a
+distinct secondary leaf (`ApplyExpressionToTableByColumnAlgorithm` — see (d)). The `function` attribute
+is never dropped.
+
+**Leaf distribution (primary, all 58):** `TableTransformFunction` 13 · `TableFilterModifyFunction` 13 ·
+`TableJoinSplitFunction` 8 · `TableAggregateFunction` 8 · `MiscDataFunction` 7 ·
+`TableDataFunction` 3 · `AnnotationsEditFunction` 3 · `MiscellaneousFunction` 3 ·
+`TableExportFileFunction` 0 · `AnnotationsConvertFunction` 0 (total 58).
+(No node here maps to the `tables/` export leaf or the `annotations/` convert leaf.)
+
+---
+
+#### (a) jipipe-plugin-tables — 42 `TableNodeTypeCategory` ops → the 5 `tables/` leaves
+
+Assigned by each node's **actual operation** (read `@SetJIPipeDocumentation` + slots). MenuPath priors
+verified per node (not blanket-applied): Transform→`TableTransformFunction`, Filter→`TableFilterModifyFunction`,
+Merge/Append/Split→`TableJoinSplitFunction`, Clustering→`TableAggregateFunction`; the 22 no-menuPath nodes
+judged individually. **Tally: Transform 13 · FilterModify 13 · JoinSplit 8 · Aggregate 8 = 42.**
+
+**`TableTransformFunction` (13)** — transform/reshape/convert/compute-column ops (table in → reshaped table out):
+
+| node (menuPath) | rationale for non-obvious |
+|---|---|
+| `AddAnnotationColumnsAlgorithm` (Append) | adds column annotations to the table **as new columns** (a table reshape/column-add, not an annotation edit — the table data is modified) |
+| `ApplyExpressionToColumnsAlgorithm` (—) | compute new column values from expressions |
+| `ApplyExpressionToTableByColumnAlgorithm` (—) | generate table columns from expressions (**alias** → `TableDataFunction` secondary, see (d)) |
+| `ApplyExpressionPerRowAlgorithm` (—, @Deprecated) | per-row expression → new column values |
+| `ApplyExpressionPerRowAlgorithm2` (—) | per-row expression → new column values (v2) |
+| `ConvertAnnotationTableToAnnotatedTables` (—) | table in (`AnnotationTableData`) → table out, moving annotation columns into data annotations (a table **transform**, not an annotation-type conversion — the data type stays table) |
+| `ConvertColumnsAlgorithm` (—) | apply a converting function to column values |
+| `ColumnToNumericAlgorithm` (—) | convert columns to numeric |
+| `ColumnToStringAlgorithm` (—) | convert columns to string |
+| `GenerateColumnAlgorithm` (—) | **add/compute** a new column (**alias** dropped, see (d)) |
+| `AddMissingRowsInSeriesAlgorithm` (Append) | **reshape**: synthesizes missing series rows (a table transformation, not a join of multiple tables) — kept Transform despite the "Append" segment (flag (e)) |
+| `MeltTableAlgorithm` (Transform) | melt/unpivot columns↔rows (**alias** "Unpivot table" dropped, see (d)) |
+| `UnMeltTableAlgorithm` (Transform) | pivot: value column → separate columns |
+
+**`TableFilterModifyFunction` (13)** — filter/modify/select/sort (modify) ops:
+
+| node (menuPath) | rationale for non-obvious |
+|---|---|
+| `FilterTableRowsAlgorithm` (Filter) | filter rows by expression |
+| `FilterTablesAlgorithm` (Filter) | filter whole tables by their properties |
+| `SliceTableRowsAlgorithm` (Filter) | select/slice specific rows |
+| `SortTableRowsAlgorithm` (—) | sort rows (a modify op) |
+| `SortTableColumnsAlgorithm` (—) | sort/reorder columns (a modify op; **alias** "Reorder table columns" dropped, see (d)) |
+| `RemoveColumnAlgorithm` (Filter) | remove columns by name (a modify op; **alias** "Filter table columns" dropped, see (d)) |
+| `RenameTableColumnsAlgorithm` (—, @Deprecated) | rename columns (a modify op) |
+| `RenameTableColumns2Algorithm` (—) | rename columns |
+| `RenameSingleColumnsAlgorithm` (—) | rename single `TableColumnData` |
+| `RenameTableColumnsToAnnotationAlgorithm` (—) | rename columns to annotation values (a table column **modify** op, not an annotation edit) |
+| `ModifyTableColumnNamesAlgorithm` (—) | rename/modify column names via expression |
+| `ModifyTablesScript` (—) | general per-table modification via Python script (table in/out) (flag (e)) |
+| `ModifyAndMergeTablesScript` (—) | modify & merge tables via Python script (table in/out) (flag (e)) |
+
+**`TableJoinSplitFunction` (8)** — merge/append/join/split ops:
+
+| node (menuPath) | rationale |
+|---|---|
+| `MergeColumnsAlgorithm` (Merge) | merge multiple `TableColumnData` into one table |
+| `MergeTableColumnsSimpleAlgorithm` (Merge) | merge multiple tables' columns into one |
+| `MergeTableColumnsSupplementAlgorithm` (Merge) | merge source columns into target by reference columns |
+| `MergeTableColumnsSupplementMergingAlgorithm` (Merge) | merge source columns into target (merging variant) |
+| `MergeTableRowsAlgorithm` (Merge) | merge multiple tables' rows into one |
+| `SplitTableByColumnsAlgorithm` (Split) | split a table into sub-tables by selected columns |
+| `SplitTableIntoColumnsAlgorithm` (Split) | split a table into individual `TableColumnData` |
+| `SplitTableIntoRowsAlgorithm` (Split) | split a table into individual row-tables |
+
+**`TableAggregateFunction` (8)** — grouping/aggregation/clustering ops:
+
+| node (menuPath) | rationale |
+|---|---|
+| `IntegrateColumnsAlgorithm` (—) | "Summarize table" — avg/stddev/median per column (aggregation) |
+| `ApplyExpressionPerLabelAlgorithm` (Transform) | "summarize all values assigned to a key into a single value" — a **grouping/aggregation** op (group-by-key) despite the "Transform" segment → Aggregate (flag (e), the debatable Transform-vs-Aggregate one) |
+| `TableColumnToCountAlgorithm` (Transform) | count occurrences per value → histogram table (aggregation) |
+| `TableToHistogram2Algorithm` (Transform) | histogram binning (aggregation) |
+| `TableToHistogramAlgorithm` (Transform, @Deprecated) | histogram binning (aggregation) |
+| `KMeansClusteringAlgorithm` (Clustering) | clustering (grouping op) |
+| `FuzzyKMeansClusteringAlgorithm` (Clustering) | fuzzy clustering (grouping op) |
+| `DBSCANClusteringAlgorithm` (Clustering) | density clustering (grouping op) |
+
+#### (b) jipipe-plugin-tables — 3 `DataSourceNodeTypeCategory` → `data/TableDataFunction` (rule 6 by OUTPUT)
+
+All three output **`ResultsTableData`** → the table-DATA leaf in `data/` (**NOT** a `tables/` op leaf —
+see the callout). Mirrors §19.1's `DefineParametersTableAlgorithm`→`TableDataFunction` and §19.6's
+`ListZARR*`→`TableDataFunction` producers.
+
+| node | rationale |
+|---|---|
+| `DefineTablesAlgorithm` | defines one or multiple tables (output `ResultsTableData`) |
+| `GenerateTableFromExpressionAlgorithm` | generates a table's rows from expressions (output `ResultsTableData`) |
+| `TablesFromScript` | Python script generates a table (output `ResultsTableData`) |
+
+#### (c) jipipe-plugin-tables — 3 `AnnotationsNodeTypeCategory` → `annotations/` leaves (rule 5 by OP)
+
+| node (menuPath) | leaf | rationale |
+|---|---|---|
+| `AnnotateByTablePropertiesAlgorithm` (For tables) | `AnnotationsEditFunction` | **adds** row/column-count/column-name annotations to the table (an annotation adder) |
+| `AnnotateDataWithTableValues` (For all data) | `AnnotationsEditFunction` | **adds** annotations to the incoming (generic `JIPipeData`) data from table values (an annotation adder, not a type conversion) |
+| `ColumnsToAnnotationsAlgorithm` (For tables) | `AnnotationsEditFunction` | **copies** column values into annotations (adds/merges annotation entries; the data type stays a table) — *edit*, not a type conversion (flag (e)) |
+
+All three are annotation **editing/adding** ops (the target data type is unchanged) → `AnnotationsEditFunction`.
+None maps an annotation *type* to a different data type, so **no** `AnnotationsConvertFunction` is used here
+(that leaf is reserved for genuine annotation→other-data-type conversions, cf. §19.6 `AnnotationToPath`).
+
+#### (d) Aliases (5 references) — 4 dropped, 1 → secondary `function[]` (primary-first)
+
+Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf
+== primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
+
+| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
+|---|---|---|---|
+| `ApplyExpressionToTableByColumnAlgorithm` (TableTransform) | `DataSourceNodeTypeCategory` / (no menuPath), "Generate table columns from expression" | `TableDataFunction` (rule 6 by OUTPUT: with no input it **generates** a `ResultsTableData`) | **add secondary** → `function = { TableTransformFunction.class, TableDataFunction.class }` |
+| `RemoveColumnAlgorithm` (TableFilterModify) | (default `InternalNodeTypeCategory`) / (no menuPath), "Filter table columns" | `TableFilterModifyFunction` (== primary; a column filter/modify op) | **drop** (== primary) |
+| `SortTableColumnsAlgorithm` (TableFilterModify) | (default) / (no menuPath), "Reorder table columns" | `TableFilterModifyFunction` (== primary; a column modify/reorder op) | **drop** (== primary) |
+| `GenerateColumnAlgorithm` (TableTransform) | `TableNodeTypeCategory` / "Append", "Add missing columns" | `TableTransformFunction` (== primary; adds/computes a column) | **drop** (== primary) |
+| `MeltTableAlgorithm` (TableTransform) | `TableNodeTypeCategory` / "Transform", "Unpivot table" | `TableTransformFunction` (== primary; unpivot = melt) | **drop** (== primary) |
+
+**4 dropped, 1 secondary `function[]` entry** (`ApplyExpressionToTableByColumnAlgorithm` — the only
+multi-`function` node in this batch, primary-first per the §19.2/19.5/19.6 precedent). The secondary is
+genuinely distinct: its alias is a **data-source** registration (output-driven `TableDataFunction`),
+whereas the primary is a **table transform** (consumes an optional input).
+
+#### (e) Flagged for Phase 3 audit
+
+- **`ApplyExpressionPerLabelAlgorithm` → `TableAggregateFunction`** (its menuPath says "Transform"). Its
+  doc is "summarize all values assigned to a key into a single value" — a **group-by-key aggregation**.
+  Kept Aggregate by op; `TableTransformFunction` is the alternative if the audit weights the menuPath segment.
+- **`AddMissingRowsInSeriesAlgorithm` → `TableTransformFunction`** (menuPath "Append"). It synthesizes missing
+  series rows (a table **reshape**, not a join/merge of multiple inputs). Kept Transform; `TableJoinSplitFunction`
+  is the alternative if "Append" is read as a join-family op.
+- **`ConvertAnnotationTableToAnnotatedTables` → `TableTransformFunction`.** Input `AnnotationTableData`
+  (a `ResultsTableData` subclass) → `ResultsTableData`; it moves annotation columns into data annotations.
+  Kept Transform (table in, table out, rule 4); `AnnotationsEditFunction` is the alternative if the
+  annotation-producing side is weighted.
+- **`ColumnsToAnnotationsAlgorithm` → `AnnotationsEditFunction`.** Copies column values *into* annotations
+  (adds/merges annotation entries; data type stays a table). Kept Edit; `AnnotationsConvertFunction` is the
+  alternative if "columns↔annotations" is read as a type conversion.
+- **`TableColumnToCountAlgorithm` / `TableToHistogram2Algorithm` / `TableToHistogramAlgorithm` →
+  `TableAggregateFunction`** (menuPath "Transform"). Histogram/count ops are aggregations (group values into
+  bins and count/accumulate). Kept Aggregate by op; `TableTransformFunction` is the alternative if the
+  menuPath segment is weighted.
+- **`IntegrateColumnsAlgorithm` → `TableAggregateFunction`** (no menuPath). "Summarize table columns by applying
+  predefined operations like average, standard deviation, or median" — a clear aggregation.
+- **`ModifyTablesScript` / `ModifyAndMergeTablesScript` → `TableFilterModifyFunction`.** General Python-script
+  table modification (table in, table out). Kept FilterModify ("modify" in the name/doc); `TableTransformFunction`
+  is the alternative (the "Modify & merge" variant also merges, so `TableJoinSplitFunction` is a weaker alternative).
+- **`RenameTableColumnsToAnnotationAlgorithm` → `TableFilterModifyFunction`.** Renames columns to annotation
+  values (a column **modify** op on the table); kept FilterModify, not Annotations, because it edits the table's
+  column names (a table op), not the annotation data type.
+
+#### (f) jipipe-plugin-forms (10)
+
+Rule 6 (DataSource by output) for the 7 generators; rule 9 (Miscellaneous best-fit) for the 3 processors.
+
+**`MiscDataFunction` (7)** — the form **generators** (all extend `SimpleFormGeneratorAlgorithm`/
+`FormGeneratorAlgorithm`; each outputs **`FormData`**). There is **NO `FormData` data leaf in `data/`**
+(data/ = ImageData / TableData / RoiData / FilamentData / MiscData), so rule 6's "else `MiscDataFunction`"
+applies: `BooleanFormGeneratorAlgorithm`, `StringFormGeneratorAlgorithm`, `IntegerFormGeneratorAlgorithm`,
+`DoubleFormGeneratorAlgorithm`, `EnumFormGeneratorAlgorithm`, `PathFormGeneratorAlgorithm`,
+`GroupHeaderFormGeneratorAlgorithm`. (The 7 form GENERATORS are data **producers** of `FormData`, not
+table/image/roi/filament data → the Misc data leaf.)
+
+**`MiscellaneousFunction` (3)** — the **FormProcessors** (all `MiscellaneousNodeTypeCategory`, menuPath
+"Forms", each `extends JIPipeAlgorithm implements JIPipeIterationStepAlgorithm`; slots = `JIPipeData` in/out
++ `FormData` in/out, role Parameters). `SimpleIteratingFormProcessorAlgorithm`, `IteratingFormProcessorAlgorithm`,
+`MergingFormProcessorAlgorithm`. Each shows a UI during the run that lets a user **modify annotations** via
+form elements, then passes the (annotated) data through. Rule 9 best-fit: a **genuine no-specific-leaf**
+interactive-form-driven data-processing role (input `JIPipeData`+`FormData` → output `JIPipeData`+`FormData`).
+**Not** a `graph/` wrapper — it does not run/substitute a pipeline or wrap a graph; it is a per-iteration
+interactive annotation editor. Kept `MiscellaneousFunction` (the last-resort leaf). **Flag (e)** — if the audit
+reads "modify annotations via form" as an annotation-edit op, `AnnotationsEditFunction` is the alternative;
+this is a judgment call by nature.
+
+#### (g) Test infrastructure + gate results (R1/R2/R3)
+
+Both modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (mirror §19.6 / the
+`jipipe-plugin-ij` pom verbatim):
+- **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) — inserted before `</dependencies>` (verified byte-identical to the ij block by `diff`).
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/` (**byte-identical**,
+  verified with `cmp` for both).
+- Created `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (module-scoped: tables→`…plugins.tables`, forms→`…plugins.forms`;
+  `LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc mirroring the §19.6 listener) +
+  `plugins/jipipe-plugin-<m>/src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`
+  (single line = that module's listener FQCN).
+
+**Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A module's
+test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher, any
+`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
+(AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath transitively via
+jipipe-core → `net.imagej:imagej`.
+
+**Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-tables,plugins/jipipe-plugin-forms -am` → **exit 0**
+(both in one reactor; host mvn).
+
+**Stale `~/.m2` jar (documented — the *core* gotcha was NOT hit).** The installed `jipipe-core` jar was
+**2026-10-10 03:52**, i.e. *after* the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07) — **fresh**,
+so no pre-19.1 core nodes surfaced as unassigned in either prefix (the §19.6 stale-core-jar condition did not
+recur). However, the installed `jipipe-plugin-{tables,strings,annotations}` jars are all dated **2026-09-25**
+(stale — pre-19.6, when only `tables`/`forms`/`annotations` were still unconverted among on-classpath deps).
+Because the gate runs with **no `-am`**, Maven resolves those dependency jars from `~/.m2` (not the reactor), so
+the *global* (unfiltered) "N nodes not yet assigned" log line reflects the **stale** dependency counts:
+- **tables gate:** global line = **29** = the **`jipipe-plugin-annotations`** module (tables' direct dep,
+  unconverted in this Phase; 29 `@ConfigureJIPipeNode` files). None of these 29 are under the
+  `org.hkijena.jipipe.plugins.tables` prefix, so the prefix-filtered assertion saw **zero** and passed.
+- **forms gate:** global line = **92** = 48 (stale `tables` jar, pre-conversion) + 15 (stale `strings` jar,
+  pre-19.6) + 29 (`annotations`). None are under the `org.hkijena.jipipe.plugins.forms` prefix, so the
+  prefix-filtered assertion saw **zero** and passed.
+No `mvn install` was required (and none was run): the prefix-filtered failure set is what must be zero, and it was.
+The global "N nodes not yet assigned" line is an **informational** SciJava log line (a different, looser metric
+than the gate's per-node `unassignedNodeIds()` filter) that is *outside* the filtered set and **not** in
+`errors()`, per the §19.3/19.4/19.5/19.6 shape.
+
+**Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned in
+the module prefix:**
+- tables: `mvn test -pl plugins/jipipe-plugin-tables -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.tables` → **Tests run: 1, Failures: 0, Errors: 0,
+  Skipped: 0** (global "29 nodes not yet assigned" line present, outside prefix — documented above).
+- forms: `mvn test -pl plugins/jipipe-plugin-forms -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.forms` → **Tests run: 1, Failures: 0, Errors: 0,
+  Skipped: 0** (global "92 nodes not yet assigned" line present, outside prefix — documented above).
+
+**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate **skips
+cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
+
+**Transition note understood:** the 58 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node panel's
+category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking, unmerged branch).
+No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+**Byte-identity check (reviewer contract):** all 58 node files are byte-identical to base after stripping
+`import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a line-filter
+diff across `git show HEAD:<f>` vs head — 58 files, 0 non-annotation changes) — the change is annotations-only.

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.forms.algorithms;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeIterationStepGenerationResult;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,7 +29,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithmIterationStepGenerationSettings;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettings;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "of its 'Data' slot and shows a user interface during the runtime that allows users to modify annotations via form elements. " +
         "These forms are provided via the 'Forms' slot, where all contained form elements are shown in the user interface. " +
         "After the user input, the form data objects are stored in an output slot (one set of copies per iteration step).")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
+@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeInputSlot(value = FormData.class, name = "Forms", create = true, role = JIPipeDataSlotRole.Parameters)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)

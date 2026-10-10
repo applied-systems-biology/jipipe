@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.transform;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -35,8 +35,7 @@ import java.util.Set;
  */
 @SetJIPipeDocumentation(name = "Melt table", description = "Moves values from different columns (value columns) into their own rows, " +
         "while the other columns are copied (category columns). Also known as unpivot operation.")
-@AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform", aliasName = "Unpivot table")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

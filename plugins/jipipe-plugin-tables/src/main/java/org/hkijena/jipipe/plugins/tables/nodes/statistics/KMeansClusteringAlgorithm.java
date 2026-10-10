@@ -18,6 +18,7 @@ import org.apache.commons.math3.ml.clustering.Clusterer;
 import org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer;
 import org.apache.commons.math3.ml.clustering.MultiKMeansPlusPlusClusterer;
 import org.apache.commons.math3.random.JDKRandomGenerator;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableAggregateFunction;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -27,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -48,7 +48,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Apply K-Means clustering on rows", description = "Applies K-Means clustering on the table by extracting a feature vector per row and writes the cluster ID into a new column. " +
         "Also supports Multi-K-means clustering by applying multiple trials.")
 @AddJIPipeCitation("Based on org.apache.commons.math3.ml.clustering.KMeansPlusPlusClusterer")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Clustering")
+@ConfigureJIPipeNode(function = TableAggregateFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers")

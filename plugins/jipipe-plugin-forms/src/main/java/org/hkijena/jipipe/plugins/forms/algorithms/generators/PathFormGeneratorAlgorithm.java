@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.forms.algorithms.generators;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.MarkNodeAsUnstable;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.plugins.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.PathFormData;
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.PathFormData;
 @SetJIPipeDocumentation(name = "Path input form", description = "Creates a path input form. ")
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class)
 @MarkNodeAsUnstable
 public class PathFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 

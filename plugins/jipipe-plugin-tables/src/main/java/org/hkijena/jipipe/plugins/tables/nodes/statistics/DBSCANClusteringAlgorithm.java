@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.tables.nodes.statistics;
 
 import org.apache.commons.math3.ml.clustering.Cluster;
 import org.apache.commons.math3.ml.clustering.DBSCANClusterer;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableAggregateFunction;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -46,7 +46,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Apply DBSCAN clustering on rows", description = "Applies DBSCAN (density-based spatial clustering of applications with noise) clustering on the table by extracting a feature vector per row and writes the cluster ID into a new column.")
 @AddJIPipeCitation("Based on org.apache.commons.math3.ml.clustering.DBSCANClusterer")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Clustering")
+@ConfigureJIPipeNode(function = TableAggregateFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Centers", create = true, description = "The cluster centers")

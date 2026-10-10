@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.annotations;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -35,7 +35,7 @@ import java.util.Map;
  * Algorithm that integrates columns
  */
 @SetJIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

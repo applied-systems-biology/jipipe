@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.tables.nodes.rows;
 
 import com.google.common.primitives.Doubles;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Apply expression per row", description = "Deprecated. Use the node with the same name. Applies an expression for each row. The column values are available as variables.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @Deprecated

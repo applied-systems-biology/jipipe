@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.merge;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -21,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -42,7 +42,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Merge table columns (simple)", description = "Merges multiple tables into one table by merging the list of columns. " +
         "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
         "The algorithm behind this is not 'smart' and is not capable of supplementing a table with data from another table. ")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MergeTableColumnsSimpleAlgorithm extends JIPipeMergingAlgorithm {

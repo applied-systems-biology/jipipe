@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.tables.nodes.merge;
 
 import com.google.common.collect.Sets;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -41,7 +41,7 @@ import java.util.*;
  */
 @SetJIPipeDocumentation(name = "Merge table columns (supplement, iterative)", description = "Merges columns from the source table into the target table. You can choose one or multiple reference columns that determine which rows from each table should be merged together. " +
         "Please note that this node can only merge two tables per iteration step. Use the 'Merge table columns (supplement)' node if you for example want to merge multiple sources into one/multiple target(s).")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
+@ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Target", create = true)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Source", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

@@ -20,6 +20,7 @@ import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.set.TDoubleSet;
 import gnu.trove.set.hash.TDoubleHashSet;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableAggregateFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
@@ -29,7 +30,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -50,7 +50,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Table column to histogram", description = "Deprecated. Replace with a new node with the same name. " +
         "Generates a histogram of table column values. Also supports weighting the values via an additional column.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
+@ConfigureJIPipeNode(function = TableAggregateFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 @LabelAsJIPipeHidden

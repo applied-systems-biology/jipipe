@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.plugins.forms.algorithms.generators;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.MarkNodeAsUnstable;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.plugins.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.plugins.forms.datatypes.BooleanFormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
@@ -27,7 +27,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 @SetJIPipeDocumentation(name = "Boolean input form", description = "Creates a boolean input form (a checkbox). ")
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class)
 @MarkNodeAsUnstable
 public class BooleanFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 

@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,8 +43,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
  */
 @SetJIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
         "Can be optionally configured to replace existing columns.")
-@AddJIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
