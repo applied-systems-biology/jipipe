@@ -20,6 +20,10 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -44,6 +48,22 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return PlotTables2Algorithm.class;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // 19.11b default for the runtime-registered "Plot Tables 2" node variants
+        // (one per JFreeChart plot data type; no @ConfigureJIPipeNode can reach them).
+        // The node's defining output is a JFreeChart plot, so the plotting branch's
+        // generic leaf (Other plots) is the defensible default over Miscellaneous.
+        // Task 20 (TaxonomyAutoAssignment) may refine per-variant; the framework
+        // below is final.
+        return new PlotMiscFunction();
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new JFreeChartFramework();
     }
 
     @Override

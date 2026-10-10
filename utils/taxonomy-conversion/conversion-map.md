@@ -136,11 +136,11 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-r | 5 | **converted (19.11c, 5 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
 | jipipe-plugin-imp | 5 | **converted (19.11d, 5 nodes, all CoreFramework, spatial BOTH); module gate zero unassigned (first test in module)** |
 | jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-clij | 4 | pending |
-| jipipe-plugin-ij2 | 2 | pending |
+| jipipe-plugin-clij | 4 | **converted (19.11b, 4 annotated + dynamic `CLIJCommandNodeInfo` defaults, all `ClijFramework`); module gate zero unassigned** |
+| jipipe-plugin-ij2 | 2 | **converted (19.11b, 2 annotated + dynamic `ImageJ2OpNodeInfo` defaults, all `ImageJ2Framework`); module gate zero unassigned** |
 | jipipe-plugin-ij-multi-template-matching | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
 | jipipe-plugin-ij-ocr | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
-| jipipe-plugin-plots | 1 | pending |
+| jipipe-plugin-plots | 1 | **converted (19.11b, 1 annotated + dynamic `PlotTables2AlgorithmInfo` defaults, all `JFreeChartFramework`, +`PlottingFamily` step); module gate zero unassigned** |
 
 ## Per-module notes (append per batch)
 
@@ -3243,3 +3243,230 @@ state **only** by the added `CoreFramework` import + the `framework = CoreFramew
 via `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old*
 add-node panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0
 breaking, unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+### 19.11b — jipipe-plugin-clij (4 annotated + 1 dynamic NodeInfo) + jipipe-plugin-ij2 (2 annotated + 1 dynamic NodeInfo) + jipipe-plugin-plots (1 annotated + 1 dynamic NodeInfo) (7 annotated nodes, 3 dynamic)
+
+**Status:** all 7 `@ConfigureJIPipeNode`-annotated nodes converted to `function`/`framework`
+(`/spatialDimensions`), **plus** the 3 **dynamic** `JIPipeNodeInfo` classes (the ones that register
+MANY nodes at RUNTIME — discovered IJ2 ops / CLIJ macro commands / one plot variant per data type)
+each given the **19.10 accessor treatment**: a `getPrimaryFunction()` + `getFramework()` override so
+each module's zero-unassigned gate passes NOW. All 3 module gates green. **Dynamic-node functions are
+19.11b DEFAULTS pending Task 20** (see the Task-20 boundary note below). One commit.
+
+**Scope / gate prefixes (verified, matches controller):**
+- `plugins/jipipe-plugin-clij/src/main` — base pkg `org.hkijena.jipipe.plugins.clij2` (GATE PREFIX) —
+  **4** annotated files (`Clij2PushAlgorithm`, `Clij2PullAlgorithm`, `Clij2ExecuteKernelIterating`,
+  `Clij2ExecuteKernelSimpleIterating`) + 1 dynamic class `CLIJCommandNodeInfo` (implements
+  `JIPipeNodeInfo` directly). `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
+- `plugins/jipipe-plugin-ij2/src/main` — base pkg `org.hkijena.jipipe.plugins.imagej2` (GATE PREFIX) —
+  **2** annotated files (`CreateIJ2OutOfBoundsFactoryAlgorithm`, `CreateIJ2ShapeAlgorithm`) + 1 dynamic
+  class `ImageJ2OpNodeInfo`. `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
+- `plugins/jipipe-plugin-plots/src/main` — base pkg `org.hkijena.jipipe.plugins.plots` (GATE PREFIX) —
+  **1** annotated file (`PlotTablesAlgorithm`) + 1 dynamic class `PlotTables2AlgorithmInfo`.
+  `grep -rl "implements JIPipeNodeInfo" src/main` → exactly 1.
+
+**Dynamic-coverage verification (the 19.10 lesson):** each dynamic NodeInfo's `getInstanceClass()`
+returns a class **under the module's gate prefix**, so the gate sees the runtime nodes and the
+override covers them — confirmed in the gate runs (see (d)): IJ2 registered **619** distinct
+`ij2:op:*` ids under the `…imagej2` prefix, plots registered **11** distinct `plot-table:*` ids under
+the `…plots` prefix, and the CLIJ 4 annotated ids (`clij-push-to-gpu`, `clij-pull-from-gpu`,
+`clij-execute-kernel-iterating`, `clij-execute-kernel-simple-iterating`) are present (CLIJ macro-plugin
+command nodes register conditionally — see (a) note). Without the override, the IJ2/Plots gates would
+have listed all of those ids as unassigned (exactly the §19.10 14-runtime-node RED→GREEN shape).
+
+#### (a) jipipe-plugin-clij (4 annotated) — all `ClijFramework`
+
+**Framework — `ClijFramework` for all 4 + the dynamic NodeInfo** (rule 11: clij→`ClijFramework`).
+Import `org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework`. **No `ImageJ1Framework`, no
+`NoFramework`** (verified `grep -rl "NoFramework\|ImageJ1Framework" src/main` → 0).
+
+**Function (the 4 annotated) — by OP (CLIJ2 = GPU image processing; read each
+`@SetJIPipeDocumentation` + slots):**
+
+| node (old `ImagesNodeTypeCategory` / "CLIJ") | function | spatial | rationale |
+|---|---|---|---|
+| `Clij2ExecuteKernelSimpleIterating` | `FilteringFunction` | **both** | "Executes an OpenCL kernel via CLIJ2 to **process images**" — generic GPU image **processing/filtering** (any kernel, one input); the `images/` generic-processing leaf |
+| `Clij2ExecuteKernelIterating` | `FilteringFunction` | **both** | same op as the SimpleIterating sibling (multiple inputs); the `images/` generic-processing leaf (kept consistent with the sibling) |
+| `Clij2PushAlgorithm` | `MiscellaneousFunction` ⚠️ | **both** | "Converts an image **into a GPU image** managed by CLIJ" — moves image data **to** the GPU (a CPU→GPU **transfer/convert**, not a filter/measure/segment); there is **no transfer leaf** in the taxonomy, so the top-level `MiscellaneousFunction` is the honest last-resort |
+| `Clij2PullAlgorithm` | `MiscellaneousFunction` ⚠️ | **both** | "Converts a **GPU image** into a non-CLIJ image" — moves image data **from** the GPU (a GPU→CPU transfer, sibling of Push); same **no-transfer-leaf** reasoning |
+
+**Function distribution (the 4 annotated):** `FilteringFunction` **2** (both ExecuteKernel) ·
+`MiscellaneousFunction` **2** (Push + Pull). **0 nodes without a function.**
+
+**Spatial (the 4 annotated) — rule 12, first image INPUT slot:** **both = 4** (all four).
+`Clij2PushAlgorithm` takes unconstrained `ImagePlusData`; `Clij2PullAlgorithm` and both
+`Clij2ExecuteKernel*` take `CLIJImageData`, which is `@ConfigureJIPipeDataCrate(inherits =
+ImagePlusData.class)` (an unconstrained ImagePlus-backed hyperstack — 2D single images up to 3D
+stacks) ⇒ **`SPATIAL_2D, SPATIAL_3D`** on all 4 (the §19.3 closed-set ruling: unconstrained
+`ImagePlus*` ⇒ both). **Distribution: both = 4 · absent = 0.**
+
+**CLIJ dynamic-class note:** `CLIJCommandNodeInfo` (id `clij:<macro-plugin-identifier>`) is
+constructed in `CLIJPlugin.registerAlgorithms()` from `getPluginsOfType(CLIJMacroPlugin.class)`, each
+wrapped in `try/catch` that logs-and-continues on failure; a CLIJ command with **no** input/output slots
+is skipped. So the *count* of registered dynamic CLIJ command nodes depends on the on-classpath CLIJ2
+macro plugins. In this gate run the 4 **annotated** ids are confirmed present; the dynamic command
+nodes register as available and are covered by the override below regardless of count.
+
+#### (b) jipipe-plugin-ij2 (2 annotated) — all `ImageJ2Framework`
+
+**Framework — `ImageJ2Framework` for both + the dynamic NodeInfo** (rule 11: ij2→`ImageJ2Framework`;
+plan line 580: "ij2→`ImageJ2Framework` (the 2 annotated; the auto-discovered bulk is Task 20)").
+Import `org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework`.
+
+**Function (the 2 annotated) — rule 6 by OUTPUT:**
+
+| node (old `DataSourceNodeTypeCategory`) | function | spatial | rationale |
+|---|---|---|---|
+| `CreateIJ2OutOfBoundsFactoryAlgorithm` | `MiscDataFunction` | absent | rule 6 by output: emits `ImageJ2OutOfBoundsFactoryData` — an **IJ2-specific op-config** data type with **no** `data/` leaf ⇒ the `data/` **misc** leaf |
+| `CreateIJ2ShapeAlgorithm` | `MiscDataFunction` | absent | rule 6 by output: emits `ImageJ2ShapeData` — IJ2-specific op-config ⇒ the `data/` **misc** leaf (consistent with the sibling) |
+
+**Function distribution (the 2 annotated):** `MiscDataFunction` **2**. **0 without a function.**
+
+**Spatial (the 2 annotated):** **absent = 2** — both are DataSources that take **no image input** (they
+parameterize a factory/shape config) ⇒ no `spatialDimensions` field (rule 12: non-image ⇒ absent).
+
+#### (c) jipipe-plugin-plots (1 annotated) — `JFreeChartFramework` + `PlottingFamily` step
+
+**Framework — `JFreeChartFramework`** for the annotated node + the dynamic NodeInfo (rule 11:
+plots→`JFreeChartFramework`). Import `org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework`.
+
+**The 1 annotated node:**
+
+| node (old `TableNodeTypeCategory`) | function | spatial | rationale |
+|---|---|---|---|
+| `PlotTablesAlgorithm` ("Plot tables"; `ResultsTableData` in → `JFreeChartPlotData` out) | `PlotMiscFunction` | absent | the node's **plot type is user-selectable at runtime** (a `JIPipeDataInfoRef` over *all* `JFreeChartPlotData` subtypes: bar/line/pie/scatter/heatmap/histogram/box-and-whisker…) — it does **not** name a specific chart type in its docs, so the `plotting/` generic leaf "Other plots" (`PlotMiscFunction`) is the correct fit (not `PlotBarFunction`/`PlotLineFunction`/etc., which would wrongly specialize a general node) |
+
+**Spatial (the 1 annotated):** **absent** — table→plot, no image input (rule 12).
+
+**⚠️ Plots leaf (flagged):** `PlotTablesAlgorithm` → `PlotMiscFunction` chosen over the specific
+`plotting/` leaves because the concrete chart type is a *runtime parameter*, not fixed in the node.
+If the audit instead wants the generic table-plot node under a dedicated "plot from table" leaf, it
+would need a new leaf (out of scope here). Recorded, not changed.
+
+**⚠️ Plots family-step (decided + flagged):** **ADDED**
+`@JIPipeNodeTaxonomyFamilyStepAnnotation(family = PlottingFamily.class, label = "Plot tables", purpose
+= "Create a JFreeChart plot from the incoming result tables")` to `PlotTablesAlgorithm`. Rationale:
+the plan (line 580) **explicitly** names it — "plots→`JFreeChartFramework` +
+`@JIPipeNodeTaxonomyFamilyStepAnnotation(family = PlottingFamily.class, …)`" — and `PlottingFamily`'s own
+Javadoc says "creating plots … Steps are **not annotated yet**; the family's step annotations … are
+planned for later phases," with `PlotTablesAlgorithm` the module's defining node. So the plan's intent is
+that this node is a (start) step of the Plotting family — mirroring the §19.10 TrackMate family-step
+shape (a `…FamilyStepAnnotation` with `family`/`label`/`purpose`, **no** `after()` = a start step).
+This is the **only** non-`@ConfigureJIPipeNode` annotation added in this batch. **Flagged:** the step is
+a *start step* (`after = {}`) — if the audit later wants it chained after a "load table" step or
+replaced by the dynamic `PlotTables2` variants, the `after()`/step membership should be re-decided then.
+
+**Alias (1) — DROPPED (alias-leaf == primary-leaf):** `PlotTablesAlgorithm`'s
+`@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze",
+aliasName = "Plot (JFreeChart)")`. Its leaf is the plotting branch (the node plots), identical to the
+primary `PlotMiscFunction` ⇒ **dropped; no secondary `function[]`** (same shape as §19.3/§19.11a alias
+drops where the alias re-lists the same op). Verified `grep "@AddJIPipeNodeAlias" src/main` → 0.
+(clij + ij2 have **0** aliases.)
+
+#### (d) The 3 DYNAMIC NodeInfo records (19.10 accessor treatment — accessor-ONLY, no logic change)
+
+Each of the 3 runtime-registration `JIPipeNodeInfo` classes had **exactly two** things added: the
+imports + `getPrimaryFunction()` + `getFramework()`. **No spatial, no name-heuristic, no other method
+touched** (mirrors `CreateSpotDetectorNodeInfo.java`). The framework is **final** (unambiguous); the
+primary function is a **defensible 19.11b DEFAULT** that Task 20 will refine.
+
+| module / class | `getInstanceClass()` (under gate prefix?) | `getFramework()` (final) | `getPrimaryFunction()` (19.11b default) | default rationale |
+|---|---|---|---|---|
+| clij — `CLIJCommandNodeInfo` | `CLIJCommandNode` (…clij2 ✓) | `new ClijFramework()` | `new MiscellaneousFunction()` | CLIJ2 commands are **varied GPU image ops** (filter/segment/convert/measure, discovered from macro plugins); no single leaf fits the whole set ⇒ Miscellaneous. **Task 20 refines by name** (e.g. "Gaussian filter"→`FilteringFunction`). |
+| ij2 — `ImageJ2OpNodeInfo` | `ImageJ2OpNode` (…imagej2 ✓) | `new ImageJ2Framework()` | `new MiscellaneousFunction()` | ImageJ2 **ops** are varied (coloc/convert/math/…) ⇒ Miscellaneous. **Task 20 refines by name.** |
+| plots — `PlotTables2AlgorithmInfo` | `PlotTables2Algorithm` (…plots ✓) | `new JFreeChartFramework()` | `new PlotMiscFunction()` | the node's **defining output is a JFreeChart plot** (one variant per plot data type), so a `plotting/` leaf is the better default than Miscellaneous (consistent with the annotated `PlotTablesAlgorithm`). Task 20 *may* refine per-variant. |
+
+**Task-20 boundary (important — 19.11b is NOT Task 20):** 19.11b does **only** (1) convert the 7
+**static** annotated nodes (function/framework/spatial by the rules — code-defined, not discovered) and
+(2) add the **two accessor overrides** to each of the 3 dynamic NodeInfo classes with a defensible
+**default** function + the final framework, so each gate passes zero-unassigned **now**. It does **NOT**
+build a `TaxonomyAutoAssignment` helper, does **NOT** parse node names, and does **NOT** add spatial to
+the dynamic nodes. **Task 20 ("IJ2/CLIJ auto-discovery assignment")** will later build
+`TaxonomyAutoAssignment` and refine the dynamic nodes' function by **name/menuPath heuristics** (default
+`MiscellaneousFunction`) + spatial by **input-profile** (`ANY` ⇒ both), replacing these 19.11b defaults.
+The 3 dynamic functions above are therefore **19.11b defaults pending Task 20**.
+
+#### (e) Flagged for Phase 3 audit
+
+- **⚠️ CLIJ `Clij2PushAlgorithm` + `Clij2PullAlgorithm` → `MiscellaneousFunction` (judged).** These
+  transfer image data to/from the GPU; there is **no transfer/IO leaf** in the current taxonomy, so the
+  top-level Miscellaneous leaf is the honest last-resort (rule 9 shape). **Alternative:** a dedicated
+  "GPU transfer / image IO" leaf (would need a new leaf) or, if the audit groups by the *unconstrained
+  image* input, an `images/` leaf — but Push/Pull do not filter/measure/segment. Recorded, not changed.
+  (The two `Clij2ExecuteKernel*` → `FilteringFunction` are the more solid judgment: generic GPU image
+  **processing** is the closest `images/` leaf.)
+- **⚠️ Plots `PlotTablesAlgorithm` → `PlotMiscFunction`** (generic runtime-selectable plot type; see (c)).
+- **⚠️ Plots family-step (start step, `after={}`)** — see (c); re-decide chaining / membership in Phase 3.
+- **⚠️ The 3 dynamic defaults** (`CLIJCommandNodeInfo`/`ImageJ2OpNodeInfo` → `MiscellaneousFunction`,
+  `PlotTables2AlgorithmInfo` → `PlotMiscFunction`) — 19.11b defaults; **Task 20 refines by name**.
+
+#### (f) Test infrastructure (first test in each of the 3 modules — none had `src/test` or JUnit deps)
+
+For EACH of clij / ij2 / plots (mirrors the `jipipe-plugin-ij` / `jipipe-plugin-imp` pom verbatim):
+- **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) before `</dependencies>`.
+- **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
+  TaxonomyConversionReportTest.java` → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/
+  nodes/taxonomy/` (**byte-identical**, verified with `cmp` for all 3).
+- **Created** `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (module-scoped pkg `clij2`/`imagej2`/`plots`;
+  `LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc adapted to the module —
+  clij cites `ij.ImagePlus`/`ij.process.ImageProcessor` (in `CLIJImageData`/the Push-Pull nodes), ij2
+  cites `ij.ImagePlus` (in the converters), plots notes it has no direct `ij.*` but the gate's
+  `ensureInstance()` loads the ImageJ classpath so the patcher must run first) +
+  `src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`
+  (single line = that module's listener FQN).
+
+**Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not present; without re-registering the patcher, any
+`ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). `LegacyInjector` is on the test classpath transitively via
+jipipe-core → `net.imagej:imagej`.
+
+#### (g) Gate results (3 modules × enabled/unset)
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-clij,plugins/jipipe-plugin-ij2,
+  plugins/jipipe-plugin-plots -am` → **exit 0** (host mvn; no podman fallback needed).
+- **CLIJ gate (enabled):** `mvn test -pl plugins/jipipe-plugin-clij -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.clij2` → **BUILD SUCCESS**, `Tests run: 1,
+  Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…clij2` prefix. Global line
+  `Node taxonomy: 116 nodes not yet assigned …` is the on-classpath-unconverted count (still-unconverted
+  other modules + dep jars), **none** under `…clij2` ⇒ the prefix-filtered assertion saw **zero**.
+- **CLIJ gate (unset):** `mvn test -pl plugins/jipipe-plugin-clij` → **BUILD SUCCESS**, `Tests run: 1,
+  Failures: 0, Errors: 0, Skipped: 1` — gate **skips cleanly** (property unset), module green.
+- **IJ2 gate (enabled):** `… module=org.hkijena.jipipe.plugins.imagej2` → **BUILD SUCCESS**, `Tests run:
+  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…imagej2` prefix. The gate saw
+  **619** distinct `ij2:op:*` ids registered under the prefix (dynamic IJ2 ops) — **the dynamic-coverage
+  proof**: without the `ImageJ2OpNodeInfo` override these would all be listed as unassigned (RED).
+  Global line `116 nodes not yet assigned`, none under `…imagej2`.
+- **IJ2 gate (unset):** `mvn test -pl plugins/jipipe-plugin-ij2` → **BUILD SUCCESS**, `Tests run: 1,
+  Failures: 0, Errors: 0, Skipped: 1` — skipped cleanly, module green.
+- **PLOTS gate (enabled):** `… module=org.hkijena.jipipe.plugins.plots` → **BUILD SUCCESS**, `Tests run:
+  1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `…plots` prefix. The gate saw
+  **11** distinct `plot-table:*` ids (the dynamic per-data-type plot variants) under the prefix — the
+  dynamic-coverage proof for `PlotTables2AlgorithmInfo`. Global line `77 nodes not yet assigned`
+  (plots' classpath pulls in a smaller set of on-classpath modules than clij/ij2), none under `…plots`.
+- **PLOTS gate (unset):** `mvn test -pl plugins/jipipe-plugin-plots` → **BUILD SUCCESS**, `Tests run: 1,
+  Failures: 0, Errors: 0, Skipped: 1` — skipped cleanly, module green.
+- **Stale-jar gotcha (19.6–19.11d): NOT hit.** No CORE (`org.hkijena.jipipe.*`) node surfaced as
+  globally-unassigned in any prefix; no `mvn install -pl jipipe-core` was run and no jipipe-core source
+  was touched. The 116/116/77 global lines are the still-unconverted *other* modules + dependency jars,
+  all **outside** the 3 filtered prefixes (stale dependency jars only inflate the informational global
+  line).
+
+**Byte-identity check (reviewer contract):** the 7 annotated files are **annotation-only** (import
+block + the single `@ConfigureJIPipeNode(…)` line changed — `nodeTypeCategory`/`menuPath` removed,
+`function`/`framework`/`spatialDimensions` added, `…categories.*` imports dropped, leaf + framework +
+2 `SPATIAL_*` static imports added where spatial; plots additionally gained the `PlottingFamily` step
+annotation + its 2 imports and dropped its 1 alias line). The 3 NodeInfo files changed **only** by the
+added imports + the two overridden methods (`getPrimaryFunction`/`getFramework`) + the default-note
+comment (no other method, no spatial, no logic).
+
+**Transition note understood:** the 7 converted annotated nodes now fall back to `InternalNodeTypeCategory`
+via `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel. (The 3 dynamic
+NodeInfo classes keep their `getCategory()`/`getMenuPath()` — those are the `JIPipeNodeInfo` interface
+contract, not annotations, and were not part of the conversion.)

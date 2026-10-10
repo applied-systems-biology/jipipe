@@ -28,6 +28,10 @@ import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
@@ -265,6 +269,21 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return CLIJCommandNode.class;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // 19.11b default for the runtime-registered CLIJ command nodes (discovered
+        // CLIJ2 macro plugins; no @ConfigureJIPipeNode can reach them). CLIJ commands
+        // are varied GPU image ops, so the best general default is the Miscellaneous
+        // branch. Task 20 (TaxonomyAutoAssignment) refines this to a name-based
+        // heuristic + input-profile spatial; the framework below is final.
+        return new MiscellaneousFunction();
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new ClijFramework();
     }
 
     @Override

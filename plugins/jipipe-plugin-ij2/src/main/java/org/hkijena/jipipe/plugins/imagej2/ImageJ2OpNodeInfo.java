@@ -23,6 +23,10 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.plugins.imagej2.io.ImageJ2JIPipeModuleIOService;
 import org.hkijena.jipipe.plugins.imagej2.io.ImageJ2ModuleIO;
@@ -170,6 +174,21 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return ImageJ2OpNode.class;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // 19.11b default for the runtime-registered ImageJ2 op nodes (discovered
+        // net.imagej.ops; no @ConfigureJIPipeNode can reach them). ImageJ2 ops are
+        // varied, so the best general default is the Miscellaneous branch. Task 20
+        // (TaxonomyAutoAssignment) refines this to a name-based heuristic +
+        // input-profile spatial; the framework below is final.
+        return new MiscellaneousFunction();
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new ImageJ2Framework();
     }
 
     @Override
