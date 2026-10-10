@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -64,6 +65,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -78,11 +80,20 @@ import java.util.Set;
  * The browser is function-tree driven: a taxonomy function tree
  * (13 top-levels → 48 leaves) selects which entries are shown, and the
  * taxonomy facets (framework / spatial / input / tags) plus the search
- * text post-filter them. It is <em>tier-aware</em>: at narrow widths
- * (&lt; 380 px) it collapses to a single tree list of node leaves
- * ({@link NodeBrowserModel#TIER_COMPACT}), and at comfortable widths it
- * shows the tree and the results list side by side
- * ({@link NodeBrowserModel#TIER_COMFORTABLE}).
+ * text post-filter them. It is <em>tier- and search-aware</em>: the main
+ * area is a function of (tier, search active).
+ * <ul>
+ * <li>compact (&lt; 380 px, {@link NodeBrowserModel#TIER_COMPACT}) with no
+ * active search shows the <b>single function tree with node leaves</b>
+ * (icon, framework badge, spatial chips) — the tree takes over the
+ * "see what's available" role;
+ * <li>comfortable ({@link NodeBrowserModel#TIER_COMFORTABLE}) with no
+ * active search shows the <b>function tree | filtered node list</b> side
+ * by side (the tree is functions-only there — the flat list is the node
+ * view, so node leaves appear only in the compact tier);
+ * <li>an <b>active search</b> (non-empty search text) flips <em>either</em>
+ * tier into the <b>flat ranked result list</b>, hiding the tree.
+ * </ul>
  * <p>
  * The non-Swing state lives in {@link NodeBrowserModel} (unit-tested);
  * this component renders it and reacts to its changes.
@@ -133,9 +144,22 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JPanel followUpStrip = new JPanel();
     private final JPanel followUpContent = new JPanel();
 
-    // --- Layout containers (re-rendered per tier) ---
+    // --- Layout containers (re-rendered per view) ---
     private final JPanel bodyPanel = new JPanel();
     private int lastRenderedTier = Integer.MIN_VALUE;
+    /** The search-active state at the last view render (0/1); -1 = none yet. */
+    private int lastRenderedSearchActive = -1;
+
+    // --- Compact node leaves (single source of truth: the last filtered
+    // results list; see rebuildNodeLeaves) ---
+    private List<JIPipeNodeDatabaseEntry> lastFiltered = List.of();
+
+    /**
+     * Guards the tree-selection listener while the node leaves are being
+     * (re)attached: the structural change events auto-clear entry-leaf
+     * selections, and we do not want those to re-run the query.
+     */
+    private boolean selectionSuppressed;
 
     /**
      * Creates a new node browser for the given workbench and graph editor.
@@ -151,15 +175,33 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         this.isCompartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
 
         searchField = new JIPipeDesktopSearchTextField();
-        searchField.addActionListener(e -> model.setSearch(searchField.getText()));
+        searchField.addActionListener(e -> {
+            model.setSearch(searchField.getText());
+            applyViewIfNeeded(); // an active search flips either tier into the flat list
+            reloadList();
+        });
         searchField.getTextField().addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_DOWN) {
                     e.consume();
                     SwingUtilities.invokeLater(() -> {
-                        resultList.requestFocusInWindow();
-                        resultList.setSelectedIndex(0);
+                        if (model.isSearchActive() || model.getTier(getWidth()) != NodeBrowserModel.TIER_COMPACT) {
+                            resultList.requestFocusInWindow();
+                            resultList.setSelectedIndex(0);
+                        } else {
+                            // Compact, no search: move the selection to the first
+                            // node leaf of the tree, expanding its branches to
+                            // reveal it.
+                            TreePath firstLeaf = findFirstNodeLeafPath();
+                            int row = firstLeaf != null ? expandAndReturnRow(firstLeaf) : -1;
+                            if (row >= 0) {
+                                tree.setSelectionRow(row);
+                                tree.makeVisible(firstLeaf);
+                            } else {
+                                tree.requestFocusInWindow();
+                            }
+                        }
                     });
                 } else if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     e.consume();
@@ -178,10 +220,21 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         this.treeScroll = new JScrollPane(tree);
         this.treeScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         tree.setDragEnabled(true);
-        tree.setTransferHandler(new TreeFunctionTransferHandler(tree));
+        tree.setTransferHandler(new TreeNodeTransferHandler(tree));
         tree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         tree.setCellRenderer(new FunctionTreeCellRenderer());
         tree.addTreeSelectionListener(e -> updateTreePathFromSelection());
+        tree.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (SwingUtilities.isLeftMouseButton(e) && e.getClickCount() == 2) {
+                    JIPipeNodeDatabaseEntry entry = entryFromPath(tree.getSelectionPath());
+                    if (entry != null) {
+                        insertAtCursor(entry);
+                    }
+                }
+            }
+        });
 
         // Results list
         resultList = new JList<>();
@@ -237,13 +290,13 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         initializeFilterBar();
         initializeBody();
         populateTree();
-        applyTierIfNeeded();
+        applyViewIfNeeded();
 
-        // Recompute the layout tier on resize (compact vs. comfortable)
+        // Recompute the view (tier + search) on resize
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                applyTierIfNeeded();
+                applyViewIfNeeded();
             }
         });
 
@@ -405,40 +458,55 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Body (tree + results, tier-aware)
+    // Body (tree + results, tier- and search-aware)
     // ------------------------------------------------------------------
 
     private void initializeBody() {
         setLayout(new BorderLayout());
         add(toolBar, BorderLayout.NORTH);
 
-        // The body holds the filter bar (top) + the tier-dependent center;
-        // applyTierIfNeeded() (called from the constructor and the resize
-        // listener) packs it per the current tier.
+        // The body holds the filter bar (top) + the view-dependent center;
+        // applyViewIfNeeded() (called from the constructor, the resize
+        // listener, and the search listener) packs it per the current view.
         bodyPanel.setLayout(new BorderLayout());
         add(bodyPanel, BorderLayout.CENTER);
         add(followUpStrip, BorderLayout.SOUTH);
     }
 
     /**
-     * Applies the layout tier for the current width: compact shows only the
-     * results list (the tree keeps its selection but is hidden), comfortable
-     * shows the tree and results side by side. It is a no-op when the tier is
-     * unchanged since the last application, so it is safe to call from the
-     * component's resize listener on every resize.
+     * Applies the main-area view for the current (tier, search active) pair.
+     * The view matrix:
+     * <ul>
+     * <li>compact, no search → the single function tree <em>with node
+     * leaves</em> (spec: "single function tree with node leaves");
+     * <li>comfortable, no search → the function tree (functions-only) |
+     * filtered node list side by side (spec: "function tree | filtered node
+     * list");
+     * <li>either tier, search active → the flat ranked result list, tree
+     * hidden (spec: "typing flips either tier into a flat ranked result
+     * list").
+     * </ul>
+     * It is a no-op when the (tier, search-active) pair is unchanged since
+     * the last application, so it is safe to call from the component's
+     * resize listener on every resize, from the debounced search listener,
+     * and from {@link #applyQueryResult} when a new result arrives.
      */
-    private void applyTierIfNeeded() {
+    private void applyViewIfNeeded() {
         int tier = model.getTier(getWidth());
-        if (tier == lastRenderedTier) {
+        boolean searchActive = model.isSearchActive();
+        if (tier == lastRenderedTier && (searchActive ? 1 : 0) == lastRenderedSearchActive) {
             return;
         }
         lastRenderedTier = tier;
+        lastRenderedSearchActive = searchActive ? 1 : 0;
         bodyPanel.removeAll();
         bodyPanel.add(filterBar, BorderLayout.NORTH);
-        if (tier == NodeBrowserModel.TIER_COMPACT) {
-            // Compact: single list of node leaves. The tree remains the
-            // source of the function filter but is not shown.
+        if (searchActive) {
+            // Search active: flat ranked result list (both tiers).
             bodyPanel.add(resultScroll, BorderLayout.CENTER);
+        } else if (tier == NodeBrowserModel.TIER_COMPACT) {
+            // Compact: single function tree with node leaves
+            bodyPanel.add(treeScroll, BorderLayout.CENTER);
         } else {
             // Comfortable: tree + results side by side
             JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll, resultScroll);
@@ -446,8 +514,185 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             split.setContinuousLayout(true);
             bodyPanel.add(split, BorderLayout.CENTER);
         }
+        // Keep the node leaves in sync with the view (attached only for the
+        // compact no-search view; cleared otherwise)
+        rebuildNodeLeaves();
         bodyPanel.revalidate();
         bodyPanel.repaint();
+    }
+
+    // ------------------------------------------------------------------
+    // Compact node leaves (children of the function tree)
+    // ------------------------------------------------------------------
+
+    /**
+     * (Re)builds the node leaves of the function tree from
+     * {@link #lastFiltered} — the single source of truth: the last
+     * post-filtered results list (pinned-only, selection-only, and
+     * branch-filtered by {@link #applyQueryResult}), so no second query is
+     * made and the leaves always match the flat list's rows.
+     * <p>
+     * Leaves are attached only for the compact no-search view. Each entry is
+     * attached under <em>every</em> leaf function node whose
+     * {@link NodeBrowserModel#descendantIds(FunctionRegistry, JIPipeNodeTaxonomyFunction)
+     * descendant ids} intersect the entry's
+     * {@link JIPipeNodeDatabaseEntry#getFunctionIds()} — the exact predicate
+     * of the comfortable-mode branch filter, so a multi-function entry can
+     * appear under each of its branches, consistent with comfortable mode.
+     * Only <em>leaf</em> function nodes (no children) receive entries; a
+     * function with sub-functions is never a direct parent of node leaves.
+     * Entries without function ids have nowhere to attach and therefore do
+     * not appear in the compact tree (they are still reachable via search,
+     * which shows the flat list in both tiers).
+     */
+    private void rebuildNodeLeaves() {
+        FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+        boolean compactNoSearch =
+            model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT && !model.isSearchActive();
+        List<JIPipeNodeDatabaseEntry> entries = compactNoSearch ? lastFiltered : List.of();
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+
+        // Whether the tree currently has node leaves and whether it will after
+        // the rebuild. If neither, the function tree is unchanged — leave it
+        // alone. This preserves the user's navigation in the comfortable and
+        // search views, where no node leaves are shown (a reload there would
+        // collapse the function tree on every facet change).
+        boolean hadLeaves = branchHasEntryChildren(root);
+        boolean willHaveLeaves = !entries.isEmpty();
+        if (!hadLeaves && !willHaveLeaves) {
+            return;
+        }
+
+        // Capture the currently-expanded function paths and the selection so
+        // they can be restored after the reload below. (In a JTree a node can
+        // only be expanded when all its ancestors are, so this set is
+        // ancestor-closed.) Node-leaf paths are leaves and are never expanded.
+        Set<TreePath> expandedFunctionPaths = new LinkedHashSet<>();
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            TreePath p = tree.getPathForRow(i);
+            if (p != null && tree.isExpanded(p) && entryFromPath(p) == null) {
+                expandedFunctionPaths.add(p);
+            }
+        }
+        TreePath selectionPath = tree.getSelectionPath();
+        // A function-branch selection survives the rebuild (its node is not
+        // touched); an entry-leaf selection does not (the leaf may be gone).
+        boolean restoreSelection = selectionPath != null && entryFromPath(selectionPath) == null;
+
+        // (Re)attach the node leaves, then reload the display. reload() is the
+        // standard way to reflect a bulk child change; it collapses the tree,
+        // so the navigation is restored below (synchronously — no visible
+        // flicker). Wrap the whole thing in the selection-suppression guard:
+        // the reload auto-clears the selection (JTree drops selections whose
+        // nodes changed), and the re-selection below would too — without the
+        // guard that would fire updateTreePathFromSelection → reloadList (a
+        // redundant re-query).
+        attachNodeLeaves(root, registry, entries);
+        selectionSuppressed = true;
+        try {
+            treeModel.reload();
+            if (!hadLeaves && willHaveLeaves) {
+                // Node leaves are appearing for the first time: expand every
+                // function branch that carries entries so the node leaves are
+                // visible (the compact tree is the "see what's available"
+                // surface).
+                expandBranchesWithEntries(root, new TreePath(new Object[]{root}));
+            } else {
+                // Re-expand the user's previous function navigation.
+                for (TreePath p : expandedFunctionPaths) {
+                    tree.expandPath(p);
+                }
+            }
+            if (restoreSelection) {
+                tree.setSelectionPath(selectionPath);
+            }
+        } finally {
+            selectionSuppressed = false;
+        }
+    }
+
+    /**
+     * Whether the given function node has any node-leaf (database-entry)
+     * children in its subtree.
+     */
+    private boolean branchHasEntryChildren(DefaultMutableTreeNode node) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn) {
+                if (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+                    return true;
+                }
+                if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction && branchHasEntryChildren(mtn)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Expands (recursively) every function branch under the given node that
+     * carries node leaves, so the node leaves become visible. Called when node
+     * leaves first appear in the compact view.
+     */
+    private void expandBranchesWithEntries(DefaultMutableTreeNode node, TreePath path) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+                TreePath childPath = path.pathByAddingChild(mtn);
+                if (branchHasEntryChildren(mtn)) {
+                    tree.expandPath(childPath);
+                    expandBranchesWithEntries(mtn, childPath);
+                }
+            }
+        }
+    }
+
+    /**
+     * Recursively (re)attaches node-leaf rows below the given function node.
+     * At every node it first removes any previously attached node leaves (the
+     * entry children), so leaves are <em>replaced</em> on each call and cleared
+     * when {@code entries} is empty; then, at every <em>leaf</em> function
+     * node (no sub-functions), the entries of {@code entries} that attach to
+     * that function become direct children. Non-leaf nodes only forward the
+     * walk. Function children are never touched. The caller is responsible for
+     * telling the {@link #treeModel} the children changed (see
+     * {@link #rebuildNodeLeaves}).
+     */
+    private void attachNodeLeaves(DefaultMutableTreeNode functionNode, FunctionRegistry registry,
+                                  List<JIPipeNodeDatabaseEntry> entries) {
+        // Remove any previously attached node leaves (reverse order keeps the
+        // indices stable while removing)
+        for (int i = functionNode.getChildCount() - 1; i >= 0; i--) {
+            Object child = functionNode.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+                functionNode.remove(i);
+            }
+        }
+        // Collect the function (non-entry) children
+        List<DefaultMutableTreeNode> functionChildren = new ArrayList<>();
+        for (int i = 0; i < functionNode.getChildCount(); i++) {
+            Object child = functionNode.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+                functionChildren.add(mtn);
+            }
+        }
+        if (functionChildren.isEmpty() && !entries.isEmpty()) {
+            // Leaf function node: attach the entries that belong to it
+            Set<String> descendantIds = NodeBrowserModel.descendantIds(registry,
+                (JIPipeNodeTaxonomyFunction) functionNode.getUserObject());
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                for (String fid : entry.getFunctionIds()) {
+                    if (descendantIds.contains(fid)) {
+                        functionNode.add(new DefaultMutableTreeNode(entry));
+                        break;
+                    }
+                }
+            }
+        }
+        for (DefaultMutableTreeNode child : functionChildren) {
+            attachNodeLeaves(child, registry, entries);
+        }
     }
 
     // ------------------------------------------------------------------
@@ -455,7 +700,17 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // ------------------------------------------------------------------
 
     private void updateTreePathFromSelection() {
+        if (selectionSuppressed) {
+            return;
+        }
         TreePath path = tree.getSelectionPath();
+        // Selecting a node leaf (compact view) marks an insert/drag target,
+        // it does not change the active branch filter and does not re-query:
+        // only function-branch selections filter (spec: "selecting a branch
+        // filters").
+        if (path != null && entryFromPath(path) != null) {
+            return;
+        }
         if (path == null) {
             model.setTreePath(List.of());
         } else {
@@ -486,6 +741,77 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             node.add(buildTreeNode(child, registry));
         }
         return node;
+    }
+
+    /**
+     * The database entry carried by the last node of the given tree path, or
+     * {@code null} when the selection is empty or ends on a function/root row
+     * (those are not insertable nodes). Used by the tree's double-click
+     * handler and (as the drag source) by the transfer handler.
+     */
+    private JIPipeNodeDatabaseEntry entryFromPath(TreePath path) {
+        if (path == null) {
+            return null;
+        }
+        Object last = path.getLastPathComponent();
+        if (last instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry entry) {
+            return entry;
+        }
+        return null;
+    }
+
+    /**
+     * The {@link TreePath} to the first node leaf (depth-first, in tree
+     * order) that carries a database entry, or {@code null} when the tree has
+     * none. Unlike scanning the displayed rows, this finds the first leaf even
+     * when its ancestor branches are collapsed (callers expand those to
+     * reveal it), so "the first hit" is well-defined in the compact tree view.
+     */
+    private TreePath findFirstNodeLeafPath() {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        TreePath rootPath = new TreePath(new Object[]{root});
+        for (int i = 0; i < root.getChildCount(); i++) {
+            Object child = root.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn) {
+                TreePath found = findFirstNodeLeafPath(mtn, rootPath);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    private TreePath findFirstNodeLeafPath(DefaultMutableTreeNode node, TreePath parentPath) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn) {
+                TreePath path = parentPath.pathByAddingChild(mtn);
+                if (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+                    return path;
+                }
+                if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+                    TreePath found = findFirstNodeLeafPath(mtn, path);
+                    if (found != null) {
+                        return found;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Expands the given path's ancestors (so the leaf becomes visible) and
+     * returns the leaf's displayed row, or {@code -1} if the path does not
+     * exist.
+     */
+    private int expandAndReturnRow(TreePath path) {
+        Object[] components = path.getPath();
+        for (int i = 1; i < components.length; i++) {
+            tree.expandPath(new TreePath(Arrays.copyOfRange(components, 0, i)));
+        }
+        return tree.getRowForPath(path);
     }
 
     // ------------------------------------------------------------------
@@ -543,6 +869,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (!listModel.isEmpty()) {
             resultList.setSelectedIndex(0);
         }
+
+        // The compact node leaves are rebuilt from this same `filtered` list
+        // (the single source of truth) so they always match the flat list.
+        this.lastFiltered = filtered;
+        // Rebuild the leaves directly (not via applyViewIfNeeded, which is a
+        // no-op when the (tier, search) view is unchanged — but a facet /
+        // pinned / branch / selection change still rewrites `filtered`).
+        rebuildNodeLeaves();
+        // And re-apply the layout in case the search-active state flipped.
+        applyViewIfNeeded();
     }
 
     // ------------------------------------------------------------------
@@ -624,12 +960,23 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     // ------------------------------------------------------------------
 
     private void insertFirstAtCursor() {
-        JIPipeNodeDatabaseEntry entry = resultList.getSelectedValue();
-        if (entry == null && resultList.getModel().getSize() > 0) {
-            entry = resultList.getModel().getElementAt(0);
+        if (model.isSearchActive() || model.getTier(getWidth()) != NodeBrowserModel.TIER_COMPACT) {
+            // Flat list is the current view: the first hit is list row 0
+            JIPipeNodeDatabaseEntry entry = resultList.getModel().getSize() > 0
+                ? resultList.getModel().getElementAt(0) : null;
+            if (entry != null) {
+                insertAtCursor(entry);
+            }
+            return;
         }
-        if (entry != null) {
-            insertAtCursor(entry);
+        // Compact no-search view: the current view is the tree, so the first
+        // hit is its first node leaf (depth-first in tree order).
+        TreePath firstLeaf = findFirstNodeLeafPath();
+        if (firstLeaf != null) {
+            JIPipeNodeDatabaseEntry entry = entryFromPath(firstLeaf);
+            if (entry != null) {
+                insertAtCursor(entry);
+            }
         }
     }
 
@@ -854,17 +1201,23 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     /**
      * DnD source for the function tree. The canvas only accepts node-graph
      * JSON (the transfer data produced by
-     * {@link JIPipeDesktopAddNodeTransferHandler}), so a selected function
-     * leaf is resolved to the first database entry that appears under it (or
-     * one of its descendants) and delegated to that handler — the same
-     * payload the results list produces. Dragging a leaf with no matching
+     * {@link JIPipeDesktopAddNodeTransferHandler}), so the selected tree row
+     * is resolved to a database entry and delegated to that handler — the
+     * same payload the results list produces:
+     * <ul>
+     * <li>a <em>node leaf</em> row (compact view) drags exactly that entry;
+     * <li>a <em>function</em> row (branch) is resolved to the first database
+     * entry that appears under it (or one of its descendants) — unchanged
+     * from before node leaves existed; dragging a branch with no matching
      * entry (e.g. an unconverted branch) produces no droppable data.
+     * </ul>
+     * The root row is not draggable.
      */
-    private class TreeFunctionTransferHandler extends TransferHandler {
+    private class TreeNodeTransferHandler extends TransferHandler {
         private final JTree tree;
         private final JIPipeDesktopAddNodeTransferHandler delegate = new JIPipeDesktopAddNodeTransferHandler();
 
-        private TreeFunctionTransferHandler(JTree tree) {
+        private TreeNodeTransferHandler(JTree tree) {
             this.tree = tree;
         }
 
@@ -879,26 +1232,30 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             if (path == null) {
                 return null;
             }
-            JIPipeNodeTaxonomyFunction leaf = null;
+            JIPipeNodeDatabaseEntry entry = entryFromPath(path);
+            JIPipeNodeTaxonomyFunction branch = null;
             for (Object o : path.getPath()) {
                 if (o instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction fn) {
-                    leaf = fn;
+                    branch = fn;
                 }
             }
-            if (leaf == null) {
-                return null;
-            }
-            Set<String> ids = NodeBrowserModel.descendantIds(JIPipe.getNodes().getFunctions(), leaf);
-            JIPipeNodeDatabaseEntry entry = null;
-            for (JIPipeNodeDatabaseEntry candidate : database.getEntries()) {
-                for (String fid : candidate.getFunctionIds()) {
-                    if (ids.contains(fid)) {
-                        entry = candidate;
+            if (entry == null) {
+                // A function branch row: resolve to the first database entry
+                // under it (or one of its descendants)
+                if (branch == null) {
+                    return null;
+                }
+                Set<String> ids = NodeBrowserModel.descendantIds(JIPipe.getNodes().getFunctions(), branch);
+                for (JIPipeNodeDatabaseEntry candidate : database.getEntries()) {
+                    for (String fid : candidate.getFunctionIds()) {
+                        if (ids.contains(fid)) {
+                            entry = candidate;
+                            break;
+                        }
+                    }
+                    if (entry != null) {
                         break;
                     }
-                }
-                if (entry != null) {
-                    break;
                 }
             }
             if (entry == null) {
@@ -931,21 +1288,95 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     /**
-     * Tree cell renderer: shows the function's name and icon; top-level
-     * functions have icons, leaves return {@code null} and fall back to a
-     * generic node icon (as the old panel did for its entries).
+     * Tree cell renderer. Function branch rows keep the original look
+     * (name + icon, generic icon for icon-less leaves); node-leaf rows
+     * (compact view) show the entry's icon, name, a framework badge (a
+     * rounded chip in the framework's color, mirroring the node finder's
+     * detail rail), and spatial chips ("2D" / "3D").
      */
     private static class FunctionTreeCellRenderer implements TreeCellRenderer {
 
         private static final Icon GENERIC_NODE_ICON = JIPipe.RESOURCES.getIcon16("actions/tag.png");
+        private static final int CHIP_ARC = 6;
 
         @Override
         public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
                                                       boolean expanded, boolean leaf, int row, boolean hasFocus) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            Object userObject = node.getUserObject();
+            Color selectionBackground = UIManager.getColor("Tree.selectionBackground");
+            Color selectionForeground = UIManager.getColor("Tree.selectionForeground");
+            Color background = selected && selectionBackground != null ? selectionBackground : tree.getBackground();
+            Color foreground = selected && selectionForeground != null ? selectionForeground : tree.getForeground();
+
+            if (userObject instanceof JIPipeNodeDatabaseEntry entry) {
+                // Node leaf row: icon + name + framework badge + spatial chips
+                JPanel rowPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
+                rowPanel.setOpaque(true);
+                rowPanel.setBackground(background);
+                rowPanel.setForeground(foreground);
+                rowPanel.setBorder(BorderFactory.createEmptyBorder(1, 0, 1, 0));
+
+                JLabel nameLabel = new JLabel();
+                nameLabel.setText(entry.getName());
+                nameLabel.setIcon(entry.getIcon() != null ? entry.getIcon() : GENERIC_NODE_ICON);
+                nameLabel.setForeground(foreground);
+                rowPanel.add(nameLabel);
+
+                JIPipeNodeTaxonomyFramework framework = entry.getFramework();
+                boolean noFramework = NoFramework.ID.equals(framework.getId());
+                JPanel frameworkChip = new JPanel(new GridBagLayout()) {
+                    @Override
+                    protected void paintComponent(Graphics g) {
+                        super.paintComponent(g);
+                        if (!noFramework) {
+                            Graphics2D g2d = (Graphics2D) g.create();
+                            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            g2d.setColor(framework.getColor());
+                            g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, CHIP_ARC, CHIP_ARC);
+                            g2d.dispose();
+                        }
+                    }
+                };
+                frameworkChip.setOpaque(false);
+                frameworkChip.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+                frameworkChip.setToolTipText(noFramework ? "No external framework" : "Framework: " + framework.getName());
+                JLabel frameworkLabel = new JLabel(framework.getAbbreviation());
+                frameworkLabel.setForeground(noFramework ? Color.GRAY : Color.WHITE);
+                frameworkLabel.setFont(frameworkLabel.getFont().deriveFont(Font.BOLD, 9f));
+                frameworkChip.add(frameworkLabel);
+                rowPanel.add(frameworkChip);
+
+                Set<JIPipeNodeTaxonomySpatialDimension> spatial = entry.getSpatialDimensions();
+                for (JIPipeNodeTaxonomySpatialDimension dimension : spatial) {
+                    String text = dimension == JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D ? "2D" : "3D";
+                    JPanel chip = new JPanel(new GridBagLayout()) {
+                        @Override
+                        protected void paintComponent(Graphics g) {
+                            super.paintComponent(g);
+                            Graphics2D g2d = (Graphics2D) g.create();
+                            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                            g2d.setColor(Color.GRAY);
+                            g2d.drawRoundRect(0, 0, getWidth() - 1, getHeight() - 1, CHIP_ARC, CHIP_ARC);
+                            g2d.dispose();
+                        }
+                    };
+                    chip.setOpaque(false);
+                    chip.setBorder(BorderFactory.createEmptyBorder(0, 2, 0, 2));
+                    chip.setToolTipText(dimension == JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D
+                        ? "Operates in 2D" : "Operates in 3D");
+                    JLabel chipLabel = new JLabel(text);
+                    chipLabel.setForeground(foreground);
+                    chipLabel.setFont(chipLabel.getFont().deriveFont(Font.PLAIN, 9f));
+                    chip.add(chipLabel);
+                    rowPanel.add(chip);
+                }
+                return rowPanel;
+            }
+
             JLabel label = new JLabel();
             label.setOpaque(true);
-            if (node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function) {
+            if (userObject instanceof JIPipeNodeTaxonomyFunction function) {
                 label.setText(function.getName());
                 Icon icon = function.getIcon();
                 label.setIcon(icon != null ? icon : GENERIC_NODE_ICON);
@@ -955,10 +1386,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 label.setText("All functions");
                 label.setIcon(GENERIC_NODE_ICON);
             }
-            Color selectionBackground = UIManager.getColor("Tree.selectionBackground");
-            Color selectionForeground = UIManager.getColor("Tree.selectionForeground");
-            label.setForeground(selected && selectionForeground != null ? selectionForeground : tree.getForeground());
-            label.setBackground(selected && selectionBackground != null ? selectionBackground : tree.getBackground());
+            label.setForeground(foreground);
+            label.setBackground(background);
             return label;
         }
     }
