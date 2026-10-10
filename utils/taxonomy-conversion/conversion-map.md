@@ -117,7 +117,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-core | 31 | converted |
 | jipipe-plugin-ij-algorithms | 424 | **converted (19.2a+b+c, 424 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
-| jipipe-plugin-ij-3d | 62 | pending |
+| jipipe-plugin-ij-3d | 62 | **converted (19.4, 62 nodes); module gate zero unassigned** |
 | jipipe-plugin-filaments + ij-filaments | 51+ | pending |
 | jipipe-plugin-filesystem | 39 | pending |
 | jipipe-plugin-annotations | 29 | pending |
@@ -678,3 +678,163 @@ drop) **all 12 are deleted; no secondary `function[]` entries were added.**
   `Tests run: 2, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset) and the
   pre-existing `ImageTypeInfoInputProfileProviderTest` passes.
 
+### 19.4 — jipipe-plugin-ij-3d mapping (62 nodes)
+
+**Status:** converted — all 62 `@ConfigureJIPipeNode` nodes rewritten to `function`/`framework`/
+`spatialDimensions`; module gate green (see Gate result below). Single-shot module conversion (mapping +
+apply + gate in one commit), mirroring §19.3.
+
+**Scope:** every `@ConfigureJIPipeNode` class under `plugins/jipipe-plugin-ij-3d/src/main/java`
+(base package `org.hkijena.jipipe.plugins.ij3d` = the gate prefix). The module is the **3D ImageJ Suite
+(mcib3d)** integration: Fast-3D filters, 3D segmentation/thresholding, 3D feature/measure nodes, and the
+IJ3D-ROI (`Ij3dSuiteRoiListData`) measurement/filter/merge/split/convert family.
+
+**Inventory (verified, matches controller R1):** 62 annotated files. Primary `nodeTypeCategory`
+distribution: `ImagesNodeTypeCategory` **32**, `RoiNodeTypeCategory` **27**, `ExportNodeTypeCategory` **2**,
+`DataSourceNodeTypeCategory` **1**. 4 nodes have no `menuPath` (the DataSource `ImportRoi3d`, and the Roi
+no-menuPath `OutlineRoi3d`/`RemoveBorderRoi3d`/`Roi3dCalculator` — matches the controller's `none(4)`). `0
+files import net.imagej.*` (grep) → the module framework rule is clean.
+
+**Framework (R1 / rule 11):** `ImageJ1Framework` for **all 62 nodes** — 0 files import `net.imagej.*`
+(verified), consistent with ij/ij-algorithms. (The `ClijFramework` subset named in the 19.4 brief does not
+exist in this module: there is **no `clij`/`Clij`** code anywhere under `src/main`, so every node is IJ1.)
+
+**Spatial (R2 / R3 + rule 12):** read from each node's image input slots. **Every image input in this
+module is an unconstrained `ImagePlus*Data` class** — there are no `ImagePlus3DData`/`d3` (3D-constrained)
+nor `ImagePlus2DData`/`d2` (2D-constrained) data types anywhere in the node slots (verified by a per-node
+slot-class survey). So, per R3, no node is `SPATIAL_2D` or `SPATIAL_3D`; the module is a clean **both /
+absent** split, where the split follows the source-verified ij-algorithms rule: **a node with any image
+INPUT slot (required OR optional) ⇒ BOTH (`SPATIAL_2D,SPATIAL_3D`); a node with no image input slot ⇒
+absent** (no `spatialDimensions` field). Output image types do not drive spatial (e.g. `RenderOverlay3D`
+emits RGB but its input is `ImagePlusData`; `Roi3dToMask` emits a mask but its only image input is the
+optional `Reference`).
+
+**Distribution:** spatial **both = 45 · absent = 17 · 3D = 0 · 2D = 0** (total 62). Function leaves:
+`RoiFiltersFunction` 19 · `FilteringFunction` 13 · `ThresholdingFunction` 7 · `MeasurementsFunction` 6 ·
+`MergingSplittingFunction` 4 · `RoiMorphologyFunction` 4 · `ExportArchiveFunction` 2 ·
+`RoiMeasurementsFunction` 2 · `RoiIntersectionsFunction` 2 · `RoiDataFunction` 1 · `SegmentationFunction` 1 ·
+`ColorStackFunction` 1 (total 62).
+
+#### (a) Images (32) — rules 1/R2: the 19.2 leaf table is the contract for shared segments
+
+| segment (menuPath) | n | leaf | spatial | rationale for non-obvious |
+|---|---|---|---|---|
+| `Threshold` | 7 | `ThresholdingFunction` | both | the 7 nodes (`Constant/Difference/GaussianFit/LocalMean Spot` + `Hysteresis` + `IterativeThreshold` + `Nuclei`) all sit under the `Threshold` menu and are threshold-driven → the 19.2 `Threshold` contract (`ThresholdingFunction`). Their "spot/nuclei" naming is a 3D-suite label, not a new operation type. |
+| `Math\nLocal` | 4 | `FilteringFunction` | both | Fast-3D local max/min/variance → 19.2 `Math\nLocal`→`FilteringFunction` contract |
+| `Blur` | 2 | `FilteringFunction` | both | Fast-3D mean/median → 19.2 `Blur`→`FilteringFunction` |
+| `Morphology` | 3 | `FilteringFunction` | both | Fast-3D open/close/top-hat → 19.2 `Morphology`→`FilteringFunction` |
+| `Edges` | 2 | `FilteringFunction` | both | Fast-3D adaptive/sobel → 19.2 `Edges`→`FilteringFunction` |
+| `Features` | 3 | `MeasurementsFunction` | both | `EdgeFilter3D`/`FindMaxima3D`/`SymmetryFilter3D` — feature/edge/maxima **maps** → 19.2 `Features`→`MeasurementsFunction` contract (flag Phase 3: `EdgeFilter3D`/`FindMaxima3D` read more like the 19.2 `Edges`→`FilteringFunction` group than a "measurement" — see (e)) |
+| `ROI` | 4 | `MergingSplittingFunction` | both | `Extract/Remove/Render/SetOverlay3D` → 19.2 `ROI`→`MergingSplittingFunction` contract (the IJ `Image\nOverlay` menu maps to the same group, per 19.2b) |
+| `Analyze` | 1 | `MeasurementsFunction` | both | `FindParticles3D` → 19.2 `Analyze`/`FindParticles2D`→`MeasurementsFunction` precedent (emits ROI + measurements, not a segmentation) |
+| `Labels` | 1 | `ColorStackFunction` | both | `Roi3dFromLabels` (labels→ROI) → 19.2 `Labels`→`ColorStackFunction` contract (flag Phase 3) |
+| `Math\nDistance map` | 2 | `MeasurementsFunction` | both | `DistanceMap3D`/`ErodedVolumeFraction3D` → 19.2 `Math\nDistance map`→`MeasurementsFunction` contract |
+| `Segment` | 1 | `SegmentationFunction` | both | `Watershed3DSegmentation` → 19.2 `Segment`→`SegmentationFunction` contract |
+| `Binary` | 2 | `FilteringFunction` | both | `Voronoi3D`/`Watershed3DSplitting` → 19.2 `Binary`→`FilteringFunction` contract |
+
+#### (b) Roi (27) — rule 3 / R2 (the 19.2 Roi table is the precedent)
+
+Grouped by `menuPath` (matches the controller inventory: Convert 6, Filter 4, Measure 3, Merge 1, Metadata 3,
+Modify 5, Split 2, none 3 = 27). The `Convert`/`Filter`/`Metadata`/`Modify` rows map cleanly by the 19.2
+contract; `Measure`/`Split`/no-menuPath carry per-node operation judgment (R2: Roi nodes are judged "per
+what the node does").
+
+| segment (menuPath) | n | leaf | spatial | rationale |
+|---|---|---|---|---|
+| `Convert` | 6 | `RoiFiltersFunction` | `Roi3dToLabels/Mask/RGB` = both (optional `Reference` image input); `Roi2dToRoi3d`/`Roi3dToRoi2d`/`Roi3dTo3DMesh` = absent (no image input) | 19.2 `Convert`→`RoiFiltersFunction`; spatial by image-input rule |
+| `Filter` | 4 | `RoiFiltersFunction` | `ByOverlap`/`ByOverlapOld`/`ByStatistics` = both (optional `Reference`); `FilterRoi3dLists` = absent (no image) | 19.2 `Filter`→`RoiFiltersFunction`; source-verified: the 3 that take an (optional) reference → both, the pure-list one → absent (mirrors ij-algorithms `FilterRoi2dByOverlapOld`=both vs `FilterRoi2dByOverlap`=absent) |
+| `Measure` | 3 | `ExtractRoi3dRelationStatistics` + `ExtractRoi3dStatistics` → `RoiMeasurementsFunction`; **`SplitRoi3dByStatistics` → `RoiMorphologyFunction`** (judgment, below) | all three = both (optional `Reference` image) | 19.2 `Measure`→`RoiMeasurementsFunction`; the one carve-out is a Split operation (see note) |
+| `Merge` | 1 | `RoiIntersectionsFunction` | absent (no image) | 19.2 `Merge`→`RoiIntersectionsFunction` (set-union of ROI lists) |
+| `Metadata` | 3 | `RoiFiltersFunction` | all absent (no image) | 19.2 `Metadata`→`RoiFiltersFunction` (precedent `ExtractROIMetadata`/`SetROIMetadataFromTable` etc. = absent, no image) |
+| `Modify` | 5 | `RoiFiltersFunction` | `Change…FromExpressions`/`Color…ByStatistics` = both (optional `Reference`); `Change…(no expr)`/`Change…FromTable`/`Color…ByName` = absent | 19.2 `Modify`→`RoiFiltersFunction` (precedent: the ones with an image reference → both, the pure-list ones → absent) |
+| `Split` | 2 | `RoiMorphologyFunction` | `ExplodeRoi3dList` = absent; `SplitRoi3dIntoConnectedComponents` = both (optional `Reference`) | 19.2 `Split`→`RoiMorphologyFunction` |
+| *(no menuPath)* | 3 | `OutlineRoi3d` = absent → `RoiMorphologyFunction`; `RemoveBorderRoi3d` = both → `RoiFiltersFunction`; `Roi3dCalculator` = absent → `RoiIntersectionsFunction` | per row | `Outline` → 19.2 `Outline`→`RoiMorphologyFunction` (geometry-only, no image ⇒ absent); `RemoveBorder` → 19.2 `RemoveBorderRoi2d`→`RoiFiltersFunction` (required `Reference` ⇒ both); `Roi3dCalculator` → logical AND/OR/XOR (set-union) → `RoiIntersectionsFunction`, no image ⇒ absent (judgment, flag Phase 3) |
+
+**Note on `SplitRoi3dByStatisticsAlgorithm` (the one Measure-group carve-out):** its `menuPath` is
+`Measure` (so the controller's first-segment tally counts it in `Measure(3)`), but its operation is a
+**split** — "Split IJ3D ROI lists by statistics" (it measures per-ROI statistics, then classifies and
+emits split ROI lists; it lives in the `split/` package). Per R2's instruction to judge Roi nodes "per what
+the node does" and to match the 19.2 sibling `SplitRoi2dByStatisticsAlgorithm` (`Split`→`RoiMorphologyFunction`),
+it is assigned `RoiMorphologyFunction`, not the menuPath-literal `RoiMeasurementsFunction`. Flagged for
+Phase 3 (see (e)).
+
+#### (c) Export (2) + DataSource (1) — rules 6/7
+
+| node | leaf | spatial | rationale |
+|---|---|---|---|
+| `ExportRoi3dAlgorithm` | `ExportArchiveFunction` | absent (no image) | writes `Ij3dSuiteRoiListData.save()` → a **ZIP** (data type is defined `glob:./*.zip`, "IJ3D Suite 3D ROI ZIP") → archive leaf (rule 7), mirroring ij-algorithms `ROI` export→`ExportArchiveFunction` |
+| `ExportRoi3dAlgorithm2` | `ExportArchiveFunction` | absent (no image) | same `.zip`/`.roi3d` archive writer (single-path variant) → `ExportArchiveFunction` |
+| `ImportRoi3dAlgorithm` | `RoiDataFunction` | absent (no image) | DataSource → data leaf by OUTPUT type (rule 6); emits `Ij3dSuiteRoiListData` from a `*.zip` → `RoiDataFunction`, no image input ⇒ absent (mirror of 19.3 `ImportRoi2dAlgorithm`) |
+
+#### (d) Aliases (3) — all dropped (alias-leaf == primary-leaf)
+
+3 `@AddJIPipeNodeAlias` entries. Per the first-segment rule (alias IJ-menu → JIPipe group → that group's
+leaf): `Image\nOverlay` → 19.2 `ROI`→`MergingSplittingFunction` (== both overlay nodes' primary);
+`Analyze` → ROI-measure family → `RoiMeasurementsFunction` (== `ExtractRoi3dStatistics`'s primary). All
+three therefore map to a leaf identical to their primary's leaf and are **dropped** (no secondary
+`function[]` entries added), exactly as in §19.3.
+
+| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
+|---|---|---|---|
+| `ExtractOverlay3DAlgorithm` (MergingSplittingFunction) | ImageJ / `Image\nOverlay` | MergingSplittingFunction | drop (== primary; 19.2 `ROI`→MergingSplitting) |
+| `RemoveOverlay3DAlgorithm` (MergingSplittingFunction) | ImageJ / `Image\nOverlay` | MergingSplittingFunction | drop (== primary) |
+| `ExtractRoi3dStatisticsAlgorithm` (RoiMeasurementsFunction) | ImageJ / `Analyze` | RoiMeasurementsFunction | drop (== primary; `Analyze` = ROI-measure family) |
+
+Note: the `Analyze` alias on `ExtractRoi3dStatistics` — the primary leaf is `RoiMeasurementsFunction`
+(rule 3), and the IJ `Analyze` menu in the ROI context is the "measure ROIs" operation, so the alias leaf
+resolves to `RoiMeasurementsFunction` (not the image-side `MeasurementsFunction`), i.e. == primary → dropped.
+
+#### (e) Flagged for Phase 3 audit
+
+- **`EdgeFilter3D` / `FindMaxima3D` → `MeasurementsFunction`.** Kept under the `Features` segment's 19.2
+  contract (`Features`→`MeasurementsFunction`). But operationally they read like the 19.2 `Edges`→
+  `FilteringFunction` / `Math\nLocal`→`FilteringFunction` families (edge/maxima **filtering**, not
+  table-style measurement). If the audit groups by operation rather than menu segment, both move to
+  `FilteringFunction`.
+- **`SymmetryFilter3D` → `MeasurementsFunction`** — same segment-contract reasoning; its multiple outputs
+  (symmetry / edges / bin / binedge) blur the filtering-vs-measurement line.
+- **`FindParticles3D` → `MeasurementsFunction`** — follows the 19.2 `FindParticles2D` precedent (which
+  itself is flagged). Emits an ROI list + measurements; `SegmentationFunction` is a reasonable alternative
+  if the audit treats particle finding as object segmentation.
+- **`Roi3dFromLabels` → `ColorStackFunction`** — follows the 19.2 `Labels`→`ColorStackFunction` contract
+  (flagged there too). It produces an ROI list from a label image (labels→ROI), so `RoiDataFunction`-style
+  or a labels-convert leaf are defensible alternatives.
+- **`Roi3dCalculator` → `RoiIntersectionsFunction`** — the AND/OR/XOR "logical operation over the whole
+  list" is set-union/intersection semantics; `RoiFiltersFunction` is the alternative if "calculator" is
+  read as a generic list modifier rather than a set operation.
+
+#### (f) Test infrastructure (R4)
+
+The module had **no `src/test` and no JUnit deps**. Wired:
+- **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml` verbatim.
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-ij-3d/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/` (**byte-identical**,
+  verified with `cmp`).
+- Created `plugins/jipipe-plugin-ij-3d/src/test/java/org/hkijena/jipipe/plugins/ij3d/
+  ImageJLegacyPatcherLauncherSessionListener.java` — the module-scoped mirror of the ij/ij-algorithms
+  listeners (`LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc adapted to this
+  module's package).
+- Created `plugins/jipipe-plugin-ij-3d/src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = the listener's FQN).
+
+**Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A module's
+test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
+(AGENTS.md patcher contract). The ij-3d nodes reference `ij.ImagePlus`/mcib3d heavily, so this is required.
+
+#### (g) Gate result (R4/R5)
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-ij-3d -am` → **exit 0**.
+- **Gate (enabled):** `mvn test -pl plugins/jipipe-plugin-ij-3d -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ij3d` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `org.hkijena.jipipe.plugins.ij3d`
+  prefix and zero taxonomy `errors()`. The log line `JIPipeNodesServiceComponent | Node taxonomy: 619 nodes
+  not yet assigned a taxonomy function — expected during conversion` is the **global** count across all
+  on-classpath modules (most of which are not yet converted); it is *outside* the prefix-filtered failure
+  set and is not in `errors()`, so the gate passes on this module alone, exactly as ruled (same shape as
+  §19.3(g)).
+- **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-3d` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
