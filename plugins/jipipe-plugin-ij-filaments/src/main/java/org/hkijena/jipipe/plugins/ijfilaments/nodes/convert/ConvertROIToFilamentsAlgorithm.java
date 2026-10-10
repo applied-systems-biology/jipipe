@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.convert;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FilamentDataFunction;
 import ij.gui.Roi;
 import ij.process.FloatPolygon;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -23,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
@@ -33,7 +34,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.Point3d;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
 @SetJIPipeDocumentation(name = "Convert 2D ROI to filaments", description = "Converts 2D ROI into equivalent filaments")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
+@ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class ConvertROIToFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

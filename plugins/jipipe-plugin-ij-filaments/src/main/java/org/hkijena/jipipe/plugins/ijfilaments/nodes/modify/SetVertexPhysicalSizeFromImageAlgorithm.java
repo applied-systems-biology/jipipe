@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import ij.ImagePlus;
 import ij.measure.Calibration;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -25,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -34,7 +35,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 @SetJIPipeDocumentation(name = "Set filament vertex physical sizes from image", description = "Sets the physical voxel sizes of all vertices to the data provided in the image. If the image has no calibration data, " +
         "the filament voxel sizes will be reset to 1 pixel.")
-@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Modify")
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Filaments", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Intensity", description = "The calibration is extracted from this image", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

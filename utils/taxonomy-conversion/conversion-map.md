@@ -118,7 +118,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-ij-algorithms | 424 | **converted (19.2a+b+c, 424 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij-3d | 62 | **converted (19.4, 62 nodes); module gate zero unassigned** |
-| jipipe-plugin-filaments + ij-filaments | 51+ | pending |
+| jipipe-plugin-filaments + ij-filaments | 51+ | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned** |
 | jipipe-plugin-filesystem | 39 | pending |
 | jipipe-plugin-annotations | 29 | pending |
 | jipipe-plugin-utils | 28 | pending |
@@ -837,4 +837,217 @@ any `ij.*` class loaded before the context is created makes the ImageJ2 legacy p
   set and is not in `errors()`, so the gate passes on this module alone, exactly as ruled (same shape as
   §19.3(g)).
 - **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-3d` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
+
+### 19.5 — jipipe-plugin-ij-filaments mapping (51 nodes)
+
+**Status:** converted — all 51 `@ConfigureJIPipeNode` nodes rewritten to `function`/`framework`/
+`spatialDimensions`; module gate green (see Gate result below). Single-shot module conversion (mapping +
+apply + gate in one commit), mirroring §19.3/§19.4. **Note:** the plan's "jipipe-plugin-filaments +
+ij-filaments (51+)" is ONE module — `plugins/jipipe-plugin-ij-filaments` (there is no separate
+`jipipe-plugin-filaments` maven module; the filament *data type* `Filaments3DGraphData` also lives here).
+
+**Scope:** every `@ConfigureJIPipeNode` class under `plugins/jipipe-plugin-ij-filaments/src/main/java`
+(base package `org.hkijena.jipipe.plugins.ijfilaments` = the gate prefix). The module is the **filament
+graph toolkit**: TSOAX snake analysis, skeleton→filament extraction, and graph editing (filter/modify/
+merge/split/measure) over `Filaments3DGraphData` ("Stores 3D filaments as graph", `extends SimpleGraph`).
+
+**Inventory (verified, matches controller R1):** 51 annotated files. Primary `nodeTypeCategory`
+distribution: `FilamentsNodeTypeCategory` **42**, `ImagesNodeTypeCategory` **6**,
+`MiscellaneousNodeTypeCategory` **1** (`TSOAXResultAnalysis`), `RoiNodeTypeCategory` **1**
+(`ConvertROIToFilaments`), `DataSourceNodeTypeCategory` **1** (`ImportFilamentsFromJson`). The 42
+filament-category nodes' `menuPath` segments: Modify **19**, Convert **8**, Process **5**, Filter **4**,
+Split **3**, Measure **3**, none **1** (`ImportFilamentsFromJson`, which is actually DataSource). **0
+files import `net.imagej.*`** (grep) → framework rule is clean. **0 `@AddJIPipeNodeAlias`** in the module.
+
+**The `FilamentsNodeTypeCategory` discovery (matches the Task-14 note in the Known category inventory):**
+the class is **defined in this module** at `…/ijfilaments/FilamentsNodeTypeCategory.java`
+(id `org.hkijena.jipipe:filaments`, "Operations on filaments") — it is plugin-local, not one of the 12
+rules' core categories, so its 42 nodes are mapped rule-9-style **best-fit into the three `filaments/`
+leaves** (the `data/` filament leaf covers the DataSource by rule 6). The class file is **not** deleted in
+this task (it is a definition, not a `nodeTypeCategory =` usage; residue checks target usages only); it is
+torn out in Task 27's category rip-out.
+
+**Framework (R1 / rule 11):** `ImageJ1Framework` for **all 51 nodes** — 0 files import `net.imagej.*`
+(verified), consistent with ij/ij-algorithms/ij-3d.
+
+**Spatial (R3 / rule 12 — settled ruling):** read from each node's **first image INPUT slot only**.
+**`Filaments3DGraphData` is a graph, not an image — it confers NO spatial** (same absent-precedent as
+ROI-list/table/file/string inputs in prior modules). So: 3D-constrained image class ⇒ `SPATIAL_3D`;
+unconstrained `ImagePlus*` class ⇒ both; no image input ⇒ **absent**. Most of the 42 filament-graph
+nodes are therefore **absent — that is CORRECT** (flagged for Phase 3: should spatial ever extend to
+non-image 3D data types? do NOT change the semantics in this task).
+
+**Distribution:** spatial **absent = 38 · both = 12 · 3D = 1 · 2D = 0** (total 51). Function leaves:
+`FilamentFilteringFunction` **32** · `FilamentDataFunction` **8** · `FilamentSmoothingFunction` **7** ·
+`FilamentQuantificationFunction` **3** · `MergingSplittingFunction` **1** (total 51).
+
+#### (a) The 42 `FilamentsNodeTypeCategory` nodes → the three `filaments/` leaves (R2)
+
+Leaf rule (per controller R2): smoothing/straightening/simplifying/resampling the **curves** ⇒
+`FilamentSmoothingFunction`; filtering/extracting/selecting/splitting/joining/removing filaments or curve
+pieces (structural edits on the filament set) ⇒ `FilamentFilteringFunction`; measuring/quantifying
+properties, statistics, `ResultsTableData` outputs ⇒ `FilamentQuantificationFunction`.
+
+**`FilamentSmoothingFunction` (7):**
+
+| node (segment) | spatial | rationale |
+|---|---|---|
+| `SmoothFilamentsAlgorithm` (Process) | absent | "Applies a **smoothing** operation" on vertex locations — the namesake of the leaf |
+| `SimplifyFilamentsAlgorithm` (Process) | absent | "Removes all intermediate vertices (degree 2)" — curve simplification per R2's explicit example ("a 'simplify' curve op = Smoothing") |
+| `FixOverlapsNonBranchingAlgorithm` (Process) | absent | "fix filaments that are **merged together** by junctions" — straightening/separating overlapping **curves** (non-branching); R2's "remove overlapping filaments = Filtering" is the alternative → **flagged (c)** |
+| `RemoveDuplicateVerticesAlgorithm` (Process) | absent | "removes all duplicates. Edges are preserved" — coalescing coincident **curve points**, not removing filament pieces; `FixOverlaps`' doc names this exact operation as its smoothing step; R2 alternative: Filtering → **flagged (c)** |
+| `SubdivideFilamentEdges` (Modify) | absent | "Inserts a vertex at the center of edges. The connectivity and shape is preserved" — curve **resampling/densification** (R2's resampling bucket) |
+| `FlattenFilamentsAlgorithm` (Modify) | absent | "Moves the Z of each vertex to zero … flattens 3D filaments into 2D" — 3D→2D **curve straightening** (no structural piece added/removed) |
+| `GrowEndVerticesAlgorithm` (Modify) | absent | "adds vertices to end points … grows them in the direction determined by the neighbor" — extends the **curve** beyond its endpoints (smooth/straight continuation); alternative: Filtering → **flagged (c)** |
+
+**`FilamentQuantificationFunction` (3):**
+
+| node (segment) | spatial | rationale |
+|---|---|---|
+| `MeasureEdgesAlgorithm` (Measure) | absent | "Stores all available information about the edges … into a **table**" (`ResultsTableData` out) — R2's measure/table bucket |
+| `MeasureFilamentsAlgorithm` (Measure) | absent | "Measures all components … produces measurements: number of vertices/edges/length/…" (`ResultsTableData` out) |
+| `MeasureVerticesAlgorithm` (Measure) | absent | "Stores all available information about the vertices into a **table**" (`ResultsTableData` out) |
+
+**`FilamentFilteringFunction` (32):**
+
+| node (segment) | spatial | rationale |
+|---|---|---|
+| `FilterFilamentEdgesByProperties` (Filter) | absent | "Filters filament **edges** by various properties" — structural filtering of edge pieces |
+| `FilterFilamentVerticesByProperties` (Filter) | absent | "Filters filament **vertices** by various properties" |
+| `FilterFilamentsByProperties` (Filter) | absent | "Filters filament **connected components** by various properties" |
+| `RemoveBorderFilaments` (Filter) | **both** | "Removes filament components near the image borders" — R2's "remove filaments" bucket (spatial from the required `ImagePlusData` reference slot) |
+| `ErodeEndVerticesAlgorithm` (Modify) | absent | "Iteratively **removes** vertices that have a degree of at most 1" — removes curve pieces (opposite of `GrowEndVertices` → Smoothing; the pair is kept consistent) |
+| `ConnectVerticesAlgorithm` (Modify) | **both** | "Connect existing vertices based on customizable criteria" (expression-filtered candidate edges) — joins curve pieces (mask input optional ⇒ no spatial contribution) |
+| `ConnectVerticesFastAlgorithm` (Modify) | **both** | same operation, distance-based fast variant |
+| `SplitFilamentsIntoConnectedComponentsAlgorithm` (Split) | absent | "Splits the filament graph into connected components" — R2's split bucket |
+| `SplitFilamentsIntoCyclesAlgorithm` (Split) | absent | "Splits the filament graph into cycles" |
+| `FilamentCyclesToComponentsAlgorithm` (Modify) | absent | "makes each cycle a component" — re-splits the graph at cycles (its doc explicitly distinguishes this from `Split … into cycles`) |
+| `MergeFilamentsAlgorithm` (Split) | absent | "Merges multiple filament graphs into one" — R2's join bucket; menuPath `Split` is the old panel's group, not the operation (same carve-out pattern as §19.4's `SplitRoi3dByStatistics`) |
+| `CopyFilamentsAcrossZCTAlgorithm` (Process) | absent | "Copies a filament graph to other Z locations, channels, and frames" — duplicates curve pieces (spatial: first input slot is the graph, the optional `ImagePlusData` *Reference* does not drive spatial) |
+| `ConvertFilamentsToRoiAlgorithm` (Convert) | absent | "Converts filaments into 2D line ImageJ ROI" — emits an ROI list, no image input |
+| `ConvertFilamentCyclesToROIAlgorithm` (Convert) | absent | "Finds all cycles … converts each cycle into a 2D ROI" — cycle extraction + ROI output |
+| `ConvertFilamentsToRoi3dAlgorithm` (Convert) | absent | "Converts filaments into a 3D ROI" (`Ij3dSuiteRoiListData` out) |
+| `ConvertFilamentsToMaskAlgorithm` (Convert) | **both** | "Converts filaments into a mask" (`ImagePlusGreyscaleMaskData` out); required image input = the `ImagePlusData` *Reference* that determines mask size |
+| `ConvertFilamentsToLabelsAlgorithm` (Convert) | **both** | "Converts filaments into a labels image" (legacy, 3D-ROI intermediate) |
+| `ConvertFilamentsToLabels2Algorithm` (Convert) | **both** | "Converts filaments into a labels image" (non-legacy) |
+| `ConvertFilamentsToRGBAlgorithm` (Convert) | **both** | "Visualizes filaments by rendering them onto an RGB image" (`ImagePlusColorRGBData` out) |
+| `ConvertFilamentsTo3DMeshAlgorithm` (Convert) | absent | "Converts 3D filaments into a 3D scene" (`Scene3DData` out — a scene, not an image ⇒ no spatial per R3) |
+| `ChangeFilamentEdgePropertiesExpressionAlgorithm` (Modify) | absent | "override various properties of the **edges**" using expressions — attribute edit, no curve/structure change (flagged (c): no "property editing" leaf exists) |
+| `ChangeFilamentEdgePropertiesManuallyAlgorithm` (Modify) | absent | "override various properties of the **edges**" (manual) |
+| `ChangeFilamentVertexPropertiesExpressionAlgorithm` (Modify) | absent | "override various properties of the **vertices**" using expressions |
+| `ChangeFilamentVertexPropertiesManuallyAlgorithm` (Modify) | absent | "override various properties of the **vertices**" (manual) |
+| `SetFilamentMetadataToComponentIndexAlgorithm` (Modify) | absent | "writes the component index into a metadata field" — metadata edit |
+| `SetVertexMetadataFromImageAlgorithm` (Modify) | absent | "Sets the vertex metadata … from the given input image" — writes into the graph; first input slot is the graph ⇒ no spatial |
+| `SetVertexPhysicalSizeFromImageAlgorithm` (Modify) | absent | "Sets the physical voxel sizes of all vertices from the image" — graph calibration, no spatial (first input = graph) |
+| `SetVertexRadiusFromImageAlgorithm` (Modify) | absent | "Sets the radius of each vertex from the image" |
+| `SetVertexValueFromImageAlgorithm` (Modify) | absent | "Sets the value/intensity of each vertex from the image" |
+| `RemoveVertexValueBackupsAlgorithm` (Modify) | absent | "Removes value **backups** from vertices" — metadata removal (flagged (c): "removes" here targets backup metadata, not filament pieces) |
+| `RestoreVertexValueBackupAlgorithm` (Modify) | absent | "Restore value backups from vertices" — metadata restoration |
+| `FindLinearFilamentVertexOrderAlgorithm` (Modify) | absent | "find the order each vertex in that line … calculate the distance" — writes order/distance onto the graph (quantification-flavored but graph-in ⇒ Filtering; flagged (c)) |
+
+**`data/FilamentDataFunction` (from the 42? no — see (b)):** `ImportFilamentsFromJson` (DataSource),
+`ConvertROIToFilaments` (Roi) and the 6 Images-category nodes (except `SetOverlayFilaments`) — rule 6 /
+R2: filament-**data producers** belong to the data/ filament leaf.
+
+#### (b) The 9 non-`FilamentsNodeTypeCategory` nodes (R2)
+
+| node (old category / segment) | leaf | spatial | rationale |
+|---|---|---|---|
+| `ImportFilamentsFromJsonAlgorithm` (DataSource, no menuPath) | `FilamentDataFunction` | absent | R2/rule 6: data leaf by OUTPUT = `Filaments3DGraphData` ⇒ the data/ filament leaf; `FileData` in ⇒ no spatial (mirror of §19.3 `ImportRoi2d`) |
+| `ConvertROIToFilamentsAlgorithm` (Roi / Convert) | `FilamentDataFunction` | absent | R2: "converts 2D ROI into equivalent filaments" — a **filament-data producer**; the node belongs to the filament branch (its output is `Filaments3DGraphData`), so the data/ filament leaf over a rois/ leaf (flagged (c): a rois/ leaf is defensible) |
+| `SkeletonToFilaments2DAlgorithm` (Images / Convert) | `FilamentDataFunction` | **both** | "converts a binary skeleton into a filament … per Z/C/T slice (2D data)" — skeleton→filament **extraction** (image in ⇒ filament graph out); R2's images-branch suggestion (`SegmentationFunction`) is the alternative for extraction ops — chosen data/ leaf because the node's identity/branch is "filament production from a mask" (flagged (c)); `ImagePlusData` in ⇒ both |
+| `SkeletonToFilaments3DAlgorithm` (Images / Convert) | `FilamentDataFunction` | **both** | same node family, 3D variant ("per C/T stack"); `ImagePlusData` in ⇒ both |
+| `SkeletonToSimplifiedFilamentsFijiAlgorithm` (Images / Convert) | `FilamentDataFunction` | **3D** | "Extract filaments using Analyze Skeleton 2D/3D" (Fiji) — same extraction op; first input slot is the 3D-constrained `ImagePlus3DGreyscaleMaskData` *Skeleton* ⇒ `SPATIAL_3D` (the only 3D node in the module) |
+| `TSOAX2DAlgorithm` (Images / Analyze) | `FilamentDataFunction` | **both** | "Find and track filaments 2D+T (TSOAX)" — runs the TSOAX snake algorithm on a **greyscale** image to find/track filament paths (R2: arguably `FilteringFunction`/`SegmentationFunction` — flagged (c)); outputs filaments + snake table; `ImagePlusGreyscaleData` in ⇒ both |
+| `TSOAX3DAlgorithm` (Images / Analyze) | `FilamentDataFunction` | **both** | 3D+T TSOAX variant; same ruling (flagged (c)); `ImagePlusGreyscaleData` in ⇒ both |
+| `TSOAXResultAnalysisAlgorithm` (Miscellaneous / Analyze) | `FilamentDataFunction` | absent | "Parses existing results generated by TSOAX" — converts TSOAX's raw text output (`StringData` in) into a filament graph + table; R2's `FilamentQuantificationFunction` alternative rejected: it does not *quantify* an existing filament graph, it (re)constructs one from raw results (flagged (c)); no image input ⇒ absent |
+| `SetOverlayFilamentsAlgorithm` (Images / ROI) | `MergingSplittingFunction` | **both** | "Set filaments overlay" on an image — the 19.2 `ROI`→`MergingSplittingFunction` contract (same group as §19.4's `Extract/Remove/SetOverlay3D`); `ImagePlusData` in ⇒ both (R2's `MiscellaneousFunction` alternative is the flagged escape hatch) |
+
+#### (c) Flagged for Phase 3 audit
+
+- **`FixOverlapsNonBranching` → `FilamentSmoothingFunction`.** "fix filaments that are merged together by
+  junctions" reads as curve separation/straightening (Smoothing); R2's literal example
+  ("remove overlapping filaments" = Filtering) would put it in `FilamentFilteringFunction`.
+- **`RemoveDuplicateVertices` → `FilamentSmoothingFunction`.** Coalescing coincident curve points (the
+  `FixOverlaps` doc names this operation as its smoothing step) vs. R2's "removing … curve pieces" =
+  Filtering.
+- **`GrowEndVertices` → `FilamentSmoothingFunction`.** Curve extension vs. R2's "removing … curve pieces"
+  (Filtering). Its pair `ErodeEndVertices` is Filtering (removal) — if the audit prefers symmetry by
+  "endpoint editing", `Grow` could move too.
+- **`ChangeFilament{Edge,Vertex}Properties{,Expression,Manually}` (4) + `SetFilamentMetadataToComponentIndex`
+  + `SetVertex{Metadata,PhysicalSize,Radius,Value}FromImage` (4) + `RemoveVertexValueBackups` +
+  `RestoreVertexValueBackup` (11 total) → `FilamentFilteringFunction`.** Attribute/metadata edits with no
+  curve or structure change; **no "property editing" leaf exists** in the filaments/ branch, so they take
+  the structural-edit leaf as the best fit. The 10 `Set*FromImage` nodes additionally have a non-spatial
+  first input slot (the graph) — spatial stays absent by R3. If the audit adds a filaments "properties/
+  metadata" leaf, all 11 move.
+- **`FindLinearFilamentVertexOrder` → `FilamentFilteringFunction`.** Computes vertex order/distance and
+  writes it back onto the graph (quantification-flavored) but produces no table ⇒ Filtering by
+  elimination (flagged).
+- **`RemoveVertexValueBackups` → `FilamentFilteringFunction`.** "Removes" refers to backup **metadata**,
+  not filament pieces (recorded so a reviewer doesn't misread the name as Filtering-by-removal).
+- **The 6 skeleton/TSOAX `generate/` nodes → `FilamentDataFunction`.** R2 suggested judging the
+  image-side ops per `images/` leaf (`SegmentationFunction` for mask→skeleton→filament extraction;
+  `FilteringFunction` for a TSOAX on a greyscale image). Chosen the **data/ filament leaf** for all six:
+  every one of them is a *filament-graph producer* and the branch the node "belongs to" (R2's
+  ConvertROIToFilaments criterion) is filaments, not images — the output `Filaments3DGraphData` makes the
+  filament identity unambiguous, while the input-side operation (skeleton extraction / snake filtering) is
+  incidental to that identity. `TSOAX2D/3D` in particular (greyscale in, no mask) read equally well as
+  `images/FilteringFunction` — flagged. `SetOverlayFilaments` is the one Images node that is *not* a
+  producer (it edits an image) ⇒ `MergingSplittingFunction` per the 19.2 `ROI` contract.
+- **`ConvertROIToFilaments` → `FilamentDataFunction`.** R2 offered a rois/ leaf alternative; the data/
+  leaf was chosen by output-branch identity (flagged).
+- **`TSOAXResultAnalysis` → `FilamentDataFunction`.** Reconstructs filaments from TSOAX raw output text
+  (flagged; `FilamentQuantificationFunction` was the R2 alternative if it "quantifies filaments" — it
+  parses, it does not measure an existing graph).
+- **Spatial for non-image 3D data types (module-wide question).** 38/51 nodes are spatial-**absent**
+  because their (only) 3D-carrying data is `Filaments3DGraphData`, a graph — not an image. Per R3 this is
+  settled for this task; **Phase 3 should decide whether spatial should ever extend to non-image 3D data
+  types** (e.g. filaments, scenes, 3D ROI lists). Do NOT change the semantics here.
+- **`Filaments3DGraphData` as a spatial input for the "both" nodes.** For the 12 both/3D nodes the image
+  is a *second* (reference/skeleton) slot behind the required graph slot; R3's "first IMAGE input slot"
+  is read as "first slot that is an image" (the graph confers no spatial), which is how all 12 were
+  assigned (e.g. `RemoveBorderFilaments`: required graph + required `ImagePlusData` reference ⇒ both).
+  If "first input slot" were read literally slot-order-wise, these 12 would flip to absent — recorded so
+  the audit sees the interpretation.
+
+#### (d) Test infrastructure (R5)
+
+The module had **no `src/test` and no JUnit deps** (first test in this module). Wired:
+- **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml`/`plugins/jipipe-plugin-ij-3d/pom.xml` verbatim.
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-ij-filaments/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/`
+  (**byte-identical**, verified with `cmp`).
+- Created `plugins/jipipe-plugin-ij-filaments/src/test/java/org/hkijena/jipipe/plugins/ijfilaments/
+  ImageJLegacyPatcherLauncherSessionListener.java` — the module-scoped mirror of the ij/ij-3d listeners
+  (`LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc adapted: cites this
+  module's ImageJ1 touchpoints — `ij.ImagePlus` + the Fiji `AnalyzeSkeleton_` plugin).
+- Created `plugins/jipipe-plugin-ij-filaments/src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = the listener's FQN).
+
+**Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
+(AGENTS.md patcher contract). This module's nodes/data types reference `ij.ImagePlus` and the Fiji
+`AnalyzeSkeleton_` plugin heavily, so it is required.
+
+#### (e) Gate result (R5)
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-ij-filaments -am` → **exit 0**.
+- **Gate (enabled):** `mvn test -pl plugins/jipipe-plugin-ij-filaments -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijfilaments` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the
+  `org.hkijena.jipipe.plugins.ijfilaments` prefix and zero taxonomy `errors()`. The log line
+  `JIPipeNodesServiceComponent | Node taxonomy: 680 nodes not yet assigned a taxonomy function — expected
+  during conversion` is the **global** count across all on-classpath modules (most of which are not yet
+  converted); it is *outside* the prefix-filtered failure set and is not in `errors()`, so the gate passes
+  on this module alone, exactly as ruled (same shape as §19.3(g)/§19.4(g)). (An unrelated
+  pre-existing `Unregistered parameter found: class ij.process.AutoThresholder$Method …
+  NucleiSegmentation3DAlgorithm` ERROR log line comes from the dependency `jipipe-plugin-ij-3d`'s
+  converted node, not from this module.)
+- **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-filaments` → **BUILD SUCCESS**,
   `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
