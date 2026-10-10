@@ -2655,7 +2655,7 @@ generators have **no input slots** ⇒ **absent**.
 **Function split:** Resampling **2** · Filtering **1** · Preprocessing **1** · ImageData **2** (total 6).
 **Spatial distribution:** 2D **4** · absent **2** (total 6).
 
-#### (e) jipipe-plugin-scene-3d (7) — NoFramework (omitted)
+#### (e) jipipe-plugin-scene-3d (7) — CoreFramework (omitted in 19.11a, FIXED to CoreFramework in 19.11d — see §19.11d plan-correction note)
 
 **Framework (post-19.11d fix): `CoreFramework` for all 7** (the plan's Task 19.11 line
 `scene-3d→CoreFramework` — 19.11a had omitted the attribute as NoFramework, a plan-reading miss,
