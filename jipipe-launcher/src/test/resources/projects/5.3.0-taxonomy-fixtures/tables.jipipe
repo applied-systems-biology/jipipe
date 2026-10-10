@@ -1,0 +1,25 @@
+{
+  "jipipe:project-type" : "project",
+  "jipipe:project-format-version" : 1,
+  "jipipe:project-jipipe-version" : "5.3.0",
+  "graph" : {
+    "nodes" : {
+      "b6f477fe-d259-4cd4-a272-596d7d5b8081" : {
+        "jipipe:graph-compartment" : "715a6d12-98f6-4c13-9984-0294ba196b0b",
+        "jipipe:node-info-id" : "table-add-columns-generate"
+      }
+    },
+    "edges" : [ ]
+  },
+  "compartments" : {
+    "compartment-graph" : {
+      "nodes" : {
+        "715a6d12-98f6-4c13-9984-0294ba196b0b" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:node-info-id" : "jipipe:project-compartment"
+        }
+      },
+      "edges" : [ ]
+    }
+  }
+}

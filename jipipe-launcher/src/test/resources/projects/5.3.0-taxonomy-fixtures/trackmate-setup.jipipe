@@ -1,0 +1,29 @@
+{
+  "jipipe:project-type" : "project",
+  "jipipe:project-format-version" : 1,
+  "jipipe:project-jipipe-version" : "5.3.0",
+  "graph" : {
+    "nodes" : {
+      "13662fcc-dd9d-4c5f-b933-7e58cd8ce9d9" : {
+        "jipipe:graph-compartment" : "84f036b2-f37d-493a-b747-33b76afc98db",
+        "jipipe:node-info-id" : "trackmate-detector"
+      },
+      "d54844ef-d343-4880-a8b8-8a46995ebd39" : {
+        "jipipe:graph-compartment" : "84f036b2-f37d-493a-b747-33b76afc98db",
+        "jipipe:node-info-id" : "trackmate-tracking"
+      }
+    },
+    "edges" : [ ]
+  },
+  "compartments" : {
+    "compartment-graph" : {
+      "nodes" : {
+        "84f036b2-f37d-493a-b747-33b76afc98db" : {
+          "jipipe:graph-compartment" : "",
+          "jipipe:node-info-id" : "jipipe:project-compartment"
+        }
+      },
+      "edges" : [ ]
+    }
+  }
+}
