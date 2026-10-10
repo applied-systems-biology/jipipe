@@ -128,11 +128,11 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-ij-trackmate | 18 | **converted (19.10, 18 annotated + 14 runtime detector/tracker data sources = 32 registered; all TrackMateFramework); module gate zero unassigned** |
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-ij-weka | 9 | pending |
+| jipipe-plugin-ij-weka | 9 | **converted (19.11a, 9 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-python | 9 | pending |
-| jipipe-plugin-ilastik | 8 | pending |
-| jipipe-plugin-scene-3d | 7 | pending |
-| jipipe-plugin-opencv | 6 | pending |
+| jipipe-plugin-ilastik | 8 | **converted (19.11a, 8 nodes, all JIPipeDLFramework); module gate zero unassigned** |
+| jipipe-plugin-scene-3d | 7 | **converted (19.11a, 7 nodes, NoFramework-omitted); module gate zero unassigned** |
+| jipipe-plugin-opencv | 6 | **converted (19.11a, 6 nodes, all OpenCVFramework); module gate zero unassigned** |
 | jipipe-plugin-r | 5 | pending |
 | jipipe-plugin-imp | 5 | pending |
 | jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
@@ -2535,6 +2535,241 @@ the *only* changed lines are the import block and the single `@ConfigureJIPipeNo
 (no other line).
 
 **Transition note understood:** the 18 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+### 19.11a — jipipe-plugin-ij-weka (9) + jipipe-plugin-ilastik (8) + jipipe-plugin-opencv (6) + jipipe-plugin-scene-3d (7) (30 nodes)
+
+**Status:** converted — all 30 `@ConfigureJIPipeNode` nodes across the four modules rewritten to
+`function`/`framework`/`spatialDimensions`; four module gates green (see (g)). Single-shot combined
+conversion (mapping + apply + 4 gates in one commit), mirroring §19.6–§19.10.
+**Module-name note:** the plan's "weka (9)" is the maven module `plugins/jipipe-plugin-ij-weka` (base
+pkg `org.hkijena.jipipe.plugins.ijweka` = gate prefix).
+
+**The four framework shapes (per controller ruling, rule 11):**
+- **ij-weka → `JIPipeDLFramework` × 9** (rule 11: weka→JIPipeDL). WEKA is *classical* ML (Trainable
+  Weka Segmentation), but rule 11 puts weka under the DL framework and the `deeplearning/` branch is
+  its consistent home — **flagged (f)** as "classical ML under `deeplearning/`".
+- **ilastik → `JIPipeDLFramework` × 8** (rule 11: ilastik→JIPipeDL).
+- **opencv → `OpenCVFramework` × 6** (rule 11: opencv→OpenCV).
+- **scene-3d → NoFramework (OMITTED) × 7** — scene-3d is **not** on rule 11's named list → "else leave
+  NoFramework". The `framework()` default is already `NoFramework.class`
+  (`jipipe-core/…/api/ConfigureJIPipeNode.java:97`), so the attribute is **omitted** (no `framework = `
+  token, no `NoFramework` import — `grep "framework = " plugins/jipipe-plugin-scene-3d/src/main` → 0).
+
+**`ij.*` imports drive SPATIAL, NOT framework** (the §19.9/§19.10 distinction, confirmed here): 8
+ij-weka + 6 ilastik + 1 scene-3d files incidentally `import ij.*` (`ij.ImagePlus`, `ij.ImageStack`,
+`ij.gui.Roi`, `ij.process.*`) for ImagePlus-level processing. None is read as `ImageJ1Framework` (the
+framework is the *plugin's*, rule 11 plugin-scoped). Verified `grep -rl "ImageJ1Framework\|NoFramework"
+src/main` across all four modules → **0**. opencv node files have **0** `ij.*` imports (its
+IJ-bridge is in the `datatypes/` converters, not the nodes).
+
+**Dynamic-NodeInfo check (§19.10 lesson, applied defensively):** `grep -rn "implements
+JIPipeNodeInfo\|extends JIPipeDefaultNodeInfo"` across all four `src/main` trees → **NONE**. Every node
+is annotation-registered by the module's own plugin (`WekaPlugin`/`IlastikPlugin`/`OpenCvPlugin`/
+`Scene3DPlugin.registerNodeType`); no programmatic `JIPipeNodeInfo` implementations exist, so no
+accessor overrides were needed (the 19.10 pattern did not recur). **Note (i):** the ilastik module has
+2 `@ConfigureJIPipeNode` classes whose `registerNodeType` call is **commented out** in
+`IlastikPlugin.register()` — see (f).
+
+---
+
+#### (a) jipipe-plugin-ij-weka (9) — all `JIPipeDLFramework`
+
+Function = the `deeplearning/` branch by the node's **actual op** (rule 11 puts weka under JIPipeDL).
+Spatial by first image input slot (rule 12; the controller's input mix is confirmed: 5×
+`ImagePlus2DData`, 2× `ImagePlus2DGreyscaleMaskData`, 2× `ImagePlus3DData`, 1×
+`ImagePlus2DGreyscaleData` [2nd slot, labels], 1× unconstrained `ImagePlusData`).
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `ImportWekaModelFromFileAlgorithm` (DataSource, —) | `DeepLearningModelsFunction` | absent | imports a `*.model`/`*.arff` **model file** ⇒ `WekaModelData` out; model *management* (not inference); first input `FileData` ⇒ no spatial |
+| `WekaClassification2DAlgorithm` (Images / Weka) | `DeepLearningInferenceFunction` | **both** | *runs* a trained model on an image ⇒ `ImagePlusData` (unconstrained) first input; the 2D in the name is the op target, but the slot is unconstrained ⇒ both (rule 12) |
+| `WekaClassification3DAlgorithm` (Images / Weka) | `DeepLearningInferenceFunction` | **3D** | runs a trained model on a 3D image ⇒ first input `ImagePlus3DData` ⇒ 3D |
+| `WekaTrainingLabels2DAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | *trains* a Weka classifier on 2D image + labels ⇒ `ImagePlus2DData` first input; out `WekaModelData` |
+| `WekaTrainingLabels2DAlgorithm2` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | multi-image variant of the above; first input `ImagePlus2DData` |
+| `WekaTrainingMask2DAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | trains on 2D image + mask ⇒ `ImagePlus2DData` first input (2nd slot `ImagePlus2DGreyscaleMaskData`) |
+| `WekaTrainingMask2DAlgorithm2` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | multi-image variant; first input `ImagePlus2DData` |
+| `WekaTrainingRoi2dAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **2D** | trains on 2D image + ROIs ⇒ `ImagePlus2DData` first input (2nd slot `Roi2dListData`, non-image, skipped) |
+| `WekaTrainingRoi3dAlgorithm` (Images / Weka) | `DeepLearningTrainingFunction` | **3D** | trains on 3D image + ROIs ⇒ `ImagePlus3DData` first input |
+
+**Function split:** Inference **2** · Training **6** · Models **1** (total 9). **Spatial distribution:**
+2D **5** · 3D **2** · both **1** · absent **1** (total 9). (The 5 `SPATIAL_2D` = the four 2D-training
+nodes whose first input is `ImagePlus2DData` + `WekaTrainingRoi2dAlgorithm`; the 2 `SPATIAL_3D` =
+`WekaTrainingRoi3dAlgorithm` + `WekaClassification3DAlgorithm`, first input `ImagePlus3DData`; the 1
+`both` = `WekaClassification2DAlgorithm`, unconstrained `ImagePlusData` first input; the 1 absent =
+`ImportWekaModelFromFileAlgorithm`, `FileData` first input.)
+
+#### (b) jipipe-plugin-ilastik (8) — all `JIPipeDLFramework`
+
+Function: the "Ilastik" menu nodes predict segmentation/features with a trained iLastik model →
+`DeepLearningInferenceFunction`; the DataSource outputting `IlastikModelData` → `DeepLearningModelsFunction`;
+the other DataSource → rule 6 by output; the Export node → `ExportFileFormatsFunction`.
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `IlastikPixelClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | *runs* the trained pixel-classification workflow ⇒ segmentation/probabilities out; first input `ImagePlusData` (unconstrained) |
+| `IlastikAutoContextAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | runs the autocontext (iterative) workflow; first input `ImagePlusData` (unconstrained) — see (f) re: commented registration |
+| `IlastikObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | runs the object-classification workflow; first input `ImagePlusData` — see (f) |
+| `IlastikPredictionMapsObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | object classification from prediction maps; first input `ImagePlusData` — see (f) |
+| `IlastikSegmentationImageObjectClassificationAlgorithm` (Images / Ilastik) | `DeepLearningInferenceFunction` | both | object classification from a segmentation image; first input `ImagePlusData` — see (f) |
+| `ImportIlastikModel` (DataSource, —) | `DeepLearningModelsFunction` | absent | imports an `*.ilp` **project/model file** ⇒ `IlastikModelData` out; model *management*; first input `FileData` ⇒ no spatial |
+| `ImportIlastikHDF5ImageAlgorithm` (DataSource, —) | `ImageDataFunction` | absent | rule 6 by **output**: emits `ImagePlusGreyscaleData` (an image) ⇒ the data/ **image** leaf; first input `FileData` ⇒ no spatial (it *reads* an HDF5 image, does not process an image input) |
+| `ExportIlastikHDF5ImageAlgorithm` (Export / Images) | `ExportFileFormatsFunction` | both | rule 7: writes an HDF5 **file format** (not a ZIP/`ROI` archive) ⇒ the file-format leaf; first image input `ImagePlusGreyscaleData` (unconstrained) ⇒ both. Carries the module's **1 alias** (see (c)) |
+
+**Function split:** Inference **5** · Models **1** · ImageData **1** · Export **1** (total 8).
+**Spatial distribution:** both **6** · absent **2** (total 8).
+
+#### (c) The ilastik alias (1) — DROPPED
+
+`ExportIlastikHDF5ImageAlgorithm` carries the module's only `@AddJIPipeNodeAlias`:
+`nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave"`.
+Mapping the alias's old category+menuPath to a leaf by the same rules: an `ImageJNodeTypeCategory`
+`File\nSave` node is a **file-format image exporter** → `ExportFileFormatsFunction`. That is **== the
+primary** (`ExportFileFormatsFunction`), so per the A/B/C protocol (alias-leaf == primary-leaf → drop)
+the alias line is **deleted**; **no secondary `function[]` entry** was added. (This is the same outcome
+as §19.3's 12/12 dropped and the §19.2 `Convert`-only aliases — the alias is a same-leaf re-listing, not
+a distinct leaf.) Verified `grep "@AddJIPipeNodeAlias" plugins/jipipe-plugin-ilastik/src/main` → **0**
+after conversion; the other three modules have **0** aliases (verified).
+
+#### (d) jipipe-plugin-opencv (6) — all `OpenCVFramework`
+
+The 4 image ops take `OpenCvImageData` (a 2D OpenCV `Mat` — `public class OpenCvImageData implements
+JIPipeData`, no `@ImageTypeInfo`; a 2D image type) ⇒ **`SPATIAL_2D`** (rule 12). The 2 kernel
+generators have **no input slots** ⇒ **absent**.
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `BilateralFilterAlgorithm` (Images / Blur) | `FilteringFunction` | **2D** | bilateral **filter** (Blur menu) ⇒ the filtering leaf; first input `OpenCvImageData` (2D Mat) |
+| `ConvertTypeAlgorithm` (Images / Convert) | `ResamplingFunction` | **2D** | bit-depth/type conversion (ij-algorithms `Convert`→`ResamplingFunction` precedent) |
+| `ConvertDepthAlgorithm` (Images / Convert) | `ResamplingFunction` | **2D** | depth conversion (same `Convert` group) |
+| `InpaintingAlgorithm` (Images / Restore) | `PreprocessingFunction` | **2D** | restore/inpaint (content-aware fill) ⇒ the **preprocessing** leaf; first input `OpenCvImageData` |
+| `GaborKernelGenerator` (DataSource, —) | `ImageDataFunction` | absent | rule 6 by output: emits `OpenCvImageData` (an **image** — the Gabor kernel *as* a 2D image) ⇒ data/ image leaf (judgment, (f)); **no input slot** ⇒ absent |
+| `GaussianKernelGenerator` (DataSource, —) | `ImageDataFunction` | absent | same as Gabor — emits a Gaussian kernel as a 2D `OpenCvImageData`; no input ⇒ absent |
+
+**Function split:** Resampling **2** · Filtering **1** · Preprocessing **1** · ImageData **2** (total 6).
+**Spatial distribution:** 2D **4** · absent **2** (total 6).
+
+#### (e) jipipe-plugin-scene-3d (7) — NoFramework (omitted)
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `CreateLineMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `Scene3DData` — **no Scene3D data leaf exists** in `data/` (= Image/Table/Roi/Filament/**Misc**) ⇒ the data/ **misc** leaf (no-fit → misc); no image input |
+| `CreateSphereMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | same — emits `Scene3DData` (a sphere mesh); no-fit → misc; no image input |
+| `ExportScene3DToColladaAlgorithm` (Export / 3D scenes) | `ExportFileFormatsFunction` | absent | rule 7: writes a **Collada (DAE) file format** (single file, not a ZIP archive) ⇒ file-format leaf; input `Scene3DData` (non-image) ⇒ absent |
+| `ExportScene3DToColladaAlgorithm2` (Export / 3D scenes) | `ExportFileFormatsFunction` | absent | same DAE exporter (v2, relative-to-project); `Scene3DData` in ⇒ absent |
+| `GroupSceneAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | absent | rule 9 last-resort: groups 3D-scene objects (no specific leaf fits `Scene3DData` manipulation); `Scene3DData` in (non-image) ⇒ absent |
+| `MergeScenesAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | absent | rule 9: merges `Scene3DData` scenes (no scene-merge leaf); non-image in ⇒ absent |
+| `MaskTo3DMeshAlgorithm` (Images / Binary) | `MiscellaneousFunction` | **3D** | **judgment (f):** a 3D-scene-from-mask **generation** op (Marching cubes: `ImagePlus3DGreyscaleMaskData` → `Scene3DData`). Old menuPath `Binary` would rule 1 → a `images/` leaf, but the node's **output is a 3D scene, not an image**, and it is a *generation* op, not a binary image filter. Assigned `MiscellaneousFunction` (the generation/last-resort leaf) with spatial **3D** (first image input `ImagePlus3DGreyscaleMaskData` ⇒ 3D). |
+
+**Function split:** MiscData **2** · Export **2** · Miscellaneous **3** (total 7).
+**Spatial distribution:** 3D **1** · absent **6** (total 7).
+
+---
+
+#### (f) Flagged for Phase 3 audit
+
+- **⚠️ WEKA classical-ML nodes under the `deeplearning/` branch.** All 9 weka nodes are *classical*
+  machine learning (Trainable Weka Segmentation — a random-forest/ML classifier, not a neural net), yet
+  rule 11 places weka under `JIPipeDLFramework` and the `deeplearning/` function branch is their
+  consistent home (Inference/Training/Models). **Flag for Phase 3**: if the audit prefers a dedicated
+  "classical ML" framework or branch, all 9 move together (mechanical). Recorded, not silently absorbed.
+- **⚠️ opencv kernel generators → `ImageDataFunction`.** `GaborKernelGenerator`/`GaussianKernelGenerator`
+  emit `OpenCvImageData`, which *is* an image type (a 2D `Mat`), so rule 6's "image→`ImageDataFunction`"
+  (the leaned choice) is used. **Alternative:** `MiscDataFunction` (they are OpenCV-specific *kernel*
+  producers, not general image data). Flagged; both are `OpenCVFramework`, no spatial (no input slots).
+- **⚠️ scene-3d `MaskTo3DMeshAlgorithm` → `MiscellaneousFunction` (spatial 3D).** Old menuPath `Binary`
+  would point to a `images/` leaf, but the node's output is a **3D scene** (not an image) and its op is
+  mesh *generation* from a mask, so the last-resort `MiscellaneousFunction` is the honest fit. If the
+  audit groups by the *input* (a 3D mask) or adds a "3D-scene generation" leaf, it moves. Flagged.
+- **scene-3d 2 Misc (`GroupSceneAlgorithm`/`MergeScenesAlgorithm`) → `MiscellaneousFunction`.** No
+  `Scene3DData`-specific leaf exists; grouping/merging scene objects is a genuine best-fit (rule 9) with
+  no narrower alternative. Not flagged as debatable beyond the note above.
+- **ilastik `ImportIlastikHDF5ImageAlgorithm` → `ImageDataFunction` (rule 6 by output).** Emits
+  `ImagePlusGreyscaleData` (an image) ⇒ the data/ image leaf. The controller left this to "rule 6 by
+  output (read it)" — confirmed it reads an HDF5 *image file* and emits image data, not model data, so
+  `ImageDataFunction` (contrast with `ImportIlastikModel` → `DeepLearningModelsFunction`, which emits
+  `IlastikModelData`).
+- **⚠️ ilastik: 4 of the 8 nodes are NOT registered at runtime.** `IlastikPlugin.register()` (line
+  312–313) has the `registerNodeType` calls for `IlastikAutoContextAlgorithm` and
+  `IlastikObjectClassificationAlgorithm` **commented out**, and `IlastikPredictionMapsObjectClassificationAlgorithm`
+  / `IlastikSegmentationImageObjectClassificationAlgorithm` are **never referenced** by any
+  `registerNodeType` (verified repo-wide grep: 0 live references outside their own file). So only **4 of
+  the 8** ilastik nodes actually register on the gate's classpath (`ilastik-pixel-classification`,
+  `import-ilastik-model`, `import-ilastik-hdf5-image`, `export-ilastik-hdf5-image`). All 8 are still
+  converted (the 4 unregistered ones for consistency + the module-wide `mvn compile`), but the gate only
+  enumerates the 4 registered — the 4 unregistered classes cannot surface as unassigned (they have no
+  registered node info). **Not a conversion gap**; recorded so the 4-vs-8 gate count is not misread.
+  (This is the inverse of §19.10's 18-annotated-vs-32-registered: here annotated > registered.)
+
+---
+
+#### (g) Test infrastructure + gate results
+
+All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH
+(`ijweka`/`ilastik`/`opencv`/`scene3d`):
+- **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted before `</dependencies>`).
+- **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
+  TaxonomyConversionReportTest.java` → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/
+  nodes/taxonomy/` (**byte-identical**, verified with `cmp` — all 4).
+- **Created** `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (`LegacyInjector.preinit()` in
+  `launcherSessionOpened`, HKI header, Javadoc adapted to the module's ImageJ1 touchpoints — weka:
+  `ij.ImagePlus`/`ij.ImageStack`/`ij.gui.Roi`/`ij.process.*`; ilastik: `ij.ImagePlus` + `utils.hdf5.
+  IJ1Hdf5`; opencv: `ij.ImagePlus` via the `datatypes/` IJ bridge; scene-3d: `MaskTo3DMeshAlgorithm`'s
+  `ij.ImagePlus`) + `src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = that module's listener FQCN).
+
+**Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath
+transitively via jipipe-core → `net.imagej:imagej`.
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-ij-weka,plugins/jipipe-plugin-ilastik,
+  plugins/jipipe-plugin-opencv,plugins/jipipe-plugin-scene-3d -am` → **exit 0** (all four in one reactor;
+  the `JIPipeDLFramework`/`OpenCVFramework` + the `deeplearning/`/`images/`/`data/`/`export/`/
+  `MiscellaneousFunction` leaves all resolve against the installed core).
+
+- **Stale `~/.m2` core jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar
+  is dated **2026-10-10 03:52**, newer than the last jipipe-core taxonomy commit (`aeab2dcacb`,
+  2026-10-09 20:19) — **fresh** (contains the taxonomy function classes and the converted core nodes), so
+  no pre-19.1 core node surfaced as unassigned in any of the four prefixes (the §19.6 stale-core
+  condition did not recur). The gate prefix filters (`…ijweka`/`…ilastik`/`…opencv`/`…scene3d`) cover no
+  core package, so even a stale core jar could not inflate the prefix-filtered failure set. Stale
+  *dependency* jars only inflate the informational global "N nodes not yet assigned" line (see below) —
+  **no `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.**
+
+- **Gate (enabled), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`,
+  zero unassigned in the module prefix:**
+  - **ij-weka:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijweka`
+  - **ilastik:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ilastik`
+  - **opencv:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.opencv`
+  - **scene-3d:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.scene3d`
+
+  The log line `JIPipeNodesServiceComponent | Node taxonomy: N nodes not yet assigned a taxonomy
+  function — expected during conversion` is the **global** count across all on-classpath modules (the
+  still-unconverted clij / ij2 / ocr / plots / multi-template-matching / python / r / imp … modules +
+  dependency jars); **none** are under any of the four prefixes, so the prefix-filtered assertion saw
+  **zero** and passed (same shape as §19.3–§19.10). Observed global counts: ij-weka **545** · ilastik
+  **545** · opencv **116** · scene-3d **116** (the opencv/scene-3d classpaths are smaller — no
+  `jipipe-plugin-ij-algorithms` transitive dep — so their global unconverted count is lower; neither
+  count is in the prefix-filtered set).
+
+- **Gate (unset), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the
+  gate **skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works),
+  module green.
+
+**Byte-identity check (reviewer contract):** all 30 node files are byte-identical to base after
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` line (and, for the 1 alias file, the
+`@AddJIPipeNodeAlias(…)` line) — verified by a line-filter diff across `git show HEAD:<f>` vs head
+(30 files, 0 non-annotation changes). The only permitted change is the annotation + import fixup.
+
+**Transition note understood:** the 30 converted nodes now fall back to `InternalNodeTypeCategory` via
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
 panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
 unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.scene3d.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
@@ -24,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -47,7 +47,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
 @AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "3D scenes")
+@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {

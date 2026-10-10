@@ -140,3 +140,6 @@ fabric.properties
 /utils/taxonomy-conversion/bytecheck-19-8.py
 # Taxonomy conversion scratch (19.9 cellpose+omnipose applier).
 /utils/taxonomy-conversion/apply_19_9.py
+# Taxonomy conversion scratch (19.11a weka+ilastik+opencv+scene-3d applier + byte-identity check).
+/utils/taxonomy-conversion/apply_19_11a.py
+/utils/taxonomy-conversion/bytecheck-19-11a.py

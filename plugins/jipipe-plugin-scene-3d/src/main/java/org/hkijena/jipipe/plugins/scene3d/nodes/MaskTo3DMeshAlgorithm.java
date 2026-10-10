@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.scene3d.nodes;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -36,7 +37,7 @@ import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DUtils;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Mask to 3D scene", description = "Applies the 'Marching cubes' algorithm to convert a 3D mask into a 3D mesh.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
+@ConfigureJIPipeNode(function = MiscellaneousFunction.class, spatialDimensions = { SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {

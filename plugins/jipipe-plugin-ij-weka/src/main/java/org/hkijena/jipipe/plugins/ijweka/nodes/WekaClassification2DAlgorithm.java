@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ijweka.nodes;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
 import ij.ImagePlus;
 import ij.ImageStack;
 import org.hkijena.jipipe.JIPipe;
@@ -25,7 +29,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -41,7 +44,7 @@ import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "Image on which the classification should be applied", create = true)
 @AddJIPipeInputSlot(value = WekaModelData.class, name = "Model", description = "The model", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Classified image", description = "The classified image", create = true)

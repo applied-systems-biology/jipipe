@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ijweka.nodes;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningTrainingFunction;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
@@ -26,7 +29,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,7 +53,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Train Weka model from labels (multiple images, 2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
+@ConfigureJIPipeNode(function = DeepLearningTrainingFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D })
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Labeled Images", description = "Images on which the training should be applied. " +
         "Each image should have a data annotation that contains the label data.", create = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)

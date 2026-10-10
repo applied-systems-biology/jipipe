@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
 import ij.ImagePlus;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
@@ -34,7 +38,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -63,7 +66,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
         "Improves the Pixel Classification workflow by running it in multiple stages and showing each pixel the results of the previous stage. " +
         "Please note that results will be generated for each image and each project (pairwise).")
 @AddJIPipeCitation("Autocontext documentation: https://www.ilastik.org/documentation/autocontext/autocontext")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Ilastik")
+@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Probabilities Stage 1", description = "Multi-channel image where pixel values represent the probability that that pixel belongs to the class represented by that channel (Stage 1)")

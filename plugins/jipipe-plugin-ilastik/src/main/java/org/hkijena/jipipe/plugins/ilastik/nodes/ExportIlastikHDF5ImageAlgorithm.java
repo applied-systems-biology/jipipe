@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -51,10 +53,9 @@ import java.util.Map;
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
 @SetJIPipeDocumentation(name = "Export Ilastik HDF5 image", description = "Exports an image into the Ilastik HDF5 format")
-@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeOutputSlot(value = FileData.class, name = "HDF5 File", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter hdf5Path = new JIPipeExpressionParameter("\"exported_data\"");
