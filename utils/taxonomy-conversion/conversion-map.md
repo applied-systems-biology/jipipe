@@ -1851,8 +1851,14 @@ leaf; input `OMEROImageReferenceData` (a ref, not an image) ⇒ **absent**.
 emits **`OMEImageData`** ("Imports an image from OMERO into ImageJ") → the **image-data** leaf (data/ =
 ImageData for images); input `OMEROImageReferenceData` (a ref, **not** an image) ⇒ **spatial absent**
 (rule 12 reads the image *input*; there is none). **Note (f)** — the leaf/spatial split here follows two
-different rules (leaf by image output, spatial by non-image input), mirroring §19.3
-`ExtractRoi2dFromOMEImage`'s documented split.
+different rules (leaf by image output, spatial by non-image input). This is the same *mechanism* as §19.3
+`ExtractRoi2dFromOMEImage` (leaf by ROI output, spatial by its OME-image input), but that node's image
+input makes it **both**, whereas DownloadOMEROImage's reference input makes it **absent**. ⚠️ **Phase-3
+rule-refinement flag:** the 19.3 image-*importing* DataSources (`ImportImagePlus`/`BioFormatsImporter`/…)
+are **both** (they emit an image from a non-image `FileData` input), so an image-*producing* source node
+like DownloadOMEROImage is arguably **both** by that same output-based reasoning — its **absent** here is
+the literal rule-12 (input-based) reading. Decide in Phase 3 whether image-producing source nodes declare
+their **OUTPUT's** spatial (if so, flip this node to **both**, harmonizing with the 19.3 importers).
 
 **`AnnotationsEditFunction` (6)** — the `annotate/` "For OMERO" nodes (JUDGMENT ELEMENT 1 continued).
 Each **adds** OMERO metadata annotations to an `OMERO*ReferenceData` object (ref in → same ref out, now
@@ -1940,7 +1946,10 @@ to a recognizable conversion op). They therefore collapse to **one** secondary:
   outside the generic table-data leaf (they are "annotation-specific").
 - **`DownloadOMEROImageAlgorithm` → `ImageDataFunction`, spatial **absent**.** Leaf by its image OUTPUT
   (rule 6); spatial by its non-image INPUT (a reference) — the two rules point differently here
-  (absent), mirroring §19.3 `ExtractRoi2dFromOMEImage`'s documented leaf/spatial split.
+  (absent). Same *mechanism* as §19.3 `ExtractRoi2dFromOMEImage` (that one is **both** — it has an
+  OME-image input — whereas this is **absent**). ⚠️ Cross-module rule question (Phase 3): the 19.3
+  image-*importing* DataSources are **both** (image emitted from a `FileData` input), so an
+  image-*producing* source node may belong as **both** by output; decide whether to harmonize.
 - **`UploadOMEROImageToDatasetAlgorithm` → `ExportFileFormatsFunction` (both).** It is in the **Export**
   category, so rule 7 gives the export file-format leaf. A "put data into OMERO" (an external store)
   reading is export-flavored (kept); if the audit reads it as OMERO-side data management rather than a
