@@ -419,8 +419,10 @@ class TaxonomyViewTest {
 
     @Test
     void searchIdsUnconvertedIsExactlyLegacyCategoryId() {
-        // Mirrors JIPipeNodeDatabaseBuilderRun / CreateNewNodeByInfoDatabaseEntry:
-        // categoryIds.add(nodeInfo.getCategory().getId())
+        // The legacy transition shape: the raw category id, exactly the form
+        // the node database builder historically stored (that categoryIds
+        // facet was removed in task 25 — searchIds keeps the shape until the
+        // legacy fallback itself goes away in tasks 26/27).
         Set<String> ids = TaxonomyView.searchIds(unconvertedInfo());
         assertEquals(Set.of("org.hkijena.jipipe:images"), ids);
     }
