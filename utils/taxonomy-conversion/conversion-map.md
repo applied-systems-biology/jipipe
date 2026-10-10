@@ -124,7 +124,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-annotations | 29 | **converted (19.8, 29 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-omero | 26 | **converted (19.8, 26 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-cellpose | 21 | pending |
+| jipipe-plugin-cellpose | 21 | **converted (19.9, 21 nodes, DL frameworks by subpackage); module gate zero unassigned** |
 | jipipe-plugin-ij-trackmate | 18 | pending |
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
@@ -135,7 +135,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-opencv | 6 | pending |
 | jipipe-plugin-r | 5 | pending |
 | jipipe-plugin-imp | 5 | pending |
-| jipipe-plugin-omnipose | 5 | pending |
+| jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-clij | 4 | pending |
 | jipipe-plugin-ij2 | 2 | pending |
 | jipipe-plugin-ij-multi-template-matching | 1 | pending |
@@ -2029,3 +2029,309 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a
 line-filter diff across `git show HEAD:<f>` vs head — 55 files, 0 non-annotation changes) — the change is
 annotations-only.
+
+---
+
+### 19.9 — jipipe-plugin-cellpose (21) + jipipe-plugin-omnipose (5) (26 nodes)
+
+**Status:** converted — all 26 `@ConfigureJIPipeNode` nodes across the two modules rewritten to
+`function` / `framework` / `spatialDimensions`; two module gates green (see (g)). Single-shot combined
+conversion (mapping + apply + 2 gates in one commit), mirroring §19.6/§19.7/§19.8.
+
+**First framework-variety task.** §19.6–§19.8 were function-only (`NoFramework`, the attribute omitted).
+These two DL modules get **REAL frameworks** — the first batch to exercise rule 11's per-plugin framework
+table with more than the `ImageJ1Framework`/`CoreFramework` shapes already seen in §19.2–§19.5. Two
+distinctive elements: **(A)** framework is read **per node by subpackage** (cellpose) / **uniformly**
+(omnipose); **(B)** spatial is read **per node by the first image input slot** (rule 12) — here the
+`ij.ImagePlus`/`ImagePlus*Data` usage IS the spatial signal.
+
+**Scope / gate prefixes (verified, matches controller R1):**
+- `plugins/jipipe-plugin-cellpose/src/main` — base pkg **`org.hkijena.jipipe.plugins.cellpose`** (GATE
+  PREFIX) — **21** annotated files (verified `grep -rl "@ConfigureJIPipeNode" src/main | wc -l` = 21,
+  exactly one `@ConfigureJIPipeNode` per file). `CellposeUtils`/`CellposeImageInfo`/etc. are non-node
+  helpers (no annotation) → correctly excluded.
+- `plugins/jipipe-plugin-omnipose/src/main` — base pkg **`org.hkijena.jipipe.plugins.omnipose`** (GATE
+  PREFIX) — **5** annotated files (verified = 5, one each). `Omnipose0Environment`/parameter classes are
+  non-nodes → excluded.
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
+
+| module | Images ("Deep learning") | DataSource | total |
+|---|---|---|---|
+| cellpose | 13 | 8 | **21** |
+| omnipose | 4 | 1 | **5** |
+
+**Aliases (verified by grep of `@AddJIPipeNodeAlias`):** **0** in both modules → no alias→secondary-
+`function[]` conversions (step 2 of the per-batch method is a no-op here).
+
+---
+
+#### (A) Framework — by SUBPACKAGE (cellpose) / uniform (omnipose) — rule 11, per node
+
+**The key check: exact per-framework counts (verified against each file's `package` line).**
+
+| framework (cellpose) | count | nodes (by subpackage) |
+|---|---|---|
+| `Cellpose2Framework` | **3** | `algorithms/cp2` → `Cellpose2SegmentationInferenceAlgorithm`, `Cellpose2TrainingAlgorithm`, `ImportPretrainedCellpose2ModelAlgorithm` |
+| `Cellpose3Framework` | **6** | `algorithms/cp3` → `Cellpose3SegmentationInferenceAlgorithm`, `Cellpose3SegmentationTrainingAlgorithm`, `Cellpose3DenoiseInferenceAlgorithm`, `Cellpose3DenoiseTrainingAlgorithm`, `ImportPretrainedCellpose3SegmentationModelAlgorithm`, `ImportPretrainedCellpose3DenoiseModelAlgorithm` |
+| `Cellpose4Framework` | **4** | `algorithms/cp4` → `Cellpose4SegmentationInferenceAlgorithm`, `Cellpose4SegmentationTrainingAlgorithm`, `Cellpose4SegmentationTraining2Algorithm`, `ImportPretrainedCellpose4SegmentationModelAlgorithm` |
+| **NoFramework (omitted)** | **8** | `algorithms` (base, 2): `ImportCellposeModelFromFileAlgorithm`, `ImportCellposeSizeModelFromFileAlgorithm` + `legacy/algorithms` (6): `Cellpose1InferenceAlgorithm`, `Cellpose1TrainingAlgorithm`, `LegacyCellpose2InferenceAlgorithm`, `LegacyCellpose2TrainingAlgorithm`, `ImportLegacyCellposeModelAlgorithm`, `ImportLegacyCellposeSizeModelAlgorithm` |
+| **cellpose total** | **21** | |
+
+| framework (omnipose) | count | nodes |
+|---|---|---|
+| `JIPipeDLFramework` | **5** (all) | `algorithms` (3): `Omnipose0InferenceAlgorithm`, `Omnipose0TrainingAlgorithm`, `ImportPretrainedOmnipose0ModelAlgorithm` + `legacy/algorithms` (2): `LegacyOmnipose0InferenceAlgorithm`, `LegacyOmnipose0TrainingAlgorithm` |
+| **omnipose total** | **5** | |
+
+**Rule 11 rationale (per framework):**
+- **cellpose → `Cellpose{2,3,4}Framework` per subpackage** (rule 11 literal). The node files live in
+  three version subpackages; the **`package` statement is authoritative** (verified per file — not the
+  directory name). `cp2`→`Cellpose2Framework`, `cp3`→`Cellpose3Framework`, `cp4`→`Cellpose4Framework`.
+- **cellpose base package `algorithms` (2 version-agnostic model-file importers) → NoFramework (OMIT).**
+  There is **no version-agnostic cellpose framework** among the 12 (`jipipe-core/…/taxonomy/frameworks/`
+  has only `Cellpose2/3/4Framework`); these two importers take/emit a version-agnostic `CellposeModelData`
+  / `CellposeSizeModelData`, so no `CellposeN` framework fits → attribute **omitted** (the default is
+  already `NoFramework`, `jipipe-core/…/api/ConfigureJIPipeNode.java:97`). **Flagged (f).**
+- **cellpose `legacy.algorithms` (Cellpose v1 + legacy-v2, 6) → NoFramework (OMIT).** No `Cellpose1Framework`
+  (or legacy framework) exists among the 12, so the 6 legacy nodes are **omitted** like the base importers.
+  **Flagged (f)** — this is the most debatable framework call in the batch (see (f)).
+- **omnipose → `JIPipeDLFramework` for ALL 5**, including the 2 `legacy.algorithms` (v1) nodes. Unlike
+  cellpose, there is **no version split** for omnipose: rule 11 names omnipose → `JIPipeDLFramework`, and
+  the general DL framework covers its legacy nodes (a `JIPipeDLFramework` "covers legacy" precedent, unlike
+  cellpose where only version-specific frameworks exist). **This is a controller ruling** (the brief states
+  JIPipeDL for all 5 explicitly); it is also the reading rule 11 most naturally gives (omnipose is on the
+  named list; there is no omnipose-version-specific framework to fall back to). **Flagged (f)** in case the
+  audit prefers the symmetry with cellpose (NoFramework for legacy).
+
+**`ij.*` imports drive SPATIAL, NOT framework (rule 11 vs rule 12 — the CRITICAL distinction).** Both
+modules' node files incidentally `import ij.*` (cellpose 13 files, omnipose 4 files — `ij.ImagePlus`,
+`ij.IJ`, `ij.process.ImageProcessor`, …) for ImagePlus-level processing. **Do NOT** read this as
+"the node wraps IJ1 ⇒ `ImageJ1Framework`". Rule 11's framework table is **plugin-scoped, not
+import-scoped**: the framework is the *plugin's* deep-learning framework (`CellposeN`/`JIPipeDL`/
+NoFramework), regardless of the incidental `ij.*` usage. The `ij.*` imports instead feed **rule 12
+(spatial)** — the `ImagePlus*Data` first-image-input slot is what confers `SPATIAL_*`.
+**Verified: `grep -rl "ImageJ1Framework\|NoFramework" src/main` across both modules → 0** (no `ImageJ1Framework`
+assigned to any DL node; no literal `NoFramework` token — it is expressed by *omitting* the attribute).
+
+---
+
+#### (B) Function — the `deeplearning/` branch — by operation, per node
+
+The three `jipipe-core/…/taxonomy/functions/deeplearning/` leaves (read `getName()`):
+`DeepLearningInferenceFunction` ("Deep learning inference" — *running* a model on data),
+`DeepLearningModelsFunction` ("Deep learning models" — *managing* model files), and
+`DeepLearningTrainingFunction` ("Deep learning training" — *training* a model).
+
+The split is by **operation**, not by category:
+- **Run-the-model nodes** (`ImagesNodeTypeCategory` + menuPath `"Deep learning"`, produce
+  segmentation/masks/labels/flows/probabilities) → `DeepLearningInferenceFunction`.
+- **Model-importer nodes** (`DataSourceNodeTypeCategory`, `Import*Model`, read model FILES and output
+  `CellposeModelData`/`CellposeSizeModelData`/`LegacyCellposeModelData`) → `DeepLearningModelsFunction`
+  (model **management**, NOT inference).
+- **Training nodes** → `DeepLearningTrainingFunction`. ⚠️ **Deviates from the brief's "no training nodes
+  exist" premise — see (f):** 7 cellpose + 2 omnipose nodes genuinely train (`arguments.add("--train")`
+  / `"Trains a … model"`), so per the brief's escape hatch ("if you find a node that genuinely trains,
+  use it + record") they get `DeepLearningTrainingFunction`.
+
+**Function split (verified by grep):**
+
+| module | Inference | Training | Models | total |
+|---|---|---|---|---|
+| cellpose | **6** | **7** | **8** | **21** |
+| omnipose | **2** | **2** | **1** | **5** |
+| **total** | **8** | **9** | **9** | **26** |
+
+Note the brief's "13 Inference (cellpose)" = **6 true inference + 7 training** lumped under the old
+"Deep learning" menuPath. The correct rule-11/`deeplearning/` split separates the 7 trainers (which is
+what (f) records). The "8 Models (cellpose)" and "4 Inference (omnipose)" premises are confirmed; only the
+training sub-count (and the omnipose "4 Inference" = 2 inference + 2 training) is corrected.
+
+---
+
+#### (C) Spatial — by FIRST IMAGE INPUT slot (rule 12), per node
+
+Every inference/training node's spatial is read from its **first image input** `@AddJIPipeInputSlot`:
+- unconstrained `ImagePlusData` ⇒ **both** (`SPATIAL_2D, SPATIAL_3D`)
+- `ImagePlus3DData` / `ImagePlus3DGreyscaleData` (3D-specific) ⇒ **`SPATIAL_3D`** only
+- a 2D-specific class ⇒ `SPATIAL_2D`
+- model-import DataSources (`Import*Model`) take **no image input** (they read model `FileData`) ⇒ **absent**
+  (`spatialDimensions` omitted).
+
+**Spatial distribution (verified by grep):**
+
+| module | both (2D+3D) | 3D only | 2D only | absent | total |
+|---|---|---|---|---|---|
+| cellpose | **11** | **2** | 0 | **8** | **21** |
+| omnipose | **4** | 0 | 0 | **1** | **5** |
+
+**The 2 cellpose 3D-only cases (named):**
+- `legacy/algorithms/Cellpose1InferenceAlgorithm` — first image input `ImagePlus3DGreyscaleData` ⇒ `SPATIAL_3D`.
+- `legacy/algorithms/Cellpose1TrainingAlgorithm` — first image input `ImagePlus3DData` ⇒ `SPATIAL_3D`.
+
+All 11 cellpose "both" + 4 omnipose "both" nodes take an unconstrained `ImagePlusData` first image input.
+The 8 cellpose + 1 omnipose absent nodes are the `Import*Model` DataSources (first input is `FileData`,
+not an image) ⇒ rule 12 "non-image ⇒ absent". **No 2D-only case exists** (no node's first image input is
+a 2D-specific class).
+
+---
+
+#### (d) jipipe-plugin-cellpose (21) — per-node table
+
+| node (subpackage) | function | framework | spatial | note |
+|---|---|---|---|---|
+| `Cellpose2SegmentationInferenceAlgorithm` (cp2) | Inference | `Cellpose2Framework` | both | first input `ImagePlusData` |
+| `Cellpose2TrainingAlgorithm` (cp2) | **Training** | `Cellpose2Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `ImportPretrainedCellpose2ModelAlgorithm` (cp2) | Models | `Cellpose2Framework` | absent | DataSource, `CellposeModelData` out, `FileData`-free (model-file import) |
+| `Cellpose3SegmentationInferenceAlgorithm` (cp3) | Inference | `Cellpose3Framework` | both | first input `ImagePlusData` |
+| `Cellpose3SegmentationTrainingAlgorithm` (cp3) | **Training** | `Cellpose3Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `Cellpose3DenoiseInferenceAlgorithm` (cp3) | Inference | `Cellpose3Framework` | both | first input `ImagePlusData` |
+| `Cellpose3DenoiseTrainingAlgorithm` (cp3) | **Training** | `Cellpose3Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `ImportPretrainedCellpose3SegmentationModelAlgorithm` (cp3) | Models | `Cellpose3Framework` | absent | DataSource |
+| `ImportPretrainedCellpose3DenoiseModelAlgorithm` (cp3) | Models | `Cellpose3Framework` | absent | DataSource |
+| `Cellpose4SegmentationInferenceAlgorithm` (cp4) | Inference | `Cellpose4Framework` | both | first input `ImagePlusData` |
+| `Cellpose4SegmentationTrainingAlgorithm` (cp4) | **Training** | `Cellpose4Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `Cellpose4SegmentationTraining2Algorithm` (cp4) | **Training** | `Cellpose4Framework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `ImportPretrainedCellpose4SegmentationModelAlgorithm` (cp4) | Models | `Cellpose4Framework` | absent | DataSource |
+| `ImportCellposeModelFromFileAlgorithm` (base) | Models | —(NoFramework) | absent | version-agnostic importer (flag f) |
+| `ImportCellposeSizeModelFromFileAlgorithm` (base) | Models | —(NoFramework) | absent | version-agnostic importer (flag f) |
+| `Cellpose1InferenceAlgorithm` (legacy) | Inference | —(NoFramework) | **3D** | first input `ImagePlus3DGreyscaleData` (flag f) |
+| `Cellpose1TrainingAlgorithm` (legacy) | **Training** | —(NoFramework) | **3D** | first input `ImagePlus3DData` (flag f) |
+| `LegacyCellpose2InferenceAlgorithm` (legacy) | Inference | —(NoFramework) | both | first input `ImagePlusData` (flag f) |
+| `LegacyCellpose2TrainingAlgorithm` (legacy) | **Training** | —(NoFramework) | both | first input `ImagePlusData` (flag f) |
+| `ImportLegacyCellposeModelAlgorithm` (legacy) | Models | —(NoFramework) | absent | DataSource, `LegacyCellposeModelData` out (flag f) |
+| `ImportLegacyCellposeSizeModelAlgorithm` (legacy) | Models | —(NoFramework) | absent | DataSource, `LegacyCellposeSizeModelData` out (flag f) |
+
+#### (e) jipipe-plugin-omnipose (5) — per-node table
+
+All 5 → `JIPipeDLFramework` (rule 11, uniform — no version split; the 2 legacy nodes included by
+controller ruling, flag f).
+
+| node (subpackage) | function | framework | spatial | note |
+|---|---|---|---|---|
+| `Omnipose0InferenceAlgorithm` (algorithms) | Inference | `JIPipeDLFramework` | both | first input `ImagePlusData` |
+| `Omnipose0TrainingAlgorithm` (algorithms) | **Training** | `JIPipeDLFramework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `LegacyOmnipose0InferenceAlgorithm` (legacy) | Inference | `JIPipeDLFramework` | both | first input `ImagePlusData` (flag f) |
+| `LegacyOmnipose0TrainingAlgorithm` (legacy) | **Training** | `JIPipeDLFramework` | both | `--train`; first input `ImagePlusData` (flag f) |
+| `ImportPretrainedOmnipose0ModelAlgorithm` (algorithms) | Models | `JIPipeDLFramework` | absent | DataSource, `CellposeModelData` out |
+
+---
+
+#### (f) Flagged for Phase 3 audit
+
+- **⚠️ The "no training nodes exist" premise is FALSE — 9 genuine trainers were found and split out.**
+  The brief's function split ("13 Inference + 8 Models (cellpose)", "4 Inference + 1 Models (omnipose)",
+  "0 Training") lumps every old-menuPath-`"Deep learning"` node as Inference. In reality **7 cellpose
+  nodes** (`Cellpose2TrainingAlgorithm`, `Cellpose3{Segmentation,Denoise}TrainingAlgorithm`,
+  `Cellpose4SegmentationTraining{,2}Algorithm`, `Cellpose1TrainingAlgorithm`,
+  `LegacyCellpose2TrainingAlgorithm`) and **2 omnipose nodes** (`Omnipose0TrainingAlgorithm`,
+  `LegacyOmnipose0TrainingAlgorithm`) **train** models — verified by `arguments.add("--train")` and the
+  `"Trains a … model"` docstrings. Per the brief's own escape hatch ("if you find a node that genuinely
+  trains, use it + record"), they are assigned `DeepLearningTrainingFunction`, giving the corrected split
+  **cellpose 6 Inference / 7 Training / 8 Models** and **omnipose 2 Inference / 2 Training / 1 Models**.
+  **Decision recorded, not silently absorbed** — if the audit prefers the brief's "lump under Inference",
+  revert the 9 `Training` rows to `Inference` (mechanical). This is the single material deviation.
+- **cellpose base-package importers (2) → NoFramework (omitted).** No version-agnostic cellpose framework
+  exists among the 12. Kept NoFramework (omitted) per rule 11's "else → NoFramework". If Phase 3 adds a
+  version-agnostic `CellposeFramework`, these 2 (and arguably all 21) would move.
+- **cellpose `legacy.algorithms` (6) → NoFramework (omitted).** No `Cellpose1Framework`/legacy framework
+  exists. This is the **most debatable framework call**: the 6 legacy nodes (Cellpose v1 + legacy-v2) are
+  omitted. An alternative reading would give them the *closest* version framework, but that would mis-state
+  the version (v1 is neither 2/3/4), so NoFramework (omitted) is the honest choice. **Flag for Phase 3** —
+  a `Cellpose1Framework` (or a shared legacy-DL framework) would resolve it.
+- **omnipose legacy (2) → `JIPipeDLFramework` (by controller ruling).** The brief explicitly rules
+  JIPipeDL for all 5 (no version split; the general DL framework covers legacy). This **breaks symmetry
+  with cellpose** (whose legacy nodes go NoFramework because no version-agnostic cellpose framework
+  exists). The asymmetry is defensible (omnipose *has* a version-agnostic framework on the rule-11 list;
+  cellpose *doesn't*), but if the audit wants strict symmetry it would flip the 2 omnipose legacy nodes to
+  NoFramework (omitted). **Flag, do not change.**
+- **ij.* imports → spatial, not framework (confirmed).** 13 cellpose + 4 omnipose files import `ij.*`
+  (`ij.ImagePlus` etc.). None is read as `ImageJ1Framework` (the DL framework is the plugin framework,
+  rule 11 plugin-scoped). The `ij.*` usage only confers the `SPATIAL_*` by rule 12. `grep -rl
+  "ImageJ1Framework\|NoFramework" src/main` → **0**.
+
+---
+
+#### (g) Test infrastructure + gate results
+
+**cellpose** (base pkg `org.hkijena.jipipe.plugins.cellpose`): pom **already** had
+`org.junit.jupiter:junit-jupiter` (test scope — pre-existing, for the pure-unit
+`CellposeVersionUtilsTest`, which touches **no** `ij.*`) but **not** `junit-platform-launcher`.
+- **`pom.xml`:** added **only** `org.junit.platform:junit-platform-launcher` (test scope) after the
+  existing `junit-jupiter` dep.
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-cellpose/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/`
+  (**byte-identical**, verified with `cmp`).
+- Created `plugins/jipipe-plugin-cellpose/src/test/java/org/hkijena/jipipe/plugins/cellpose/
+  ImageJLegacyPatcherLauncherSessionListener.java` (`LegacyInjector.preinit()` in
+  `launcherSessionOpened`, HKI header, Javadoc citing the module's `ij.ImagePlus` touchpoint) +
+  `src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`
+  (single line = that FQCN). The pre-existing `CellposeVersionUtilsTest` must stay green (the module
+  `mvn test` runs it + the gate) — **it does** (4 tests, green, see unset run below).
+
+**omnipose** (base pkg `org.hkijena.jipipe.plugins.omnipose`): pom had **no** JUnit deps (first test) →
+full wiring (mirror `jipipe-plugin-ij`/`-ij-3d`):
+- **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (both test scope) after the last dependency (`jipipe-plugin-cellpose`).
+- Copied the gate test → `plugins/jipipe-plugin-omnipose/src/test/java/org/hkijena/jipipe/api/nodes/
+  taxonomy/` (**byte-identical**, verified with `cmp`).
+- Created `plugins/jipipe-plugin-omnipose/src/test/java/org/hkijena/jipipe/plugins/omnipose/
+  ImageJLegacyPatcherLauncherSessionListener.java` + `src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = that FQCN).
+
+**Why the listener is needed (both):** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context.
+A module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath. **Both modules genuinely load
+`ij.*` node classes** (their inference/training algorithms use `ij.ImagePlus`), so the ImageJ2 legacy
+patcher (`net.imagej.patcher.LegacyInjector`) **must** run first — otherwise the patcher fails
+(`No _hooks field found in ij.IJ` / `LinkageError: duplicate class definition`), corrupting the context
+so no node infos register (AGENTS.md patcher contract). `LegacyInjector` is on the test classpath
+transitively via jipipe-core → `net.imagej:imagej`.
+
+**Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-cellpose,plugins/jipipe-plugin-omnipose -am`
+→ **exit 0** (both in one reactor; host mvn — the `Cellpose{2,3,4}Framework` / `JIPipeDLFramework` /
+`DeepLearning{Inference,Training,Models}Function` symbols all resolve against the installed core).
+
+**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is
+**2026-10-10 03:52**, newer than the last jipipe-core taxonomy commit (`aeab2dcacbed`, 2026-10-09 20:19)
+— **fresh** (it contains the 74+ taxonomy function classes and the converted core nodes), so no pre-19.1
+core node surfaced as unassigned in either prefix (the §19.6 stale-core condition did not recur). The gate
+prefix filter (`org.hkijena.jipipe.plugins.cellpose` / `…omnipose`) does **not** cover any core package, so
+even a stale core jar could not inflate the prefix-filtered failure set. Stale *dependency* jars only
+inflate the informational global "N nodes not yet assigned" line (see below) — **no `mvn install` was run.**
+
+**Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned
+in the module prefix:**
+- **cellpose:** `mvn test -pl plugins/jipipe-plugin-cellpose -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.cellpose` → **Tests run: 1, Failures: 0,
+  Errors: 0, Skipped: 0**, **zero unassigned in the `…cellpose` prefix**. Log line
+  `JIPipeNodesServiceComponent | Node taxonomy: 554 nodes not yet assigned a taxonomy function — expected
+  during conversion` is the **global** count across all on-classpath modules (the unconverted trackmate /
+  weka / ilastik / clij / ij2 / ocr / plots / multi-template-matching / python / r / imp / scene-3d /
+  opencv / omnipose-before-this-batch … modules + stale dependency jars); **none** are under the
+  `org.hkijena.jipipe.plugins.cellpose` prefix, so the prefix-filtered assertion saw **zero** and passed
+  (same shape as §19.3/19.4/19.5/19.6/19.7/19.8).
+- **omnipose:** `mvn test -pl plugins/jipipe-plugin-omnipose -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.omnipose` → **Tests run: 1, Failures: 0,
+  Errors: 0, Skipped: 0**, **zero unassigned in the `…omnipose` prefix**. Log line
+  `Node taxonomy: 575 nodes not yet assigned a taxonomy function — expected during conversion` is the
+  **global** count (its classpath additionally includes the on-classpath cellpose module, but all 21
+  cellpose nodes are now assigned, so they do not contribute; **none** are under the
+  `org.hkijena.jipipe.plugins.omnipose` prefix) → assertion **zero**, passed.
+
+**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate
+**skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works). The
+**cellpose** unset run additionally ran the pre-existing `CellposeVersionUtilsTest` → **Tests run: 4,
+Failures: 0, Errors: 0, Skipped: 0** (module total `Tests run: 5, …, Skipped: 1` — the 1 skip is the
+gated gate), confirming the pre-existing test stays green.
+
+**Transition note understood:** the 26 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+**Byte-identity check (reviewer contract):** all 26 node files are byte-identical to base after stripping
+`import …;` lines and the `@ConfigureJIPipeNode(…)` line (verified by a line-filter diff across
+`git show HEAD:<f>` vs head — 26 files, 0 non-annotation changes) — the change is annotations-only.
+(Import re-arrangement: the new taxonomy imports — static `SPATIAL_*` (where spatial present) + framework
+(where framework present) + the `deeplearning/` leaf — are prepended to the import block and the
+`…nodes.categories.*` import is dropped; this is the permitted import fixup, not a body change.)

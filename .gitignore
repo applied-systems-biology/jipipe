@@ -138,3 +138,5 @@ fabric.properties
 # Taxonomy conversion scratch (19.8 annotations+ij-omero applier + byte-identity check).
 /utils/taxonomy-conversion/apply-19-8.py
 /utils/taxonomy-conversion/bytecheck-19-8.py
+# Taxonomy conversion scratch (19.9 cellpose+omnipose applier).
+/utils/taxonomy-conversion/apply_19_9.py
