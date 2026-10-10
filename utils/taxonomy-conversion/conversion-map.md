@@ -506,7 +506,7 @@ Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D s
 **Scope:** every `@ConfigureJIPipeNode` class under
 `plugins/jipipe-plugin-ij/src/main/java` (package `org.hkijena.jipipe.plugins.imagejdatatypes`).
 The module is **data-type wrappers + importers/exporters** of IJ1 `ImagePlus`/Bio-Formats images:
-50 `ImagePlus*Data` classes (2D/3D/4D/5D, color/greyscale/mask, FFT) plus 30 algorithm classes
+54 `ImagePlus*Data` data-type classes (2D/3D/4D/5D, color/greyscale/mask, FFT) plus 26 algorithm classes
 (importers, export nodes, ROI/table sources, color-space/contrast/converter ops, macro + OME-XML
 sources, 3 annotation nodes).
 
@@ -534,10 +534,12 @@ menuPath / data-class name:
 `RoiDataFunction` 2 · `PreprocessingFunction` 2 · `TableDataFunction` 1 · `ResamplingFunction` 1 ·
 `ExportArchiveFunction` 1.
 
-#### (a) Data-type wrappers (50) — all `ImageDataFunction`, `ImageJ1Framework`; spatial by declared dimension
+#### (a) Data-type wrappers (54) — all `ImageDataFunction`, `ImageJ1Framework`; spatial by declared dimension
 
-The 50 `ImagePlus*Data` classes (registered via `registerImageDataType` in `ImageJDataTypesPlugin`, not
-`registerNodeType`) are pure IJ1 `ImagePlus` image-data types. Function is the **data/ branch leaf**
+The 54 `ImagePlus*Data` classes (registered as data types via `registerImageDataType` in
+`ImageJDataTypesPlugin` AND exposed as browsable nodes via their `@ConfigureJIPipeNode`
+annotation — these are exactly the 54 "default/Internal" category nodes of the inventory) are pure
+IJ1 `ImagePlus` image-data types. Function is the **data/ branch leaf**
 `ImageDataFunction` (the "image data" locations — same as the ij-algorithms DataSource→`ImageDataFunction`
 precedent); none is a table/ROI/filament type, so no `TableDataFunction`/`RoiDataFunction`/other here.
 Spatial comes from the `@ImageTypeInfo(numDimensions=…)` / package (no image *input* slot exists on a
