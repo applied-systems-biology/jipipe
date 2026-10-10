@@ -26,12 +26,12 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -45,8 +45,7 @@ import javax.swing.*;
 
 @SetJIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
+@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class, framework = ImageJ1Framework.class)
 public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
 
     private ImageJDataExporterRef exporterType = new ImageJDataExporterRef();

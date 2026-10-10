@@ -21,11 +21,12 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -38,7 +39,7 @@ import java.util.List;
 
 
 @SetJIPipeDocumentation(name = "Outline 2D ROI (Concave Hull Moreira/Santos)", description = "Uses the algorithm by Moreira and Santos to calculate the concave hull of the provided rois")
-@ConfigureJIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Outline")
+@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 @AddJIPipeCitation("Moreira, A., & Santos, M. Y. (2007, March). Concave hull: A k-nearest neighbours approach for the computation of the region occupied by a set of points. In International Conference on Computer Graphics Theory and Applications (Vol. 2, pp. 61-68). SciTePress.")

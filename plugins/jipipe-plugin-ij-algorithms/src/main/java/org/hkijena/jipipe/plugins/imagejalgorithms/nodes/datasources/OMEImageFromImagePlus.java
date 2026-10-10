@@ -13,13 +13,15 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.datasources;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -32,8 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.parameters.OMEExporterSettings
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true, optional = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "OME Image", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
 
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();

@@ -19,11 +19,12 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -41,7 +42,7 @@ import java.io.IOException;
 @SetJIPipeDocumentation(name = "Render JIPipe project pipeline", description = "Creates a single-image render of a whole JIPipe pipeline project. " +
         "This node is equivalent to <code>Publish &gt; Whole-pipeline render</code>. Please note that the pipelines should be arranged " +
         "in a space-efficient way to reduce the file sizes.")
-@ConfigureJIPipeNode(menuPath = "Meta run", nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = PlotMiscFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, name = "Render", create = true)
 public class RenderJIPipeProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {

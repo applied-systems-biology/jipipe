@@ -20,11 +20,12 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -39,7 +40,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Annotate with 2D ROI properties", description = "Extracts properties of the ROI lists and stores them into annotations. " +
         "This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. " +
         "By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
-@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For ROI")
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
 public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -20,10 +20,11 @@ import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 import org.hkijena.jipipe.plugins.parameters.library.roi.RectangleList;
@@ -32,7 +33,7 @@ import java.awt.*;
 
 
 @SetJIPipeDocumentation(name = "Define rectangular ROI", description = "Manually defines rectangular ROI")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output")
 @Deprecated
 @LabelAsJIPipeHidden

@@ -20,9 +20,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -47,10 +47,9 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
         "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = FolderData.class, name = "Folder", description = "One or multiple directories", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", description = "The imported image(s)", create = true)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");
