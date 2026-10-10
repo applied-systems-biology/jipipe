@@ -129,17 +129,17 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-weka | 9 | **converted (19.11a, 9 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-python | 9 | pending |
+| jipipe-plugin-python | 9 | **converted (19.11c, 9 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
 | jipipe-plugin-ilastik | 8 | **converted (19.11a, 8 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-scene-3d | 7 | **converted (19.11a, 7 nodes, NoFramework-omitted); module gate zero unassigned** |
 | jipipe-plugin-opencv | 6 | **converted (19.11a, 6 nodes, all OpenCVFramework); module gate zero unassigned** |
-| jipipe-plugin-r | 5 | pending |
+| jipipe-plugin-r | 5 | **converted (19.11c, 5 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
 | jipipe-plugin-imp | 5 | pending |
 | jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-clij | 4 | pending |
 | jipipe-plugin-ij2 | 2 | pending |
-| jipipe-plugin-ij-multi-template-matching | 1 | pending |
-| jipipe-plugin-ij-ocr | 1 | pending |
+| jipipe-plugin-ij-multi-template-matching | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
+| jipipe-plugin-ij-ocr | 1 | **converted (19.11c, 1 node, function-only/NoFramework-omitted, spatial both); module gate zero unassigned** |
 | jipipe-plugin-plots | 1 | pending |
 
 ## Per-module notes (append per batch)
@@ -2770,6 +2770,280 @@ stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` line (and, for
 (30 files, 0 non-annotation changes). The only permitted change is the annotation + import fixup.
 
 **Transition note understood:** the 30 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+### 19.11c — jipipe-plugin-python (9) + jipipe-plugin-r (5) + jipipe-plugin-ij-multi-template-matching (1) + jipipe-plugin-ij-ocr (1) (16 nodes)
+
+**Status:** converted — all 16 `@ConfigureJIPipeNode` nodes across the four modules rewritten to
+`function` (plus `spatialDimensions` on the **2** image-input nodes only); four module gates green
+(see (g)). Single-shot combined conversion (mapping + apply + 4 gates in one commit), mirroring
+§19.6–§19.11a.
+
+**These are the two remaining NON-ImageJ-function-only + two image-leaf modules of phase 1b.** Three of
+the four (python, r) are pure script-execution / script-data modules → **function-only, NoFramework,
+spatial absent** (the §19.6/§19.7 shape). The two image modules (ij-multi-template-matching, ij-ocr) are
+**also NoFramework** (rule 11: neither is on the named list and neither is the `ij`/`ij-3d`/`ij-algorithms`
+plugin — their single `ij.*` imports are incidental ImagePlus usage, §19.9/§19.10/§19.11a distinction) but
+**additionally declare `spatialDimensions`** (they have an image *input* slot).
+
+**Scope / gate prefixes (verified, matches controller R1):**
+- `plugins/jipipe-plugin-python/src/main` — base pkg `org.hkijena.jipipe.plugins.python` (GATE PREFIX) — **9** annotated files.
+- `plugins/jipipe-plugin-r/src/main` — base pkg `org.hkijena.jipipe.plugins.r` (GATE PREFIX) — **5** annotated files.
+- `plugins/jipipe-plugin-ij-multi-template-matching/src/main` — base pkg `org.hkijena.jipipe.plugins.ijmultitemplatematching` (GATE PREFIX) — **1** annotated file.
+- `plugins/jipipe-plugin-ij-ocr/src/main` — base pkg `org.hkijena.jipipe.plugins.ijocr` (GATE PREFIX) — **1** annotated file.
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
+
+| module | Miscellaneous | DataSource | Images | total |
+|---|---|---|---|---|
+| python | 7 ("Python script") | 2 | — | **9** |
+| r | 2 ("R script") | 3 | — | **5** |
+| ij-multi-template-matching | — | — | 1 ("Analyze") | **1** |
+| ij-ocr | — | — | 1 ("OCR") | **1** |
+
+**`ij.*` imports (verified):** python **0** files · r **0** files · ij-multi-template-matching **1** file
+(`MultiTemplateMatchingAlgorithm` — `ij.ImagePlus`/`ij.gui.Roi`/`ij.process.*`) · ij-ocr **1** file
+(`TesseractOCRAlgorithm` — `ij.IJ`/`ij.ImagePlus`). The `ij.*` imports are **incidental ImagePlus
+processing, NOT a framework signal** (rule 11 is plugin-scoped; these modules are not `ij`/`ij-3d`/
+`ij-algorithms`).
+
+---
+
+#### Framework — OMITTED for ALL 16 (rule 11, deliberate, not an omission)
+
+None of these four modules is on rule 11's named list (cellpose/trackmate/clij/opencv/plots/weka/
+ilastik/omnipose/ij2-discovered/ij/ij-3d/ij-algorithms), and none is a "core plugin". Rule 11's final
+clause — "else leave `NoFramework`" — therefore applies to every node. The `@ConfigureJIPipeNode.
+framework()` default is **already** `NoFramework.class` (`jipipe-core/…/api/ConfigureJIPipeNode.java:97`),
+so the attribute is **omitted entirely** — no node writes `framework = NoFramework.class`, and there is
+**no `NoFramework` import** anywhere. `grep -rl "framework = " src/main` across all four modules → **0**;
+`grep -rl "NoFramework\|ImageJ1Framework" src/main` across all four → **0**. (This is the mirror of
+§19.6/§19.7/§19.11a-scene-3d: function-only, NoFramework-omitted — the ijmtm/ijocr nodes get the *extra*
+`spatialDimensions` attribute only.)
+
+---
+
+#### (a) jipipe-plugin-python (9) — function-only, NoFramework-omitted, spatial ABSENT
+
+Rule 9 (Miscellaneous best-fit — the "Python script" menu nodes) + rule 6 (DataSource → data leaf by
+output). **Spatial: absent on all 9** — no node has an image *input* slot (the generic `JIPipeData`
+"Annotations" input and `FileData` input confer no spatial per the §19.5 graph-slot precedent;
+controller-verified 0 image inputs).
+
+**The 7 "Python script" Misc nodes → `MiscellaneousFunction`** (general script execution — there is no
+"script" leaf; a *graph-wrapper* reading was considered and rejected per node: `GraphWrappersFunction`
+is for nodes that wrap a *sub-pipeline/graph* (§19.1 `JIPipeProjectCompartment`, §19.6
+`RunJIPipeProject`). These 7 **run an arbitrary Python/Jython snippet over data slots** (their
+`JIPipe.*` API is data-in/data-out, not graph execution) — the `JIPipeScriptAlgorithm` family — so the
+last-resort `MiscellaneousFunction` is the honest fit, exactly as the controller ruled):
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `RunPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | runs a Python script over the data slots (dedicated interpreter; `JIPipeParameterSlotAlgorithm`) — general script execution, no graph wrapper |
+| `RunIteratingPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | per-iteration-step script; data slots in/out (`JIPipeIteratingAlgorithm`) |
+| `RunMergingPythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | merging-iteration script; data slots in/out (`JIPipeMergingAlgorithm`) |
+| `RunJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython (embedded interpreter) variant of the custom runner; data slots in/out |
+| `RunIteratingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython per-iteration-step variant |
+| `RunMergingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython merging variant |
+| `RunSimpleIteratingJythonScriptAlgorithm` (Misc / "Python script") | `MiscellaneousFunction` | absent | Jython single-input-slice variant |
+
+**The 2 DataSource nodes → `MiscDataFunction`** (rule 6 by **output**: both emit `PythonScriptData`,
+which is a `StringData` subclass — **no python-script data leaf exists** in `data/` (= Image/Table/Roi/
+Filament/**Misc**) ⇒ the data/ **misc** leaf, mirroring §19.3's `DefineImageJMacroAlgorithm`/
+`ImportImageJMacroAlgorithm` → `MiscDataFunction` for `StringData`-derived types):
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `DefinePythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `PythonScriptData` (a `StringData` subclass); no-fit → misc; generic `JIPipeData` "Annotations" input (non-image) |
+| `ImportPythonScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `PythonScriptData` (script text from a `FileData` input); no-fit → misc |
+
+**Function split:** `MiscellaneousFunction` **7** · `MiscDataFunction` **2** (total 9). **Spatial:**
+absent **9** (total 9). **Aliases:** 0 (verified `grep "@AddJIPipeNodeAlias" src/main` → 0).
+
+#### (b) jipipe-plugin-r (5) — function-only, NoFramework-omitted, spatial ABSENT
+
+Rule 9 (the 2 "R script" Misc nodes) + rule 6 (the 3 DataSource nodes, by **output**). **Spatial:
+absent on all 5** — no image *input* slot (controller-verified 0 image inputs; the R runners' *outputs*
+include an `ImagePlusColorRGBData` slot but rule 12 keys spatial off the first image **input**).
+
+**The 2 "R script" Misc nodes → `MiscellaneousFunction`** (script execution; the graph-wrapper reading
+was considered and rejected per node — these **run an R script over data slots** with the `JIPipe.*`
+data-in/data-out API, not a sub-pipeline wrapper):
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `RunIteratingRScriptAlgorithm` (Misc / "R script") | `MiscellaneousFunction` | absent | runs an R script per iteration step over the data slots (in: `ResultsTableData`; out: `ImagePlusColorRGBData` + `ResultsTableData`) — general script execution, not a graph wrapper |
+| `RunMergingRScriptAlgorithm` (Misc / "R script") | `MiscellaneousFunction` | absent | runs an R script over merging iteration steps; same slots — general script execution |
+
+**The 3 DataSource nodes → rule 6 by OUTPUT:** the 2 that emit `RScriptData` (a `StringData` subclass —
+**no R-script data leaf** in `data/`) → `MiscDataFunction`; the 1 that emits `ResultsTableData` →
+`TableDataFunction`:
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `DefineRScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `RScriptData` (a `StringData` subclass); no-fit → misc (mirrors §19.3 `DefineImageJMacroAlgorithm`) |
+| `ImportRScriptAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `RScriptData` (script text from a `FileData` input); no-fit → misc |
+| `ImportRDatasetAlgorithm` (DataSource, —) | `TableDataFunction` | absent | rule 6 by output: "Imports a standard R data set (datasets package) **as table**" ⇒ emits **`ResultsTableData`** ⇒ the data/ **table** leaf (contrast the 2 `RScriptData` nodes) |
+
+**Function split:** `MiscellaneousFunction` **2** · `MiscDataFunction` **2** · `TableDataFunction`
+**1** (total 5). **Spatial:** absent **5** (total 5). **Aliases:** 0 (verified).
+
+#### (c) jipipe-plugin-ij-multi-template-matching (1) — NoFramework-omitted, spatial **BOTH**, JUDGED leaf
+
+`MultiTemplateMatchingAlgorithm` (old: `ImagesNodeTypeCategory`, menuPath `Analyze`; the 1 alias in the
+batch — see (d)).
+
+- **Framework: OMITTED (NoFramework).** Not on rule 11's list and not the `ij`/`ij-3d`/`ij-algorithms`
+  plugin (rule 11) → else NoFramework; `ij.*` imports (`ij.ImagePlus`/`ij.gui.Roi`/`ij.process.*`) are
+  incidental ImagePlus usage, driving **SPATIAL only** (rule 12), not framework.
+- **Function: `MeasurementsFunction`** (JUDGED, see rationale) — a template-matching *object detector*
+  that locates template matches in a grayscale image and reports them (ROI list + a "Measurements"
+  results table + an assembled-templates overlay).
+- **Spatial: `spatialDimensions = { SPATIAL_2D, SPATIAL_3D }` (BOTH).** Rule 12 reads the **first image
+  input slot**: `@AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image")` is slot #1 (the
+  `ImagePlus2DData` "Template" is slot #2). The first input is **unconstrained `ImagePlusData`** ⇒
+  BOTH. (Confirmed: `ImagePlusData` is slot #1, not `ImagePlus2DData`.)
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `MultiTemplateMatchingAlgorithm` (Images / "Analyze") | `MeasurementsFunction` | **both** | **JUDGED (flag (e)):** template matching **locates** template instances in a target image and **measures** each match (outputs an `Roi2dListData` "ROI" list, a `ResultsTableData` "Measurements" table — *literally named "Measurements"* — and an "Assembled templates" image). `MeasurementsFunction` is chosen over `SegmentationFunction` because (1) the node's own **old menuPath is `Analyze`**, and the §19.2 ij-algorithms precedent maps the entire `Images/Analyze` group (5 nodes) → `MeasurementsFunction` (whereas `Images/Detect` → `SegmentationFunction`); (2) it reports *located, scored matches as measurements* (a results table) rather than partitioning the whole image into a label/mask (the "Segmentation" leaf's stated description, "Partitioning images into meaningful objects"). The `SegmentationFunction` (object-detection) reading is the flagged alternative. |
+
+**Function split:** `MeasurementsFunction` **1** (total 1). **Spatial:** both **1** (total 1).
+
+#### (d) The 1 alias (ij-multi-template-matching) — DROPPED
+
+`MultiTemplateMatchingAlgorithm` carries the batch's only `@AddJIPipeNodeAlias`:
+`nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching"` —
+the IJ "Plugins" menu re-listing of the same node. Mapped by the A/B/C protocol (alias-leaf ==
+primary-leaf → drop, else secondary `function[]`): the alias is an **ImageJ-category** node, but under
+rule 11/§19.3 the *framework* (which for an IJ plugin node would be `ImageJ1Framework`) is a separate
+attribute from the *function* leaf, and this node's **function** leaf is determined by its op (template
+matching ⇒ `MeasurementsFunction`). The IJ `Plugins\nMulti-Template-Matching` alias does **not** point
+to a *distinct function leaf* — it is the same node, same op, re-listed in the IJ Plugins menu. Its
+function leaf is therefore **== the primary** (`MeasurementsFunction`) ⇒ **dropped** (no secondary
+`function[]` entry). This is the same outcome as the §19.3 IJ-category aliases (12/12 dropped —
+`ImageJ`/`Plugins\n…` re-listings map to the node's own primary leaf). Verified `grep
+"@AddJIPipeNodeAlias" plugins/jipipe-plugin-ij-multi-template-matching/src/main` → **0** after
+conversion. The other three modules: **0** aliases (verified). (Both the `ImageJNodeTypeCategory` and
+`ImagesNodeTypeCategory` imports became unused and were removed with the node/alias annotations.)
+
+**Flag (e) re the alias:** the alias is *framework*-flavored (ImageJ `Plugins` menu) rather than
+*function*-flavored, so one could argue it should have contributed a secondary **framework** (IJ1)
+rather than a secondary **function**. But rule 11 fixes the framework to **NoFramework** for this
+module (the controller ruled it is *not* an ImageJ plugin), so there is no IJ1 framework to add anyway
+— the alias is a pure function-leaf re-listing and is dropped. Recorded, not silently absorbed.
+
+#### (e) jipipe-plugin-ij-ocr (1) — NoFramework-omitted, spatial **BOTH**, JUDGED leaf
+
+`TesseractOCRAlgorithm` (old: `ImagesNodeTypeCategory`, menuPath `OCR`).
+
+- **Framework: OMITTED (NoFramework).** Not on rule 11's list and not the `ij`/`ij-3d`/`ij-algorithms`
+  plugin → else NoFramework; `ij.*` imports (`ij.IJ`/`ij.ImagePlus`) are incidental, driving
+  **SPATIAL only**, not framework.
+- **Function: `MiscellaneousFunction`** (JUDGED, see rationale) — OCR: image → text.
+- **Spatial: `spatialDimensions = { SPATIAL_2D, SPATIAL_3D }` (BOTH).** Rule 12 first image input slot:
+  `@AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input")`. `ImagePlusGreyscaleData`
+  **extends unconstrained `ImagePlusData`** (no `numDimensions` in its `@ImageTypeInfo`) ⇒ BOTH.
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `TesseractOCRAlgorithm` (Images / "OCR") | `MiscellaneousFunction` | **both** | **JUDGED (flag (f)):** OCR reads text out of an image (in: `ImagePlusGreyscaleData`; out: a `ResultsTableData` "Results" of the Tesseract TSV exporter). `MiscellaneousFunction` is chosen over `MeasurementsFunction` because OCR is **not** a measurement op — it does not measure geometric/intensity *properties* of objects (the `MeasurementsFunction` description, "Measuring properties of images and objects"); it **recognizes/extracts text**, which has **no clean taxonomy home** (no "OCR"/"text" leaf exists in `images/` or elsewhere). The `MeasurementsFunction` reading (it emits a "measurements" table) is the flagged alternative, but it would mislabel text extraction as image/object measurement. The honest last-resort leaf is `MiscellaneousFunction`. |
+
+**Function split:** `MiscellaneousFunction` **1** (total 1). **Spatial:** both **1** (total 1).
+
+---
+
+#### (f) Flagged for Phase 3 audit (the 2 judged image nodes — main flags)
+
+- **⚠️ `MultiTemplateMatchingAlgorithm` → `MeasurementsFunction` (spatial BOTH).** Template *matching*
+  is an object-**detection** op, so `SegmentationFunction` ("detect objects"/partitioning) is the
+  defensible alternative. Chose `MeasurementsFunction` on (1) the node's own old menuPath `Analyze`
+  (the §19.2 `Images/Analyze`→`MeasurementsFunction` precedent, vs `Images/Detect`→`SegmentationFunction`)
+  and (2) its output being a *scored-match measurements table* + ROI list (located/measured instances),
+  not a whole-image label/mask. **Both defensible; the reviewer should check the `Analyze`-vs-`Detect`
+  menuPath reading.** If the audit groups template matching as detection/segmentation, it moves to
+  `SegmentationFunction` (the spatial + NoFramework are unchanged).
+- **⚠️ `TesseractOCRAlgorithm` → `MiscellaneousFunction` (spatial BOTH).** OCR (image→text) has no
+  dedicated leaf. `MeasurementsFunction` is the alternative (it emits a results/"measurements" table),
+  but text *recognition* is not image/object *measurement*, so `MiscellaneousFunction` (the honest
+  last-resort) was chosen. **Both defensible; the reviewer should check whether OCR should be read as
+  a table-producing "measurement" op.** If so, it moves to `MeasurementsFunction` (spatial +
+  NoFramework unchanged).
+- **The 1 ijmtm alias dropped (framework-flavored, not function-flavored).** See (d) — the
+  `ImageJ`/`Plugins\nMulti-Template-Matching` alias is the same op re-listed in the IJ menu; because
+  rule 11 fixes this module's framework to NoFramework, the alias has no distinct *function* leaf and
+  is dropped. Recorded so the "1 alias = 1 drop" count is not misread as a lost IJ1-framework signal.
+
+---
+
+#### (g) Test infrastructure + gate results
+
+All four modules had **no `src/test` and no JUnit deps** (first test in each). For EACH
+(`python`/`r`/`ijmultitemplatematching`/`ijocr`):
+- **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted before `</dependencies>`).
+- **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
+  TaxonomyConversionReportTest.java` → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/
+  nodes/taxonomy/` (**byte-identical**, verified with `cmp` — all 4).
+- **Created** `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (`LegacyInjector.preinit()` in
+  `launcherSessionOpened`, HKI header, Javadoc adapted to the module — ijmtm: `MultiTemplateMatchingAlgorithm`
+  loads `ij.ImagePlus`/`ij.process.*`; ijocr: `TesseractOCRAlgorithm` loads `ij.IJ`/`ij.ImagePlus`;
+  python/r: no `ij.*` in nodes, but the gate's `JIPipe.ensureInstance()` still creates the SciJava/
+  ImageJ context, so the patcher must run first) + `src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = that module's listener FQCN).
+
+**Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath
+transitively via jipipe-core → `net.imagej:imagej`.
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-python,plugins/jipipe-plugin-r,
+  plugins/jipipe-plugin-ij-multi-template-matching,plugins/jipipe-plugin-ij-ocr -am` → **exit 0** (all
+  four in one reactor; the `MiscellaneousFunction`/`MiscDataFunction`/`TableDataFunction`/
+  `MeasurementsFunction` leaves + the `SPATIAL_*` statics all resolve against the installed core).
+
+- **Stale `~/.m2` core jar (the *core* gotcha was NOT hit).** The installed `jipipe-core`
+  6.0.0-SNAPSHOT jar is dated **2026-10-10 03:52** (verified), newer than the last jipipe-core taxonomy
+  commit — **fresh** (contains the taxonomy function classes + converted core nodes). No CORE
+  (`org.hkijena.jipipe.*`) node surfaced as unassigned in any of the four prefixes (the §19.6
+  stale-core condition did not recur). The gate prefixes (`…python`/`…r`/`…ijmultitemplatematching`/
+  `…ijocr`) cover no core package, so even a stale core jar could not inflate the prefix-filtered
+  failure set. Stale *dependency* jars only inflate the informational global "N nodes not yet assigned"
+  line (see below) — **no `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.**
+
+- **Gate (enabled), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`,
+  zero unassigned in the module prefix:**
+  - **python:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.python` → log
+    `INFORMATION: JIPipeNodesServiceComponent | Node taxonomy validation passed` (the python classpath
+    carries no other unconverted module, so there is no global "N nodes" line at all — 0 unassigned).
+  - **r:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.r` → log `Node taxonomy: 116 nodes
+    not yet assigned a taxonomy function — expected during conversion` (global; none under the prefix).
+  - **ij-multi-template-matching:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijmultitemplatematching` → log `Node taxonomy: 116 nodes not yet assigned…` (global).
+  - **ij-ocr:** `…-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijocr` → log `Node taxonomy: 116 nodes not yet assigned…` (global).
+
+  The `116` global count (r/ijmtm/ijocr classpaths; python's clean classpath shows none) is the
+  **global** count across all on-classpath modules (the still-unconverted clij / ij2 / plots / imp …
+  modules + dependency jars); **none** are under any of the four prefixes, so the prefix-filtered
+  assertion saw **zero** and passed (same shape as §19.3–§19.11a).
+
+- **Gate (unset), all four → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the
+  gate **skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works),
+  module green.
+
+**Byte-identity check (reviewer contract):** all 16 node files are byte-identical to base after
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
+(verified by a line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.
+The only permitted change is the annotation + import fixup (plus, for the 2 image nodes, the 2
+`SPATIAL_*` static imports, and, for the 1 alias file, the removal of the now-unused
+`ImageJNodeTypeCategory` import).
+
+**Transition note understood:** the 16 converted nodes now fall back to `InternalNodeTypeCategory` via
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
 panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
 unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.

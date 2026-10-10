@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
@@ -31,7 +31,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 
 @SetJIPipeDocumentation(name = "Import R script", description = "Imports a R script from a file")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true)
 @AddJIPipeOutputSlot(value = RScriptData.class, name = "Script", create = true)
 public class ImportRScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm {
