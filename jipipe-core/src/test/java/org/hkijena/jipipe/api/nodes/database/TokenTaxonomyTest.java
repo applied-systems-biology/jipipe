@@ -57,12 +57,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Verifies that the node taxonomy is fed into the node search's
- * {@link WeightedTokens} <b>additively</b> (Task 18, dual-read): a
- * converted node's token set gains function-path words (leaf 6 → parent 4 →
- * top 2), the framework name (6) and abbreviation (5), and the merged tags
- * (6), while the legacy name (8) / menu (2) / description (1) tokens are
- * kept unchanged. An unconverted node's token set is identical to the
- * pre-taxonomy one, so search can never regress during 1b.
+ * {@link WeightedTokens} <b>additively</b> (Task 18; the legacy
+ * category/menu tokens were removed in Task 25): a converted node's token
+ * set gains function-path words (leaf 6 → parent 4 → top 2), the framework
+ * name (6) and abbreviation (5), and the merged tags (6), while the legacy
+ * name (8) / description (1) tokens are kept unchanged and the legacy
+ * category/menu (2) token is absent. An unconverted node's token set is the
+ * pre-taxonomy one minus the removed category/menu token.
  * <p>
  * {@code WeightedTokens.add} lowercases and splits on whitespace, so all
  * assertions here are per-word (the same word can carry several weights).
@@ -127,7 +128,8 @@ class TokenTaxonomyTest {
      * Images &gt; Segmentation &gt; Cell-based primary,
      * ROI measurements secondary, framework Cellpose 4 / CP4, 3D spatial
      * dimension, node-level tag "cells") gains the taxonomy tokens
-     * additively; the legacy name/menu/description tokens remain.
+     * additively; the legacy name/description tokens remain and the legacy
+     * category/menu token is gone (Task 25).
      */
     @Test
     void convertedNodeAddsTaxonomyTokensAdditively() {
@@ -193,9 +195,12 @@ class TokenTaxonomyTest {
         assertTrue(tokenWeights(tokens, "cells").contains(WeightedTokens.WEIGHT_TAG),
             "node-level tag 'cells' must be at WEIGHT_TAG: " + tokenDump(tokens));
 
-        // --- Legacy menu token still present at WEIGHT_MENU (2) ---
-        assertTrue(tokenWeights(tokens, "miscellaneous").contains(WeightedTokens.WEIGHT_MENU),
-            "legacy category/menu token 'miscellaneous' must still be at WEIGHT_MENU: " + tokenDump(tokens));
+        // --- The legacy category/menu token is gone (Task 25) ---
+        // The word 'miscellaneous' was contributed only by the removed
+        // legacy "category name \n menu path" WEIGHT_MENU token, so its
+        // absence proves that token is no longer added.
+        assertFalse(tokens.contains("miscellaneous"),
+            "the legacy category/menu token 'miscellaneous' must be absent: " + tokenDump(tokens));
 
         // --- Legacy description token still present at WEIGHT_DESCRIPTION (1) ---
         assertEquals(Set.of(WeightedTokens.WEIGHT_DESCRIPTION), tokenWeights(tokens, "stub"),
@@ -245,9 +250,10 @@ class TokenTaxonomyTest {
 
     /**
      * Brief case 2: an unconverted node (legacy {@code nodeTypeCategory},
-     * no function) yields a token set identical to the pre-taxonomy one —
-     * the legacy name/menu/description tokens are present and NO taxonomy
-     * word (function, framework, or tag) appears.
+     * no function) yields the pre-taxonomy token set minus the removed
+     * legacy category/menu token (Task 25) — the legacy name/description
+     * tokens are present, the category/menu token is absent, and NO
+     * taxonomy word (function, framework, or tag) appears.
      */
     @Test
     void unconvertedNodeHasNoTaxonomyTokens() {
@@ -263,12 +269,13 @@ class TokenTaxonomyTest {
         WeightedTokens tokens = new CreateNewNodeByInfoDatabaseEntry(
             "create-node-by-info:" + UNCONVERTED_ID, info).getTokens();
 
-        // Legacy tokens are intact: name words (highest), the category word
-        // "miscellaneous" at the menu weight, description words at weight 1
+        // Legacy tokens: name words (highest) and description words at
+        // weight 1 are intact; the legacy category/menu token
+        // ('miscellaneous' at the menu weight) is gone (Task 25)
         assertEquals(Set.of(WeightedTokens.WEIGHT_NAME), tokenWeights(tokens, "unconverted"));
         assertTrue(tokenWeights(tokens, "legacy").contains(WeightedTokens.WEIGHT_NAME));
-        assertTrue(tokenWeights(tokens, "miscellaneous").contains(WeightedTokens.WEIGHT_MENU),
-            "the legacy category/menu token must be present: " + tokenDump(tokens));
+        assertFalse(tokens.contains("miscellaneous"),
+            "the legacy category/menu token must be absent: " + tokenDump(tokens));
         assertEquals(Set.of(WeightedTokens.WEIGHT_DESCRIPTION), tokenWeights(tokens, "stub"));
 
         // No taxonomy word may appear

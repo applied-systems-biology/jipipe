@@ -44,7 +44,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final boolean canAddInputSlots;
     private final boolean canAddOutputSlots;
-    private final Set<String> categoryIds = new HashSet<>();
     private final List<String> locationInfos = new ArrayList<>();
 
     public CreateNewNodeByInfoDatabaseEntry(String id, JIPipeNodeInfo nodeInfo) {
@@ -57,7 +56,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
                 ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canAddOutputSlot();
         initializeSlots();
         initializeTokens();
-        initializeCategoryIds();
         initializeLocationInfos();
         initializeTaxonomyFacets(this, nodeInfo);
     }
@@ -96,13 +94,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
         }
     }
 
-    private void initializeCategoryIds() {
-        categoryIds.add(nodeInfo.getCategory().getId());
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            categoryIds.add(alias.getCategory().getId());
-        }
-    }
-
     private void initializeSlots() {
         for (AddJIPipeInputSlot inputSlot : nodeInfo.getInputSlots()) {
             if (!StringUtils.isNullOrEmpty(inputSlot.name())) {
@@ -126,10 +117,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
         tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_NAME);
         for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
             tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
-        }
-        tokens.add(nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath(), WeightedTokens.WEIGHT_MENU);
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         }
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         // Task 18: feed the new taxonomy into the search tokens ADDITIVELY.
@@ -255,11 +242,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     @Override
     public List<String> getLocationInfos() {
         return locationInfos;
-    }
-
-    @Override
-    public Set<String> getCategoryIds() {
-        return categoryIds;
     }
 
     @Override

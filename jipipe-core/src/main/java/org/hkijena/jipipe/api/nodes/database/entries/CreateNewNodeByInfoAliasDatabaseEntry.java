@@ -41,7 +41,6 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final boolean canAddInputSlots;
     private final boolean canAddOutputSlots;
-    private final Set<String> categoryIds = new HashSet<>();
     private final List<String> locationInfos = new ArrayList<>();
 
     public CreateNewNodeByInfoAliasDatabaseEntry(String id, JIPipeNodeInfo nodeInfo, JIPipeNodeMenuLocation alias) {
@@ -55,7 +54,6 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
                 ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canAddOutputSlot();
         initializeSlots();
         initializeTokens();
-        initializeCategoryIds();
         initializeLocationInfos();
         // Same node as the base entry: same taxonomy facets
         CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, nodeInfo);
@@ -63,10 +61,6 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
 
     private void initializeLocationInfos() {
         locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
-    }
-
-    private void initializeCategoryIds() {
-        categoryIds.add(alias.getCategory().getId());
     }
 
     private void initializeSlots() {
@@ -93,7 +87,6 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
         for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
             tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
         }
-        tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         // Task 18: feed the new taxonomy into the search tokens ADDITIVELY
         // (same node as the base entry: same taxonomy tokens)
@@ -148,11 +141,6 @@ public class CreateNewNodeByInfoAliasDatabaseEntry extends DefaultJIPipeNodeData
     @Override
     public List<String> getLocationInfos() {
         return locationInfos;
-    }
-
-    @Override
-    public Set<String> getCategoryIds() {
-        return categoryIds;
     }
 
     @Override

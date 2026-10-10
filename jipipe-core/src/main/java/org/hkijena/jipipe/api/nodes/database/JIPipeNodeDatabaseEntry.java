@@ -48,8 +48,6 @@ public interface JIPipeNodeDatabaseEntry {
 
     List<String> getLocationInfos();
 
-    Set<String> getCategoryIds();
-
     Map<String, JIPipeDataSlotInfo> getInputSlots();
 
     Map<String, JIPipeDataSlotInfo> getOutputSlots();

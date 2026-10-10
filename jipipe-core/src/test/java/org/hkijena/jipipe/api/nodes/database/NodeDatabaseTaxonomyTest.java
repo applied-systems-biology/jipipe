@@ -126,8 +126,7 @@ class NodeDatabaseTaxonomyTest {
 
     /**
      * The "create node by info" entry carries the taxonomy facets of its
-     * node info (the production population path), and the legacy
-     * {@link JIPipeNodeDatabaseEntry#getCategoryIds()} is still populated.
+     * node info (the production population path).
      */
     @Test
     void entryCarriesTaxonomyFacets() {
@@ -148,10 +147,6 @@ class NodeDatabaseTaxonomyTest {
         assertEquals(JIPipeNodeTaxonomyInputProfile.NA, entry.getInputProfile());
         // Merged tags: the node-level tag plus the function's tag
         assertEquals(Set.of("detect", "tm-func-tag"), entry.getTags());
-
-        // Legacy category facet is kept (Task 27 removes it)
-        assertTrue(entry.getCategoryIds().contains(new MiscellaneousNodeTypeCategory().getId()),
-            "legacy category ids must still be populated, got: " + entry.getCategoryIds());
     }
 
     /**

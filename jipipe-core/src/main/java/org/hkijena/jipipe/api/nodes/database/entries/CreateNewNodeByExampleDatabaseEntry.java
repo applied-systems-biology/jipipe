@@ -43,7 +43,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
     private final String descriptionPlain;
     private final JIPipeGraphNode exampleNode;
-    private final Set<String> categoryIds = new HashSet<>();
     private final List<String> locationInfos = new ArrayList<>();
 
     public CreateNewNodeByExampleDatabaseEntry(String id, JIPipeNodeExample example) {
@@ -53,7 +52,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
         initializeSlots();
         initializeTokens();
-        initializeCategoryIds();
         initializeLocationInfos();
         // Same node as the example's node info: same taxonomy facets
         CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, example.getNodeInfo());
@@ -63,13 +61,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
         locationInfos.add((example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath()).trim());
         for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
             locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
-        }
-    }
-
-    private void initializeCategoryIds() {
-        categoryIds.add(exampleNode.getInfo().getCategory().getId());
-        for (JIPipeNodeMenuLocation alias : exampleNode.getInfo().getAliases()) {
-            categoryIds.add(alias.getCategory().getId());
         }
     }
 
@@ -87,10 +78,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
         tokens.add(example.getNodeInfo().getName(), WeightedTokens.WEIGHT_NAME);
         for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
             tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
-        }
-        tokens.add(example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath(), WeightedTokens.WEIGHT_MENU);
-        for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
-            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
         }
         tokens.add(example.getNodeTemplate().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         tokens.add(example.getNodeInfo().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
@@ -139,11 +126,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     @Override
     public List<String> getLocationInfos() {
         return locationInfos;
-    }
-
-    @Override
-    public Set<String> getCategoryIds() {
-        return categoryIds;
     }
 
     @Override
