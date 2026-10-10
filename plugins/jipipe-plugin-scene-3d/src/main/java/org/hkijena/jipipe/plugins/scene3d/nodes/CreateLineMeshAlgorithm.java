@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.scene3d.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,7 +30,7 @@ import org.hkijena.jipipe.plugins.scene3d.model.geometries.Scene3DLineGeometry;
 
 @SetJIPipeDocumentation(name = "Create 3D line mesh", description = "Generates a 3D scene containing a line mesh.")
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class, framework = CoreFramework.class)
 public class CreateLineMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Scene3DLineGeometry geometry;

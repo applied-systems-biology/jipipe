@@ -131,10 +131,10 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-ij-weka | 9 | **converted (19.11a, 9 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-python | 9 | **converted (19.11c, 9 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
 | jipipe-plugin-ilastik | 8 | **converted (19.11a, 8 nodes, all JIPipeDLFramework); module gate zero unassigned** |
-| jipipe-plugin-scene-3d | 7 | **converted (19.11a, 7 nodes, NoFramework-omitted); module gate zero unassigned** |
+| jipipe-plugin-scene-3d | 7 | **converted (19.11a, 7 nodes); framework FIXED in 19.11d: NoFramework-omitted → CoreFramework (plan's Task 19.11 line); module gate zero unassigned** |
 | jipipe-plugin-opencv | 6 | **converted (19.11a, 6 nodes, all OpenCVFramework); module gate zero unassigned** |
 | jipipe-plugin-r | 5 | **converted (19.11c, 5 nodes, function-only/NoFramework-omitted); module gate zero unassigned** |
-| jipipe-plugin-imp | 5 | pending |
+| jipipe-plugin-imp | 5 | **converted (19.11d, 5 nodes, all CoreFramework, spatial BOTH); module gate zero unassigned (first test in module)** |
 | jipipe-plugin-omnipose | 5 | **converted (19.9, 5 nodes, all JIPipeDLFramework); module gate zero unassigned** |
 | jipipe-plugin-clij | 4 | pending |
 | jipipe-plugin-ij2 | 2 | pending |
@@ -2553,10 +2553,14 @@ pkg `org.hkijena.jipipe.plugins.ijweka` = gate prefix).
   its consistent home — **flagged (f)** as "classical ML under `deeplearning/`".
 - **ilastik → `JIPipeDLFramework` × 8** (rule 11: ilastik→JIPipeDL).
 - **opencv → `OpenCVFramework` × 6** (rule 11: opencv→OpenCV).
-- **scene-3d → NoFramework (OMITTED) × 7** — scene-3d is **not** on rule 11's named list → "else leave
-  NoFramework". The `framework()` default is already `NoFramework.class`
-  (`jipipe-core/…/api/ConfigureJIPipeNode.java:97`), so the attribute is **omitted** (no `framework = `
-  token, no `NoFramework` import — `grep "framework = " plugins/jipipe-plugin-scene-3d/src/main` → 0).
+- **scene-3d → `CoreFramework` × 7** — the plan's Task 19.11 framework line explicitly says
+  `scene-3d→CoreFramework`, which **overrides** rule 11's generic "else leave `NoFramework`" fallback
+  (scene-3d is not on rule 11's named list). ⚠️ **19.11a recorded this as NoFramework (omitted) — a
+  plan-reading miss** (it applied rule 11's "else" clause and missed the plan's explicit
+  `scene-3d→CoreFramework` line). **Fixed in 19.11d**: all 7 nodes now carry
+  `framework = CoreFramework.class` (+ the `…taxonomy.frameworks.CoreFramework` import); function +
+  spatial are byte-identical to 19.11a's committed state (MiscData 2 / Export 2 / Miscellaneous 3;
+  spatial 3D 1 [MaskTo3DMesh] / absent 6). See §19.11d for the plan-correction note.
 
 **`ij.*` imports drive SPATIAL, NOT framework** (the §19.9/§19.10 distinction, confirmed here): 8
 ij-weka + 6 ilastik + 1 scene-3d files incidentally `import ij.*` (`ij.ImagePlus`, `ij.ImageStack`,
@@ -2653,15 +2657,19 @@ generators have **no input slots** ⇒ **absent**.
 
 #### (e) jipipe-plugin-scene-3d (7) — NoFramework (omitted)
 
-| node (old cat / menuPath) | function | spatial | rationale |
-|---|---|---|---|
-| `CreateLineMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | rule 6 by output: emits `Scene3DData` — **no Scene3D data leaf exists** in `data/` (= Image/Table/Roi/Filament/**Misc**) ⇒ the data/ **misc** leaf (no-fit → misc); no image input |
-| `CreateSphereMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | absent | same — emits `Scene3DData` (a sphere mesh); no-fit → misc; no image input |
-| `ExportScene3DToColladaAlgorithm` (Export / 3D scenes) | `ExportFileFormatsFunction` | absent | rule 7: writes a **Collada (DAE) file format** (single file, not a ZIP archive) ⇒ file-format leaf; input `Scene3DData` (non-image) ⇒ absent |
-| `ExportScene3DToColladaAlgorithm2` (Export / 3D scenes) | `ExportFileFormatsFunction` | absent | same DAE exporter (v2, relative-to-project); `Scene3DData` in ⇒ absent |
-| `GroupSceneAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | absent | rule 9 last-resort: groups 3D-scene objects (no specific leaf fits `Scene3DData` manipulation); `Scene3DData` in (non-image) ⇒ absent |
-| `MergeScenesAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | absent | rule 9: merges `Scene3DData` scenes (no scene-merge leaf); non-image in ⇒ absent |
-| `MaskTo3DMeshAlgorithm` (Images / Binary) | `MiscellaneousFunction` | **3D** | **judgment (f):** a 3D-scene-from-mask **generation** op (Marching cubes: `ImagePlus3DGreyscaleMaskData` → `Scene3DData`). Old menuPath `Binary` would rule 1 → a `images/` leaf, but the node's **output is a 3D scene, not an image**, and it is a *generation* op, not a binary image filter. Assigned `MiscellaneousFunction` (the generation/last-resort leaf) with spatial **3D** (first image input `ImagePlus3DGreyscaleMaskData` ⇒ 3D). |
+**Framework (post-19.11d fix): `CoreFramework` for all 7** (the plan's Task 19.11 line
+`scene-3d→CoreFramework` — 19.11a had omitted the attribute as NoFramework, a plan-reading miss,
+corrected in 19.11d; function + spatial below are unchanged from 19.11a).
+
+| node (old cat / menuPath) | function | framework | spatial | rationale |
+|---|---|---|---|---|
+| `CreateLineMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | `CoreFramework` | absent | rule 6 by output: emits `Scene3DData` — **no Scene3D data leaf exists** in `data/` (= Image/Table/Roi/Filament/**Misc**) ⇒ the data/ **misc** leaf (no-fit → misc); no image input |
+| `CreateSphereMeshAlgorithm` (DataSource, —) | `MiscDataFunction` | `CoreFramework` | absent | same — emits `Scene3DData` (a sphere mesh); no-fit → misc; no image input |
+| `ExportScene3DToColladaAlgorithm` (Export / 3D scenes) | `ExportFileFormatsFunction` | `CoreFramework` | absent | rule 7: writes a **Collada (DAE) file format** (single file, not a ZIP archive) ⇒ file-format leaf; input `Scene3DData` (non-image) ⇒ absent |
+| `ExportScene3DToColladaAlgorithm2` (Export / 3D scenes) | `ExportFileFormatsFunction` | `CoreFramework` | absent | same DAE exporter (v2, relative-to-project); `Scene3DData` in ⇒ absent |
+| `GroupSceneAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | `CoreFramework` | absent | rule 9 last-resort: groups 3D-scene objects (no specific leaf fits `Scene3DData` manipulation); `Scene3DData` in (non-image) ⇒ absent |
+| `MergeScenesAlgorithm` (Misc / 3D Scenes) | `MiscellaneousFunction` | `CoreFramework` | absent | rule 9: merges `Scene3DData` scenes (no scene-merge leaf); non-image in ⇒ absent |
+| `MaskTo3DMeshAlgorithm` (Images / Binary) | `MiscellaneousFunction` | `CoreFramework` | **3D** | **judgment (f):** a 3D-scene-from-mask **generation** op (Marching cubes: `ImagePlus3DGreyscaleMaskData` → `Scene3DData`). Old menuPath `Binary` would rule 1 → a `images/` leaf, but the node's **output is a 3D scene, not an image**, and it is a *generation* op, not a binary image filter. Assigned `MiscellaneousFunction` (the generation/last-resort leaf) with spatial **3D** (first image input `ImagePlus3DGreyscaleMaskData` ⇒ 3D). |
 
 **Function split:** MiscData **2** · Export **2** · Miscellaneous **3** (total 7).
 **Spatial distribution:** 3D **1** · absent **6** (total 7).
@@ -3047,3 +3055,191 @@ The only permitted change is the annotation + import fixup (plus, for the 2 imag
 `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
 panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
 unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+### 19.11d — jipipe-plugin-imp (5, full convert) + jipipe-plugin-scene-3d framework fix (7, NoFramework→CoreFramework)
+
+**Status:** imp fully converted (5 nodes — the **12th module** the plan named but 19.11a–c missed) +
+scene-3d framework corrected (7 nodes). One commit. Module gate (imp, **first test in the module**)
+zero unassigned; scene-3d gate re-run still zero unassigned.
+
+**The plan-correction (why this batch exists):** the plan's Task 19.11 names a framework line
+`scene-3d→CoreFramework` and lists `imp` as a module to convert. 19.11a (a) **missed imp entirely**
+(it was not in the 19.11a module list) and (b) **under-ruled scene-3d's framework** — it applied rule
+11's generic "else leave `NoFramework`" fallback and omitted the attribute, missing that the plan's
+explicit `scene-3d→CoreFramework` line **overrides** rule 11 for that module. 19.11d (a) converts imp
+(5 nodes, all `CoreFramework`) and (b) fixes scene-3d's 7 nodes to `CoreFramework`. The fix is
+**annotation-only** on scene-3d (function + spatial byte-identical to 19.11a's committed state); imp
+is a full `nodeTypeCategory`/`menuPath` → `function`/`framework`/`spatialDimensions` conversion.
+
+**Scope / gate prefixes (verified, matches controller):**
+- `plugins/jipipe-plugin-scene-3d/src/main` — base pkg `org.hkijena.jipipe.plugins.scene3d` (GATE
+  PREFIX) — **7** annotated files (2 Create*Mesh DataSource, 2 Export*Collada, GroupScene, MergeScenes,
+  MaskTo3DMesh). **Fix only** (framework attribute + import).
+- `plugins/jipipe-plugin-imp/src/main` — base pkg `org.hkijena.jipipe.plugins.imp` (GATE PREFIX) —
+  **5** annotated files (the `nodes/` package). **Full convert.**
+
+#### (A) scene-3d framework fix (7 nodes) — NoFramework (omitted) → `CoreFramework`
+
+Every node's `@ConfigureJIPipeNode(function = <Leaf>.class[, spatialDimensions = {…}])` gained
+`framework = CoreFramework.class` (+ the `import
+org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework`). The `function` and `spatialDimensions`
+values are **unchanged** from 19.11a:
+
+| node | function (unchanged) | framework (FIXED) | spatial (unchanged) |
+|---|---|---|---|
+| `CreateLineMeshAlgorithm` | `MiscDataFunction` | NoFramework (omitted) → **`CoreFramework`** | absent |
+| `CreateSphereMeshAlgorithm` | `MiscDataFunction` | → **`CoreFramework`** | absent |
+| `ExportScene3DToColladaAlgorithm` | `ExportFileFormatsFunction` | → **`CoreFramework`** | absent |
+| `ExportScene3DToColladaAlgorithm2` | `ExportFileFormatsFunction` | → **`CoreFramework`** | absent |
+| `GroupSceneAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | absent |
+| `MergeScenesAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | absent |
+| `MaskTo3DMeshAlgorithm` | `MiscellaneousFunction` | → **`CoreFramework`** | **3D** |
+
+Verified `grep -rl "framework = CoreFramework" plugins/jipipe-plugin-scene-3d/src/main` → **7**;
+`grep -rl "nodeTypeCategory\|menuPath" src/main` → **0**; `grep -rl "NoFramework\|ImageJ1Framework"
+src/main` → **0** (the fix is additive on top of 19.11a's already-converted state).
+
+#### (B) jipipe-plugin-imp (5 nodes) — full convert, all `CoreFramework`
+
+**Framework — `CoreFramework` for all 5** (plan: imp→CoreFramework). The `ImportImpImageAlgorithm`
+node has **0** `ij.*` imports, and the other 4 (e.g. `ConvertImpImageToImagePlusAlgorithm` imports
+`ij.ImagePlus`/`ij.ImageStack`/`ij.process.ColorProcessor`; `ImpImageData` imports `ij.*`) use `ij.*`
+**incidentally** for ImagePlus-level processing — that is a **spatial** signal (rule 12), **NOT** a
+framework signal (rule 11 is plugin-scoped; imp is not the `ij`/`ij-3d`/`ij-algorithms` plugin, and the
+plan names it `CoreFramework`). **No `ImageJ1Framework`.** Verified `grep -rl
+"NoFramework\|ImageJ1Framework" src/main` → **0**.
+
+**Aliases (2) — both DROPPED (alias-leaf == primary-leaf):**
+
+| node (primary leaf) | alias (old category / name) | alias leaf | action |
+|---|---|---|---|
+| `ExportImpImageAlgorithm` (ExportFileFormats) | `ImageJNodeTypeCategory` / `File\nSave` | `ExportFileFormatsFunction` (rule 7: an IJ `File\nSave` image exporter = the file-format export leaf) | **drop** (== primary; the IJ re-listing of the same export — same shape as §19.3's 12/12 and §19.11a's ilastik `File\nSave` drop) |
+| `ImportImpImageAlgorithm` (ImageData) | `DataSourceNodeTypeCategory` / aliasName `Import image (Java)` (no menuPath) | `ImageDataFunction` (rule 6 by output: a DataSource emitting image data `ImpImageData` ⇒ the data/ image leaf) | **drop** (== primary; it is a same-source DataSource re-listing — same shape as §19.3's DataSource-alias drops, where an alias sharing the primary's output type maps to the same leaf) |
+
+Both alias leaves collapse to the primary, so per the A/B/C protocol **both `@AddJIPipeNodeAlias` lines
+are deleted; no secondary `function[]` entries added.** Verified `grep "@AddJIPipeNodeAlias"
+plugins/jipipe-plugin-imp/src/main` → **0** after conversion.
+
+**Per-node table (function by op, rule 6/7 + images-leaf judgment):**
+
+| node (old cat / menuPath) | function | spatial | rationale |
+|---|---|---|---|
+| `ImportImpImageAlgorithm` (DataSource, —) | `ImageDataFunction` | **both** | rule 6 by **output**: a DataSource emitting `ImpImageData` (image data) ⇒ the data/ **image** leaf (mirror of §19.11a ilastik `ImportIlastikHDF5Image`→`ImageDataFunction`); spatial from the `ImpImageData` image output (see spatial ruling below) |
+| `ExportImpImageAlgorithm` (Export / "Images") | `ExportFileFormatsFunction` | **both** | rule 7: exports `ImpImageData` → a non-JIPipe file format (PNG/JPEG/BMP/GIF) ⇒ the file-format leaf (not a ZIP archive); `ImpImageData` image input ⇒ both |
+| `ConvertImpImageToImagePlusAlgorithm` (Images / "IMP\nConvert") | `ResamplingFunction` | **both** | a genuine image **type/format conversion** (`ImpImageData` → `ImagePlusData`); the `images/` conversion leaf is `ResamplingFunction` (the ij-algorithms `Convert`→`ResamplingFunction` + opencv `ConvertType`/`ConvertDepth`→`ResamplingFunction` precedents) — chosen over a data/ leaf because the node **transforms** an image input rather than producing one; `ImpImageData` image input ⇒ both |
+| `SetImpAlphaChannelAlgorithm` (Images / "IMP") | `MergingSplittingFunction` | **both** | **judgment (e):** combines an `ImpImageData` image with an `ImpImageData` mask by **setting/merging the alpha channel** into the image (channel **combine**); the `images/` merge/combine leaf is `MergingSplittingFunction` |
+| `SplitImpAlphaChannelAlgorithm` (Images / "IMP") | `MergingSplittingFunction` | **both** | **judgment (e):** **splits** the alpha channel out of an `ImpImageData` into a dedicated `ImpImageData` (channel **split**); the `images/` split leaf is `MergingSplittingFunction` (the same leaf as its `Set` sibling, for consistency) |
+
+**Function split:** `MergingSplittingFunction` **2** · `ImageDataFunction` **1** ·
+`ExportFileFormatsFunction` **1** · `ResamplingFunction` **1** (total 5).
+
+**Spatial — BOTH on all 5 (rule 12 + the §19.3 closed-set ruling; see below).** Every node's image
+input/output is `ImpImageData`, an **unconstrained ZCT hyperstack** image type (no `@ImageTypeInfo`,
+`@ConfigureJIPipeDataCrate(inherits = ImagePlusData.class)`, variable `numSlices`/`numFrames`/
+`numChannels`, `toImagePlus` builds a 3D `ImageStack`, `importData`/`exportData` round-trip ZCT
+`-z…c…t…` hyperstacks). Unconstrained image data ⇒ **both** (`SPATIAL_2D, SPATIAL_3D`) per the closed
+spatial set {2D, 3D} (the §19.3 dimensioned-wrapper ruling: "4D/5D (≥3) collapses to {2D, 3D}"; bare
+unconstrained `ImagePlus*` ⇒ both). The 19.11c "imp → classically 2D" hint was **not** applied: the
+*actual* `ImpImageData` supports 2D single images **and** ZCT hyperstacks (i.e. up to 3D), so it is
+genuinely **unconstrained**, not classically-2D-only. The 5 nodes with an `ImpImageData` image
+input/output are **all 5** (Import by its image *output*; Export/Convert/Set/Split by their
+`ImpImageData` *input*). **`spatialDimensions = { SPATIAL_2D, SPATIAL_3D }` on all 5.**
+
+**Distribution:** spatial **both = 5** (total 5). No `SPATIAL_*`-absent node in imp.
+
+#### (c) Test infrastructure (imp — first test in module)
+
+The imp module had **no `src/test` and no JUnit deps** (first test). Wired (mirror §19.11a/19.11c /
+the `jipipe-plugin-ij` pom verbatim):
+- **`pom.xml`:** added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope), mirroring `plugins/jipipe-plugin-ij/pom.xml` verbatim (inserted after the
+  `jipipe-plugin-ij` dependency, before `</dependencies>`).
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/
+  TaxonomyConversionReportTest.java` → `plugins/jipipe-plugin-imp/src/test/java/org/hkijena/jipipe/api/
+  nodes/taxonomy/` (**byte-identical**, verified with `cmp`).
+- Created `plugins/jipipe-plugin-imp/src/test/java/org/hkijena/jipipe/plugins/imp/
+  ImageJLegacyPatcherLauncherSessionListener.java` (module-scoped pkg `org.hkijena.jipipe.plugins.imp`;
+  `LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc adapted — cites this
+  module's ImageJ1 touchpoints `ij.ImagePlus`/`ij.ImageStack`/`ij.process.ColorProcessor`) +
+  `src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`
+  (single line = the listener's FQN).
+
+**Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the
+patcher, any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). This module's `ConvertImpImageToImagePlusAlgorithm` + `ImpImageData`
+genuinely load `ij.*`, so it is required. `LegacyInjector` is on the test classpath transitively via
+jipipe-core → `net.imagej:imagej`.
+
+#### (d) Gate results
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-imp,plugins/jipipe-plugin-scene-3d -am`
+  → **exit 0** (both in one reactor; host mvn).
+- **Stale `~/.m2` core jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` 6.0.0-SNAPSHOT
+  jar is dated **2026-10-10 03:52** (verified), newer than the last jipipe-core taxonomy commit
+  (`aeab2dcacb`, 2026-10-09 20:19) — **fresh** (contains the 74+ taxonomy function/framework classes and
+  the converted core nodes), so no pre-19.1 core node surfaced as unassigned in either prefix (the §19.6
+  stale-core condition did not recur). The gate prefixes (`…imp` / `…scene3d`) cover no core package, so
+  even a stale core jar could not inflate the prefix-filtered failure set. Stale *dependency* jars only
+  inflate the informational global "N nodes not yet assigned" line (see below) — **no
+  `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.**
+- **imp gate (enabled):** `mvn test -pl plugins/jipipe-plugin-imp -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imp` → **BUILD SUCCESS**, `Tests run: 1,
+  Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `org.hkijena.jipipe.plugins.imp`
+  prefix. The log line `JIPipeNodesServiceComponent | Node taxonomy: 116 nodes not yet assigned a
+  taxonomy function — expected during conversion` is the **global** count across all on-classpath
+  modules (the still-unconverted clij / ij2 / plots / imp's own stale dep jars / … + the not-yet-
+  reinstalled on-classpath module jars); **none** are under the `org.hkijena.jipipe.plugins.imp` prefix,
+  so the prefix-filtered assertion saw **zero** and passed (same shape as §19.3–§19.11c).
+- **imp gate (unset):** `mvn test -pl plugins/jipipe-plugin-imp` (no property) → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset), no
+  `_hooks`/`LinkageError` patcher failure (listener works), module green.
+- **scene-3d gate (re-run, enabled):** `mvn test -pl plugins/jipipe-plugin-scene-3d
+  -Dtest=TaxonomyConversionReportTest -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.scene3d`
+  → **BUILD SUCCESS**, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` — **still zero unassigned**
+  after the framework fix (the `116 nodes` global line is the same on-classpath-unconverted count,
+  outside the `…scene3d` prefix). Adding `framework` to already-converted nodes does not change the
+  gate's unassigned count, as expected.
+
+#### (e) Flagged for Phase 3 audit
+
+- **⚠️ The 2 imp alpha-channel ops → `MergingSplittingFunction` (judged).** `SetImpAlphaChannel`
+  (combine/merge a mask into the image's alpha) and `SplitImpAlphaChannel` (separate the alpha channel
+  out into a dedicated image) are both channel **combine/split** ops → the `images/`
+  `MergingSplittingFunction` leaf. **Flagged:** `SetImpAlphaChannel` could alternatively be read as a
+  `PreprocessingFunction` (it edits/prepares the image's alpha, not a structural merge of two
+  independent images into one montage); `SplitImpAlphaChannel` is the cleaner MergingSplitting fit
+  (a genuine split). If the audit groups alpha-channel editing under preprocessing, `Set` moves to
+  `PreprocessingFunction` (framework + spatial unchanged).
+- **⚠️ imp spatial = BOTH on all 5 (the `ImpImageData` dimensionality judgment).** The brief offered a
+  decision tree (classically-2D → `SPATIAL_2D`; unconstrained → BOTH; no-dimension-concept → absent).
+  The **actual** `ImpImageData` is an **unconstrained ZCT hyperstack** (variable `numSlices`/
+  `numFrames`/`numChannels`; `@ConfigureJIPipeDataCrate(inherits = ImagePlusData.class)`; `toImagePlus`
+  builds a 3D `ImageStack`; `importData`/`exportData` round-trip ZCT `-z…c…t…` hyperstacks). It is
+  therefore **unconstrained** (2D single images up to 3D ZCT stacks), not classically-2D-only, so
+  **BOTH** (`SPATIAL_2D, SPATIAL_3D`) is the honest assignment per the §19.3 closed-set ruling
+  (unconstrained/≥3D collapses to {2D, 3D}). **Flagged:** if the audit reads "IMP" as a 2D flat-image
+  format (the brief's "classically 2D 8/16-bit" hint) and disregards the ZCT hyperstack support, all 5
+  flip to `SPATIAL_2D` (mechanical). Also a **cross-module rule question** (echoing §19.8(f)): the
+  `ImportImpImageAlgorithm` node has **no image *input*** (its input is `FileData`); its spatial is
+  taken from its `ImpImageData` **output** (unconstrained ⇒ both). The §19.3/§19.8 image-import
+  DataSources (`ImportImagePlus`/`BioFormatsImporter`/`ImportIlastikHDF5Image`/`DownloadOMEROImage`)
+  treat image-*producing* sources' spatial by the **output**'s dimensionality, so this is consistent
+  with those — but §19.8's literal rule-12 (input-based) reading would make the Import node **absent**.
+  Decide in Phase 3 whether image-producing source nodes declare their OUTPUT's spatial (kept **both**
+  here, harmonizing with the §19.3 importers).
+
+**Byte-identity check (reviewer contract):** all 5 imp node files are byte-identical to base after
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
+(annotations-only change: `nodeTypeCategory`/`menuPath` removed, `function`/`framework`/
+`spatialDimensions` added, `…categories.*` imports dropped, leaf + `CoreFramework` + 2 `SPATIAL_*`
+static imports added, the 2 alias lines deleted). All 7 scene-3d files differ from 19.11a's committed
+state **only** by the added `CoreFramework` import + the `framework = CoreFramework.class` attribute
+(function + spatial byte-identical).
+
+**Transition note understood:** the 5 converted imp nodes now fall back to `InternalNodeTypeCategory`
+via `getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old*
+add-node panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0
+breaking, unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
