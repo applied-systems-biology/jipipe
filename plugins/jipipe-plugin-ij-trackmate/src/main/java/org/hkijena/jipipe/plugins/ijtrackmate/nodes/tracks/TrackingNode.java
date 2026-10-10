@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingFunction;
 import fiji.plugin.trackmate.tracking.SpotTracker;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -22,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
@@ -35,7 +36,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Track spots", after = {SpotDetectorNode.class}, purpose = "Link the detected spots into tracks")
 @SetJIPipeDocumentation(name = "Track spots", description = "Track spots using TrackMate")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
+@ConfigureJIPipeNode(function = TrackingLinkingFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", description = "The detected spots", create = true)
 @AddJIPipeInputSlot(value = SpotTrackerData.class, name = "Spot tracker", description = "The algorithm that tracks the spots", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, name = "Tracks", description = "The detected tracks", create = true)

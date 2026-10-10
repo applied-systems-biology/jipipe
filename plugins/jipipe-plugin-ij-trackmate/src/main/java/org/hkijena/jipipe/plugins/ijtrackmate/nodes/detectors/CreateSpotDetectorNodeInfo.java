@@ -23,6 +23,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -73,6 +77,20 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return CreateSpotDetectorNode.class;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // Programmatic data source (rule 6): emits SpotDetectorData (not an
+        // image/table/ROI/filament type) ⇒ the data/ misc leaf. No annotation
+        // can reach this runtime-registered node, so the taxonomy membership is
+        // set here rather than via @ConfigureJIPipeNode.
+        return new MiscDataFunction();
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new TrackMateFramework();
     }
 
     public SpotDetectorFactory<?> getSpotDetectorFactory() {

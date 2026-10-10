@@ -125,7 +125,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-omero | 26 | **converted (19.8, 26 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-cellpose | 21 | **converted (19.9, 21 nodes, DL frameworks by subpackage); module gate zero unassigned** |
-| jipipe-plugin-ij-trackmate | 18 | pending |
+| jipipe-plugin-ij-trackmate | 18 | **converted (19.10, 18 annotated + 14 runtime detector/tracker data sources = 32 registered; all TrackMateFramework); module gate zero unassigned** |
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-forms | 10 | **converted (19.7, 10 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-weka | 9 | pending |
@@ -2335,3 +2335,206 @@ unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old pan
 (Import re-arrangement: the new taxonomy imports — static `SPATIAL_*` (where spatial present) + framework
 (where framework present) + the `deeplearning/` leaf — are prepended to the import block and the
 `…nodes.categories.*` import is dropped; this is the permitted import fixup, not a body change.)
+
+### 19.10 — jipipe-plugin-ij-trackmate (18 annotated + 14 runtime = 32 registered nodes)
+
+**Status:** converted — all 18 `@ConfigureJIPipeNode`-annotated nodes rewritten to
+`function`/`framework`/`spatialDimensions`, **plus** the 14 runtime-registered TrackMate
+detector/tracker data sources assigned via programmatic overrides; module gate green (see (e)).
+Single-shot module conversion (mapping + apply + gate in one commit), mirroring §19.5/§19.9.
+**Note:** the plan's "jipipe-plugin-trackmate" is the maven module
+`plugins/jipipe-plugin-ij-trackmate` (base package `org.hkijena.jipipe.plugins.ijtrackmate` = the
+gate prefix).
+
+**The two distinctive elements (per controller):**
+- **(A) Framework = `TrackMateFramework` for ALL nodes (rule 11: trackmate→`TrackMateFramework`).**
+  Every node gets `TrackMateFramework` — 18 by annotation + 14 by programmatic `getFramework()`
+  override. **No `ImageJ1Framework`, no `NoFramework`.** 7 files incidentally `import ij.*`
+  (`ij.ImagePlus`, `ij.ImageStack`, `ij.process.*`) for ImagePlus-level rendering — that drives
+  **SPATIAL (rule 12), NOT framework**: rule 11's framework is plugin-scoped, not import-scoped
+  (same §19.9 `ij.*`-vs-framework distinction).
+- **(B) Function = the `tracking/` branch (4 leaves) by node OP**, with judgment for the
+  render/convert nodes. The four `jipipe-core/…/taxonomy/functions/tracking/` leaves (read
+  `getName()`): `TrackingDetectionFunction` ("Tracking: detection"), `TrackingLinkingFunction`
+  ("…linking"), `TrackingFilteringFunction` ("…filtering"), `TrackingAnalysisFunction`
+  ("…analysis").
+
+**Scope / gate prefix (verified):** `plugins/jipipe-plugin-ij-trackmate/src/main`, base pkg
+`org.hkijena.jipipe.plugins.ijtrackmate` (GATE PREFIX) — **18** `@ConfigureJIPipeNode` files (verified
+`grep -rl "@ConfigureJIPipeNode" src/main | wc -l` = 18, exactly one per file). **0 `@AddJIPipeNodeAlias`**
+in the module → no alias→secondary-`function[]` conversions.
+
+#### (A) Inventory — the 32 registered nodes, NOT the 18
+
+**The module registers 32 nodes, not 18.** `TrackMatePlugin.registerNodes()` registers the **18**
+annotated node classes. **Additionally**, `TrackMateUtils.registerSpotDetectors/registerSpotTrackers`
+(`…/utils/TrackMateUtils.java:119-147`) iterate the on-classpath TrackMate
+`SpotDetectorFactory`/`SpotTrackerFactory` plugins and, at startup, create one
+`CreateSpotDetectorNodeInfo` / `CreateSpotTrackerNodeInfo` each and call
+`registerNodeType(JIPipeNodeInfo, …)` — i.e. **14 more nodes** (7 detectors: DoG, Hessian, Label image,
+LoG, Manual, Mask, Thresholding; 7 trackers: Manual, Simple LAP, LAP, Advanced Kalman, Kalman, Overlap,
+Nearest-neighbor) registered **programmatically at runtime**. These classes implement
+`JIPipeNodeInfo` **directly** (they are not `JIPipeMutableNodeInfo` and carry no
+`@ConfigureJIPipeNode`), so their core `getPrimaryFunction()` default returns `null`
+(`jipipe-core/…/api/nodes/JIPipeNodeInfo.java:312`) and `getInstanceClass()` returns
+`CreateSpotDetectorNode`/`CreateSpotTrackerNode` (both under the prefix). The gate
+(`TaxonomyConversionReportTest`) filters by `instanceClass.getName().startsWith(prefix)` and asserts
+**zero** unassigned — so the 14 runtime nodes are *inside* the filtered set and **fail the gate while
+unassigned**. The brief scoped this task to the 18 annotated files ("18 nodes"), but its own acceptance
+criterion ("zero unassigned in THAT prefix") and rule "Do NOT leave any node without a function" cannot
+both hold while the 14 stay `null`. **Decision: assign all 14** (see (c)); the module is genuinely
+32-node-green, not 18. This is the one place the batch extends beyond the literal 18-file list, and it
+is forced by the gate's contract, not by judgment.
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):** all 18 annotated nodes were
+`ImagesNodeTypeCategory` (menuPath `Tracking` and its `\Filter`, `\Measure`, `\Split/Merge`,
+`\Visualize`, `\Convert` submenus). The 14 runtime nodes are `DataSourceNodeTypeCategory`
+(`CreateSpot{Detector,Tracker}NodeInfo.getCategory()`).
+
+#### (B) The 18 annotated nodes → the four `tracking/` leaves, by OP
+
+| node (old menuPath) | leaf | spatial | rationale |
+|---|---|---|---|
+| `SpotDetectorNode` (Tracking) | `TrackingDetectionFunction` | **both** | "Detect spots using TrackMate" — image + detector ⇒ `SpotsCollectionData`; the detection leaf |
+| `TrackingNode` (Tracking) | `TrackingLinkingFunction` | absent | "Track spots using TrackMate" — spots + tracker ⇒ `TrackCollectionData` (links spots into tracks); the linking leaf |
+| `SpotFilterNode` (Tracking\nFilter) | `TrackingFilteringFunction` | absent | "Filter TrackMate spots via expressions" — the filtering leaf |
+| `TrackFilterNode` (Tracking\nFilter) | `TrackingFilteringFunction` | absent | "Filter TrackMate spots via expressions" (tracks) — the filtering leaf |
+| `SplitSpotsNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Creates a list for each individual spot" — splits the spot set; no `tracking/` split leaf ⇒ filtering (judgment, flagged (d)) |
+| `MergeSpotsNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Merges spot lists" — joins spot sets; no `tracking/` split/merge leaf ⇒ filtering (judgment, flagged (d)) |
+| `SplitTracksNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Creates a list for each individual track" — splits the track set ⇒ filtering (judgment, flagged (d)) |
+| `MergeTracksNode` (Tracking\nSplit/Merge) | `TrackingFilteringFunction` | absent | "Merges track lists" — joins track sets ⇒ filtering (judgment, flagged (d)) |
+| `MeasureSpotsNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the spots and outputs the results into a table" (`ResultsTableData` out) — the analysis leaf |
+| `MeasureTracksNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the tracks and outputs the results into a table" (`ResultsTableData` out) |
+| `MeasureEdgesNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Measures the edges and outputs the results into a table" (`ResultsTableData` out) |
+| `MeasureBranchesNode` (Tracking\nMeasure) | `TrackingAnalysisFunction` | absent | "Analyzes each branch of all tracks" (`ResultsTableData` out) |
+| `SpotsToRGBNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — renders spots/tracks to RGB (see (c)) |
+| `TracksToRGBNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — renders tracks to RGB (see (c)) |
+| `TrackSchemeRendererNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | absent | JUDGMENT — renders the track scheme to an image (see (c)) |
+| `FollowSpotsPerTrackNode` (Tracking\nVisualize) | `TrackingAnalysisFunction` | **both** | JUDGMENT — per-track follow images (see (c)) |
+| `ConvertSpotsToRoiNode` (Tracking\nConvert) | `TrackingAnalysisFunction` | absent | JUDGMENT — spots ⇒ ROIs (see (c)) |
+| `ConvertTracksToRoiNode` (Tracking\nConvert) | `TrackingAnalysisFunction` | absent | JUDGMENT — tracks ⇒ ROI lists (see (c)) |
+
+**Function distribution (the 18 annotated):** `TrackingFilteringFunction` **6** (2 filter + 2 split +
+2 merge) · `TrackingAnalysisFunction` **8** (4 measure + 4 judgment) · `TrackingDetectionFunction`
+**1** · `TrackingLinkingFunction` **1**. **0 nodes without a function.**
+
+#### (C) The 6 judgment nodes (render/convert) — no obvious `tracking/` leaf
+
+There is **no "tracking render" or "tracking export" leaf**, so these six are genuine best-fit picks.
+**All six take tracking data (`SpotsCollectionData`/`TrackCollectionData`) as their primary input and
+*visualize/export the result of tracking***; none produces new tracking state. The `tracking/` branch
+has no rendering/export leaf, and the cross-branch leaves (`images/` render-to-image, `rois/`
+convert-to-ROI) describe the *output* artifact rather than the node's identity. The chosen reading —
+**all six → `TrackingAnalysisFunction`** — is that the node *belongs to the tracking branch* and its
+operation is analyzing/visualizing tracking output. **This directly mirrors §19.5's filament
+precedent** (`ConvertFilamentsToRGB` → `FilamentDataFunction`, `ConvertFilamentsToRoi` →
+`FilamentDataFunction`, where the source-data's branch won over the `images/`/`rois/` output leaf).
+Each is **flagged for Phase 3 (d)**; the alternative cross-branch leaf is recorded per node.
+
+| node | assigned | first image input (rule 12) | cross-branch alternative (flagged) |
+|---|---|---|---|
+| `SpotsToRGBNode` | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
+| `TracksToRGBNode` | `TrackingAnalysisFunction` | optional `ImagePlusColorRGBData` *Image* (2nd slot) ⇒ **both** | `images/ColorStackFunction` (render-to-image) |
+| `TrackSchemeRendererNode` | `TrackingAnalysisFunction` | none (tracks ⇒ rendered scheme image) ⇒ **absent** | `images/` render-to-image leaf |
+| `FollowSpotsPerTrackNode` | `TrackingAnalysisFunction` | required `ImagePlusData` *Image* (1st slot) ⇒ **both** | `images/` render-to-image leaf |
+| `ConvertSpotsToRoiNode` | `TrackingAnalysisFunction` | none (spots ⇒ `Roi2dListData`) ⇒ **absent** | `rois/RoiFiltersFunction` (convert-to-ROI) |
+| `ConvertTracksToRoiNode` | `TrackingAnalysisFunction` | none (tracks ⇒ `Roi2dListData`) ⇒ **absent** | `rois/RoiFiltersFunction` (convert-to-ROI) |
+
+**Spatial (rule 12, first image INPUT slot):** 14 of 18 take only tracking data
+(`TrackCollectionData`/`SpotsCollectionData`/`SpotDetectorData`/`SpotTrackerData` — not images) ⇒
+**absent** (no `spatialDimensions` field). 4 have an image input ⇒ **both** (unconstrained
+`ImagePlusData`/`ImagePlusColorRGBData`): `SpotDetectorNode`, `SpotsToRGBNode`, `TracksToRGBNode`,
+`FollowSpotsPerTrackNode`. **Distribution: absent = 14 · both = 4** (matches the brief's ~14/~4
+expectation). The two RGB renderers' `Image` slot is `ImagePlusColorRGBData` (2nd slot, behind the
+required spots/tracks slot — an image slot *confers* spatial per §19.5's reading), hence both.
+
+#### (d) Flagged for Phase 3 audit
+
+- **The 14 runtime `CreateSpot{Detector,Tracker}NodeInfo` → `MiscDataFunction` + `TrackMateFramework`**
+  (assigned by overriding `getPrimaryFunction()`/`getFramework()` on the programmatic
+  `JIPipeNodeInfo` classes — the annotation cannot reach them). Rule 6 (DataSource → data leaf by
+  output type): output is `SpotDetectorData`/`SpotTrackerData` — **not** an image/table/ROI/filament
+  type ⇒ the data/ **misc** leaf. **Alternative (role-based):** detectors ⇒ `TrackingDetectionFunction`,
+  trackers ⇒ `TrackingLinkingFunction`, since these are the TrackMate algorithm factories the
+  `SpotDetectorNode`/`TrackingNode` consume. The data/ misc leaf was chosen as the rule-6 literal; a
+  role-based `tracking/` assignment is equally defensible and may be preferable if the audit groups by
+  the factory's role rather than the output data type.
+- **`Split{Spots,Tracks}Node` + `Merge{Spots,Tracks}Node` (4) → `TrackingFilteringFunction`.** There is
+  no `tracking/` "split/merge" leaf; the four structural set-operations take the filtering leaf as best
+  fit (the closest `tracking/` leaf to "select/retain a subset of the set"). If the audit adds a
+  `tracking/` split/merge (or "edit") leaf, all four move.
+- **The 6 render/convert judgment nodes → `TrackingAnalysisFunction`** (see (C) per-node alternatives).
+  Chosen the `tracking/` branch leaf by node identity (they consume/visualize tracking output) over the
+  cross-branch `images/`/`rois/` output leaf, mirroring §19.5's filaments precedent. If the audit
+  prefers output-artifact grouping, `SpotsToRGB`/`TracksToRGB`/`TrackSchemeRenderer`/`FollowSpotsPerTrack`
+  move to an `images/` render leaf and `ConvertSpotsToRoi`/`ConvertTracksToRoi` to
+  `rois/RoiFiltersFunction`.
+
+#### (e) Test infrastructure
+
+The pom **already** had `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+(added by Task 13) — **left UNCHANGED** (no `pom.xml` in the commit). One pre-existing pure-unit test,
+`…/nodes/TrackMateFamilyStepsTest.java` (uses `FamilyAssembler`, touches no `ij.*`, no
+`ensureInstance`), was already present and **must stay green** (the module `mvn test` runs it + the gate).
+Added:
+- **Copied** `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-ij-trackmate/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/`
+  (**byte-identical**, verified with `cmp`).
+- **Created** `plugins/jipipe-plugin-ij-trackmate/src/test/java/org/hkijena/jipipe/plugins/ijtrackmate/
+  ImageJLegacyPatcherLauncherSessionListener.java` — the module-scoped mirror of the core/cellpose
+  listeners (pkg `org.hkijena.jipipe.plugins.ijtrackmate`; `LegacyInjector.preinit()` in
+  `launcherSessionOpened`, HKI header, Javadoc adapted to this module's ImageJ1 touchpoints —
+  `ij.ImagePlus`/`ij.ImageStack`/`ij.process.*`).
+- **Created** `plugins/jipipe-plugin-ij-trackmate/src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = the listener's FQN).
+
+**Why the listener is required:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). This module's render nodes reference `ij.ImagePlus`,
+`ij.ImageStack`, `ij.process.ColorProcessor`/`ImageProcessor`, so it is required.
+
+#### (f) Gate result
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-ij-trackmate -am` → **exit 0** (host mvn;
+  no podman fallback needed).
+- **Gate (enabled):** `mvn test -pl plugins/jipipe-plugin-ij-trackmate -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.ijtrackmate` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the
+  `org.hkijena.jipipe.plugins.ijtrackmate` prefix and zero taxonomy `errors()` (the 14 runtime nodes are
+  assigned, so they do not appear). **First run was RED** — before the 14 overrides, the gate listed all
+  14 `trackmate-create-spot-detector-*`/`trackmate-create-spot-tracker-*` ids as unassigned; adding the
+  two `getPrimaryFunction()`/`getFramework()` overrides turned it green. The log line
+  `JIPipeNodesServiceComponent | Node taxonomy: 545 nodes not yet assigned a taxonomy function — expected
+  during conversion` is the **global** count across all on-classpath modules (the unconverted weka /
+  ilastik / clij / ij2 / ocr / plots / multi-template-matching / python / r / imp / scene-3d / opencv …
+  modules + dependency jars); **none** are under the `org.hkijena.jipipe.plugins.ijtrackmate` prefix, so
+  the prefix-filtered assertion saw **zero** and passed (same shape as §19.3/…/§19.9).
+- **Gate (unset) / full module:** `mvn test -pl plugins/jipipe-plugin-ij-trackmate` → **BUILD SUCCESS**,
+  module total `Tests run: 6, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property
+  unset, the 1 skip) and the pre-existing `TrackMateFamilyStepsTest` → `Tests run: 5, Failures: 0,
+  Errors: 0, Skipped: 0` (**green**, module stays green). No `_hooks`/`LinkageError` (listener works).
+- **Stale-jar gotcha (19.6–19.9):** **not hit.** The enabled gate never surfaced any CORE
+  (`org.hkijena.jipipe.*`) node as globally-unassigned that this batch was expected to fix; the 545
+  global count is purely the still-unconverted *other* modules + dependency jars and is outside the
+  filtered prefix. No `mvn install -pl jipipe-core` was run and no jipipe-core source was touched.
+
+#### (g) Family-step annotation preservation (reviewer contract)
+
+**14 of the 18 node files carry Task-13 `@JIPipeNodeTaxonomyFamilyStepAnnotation` family-step markers**
+(`SpotFilterNode`, `SpotsToRGBNode`, `MeasureSpotsNode`, `SpotDetectorNode`, `TrackingNode`,
+`MeasureBranchesNode`, `FollowSpotsPerTrackNode`, `TrackFilterNode`, `TracksToRGBNode`,
+`MeasureTracksNode`, `TrackSchemeRendererNode`, `MeasureEdgesNode`, `ConvertSpotsToRoiNode`,
+`ConvertTracksToRoiNode`). These are **separate from `@ConfigureJIPipeNode`** and were **already
+correct — left byte-identical.** Verified by line-filter `git diff`: in every one of the 18 node files
+the *only* changed lines are the import block and the single `@ConfigureJIPipeNode(…)` line — **no
+`@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, …)` line appears in any diff**
+(14/14 preserved). The 2 NodeInfo files changed only by the added imports + the two overridden methods
+(no other line).
+
+**Transition note understood:** the 18 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.

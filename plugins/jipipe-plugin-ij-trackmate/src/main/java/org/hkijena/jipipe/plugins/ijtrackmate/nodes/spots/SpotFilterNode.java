@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingFilteringFunction;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -23,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
@@ -45,7 +46,7 @@ import java.util.Map;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter spots", after = {SpotDetectorNode.class}, purpose = "Remove detected spots that do not match the selection criteria")
 @SetJIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
+@ConfigureJIPipeNode(function = TrackingFilteringFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, name = "Output", create = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
