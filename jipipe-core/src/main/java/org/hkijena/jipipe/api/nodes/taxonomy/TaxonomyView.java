@@ -158,14 +158,16 @@ public final class TaxonomyView {
     }
 
     /**
-     * The search ids for the node's function/category, in the exact format
+     * The search ids for the node's taxonomy functions, in the exact format
      * the node database uses.
      * <p>
-     * Converted: the primary function's id plus every secondary function's id.
-     * Unconverted: the legacy category id, in exactly the form the node
-     * database builder ({@code org.hkijena.jipipe.api.nodes.database.
-     * JIPipeNodeDatabaseBuilderRun}) puts into an entry's
-     * {@code categoryIds} ({@code nodeInfo.getCategory().getId()}).
+     * Converted (a primary function is present): the primary function's id
+     * plus every secondary function's id. Unconverted (no primary function):
+     * the legacy category id, exactly the form the node database builder
+     * historically used ({@code nodeInfo.getCategory().getId()}) — kept only
+     * for the transition; every node has a function since the 1b conversion,
+     * and this legacy branch is removed in task 27 (when
+     * {@code JIPipeNodeInfo.getCategory()} itself goes away in task 26).
      *
      * @param info the node info
      * @return the search ids, never {@code null}
