@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
@@ -305,11 +304,6 @@ public class ThemeUtils {
         return CURRENT_STYLE.getPanelBackground();
     }
 
-    public static Color getNodeFillColor(JIPipeNodeTypeCategory category) {
-        float colorHue = category.getColorHue();
-        return getNodeFillColor(colorHue);
-    }
-
     public static Color getNodeFillColor(float colorHue) {
         if (colorHue < 0) {
             return CURRENT_STYLE.getPanelBackground();
@@ -335,11 +329,6 @@ public class ThemeUtils {
         // fn-null defensive state (only reachable via JIPipeEmptyNodeInfo,
         // never a registered node): the legacy negative-hue border channel.
         return CURRENT_STYLE.getNodeHighlightBorder();
-    }
-
-    private static Color getNodeBorderColor(JIPipeNodeTypeCategory category) {
-        float colorHue = category.getColorHue();
-        return getNodeBorderColor(colorHue);
     }
 
     public static Color getNodeBorderColor(float colorHue) {

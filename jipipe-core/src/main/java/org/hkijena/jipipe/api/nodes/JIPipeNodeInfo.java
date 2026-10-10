@@ -53,7 +53,7 @@ public interface JIPipeNodeInfo {
     String getId();
 
     /**
-     * If the node is of category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}, allows to re-assign them to a new menu
+     * If the node is a data source (its function is under the Data sources branch), allows to re-assign them to a new menu
      * If {@link JIPipeEmptyData} is returned, no re-assignment is applied
      *
      * @return the re-assigned data type menu or {@link JIPipeEmptyData}

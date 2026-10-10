@@ -13,32 +13,16 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-
 public enum JIPipeNodeDatabasePipelineVisibility {
     Pipeline,
     Compartments,
     Both;
 
-    public static JIPipeNodeDatabasePipelineVisibility fromCategory(JIPipeNodeTypeCategory category) {
-        if (category.isVisibleInPipeline() && category.isVisibleInCompartments()) {
-            return Both;
-        } else if (category.isVisibleInCompartments()) {
-            return Compartments;
-        } else {
-            return Pipeline;
-        }
-    }
-
     /**
-     * The taxonomy replacement for {@link #fromCategory(JIPipeNodeTypeCategory)}.
-     * Takes the node's two visibility behavior flags (see
-     * {@code TaxonomyView.behaviorFlags}) directly, so it works for converted
-     * nodes whose legacy category is the generic {@code Internal} category
-     * (whose flags are wrong). Uses the identical 3-value logic as
-     * {@link #fromCategory}.
+     * Derives the pipeline visibility from the node's two visibility
+     * behavior flags (see {@code TaxonomyView.behaviorFlags}).
      *
-     * @param visibleInPipeline    whether the node is visible in the pipeline editor
+     * @param visibleInPipeline     whether the node is visible in the pipeline editor
      * @param visibleInCompartments whether the node is visible in the compartment editor
      * @return the corresponding visibility constant
      */

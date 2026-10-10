@@ -29,10 +29,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
- * Verifies the additive taxonomy fields added to {@link ConfigureJIPipeNode},
- * the {@link JIPipeNodeTaxonomyTags} repeatable annotation, and that the legacy
- * fields ({@code menuPath}, {@code nodeTypeCategory}) still exist and compile
- * with their original defaults (this task must not break the tree).
+ * Verifies the taxonomy fields of {@link ConfigureJIPipeNode} and the
+ * {@link JIPipeNodeTaxonomyTags} repeatable annotation.
  */
 class ConfigureJIPipeNodeAnnotationTest {
 
@@ -109,7 +107,7 @@ class ConfigureJIPipeNodeAnnotationTest {
 
     /**
      * A node stub annotated with the new taxonomy fields plus two repeated
-     * {@link JIPipeNodeTaxonomyTags} annotations and the legacy fields.
+     * {@link JIPipeNodeTaxonomyTags} annotations.
      */
     @ConfigureJIPipeNode(
         function = {StubFunction.class},
@@ -119,11 +117,6 @@ class ConfigureJIPipeNodeAnnotationTest {
     @JIPipeNodeTaxonomyTags({"a", "b"})
     @JIPipeNodeTaxonomyTags({"c"})
     private static class AnnotatedNode {
-    }
-
-    /** A node stub that uses only the legacy {@code menuPath} field. */
-    @ConfigureJIPipeNode(menuPath = "Legacy / Menu")
-    private static class LegacyNode {
     }
 
     @Test
@@ -187,36 +180,6 @@ class ConfigureJIPipeNodeAnnotationTest {
         assertNotNull(annotation);
         assertEquals(0, annotation.function().length);
         assertEquals(0, annotation.spatialDimensions().length);
-    }
-
-    @SuppressWarnings("deprecation")
-    @Test
-    void legacyFieldsStillExistAndKeepDefaults() {
-        // These calls only compile if the legacy fields are still present.
-        ConfigureJIPipeNode annotation = AnnotatedNode.class.getAnnotation(ConfigureJIPipeNode.class);
-        assertNotNull(annotation);
-        // menuPath defaults to "" when not set.
-        assertEquals("", annotation.menuPath());
-        // nodeTypeCategory defaults to InternalNodeTypeCategory when not set.
-        assertNotNull(annotation.nodeTypeCategory());
-
-        // A node that sets menuPath still reads it back.
-        ConfigureJIPipeNode legacy = LegacyNode.class.getAnnotation(ConfigureJIPipeNode.class);
-        assertNotNull(legacy);
-        assertEquals("Legacy / Menu", legacy.menuPath());
-    }
-
-    @Test
-    void legacyFieldsAreDeprecated() {
-        // The deprecation markers are present on both legacy fields.
-        try {
-            assertNotNull(ConfigureJIPipeNode.class.getDeclaredMethod("menuPath")
-                .getAnnotation(Deprecated.class));
-            assertNotNull(ConfigureJIPipeNode.class.getDeclaredMethod("nodeTypeCategory")
-                .getAnnotation(Deprecated.class));
-        } catch (NoSuchMethodException e) {
-            throw new AssertionError("legacy method not found: " + e.getMessage(), e);
-        }
     }
 
 }

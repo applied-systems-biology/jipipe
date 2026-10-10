@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -489,8 +488,7 @@ class NodeDatabaseTaxonomyTest {
      * {@code after = {} start step annotation.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags("detect")
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots")
     public static class SpotDetectNode extends JIPipeGraphNode {
@@ -515,8 +513,7 @@ class NodeDatabaseTaxonomyTest {
      * Same function and framework as {@link SpotDetectNode}, no node-level
      * tags (only the function's tag is merged in).
      */
-    @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+    @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class)
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Track",
         after = {SpotDetectNode.class})
     public static class TrackNode extends JIPipeGraphNode {
@@ -542,7 +539,6 @@ class NodeDatabaseTaxonomyTest {
      * first (the follow-up, track, being excluded from the sibling tier).
      * Deliberately has no framework of its own and no tags.
      */
-    @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter tracks",
         after = {TrackNode.class})
     public static class FilterTracksNode extends JIPipeGraphNode {
@@ -566,7 +562,7 @@ class NodeDatabaseTaxonomyTest {
      * Same framework as the family nodes, no family step and no shared tags:
      * a pure tier-2 candidate.
      */
-    @ConfigureJIPipeNode(framework = StubFramework.class, nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+    @ConfigureJIPipeNode(framework = StubFramework.class)
     public static class OtherFrameworkNode extends JIPipeGraphNode {
         public OtherFrameworkNode(JIPipeNodeInfo info) {
             super(info);
@@ -588,8 +584,7 @@ class NodeDatabaseTaxonomyTest {
      * Shares both of the detect node's tags (node-level; the tag-free
      * function contributes none): tier 3, two-shared slot.
      */
-    @ConfigureJIPipeNode(function = {StubNoTagFunction.class},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+    @ConfigureJIPipeNode(function = {StubNoTagFunction.class})
     @JIPipeNodeTaxonomyTags({"detect", "tm-func-tag"})
     public static class SharedTagOneNode extends JIPipeGraphNode {
         public SharedTagOneNode(JIPipeNodeInfo info) {
@@ -612,8 +607,7 @@ class NodeDatabaseTaxonomyTest {
      * Shares exactly one of the detect node's tags (node-level; the
      * tag-free function contributes none): tier 3, one-shared slot.
      */
-    @ConfigureJIPipeNode(function = {StubNoTagFunction.class},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+    @ConfigureJIPipeNode(function = {StubNoTagFunction.class})
     @JIPipeNodeTaxonomyTags("detect")
     public static class SharedTagTwoNode extends JIPipeGraphNode {
         public SharedTagTwoNode(JIPipeNodeInfo info) {
@@ -638,7 +632,6 @@ class NodeDatabaseTaxonomyTest {
      * tier, since it also shares both of detect's tags).
      */
     @ConfigureJIPipeNode(function = {StubNoTagFunction.class}, framework = StubFramework.class,
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class,
         nodeClassification = JIPipeNodeClassification.AutoImport)
     @JIPipeNodeTaxonomyTags({"detect", "tm-func-tag"})
     public static class AutoImportNode extends JIPipeGraphNode {

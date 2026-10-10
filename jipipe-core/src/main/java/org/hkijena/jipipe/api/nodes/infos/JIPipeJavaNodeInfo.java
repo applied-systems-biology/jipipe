@@ -127,7 +127,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
 
     /**
      * Returns the alternative assignment to another data source type menu for a node
-     * Only applicable if the node is of node category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}
+     * Only applicable for data source nodes (their function is under the Data sources branch)
      * {@link JIPipeEmptyData} means that no re-assignment should be applied
      *
      * @param klass The data class

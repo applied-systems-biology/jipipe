@@ -139,7 +139,6 @@ public class FilamentsPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "Installation of TSOAX",
                 RESOURCES.getIcon16("tsoax.png"));
 
-        registerNodeTypeCategory(new FilamentsNodeTypeCategory());
         registerApplicationSettingsSheet(new ImageViewerUIFilamentDisplayApplicationSettings());
 
         registerDatatype("filaments", Filaments3DGraphData.class, RESOURCES.getIcon16URL("data-type-filaments.png"));

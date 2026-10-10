@@ -30,7 +30,6 @@ import org.hkijena.jipipe.api.data.thumbnails.JIPipeTextThumbnailData;
 import org.hkijena.jipipe.api.data.utils.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.grapheditortool.tools.*;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
-import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepSolverPreference;
 import org.hkijena.jipipe.api.project.JIPipeProjectInfoParameters;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunPartitionInheritedBoolean;
@@ -112,17 +111,6 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 JIPipe.RESOURCES.getIcon16URL("data-types/data-type.png"));
 
         registerDefaultDataTypeViewer(JIPipeDataTable.class, JIPipeDataTableDataViewer.class);
-
-        registerNodeTypeCategory(new InternalNodeTypeCategory());
-        registerNodeTypeCategory(new DataSourceNodeTypeCategory());
-        registerNodeTypeCategory(new FileSystemNodeTypeCategory());
-        registerNodeTypeCategory(new MiscellaneousNodeTypeCategory());
-        registerNodeTypeCategory(new ImagesNodeTypeCategory());
-        registerNodeTypeCategory(new TableNodeTypeCategory());
-        registerNodeTypeCategory(new RoiNodeTypeCategory());
-        registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
-        registerNodeTypeCategory(new ExportNodeTypeCategory());
-        registerNodeTypeCategory(new ImageJNodeTypeCategory());
 
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());

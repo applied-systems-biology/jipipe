@@ -15,11 +15,7 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -37,28 +33,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ConfigureJIPipeNode {
     /**
-     * A submenu where the entry should be located.
-     * This is valid for {@link JIPipeGraphNode} and {@link org.hkijena.jipipe.api.data.JIPipeData}
-     * Menu entries are separated via newlines.
-     *
-     * @return The menu path
-     */
-    @Deprecated
-    String menuPath() default "";
-
-    /**
-     * Assigns a category to any {@link JIPipeNodeInfo} that listens to this annotation.
-     * Determines in which menus the nodes are placed and how the user can interact with it.
-     * Defaults to {@link InternalNodeTypeCategory}, which prevents users from creating such nodes and deleting them,
-     * so change this categorization
-     *
-     * @return the category
-     */
-    @Deprecated
-    Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
-
-    /**
-     * Only used if the node type category is set to {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}.
+     * Only used for data source nodes (their function is under the Data sources branch).
      * Allows to re-assign the data source node into the menu of another data type
      * If set to {@link JIPipeEmptyData}, no re-allocation is applied.
      */

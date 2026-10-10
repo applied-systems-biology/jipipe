@@ -41,7 +41,6 @@ import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -229,11 +228,11 @@ class TokenTaxonomyTest {
     }
 
     /**
-     * Brief case 2: an unconverted node (legacy {@code nodeTypeCategory},
-     * no function) yields the pre-taxonomy token set minus the removed
-     * legacy category/menu token (Task 25) — the legacy name/description
-     * tokens are present, the category/menu token is absent, and NO
-     * taxonomy word (function, framework, or tag) appears.
+     * Brief case 2: an unconverted node (no function) yields the
+     * pre-taxonomy token set minus the removed legacy category/menu token
+     * (Task 25) — the legacy name/description tokens are present, the
+     * category/menu token is absent, and NO taxonomy word (function,
+     * framework, or tag) appears.
      */
     @Test
     void unconvertedNodeHasNoTaxonomyTokens() {
@@ -353,8 +352,7 @@ class TokenTaxonomyTest {
     @ConfigureJIPipeNode(
         function = {SegmentationCellBasedFunction.class, RoiMeasurementsFunction.class},
         framework = Cellpose4Framework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags("cells")
     @AddJIPipeInputSlot(value = JIPipeEmptyData.class)
     public static class ConvertedCellSegmenterNode extends JIPipeGraphNode {
@@ -375,12 +373,14 @@ class TokenTaxonomyTest {
     }
 
     /**
-     * An unconverted node: only the legacy {@code nodeTypeCategory} is
-     * set — no function, no framework, no tags, no spatial dimensions.
+     * An unconverted node: no taxonomy fields at all — no function, no
+     * framework, no tags, no spatial dimensions. Since the legacy
+     * node-type-category system was removed (Task 27), this is modeled by
+     * an empty {@code @ConfigureJIPipeNode}.
      */
     @SetJIPipeDocumentation(name = "Unconverted Legacy Node",
         description = "A legacy stub node.")
-    @ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+    @ConfigureJIPipeNode
     public static class UnconvertedLegacyNode extends JIPipeGraphNode {
         public UnconvertedLegacyNode(JIPipeNodeInfo info) {
             super(info);

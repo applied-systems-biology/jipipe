@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
@@ -390,8 +389,7 @@ class NodeBrowserModelTest {
      * {@code tag-b} and {@code tag-c}.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D})
     @JIPipeNodeTaxonomyTags({TAG_B, TAG_C})
     @AddJIPipeInputSlot(value = NodeBrowserModelTestPlaneData.class, name = "Input", create = true)
     public static class PlaneNode extends JIPipeGraphNode {
@@ -416,8 +414,7 @@ class NodeBrowserModelTest {
      * slots (input profile {@code NA}), tag {@code tag-a}.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
-        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D},
-        nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+        spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D})
     @JIPipeNodeTaxonomyTags(TAG_A)
     public static class VolumeNode extends JIPipeGraphNode {        public VolumeNode(JIPipeNodeInfo info) {
             super(info);

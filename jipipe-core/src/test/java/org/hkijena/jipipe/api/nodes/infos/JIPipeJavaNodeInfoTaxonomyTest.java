@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -41,9 +40,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Tests that {@link JIPipeJavaNodeInfo} extracts the taxonomy fields
  * (functions, framework, spatial dimensions, node-level tags) from
  * {@link ConfigureJIPipeNode} / {@link JIPipeNodeTaxonomyTags} into the
- * new getters on the node info, and that unconverted nodes (legacy
- * {@code nodeTypeCategory} only) report a null primary function, no
- * secondary functions, and a {@link NoFramework} framework.
+ * new getters on the node info, and that unconverted nodes (no taxonomy
+ * fields) report a null primary function, no secondary functions, and a
+ * {@link NoFramework} framework.
  */
 class JIPipeJavaNodeInfoTaxonomyTest {
 
@@ -136,54 +135,6 @@ class JIPipeJavaNodeInfoTaxonomyTest {
     }
 
     /**
-     * Minimal legacy {@link JIPipeNodeTypeCategory}.
-     */
-    static class LegacyCategory implements JIPipeNodeTypeCategory {
-        public LegacyCategory() {
-        }
-
-        @Override
-        public String getId() {
-            return "stub:legacy-category";
-        }
-
-        @Override
-        public String getName() {
-            return "Legacy Category";
-        }
-
-        @Override
-        public String getDescription() {
-            return "A legacy stub category";
-        }
-
-        @Override
-        public int getUIOrder() {
-            return 0;
-        }
-
-        @Override
-        public Icon getIcon() {
-            return null;
-        }
-
-        @Override
-        public float getColorHue() {
-            return 0.5f;
-        }
-
-        @Override
-        public boolean isVisibleInPipeline() {
-            return true;
-        }
-
-        @Override
-        public boolean isVisibleInCompartments() {
-            return true;
-        }
-    }
-
-    /**
      * Stub primary function.
      */
     static class StubFuncA extends StubFunction {
@@ -223,10 +174,11 @@ class JIPipeJavaNodeInfoTaxonomyTest {
     }
 
     /**
-     * A node that is NOT yet converted: it only declares the legacy
-     * node type category.
+     * A node that is NOT yet converted: it declares no taxonomy fields at
+     * all (since the legacy node-type-category system was removed in Task
+     * 27, "unconverted" is modeled by an empty {@code @ConfigureJIPipeNode}).
      */
-    @ConfigureJIPipeNode(nodeTypeCategory = LegacyCategory.class)
+    @ConfigureJIPipeNode
     private static class UnconvertedStub extends JIPipeGraphNode {
         public UnconvertedStub(JIPipeNodeInfo info) {
             super(info);

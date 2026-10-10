@@ -34,7 +34,6 @@ import org.hkijena.jipipe.api.instrumentation.InstrumentationOperation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
@@ -356,15 +355,6 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerDatatypeDisplayOperation(String dataTypeId, JIPipeDesktopDataDisplayOperation operation) {
         service.getDataTypes().registerDisplayOperation(dataTypeId, operation);
-    }
-
-    /**
-     * Registers a node type category
-     *
-     * @param category the category
-     */
-    public void registerNodeTypeCategory(JIPipeNodeTypeCategory category) {
-        service.getNodes().registerCategory(category);
     }
 
     /**

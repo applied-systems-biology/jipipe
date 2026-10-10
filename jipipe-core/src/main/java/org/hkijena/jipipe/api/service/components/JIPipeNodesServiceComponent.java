@@ -45,7 +45,6 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     private final Multimap<String, JIPipeNodeExample> registeredExamples = HashMultimap.create();
     private final Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
     private final Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
-    private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
     private final Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
     private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
     private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
@@ -139,20 +138,6 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             taxonomyResolver.refreshClassToNodeIdMapping(registeredNodeClasses);
             enrichNodeTaxonomy();
         }
-    }
-
-    public JIPipeNodeTypeCategory getCategory(String id) {
-        return registeredCategories.getOrDefault(id, null);
-    }
-
-    /**
-     * Registers a category
-     *
-     * @param category the category instance
-     */
-    public void registerCategory(JIPipeNodeTypeCategory category) {
-        registeredCategories.put(category.getId(), category);
-        getProgressInfo().log("Registered node type category " + category);
     }
 
     /**
@@ -267,10 +252,6 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
         for (JIPipeNodeRegistrationTask task : registrationTasks) {
             report.report(reportContext, task, progressInfo);
         }
-    }
-
-    public ImmutableBiMap<String, JIPipeNodeTypeCategory> getRegisteredCategories() {
-        return ImmutableBiMap.copyOf(registeredCategories);
     }
 
     /**
