@@ -21,6 +21,7 @@ import net.haesleinhuepf.clij.macro.documentation.HTMLDocumentationTemplate;
 import net.haesleinhuepf.clij.macro.documentation.OffersDocumentation;
 import net.haesleinhuepf.clij2.utilities.IsCategorized;
 import org.apache.commons.text.WordUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
@@ -30,8 +31,9 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyAutoAssignment;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
@@ -273,12 +275,27 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
-        // 19.11b default for the runtime-registered CLIJ command nodes (discovered
-        // CLIJ2 macro plugins; no @ConfigureJIPipeNode can reach them). CLIJ commands
-        // are varied GPU image ops, so the best general default is the Miscellaneous
-        // branch. Task 20 (TaxonomyAutoAssignment) refines this to a name-based
-        // heuristic + input-profile spatial; the framework below is final.
-        return new MiscellaneousFunction();
+        // Task 20: name-based heuristic for the runtime-registered CLIJ command
+        // nodes (discovered CLIJ2 macro plugins; no @ConfigureJIPipeNode can
+        // reach them). Supersedes the flat 19.11b MiscellaneousFunction default;
+        // the framework below is final (CLIJ).
+        return TaxonomyAutoAssignment.functionForName(getName());
+    }
+
+    @Override
+    public Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        // Task 20: derived from the first image input slot's data class
+        // (ANY ⇒ both 2D + 3D), never heuristic. Defensive: registration must
+        // not crash if the node service is not ready or a slot class is odd.
+        try {
+            List<Class<?>> inputClasses = new ArrayList<>();
+            for (AddJIPipeInputSlot slot : inputSlots) {
+                inputClasses.add(slot.value());
+            }
+            return TaxonomyAutoAssignment.spatialForFirstImageInput(inputClasses, JIPipe.getNodes()::inputProfileFor);
+        } catch (RuntimeException e) {
+            return Collections.emptySet();
+        }
     }
 
     @Override
