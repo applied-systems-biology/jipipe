@@ -72,4 +72,18 @@ public final class GraphDebugFunction implements JIPipeNodeTaxonomyFunction {
     public boolean isVisibleInCompartments() {
         return false;
     }
+
+    /**
+     * Internal nodes are not user-extractable, mirroring the legacy
+     * {@code InternalNodeTypeCategory.canExtract()} = {@code false}. This is the
+     * third member of the internal trio alongside
+     * {@link #isVisibleInPipeline()} / {@link #isVisibleInCompartments()} (both
+     * {@code false} here), so that
+     * {@code JIPipeGraph.extract(..., withInternal = false)} keeps excluding
+     * these nodes once their flags are read from the taxonomy function.
+     */
+    @Override
+    public boolean canExtract() {
+        return false;
+    }
 }
