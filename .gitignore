@@ -133,3 +133,5 @@ fabric.properties
 # Taxonomy conversion scratch (19.4 ij-3d mapping build).
 /utils/taxonomy-conversion/survey_ij3d.py
 /utils/taxonomy-conversion/apply_ij3d.py
+# Taxonomy conversion scratch (19.6 filesystem+strings+utils applier).
+/utils/taxonomy-conversion/apply_196.py

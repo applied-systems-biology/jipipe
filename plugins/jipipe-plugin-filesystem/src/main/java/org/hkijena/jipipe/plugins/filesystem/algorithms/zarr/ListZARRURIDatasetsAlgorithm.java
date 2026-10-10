@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.zarr;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -21,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.strings.StringData;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import static org.janelia.saalfeldlab.n5.ij.N5Importer.PARSERS;
 
 @SetJIPipeDocumentation(name = "List ZARR URI datasets", description = "Lists all available datasets and groups in an ZARR URI")
-@ConfigureJIPipeNode(nodeTypeCategory = FileSystemNodeTypeCategory.class, menuPath = "ZARR")
+@ConfigureJIPipeNode(function = TableDataFunction.class)
 @AddJIPipeInputSlot(value = URIData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class ListZARRURIDatasetsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

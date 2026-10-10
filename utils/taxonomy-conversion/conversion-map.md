@@ -119,13 +119,13 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij-3d | 62 | **converted (19.4, 62 nodes); module gate zero unassigned** |
 | jipipe-plugin-filaments + ij-filaments | 51+ | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned** |
-| jipipe-plugin-filesystem | 39 | pending |
+| jipipe-plugin-filesystem | 39 | **converted (19.6, 39 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-annotations | 29 | pending |
-| jipipe-plugin-utils | 28 | pending |
+| jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-ij-omero | 26 | pending |
 | jipipe-plugin-cellpose | 21 | pending |
 | jipipe-plugin-ij-trackmate | 18 | pending |
-| jipipe-plugin-strings | 15 | pending |
+| jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-forms | 10 | pending |
 | jipipe-plugin-ij-weka | 9 | pending |
 | jipipe-plugin-python | 9 | pending |
@@ -1055,3 +1055,328 @@ any `ij.*` class loaded before the context is created makes the ImageJ2 legacy p
   converted node, not from this module.)
 - **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij-filaments` → **BUILD SUCCESS**,
   `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset).
+
+
+### 19.6 — jipipe-plugin-filesystem + jipipe-plugin-strings + jipipe-plugin-utils (82 nodes)
+
+**Status:** converted — all 82 `@ConfigureJIPipeNode` nodes across the three modules rewritten to
+`function`-only; three module gates green (see Gate result below). Single-shot combined conversion
+(mapping + apply + 3 gates in one commit), mirroring §19.3/§19.4/§19.5.
+
+**Scope / gate prefixes (verified, matches controller R1):**
+- `plugins/jipipe-plugin-filesystem/src/main` — base pkg `org.hkijena.jipipe.plugins.filesystem` — **39** annotated files.
+- `plugins/jipipe-plugin-strings/src/main` — base pkg `org.hkijena.jipipe.plugins.strings` — **15** annotated files.
+- `plugins/jipipe-plugin-utils/src/main` — base pkg `org.hkijena.jipipe.plugins.utils` — **28** annotated files.
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
+
+| module | DataSource | FileSystemNodeTypeCategory | Miscellaneous | Export | Annotations | Table | total |
+|---|---|---|---|---|---|---|---|
+| filesystem | 10 | 16 | 1 | 6 | 5 | 1 | **39** |
+| strings | 4 | — | 7 | — | 3 | 1 | **15** |
+| utils | 1 | — | 24 | — | 3 | — | **28** |
+
+(`FileSystemNodeTypeCategory` is a **core** category class at `jipipe-core/…/api/nodes/categories/
+FileSystemNodeTypeCategory.java` — rule 8 — not module-local like the 19.5 `FilamentsNodeTypeCategory`.)
+
+**Aliases (verified by grep of `@AddJIPipeNodeAlias`):** filesystem **3 refs in 2 files**
+(`ProjectUserPathDataSource` ×2, `SimplePathAnnotationGenerator` ×1); utils **4 refs in 2 files**
+(`MultiIterationStepCheckerAlgorithm` ×2, `SingleIterationStepCheckerAlgorithm` ×2); strings **0**.
+Total **7** alias references → decisions in (d).
+
+---
+
+**Framework — OMITTED for all 82 (rule 11, deliberate, not an omission).** None of these three modules
+is on rule 11's named list (cellpose/trackmate/clij/opencv/plots/weka/ilastik/omnipose/ij2-discovered/
+ij/ij-3d/ij-algorithms), and they are **not** "core plugins" (they are standalone plugin modules, not
+bundled in jipipe-core). Rule 11's final clause — "else leave `NoFramework`" — therefore applies. The
+`@ConfigureJIPipeNode.framework()` default is **already** `NoFramework.class`
+(`jipipe-core/…/api/ConfigureJIPipeNode.java:97`), so the attribute is **omitted entirely** — no node
+here writes `framework = NoFramework.class` (this is the mirror of why the 19.1 core nodes write
+`framework = CoreFramework.class` but these do not). `grep -rl "framework = " src/main` across all three
+modules → **0**.
+
+**Spatial — ABSENT for all 82 (rule 12, deliberate, not an omission).** None of the 82 nodes has an
+image input slot (verified by a per-node slot survey: zero `ImagePlus*`/`Image*`/`OME*`/`ImageData*`
+input values across the three modules; the closest is a generic `JIPipeData` slot, which confers no
+spatial per the §19.5 graph-slot precedent). Rule 12's "non-image ⇒ absent" therefore applies to every
+node: `spatialDimensions` is **omitted entirely** on all 82, and there is **no** `SPATIAL_*` static
+import anywhere in the three modules. `grep -rl "spatialDimensions = " src/main` across all three → **0**.
+
+So every converted node's annotation is exactly `@ConfigureJIPipeNode(function = <Leaf>.class)`, or
+`@ConfigureJIPipeNode(function = { Primary.class, SecondaryLeaf.class })` where an alias added a
+distinct secondary leaf. This is the simplest shape to date — but the `function` attribute is never
+dropped (it is the whole point of the conversion).
+
+**Leaf distribution (primary, all 82):** `MiscDataFunction` 29 · `MiscellaneousFunction` 17 ·
+`AnnotationsEditFunction` 10 · `TableDataFunction` 7 · `ExportFileFormatsFunction` 6 ·
+`TableFilterModifyFunction` 4 · `GraphDebugFunction` 3 · `TableJoinSplitFunction` 2 ·
+`TableTransformFunction` 2 · `AnnotationsConvertFunction` 1 · `GraphWrappersFunction` 1 (total 82).
+
+---
+
+#### (a) jipipe-plugin-filesystem (39)
+
+Rule 8 (`FileSystemNodeTypeCategory` → data-source leaf by what it reads, else `MiscDataFunction`);
+rule 6 (DataSource → data leaf by output); rule 7 (Export); rule 5 (Annotations); rule 4 (Table).
+
+**`MiscDataFunction` (25)** — the filesystem/path core. All read and/or emit `PathData` /
+`FileData` / `FolderData` / `JIPipeData` / `URIData` (no dedicated path/file/folder data leaf exists;
+`data/` = Image/Table/Roi/Filament/**Misc**). Assigned per the actual data role, not the menuPath
+(`Modify`/`Convert`/`ZARR`/`Extract`/`List`/`Filter` are filesystem operations, not taxonomy ops):
+
+| node (old segment) | rationale for non-obvious |
+|---|---|
+| `ConcatenatePaths`, `ConcatenateByParameter`, `ModifyPath`, `ModifyPathWithExpression`, `RenameByString`, `RelativizePaths`, `RelativizeByParameter` (Modify) | path-string edits (rule 8 "else Misc") |
+| `ExtractFileName`, `ExtractParent` (Extract) | path decomposition → path/file data |
+| `FilterPaths` (Filter) | path predicate removal |
+| `CopyPath` | copies a file to a destination, emits the copied `PathData` (a path producer, not a "copy data" op) |
+| `CreateDirectory` | emits `FolderData` |
+| `ListFiles`, `ListSubfolders` (List) | emit `FileData`/`FolderData` lists |
+| `ConvertDataToOutputPath` (Misc/Convert, "Get output path") | computes the run's output path, emits `FolderData` (a data producer); **flag (e)** — could be export-flavored |
+| `DownloadFilesDataSource`, `OutputFolderDataSource`, `PathFromUserDataSource`, `ProjectUserPathDataSource`, `TemporaryFileDataSource`, `TemporaryFolderDataSource` (DataSource) | rule 6 by output (`FileData`/`FolderData`/`PathData`) → Misc |
+| `URIListDataSource` (DataSource) | emits `URIData` (a `StringData` subclass) → Misc (no image/table/ROI) |
+| `ImportDataRowFolder` (DataSource) | emits generic `JIPipeData` (one row from a row-folder) → Misc |
+
+**`TableDataFunction` (2)** — rule 8/6 by OUTPUT type: `ListZARRDirectoryZIPDatasetsAlgorithm`,
+`ListZARRURIDatasetsAlgorithm` (both `ZARR` segment) read a ZARR store and emit **`ResultsTableData`**
+(the dataset/group listing as a table) → the data/ table leaf (a refinement of rule 8's "leaf by what
+it reads/emits", mirroring §19.3's `ImportResultsTable`→`TableDataFunction`).
+
+**`TableTransformFunction` (1)** — `AnnotationTableToPaths` (Table/Convert): input is
+**`AnnotationTableData`** (a `ResultsTableData` subclass), output `PathData`. Rule 4 (Table category →
+`tables/`) wins because it *transforms a table* into paths (the annotation table is the primary data it
+consumes); **flag (e)** — MiscDataFunction is the alternative if judged by output (rule 8).
+
+**`ExportFileFormatsFunction` (6)** — rule 7: `ExportData`, `ExportDataByParameter`,
+`ExportDataByParameter2`, `ExportDataTable`, `ExportDataTableByParameter` (all write files via
+JIPipe's standard exporter → the file-format export leaf; the two DataTable variants write a data-table
+*directory*, still a file export, not a ZIP archive), plus `ConvertToExportedPath` ("Get export path" —
+it does **not** write a file, it generates the export `PathData`; kept in the export family mirroring
+§19.3's `SetBioFormatsExporterSettings`; **flag (e)**).
+
+**`AnnotationsEditFunction` (4)** — rule 5: `AnnotateWithPathProperties` (For paths) adds property
+annotations to paths (an *adder*); `SimpleFileAnnotationGenerator`, `SimpleFolderAnnotationGenerator`,
+`SimplePathAnnotationGenerator` (all For paths) each **create/add** one annotation (e.g. `#Dataset`) to
+files/folders/paths — annotation *editing/adding* ops (same Edit leaf as §19.3's
+`AnnotateDataWithImageProperties`), not type-conversions. `SimplePathAnnotationGenerator` carries 1
+alias (see (d)).
+
+**`AnnotationsConvertFunction` (1)** — `AnnotationToPath` (Annotations/Convert): converts a data
+annotation (key `#Dataset`) into `PathData` — a genuine annotation→other-data **conversion** (the one
+node here that maps an annotation *type* to a different data type), hence the Convert leaf.
+
+#### (b) jipipe-plugin-strings (15)
+
+Rule 6 (DataSource), rule 5 (Annotations), rule 4 (Table), rule 9 (Miscellaneous best-fit). The module
+wraps `StringData` and its subclasses (`XMLData`, `JsonData`, `URIData`, `TextData`…) — no image data.
+
+**`MiscDataFunction` (4)** — the four DataSource nodes (rule 6 by output; there is **no** dedicated
+string/text data leaf, so `data/` → Misc, mirroring §19.3's `DefineImageJMacroAlgorithm`/
+`ImportImageJMacroAlgorithm`→`MiscDataFunction` for `StringData`-derived types): `ImportStringAlgorithm`
+(`StringData`), `ImportXMLAlgorithm` (`XMLData`), `ImportJsonAlgorithm` (`JsonData`),
+`StringDefinitionDataSource` (`StringData`).
+
+**`AnnotationsEditFunction` (3)** — rule 5: `AnnotateWithJsonDataAlgorithm` (For JSON),
+`AnnotateWithTextDataAlgorithm` (For text), `AnnotateWithXPathDataAlgorithm` (For XML) — each **adds
+annotations to** JSON/text/XML data (annotation adders; the "For …" menuPath signals the target type,
+not a conversion).
+
+**`TableDataFunction` (3)** — the three table-**producers** that derive a `ResultsTableData` from a
+*non-table* input: `ExtractJsonDataAsTableAlgorithm` (JSON→table), `ExtractXPathDataAsTableAlgorithm`
+(XML→table), `TextDataToTableAlgorithm` (text→table). Rule 9 / §19.1 `TableDataFunction` precedent for
+"produce a table from non-table source"; **flag (e)** — `TableTransformFunction` is the alternative if
+the audit reads "as table" as a *conversion* of table data.
+
+**`TableTransformFunction` (1)** — `TableToCSVTextAlgorithm` (Table/Convert): input **`ResultsTableData`**
+→ `StringData`. A genuine table **transform** (table in, non-table out) under rule 4 — the only node
+here with a table *input*, so the tables/ transform leaf (consistent with the `TableDataFunction`
+producers above being table-*out* from non-table).
+
+**`MiscellaneousFunction` (4)** — rule 9 last-resort (no text/XML-processing leaf exists):
+`ProcessTextDataAlgorithm` (Text: expression-map text→text), `PrettifyXMLAlgorithm` (XML: reindent
+XML→XML), `ExtractTextFromXMLAlgorithm` (XML: XPath→`StringData`), `ExtractTextFromJsonAlgorithm`
+(JSON: json-path→`StringData`). These operate on the text/XML *string* itself (not annotations, not
+tables), so the `Miscellaneous` branch is the honest fit.
+
+#### (c) jipipe-plugin-utils (28)
+
+Rule 6 (DataSource), rule 5 (Annotations), rule 9 (Miscellaneous best-fit — expected to be common here).
+The brief explicitly steered: table-ish ops → `tables/`, graph/compartment ops → `graph/`, read each.
+
+**`TableFilterModifyFunction` (4)** — the table **row filter/sort** ops (all carry generic
+`JIPipeData` slots but their docs/params target data-table rows — §19.1's "tables as a table type"
+precedent): `DataSlicer` ("Slices the incoming data table into a smaller table", Filter),
+`SelectDataTableRowsAlgorithm` ("select a specific set of input data table rows", Filter),
+`SortRowsByAnnotationsAlgorithm` + `SortRowsByExpressionAlgorithm` (Sort). **Flag (e)** — the generic
+`JIPipeData` slot makes `MiscellaneousFunction` a defensible fallback if the audit weights slot-type
+over doc-intent.
+
+**`TableJoinSplitFunction` (2)** — `MergeDataToTableAlgorithm` (Data tables: merges iteration-step data
+into a `JIPipeDataTable` = table *merge*, mirroring §19.1 `MergeParameters`→`TableJoinSplit`) and
+`ExtractTableAlgorithm` ("Unpack data table": splits a `JIPipeDataTable` input into its rows/data on
+output = table *split*). **Flag (e)** on `ExtractTable` — `TableTransformFunction` is the alternative if
+"unpack" is read as a transform.
+
+**`TableDataFunction` (2)** — the two `ParametersData` producers: `JIPipeProjectParameterDefinition`
+(DataSource; extends `DefineParametersTableAlgorithm`, emits `ParametersData` — §19.1's
+`DefineParametersTableAlgorithm`→`TableDataFunction` precedent) and
+`PathsToJIPipeProjectParametersAlgorithm` (Meta run; non-table `PathData` in → `ParametersData` table
+out, a table *producer* like `DefineParametersFromGlobalParameters`). **Flag (e)** on
+`PathsToJIPipeProjectParameters` — `TableTransformFunction` is the alternative (it does consume an
+input to build the table).
+
+**`GraphDebugFunction` (3)** — the graph/pipeline **inspection & debugging** nodes:
+`GetJIPipeSlotFolderAlgorithm` (Meta run: extracts a slot's output folder from a JIPipe output),
+`ImportJIPipeSlotFolderAlgorithm` (Meta run: extends the above, also imports the folder's data),
+`CrasherAlgorithm` (Misc, no menuPath: "Cancels the current run if data is processed. Use this node to
+inform users about unwanted conditions" — a deliberate pipeline *debug/tripwire*). **Flag (e)** on the
+two slot-folder nodes — `GraphWrappersFunction` is the alternative if "meta-run slot inspection" is read
+as graph-wrapping rather than debugging.
+
+**`GraphWrappersFunction` (1)** — `RunJIPipeProjectAlgorithm` (Meta run): runs an **existing JIPipe
+project** (a sub-pipeline) with a given parameter set, emits its `JIPipeOutputData` — a
+pipeline-wrapper/orchestration role (§19.1 `JIPipeProjectCompartment`/wrappers precedent), distinct from
+the debug-flavored slot-folder/crash nodes. **Flag (e)** — `GraphDebugFunction` (the "Meta run" segment
+group) is the alternative if the audit groups all Meta-run nodes together.
+
+**`MiscellaneousFunction` (13)** — rule 9 last-resort (no specific leaf fits). Generic
+`JIPipeData` pass-through / meta / distribution / process ops:
+`ConverterAlgorithm` (convert any data type→type), `RunExpressionAlgorithm` (run an expression per row,
+pass-through), `SleepAlgorithm` (wait), `DuplicateDataAlgorithm` (duplicate for debugging),
+`UsePlaceholderForMissingDataAlgorithm` (substitute a placeholder for missing data),
+`IterationStepSlicer` (merge/slice merging iteration steps; **flag (e)** — graph/iteration-flavored),
+`DistributeDataRandomlyByCountAlgorithm` + `DistributeDataRandomlyByPercentageAlgorithm` (Split: split
+data across output slots by count/percentage; **flag (e)**), `RunProcessIteratingAlgorithm` +
+`RunProcessMergingAlgorithm` (Process: execute an OS process; **flag (e)** — no "external process"
+leaf exists), `ToDataStringAlgorithm` (Convert: data → its `StringData` representation), and the two
+iteration-step **checkers** `SingleIterationStepCheckerAlgorithm` + `MultiIterationStepCheckerAlgorithm`
+(primary = Miscellaneous, with an `AnnotationsEditFunction` secondary each from their annotation-filter
+aliases — see (d); **flag (e)**).
+
+**`AnnotationsEditFunction` (3)** — rule 5: `AnnotateWithDataTableProperties` (For data tables: add
+row/column property annotations), `PullDataTableAnnotations` (annotate tables with annotations pulled
+from inside the table), `PushDataTableAnnotations` (copy the table's annotations into the table) — all
+annotation add/edit ops on data tables.
+
+#### (d) Aliases (7 references) — 5 dropped, 2 → secondary `function[]` (primary-first)
+
+Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf
+== primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
+
+| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
+|---|---|---|---|
+| `ProjectUserPathDataSource` (MiscData) | DataSource / "Project user directory" | `MiscDataFunction` (rule 6, `FolderData` out) | **drop** (== primary) |
+| `ProjectUserPathDataSource` (MiscData) | DataSource / "Project user file" | `MiscDataFunction` (rule 6, file `PathData` out) | **drop** (== primary) |
+| `SimplePathAnnotationGenerator` (AnnotationsEdit) | Annotations / "For paths" | `AnnotationsEditFunction` (rule 5, adder) | **drop** (== primary) |
+| `MultiIterationStepCheckerAlgorithm` (Miscellaneous) | Miscellaneous / "Filter" ("Limit to iteration steps") | `MiscellaneousFunction` (== primary) | **drop** (== primary) |
+| `MultiIterationStepCheckerAlgorithm` (Miscellaneous) | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5: filters/annotates by annotation) | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
+| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Miscellaneous / "Filter" ("Limit to iteration steps") | `MiscellaneousFunction` (== primary) | **drop** (== primary) |
+| `SingleIterationStepCheckerAlgorithm` (Miscellaneous) | Annotations / "Filter" ("Filter multiple data by annotation") | `AnnotationsEditFunction` (rule 5) | **add secondary** → `function = { MiscellaneousFunction.class, AnnotationsEditFunction.class }` |
+
+**5 dropped, 2 secondary `function[]` entries** (the two iteration-step checkers — the only two
+multi-`function` nodes in this batch, primary-first per the §19.2/19.5 precedent).
+
+#### (e) Flagged for Phase 3 audit
+
+- **`ConvertToExportedPath` → `ExportFileFormatsFunction`.** In the Export category but writes **no**
+  file — it generates the export `PathData`. Kept in the export family (mirrors §19.3
+  `SetBioFormatsExporterSettings`); `MiscDataFunction` is the alternative if "not a real exporter" is
+  preferred.
+- **`AnnotationTableToPaths` → `TableTransformFunction`.** Has a table *input* (`AnnotationTableData`)
+  so rule 4 applies, but its output is `PathData`; `MiscDataFunction` (rule 8, judged by output) is the
+  alternative.
+- **`ConvertDataToOutputPath` → `MiscDataFunction`.** A run-output *path producer*; export-flavored by
+  intent (computes where data is stored) but emits `FolderData` → Misc.
+- **`DataSlicer` / `SelectDataTableRows` / `SortRowsBy{Annotations,Expression}` → `TableFilterModifyFunction`.**
+  Generic `JIPipeData` slots; assigned to the tables/ filter leaf by their data-table doc/params. If
+  slot-type outranks doc-intent, all four fall to `MiscellaneousFunction`.
+- **`ExtractTableAlgorithm` (Unpack) → `TableJoinSplitFunction`** (table *split* into rows) vs
+  `TableTransformFunction`; **`PathsToJIPipeProjectParameters` → `TableDataFunction`** (non-table→table
+  producer) vs `TableTransformFunction` (consumes a path input).
+- **Strings table-producers `ExtractJsonDataAsTable` / `ExtractXPathDataAsTable` / `TextDataToTable` →
+  `TableDataFunction`** (derive a table from a non-table source) vs `TableTransformFunction` (a
+  "convert-to-table" reading). `TableToCSVText` (table *in*) is the contrasting `TableTransformFunction`.
+- **`RunJIPipeProject` → `GraphWrappersFunction`** (runs a sub-pipeline) vs `GraphDebugFunction`
+  (the "Meta run" segment group). **`GetJIPipeSlotFolder` / `ImportJIPipeSlotFolder` →
+  `GraphDebugFunction`** (slot-folder inspection/debug) vs `GraphWrappersFunction`.
+- **`IterationStepSlicer` → `MiscellaneousFunction`** (merging-iteration-step slicer; graph-flavored,
+  no dedicated leaf). **`DistributeDataRandomly{ByCount,ByPercentage}` → `MiscellaneousFunction`**
+  (data distribution across output slots; the `Split` menuPath is the old panel group, not a
+  tables/join op). **`RunProcess{Iterating,Merging}` → `MiscellaneousFunction`** (OS process execution;
+  no "external process" leaf). **`ToDataString` → `MiscellaneousFunction`** (data→string; no text leaf).
+- **`Single`/`MultiIterationStepChecker` → primary `MiscellaneousFunction` + secondary
+  `AnnotationsEditFunction`.** Primary is the generic iteration-step limiter (Misc); the secondary
+  carries their annotation-filter aliases. If the checkers are read as annotation filters primarily,
+  the primary could flip to `AnnotationsEditFunction`.
+
+#### (f) Test infrastructure
+
+All three modules had **no `src/test` and no JUnit deps** (first test in each). For EACH:
+- **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) — mirrors `plugins/jipipe-plugin-ij/pom.xml`/`-ij-3d`/`-ij-filaments` verbatim (inserted
+  before `</dependencies>`; in `strings` after the `json-path` dependency).
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/` (**byte-identical**,
+  verified with `cmp`).
+- Created `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (module-scoped: filesystem→`…plugins.filesystem`,
+  strings→`…plugins.strings`, utils→`…plugins.utils`; `LegacyInjector.preinit()` in
+  `launcherSessionOpened`, HKI header, Javadoc mirroring the §19.3/19.4/19.5 listeners).
+- Created `plugins/jipipe-plugin-<m>/src/test/resources/META-INF/services/
+  org.junit.platform.launcher.LauncherSessionListener` (single line = that module's listener FQCN).
+
+**Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent
+failure (AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath
+transitively via jipipe-core → `net.imagej:imagej`.
+
+#### (g) Gate result (R1/R2/R3)
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-filesystem,plugins/jipipe-plugin-strings,
+  plugins/jipipe-plugin-utils -am` → **exit 0** (all three in one reactor).
+
+- **Stale `~/.m2` core jar (environment fix, documented):** running the filesystem gate
+  (`-pl plugins/jipipe-plugin-filesystem`, *no* `-am`) resolves `jipipe-core` from the **installed**
+  `~/.m2` jar, which was dated **2026-10-09 17:32** — ~3.5 h *before* the §19.1 core conversion commit
+  `910aa020d6` (2026-10-09 21:07). The stale jar's `FileDataSource` et al. still carried
+  `nodeTypeCategory=DataSourceNodeTypeCategory` (no `function`), so the **first** filesystem gate run
+  reported 6 unassigned: `import-file`, `import-file-list`, `import-folder`, `import-folder-list`,
+  `import-path`, `import-path-list`. These six are core's `plugins/filesystem/datasources` classes —
+  their package `org.hkijena.jipipe.plugins.filesystem.datasources` **starts with** the filesystem gate
+  prefix and they are **registered by the filesystem module's** `FilesystemPlugin` — i.e. exactly the
+  six §19.1 "re-covered by Task 19.6 for utils/filesystem" classes (the §19.1 core gate could not see
+  them because they are not on the *core* test classpath). This was the **expected** stale-jar condition,
+  not a conversion gap: all six already carry `function = MiscDataFunction.class, framework =
+  CoreFramework.class` in source (verified). Fix: `mvn -q -B install -pl jipipe-core -DskipTests`
+  (refreshed the core jar; `javap` then showed `FileDataSource` with `function=[MiscDataFunction]`).
+  As a secondary cleanup, `mvn -q -B install -pl plugins/jipipe-plugin-filesystem -DskipTests` was also
+  run so the utils gate's classpath (utils depends on filesystem) no longer saw a stale filesystem jar
+  (its initial global "39 nodes not yet assigned" line, = filesystem's count, disappeared). **No source
+  files were changed by these installs** — they only refreshed the local `~/.m2` reactor artifacts so
+  the specified no-`-am` gate commands reflect the current (converted) source.
+
+- **Gate (enabled), all three → BUILD SUCCESS, `Tests run: 1, Failures: 0`, "Node taxonomy validation
+  passed", zero unassigned in the module prefix:**
+  - filesystem: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.filesystem`
+  - strings: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.strings`
+  - utils: `-Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.utils`
+  (The utils module's classpath includes the now-converted filesystem + core, so no "N nodes not yet
+  assigned" global line remained; had any unconverted on-classpath module existed, that global count
+  would be *outside* the prefix-filtered failure set and not in `errors()`, per the §19.3/19.4/19.5
+  shape.)
+
+- **Gate (unset), all three → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the
+  gate **skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
+
+**Transition note understood:** the 82 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategory()` (`isVisibleInPipeline` false), so they are absent from the *old* add-node panel's
+category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking, unmerged
+branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+**Byte-identity check (reviewer contract):** all 82 node files are byte-identical to base after
+stripping `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines
+(verified by a line-filter diff across `git show HEAD:<f>` vs head) — the change is annotations-only.

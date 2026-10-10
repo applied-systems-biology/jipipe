@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -23,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
@@ -34,7 +34,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Temporary folder", description = "Generates a temporary folder that will be located within your operating system's temporary directory or " +
         "the directory specified in the JIPipe settings. Please note that there are no guarantees on the actual folder name, as the outcome depends on the operating system. " +
         "The folder is already existing, so a 'Create directories' operation is not needed.")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 public class TemporaryFolderDataSource extends JIPipeParameterSlotAlgorithm {
 

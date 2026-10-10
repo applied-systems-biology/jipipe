@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableFilterModifyFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -25,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Sort data rows by annotation", description = "Sorts the data rows by one or multiple annotations.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
+@ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
     private StringQueryExpressionAndSortOrderPairParameterList sortOrderList = new StringQueryExpressionAndSortOrderPairParameterList();
     private SortOrder defaultSortOrder = SortOrder.Ascending;

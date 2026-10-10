@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -20,7 +21,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -34,8 +34,7 @@ import java.nio.file.Files;
  * Algorithm that generates annotations from folder names
  */
 @SetJIPipeDocumentation(name = "Annotate with file/directory name", description = "Creates an annotation for each path based on its name or its full path.")
-@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
-@AddJIPipeNodeAlias(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths", aliasName = "Add path to annotations")
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = PathData.class, name = "Paths", create = true)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Annotated paths", create = true)
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

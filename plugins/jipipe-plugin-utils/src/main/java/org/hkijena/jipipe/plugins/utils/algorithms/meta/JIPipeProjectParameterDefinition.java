@@ -14,13 +14,13 @@
 package org.hkijena.jipipe.plugins.utils.algorithms.meta;
 
 import ij.IJ;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -46,7 +46,7 @@ import java.util.Map;
         "If it matches with a pipeline parameter (that can be set up via a pipeline's settings), this parameter is changed. It can also match with an absolute path to a node's parameter with following format: " +
         "[node-id]/[node parameter key]")
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableDataFunction.class)
 public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {
         super(info);

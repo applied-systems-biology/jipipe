@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -22,14 +23,13 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 
 @SetJIPipeDocumentation(name = "Duplicate data", description = "Creates a duplicate of the input data. Useful for debugging purposes.")
 @AddJIPipeInputSlot(name = "Input", value = JIPipeData.class, create = true)
 @AddJIPipeOutputSlot(name = "Output", value = JIPipeData.class, create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
 public class DuplicateDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public DuplicateDataAlgorithm(JIPipeNodeInfo info) {

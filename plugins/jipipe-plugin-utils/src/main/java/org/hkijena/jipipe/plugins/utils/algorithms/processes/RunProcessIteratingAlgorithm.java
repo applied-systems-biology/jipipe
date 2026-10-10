@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms.processes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,7 +25,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -40,7 +40,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Process")
+@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();
