@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.annotation.algorithms;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -43,7 +43,7 @@ import java.util.Map;
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Target", create = true, description = "The target data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Source", create = true, description = "The data where the annotations are sourced from")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Target", create = true, description = "Annotated target")
-@ConfigureJIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     private JIPipeExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
     private JIPipeExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");

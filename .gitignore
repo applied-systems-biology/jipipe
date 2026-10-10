@@ -135,3 +135,6 @@ fabric.properties
 /utils/taxonomy-conversion/apply_ij3d.py
 # Taxonomy conversion scratch (19.6 filesystem+strings+utils applier).
 /utils/taxonomy-conversion/apply_196.py
+# Taxonomy conversion scratch (19.8 annotations+ij-omero applier + byte-identity check).
+/utils/taxonomy-conversion/apply-19-8.py
+/utils/taxonomy-conversion/bytecheck-19-8.py

@@ -121,9 +121,9 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 | jipipe-plugin-filaments + ij-filaments | 51+ | **converted (19.5, 51 nodes — one module, `plugins/jipipe-plugin-ij-filaments`); module gate zero unassigned** |
 | jipipe-plugin-tables | 48 | **converted (19.7, 48 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-filesystem | 39 | **converted (19.6, 39 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-annotations | 29 | pending |
+| jipipe-plugin-annotations | 29 | **converted (19.8, 29 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-utils | 28 | **converted (19.6, 28 nodes, function-only/NoFramework); module gate zero unassigned** |
-| jipipe-plugin-ij-omero | 26 | pending |
+| jipipe-plugin-ij-omero | 26 | **converted (19.8, 26 nodes, function-only/NoFramework); module gate zero unassigned** |
 | jipipe-plugin-cellpose | 21 | pending |
 | jipipe-plugin-ij-trackmate | 18 | pending |
 | jipipe-plugin-strings | 15 | **converted (19.6, 15 nodes, function-only/NoFramework); module gate zero unassigned** |
@@ -1675,3 +1675,348 @@ No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
 **Byte-identity check (reviewer contract):** all 58 node files are byte-identical to base after stripping
 `import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a line-filter
 diff across `git show HEAD:<f>` vs head — 58 files, 0 non-annotation changes) — the change is annotations-only.
+
+### 19.8 — jipipe-plugin-annotations (29) + jipipe-plugin-ij-omero (26) (55 nodes)
+
+**Status:** converted — all 55 `@ConfigureJIPipeNode` nodes across the two modules rewritten to
+`function`-only; two module gates green (see (g)). Single-shot combined conversion (mapping + apply +
+2 gates in one commit), mirroring §19.6/§19.7. Same class of task as 19.6/19.7 (function-only,
+non-ImageJ modules) **plus two judgment-heavy elements**: the 2-leaf `annotations/` Edit-vs-Convert
+split (26 annotations nodes + 6 omero annotation nodes) and the OME-image spatial question (1 omero
+node).
+
+**Scope / gate prefixes (verified, matches controller R1):**
+- `plugins/jipipe-plugin-annotations/src/main` — base pkg **`org.hkijena.jipipe.plugins.annotation`**
+  (SINGULAR = GATE PREFIX) — **29** annotated files (28 `algorithms/` + 1 `datasources/`).
+  `ImplicitResultsTableDataConverter` is a `JIPipeDataConverter` (not a node — no `@ConfigureJIPipeNode`),
+  `AnnotationFilterExpression` is an expression class (not a node) → both correctly **excluded**.
+- `plugins/jipipe-plugin-ij-omero/src/main` — base pkg **`org.hkijena.jipipe.plugins.omero`** (GATE PREFIX)
+  — **26** annotated files (6 `annotate/` + 7 `datasources/` + 2 `download/` + 1 `manage/` + 8 `navigate/`
+  + 2 `upload/`).
+
+**Primary-category inventory (verified by grep of `nodeTypeCategory =`):**
+
+| module | Annotations | DataSource | FileSystem | Export | Miscellaneous | total |
+|---|---|---|---|---|---|---|
+| annotations | 26 | 2 | — | — | 1 | **29** |
+| ij-omero | 6 | 9 | 9 | 2 | — | **26** |
+
+(omero's `navigate/` = 8 nodes + `manage/OMEROCreateDataset` = **9** `FileSystemNodeTypeCategory`;
+`download/` = 2 nodes + 7 `datasources/` = **9** `DataSourceNodeTypeCategory` — the controller's "9
+DataSource" is by category, spanning the two sub-packages.)
+
+**Aliases (verified by grep of `@AddJIPipeNodeAlias`):** annotations **5 refs in 2 files**
+(`AnnotateByExpression` ×3, `ConvertToAnnotationTable` ×2); ij-omero **0**. Total **5** alias references
+→ decisions in (e).
+
+---
+
+**Framework — OMITTED for all 55 (rule 11, deliberate, not an omission).** Neither module is on rule 11's
+named list (cellpose/trackmate/clij/opencv/plots/weka/ilastik/omnipose/ij2-discovered/ij/ij-3d/
+ij-algorithms), and they are **not** "core plugins" (standalone plugin modules, not bundled in
+jipipe-core). Rule 11's final clause — "else leave `NoFramework`" — applies. The
+`@ConfigureJIPipeNode.framework()` default is **already** `NoFramework.class`
+(`jipipe-core/…/api/ConfigureJIPipeNode.java:97`), so the attribute is **omitted entirely** — no node
+writes `framework = NoFramework.class`, and **no** `NoFramework` import is added. `grep -rl "framework = "
+src/main` across both → **0**. **Note (ij-omero specifically):** the `omero` module is an **OMERO
+integration** (`ome.*`/`loci.*`/Bio-Formats based), **not** an ImageJ module — **0** files import
+`net.imagej.*` (verified); it has exactly **1** incidental `ij.ImagePlus` import (the OMERO image importer
+wraps an `ij.ImagePlus`). `ij.ImagePlus` is an IJ1 *type*, not the IJ1 framework, and the node does not
+call IJ1 processing APIs, so rule 11's "else → NoFramework" still holds (OMERO is the framework, and there
+is no OMERO framework leaf — it stays `NoFramework`).
+
+**Spatial:**
+- **annotations (29) — ABSENT on all 29 (rule 12, deliberate).** 0 files import `net.imagej.*`/`ij.*`; the
+  per-node slot survey shows **zero** image input slots (every input is `JIPipeData` or a non-image
+  reference/table type; the only non-`JIPipeData` input is `AnnotateWithAnnotationTable`'s
+  `AnnotationTableData`). Rule 12's "non-image ⇒ absent" applies to every node → `spatialDimensions`
+  omitted entirely; no `SPATIAL_*` import. `grep -rl "spatialDimensions = " src/main` → **0**.
+- **ij-omero (26) — ABSENT on 25, BOTH on 1 (rule 12).** The 26 nodes' inputs are
+  `OMERO*ReferenceData` (metadata **references** to OMERO image/dataset/project/plate/well/group/screen/
+  annotation objects — **not images**), `ResultsTableData`, and `OMEImageData` (1). `OMERO*ReferenceData`
+  confers **no** spatial (absent-precedent, same as §19.5's filament-graph references and §19.6's
+  path/file references). The **ONE** node with an `OMEImageData` *input* —
+  `UploadOMEROImageToDatasetAlgorithm` (Export/Images, "Uploads an image into an OMERO dataset") — takes
+  an **unconstrained** `OMEImageData` (no `@ImageTypeInfo(numDimensions=…)` on the class) ⇒ **both**
+  (`SPATIAL_2D, SPATIAL_3D`) per rule 12. **Distribution: absent 25 · both 1.** Note the contrast:
+  `DownloadOMEROImageAlgorithm` *outputs* `OMEImageData` but its only *input* is
+  `OMEROImageReferenceData` (a reference) ⇒ **absent** (rule 12 reads the image *input* slot, not the
+  output). So the omero spatial distribution is **absent = 25 · both = 1 · 3D = 0 · 2D = 0** (total 26).
+
+So every converted node's annotation is exactly `@ConfigureJIPipeNode(function = <Leaf>.class)`, or
+`@ConfigureJIPipeNode(function = { Primary.class, SecondaryLeaf.class })` for the one alias-collapse
+(`ConvertToAnnotationTable`), or `@ConfigureJIPipeNode(function = <Leaf>.class, spatialDimensions =
+{ SPATIAL_2D, SPATIAL_3D })` for the one OME-image node. The `function` attribute is never dropped.
+
+**Leaf distribution (primary, all 55):** `AnnotationsEditFunction` **30** (24 annotations + 6 omero) ·
+`MiscDataFunction` **16** (omero only: 7 DataSource + 8 navigate + 1 manage) · `TableDataFunction` **3**
+(2 annotations DataSources + 1 omero DataSource `DownloadOMEROTable`) · `AnnotationsConvertFunction` **2**
+(annotations module) · `ExportFileFormatsFunction` **2** (omero) · `MiscellaneousFunction` **1**
+(annotations `MergeDataSlots`) · `ImageDataFunction` **1** (omero `DownloadOMEROImage`). Total **55**.
+(Precise per-module per-node tables are in (a) and (b).)
+
+---
+
+#### (a) jipipe-plugin-annotations (29)
+
+**JUDGMENT ELEMENT 1 — the 26 `AnnotationsNodeTypeCategory` nodes → the 2-leaf `annotations/` split.**
+The `annotations/` branch has exactly **two** leaves: `AnnotationsEditFunction` ("Editing annotation data"
+— add/modify/remove/filter/reorder the annotation set on data) and `AnnotationsConvertFunction`
+("Converting between annotation types" — a genuine annotation **type**→other-representation conversion).
+Each of the 26 is judged by its **actual operation** (read `@SetJIPipeDocumentation` + slots), NOT by the
+menuPath first segment ("For all data" / "For X" signals the annotation **target**, not the op — per the
+brief). Result: **24 Edit / 2 Convert**.
+
+**`AnnotationsEditFunction` (24)** — the add/set/modify/remove/rename/filter/merge/split/reorder ops
+(the annotation set on the data is edited; the data type is unchanged):
+
+| node (menuPath) | operation (rationale) |
+|---|---|
+| `AnnotateByExpression` (Modify) | **sets/edits** annotation values (expressions); 3 same-leaf aliases dropped (see (e)) |
+| `AnnotateByProjectPaths` (For all data) | **adds** annotations (project paths) |
+| `AnnotateWithAnnotationTable` (For all data) | **merges** matching annotations from an `AnnotationTableData` into the data's annotation set (the table is the *source*, the data's annotations are edited — not a data-type conversion) |
+| `AnnotateWithData` (For all data) | **adds** a data annotation pointing at the other input data |
+| `AnnotateWithDataString` (For all data) | **adds** a string annotation (data→string representation) |
+| `AnnotateWithSourceSlot` (For all data) | **adds** a string annotation (source-slot name/label) |
+| `ExtractAndReplaceAnnotation` (Modify) | **edits** annotation values (extract substrings + replace) |
+| `FilterByAnnotationIfElse` (Filter) | **filters** data by annotation value (If/Else split) |
+| `FilterByAnnotation` (Filter) | **filters** data by annotation value |
+| `GenerateRandomUniqueAnnotation` (For all data) | **adds** a random-unique annotation |
+| `GenerateUniqueAnnotation` (For all data) | **adds** a row-index-unique annotation |
+| `MergeAnnotations` (—) | **merges** the annotation sets of all inputs |
+| `ModifyAnnotationScript` (Modify) | **modifies** annotations via a Python script |
+| `OverwriteAnnotations` (—) | **copies/overwrites** annotations from source→target data |
+| `RemoveAnnotationAlgorithm` (Remove) | **removes** annotations by name/value |
+| `RemoveArrayAnnotationsAlgorithm` (Filter) | **removes** array-valued annotations/columns |
+| `RemoveDataAnnotations` (Remove) | **removes** data annotations by column name |
+| `RemoveNAAnnotationColumnsAlgorithm` (Filter) | **removes** annotation columns with missing values |
+| `RenameAnnotation` (Modify) | **renames** annotations |
+| `RenameDataAnnotation` (Modify) | **renames** data annotations |
+| `SetSingleAnnotation` (Modify) | **sets** a single annotation (expression) |
+| `SimplifyAnnotationsAlgorithm` (—) | **merges** iteration-step annotations into one + renames/deletes the sources (an annotation-set restructure, not a type conversion) |
+| `SplitByAnnotation` (Filter) | **splits/filters** the data by annotation value |
+| `SplitByAnnotationScript` (Filter) | **splits/filters** the data by annotation value (Python) |
+
+**`AnnotationsConvertFunction` (2)** — the two nodes whose operation is a genuine annotation **type →
+other representation** conversion (the annotation *representation* itself changes; the data type is
+unchanged `JIPipeData` in/out):
+
+| node (menuPath) | operation (rationale) |
+|---|---|
+| `DataAnnotationToStringAnnotation` (For all data) | **converts data annotations to string annotations** (data-annotation → text-annotation **type** conversion; the doc is literally "Convert data annotations to a strings and generates a string annotation") |
+| `ExtractDataAnnotation` (—) | **converts a data annotation into the main data** (the doc is "Extracts a data annotation"; its `Annotate with current data` option "the current (main) data is **converted into an annotation** of the specified name") — a data↔annotation **representation** conversion. **Flag (f)** — the strongest Convert candidate is `DataAnnotationToStringAnnotation`; `ExtractDataAnnotation` is the one genuinely debatable (an "extract a column" reading would make it Edit) |
+
+(The 3rd `ConvertToAnnotationTable` is **not** in the 26 Annotations nodes — it is a
+`DataSourceNodeTypeCategory` node, see below; its 2 "Annotations to table" aliases collapse to
+`AnnotationsConvertFunction` as a **secondary**, see (e).)
+
+**The 2 `DataSourceNodeTypeCategory` nodes (output `AnnotationTableData`) → `TableDataFunction` (rule 6 by
+output).** `AnnotationTableData` **is a table** (`extends ResultsTableData`), so rule 6's
+"`JIPipeDataTable` → `TableDataFunction`" applies — the table-**data** leaf in `data/` (NOT a `tables/`
+op leaf, per the §19.7 callout). `MiscDataFunction` (the "annotation-specific, not a generic data table"
+alternative) was rejected: `AnnotationTableData` is literally a `ResultsTableData` subclass, so it is a
+table. Mirrors §19.6 `AnnotationTableToPaths`' input-side and §19.3/§19.7 table producers. **Flag (f)** —
+both are "annotation-specific" tables; `MiscDataFunction` is the alternative if the audit reads
+annotation-tables as outside the generic table-data leaf.
+
+| node | leaf | rationale |
+|---|---|---|
+| `AnnotationTableFromFile` (no menuPath) | `TableDataFunction` | rule 6 by OUTPUT: emits `AnnotationTableData` (a `ResultsTableData` subclass) → the table-data leaf; `FileData` in ⇒ no spatial |
+| `ConvertToAnnotationTable` (no menuPath) | `TableDataFunction` (primary) + `AnnotationsConvertFunction` (secondary) | rule 6 by OUTPUT: emits `AnnotationTableData` → table-data leaf (primary); its 2 "Annotations to table" aliases map to `AnnotationsConvertFunction` (rule 5 / rule 9 best-fit, both the *same* leaf) → **one secondary** (see (e)) |
+
+**The 1 `MiscellaneousNodeTypeCategory` node → `MiscellaneousFunction` (rule 9).**
+
+| node | leaf | rationale |
+|---|---|---|
+| `MergeDataSlots` (no menuPath) | `MiscellaneousFunction` | a **structural** pass-through ("Structural node that indicates that all inputs are merged into a single output … not needed outside structuring the pipeline") — generic `JIPipeData` in/out, no specific leaf (not a graph/compartment wrapper, not a table op) → rule 9 last-resort |
+
+#### (b) jipipe-plugin-ij-omero (26)
+
+**`MiscDataFunction` (16)** — the OMERO **reference**-data producers. `OMERO*ReferenceData` is not a
+table/image/ROI/filament, and there is **NO OMERO data leaf in `data/`** (data/ = ImageData / TableData /
+RoiData / FilamentData / **Misc**). Rule 6 (DataSource by output) and rule 8 (FileSystem by what it
+reads) both fall to `MiscDataFunction`. Spatial **absent** (reference inputs/outputs are not images).
+
+| node (category) | rationale |
+|---|---|
+| `OMERODatasetReferenceDataSource`, `OMEROGroupReferenceDataSource`, `OMEROImageReferenceDataSource`, `OMEROPlateReferenceDataSource`, `OMEROProjectReferenceDataSource`, `OMEROScreenReferenceDataSource`, `OMEROWellReferenceDataSource` (DataSource, "OMERO") | rule 6 by OUTPUT: emit `OMERO*ReferenceData` (metadata refs) → no OMERO data leaf ⇒ `MiscDataFunction`; no image input ⇒ absent |
+| `OMEROListProjects`, `OMEROListDatasets`, `OMEROListGroups`, `OMEROListPlates`, `OMEROListScreens`, `OMEROListWells`, `OMEROListDatasetImages`, `OMEROListWellImages` (FileSystem, "OMERO") | rule 8: list/navigate OMERO objects (ref in → ref out) → `MiscDataFunction`; refs are not images ⇒ absent |
+| `OMEROCreateDataset` (FileSystem, "OMERO") | rule 8: creates a dataset from a project ref (ref in → dataset ref out) → `MiscDataFunction`; refs not images ⇒ absent |
+
+**`TableDataFunction` (1)** — `DownloadOMEROTableAlgorithm` (DataSource, no menuPath): rule 6 by OUTPUT —
+emits `ResultsTableData` ("Imports tables attached to an OMERO image as ImageJ table") → the table-data
+leaf; input `OMEROImageReferenceData` (a ref, not an image) ⇒ **absent**.
+
+**`ImageDataFunction` (1)** — `DownloadOMEROImageAlgorithm` (DataSource, no menuPath): rule 6 by OUTPUT —
+emits **`OMEImageData`** ("Imports an image from OMERO into ImageJ") → the **image-data** leaf (data/ =
+ImageData for images); input `OMEROImageReferenceData` (a ref, **not** an image) ⇒ **spatial absent**
+(rule 12 reads the image *input*; there is none). **Note (f)** — the leaf/spatial split here follows two
+different rules (leaf by image output, spatial by non-image input), mirroring §19.3
+`ExtractRoi2dFromOMEImage`'s documented split.
+
+**`AnnotationsEditFunction` (6)** — the `annotate/` "For OMERO" nodes (JUDGMENT ELEMENT 1 continued).
+Each **adds** OMERO metadata annotations to an `OMERO*ReferenceData` object (ref in → same ref out, now
+annotated) — an annotation **editing/adding** op on the reference (the "For OMERO" segment is the target,
+not the op). None *converts* between annotation types, so `AnnotationsConvertFunction` is **unused** in
+omero. Spatial **absent** (refs are not images). Mirrors §19.3's `AnnotateDataWithImageProperties`/
+`ImagePropertiesToAnnotation` → `AnnotationsEditFunction`.
+
+| node | rationale |
+|---|---|
+| `AnnotateOMEROImageReference` | **adds** OMERO metadata to an image reference |
+| `AnnotateOMERODatasetReference` | **adds** OMERO metadata to a dataset reference |
+| `AnnotateOMEROProjectReference` | **adds** OMERO metadata to a project reference |
+| `AnnotateOMEROPlateReference` | **adds** OMERO metadata to a plate reference |
+| `AnnotateOMEROWellReference` | **adds** OMERO metadata to a well reference |
+| `AnnotateOMEROScreenReference` | **adds** OMERO metadata to a screen reference |
+
+**`ExportFileFormatsFunction` (2)** — rule 7 (Export category).
+
+| node (menuPath) | leaf | spatial | rationale |
+|---|---|---|---|
+| `UploadOMEROImageToDataset` (Images) | `ExportFileFormatsFunction` | **both** | **the one OME-image node.** Uploads an `OMEImageData` into an OMERO dataset (ref in + **`OMEImageData` input** → image ref out). It is in the **Export** category (rule 7 → the export file-format leaf, NOT the images/ processing leaves); it is not a ZIP/archive ⇒ not `ExportArchiveFunction`. First image *input* = unconstrained `OMEImageData` ⇒ **both** (rule 12). (A "put data into OMERO" reading makes it export-flavored; see (f).) |
+| `UploadOMEROTable` (Tables) | `ExportFileFormatsFunction` | absent | attaches a `ResultsTableData` to an OMERO image (table + ref in → annotation ref out); Export category ⇒ rule 7 file-format leaf; inputs are table + ref (no image) ⇒ **absent** |
+
+**omero function tally:** `AnnotationsEditFunction` 6 · `MiscDataFunction` 16 · `TableDataFunction` 1 ·
+`ImageDataFunction` 1 · `ExportFileFormatsFunction` 2 = **26**. Spatial: absent 25 · both 1.
+
+#### (c) The 26-node annotations/ Edit-vs-Convert split — summary (JUDGMENT ELEMENT 1)
+
+- **`AnnotationsEditFunction`: 24** (annotations module) + **6** (omero) = **30 total** — every
+  add/set/modify/remove/rename/filter/merge/split/copy op on the annotation set.
+- **`AnnotationsConvertFunction`: 2** (annotations module: `DataAnnotationToStringAnnotation`,
+  `ExtractDataAnnotation`) — the only two nodes that change an annotation's **type/representation**
+  (data-annotation→string-annotation; data-annotation↔main-data). No omero node converts between
+  annotation types.
+- **Debatable (flagged, not fixed):** `ExtractDataAnnotation` (see (f)) — "extract a data annotation into
+  the main data" is the borderline case; a "column-extract = Edit" reading would move it to
+  `AnnotationsEditFunction` (→ 25 Edit / 1 Convert). `DataAnnotationToStringAnnotation` is the
+  unambiguous Convert (its doc is a type conversion). The 24 Edit nodes are unambiguous (all are
+  add/modify/remove/filter/rename/merge on the annotation set with the data type unchanged).
+
+#### (d) The 2 DataSource leaf choice (annotations)
+
+Both `DataSourceNodeTypeCategory` nodes output `AnnotationTableData` (a `ResultsTableData` subclass) →
+**`TableDataFunction`** (rule 6 by output; the table-**data** leaf in `data/`). `MiscDataFunction` (the
+"annotation-specific, not a generic table" alternative) was rejected because `AnnotationTableData` is
+literally a table. **Flagged (f)** for Phase 3 (both are annotation-flavored tables).
+
+#### (e) Aliases (5 references) — 3 dropped, 2 → collapse to 1 secondary `function[]` (primary-first)
+
+Per the A/B/C protocol: map the alias's old category+menuPath to a leaf by the same rules; alias-leaf ==
+primary-leaf → drop, else add as a **secondary** `function[]` entry (primary first).
+
+| node (primary leaf) | alias (old category / menuPath) | alias leaf | action |
+|---|---|---|---|
+| `AnnotateByExpression` (AnnotationsEdit) | (default `InternalNodeTypeCategory`) / "Set annotations" | `AnnotationsEditFunction` (rule 5, set/modify) | **drop** (== primary) |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Modify annotations" | `AnnotationsEditFunction` | **drop** (== primary) |
+| `AnnotateByExpression` (AnnotationsEdit) | (default) / "Edit annotations" | `AnnotationsEditFunction` | **drop** (== primary) |
+| `ConvertToAnnotationTable` (TableData) | `AnnotationsNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 5: a genuine annotation→table **conversion**) | **add secondary** |
+| `ConvertToAnnotationTable` (TableData) | `MiscellaneousNodeTypeCategory` / "Annotations to table" | `AnnotationsConvertFunction` (rule 9 best-fit: the op is a conversion, not the Miscellaneous last-resort) | **collapses to the same secondary** |
+
+The two `ConvertToAnnotationTable` aliases are **both** named "Annotations to table" and both map to
+`AnnotationsConvertFunction` (the Annotations alias by rule 5; the Miscellaneous alias by rule 9's
+best-fit, since the operation is a conversion — the `MiscellaneousFunction` last-resort does *not* apply
+to a recognizable conversion op). They therefore collapse to **one** secondary:
+`@ConfigureJIPipeNode(function = { TableDataFunction.class, AnnotationsConvertFunction.class })`
+(primary-first, per the §19.2/19.5/19.6/19.7 precedent). **3 dropped, 1 secondary `function[]` entry**
+(`ConvertToAnnotationTable` — the only multi-`function` node in this batch).
+
+#### (f) Flagged for Phase 3 audit
+
+- **`ExtractDataAnnotation` → `AnnotationsConvertFunction`** (the borderline Convert). "Extracts a data
+  annotation" + "the current (main) data is **converted into an annotation**" reads as a
+  data↔annotation **representation** conversion (Convert); a "extract a column" reading would make it
+  `AnnotationsEditFunction`. This is the one genuinely debatable node in the 26-way split — if the audit
+  flips it, the split becomes 25 Edit / 1 Convert.
+- **`AnnotateWithAnnotationTable` → `AnnotationsEditFunction`.** It consumes an `AnnotationTableData`
+  input (annotation *source*), which superficially resembles "table→annotations". But its operation is to
+  **merge** matching annotations *into the data's annotation set* (the table is the source; the data is
+  the target) — an annotation **edit**, not a data-type conversion. Kept Edit; `AnnotationsConvertFunction`
+  is the alternative if "annotation-table → annotations" is read as a type conversion.
+- **The 2 annotations DataSources (`AnnotationTableFromFile`, `ConvertToAnnotationTable` primary) →
+  `TableDataFunction`.** Both emit `AnnotationTableData` (a `ResultsTableData` subclass) → the table-data
+  leaf by output (rule 6). `MiscDataFunction` is the alternative if the audit treats annotation-tables as
+  outside the generic table-data leaf (they are "annotation-specific").
+- **`DownloadOMEROImageAlgorithm` → `ImageDataFunction`, spatial **absent**.** Leaf by its image OUTPUT
+  (rule 6); spatial by its non-image INPUT (a reference) — the two rules point differently here
+  (absent), mirroring §19.3 `ExtractRoi2dFromOMEImage`'s documented leaf/spatial split.
+- **`UploadOMEROImageToDatasetAlgorithm` → `ExportFileFormatsFunction` (both).** It is in the **Export**
+  category, so rule 7 gives the export file-format leaf. A "put data into OMERO" (an external store)
+  reading is export-flavored (kept); if the audit reads it as OMERO-side data management rather than a
+  file-format export, `MiscDataFunction` is a weaker alternative. Its spatial is **both** (the only
+  omero node with an image input — the unconstrained `OMEImageData`), per rule 12.
+- **omero `OMERO*ReferenceData` producers → `MiscDataFunction` (16 nodes).** No OMERO data leaf exists in
+  `data/`; the references fall to the Misc data leaf (rules 6/8). If the audit adds an OMERO/external-
+  object data leaf in Phase 3, these 16 would move.
+- **ij-omero `OMERO*ReferenceData` is not an image (spatial absent on 25/26).** Settled for this task
+  (rule 12: non-image ⇒ absent); consistent with §19.5's filament-graph and §19.6's path/file reference
+  precedent. Phase 3 should confirm spatial never extends to OMERO reference types.
+
+#### (g) Test infrastructure + gate results
+
+Both modules had **no `src/test` and no JUnit deps** (first test in each). For EACH (mirror §19.6 / the
+`jipipe-plugin-ij`/`-ij-3d`/`-ij-filaments`/`-tables`/`-forms` pom verbatim):
+- **`pom.xml`**: added `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) — inserted before `</dependencies>` (annotations: after the `jipipe-core` dependency;
+  ij-omero: after the `com.zeroc:glacier2` dependency).
+- Copied `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/TaxonomyConversionReportTest.java`
+  → `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/` (**byte-identical**,
+  verified with `cmp` for both).
+- Created `plugins/jipipe-plugin-<m>/src/test/java/org/hkijena/jipipe/plugins/<pkg>/
+  ImageJLegacyPatcherLauncherSessionListener.java` (module-scoped: annotations→`…plugins.annotation`,
+  ij-omero→`…plugins.omero`; `LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header, Javadoc
+  mirroring §19.6; the ij-omero Javadoc additionally cites the module's `ij.ImagePlus` touchpoint) +
+  `plugins/jipipe-plugin-<m>/src/test/resources/META-INF/services/org.junit.platform.launcher.LauncherSessionListener`
+  (single line = that module's listener FQCN).
+
+**Why the listener is needed:** the gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context. A
+module's test classpath does not include jipipe-core's test classes, so core's
+`ImageJLegacyPatcherLauncherSessionListener` is not on the classpath; without re-registering the patcher,
+any `ij.*` class loaded before the context is created makes the ImageJ2 legacy patcher
+(`net.imagej.patcher.LegacyInjector`) fail (`No _hooks field found in ij.IJ`), an order-dependent failure
+(AGENTS.md patcher contract). `net.imagej.patcher.LegacyInjector` is on the test classpath transitively
+via jipipe-core → `net.imagej:imagej`. The ij-omero gate in particular initializes the OMERO importer
+(which wraps `ij.ImagePlus` via loci Bio-Formats), so the patcher must run first.
+
+**Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-annotations,plugins/jipipe-plugin-ij-omero -am`
+→ **exit 0** (both in one reactor; host mvn).
+
+**Stale `~/.m2` jar (the *core* gotcha was NOT hit).** The installed `jipipe-core` SNAPSHOT jar is
+**2026-10-10 03:52** (after the §19.1 core conversion commit `910aa020d6` (2026-10-09 21:07)) — **fresh**
+(it contains the 74 taxonomy function classes and the converted core nodes), so no pre-19.1 core node
+surfaced as unassigned in either prefix (the §19.6 stale-core condition did not recur). The gate prefix
+filter (`org.hkijena.jipipe.plugins.annotation` / `…omero`) does **not** cover any core package
+(`org.hkijena.jipipe.plugins.filesystem.datasources`, etc.), so even a stale core jar could not inflate the
+prefix-filtered failure set. Stale *dependency* jars only inflate the informational global "N nodes not yet
+assigned" line (see below) — no fix needed. No `mvn install` was run.
+
+**Gate (enabled), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0`, zero unassigned
+in the module prefix:**
+- **annotations:** `mvn test -pl plugins/jipipe-plugin-annotations -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.annotation` → **Tests run: 1, Failures: 0,
+  Errors: 0, Skipped: 0**, log line `JIPipeNodesServiceComponent | Node taxonomy validation passed`
+  (zero unassigned, zero errors).
+- **ij-omero:** `mvn test -pl plugins/jipipe-plugin-ij-omero -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.omero` → **Tests run: 1, Failures: 0,
+  Errors: 0, Skipped: 0**, **zero unassigned in the `…omero` prefix**. The log line
+  `JIPipeNodesServiceComponent | Node taxonomy: 116 nodes not yet assigned a taxonomy function — expected
+  during conversion` is the **global** count across all on-classpath modules (the unconverted cellpose /
+  trackmate / weka / ilastik / omnipose / clij / ij2 / ocr / plots / multi-template-matching / python /
+  r / imp / scene-3d / opencv … modules + stale dependency jars); **none** are under the
+  `org.hkijena.jipipe.plugins.omero` prefix, so the prefix-filtered assertion saw **zero** and passed
+  (same shape as §19.3/19.4/19.5/19.6/19.7). The annotations classpath happens to have no unconverted
+  on-classpath module, so it reported a clean "validation passed" with no global count line.
+
+**Gate (unset), both → BUILD SUCCESS, `Tests run: 1, Failures: 0, Errors: 0, Skipped: 1`** — the gate
+**skips cleanly** (property unset), no `_hooks`/`LinkageError` patcher failure (listener works).
+
+**Transition note understood:** the 55 converted nodes now fall back to `InternalNodeTypeCategory` via
+`getCategoryOf(nodeClass)` (`isVisibleInPipeline` false), so they are absent from the *old* add-node
+panel's category buttons until Task 24 swaps in the new taxonomy browser. Intended (6.0.0 breaking,
+unmerged branch). No `menuPath`/`nodeTypeCategory` was kept to "fix" the old panel.
+
+**Byte-identity check (reviewer contract):** all 55 node files are byte-identical to base after stripping
+`import …;` lines and the `@ConfigureJIPipeNode(…)` / `@AddJIPipeNodeAlias(…)` lines (verified by a
+line-filter diff across `git show HEAD:<f>` vs head — 55 files, 0 non-annotation changes) — the change is
+annotations-only.
