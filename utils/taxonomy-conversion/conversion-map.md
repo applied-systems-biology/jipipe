@@ -3356,12 +3356,18 @@ This is the **only** non-`@ConfigureJIPipeNode` annotation added in this batch. 
 a *start step* (`after = {}`) — if the audit later wants it chained after a "load table" step or
 replaced by the dynamic `PlotTables2` variants, the `after()`/step membership should be re-decided then.
 
-**Alias (1) — DROPPED (alias-leaf == primary-leaf):** `PlotTablesAlgorithm`'s
+**Alias (1) — KEPT as a primary-first secondary:** `PlotTablesAlgorithm`'s
 `@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze",
-aliasName = "Plot (JFreeChart)")`. Its leaf is the plotting branch (the node plots), identical to the
-primary `PlotMiscFunction` ⇒ **dropped; no secondary `function[]`** (same shape as §19.3/§19.11a alias
-drops where the alias re-lists the same op). Verified `grep "@AddJIPipeNodeAlias" src/main` → 0.
-(clij + ij2 have **0** aliases.)
+aliasName = "Plot (JFreeChart)")`. Per the alias protocol (the alias's *menuPath* drives the secondary
+leaf, **not** the node's primary op), menuPath `"Analyze"` → `MeasurementsFunction` (the §19.2
+`Images/Analyze`→`MeasurementsFunction` rule, cf. the 19.11c `MultiTemplateMatching` precedent), which
+is **distinct** from the primary `PlotMiscFunction` ⇒ kept as the primary-first secondary
+`function = { PlotMiscFunction.class, MeasurementsFunction.class }` (controller fix, applied to the code
+before the implementer's background commit landed). **Flagged (Minor):** if the audit reads the IJ
+"Analyze" re-listing of a *plotting* node as a menu artifact rather than a measurements op, the
+secondary is dropped (mechanical one-line change). Verified `grep "@AddJIPipeNodeAlias" src/main` → 0
+(the alias annotation is removed; the secondary lives in `@ConfigureJIPipeNode`). (clij + ij2 have
+**0** aliases.)
 
 #### (d) The 3 DYNAMIC NodeInfo records (19.10 accessor treatment — accessor-ONLY, no logic change)
 
