@@ -1182,21 +1182,8 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 menuLabel.setText(menuPath);
 
                 alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
-                if (info.getAliases().isEmpty()) {
-                    alternativeLabel.setText("");
-                } else {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append("Alias: ");
-                    List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
-                    for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                        if (i > 0) {
-                            builder.append(", ");
-                        }
-                        JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
-                        builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n"))).append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
-                    }
-                    alternativeLabel.setText(builder.toString());
-                }
+                // Task 26a: alias rows removed (converted nodes have no aliases).
+                alternativeLabel.setText("");
 
             } else if (value instanceof JIPipeDesktopGraphNodeUI) {
                 JIPipeGraphNode node = ((JIPipeDesktopGraphNodeUI) value).getNode();

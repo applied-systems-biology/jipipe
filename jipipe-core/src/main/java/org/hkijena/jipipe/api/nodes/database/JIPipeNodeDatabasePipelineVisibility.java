@@ -30,6 +30,28 @@ public enum JIPipeNodeDatabasePipelineVisibility {
         }
     }
 
+    /**
+     * The taxonomy replacement for {@link #fromCategory(JIPipeNodeTypeCategory)}.
+     * Takes the node's two visibility behavior flags (see
+     * {@code TaxonomyView.behaviorFlags}) directly, so it works for converted
+     * nodes whose legacy category is the generic {@code Internal} category
+     * (whose flags are wrong). Uses the identical 3-value logic as
+     * {@link #fromCategory}.
+     *
+     * @param visibleInPipeline    whether the node is visible in the pipeline editor
+     * @param visibleInCompartments whether the node is visible in the compartment editor
+     * @return the corresponding visibility constant
+     */
+    public static JIPipeNodeDatabasePipelineVisibility fromFlags(boolean visibleInPipeline, boolean visibleInCompartments) {
+        if (visibleInPipeline && visibleInCompartments) {
+            return Both;
+        } else if (visibleInCompartments) {
+            return Compartments;
+        } else {
+            return Pipeline;
+        }
+    }
+
     public boolean matches(JIPipeNodeDatabasePipelineVisibility other) {
         if (this == Both || other == Both) {
             return true;

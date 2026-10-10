@@ -20,11 +20,10 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
 import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
             // Add creation of nodes by info
             for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
                 JIPipeNodeInfo nodeInfo = entry.getValue();
-                if (nodeInfo.isHidden() || nodeInfo.getCategory() instanceof InternalNodeTypeCategory) {
+                if (nodeInfo.isHidden() || TaxonomyView.isUnderFunction(nodeInfo, GraphFunction.class)) {
                     continue;
                 }
                 {
@@ -70,17 +69,6 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
                     CreateNewNodeByExampleDatabaseEntry newEntry = new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + entry.getKey() + ":[" + i + "]", example);
                     newEntries.add(newEntry);
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
-                }
-                // Add node alias creation
-                List<JIPipeNodeMenuLocation> aliases = nodeInfo.getAliases();
-                for (int i = 0; i < aliases.size(); i++) {
-                    JIPipeNodeMenuLocation alias = aliases.get(i);
-                    if (!StringUtils.isNullOrEmpty(alias.getAlternativeName())) {
-                        // Add as alias if name is different
-                        CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
-                        newEntries.add(newEntry);
-                        CACHED_GLOBAL_ENTRIES.add(newEntry);
-                    }
                 }
             }
 

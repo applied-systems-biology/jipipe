@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ExportFunction;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeGraphRun;
 import org.hkijena.jipipe.api.run.JIPipeGraphRunConfiguration;
@@ -157,7 +158,7 @@ public class JIPipeDesktopCustomRunSettingsUI extends JIPipeDesktopProjectWorkbe
 
         messagePanel.addMessage(JIPipeDesktopMessagePanel.MessageType.Success, "Please review the settings on the left-hand side. Then proceed to click the following button.", false, false, runButton);
 
-        boolean containsExporterNodes = getDesktopProjectWorkbench().getProject().getGraph().getGraphNodes().stream().anyMatch(node -> node.getInfo().getCategory() instanceof ExportNodeTypeCategory);
+        boolean containsExporterNodes = getDesktopProjectWorkbench().getProject().getGraph().getGraphNodes().stream().anyMatch(node -> TaxonomyView.isUnderFunction(node.getInfo(), ExportFunction.class));
         if (containsExporterNodes) {
             JButton configureButton = new JButton("Only node-based export");
             configureButton.addActionListener(e -> {

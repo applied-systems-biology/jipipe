@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+
 import org.hkijena.jipipe.api.nodes.taxonomy.*;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
@@ -35,7 +35,6 @@ import org.hkijena.jipipe.api.validation.*;
 import javax.swing.*;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * Manages known algorithms and their annotations
@@ -176,7 +175,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     public <T extends JIPipeData> Set<JIPipeNodeInfo> getMenuDataSourcesFor(Class<? extends T> dataClass) {
         Set<JIPipeNodeInfo> result = new HashSet<>();
         for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
-            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+            if (TaxonomyView.isDataSource(info)) {
                 if (info.getDataSourceMenuLocation() == dataClass) {
                     result.add(info);
                 } else if (info.getDataSourceMenuLocation() == JIPipeEmptyData.class) {
@@ -187,26 +186,6 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
             }
         }
         return result;
-    }
-
-    /**
-     * Gets all algorithms of specified category
-     *
-     * @param category             The category
-     * @param includingAlternative if alternative categorizations should be included (from alternative menu paths)
-     * @return Algorithms within the specified category
-     */
-    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category, boolean includingAlternative) {
-        return registeredNodeInfos.values().stream().filter(d -> {
-            if (includingAlternative) {
-                for (JIPipeNodeMenuLocation location : d.getAliases()) {
-                    if (Objects.equals(location.getCategory().getId(), category.getId())) {
-                        return true;
-                    }
-                }
-            }
-            return Objects.equals(d.getCategory().getId(), category.getId());
-        }).collect(Collectors.toSet());
     }
 
     /**
@@ -358,7 +337,7 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
         ImageIcon icon = iconInstances.getOrDefault(info, null);
         if (icon == null) {
             ImageIcon defaultIcon;
-            if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
+            if (TaxonomyView.isDataSource(info)) {
                 if (!info.getOutputSlots().isEmpty()) {
                     defaultIcon = JIPipe.getDataTypes().getIconFor(info.getOutputSlots().get(0).value());
                 } else {

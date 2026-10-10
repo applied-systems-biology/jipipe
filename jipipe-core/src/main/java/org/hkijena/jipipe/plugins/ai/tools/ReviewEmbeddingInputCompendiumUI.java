@@ -16,14 +16,14 @@ package org.hkijena.jipipe.plugins.ai.tools;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.embeddings.JIPipeEmbeddingDatabase;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopCompendiumUI;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.Comparator;
@@ -50,12 +50,14 @@ public class ReviewEmbeddingInputCompendiumUI extends JIPipeDesktopCompendiumUI<
 
     @Override
     protected List<JIPipeNodeInfo> getFilteredItems() {
+        // Task 26a: search over name + description + secondary function names
+        // (the alias/menu-path terms are gone).
         Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(
                 info.getName() + " " +
-                        info.getAliases().stream()
-                                .map(location -> location.getCategory().getName() + location.getMenuPath() + location.getAlternativeName())
+                        info.getSecondaryFunctions().stream()
+                                .map(JIPipeNodeTaxonomyFunction::getName)
                                 .collect(Collectors.joining(" ")) +
-                        " " + info.getDescription() + " " + info.getMenuPath());
+                        " " + info.getDescription());
 
         return JIPipe.getNodes().getRegisteredNodeInfos().values().stream()
                 .filter(filterFunction)
@@ -81,22 +83,9 @@ public class ReviewEmbeddingInputCompendiumUI extends JIPipeDesktopCompendiumUI<
         builder.append("<tr><td><strong>Node ID</strong></td><td><code>")
                 .append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
         builder.append("<tr><td><strong>Category</strong></td><td>")
-                .append(HtmlEscapers.htmlEscaper().escape(info.getCategory().getName())).append("</td></tr>");
-        builder.append("<tr><td><strong>Menu path</strong></td><td>")
-                .append(HtmlEscapers.htmlEscaper().escape(info.getMenuPath())).append("</td></tr>");
-
-        // Aliases
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<tr><td><strong>Aliases</strong></td><td>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append(HtmlEscapers.htmlEscaper().escape(
-                        location.getCategory().getName() + " > " +
-                                String.join(" > ", location.getMenuPath().split("\n")) +
-                                " > " + StringUtils.orElse(location.getAlternativeName(), info.getName())));
-                builder.append("<br/>");
-            }
-            builder.append("</td></tr>");
-        }
+                .append(HtmlEscapers.htmlEscaper().escape(TaxonomyView.functionDisplayName(info))).append("</td></tr>");
+        builder.append("<tr><td><strong>Location</strong></td><td>")
+                .append(HtmlEscapers.htmlEscaper().escape(TaxonomyView.locationPath(info))).append("</td></tr>");
 
         builder.append("</table>\n\n");
 

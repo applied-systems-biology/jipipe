@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -87,11 +88,54 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
         entry.setTags(nodeInfo.getMergedTags());
     }
 
+    /**
+     * Populates {@link #locationInfos} from the node's taxonomy (Task 26a).
+     * <p>
+     * The primary function contributes the function chain root→leaf,
+     * {@code \n}-joined, no node name — e.g. {@code "Data Sources\nImage data"}.
+     * The 21b node-finder + entry-list renderers do {@code .replace("\n", " > ")},
+     * and the search/embedding consume the raw form. Secondary functions each
+     * contribute their own chain (they replace the removed alias location
+     * entries). A node with no primary function contributes nothing — it
+     * should not exist post-conversion; do NOT read the legacy category.
+     */
     private void initializeLocationInfos() {
-        locationInfos.add((nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath()).trim());
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
+        JIPipeNodeTaxonomyFunction primary = nodeInfo.getPrimaryFunction();
+        if (primary != null) {
+            locationInfos.add(functionChainLocation(primary));
         }
+        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+            if (secondary != null) {
+                locationInfos.add(functionChainLocation(secondary));
+            }
+        }
+    }
+
+    /**
+     * The {@code \n}-joined function chain (root→leaf) for the given leaf
+     * function, e.g. {@code "Data Sources\nImage data"}. Guards against a
+     * cyclic parent chain so it always terminates.
+     *
+     * @param leaf the leaf function to start the chain from
+     * @return the root→leaf chain joined by {@code \n}; never null
+     */
+    static String functionChainLocation(JIPipeNodeTaxonomyFunction leaf) {
+        List<String> names = new ArrayList<>();
+        Set<String> visited = new LinkedHashSet<>();
+        JIPipeNodeTaxonomyFunction current = leaf;
+        while (current != null && visited.add(current.getId())) {
+            names.add(current.getName());
+            current = current.getParent();
+        }
+        // names is leaf→root; emit root→leaf.
+        StringBuilder sb = new StringBuilder();
+        for (int i = names.size() - 1; i >= 0; i--) {
+            if (i < names.size() - 1) {
+                sb.append("\n");
+            }
+            sb.append(names.get(i));
+        }
+        return sb.toString();
     }
 
     private void initializeSlots() {
@@ -115,9 +159,6 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
 
     private void initializeTokens() {
         tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_NAME);
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
-        }
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         // Task 18: feed the new taxonomy into the search tokens ADDITIVELY.
         // For unconverted nodes (no function, NoFramework, no tags) this
@@ -196,7 +237,8 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
 
     @Override
     public JIPipeNodeDatabasePipelineVisibility getVisibility() {
-        return JIPipeNodeDatabasePipelineVisibility.fromCategory(nodeInfo.getCategory());
+        TaxonomyView.BehaviorFlags flags = TaxonomyView.behaviorFlags(nodeInfo);
+        return JIPipeNodeDatabasePipelineVisibility.fromFlags(flags.isVisibleInPipeline(), flags.isVisibleInCompartments());
     }
 
     @Override

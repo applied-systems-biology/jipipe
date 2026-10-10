@@ -21,11 +21,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.InputProfileProvider;
@@ -87,7 +85,6 @@ class TokenTaxonomyTest {
 
     private static final String CONVERTED_ID = "tokentax:converted-cell-segmenter";
     private static final String UNCONVERTED_ID = "tokentax:unconverted-legacy";
-    private static final String CONVERTED_ALIAS_ID = CONVERTED_ID + ":alias-0";
 
     private static final JIPipeMutableDependency TEST_DEPENDENCY =
         new JIPipeMutableDependency("token-taxonomy-test", "1.0.0", "token-taxonomy-test");
@@ -229,23 +226,6 @@ class TokenTaxonomyTest {
             assertFalse(tokens.contains(profile.name().toLowerCase(Locale.ROOT)),
                 "input profile '" + profile + "' must not be a search token");
         }
-
-        // --- The alias entry (dual-read) carries the same taxonomy tokens ---
-        CreateNewNodeByInfoAliasDatabaseEntry alias =
-            new CreateNewNodeByInfoAliasDatabaseEntry(CONVERTED_ALIAS_ID, info, info.getAliases().get(0));
-        WeightedTokens aliasTokens = alias.getTokens();
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(aliasTokens, "cell-based"));
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_LEAF), tokenWeights(aliasTokens, "roi"));
-        assertFalse(aliasTokens.contains("rois"),
-            "the alias entry must not walk the secondary ancestor chain either");
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FUNCTION_TOP), tokenWeights(aliasTokens, "images"));
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FRAMEWORK), tokenWeights(aliasTokens, "cellpose"));
-        assertEquals(Set.of(WeightedTokens.WEIGHT_FRAMEWORK_ABBREV), tokenWeights(aliasTokens, "cp4"));
-        assertEquals(Set.of(WeightedTokens.WEIGHT_TAG), tokenWeights(aliasTokens, "cell-segmentation"));
-        assertTrue(tokenWeights(aliasTokens, "segment").contains(WeightedTokens.WEIGHT_NAME),
-            "the alias entry must keep the node name token at WEIGHT_NAME");
-        assertEquals(Set.of(WeightedTokens.WEIGHT_NAME), tokenWeights(aliasTokens, "alt"),
-            "the alias entry must keep the alternative name token at WEIGHT_NAME");
     }
 
     /**
@@ -377,8 +357,6 @@ class TokenTaxonomyTest {
         nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
     @JIPipeNodeTaxonomyTags("cells")
     @AddJIPipeInputSlot(value = JIPipeEmptyData.class)
-    @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class,
-        menuPath = "alt/cells", aliasName = "Cell Segmenter Alt")
     public static class ConvertedCellSegmenterNode extends JIPipeGraphNode {
         public ConvertedCellSegmenterNode(JIPipeNodeInfo info) {
             super(info);

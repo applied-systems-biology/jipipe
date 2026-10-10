@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -52,7 +53,10 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
 
     @Override
     protected List<JIPipeNodeInfo> getFilteredItems() {
-        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getAliases().stream().map(location -> location.getCategory().getName() + location.getMenuPath() + location.getAlternativeName()).collect(Collectors.joining(" ")) + " " + info.getDescription() + " " + info.getMenuPath());
+        // Task 26a: search over name + description + secondary function names
+        // (the alias/menu-path terms are gone; secondary functions carry the
+        // alternate-location search terms).
+        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getSecondaryFunctions().stream().map(JIPipeNodeTaxonomyFunction::getName).collect(Collectors.joining(" ")));
 
         return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
@@ -68,13 +72,7 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<p>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
-            }
-            builder.append("</p><br/>\n\n");
-        }
+        // Task 26a: alias rows removed (converted nodes have no aliases).
 
         // Write description
         String description = info.getDescription().getBody();

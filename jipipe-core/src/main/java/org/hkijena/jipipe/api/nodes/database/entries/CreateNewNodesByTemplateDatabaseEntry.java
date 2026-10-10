@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -34,7 +35,7 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         // Find visibility
         boolean foundPipelineOnly = false;
         for (JIPipeGraphNode graphNode : template.getGraph().getGraphNodes()) {
-            if (!graphNode.getInfo().getCategory().isVisibleInCompartments()) {
+            if (!TaxonomyView.behaviorFlags(graphNode.getInfo()).isVisibleInCompartments()) {
                 foundPipelineOnly = true;
             }
         }

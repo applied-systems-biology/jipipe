@@ -19,7 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
@@ -63,14 +63,14 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
 
     public static Map<String, Set<JIPipeNodeTemplate>> groupByMenuPaths(Collection<JIPipeNodeTemplate> infos) {
         Map<String, Set<JIPipeNodeTemplate>> result = new HashMap<>();
-        for (JIPipeNodeTemplate info : infos) {
-            String menuPath = String.join("\n", info.getMenuPath());
+        for (JIPipeNodeTemplate template : infos) {
+            String menuPath = String.join("\n", template.getMenuPath());
             Set<JIPipeNodeTemplate> group = result.getOrDefault(menuPath, null);
             if (group == null) {
                 group = new HashSet<>();
                 result.put(menuPath, group);
             }
-            group.add(info);
+            group.add(template);
         }
         return result;
     }
@@ -82,7 +82,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
             JIPipeGraphNode node = algorithms.iterator().next();
             template.setName(node.getName());
             URL url = JIPipe.getNodes().getIconURLFor(node.getInfo());
-            if (node.getInfo().getCategory() instanceof DataSourceNodeTypeCategory) {
+            if (TaxonomyView.isDataSource(node.getInfo())) {
                 if (!node.getOutputSlots().isEmpty()) {
                     url = JIPipe.getDataTypes().getIconURLFor(JIPipeDataInfo.getInstance(node.getOutputSlots().get(0).getAcceptedDataType()));
                 }

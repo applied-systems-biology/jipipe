@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamily;
@@ -580,9 +579,6 @@ public class NodeFinderDetailRail extends JPanel {
     private static JIPipeNodeInfo entryNodeInfo(JIPipeNodeDatabaseEntry entry) {
         if (entry instanceof CreateNewNodeByInfoDatabaseEntry byInfo) {
             return byInfo.getNodeInfo();
-        }
-        if (entry instanceof CreateNewNodeByInfoAliasDatabaseEntry alias) {
-            return alias.getNodeInfo();
         }
         return null;
     }

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -155,6 +156,51 @@ public final class TaxonomyView {
         // Null category: safe defaults mirroring the interface defaults
         // (canExtract/isRunnable true) + permissive visibility (true).
         return new BehaviorFlags(true, true, true, true);
+    }
+
+    /**
+     * Whether the node's primary function (or one of its ancestors) IS the
+     * given top-level function branch — the taxonomy replacement for the
+     * legacy "category is an instance of &lt;Category&gt;" checks.
+     * <p>
+     * Walks the primary function's {@link JIPipeNodeTaxonomyFunction#getParent()
+     * parent} chain up to the root, so a branch counts when it is the leaf
+     * itself or any ancestor. A node with no primary function (unconverted,
+     * or a defensive null) is never under any branch.
+     *
+     * @param info   the node info
+     * @param branch the top-level function branch class to test for
+     * @return {@code true} if the primary function's chain reaches a function
+     * of the given branch class
+     */
+    public static boolean isUnderFunction(JIPipeNodeInfo info, Class<? extends JIPipeNodeTaxonomyFunction> branch) {
+        JIPipeNodeTaxonomyFunction fn = info.getPrimaryFunction();
+        while (fn != null) {
+            if (branch.isInstance(fn)) {
+                return true;
+            }
+            fn = fn.getParent();
+        }
+        return false;
+    }
+
+    /**
+     * The data-source signal post-taxonomy: a node under the
+     * {@link DataSourcesFunction} branch.
+     * <p>
+     * Replaces the legacy "category is an instance of
+     * DataSourceNodeTypeCategory" check, which broke for converted nodes
+     * (their legacy category is the generic {@code Internal} category, so
+     * the {@code instanceof} is false). The
+     * {@code @ConfigureJIPipeNode.dataSourceMenuLocation()} data type is a
+     * separate, per-type grouping signal and is unaffected.
+     *
+     * @param info the node info
+     * @return {@code true} if the node's primary function chain reaches the
+     * {@link DataSourcesFunction} branch
+     */
+    public static boolean isDataSource(JIPipeNodeInfo info) {
+        return isUnderFunction(info, DataSourcesFunction.class);
     }
 
     /**

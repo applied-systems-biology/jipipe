@@ -15,13 +15,11 @@ package org.hkijena.jipipe.api.nodes.database;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
-import org.hkijena.jipipe.api.nodes.AddJIPipeNodeAlias;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewCompartmentNodeDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
@@ -58,7 +56,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * (detect → track → filter), plus same-framework, shared-tag,
  * auto-import, and tagless siblings. The database is built directly from
  * {@link JIPipeNodeInfo}s via
- * {@link CreateNewNodeByInfoDatabaseEntry}/{@link CreateNewNodeByInfoAliasDatabaseEntry}
+ * {@link CreateNewNodeByInfoDatabaseEntry}
  * and {@link JIPipeNodeDatabase#setEntries(List)}, bypassing the full
  * {@code JIPipeNodeDatabaseBuilderRun} (whose global entry cache would
  * otherwise leak synthetic entries into later tests); the entry
@@ -85,7 +83,6 @@ class NodeDatabaseTaxonomyTest {
     private static final String SHARED_TAG_2 = "nodbtax:shared-tag-2";
     private static final String AUTO_IMPORT_ID = "nodbtax:auto-import";
     private static final String NO_TAGS_ID = "nodbtax:no-tags";
-    private static final String SPOT_DETECT_ALIAS_ID = SPOT_DETECT_ID + ":alias-0";
 
     @BeforeAll
     static void ensureJIPipe() {
@@ -150,27 +147,23 @@ class NodeDatabaseTaxonomyTest {
     }
 
     /**
-     * The "create node by info alias" entry carries the same facets as the
-     * base entry (same node, same taxonomy), and both entries expose the
-     * origin node id; entries that do not wrap a node type expose {@code null}.
+     * The "create node by info" entry exposes the origin node id; entries
+     * that do not wrap a node type (compartment entries) expose
+     * {@code null}.
+     * <p>
+     * Task 26a: the "create node by info alias" entry (and its
+     * menu-location-backed alias data) was removed — aliases
+     * became secondary functions, which the base entry already carries.
      */
     @Test
-    void aliasEntryCarriesSameFacetsAndOriginNodeId() {
+    void baseEntryExposesOriginNodeId() {
         registerNodes();
 
         JIPipeNodeInfo detectInfo = JIPipe.getNodes().getRegisteredNodeInfos().get(SPOT_DETECT_ID);
         CreateNewNodeByInfoDatabaseEntry base =
             new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + SPOT_DETECT_ID, detectInfo);
-        CreateNewNodeByInfoAliasDatabaseEntry alias =
-            new CreateNewNodeByInfoAliasDatabaseEntry(SPOT_DETECT_ALIAS_ID, detectInfo, detectInfo.getAliases().get(0));
 
         assertEquals(SPOT_DETECT_ID, base.getOriginNodeId());
-        assertEquals(SPOT_DETECT_ID, alias.getOriginNodeId());
-        assertEquals(base.getFunctionIds(), alias.getFunctionIds());
-        assertEquals(base.getFramework().getId(), alias.getFramework().getId());
-        assertEquals(base.getSpatialDimensions(), alias.getSpatialDimensions());
-        assertEquals(base.getInputProfile(), alias.getInputProfile());
-        assertEquals(base.getTags(), alias.getTags());
 
         // A compartment entry does not wrap a node type
         CreateNewCompartmentNodeDatabaseEntry compartment = new CreateNewCompartmentNodeDatabaseEntry();
@@ -326,8 +319,10 @@ class NodeDatabaseTaxonomyTest {
 
     /**
      * Builds a fresh database holding only the entries created here: one
-     * "create node by info" entry per synthetic node, plus one alias entry
-     * for the detect node.
+     * "create node by info" entry per synthetic node.
+     * <p>
+     * Task 26a: the alias entry for the detect node was removed (the
+     * menu-location-backed alias entry no longer exists).
      */
     private static JIPipeNodeDatabase databaseWithAllEntries() {
         JIPipeNodeDatabase database = new TestNodeDatabase();
@@ -337,8 +332,6 @@ class NodeDatabaseTaxonomyTest {
             JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(id);
             entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + id, info));
         }
-        JIPipeNodeInfo detectInfo = JIPipe.getNodes().getRegisteredNodeInfos().get(SPOT_DETECT_ID);
-        entries.add(new CreateNewNodeByInfoAliasDatabaseEntry(SPOT_DETECT_ALIAS_ID, detectInfo, detectInfo.getAliases().get(0)));
         database.setEntries(entries);
         return database;
     }
@@ -492,15 +485,13 @@ class NodeDatabaseTaxonomyTest {
     /**
      * Start step of the {@link TrackMateFamily}: the spot detector.
      * Carries the stub function (tags merged from function + node level),
-     * the stub framework, 3D spatial dimension, an alias, and the
+     * the stub framework, 3D spatial dimension, and the
      * {@code after = {} start step annotation.
      */
     @ConfigureJIPipeNode(function = {StubFunction.class}, framework = StubFramework.class,
         spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D},
         nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
     @JIPipeNodeTaxonomyTags("detect")
-    @AddJIPipeNodeAlias(nodeTypeCategory = MiscellaneousNodeTypeCategory.class,
-        menuPath = "alias/detect", aliasName = "Spot Detector")
     @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots")
     public static class SpotDetectNode extends JIPipeGraphNode {
         public SpotDetectNode(JIPipeNodeInfo info) {

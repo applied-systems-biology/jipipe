@@ -14,19 +14,15 @@
 package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoAliasDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Renderer for {@link JIPipeNodeDatabaseEntry} (supports only non-existing nodes fully)
@@ -113,42 +109,9 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         }
 
         if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
-            JIPipeNodeInfo info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
             alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
-            if (info.getAliases().isEmpty()) {
-                alternativeLabel.setText("");
-            } else {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Alias: ");
-                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
-                for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                    if (i > 0) {
-                        builder.append(", ");
-                    }
-                    JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
-                    builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n")))
-                            .append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
-                }
-                alternativeLabel.setText(builder.toString());
-            }
-        } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
-            JIPipeNodeInfo info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
-            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
-            if (info.getAliases().isEmpty()) {
-                alternativeLabel.setText("");
-            } else {
-                StringBuilder builder = new StringBuilder();
-                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
-                for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                    if (i > 0) {
-                        builder.append(", ");
-                    }
-                    JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
-                    builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n")))
-                            .append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
-                }
-                alternativeLabel.setText(builder.toString());
-            }
+            // Task 26a: alias rows removed (converted nodes have no aliases).
+            alternativeLabel.setText("");
         } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
             alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getPrimaryColor());
             alternativeLabel.setText("Example");
@@ -178,8 +141,6 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         JIPipeNodeInfo info = null;
         if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
             info = ((CreateNewNodeByInfoDatabaseEntry) obj).getNodeInfo();
-        } else if (obj instanceof CreateNewNodeByInfoAliasDatabaseEntry) {
-            info = ((CreateNewNodeByInfoAliasDatabaseEntry) obj).getNodeInfo();
         } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
             info = ((CreateNewNodeByExampleDatabaseEntry) obj).getExample().getNodeInfo();
         }

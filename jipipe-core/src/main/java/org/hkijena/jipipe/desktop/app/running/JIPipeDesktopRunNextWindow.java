@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ExportFunction;
 import org.hkijena.jipipe.api.run.JIPipeProjectRunSet;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
@@ -180,7 +181,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
 
     private boolean projectHasExporterNodes() {
         for (JIPipeGraphNode graphNode : getProject().getGraph().getGraphNodes()) {
-            if (graphNode.getInfo().getCategory() instanceof ExportNodeTypeCategory) {
+            if (TaxonomyView.isUnderFunction(graphNode.getInfo(), ExportFunction.class)) {
                 return true;
             }
         }

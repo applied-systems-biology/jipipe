@@ -19,10 +19,12 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -58,9 +60,16 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     }
 
     private void initializeLocationInfos() {
-        locationInfos.add((example.getNodeInfo().getCategory().getName() + "\n" + example.getNodeInfo().getMenuPath()).trim());
-        for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
-            locationInfos.add((alias.getCategory().getName() + "\n" + alias.getMenuPath()).trim());
+        // Task 26a: repopulate from the function chain (primary + secondary),
+        // replacing the legacy "category\nmenuPath" + alias location entries.
+        JIPipeNodeInfo nodeInfo = example.getNodeInfo();
+        if (nodeInfo.getPrimaryFunction() != null) {
+            locationInfos.add(CreateNewNodeByInfoDatabaseEntry.functionChainLocation(nodeInfo.getPrimaryFunction()));
+        }
+        for (JIPipeNodeTaxonomyFunction secondary : nodeInfo.getSecondaryFunctions()) {
+            if (secondary != null) {
+                locationInfos.add(CreateNewNodeByInfoDatabaseEntry.functionChainLocation(secondary));
+            }
         }
     }
 
@@ -76,9 +85,6 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     private void initializeTokens() {
         tokens.add(example.getNodeTemplate().getName(), WeightedTokens.WEIGHT_NAME);
         tokens.add(example.getNodeInfo().getName(), WeightedTokens.WEIGHT_NAME);
-        for (JIPipeNodeMenuLocation alias : example.getNodeInfo().getAliases()) {
-            tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_NAME);
-        }
         tokens.add(example.getNodeTemplate().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         tokens.add(example.getNodeInfo().getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
@@ -95,7 +101,8 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
 
     @Override
     public JIPipeNodeDatabasePipelineVisibility getVisibility() {
-        return JIPipeNodeDatabasePipelineVisibility.fromCategory(example.getNodeInfo().getCategory());
+        TaxonomyView.BehaviorFlags flags = TaxonomyView.behaviorFlags(example.getNodeInfo());
+        return JIPipeNodeDatabasePipelineVisibility.fromFlags(flags.isVisibleInPipeline(), flags.isVisibleInCompartments());
     }
 
     @Override
