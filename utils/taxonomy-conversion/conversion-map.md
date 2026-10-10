@@ -727,7 +727,7 @@ optional `Reference`).
 | `Features` | 3 | `MeasurementsFunction` | both | `EdgeFilter3D`/`FindMaxima3D`/`SymmetryFilter3D` — feature/edge/maxima **maps** → 19.2 `Features`→`MeasurementsFunction` contract (flag Phase 3: `EdgeFilter3D`/`FindMaxima3D` read more like the 19.2 `Edges`→`FilteringFunction` group than a "measurement" — see (e)) |
 | `ROI` | 4 | `MergingSplittingFunction` | both | `Extract/Remove/Render/SetOverlay3D` → 19.2 `ROI`→`MergingSplittingFunction` contract (the IJ `Image\nOverlay` menu maps to the same group, per 19.2b) |
 | `Analyze` | 1 | `MeasurementsFunction` | both | `FindParticles3D` → 19.2 `Analyze`/`FindParticles2D`→`MeasurementsFunction` precedent (emits ROI + measurements, not a segmentation) |
-| `Labels` | 1 | `ColorStackFunction` | both | `Roi3dFromLabels` (labels→ROI) → 19.2 `Labels`→`ColorStackFunction` contract (flag Phase 3) |
+| `Labels` | 1 | `ColorStackFunction` | both | `Roi3dFromLabels` (labels→ROI) → matches the 19.2 `Labels\nConvert`→`ColorStackFunction` row (the operative `LabelsToROI` precedent); the plain 19.2 `Labels` row is `SegmentationFunction` — judged as a labels→ROI *conversion* op (flag Phase 3) |
 | `Math\nDistance map` | 2 | `MeasurementsFunction` | both | `DistanceMap3D`/`ErodedVolumeFraction3D` → 19.2 `Math\nDistance map`→`MeasurementsFunction` contract |
 | `Segment` | 1 | `SegmentationFunction` | both | `Watershed3DSegmentation` → 19.2 `Segment`→`SegmentationFunction` contract |
 | `Binary` | 2 | `FilteringFunction` | both | `Voronoi3D`/`Watershed3DSplitting` → 19.2 `Binary`→`FilteringFunction` contract |
