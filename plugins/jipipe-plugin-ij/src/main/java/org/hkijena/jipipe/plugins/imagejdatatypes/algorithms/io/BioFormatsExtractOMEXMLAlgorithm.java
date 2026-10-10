@@ -24,11 +24,12 @@ import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -47,7 +48,7 @@ import java.io.IOException;
 @SetJIPipeDocumentation(name = "Read OME XML from file", description = "Obtains the OME XML from Bio-Formats without importing the file itself")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "The image file(s)", create = true)
 @AddJIPipeOutputSlot(value = OMEXMLData.class, name = "Output", description = "The OME XML", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MiscDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
         "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")

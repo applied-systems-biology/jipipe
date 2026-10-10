@@ -12,6 +12,9 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2.color;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -35,7 +38,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
  * RGB colored 2D image
  */
 @SetJIPipeDocumentation(name = "2D ImageJ image (RGB)", description = "A colored image (RGB colors)")
-@ConfigureJIPipeNode(menuPath = "Images\n2D\nColor")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus2DData.class)

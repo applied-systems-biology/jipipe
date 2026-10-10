@@ -116,7 +116,7 @@ Status: `pending` → `converting` → `converted` (gate green). Update after ea
 |---|---|---|
 | jipipe-core | 31 | converted |
 | jipipe-plugin-ij-algorithms | 424 | **converted (19.2a+b+c, 424 nodes); module gate zero unassigned** |
-| jipipe-plugin-ij | 80 | pending |
+| jipipe-plugin-ij | 80 | **converted (19.3, 80 nodes); module gate zero unassigned** |
 | jipipe-plugin-ij-3d | 62 | pending |
 | jipipe-plugin-filaments + ij-filaments | 51+ | pending |
 | jipipe-plugin-filesystem | 39 | pending |
@@ -497,4 +497,182 @@ Consistency check: total 3D set = 13 overrides + 3 optical-flow = 16; total 2D s
 - `Images/Metadata` → `MiscellaneousFunction` (could be `MeasurementsFunction` for the extract node).
 - `FFT` → `FilteringFunction` (could be `MeasurementsFunction` for transform-only nodes).
 - `RenderJIPipeProjectAlgorithm` → `PlotMiscFunction` (pipeline rendering; could be `MiscellaneousFunction`).
+
+### 19.3 — jipipe-plugin-ij mapping (80 nodes)
+
+**Status:** converted — all 80 `@ConfigureJIPipeNode` nodes rewritten to `function`/`framework`/
+`spatialDimensions`; module gate green (see Gate result below).
+
+**Scope:** every `@ConfigureJIPipeNode` class under
+`plugins/jipipe-plugin-ij/src/main/java` (package `org.hkijena.jipipe.plugins.imagejdatatypes`).
+The module is **data-type wrappers + importers/exporters** of IJ1 `ImagePlus`/Bio-Formats images:
+50 `ImagePlus*Data` classes (2D/3D/4D/5D, color/greyscale/mask, FFT) plus 30 algorithm classes
+(importers, export nodes, ROI/table sources, color-space/contrast/converter ops, macro + OME-XML
+sources, 3 annotation nodes).
+
+**Inventory (verified, matches controller R1):** 80 annotated files. Primary `nodeTypeCategory`
+distribution: *(default = InternalNodeTypeCategory)* **54**, `DataSourceNodeTypeCategory` **12**,
+`ImagesNodeTypeCategory` **7**, `ExportNodeTypeCategory` **4**, `AnnotationsNodeTypeCategory` **3**.
+14 nodes have no `menuPath` (3 in the Images category + 11 in the DataSource category).
+
+**Framework (R1 / rule 11):** `ImageJ1Framework` for **all 80 nodes**. **0 files import
+`net.imagej.*`** (verified by grep) — the module wraps IJ1 `ImagePlus`/Bio-Formats data only; there is
+no IJ2-API wrapper node here, so the module-level rule holds without exception.
+
+**Spatial (R2 / rule 12):** from each node's first image input slot, or (for data-type wrappers and
+sources, which have no image *input*) the data's **declared dimensionality** from its `@ImageTypeInfo` /
+menuPath / data-class name:
+- `d2/*` classes, `ImagePlusFFT2DData` ⇒ `SPATIAL_2D` (12)
+- `d3/*` classes, `ImagePlusFFT3DData` ⇒ `SPATIAL_3D` (11)
+- unconstrained / `d4` / `d5` image data (bare `ImagePlus*` color+greyscale, `FFT4D/5D`, `FFT`) ⇒
+  **both** (dimensioned-wrapper ruling: the spatial set is closed to {2D,3D}) (51)
+- **absent** (no `spatialDimensions`): table/ROI/OME-XML/macro sources + the file-only annotation node
+  (no image dimensionality to declare) (6)
+
+**Distribution:** spatial 2D=12 · 3D=11 · both=51 · absent=6. Function leaves: `ImageDataFunction` 61 ·
+`MiscDataFunction` 3 · `ExportFileFormatsFunction` 3 · `ColorStackFunction` 3 · `AnnotationsEditFunction` 3 ·
+`RoiDataFunction` 2 · `PreprocessingFunction` 2 · `TableDataFunction` 1 · `ResamplingFunction` 1 ·
+`ExportArchiveFunction` 1.
+
+#### (a) Data-type wrappers (50) — all `ImageDataFunction`, `ImageJ1Framework`; spatial by declared dimension
+
+The 50 `ImagePlus*Data` classes (registered via `registerImageDataType` in `ImageJDataTypesPlugin`, not
+`registerNodeType`) are pure IJ1 `ImagePlus` image-data types. Function is the **data/ branch leaf**
+`ImageDataFunction` (the "image data" locations — same as the ij-algorithms DataSource→`ImageDataFunction`
+precedent); none is a table/ROI/filament type, so no `TableDataFunction`/`RoiDataFunction`/other here.
+Spatial comes from the `@ImageTypeInfo(numDimensions=…)` / package (no image *input* slot exists on a
+data type, so R2 uses the declared dimensionality). Grouped (full 80-row table is in the report; these
+groups cover all 50):
+
+| wrapper group | classes (n) | function | spatial | rationale |
+|---|---|---|---|---|
+| 2D image types (`d2`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **2D** | `@ImageTypeInfo(numDimensions=2)` / `d2` package |
+| 2D FFT (`ImagePlusFFT2DData`) | 1 | `ImageDataFunction` | **2D** | `numDimensions=2`, frequency-space 2D image |
+| 3D image types (`d3`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **3D** | `numDimensions=3` / `d3` package |
+| 3D FFT (`ImagePlusFFT3DData`) | 1 | `ImageDataFunction` | **3D** | `numDimensions=3`, frequency-space 3D image |
+| bare unconstrained color (`Color{,HSB,LAB,RGB}`, root) | 4 | `ImageDataFunction` | **both** | `@ImageTypeInfo` without `numDimensions` ⇒ unconstrained (dimensioned-wrapper ruling) |
+| bare unconstrained greyscale (`Greyscale{,8U,16U,32F,Mask}`, root) | 5 | `ImageDataFunction` | **both** | unconstrained `@ImageTypeInfo` ⇒ both |
+| 4D image types (`d4`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **both** | 4D (≥3) collapses to {2D,3D} — closed spatial set |
+| 5D image types (`d5`: base + Color{,HSB,LAB,RGB} + Greyscale{,8U,16U,32F,Mask}) | 10 | `ImageDataFunction` | **both** | 5D (≥3) collapses to {2D,3D} |
+| FFT `ImagePlusFFT4DData`, `ImagePlusFFT5DData`, `ImagePlusFFTData` | 3 | `ImageDataFunction` | **both** | 4D/5D ⇒ both; bare `FFT` unconstrained ⇒ both |
+
+#### (b) Images-category operational nodes (7) — rule 1 / R1
+
+| node | function | spatial | rationale |
+|---|---|---|---|
+| `ApplyDisplayContrastAlgorithm` | `PreprocessingFunction` | both | menuPath `Contrast`; applies brightness/contrast display range (precedent: ij-algorithms `Contrast`→`PreprocessingFunction`); first image input `ImagePlusData` (unconstrained) ⇒ both |
+| `DisplayRangeCalibrationAlgorithm` | `PreprocessingFunction` | both | menuPath `Contrast`; calibrates the display range; `ImagePlusData` in ⇒ both |
+| `ToRGBColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | menuPath `Colors\nConvert`; color-space conversion (precedent: ij-algorithms `Colors\nConvert`→`ColorStackFunction`); `ImagePlusData` in ⇒ both |
+| `ToHSBColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | color-space conversion; `ImagePlusData` in ⇒ both |
+| `ToLABColorSpaceConverterAlgorithm` | `ColorStackFunction` | both | color-space conversion; `ImagePlusData` in ⇒ both |
+| `ImportLUTAsRGBFromFileAlgorithm` | `ImageDataFunction` | **2D** | **R1 override — judged by data class + purpose, not the Images category.** No menuPath; imports a LUT as a *2D* RGB image (source), output `ImagePlus2DColorRGBData`. It produces image data (data-source role) rather than processing it, so it is the data leaf `ImageDataFunction`, spatial from the 2D output. Flagged for Phase 3 (see (d)). |
+| `ImageTypeConverter` | `ResamplingFunction` | both | **non-obvious.** No menuPath; converts an `ImagePlusData` image *into another ImagePlus data type* (bit-depth / 2D/3D / greyscale↔color) via a parameter. It is an in-place image type conversion, not a data source (it has an image input it transforms) — the ij-algorithms `Convert` group precedent is `ResamplingFunction`. `ImagePlusData` in ⇒ both. Flagged for Phase 3 (see (d)). |
+
+#### (c) DataSource (12), Export (4), Annotations (3) — rules 5/6/7, R1
+
+**DataSource (12) — rule 6, by OUTPUT type:**
+
+| node | function | spatial | output (rationale) |
+|---|---|---|---|
+| `BioFormatsImporterAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (Bio-Formats image import; OME wraps an unconstrained `ImagePlus`) |
+| `ImportImageJSampleAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (ImageJ sample image; no input ⇒ source, unconstrained) |
+| `ImportImagePlusAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (image from file) |
+| `ImportOMEZARRFromURIAsImagePlusAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (OME-Zarr from URI) |
+| `ImportOMEZARRFromZipDirectoryAsImagePlusAlgorithm` | `ImageDataFunction` | both | `OMEImageData` (OME-Zarr from zip dir) |
+| `NativeImageJImporterAlgorithm` | `ImageDataFunction` | both | `ImagePlusData` (ImageJ1 `IJ.open` import) |
+| `ImportResultsTableAlgorithm` | `TableDataFunction` | **absent** | `ResultsTableData` (results table from file ⇒ table leaf, no image) |
+| `ImportRoi2dAlgorithm` | `RoiDataFunction` | **absent** | `Roi2dListData` (ROI list from file ⇒ ROI leaf, no image) |
+| `ExtractRoi2dFromOMEImageAlgorithm` | `RoiDataFunction` | **both** | `Roi2dListData` **but** it takes an `OMEImageData` *input* (extracts ROIs from the OME image) ⇒ first image input OME (unconstrained) ⇒ both. ROI leaf by output, spatial by input. |
+| `BioFormatsExtractOMEXMLAlgorithm` | `MiscDataFunction` | **absent** | `OMEXMLData` (extends `XMLData`→`StringData`; OME-XML text, not image/table/ROI) |
+| `DefineImageJMacroAlgorithm` | `MiscDataFunction` | **absent** | `ImageJMacroData` (extends `StringData`; a macro text, not image) |
+| `ImportImageJMacroAlgorithm` | `MiscDataFunction` | **absent** | `ImageJMacroData` (macro text from file) |
+
+**Export (4) — rule 7:**
+
+| node | function | spatial | rationale |
+|---|---|---|---|
+| `BioFormatsExporterAlgorithm` | `ExportFileFormatsFunction` | both | writes `*.ome.tiff` (single file format); OME image input ⇒ both. (Deprecated sibling of `…2Algorithm`.) |
+| `BioFormatsExporter2Algorithm` | `ExportFileFormatsFunction` | both | writes `*.ome.tiff`; OME image input ⇒ both |
+| `SetBioFormatsExporterSettings` | `ExportFileFormatsFunction` | both | **non-obvious (flagged).** Configures the OME-TIFF exporter settings (pass-through `OMEImageData` in→out, no file written). It is not a file writer, but its whole purpose is preparing an OME-TIFF export and it sits under the `Images` export group, so it is grouped with the export-leaf family. `OMEImageData` in ⇒ both. |
+| `ExportImagePlusAsOMEZARRAlgorithm` | `ExportArchiveFunction` | both | **judgment.** "Writes an OME ZARR into a directory or **ZIP** file" — a ZARR archive, so the archive leaf per rule 7 (archive→`ExportArchiveFunction`). `OMEImageData` in ⇒ both. |
+
+**Annotations (3) — rule 5:**
+
+| node | function | spatial | rationale |
+|---|---|---|---|
+| `AnnotateDataWithImagePropertiesAlgorithm` | `AnnotationsEditFunction` | both | `For all data`; adds data annotations from an image's properties; image input `ImagePlusData` ⇒ both |
+| `BioFormatsAnnotatorAlgorithm` | `AnnotationsEditFunction` | **absent** | `For paths`; annotates `FileData` with OME metadata (no image data in/out) ⇒ absent |
+| `ImagePropertiesToAnnotationAlgorithm` | `AnnotationsEditFunction` | both | `For images`; adds annotations from image properties; `ImagePlusData` in ⇒ both |
+
+(All three *edit/add* annotations on existing data; none converts *between* annotation types, so
+`AnnotationsConvertFunction` is unused — same outcome as ij-algorithms §19.2.)
+
+#### (d) Aliases (12) — all dropped (alias-leaf == primary-leaf)
+
+12 `@AddJIPipeNodeAlias` entries across 10 files. Every alias's old category maps to the **same**
+function leaf as the node's primary (image import/export/contrast/ROI/table/LUT → `ImageDataFunction` /
+`ExportFileFormatsFunction` / `PreprocessingFunction` / `RoiDataFunction` / `TableDataFunction` respectively,
+or a same-source `DataSourceNodeTypeCategory` alias). Per the A/B/C protocol (alias-leaf == primary-leaf →
+drop) **all 12 are deleted; no secondary `function[]` entries were added.**
+
+| node | alias (old category / menuPath) | alias leaf | action |
+|---|---|---|---|
+| `NativeImageJImporterAlgorithm` | DataSource / — | `ImageDataFunction` | drop (== primary) |
+| `NativeImageJImporterAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
+| `BioFormatsImporterAlgorithm` | DataSource / — | `ImageDataFunction` | drop (== primary) |
+| `BioFormatsImporterAlgorithm` | ImageJ / `Plugins\nBio-Formats` | `ImageDataFunction` | drop (== primary) |
+| `ImportImagePlusAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
+| `ImportRoi2dAlgorithm` | ImageJ / `File` | `RoiDataFunction` | drop (== primary) |
+| `ImportResultsTableAlgorithm` | ImageJ / `File` | `TableDataFunction` | drop (== primary) |
+| `ImportLUTAsRGBFromFileAlgorithm` | ImageJ / `File` | `ImageDataFunction` | drop (== primary) |
+| `BioFormatsExporterAlgorithm` | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
+| `BioFormatsExporter2Algorithm` | ImageJ / `Plugins\nBio-Formats` | `ExportFileFormatsFunction` | drop (== primary) |
+| `ApplyDisplayContrastAlgorithm` | ImageJ / `Image\nAdjust` | `PreprocessingFunction` | drop (== primary) |
+| `DisplayRangeCalibrationAlgorithm` | ImageJ / `Image\nAdjust` | `PreprocessingFunction` | drop (== primary) |
+
+#### (e) Flagged for Phase 3 audit
+
+- **`ImportLUTAsRGBFromFileAlgorithm` → `ImageDataFunction`.** It is in the Images category with no
+  menuPath; it *imports* a LUT as a 2D RGB image. Chosen `ImageDataFunction` (data-source/production role)
+  over an images-processing leaf because it produces image data from a file rather than transforming an
+  image input. Could equally be `ResamplingFunction` if the audit wants color-space importers grouped
+  with converters.
+- **`ImageTypeConverter` → `ResamplingFunction`.** An in-place image-type/bit-depth conversion (no file,
+  parameter-driven). `ResamplingFunction` mirrors the ij-algorithms `Convert` group; `ColorStackFunction`
+  or a dedicated type-conversion leaf are alternatives if the audit prefers a finer split.
+- **`SetBioFormatsExporterSettings` → `ExportFileFormatsFunction`.** A settings-only pass-through (no file
+  written) placed in the export family for consistency with its sibling exporters; could be
+  `PreprocessingFunction`/`MiscellaneousFunction` if "not an actual exporter" is preferred.
+- **`ExtractRoi2dFromOMEImageAlgorithm` → `RoiDataFunction` (both).** Leaf by its ROI output (rule 6), but
+  it has an image *input* (OME) so spatial is both, not absent — consistent with the module's other
+  OME-touching nodes. Flagged only because the leaf/spatial split here follows two different rules.
+- **`ExportImagePlusAsOMEZARRAlgorithm` → `ExportArchiveFunction`.** Chosen because ZARR is written to a
+  directory/ZIP archive; `ExportFileFormatsFunction` is a reasonable alternative if the audit treats ZARR
+  as a format rather than an archive.
+
+#### (f) Test infrastructure (R4)
+
+- Copied `TaxonomyConversionReportTest.java` **byte-identical** into
+  `plugins/jipipe-plugin-ij/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/`.
+- Added `ImageJLegacyPatcherLauncherSessionListener`
+  (`…/plugins/imagejdatatypes/`, `LegacyInjector.preinit()` in `launcherSessionOpened`, HKI header) — the
+  gate calls `JIPipe.ensureInstance()` → ImageJ SciJava context → the IJ1 patcher must run first.
+- Added `META-INF/services/org.junit.platform.launcher.LauncherSessionListener` pointing at it.
+- **`pom.xml` unchanged** — `org.junit.jupiter:junit-jupiter` + `org.junit.platform:junit-platform-launcher`
+  (test scope) were already present (Task 12); the pre-existing `ImageTypeInfoInputProfileProviderTest`
+  stays green.
+
+#### (g) Gate result (R4/R5)
+
+- **Compile:** `mvn -q -B compile -pl plugins/jipipe-plugin-ij -am` → exit 0.
+- **Gate (enabled):** `mvn test -pl plugins/jipipe-plugin-ij -Dtest=TaxonomyConversionReportTest
+  -Djipipe.taxonomy.report.module=org.hkijena.jipipe.plugins.imagejdatatypes` → **BUILD SUCCESS**,
+  `Tests run: 1, Failures: 0, Errors: 0, Skipped: 0` — **zero unassigned** in the `imagejdatatypes` prefix
+  and zero global taxonomy errors. (The log line "159 nodes not yet assigned a taxonomy function — expected
+  during conversion" is the *global* count across the on-classpath modules — most of which are not yet
+  converted — and is **not** in the prefix-filtered failure set nor in `errors()`, so the gate passes on
+  this module alone, exactly as ruled.)
+- **Full module (no property):** `mvn test -pl plugins/jipipe-plugin-ij` → **BUILD SUCCESS**,
+  `Tests run: 2, Failures: 0, Errors: 0, Skipped: 1` — the gate **skips cleanly** (property unset) and the
+  pre-existing `ImageTypeInfoInputProfileProviderTest` passes.
 

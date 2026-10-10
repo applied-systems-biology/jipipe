@@ -12,6 +12,10 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.fft;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -27,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImageTypeInfo;
  * 5D image in frequency space
  */
 @SetJIPipeDocumentation(name = "5D ImageJ FFT Image")
-@ConfigureJIPipeNode(menuPath = "Images\nFFT")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 5)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusFFTData.class)

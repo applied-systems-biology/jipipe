@@ -12,6 +12,10 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -37,7 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
  * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "ImageJ Image (LAB)", description = "A colored image (LAB colors)")
-@ConfigureJIPipeNode(menuPath = "Images\nColor")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusColorData.class)

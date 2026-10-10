@@ -12,6 +12,10 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -36,7 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
  * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "ImageJ Image (8 bit)", description = "An 8-bit greyscale image")
-@ConfigureJIPipeNode(menuPath = "Images\nGreyscale")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusGreyscaleData.class)

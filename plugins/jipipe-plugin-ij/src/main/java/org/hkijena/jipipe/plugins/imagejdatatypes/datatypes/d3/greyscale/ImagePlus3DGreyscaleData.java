@@ -12,6 +12,9 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.greyscale;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
@@ -33,7 +36,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  * Greyscale 3D image
  */
 @SetJIPipeDocumentation(name = "3D ImageJ image (greyscale)", description = "A greyscale image")
-@ConfigureJIPipeNode(menuPath = "Images\n3D\nGreyscale")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 3)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus3DData.class)

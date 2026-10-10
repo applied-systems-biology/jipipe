@@ -18,9 +18,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
@@ -34,8 +34,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Import ROI", description = "Loads a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).")
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (ROI)")
+@ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ1Framework.class)
 public class ImportRoi2dAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

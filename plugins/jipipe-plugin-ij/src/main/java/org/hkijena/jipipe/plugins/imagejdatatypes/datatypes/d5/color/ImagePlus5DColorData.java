@@ -12,6 +12,10 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d5.color;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
@@ -37,7 +41,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  * Conversion works through {@link ImplicitImageTypeConverter}
  */
 @SetJIPipeDocumentation(name = "5D ImageJ image (Color)", description = "A color image")
-@ConfigureJIPipeNode(menuPath = "Images\n5D\nColor")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus5DData.class)

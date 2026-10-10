@@ -12,6 +12,10 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d4.greyscale;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -33,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.dimensions.ImageDimension
  * 16-bit greyscale 4D image
  */
 @SetJIPipeDocumentation(name = "4D ImageJ image (16 bit)", description = "A 16-bit greyscale image")
-@ConfigureJIPipeNode(menuPath = "Images\n4D\nGreyscale")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ShortProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = ShortProcessor.class, bitDepth = 16, numDimensions = 4)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlus4DGreyscaleData.class)

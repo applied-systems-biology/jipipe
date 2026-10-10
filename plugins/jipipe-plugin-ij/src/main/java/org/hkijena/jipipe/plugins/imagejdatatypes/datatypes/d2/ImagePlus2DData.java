@@ -12,6 +12,9 @@
  */
 
 package org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d2;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -29,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
  * 2D image
  */
 @SetJIPipeDocumentation(name = "2D ImageJ image", description = "A 2D image")
-@ConfigureJIPipeNode(menuPath = "Images\n2D")
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D })
 @LabelAsJIPipeHeavyData
 @ImageTypeInfo(numDimensions = 2)
 @ConfigureJIPipeDataCrate(entities = {}, inherits = ImagePlusData.class)
