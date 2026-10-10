@@ -871,14 +871,16 @@ torn out in Task 27's category rip-out.
 **Framework (R1 / rule 11):** `ImageJ1Framework` for **all 51 nodes** — 0 files import `net.imagej.*`
 (verified), consistent with ij/ij-algorithms/ij-3d.
 
-**Spatial (R3 / rule 12 — settled ruling):** read from each node's **first image INPUT slot only**.
+**Spatial (R3 / rule 12 — settled ruling):** read from each node's **first image INPUT slot only** (a
+graph slot confers nothing — "first image input slot" = the first slot that is an image).
 **`Filaments3DGraphData` is a graph, not an image — it confers NO spatial** (same absent-precedent as
 ROI-list/table/file/string inputs in prior modules). So: 3D-constrained image class ⇒ `SPATIAL_3D`;
-unconstrained `ImagePlus*` class ⇒ both; no image input ⇒ **absent**. Most of the 42 filament-graph
-nodes are therefore **absent — that is CORRECT** (flagged for Phase 3: should spatial ever extend to
-non-image 3D data types? do NOT change the semantics in this task).
+unconstrained `ImagePlus*` class ⇒ both; no image input ⇒ **absent**. The module has **19 image-input
+nodes — all non-absent (18 both + 1 3D)**; the **32 graph/table/ROI/file-only nodes are absent — that is
+CORRECT** (flagged for Phase 3: should spatial ever extend to non-image 3D data types? do NOT change the
+semantics in this task).
 
-**Distribution:** spatial **absent = 38 · both = 12 · 3D = 1 · 2D = 0** (total 51). Function leaves:
+**Distribution:** spatial **absent = 32 · both = 18 · 3D = 1 · 2D = 0** (total 51). Function leaves:
 `FilamentFilteringFunction` **32** · `FilamentDataFunction` **8** · `FilamentSmoothingFunction` **7** ·
 `FilamentQuantificationFunction` **3** · `MergingSplittingFunction` **1** (total 51).
 
@@ -895,7 +897,7 @@ properties, statistics, `ResultsTableData` outputs ⇒ `FilamentQuantificationFu
 |---|---|---|
 | `SmoothFilamentsAlgorithm` (Process) | absent | "Applies a **smoothing** operation" on vertex locations — the namesake of the leaf |
 | `SimplifyFilamentsAlgorithm` (Process) | absent | "Removes all intermediate vertices (degree 2)" — curve simplification per R2's explicit example ("a 'simplify' curve op = Smoothing") |
-| `FixOverlapsNonBranchingAlgorithm` (Process) | absent | "fix filaments that are **merged together** by junctions" — straightening/separating overlapping **curves** (non-branching); R2's "remove overlapping filaments = Filtering" is the alternative → **flagged (c)** |
+| `FixOverlapsNonBranchingAlgorithm` (Process) | **both** | "fix filaments that are **merged together** by junctions" — straightening/separating overlapping **curves** (non-branching); R2's "remove overlapping filaments = Filtering" is the alternative → **flagged (c)**; optional `ImagePlusGreyscaleMaskData` *Mask* input ⇒ both |
 | `RemoveDuplicateVerticesAlgorithm` (Process) | absent | "removes all duplicates. Edges are preserved" — coalescing coincident **curve points**, not removing filament pieces; `FixOverlaps`' doc names this exact operation as its smoothing step; R2 alternative: Filtering → **flagged (c)** |
 | `SubdivideFilamentEdges` (Modify) | absent | "Inserts a vertex at the center of edges. The connectivity and shape is preserved" — curve **resampling/densification** (R2's resampling bucket) |
 | `FlattenFilamentsAlgorithm` (Modify) | absent | "Moves the Z of each vertex to zero … flattens 3D filaments into 2D" — 3D→2D **curve straightening** (no structural piece added/removed) |
@@ -918,13 +920,13 @@ properties, statistics, `ResultsTableData` outputs ⇒ `FilamentQuantificationFu
 | `FilterFilamentsByProperties` (Filter) | absent | "Filters filament **connected components** by various properties" |
 | `RemoveBorderFilaments` (Filter) | **both** | "Removes filament components near the image borders" — R2's "remove filaments" bucket (spatial from the required `ImagePlusData` reference slot) |
 | `ErodeEndVerticesAlgorithm` (Modify) | absent | "Iteratively **removes** vertices that have a degree of at most 1" — removes curve pieces (opposite of `GrowEndVertices` → Smoothing; the pair is kept consistent) |
-| `ConnectVerticesAlgorithm` (Modify) | **both** | "Connect existing vertices based on customizable criteria" (expression-filtered candidate edges) — joins curve pieces (mask input optional ⇒ no spatial contribution) |
+| `ConnectVerticesAlgorithm` (Modify) | **both** | "Connect existing vertices based on customizable criteria" (expression-filtered candidate edges) — joins curve pieces (optional `ImagePlusGreyscaleMaskData` *Mask* = first image input ⇒ both) |
 | `ConnectVerticesFastAlgorithm` (Modify) | **both** | same operation, distance-based fast variant |
 | `SplitFilamentsIntoConnectedComponentsAlgorithm` (Split) | absent | "Splits the filament graph into connected components" — R2's split bucket |
 | `SplitFilamentsIntoCyclesAlgorithm` (Split) | absent | "Splits the filament graph into cycles" |
 | `FilamentCyclesToComponentsAlgorithm` (Modify) | absent | "makes each cycle a component" — re-splits the graph at cycles (its doc explicitly distinguishes this from `Split … into cycles`) |
 | `MergeFilamentsAlgorithm` (Split) | absent | "Merges multiple filament graphs into one" — R2's join bucket; menuPath `Split` is the old panel's group, not the operation (same carve-out pattern as §19.4's `SplitRoi3dByStatistics`) |
-| `CopyFilamentsAcrossZCTAlgorithm` (Process) | absent | "Copies a filament graph to other Z locations, channels, and frames" — duplicates curve pieces (spatial: first input slot is the graph, the optional `ImagePlusData` *Reference* does not drive spatial) |
+| `CopyFilamentsAcrossZCTAlgorithm` (Process) | **both** | "Copies a filament graph to other Z locations, channels, and frames" — duplicates curve pieces (spatial: optional `ImagePlusData` *Reference* = first image input ⇒ both; the graph slot confers nothing) |
 | `ConvertFilamentsToRoiAlgorithm` (Convert) | absent | "Converts filaments into 2D line ImageJ ROI" — emits an ROI list, no image input |
 | `ConvertFilamentCyclesToROIAlgorithm` (Convert) | absent | "Finds all cycles … converts each cycle into a 2D ROI" — cycle extraction + ROI output |
 | `ConvertFilamentsToRoi3dAlgorithm` (Convert) | absent | "Converts filaments into a 3D ROI" (`Ij3dSuiteRoiListData` out) |
@@ -938,10 +940,10 @@ properties, statistics, `ResultsTableData` outputs ⇒ `FilamentQuantificationFu
 | `ChangeFilamentVertexPropertiesExpressionAlgorithm` (Modify) | absent | "override various properties of the **vertices**" using expressions |
 | `ChangeFilamentVertexPropertiesManuallyAlgorithm` (Modify) | absent | "override various properties of the **vertices**" (manual) |
 | `SetFilamentMetadataToComponentIndexAlgorithm` (Modify) | absent | "writes the component index into a metadata field" — metadata edit |
-| `SetVertexMetadataFromImageAlgorithm` (Modify) | absent | "Sets the vertex metadata … from the given input image" — writes into the graph; first input slot is the graph ⇒ no spatial |
-| `SetVertexPhysicalSizeFromImageAlgorithm` (Modify) | absent | "Sets the physical voxel sizes of all vertices from the image" — graph calibration, no spatial (first input = graph) |
-| `SetVertexRadiusFromImageAlgorithm` (Modify) | absent | "Sets the radius of each vertex from the image" |
-| `SetVertexValueFromImageAlgorithm` (Modify) | absent | "Sets the value/intensity of each vertex from the image" |
+| `SetVertexMetadataFromImageAlgorithm` (Modify) | **both** | "Sets the vertex metadata … from the given input image" — writes into the graph; required `ImagePlusGreyscaleData` *Value* = first image input ⇒ both (graph slot confers nothing) |
+| `SetVertexPhysicalSizeFromImageAlgorithm` (Modify) | **both** | "Sets the physical voxel sizes of all vertices from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
+| `SetVertexRadiusFromImageAlgorithm` (Modify) | **both** | "Sets the radius of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
+| `SetVertexValueFromImageAlgorithm` (Modify) | **both** | "Sets the value/intensity of each vertex from the image" — required `ImagePlusGreyscaleData` first image input ⇒ both |
 | `RemoveVertexValueBackupsAlgorithm` (Modify) | absent | "Removes value **backups** from vertices" — metadata removal (flagged (c): "removes" here targets backup metadata, not filament pieces) |
 | `RestoreVertexValueBackupAlgorithm` (Modify) | absent | "Restore value backups from vertices" — metadata restoration |
 | `FindLinearFilamentVertexOrderAlgorithm` (Modify) | absent | "find the order each vertex in that line … calculate the distance" — writes order/distance onto the graph (quantification-flavored but graph-in ⇒ Filtering; flagged (c)) |
@@ -979,8 +981,7 @@ R2: filament-**data producers** belong to the data/ filament leaf.
   + `SetVertex{Metadata,PhysicalSize,Radius,Value}FromImage` (4) + `RemoveVertexValueBackups` +
   `RestoreVertexValueBackup` (11 total) → `FilamentFilteringFunction`.** Attribute/metadata edits with no
   curve or structure change; **no "property editing" leaf exists** in the filaments/ branch, so they take
-  the structural-edit leaf as the best fit. The 10 `Set*FromImage` nodes additionally have a non-spatial
-  first input slot (the graph) — spatial stays absent by R3. If the audit adds a filaments "properties/
+  the structural-edit leaf as the best fit. If the audit adds a filaments "properties/
   metadata" leaf, all 11 move.
 - **`FindLinearFilamentVertexOrder` → `FilamentFilteringFunction`.** Computes vertex order/distance and
   writes it back onto the graph (quantification-flavored) but produces no table ⇒ Filtering by
@@ -1001,16 +1002,19 @@ R2: filament-**data producers** belong to the data/ filament leaf.
 - **`TSOAXResultAnalysis` → `FilamentDataFunction`.** Reconstructs filaments from TSOAX raw output text
   (flagged; `FilamentQuantificationFunction` was the R2 alternative if it "quantifies filaments" — it
   parses, it does not measure an existing graph).
-- **Spatial for non-image 3D data types (module-wide question).** 38/51 nodes are spatial-**absent**
-  because their (only) 3D-carrying data is `Filaments3DGraphData`, a graph — not an image. Per R3 this is
+- **Spatial for non-image 3D data types (module-wide question).** 32/51 nodes are spatial-**absent**
+  because their only data inputs are `Filaments3DGraphData` (a graph — not an image) plus
+  table/ROI/file/string. Per R3 this is
   settled for this task; **Phase 3 should decide whether spatial should ever extend to non-image 3D data
   types** (e.g. filaments, scenes, 3D ROI lists). Do NOT change the semantics here.
-- **`Filaments3DGraphData` as a spatial input for the "both" nodes.** For the 12 both/3D nodes the image
-  is a *second* (reference/skeleton) slot behind the required graph slot; R3's "first IMAGE input slot"
-  is read as "first slot that is an image" (the graph confers no spatial), which is how all 12 were
-  assigned (e.g. `RemoveBorderFilaments`: required graph + required `ImagePlusData` reference ⇒ both).
-  If "first input slot" were read literally slot-order-wise, these 12 would flip to absent — recorded so
-  the audit sees the interpretation.
+- **Spatial rule interpretation.** R3's "first IMAGE input slot" is read as "the first slot that is an
+  image" (graph slots confer no spatial). Applied uniformly, **all 19 image-input nodes are non-absent
+  (18 both + 1 3D)**; the 32 graph/table/ROI/file-only nodes are absent. For the 18 both-nodes whose
+  image is a slot *behind* the required graph slot (e.g. `RemoveBorderFilaments`: required graph + required
+  `ImagePlusData` reference ⇒ both; the `SetVertex*FromImage` nodes: required graph + required
+  `ImagePlusGreyscaleData` ⇒ both) this reading is what drives the assignment. If "first input slot" were
+  read literally slot-order-wise, those nodes would flip to absent — recorded so the audit sees the
+  interpretation.
 
 #### (d) Test infrastructure (R5)
 
