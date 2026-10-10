@@ -62,6 +62,19 @@ The `plugins/` directory contains additional modules for functionality separatio
 - Data environments
 - etc.
 
+### Node taxonomy (6.0.0)
+
+Since 6.0.0, node categorization no longer uses the legacy `JIPipeNodeTypeCategory` / `menuPath` system (removed entirely). Nodes are assigned to a **function tree** + **framework** + **spatial dimensions** + **tags** (see the `api/nodes/taxonomy/` package):
+
+- **Functions** — `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables, Data sources, Tracking, …) with 48 leaves. Assign a node with `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` — the first entry is the primary function, the rest are secondary (analogous to former menu aliases).
+- **Frameworks** — `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`): `@ConfigureJIPipeNode(framework = CoreFramework.class)`.
+- **Spatial dimensions / tags** — `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of `JIPipeNodeTaxonomySpatialDimension`, a closed set: 2D/3D) and `@JIPipeNodeTaxonomyTags("…")`.
+
+Rules:
+- Function/framework IDs are registration IDs and are persisted in saved projects — use **stable string literals**, never code-derived values (the same rule as node/data-type IDs, below).
+- Every registered node **must** have a primary function. This is enforced by the branch gate `TaxonomyFullValidationTest` (jipipe-launcher; runs the production validation over the entire registry and fails on any unassigned node) and by the per-module `TaxonomyConversionReportTest` gates (run with `-Djipipe.taxonomy.report.module=<java-package-prefix>`).
+- Conversion decision record: `utils/taxonomy-conversion/conversion-map.md`. Design spec: `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md`.
+
 ## Development Patterns
 
 ### Creating a New Algorithm Node
