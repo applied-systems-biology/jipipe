@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.add;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
-import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.GraphInteractiveObjectUIContextAction;
@@ -40,7 +40,7 @@ public class AddNewCompartmentUIContextAction implements GraphInteractiveObjectU
             JIPipeDesktopDockPanel dockPanel = canvasUI.getGraphEditorUI().getDockPanel();
             dockPanel.activatePanel(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_ADD_NODES, true);
             SwingUtilities.invokeLater(() -> {
-                dockPanel.getPanelComponent(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopAddNodesPanel.class).focusSearchBar();
+                dockPanel.getPanelComponent(JIPipeDesktopCompartmentsGraphEditorUI.DOCK_ADD_NODES, JIPipeDesktopNodeBrowser.class).focusSearchBar();
             });
         }
     }

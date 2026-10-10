@@ -29,7 +29,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.batchassistant.JIPipeDesktopDataBatchAssistantUI;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
 import org.hkijena.jipipe.desktop.app.cache.JIPipeDesktopAlgorithmCacheBrowserUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -253,7 +253,7 @@ public class JIPipeDesktopPipelineGraphEditorUI extends JIPipeDesktopGraphEditor
                 JIPipe.RESOURCES.getIcon24("actions/node-add.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
-                JIPipeDesktopDockPanel.UI_ORDER_PINNED, new JIPipeDesktopAddNodesPanel(getDesktopWorkbench(), this));
+                JIPipeDesktopDockPanel.UI_ORDER_PINNED, new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_NODE_TEMPLATES, "Templates",
                 JIPipe.RESOURCES.getIcon24("actions/star3.png"),
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,

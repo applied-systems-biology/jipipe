@@ -18,11 +18,14 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
@@ -47,6 +50,7 @@ import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNode
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
@@ -59,6 +63,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -74,8 +79,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * The adaptive node browser (Task 16), replacing the old
- * {@link JIPipeDesktopAddNodesPanel} in a later task.
+ * The adaptive node browser (Task 16), which replaces the old add-nodes
+ * panel (Task 24: mounted in both graph editors, old panel deleted).
  * <p>
  * The browser is function-tree driven: a taxonomy function tree
  * (13 top-levels → 48 leaves) selects which entries are shown, and the
@@ -100,8 +105,8 @@ import java.util.Set;
  * <p>
  * <b>Wiring note (Task 24):</b> this component is self-contained — it
  * reads from {@code JIPipe.getNodes()} and the (project's)
- * {@link JIPipeNodeDatabase} and holds no static state. It is mounted
- * into the graph editors by Task 24.
+ * {@link JIPipeNodeDatabase} and holds no static state. It is mounted in
+ * both graph editors' {@code DOCK_ADD_NODES} dock (Task 24b).
  */
 public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implements JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener {
 
@@ -112,7 +117,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
     private final boolean isCompartmentsEditor;
 
-    // --- Toolbar (search + AI toggle lifted from JIPipeDesktopAddNodesPanel) ---
+    // --- Toolbar (search + AI toggle lifted from the old add-nodes panel) ---
     private final JToolBar toolBar = new JToolBar();
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node browser");
     private final JIPipeDesktopSearchTextField searchField;
@@ -234,6 +239,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                     }
                 }
             }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+                handleTreePopupMenuTrigger(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                handleTreePopupMenuTrigger(e);
+            }
         });
 
         // Results list
@@ -309,7 +324,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Toolbar (lifted from JIPipeDesktopAddNodesPanel.initializeToolbar, L615-689)
+    // Toolbar (lifted from the old add-nodes panel's toolbar)
     // ------------------------------------------------------------------
 
     private void initializeToolbar() {
@@ -985,8 +1000,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             return;
         }
         // entry.addToGraph(...) snapshots the history internally and adds the
-        // node(s) to the canvas (mirrors JIPipeDesktopAddNodesPanel.insertAtCursor,
-        // L787-790); then select the added node UIs.
+        // node(s) to the canvas (mirrors the old add-nodes panel's
+        // insertAtCursor); then select the added node UIs.
         Set<JIPipeDesktopGraphNodeUI> nodeUIs = entry.addToGraph(graphEditorUI.getCanvasUI());
         graphEditorUI.getCanvasUI().getSelectionManager().setSelection(nodeUIs);
     }
@@ -1017,6 +1032,150 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         JIPipe.getSettings().save();
         reloadList();
+    }
+
+    // ------------------------------------------------------------------
+    // Data-source menu (ported from the old add-nodes panel, which is
+    // deleted in this task; the per-category menus are not ported — the
+    // tree takes over the "see what's available" role)
+    // ------------------------------------------------------------------
+
+    /**
+     * Initializes the data-source quick menu: one submenu per data type
+     * (grouped by the data types' menu paths), each listing the data source
+     * nodes that can produce that type. Ported from the old add-nodes panel's
+     * {@code initializeAddDataSourceMenu} — same {@code getDataTypesByMenuPaths()}
+     * iteration, same {@code getMenuDataSourcesFor(dataClass)} lookup, same
+     * hidden data-type / node skips, same {@code newInstance()} +
+     * {@code snapshotBeforeAddNode} + {@code insertNode} (the old method's
+     * {@code addedAlgorithms} accumulation had no user-visible effect, so it
+     * is dropped).
+     */
+    private void initializeAddDataSourceMenu(JPopupMenu menu) {
+        JIPipeGraph algorithmGraph = graphEditorUI.getGraph();
+        Map<String, Set<Class<? extends JIPipeData>>> dataTypesByMenuPaths = JIPipe.getDataTypes().getDataTypesByMenuPaths();
+        Map<String, JComponent> menuTree = UIUtils.createMenuTree(menu, dataTypesByMenuPaths.keySet());
+
+        for (Map.Entry<String, Set<Class<? extends JIPipeData>>> entry : dataTypesByMenuPaths.entrySet()) {
+            JComponent subMenu = menuTree.get(entry.getKey());
+            for (Class<? extends JIPipeData> dataTypeClass : JIPipeData.getSortedList(entry.getValue())) {
+                if (JIPipeData.isHidden(dataTypeClass))
+                    continue;
+                Set<JIPipeNodeInfo> dataSources = JIPipe.getNodes().getMenuDataSourcesFor(dataTypeClass);
+                boolean isEmpty = true;
+                Icon icon = JIPipe.getDataTypes().getIconFor(dataTypeClass);
+                JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataTypeClass));
+                dataMenu.setIcon(icon);
+
+                for (JIPipeNodeInfo info : dataSources) {
+                    if (info.isHidden())
+                        continue;
+                    JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
+                    addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
+                    addItem.addActionListener(e -> {
+                        if (!JIPipeDesktopProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getDesktopWorkbench()))
+                            return;
+                        JIPipeGraphNode node = info.newInstance();
+                        graphEditorUI.getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
+                        algorithmGraph.insertNode(node, graphEditorUI.getCompartment());
+                    });
+                    dataMenu.add(addItem);
+                    isEmpty = false;
+                }
+
+                subMenu.add(dataMenu);
+                if (isEmpty)
+                    dataMenu.setVisible(false);
+            }
+        }
+
+        // Remove empty menus
+        boolean changed;
+        Set<JComponent> invisible = new HashSet<>();
+        do {
+            changed = false;
+            for (JComponent item : menuTree.values()) {
+                if (invisible.contains(item)) {
+                    continue;
+                }
+                boolean hasVisible = false;
+                for (int i = 0; i < UIUtils.getMenuItemCount(item); i++) {
+                    if (UIUtils.getMenuItem(item, i).isVisible()) {
+                        hasVisible = true;
+                        break;
+                    }
+                }
+                if (!hasVisible) {
+                    item.setVisible(false);
+                    invisible.add(item);
+                    changed = true;
+                }
+            }
+        }
+        while (changed);
+    }
+
+    /**
+     * Right-click trigger for the function tree (the {@code isPopupTrigger}
+     * check on both press and release covers all platforms). When the clicked
+     * row is on the {@code DataSourcesFunction} branch or one of its
+     * {@code *DataFunction} leaf branches, the full data-source menu is shown
+     * — rebuilt on each show (reloaded-on-show, like the old panel's
+     * reloadable pattern). Right-clicks on any other tree row (or on a node
+     * leaf row) are ignored: the old per-category {@code menuPath} popups are
+     * removed by the redesign. The full menu is shown on the branch <em>and</em>
+     * its leaves (a verifiable per-leaf data-type pre-scope is not available).
+     */
+    private void handleTreePopupMenuTrigger(MouseEvent e) {
+        if (!e.isPopupTrigger()) {
+            return;
+        }
+        TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+        if (path == null) {
+            return;
+        }
+        JIPipeNodeTaxonomyFunction branch = functionFromTreePath(path);
+        if (branch == null || !isUnderDataSources(branch)) {
+            return;
+        }
+        JPopupMenu popupMenu = new JPopupMenu();
+        initializeAddDataSourceMenu(popupMenu);
+        if (popupMenu.getComponentCount() > 0) {
+            popupMenu.revalidate();
+            popupMenu.show(tree, e.getX(), e.getY());
+        }
+    }
+
+    /**
+     * Whether the given function is {@code DataSourcesFunction} itself or a
+     * descendant of it (walks the function's {@link JIPipeNodeTaxonomyFunction#
+     * getParent()} chain up to the root).
+     */
+    private boolean isUnderDataSources(JIPipeNodeTaxonomyFunction function) {
+        JIPipeNodeTaxonomyFunction current = function;
+        while (current != null) {
+            if (current instanceof DataSourcesFunction) {
+                return true;
+            }
+            current = current.getParent();
+        }
+        return false;
+    }
+
+    /**
+     * The function carried by the last node of the given tree path (the row
+     * the user interacted with), or {@code null} when the path is empty, on
+     * the root, or on a node-leaf (database-entry) row.
+     */
+    private JIPipeNodeTaxonomyFunction functionFromTreePath(TreePath path) {
+        if (path == null) {
+            return null;
+        }
+        Object last = path.getLastPathComponent();
+        if (last instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction fn) {
+            return fn;
+        }
+        return null;
     }
 
     // ------------------------------------------------------------------

@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.bookmarks.JIPipeDesktopBookmarkListPanel;
-import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopAddNodesPanel;
+import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.JIPipeDesktopNodeBrowser;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorLogPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorMinimap;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -187,7 +187,7 @@ public class JIPipeDesktopCompartmentsGraphEditorUI extends JIPipeDesktopGraphEd
                 JIPipeDesktopDockPanel.PanelLocation.BottomLeft,
                 false,
                 JIPipeDesktopDockPanel.UI_ORDER_PINNED,
-                new JIPipeDesktopAddNodesPanel(getDesktopWorkbench(), this));
+                new JIPipeDesktopNodeBrowser(getDesktopWorkbench(), this));
         getDockPanel().addDockPanel(DOCK_ERRORS,
                 "Errors",
                 JIPipe.RESOURCES.getIcon24("actions/dialog-warning-2.png"),
