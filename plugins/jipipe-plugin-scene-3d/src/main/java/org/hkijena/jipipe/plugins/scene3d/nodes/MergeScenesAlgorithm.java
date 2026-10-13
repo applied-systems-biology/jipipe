@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.scene3d.nodes;
 
 
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,10 +26,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.plugins.scene3d.datatypes.Scene3DData;
 
 @SetJIPipeDocumentation(name = "Merge 3D scenes", description = "Merges the input scenes into one")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class)
 @AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class MergeScenesAlgorithm extends JIPipeMergingAlgorithm {

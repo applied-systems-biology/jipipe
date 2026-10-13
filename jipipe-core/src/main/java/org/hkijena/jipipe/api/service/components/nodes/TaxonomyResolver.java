@@ -374,6 +374,9 @@ public class TaxonomyResolver {
 
     private static Set<String> mergedTags(JIPipeNodeInfo info, Set<JIPipeNodeTaxonomyFunction> functions) {
         Set<String> tags = new LinkedHashSet<>(info.getTaxonomyTags());
+        // Tag-audit resource (jipipe-core): per-node tags for the curated
+        // nodes, merged next to the annotation-declared tags
+        tags.addAll(TaxonomyAutoAssignment.CuratedNodeTags.tagsOf(info.getId()));
         for (JIPipeNodeTaxonomyFunction function : functions) {
             collectFunctionPathTags(function, tags, new HashSet<>());
         }

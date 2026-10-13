@@ -19,16 +19,17 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * The generic deep-learning workflow family: running deep-learning
- * models on images.
+ * The generic machine-learning workflow family: classifying and
+ * segmenting images with machine-learning models (deep learning,
+ * random forests).
  * <p>
  * Steps are not annotated yet; the family's step annotations and
  * template/example wiring are planned for later phases.
  */
-public final class DeepLearningFamily implements JIPipeNodeTaxonomyFamily {
+public final class MachineLearningFamily implements JIPipeNodeTaxonomyFamily {
 
     /** The stable id of this family; used verbatim in step ids. */
-    public static final String ID = "jipipe:family:deep-learning";
+    public static final String ID = "jipipe:family:machine-learning";
 
     @Override
     public String getId() {
@@ -37,12 +38,12 @@ public final class DeepLearningFamily implements JIPipeNodeTaxonomyFamily {
 
     @Override
     public String getName() {
-        return "Deep learning";
+        return "Machine learning";
     }
 
     @Override
     public String getDescription() {
-        return "Process images with deep-learning models.";
+        return "Classify and segment images with machine-learning models (deep learning, random forests).";
     }
 
     /**

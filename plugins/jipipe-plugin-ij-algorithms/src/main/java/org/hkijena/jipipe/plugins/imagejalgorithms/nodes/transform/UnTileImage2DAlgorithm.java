@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.transform;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.IJ;
@@ -26,7 +27,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
+
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -44,7 +45,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Un-Tile image 2D", description = "Merges/Assembles multiple image tiles back into one image. Utilizes annotations to determine the location of tiles.")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageTransformationsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {

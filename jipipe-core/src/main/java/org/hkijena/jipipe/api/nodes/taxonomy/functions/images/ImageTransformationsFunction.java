@@ -11,10 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning;
+package org.hkijena.jipipe.api.nodes.taxonomy.functions.images;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DeepLearningFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
@@ -22,23 +22,30 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Seed leaf of the Deep Learning branch: Managing deep learning models.
+ * Leaf of the Images branch: images: Geometric transformations of images (flip, translate, rotate, reslice, transpose, crop).
+ * <p>
+ * Added by the full-registry classification audit: the auto-discovered
+ * ImageJ2/CLIJ2 nodes (and some curated ones) previously fell through the
+ * name-keyword heuristic into the Miscellaneous catch-all.
  */
-public final class DeepLearningModelsFunction implements JIPipeNodeTaxonomyFunction {
+public final class ImageTransformationsFunction implements JIPipeNodeTaxonomyFunction {
+
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:image-transformations";
 
     @Override
     public String getId() {
-        return "jipipe:function:deeplearning-models";
+        return "jipipe:function:image-transformations";
     }
 
     @Override
     public String getName() {
-        return "Deep learning models";
+        return "Image transformations";
     }
 
     @Override
     public JIPipeNodeTaxonomyFunction getParent() {
-        return new DeepLearningFunction();
+        return new ImagesFunction();
     }
 
     @Override
@@ -49,7 +56,7 @@ public final class DeepLearningModelsFunction implements JIPipeNodeTaxonomyFunct
 
     @Override
     public String getDescription() {
-        return "Managing deep learning models";
+        return "Geometric transformations of images: flip, translate, rotate, reslice, transpose, crop, paste, and dimension reordering";
     }
 
     @Override

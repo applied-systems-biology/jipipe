@@ -18,8 +18,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -34,7 +35,7 @@ import java.util.stream.Collectors;
 @SetJIPipeDocumentation(name = "Table to ImageJ", description = "Opens all incoming tables in ImageJ")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = { MiscellaneousFunction.class, ExportFileFormatsFunction.class }, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = { DataUtilitiesFunction.class, ExportFileFormatsFunction.class }, framework = ImageJ1Framework.class)
 public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
 
     public ResultsTableToGUI(JIPipeNodeInfo info) {

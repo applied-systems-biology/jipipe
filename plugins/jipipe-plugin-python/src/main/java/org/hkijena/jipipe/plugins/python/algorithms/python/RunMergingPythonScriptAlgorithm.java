@@ -26,9 +26,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -51,7 +54,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Run Python script (merging)", description = "Runs a Python script that iterates through each iteration step in the input slots. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings.\n\nTo learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 @RegisterJIPipeEnvironmentUsage(PythonEnvironment.class)
 @RegisterJIPipeEnvironmentUsage(JIPipePythonAdapterLibraryEnvironment.class)
 public class RunMergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {

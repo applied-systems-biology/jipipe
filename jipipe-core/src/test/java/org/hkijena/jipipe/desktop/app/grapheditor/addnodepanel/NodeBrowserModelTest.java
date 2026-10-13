@@ -57,6 +57,13 @@ class NodeBrowserModelTest {
     /** Stable id literal for the stub taxonomy function (see the stable-ID rule). */
     private static final String FUNCTION_ID = "node-browser-model-test:function";
 
+    /**
+     * Stable id literal for a stub function that is visible in the
+     * compartments editor but NOT in the pipeline (used to exercise the
+     * visibility-role filter of {@code populatedFunctionIds}).
+     */
+    private static final String COMP_FUNCTION_ID = "node-browser-model-test:comp-function";
+
     /** Stable id literal for the stub taxonomy framework (see the stable-ID rule). */
     private static final String FRAMEWORK_ID = "node-browser-model-test:framework";
 
@@ -68,6 +75,7 @@ class NodeBrowserModelTest {
     private static final String PLANE_NODE_ID = "nodebrowser:plane-node";
     private static final String VOLUME_NODE_ID = "nodebrowser:volume-node";
     private static final String OTHER_NODE_ID = "nodebrowser:other-node";
+    private static final String COMP_NODE_ID = "nodebrowser:comp-node";
     private static final String TAG_A = "nodebrowser:tag-a";
     private static final String TAG_B = "nodebrowser:tag-b";
     private static final String TAG_C = "nodebrowser:tag-c";
@@ -89,6 +97,7 @@ class NodeBrowserModelTest {
         nodes.unregister(PLANE_NODE_ID);
         nodes.unregister(VOLUME_NODE_ID);
         nodes.unregister(OTHER_NODE_ID);
+        nodes.unregister(COMP_NODE_ID);
         nodes.unregisterInputProfileProviders(List.of(TEST_PROFILE_PROVIDER));
         // Re-run the (idempotent) registration pipeline so that enrichment
         // recomputes over the surviving real nodes only.
@@ -230,8 +239,106 @@ class NodeBrowserModelTest {
     }
 
     // ------------------------------------------------------------------
+    // Data-type facet (input / output) — merged "Data" filter
+    // ------------------------------------------------------------------
+
+    @Test
+    void dataTypeFacets() {
+        registerNodes();
+        NodeBrowserModel model = new NodeBrowserModel();
+        // PlaneNode has an input AND an output of NodeBrowserModelTestPlaneData;
+        // VolumeNode/OtherNode have no slots at all.
+        JIPipeNodeDatabaseEntry plane = new CreateNewNodeByInfoDatabaseEntry(
+            "create-node-by-info:" + PLANE_NODE_ID,
+            JIPipe.getNodes().getRegisteredNodeInfos().get(PLANE_NODE_ID));
+        JIPipeNodeDatabaseEntry volume = new CreateNewNodeByInfoDatabaseEntry(
+            "create-node-by-info:" + VOLUME_NODE_ID,
+            JIPipe.getNodes().getRegisteredNodeInfos().get(VOLUME_NODE_ID));
+        JIPipeNodeDatabaseEntry other = new CreateNewNodeByInfoDatabaseEntry(
+            "create-node-by-info:" + OTHER_NODE_ID,
+            JIPipe.getNodes().getRegisteredNodeInfos().get(OTHER_NODE_ID));
+
+        // No data-type filter: all pass
+        assertTrue(model.matches(plane));
+        assertTrue(model.matches(volume));
+        assertTrue(model.matches(other));
+
+        // Input filter: only the node with a matching input slot passes
+        model.setInputDataTypes(Set.of(NodeBrowserModelTestPlaneData.class));
+        assertTrue(model.matches(plane));
+        assertFalse(model.matches(volume));
+        assertFalse(model.matches(other));
+
+        // Clearing the input filter restores the pass-through
+        model.setInputDataTypes(Set.of());
+        assertTrue(model.matches(volume));
+
+        // Output filter: symmetric
+        model.setOutputDataTypes(Set.of(NodeBrowserModelTestPlaneData.class));
+        assertTrue(model.matches(plane));
+        assertFalse(model.matches(volume));
+
+        // Combined: the node must match BOTH
+        model.setInputDataTypes(Set.of(NodeBrowserModelTestPlaneData.class));
+        assertTrue(model.matches(plane));
+        assertFalse(model.matches(volume));
+
+        // No cross-reset: setting output left the input filter in place
+        model.setOutputDataTypes(Set.of());
+        assertEquals(Set.of(NodeBrowserModelTestPlaneData.class), model.getInputDataTypes());
+        assertTrue(model.matches(plane));
+        assertFalse(model.matches(volume));
+    }
+
+    // ------------------------------------------------------------------
     // Helpers
     // ------------------------------------------------------------------
+
+    /**
+     * The function-tree pruning support ({@link
+     * NodeBrowserModel#populatedFunctionIds}) returns the union of the
+     * nodes' function ids (primary + secondary), filters by the visibility
+     * role (a function visible only in the other editor is not counted),
+     * and is safe on null input.
+     */
+    @Test
+    void populatedFunctionIdsUnionsNodeFunctionsAndFiltersByRole() {
+        // null -> empty set (defensive; callers keep the full skeleton)
+        assertTrue(NodeBrowserModel.populatedFunctionIds(null,
+            JIPipeNodeDatabasePipelineVisibility.Pipeline).isEmpty());
+
+        registerNodes();
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        // Only the three registered stubs (PlaneNode + VolumeNode declare the
+        // visible stub function, OtherNode has no @ConfigureJIPipeNode at all
+        // (primary null) and contributes nothing). Scoping to the stub ids
+        // mirrors databaseWithAllEntries() and keeps this independent of the
+        // rest of the registered plugin set.
+        List<JIPipeNodeInfo> stubInfos = List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID)
+            .stream().map(nodes::getInfoById).toList();
+        assertEquals(Set.of(FUNCTION_ID),
+            NodeBrowserModel.populatedFunctionIds(stubInfos,
+                JIPipeNodeDatabasePipelineVisibility.Pipeline));
+        assertEquals(Set.of(FUNCTION_ID),
+            NodeBrowserModel.populatedFunctionIds(stubInfos,
+                JIPipeNodeDatabasePipelineVisibility.Compartments));
+
+        // A node whose primary function is pipeline-hidden must not count
+        // toward the Pipeline role, but must for Compartments.
+        nodes.register(new JIPipeJavaNodeInfo(COMP_NODE_ID, CompNode.class), TEST_DEPENDENCY);
+        try {
+            List<JIPipeNodeInfo> withComp = List.of(PLANE_NODE_ID, VOLUME_NODE_ID, OTHER_NODE_ID, COMP_NODE_ID)
+                .stream().map(nodes::getInfoById).toList();
+            assertEquals(Set.of(FUNCTION_ID),
+                NodeBrowserModel.populatedFunctionIds(withComp,
+                    JIPipeNodeDatabasePipelineVisibility.Pipeline));
+            assertEquals(Set.of(FUNCTION_ID, COMP_FUNCTION_ID),
+                NodeBrowserModel.populatedFunctionIds(withComp,
+                    JIPipeNodeDatabasePipelineVisibility.Compartments));
+        } finally {
+            nodes.unregister(COMP_NODE_ID);
+        }
+    }
 
     private static Set<String> originNodeIds(List<JIPipeNodeDatabaseEntry> entries) {
         Set<String> ids = new java.util.LinkedHashSet<>();
@@ -356,6 +463,61 @@ class NodeBrowserModelTest {
         }
     }
 
+    /**
+     * A taxonomy function that is visible in the compartments editor but NOT
+     * in the pipeline: the role-filter half of
+     * {@link NodeBrowserModel#populatedFunctionIds}.
+     */
+    public static class StubCompFunction implements JIPipeNodeTaxonomyFunction {
+        public StubCompFunction() {
+        }
+
+        @Override
+        public String getId() {
+            return COMP_FUNCTION_ID;
+        }
+
+        @Override
+        public String getName() {
+            return "Node Browser Test Comp Function";
+        }
+
+        @Override
+        public JIPipeNodeTaxonomyFunction getParent() {
+            return null;
+        }
+
+        @Override
+        public Float getColorHue() {
+            return 0.21f;
+        }
+
+        @Override
+        public String getDescription() {
+            return "Test stub function, compartments only";
+        }
+
+        @Override
+        public Icon getIcon() {
+            return null;
+        }
+
+        @Override
+        public Set<String> getTags() {
+            return Set.of();
+        }
+
+        @Override
+        public boolean isVisibleInPipeline() {
+            return false;
+        }
+
+        @Override
+        public boolean isVisibleInCompartments() {
+            return true;
+        }
+    }
+
     /** Minimal taxonomy framework. */
     public static class StubFramework implements JIPipeNodeTaxonomyFramework {
         public StubFramework() {
@@ -392,6 +554,7 @@ class NodeBrowserModelTest {
         spatialDimensions = {JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D})
     @JIPipeNodeTaxonomyTags({TAG_B, TAG_C})
     @AddJIPipeInputSlot(value = NodeBrowserModelTestPlaneData.class, name = "Input", create = true)
+    @AddJIPipeOutputSlot(value = NodeBrowserModelTestPlaneData.class, name = "Output")
     public static class PlaneNode extends JIPipeGraphNode {
         public PlaneNode(JIPipeNodeInfo info) {
             super(info);
@@ -439,6 +602,28 @@ class NodeBrowserModelTest {
     @JIPipeNodeTaxonomyTags(TAG_A)
     public static class OtherNode extends JIPipeGraphNode {
         public OtherNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /**
+     * Node whose primary function is compartments-only (not pipeline-visible):
+     * exercises the role filter of {@code populatedFunctionIds}.
+     */
+    @ConfigureJIPipeNode(function = {StubCompFunction.class}, framework = StubFramework.class)
+    public static class CompNode extends JIPipeGraphNode {
+        public CompNode(JIPipeNodeInfo info) {
             super(info);
         }
 

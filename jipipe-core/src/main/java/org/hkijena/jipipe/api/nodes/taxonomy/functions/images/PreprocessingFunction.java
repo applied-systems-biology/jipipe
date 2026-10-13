@@ -26,6 +26,9 @@ import java.util.Set;
  */
 public final class PreprocessingFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:preprocessing";
+
     @Override
     public String getId() {
         return "jipipe:function:preprocessing";

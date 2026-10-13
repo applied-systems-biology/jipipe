@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.cellpose.algorithms;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningModelsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 
 @SetJIPipeDocumentation(name = "Import Cellpose model from file", description = "Imports a Cellpose model from a file")
-@ConfigureJIPipeNode(function = DeepLearningModelsFunction.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
 public class ImportCellposeModelFromFileAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.RegisterJIPipeParameterCollectionContextAction;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
@@ -45,7 +46,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @SetJIPipeDocumentation(name = "Project user path", description = "Returns a project user path as data. You can configure paths within the project settings.")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Output", create = true)
 public class ProjectUserPathDataSource extends JIPipeSimpleIteratingAlgorithm {
 

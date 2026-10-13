@@ -19,16 +19,19 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingRFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.plugins.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.plugins.strings.RScriptData;
 
 @SetJIPipeDocumentation(name = "Define R script", description = "Defines an R script")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = ScriptingRFunction.class, framework = RFramework.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true)
 @AddJIPipeOutputSlot(value = RScriptData.class, name = "Script", create = true)
 public class DefineRScriptAlgorithm extends JIPipeSimpleIteratingAlgorithm implements JIPipeScriptAlgorithm {

@@ -13,13 +13,14 @@
 
 package org.hkijena.jipipe.plugins.forms.algorithms.generators;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.MarkNodeAsUnstable;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FormsFunction;
 import org.hkijena.jipipe.plugins.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.plugins.forms.datatypes.FormData;
 import org.hkijena.jipipe.plugins.forms.datatypes.IntegerFormData;
@@ -27,7 +28,7 @@ import org.hkijena.jipipe.plugins.forms.datatypes.IntegerFormData;
 @SetJIPipeDocumentation(name = "Integer input form", description = "Creates a integer input form. ")
 @AddJIPipeInputSlot(value = FormData.class, name = "Existing")
 @AddJIPipeOutputSlot(value = FormData.class, name = "Combined")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FormsFunction.class)
 @MarkNodeAsUnstable
 public class IntegerFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 

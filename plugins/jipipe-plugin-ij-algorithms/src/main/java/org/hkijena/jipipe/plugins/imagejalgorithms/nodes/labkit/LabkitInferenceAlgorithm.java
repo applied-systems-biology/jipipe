@@ -14,7 +14,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Labkit inference", description = "Uses Labkit to segment or calculate the probability map of the input images")
-@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(name = "Raw", value = ImagePlusData.class, description = "The input image", create = true)
 @AddJIPipeInputSlot(name = "Model", value = JsonData.class, description = "The Labkit model", create = true)
 @AddJIPipeOutputSlot(name = "Labels", value = ImagePlusData.class, description = "The output labels")

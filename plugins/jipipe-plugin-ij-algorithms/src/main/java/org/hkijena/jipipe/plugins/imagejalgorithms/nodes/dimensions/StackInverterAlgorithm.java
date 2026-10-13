@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.dimensions;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import ij.ImagePlus;
 import ij.plugin.StackReverser;
@@ -22,7 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
+
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -32,7 +33,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.d3.ImagePlus3DData;
  * Wrapper around {@link ImageProcessor}
  */
 @SetJIPipeDocumentation(name = "Invert 3D stack Z-order", description = "Inverts the order of a Z-stack.")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DData.class, name = "Output", create = true)
 public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {

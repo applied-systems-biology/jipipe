@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.dimensions;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
@@ -24,7 +25,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
+
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -54,7 +55,7 @@ import java.util.*;
         "The type of the output image is determined by the consensus bit depth. " +
         "This node has similar functionality to the 'Combine stacks' node. " +
         "If no order (ascending) is given for each input, the order of input images is determined by the order in the slot list.")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output")
 public class StackToDimensionMerger2Algorithm extends JIPipeIteratingAlgorithm {
 

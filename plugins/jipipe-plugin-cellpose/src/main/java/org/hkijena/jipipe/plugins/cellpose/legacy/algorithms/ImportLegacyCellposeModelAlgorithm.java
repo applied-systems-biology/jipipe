@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.cellpose.legacy.algorithms;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningModelsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelD
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 
 @SetJIPipeDocumentation(name = "Import Cellpose model", description = "Imports a Cellpose model from a file")
-@ConfigureJIPipeNode(function = DeepLearningModelsFunction.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, name = "Output", create = true)
 @Deprecated

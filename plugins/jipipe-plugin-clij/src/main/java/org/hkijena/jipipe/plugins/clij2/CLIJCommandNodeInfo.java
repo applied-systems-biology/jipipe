@@ -45,6 +45,23 @@ import java.util.*;
 
 public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
+    /**
+     * Command name → function-id mapping, loaded once from the plugin's
+     * {@code taxonomy/clij-command-mapping.json} resource (values are stable
+     * function-id literals; unmapped commands fall back to the name-keyword
+     * heuristic).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping COMMAND_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(CLIJPlugin.RESOURCES, "taxonomy/clij-command-mapping.json");
+
+    /**
+     * Command name → tags mapping (tag-audit pipeline), loaded once from the
+     * plugin's taxonomy/clij-command-tags.json resource (same package-relative
+     * location as the command mapping).
+     */
+    private static final TaxonomyAutoAssignment.TagMapping COMMAND_TAGS =
+            TaxonomyAutoAssignment.TagMapping.load(CLIJCommandNodeInfo.class, "taxonomy/clij-command-tags.json");
+
     private final String nodeId;
     private final String nodeName;
     private final PluginInfo<CLIJMacroPlugin> pluginInfo;
@@ -259,11 +276,27 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
-        // Task 20: name-based heuristic for the runtime-registered CLIJ command
-        // nodes (discovered CLIJ2 macro plugins; no @ConfigureJIPipeNode can
-        // reach them). Supersedes the flat 19.11b MiscellaneousFunction default;
-        // the framework below is final (CLIJ).
+        // Full-registry classification audit: the CLIJ command's display name
+        // is mapped to the taxonomy function via the plugin's JSON resource
+        // (taxonomy/clij-command-mapping.json, keyed by command name; values
+        // are stable function-id literals). The resource mapping supersedes
+        // the old Task-20 display-name heuristic; the heuristic remains the
+        // fallback for unmapped commands, and Miscellaneous the last resort.
+        String mapped = COMMAND_MAPPING.functionIdOf(getName());
+        if (mapped != null) {
+            JIPipeNodeTaxonomyFunction function = TaxonomyAutoAssignment.functionForId(mapped);
+            if (function != null) {
+                return function;
+            }
+        }
         return TaxonomyAutoAssignment.functionForName(getName());
+    }
+
+    @Override
+    public Set<String> getMergedTags() {
+        // Auto-discovered CLIJ commands have no @JIPipeNodeTaxonomyTags
+        // annotation; the tag-audit mapping (resource) is their tag source.
+        return COMMAND_TAGS.tagsOf(getName());
     }
 
     @Override

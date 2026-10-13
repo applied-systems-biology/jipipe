@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.cellpose.legacy.algorithms;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, name = "Styles")
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
-@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, spatialDimensions = { SPATIAL_3D })
 @Deprecated
 @LabelAsJIPipeHidden
 @RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)

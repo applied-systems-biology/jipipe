@@ -22,7 +22,10 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotBarFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotLineFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotScatterFunction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -51,13 +54,23 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
 
     @Override
     public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
-        // 19.11b default for the runtime-registered "Plot Tables 2" node variants
-        // (one per JFreeChart plot data type; no @ConfigureJIPipeNode can reach them).
-        // The node's defining output is a JFreeChart plot, so the plotting branch's
-        // generic leaf (Other plots) is the defensible default over Miscellaneous.
-        // Task 20 (TaxonomyAutoAssignment) may refine per-variant; the framework
-        // below is final.
-        return new PlotMiscFunction();
+        // Runtime-registered "Plot Tables 2" node variants (one per JFreeChart
+        // plot data type; no @ConfigureJIPipeNode can reach them). The variant
+        // is defined by its plot data type id, so route each to the matching
+        // plotting leaf instead of dumping everything into "Other plots":
+        //   scatter  -> plot-xy-scatter
+        //   line     -> plot-xy-line, plot-category-line, plot-category-statistical-line
+        //   bar      -> plot-category-bar, plot-category-bar-stacked,
+        //               plot-category-statistical-bar, plot-box-and-whisker
+        //   other    -> plot-histogram, plot-pie-2d, plot-pie-3d, and any future type
+        String dataTypeId = plotDataType.getId();
+        return switch (dataTypeId) {
+            case "plot-xy-scatter" -> new PlotScatterFunction();
+            case "plot-xy-line", "plot-category-line", "plot-category-statistical-line" -> new PlotLineFunction();
+            case "plot-category-bar", "plot-category-bar-stacked",
+                 "plot-category-statistical-bar", "plot-box-and-whisker" -> new PlotBarFunction();
+            default -> new PlotMiscFunction();
+        };
     }
 
     @Override

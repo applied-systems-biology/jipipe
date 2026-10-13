@@ -82,6 +82,7 @@ class NodeDatabaseTaxonomyTest {
     private static final String SHARED_TAG_2 = "nodbtax:shared-tag-2";
     private static final String AUTO_IMPORT_ID = "nodbtax:auto-import";
     private static final String NO_TAGS_ID = "nodbtax:no-tags";
+    private static final String SAME_FUNCTION_ID = "nodbtax:same-function";
 
     @BeforeAll
     static void ensureJIPipe() {
@@ -100,6 +101,7 @@ class NodeDatabaseTaxonomyTest {
         nodes.unregister(SHARED_TAG_2);
         nodes.unregister(AUTO_IMPORT_ID);
         nodes.unregister(NO_TAGS_ID);
+        nodes.unregister(SAME_FUNCTION_ID);
         // The TrackMate steps assembled into the shared FamilyAssembler by
         // the three synthetic family nodes. TrackMateFamily is a
         // production family class (kept), but the resolver's
@@ -199,20 +201,25 @@ class NodeDatabaseTaxonomyTest {
     /**
      * {@link JIPipeNodeDatabase#related(JIPipeNodeDatabaseEntry, int)} ranks
      * candidates in tiers: same-family siblings (excluding follow-ups)
-     * first, then same-framework, then shared-tag (≥2 shared before 1),
-     * de-duplicated and capped, with auto-import entries down-ranked to the
-     * end of their tier.
+     * first, then same-function, then same-framework, then shared-tag (≥2
+     * shared before 1), de-duplicated and capped, with auto-import entries
+     * down-ranked to the end of their tier.
      * <p>
      * Expected order for {@code related(detect, 10)} with the synthetic set:
      * <ol>
      * <li>{@code filter} — the only family sibling that is not a follow-up
      * (the sibling {@code track} is a follow-up and is excluded from this
      * tier);</li>
-     * <li>{@code track} — qualifies via the shared framework (tier 2);
-     * being a follow-up only removes it from the sibling tier;</li>
-     * <li>{@code otherFramework} — tier 2, standard classification;</li>
-     * <li>{@code autoImport} — tier 2 candidate (shared framework) that is
-     * auto-import classified, hence down-ranked to the end of the tier; it
+     * <li>{@code track} — same function as detect (its family follow-up);</li>
+     * <li>{@code sameFunction} — shares detect's function leaf but has a
+     * different framework: it ranks in the function tier, i.e. <em>above</em>
+     * the same-framework siblings below, even though it appears later in the
+     * entry list. This is the regression guard for the "identical
+     * follow-ups for functionally different nodes" issue: shared
+     * functionality outranks a large shared framework.</li>
+     * <li>{@code otherFramework} — same framework, standard classification;</li>
+     * <li>{@code autoImport} — same-framework candidate that is
+     * auto-import classified, hence down-ranked to the end of its tier; it
      * is de-duplicated out of the tag tier where it would also qualify;</li>
      * <li>{@code sharedTagOne} — two shared tags;</li>
      * <li>{@code sharedTagTwo} — exactly one shared tag.</li>
@@ -220,7 +227,7 @@ class NodeDatabaseTaxonomyTest {
      * {@code noTags} qualifies for no tier and must be absent.
      */
     @Test
-    void relatedRanksFamilyThenFrameworkThenTags() {
+    void relatedRanksFamilyThenFunctionThenFrameworkThenTags() {
         registerNodes();
         JIPipeNodeDatabase database = databaseWithAllEntries();
         CreateNewNodeByInfoDatabaseEntry detect = byInfo(database, SPOT_DETECT_ID);
@@ -230,10 +237,18 @@ class NodeDatabaseTaxonomyTest {
         CreateNewNodeByInfoDatabaseEntry sharedTag1 = byInfo(database, SHARED_TAG_1);
         CreateNewNodeByInfoDatabaseEntry sharedTag2 = byInfo(database, SHARED_TAG_2);
         CreateNewNodeByInfoDatabaseEntry autoImport = byInfo(database, AUTO_IMPORT_ID);
+        CreateNewNodeByInfoDatabaseEntry sameFunction = byInfo(database, SAME_FUNCTION_ID);
 
         List<JIPipeNodeDatabaseEntry> expected = List.of(
-            filter, track, otherFramework, autoImport, sharedTag1, sharedTag2);
+            filter, track, sameFunction, otherFramework, autoImport, sharedTag1, sharedTag2);
         assertEquals(expected, database.related(detect, 10));
+
+        // The same-function node outranks the same-framework node, even
+        // though it is registered (and listed) after them.
+        int sameFunctionIdx = expected.indexOf(sameFunction);
+        int otherFrameworkIdx = expected.indexOf(otherFramework);
+        assertTrue(sameFunctionIdx < otherFrameworkIdx,
+            "a same-function entry must rank above a same-framework entry");
 
         // Cap
         assertEquals(List.of(filter, track), database.related(detect, 2));
@@ -256,14 +271,15 @@ class NodeDatabaseTaxonomyTest {
         assertSame(first, database.related(detect, 10), "related() must be cached per entry");
 
         // Replacing the entries (e.g. the builder run) invalidates the
-        // cache; in the new entry set the family sibling (filter) is
-        // gone, so the framework candidate becomes the first result
+        // cache; in the new entry set the family sibling (filter) and the
+        // same-function node are gone, so the same-function candidate
+        // (track) becomes the first result
         List<JIPipeNodeDatabaseEntry> reordered = List.of(
             otherFramework, detect, track);
         database.setEntries(reordered);
         List<JIPipeNodeDatabaseEntry> second = database.related(detect, 10);
         assertNotSame(first, second, "replacing the entries must invalidate the related cache");
-        assertEquals(otherFramework, second.get(0), "the related order must reflect the new entry set");
+        assertEquals(track, second.get(0), "the related order must reflect the new entry set (same-function tier)");
     }
 
     // ------------------------------------------------------------------
@@ -287,6 +303,7 @@ class NodeDatabaseTaxonomyTest {
         registerNode(SharedTagTwoNode.class, SHARED_TAG_2, nodes);
         registerNode(AutoImportNode.class, AUTO_IMPORT_ID, nodes);
         registerNode(NoTagsNode.class, NO_TAGS_ID, nodes);
+        registerNode(SameFunctionNode.class, SAME_FUNCTION_ID, nodes);
     }
 
     private static void registerNode(Class<? extends JIPipeGraphNode> nodeClass, String id, JIPipeNodesServiceComponent nodes) {
@@ -327,7 +344,7 @@ class NodeDatabaseTaxonomyTest {
         JIPipeNodeDatabase database = new TestNodeDatabase();
         List<JIPipeNodeDatabaseEntry> entries = new java.util.ArrayList<>();
         for (String id : List.of(SPOT_DETECT_ID, TRACK_ID, FILTER_ID, OTHER_FRAMEWORK_ID,
-            SHARED_TAG_1, SHARED_TAG_2, AUTO_IMPORT_ID, NO_TAGS_ID)) {
+            SHARED_TAG_1, SHARED_TAG_2, AUTO_IMPORT_ID, NO_TAGS_ID, SAME_FUNCTION_ID)) {
             JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(id);
             entries.add(new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + id, info));
         }
@@ -654,6 +671,32 @@ class NodeDatabaseTaxonomyTest {
     /** No framework, no family step, no tags: excluded from related(). */
     public static class NoTagsNode extends JIPipeGraphNode {
         public NoTagsNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                   JIPipeValidationReportSettings reportSettings,
+                                   JIPipeValidationReport report,
+                                   JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /**
+     * Shares {@code detect}'s function leaf (the stub function) but has no
+     * framework, no family step and no node-level tags: a pure
+     * <em>function-tier</em> candidate. It must rank above the
+     * same-framework nodes (regression guard for "identical follow-ups for
+     * functionally different nodes"): shared functionality outranks a large
+     * shared framework.
+     */
+    @ConfigureJIPipeNode(function = {StubFunction.class})
+    public static class SameFunctionNode extends JIPipeGraphNode {
+        public SameFunctionNode(JIPipeNodeInfo info) {
             super(info);
         }
 

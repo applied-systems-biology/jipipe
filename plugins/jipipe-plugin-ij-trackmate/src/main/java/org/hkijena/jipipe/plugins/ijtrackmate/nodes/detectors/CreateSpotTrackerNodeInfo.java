@@ -23,9 +23,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyAutoAssignment;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -91,17 +92,26 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
+    public Set<String> getMergedTags() {
+        // Programmatic info (not enriched by TaxonomyResolver): the tag-audit
+        // resource (jipipe-core) is the tag source.
+        return TaxonomyAutoAssignment.CuratedNodeTags.tagsOf(getId());
+    }
+
+    @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return CreateSpotTrackerNode.class;
     }
 
     @Override
     public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
-        // Programmatic data source (rule 6): emits SpotTrackerData (not an
-        // image/table/ROI/filament type) ⇒ the data/ misc leaf. No annotation
-        // can reach this runtime-registered node, so the taxonomy membership is
-        // set here rather than via @ConfigureJIPipeNode.
-        return new MiscDataFunction();
+        // Spot tracker factories (Kalman, LAP, sparse/simple LAP,
+        // nearest-neighbor, overlap) create the trackers that feed the
+        // "Track spots" step ⇒ the Tracking linking leaf, next to their
+        // annotated siblings. (The "rule 6" data/misc default of the original
+        // conversion only reflected the emitted data type, not the role in the
+        // tracking workflow.)
+        return new TrackingLinkingFunction();
     }
 
     @Override

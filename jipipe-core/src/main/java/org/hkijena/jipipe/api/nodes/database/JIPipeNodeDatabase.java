@@ -151,6 +151,15 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
      * step in any family that the entry's origin node is a step in,
      * <i>excluding the entry's follow-ups</i> (those are surfaced by
      * {@link #followUps(JIPipeNodeDatabaseEntry)});</li>
+     * <li><b>same function</b> — entries that appear under at least one of
+     * the entry's
+     * {@link JIPipeNodeDatabaseEntry#getFunctionIds() function leaves}
+     * (i.e. they share a taxonomy function with the entry). This ranks
+     * <em>what the node does</em> above <em>where it comes from</em>: two
+     * nodes in the same function are contextually more useful "next
+     * steps" than arbitrary nodes from the same framework, which is what
+     * keeps the suggestions distinct for functionally different nodes that
+     * happen to share a large framework (e.g. many ImageJ 1 nodes);</li>
      * <li><b>same framework</b> — entries whose
      * {@link JIPipeNodeDatabaseEntry#getFramework() framework id} equals
      * the entry's (the {@code NoFramework} sentinel never matches);</li>
@@ -225,7 +234,29 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             }
         }
 
-        // Tier 2: same framework (the NoFramework sentinel never matches:
+        // Tier 2: same function — entries that appear under at least one of
+        // the entry's function leaves (an exact shared function id). Ranking
+        // shared functionality above framework is what keeps the suggestions
+        // distinct for functionally different nodes that share a large
+        // framework (e.g. the many ImageJ 1 nodes): two "Filtering" nodes are
+        // a better "next step" pair than two arbitrary ImageJ 1 nodes.
+        List<JIPipeNodeDatabaseEntry> tierFunction = new ArrayList<>();
+        Set<String> myFunctionIds = e.getFunctionIds();
+        if (!myFunctionIds.isEmpty()) {
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                if (sameNode.test(entry)) {
+                    continue;
+                }
+                for (String fid : entry.getFunctionIds()) {
+                    if (myFunctionIds.contains(fid) && added.add(entry.getId())) {
+                        tierFunction.add(entry);
+                        break;
+                    }
+                }
+            }
+        }
+
+        // Tier 3: same framework (the NoFramework sentinel never matches:
         // it would make every framework-less entry a "sibling")
         List<JIPipeNodeDatabaseEntry> tier2 = new ArrayList<>();
         String frameworkId = e.getFramework().getId();
@@ -238,7 +269,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             }
         }
 
-        // Tier 3: shared tags (>=2 shared before exactly 1)
+        // Tier 4: shared tags (>=2 shared before exactly 1)
         List<JIPipeNodeDatabaseEntry> tier3 = new ArrayList<>();
         Set<String> myTags = e.getTags();
         if (!myTags.isEmpty()) {
@@ -274,7 +305,7 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
         // Merge the tiers in priority order; within each tier,
         // down-ranked (non-Standard) entries are sorted to the end
-        for (List<JIPipeNodeDatabaseEntry> tier : List.of(tier1, tier2, tier3)) {
+        for (List<JIPipeNodeDatabaseEntry> tier : List.of(tier1, tierFunction, tier2, tier3)) {
             if (result.size() >= max) {
                 break;
             }

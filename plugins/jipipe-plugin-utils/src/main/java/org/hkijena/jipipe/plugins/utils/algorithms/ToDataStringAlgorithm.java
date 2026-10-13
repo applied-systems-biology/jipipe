@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -25,13 +25,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.strings.StringData;
 
 @SetJIPipeDocumentation(name = "To data string", description = "Converts the incoming data into a data object containing the string representation of the data")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = StringData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 public class ToDataStringAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean detailedDataString = true;

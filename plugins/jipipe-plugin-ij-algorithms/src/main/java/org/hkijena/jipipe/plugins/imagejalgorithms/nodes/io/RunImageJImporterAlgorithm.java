@@ -45,7 +45,7 @@ import javax.swing.*;
 
 @SetJIPipeDocumentation(name = "Import from ImageJ", description = "Runs an ImageJ importer. You can select the utilized importer type in the parameters.")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = { MiscDataFunction.class, ImageDataFunction.class }, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = { ImageDataFunction.class, MiscDataFunction.class }, framework = ImageJ1Framework.class)
 public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ImageJDataImporterRef importerType = new ImageJDataImporterRef();

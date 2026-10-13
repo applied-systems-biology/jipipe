@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
 
 /**
@@ -31,7 +32,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
  */
 @SetJIPipeDocumentation(name = "Relativize paths", description = "Converts the child path into a path relative to the parent path. This also works for children that " +
         "are located in a parent folder.")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 
 @AddJIPipeInputSlot(value = PathData.class, name = "Parent", create = true)

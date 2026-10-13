@@ -21,14 +21,18 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsConvertFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.GraphAnnotationsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FilamentDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FormsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningModelsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningTrainingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportArchiveFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
@@ -39,6 +43,17 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageArithmeticFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageComparisonFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageLabelingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageMomentsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageNeighborMeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImagePixelManipulationFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageProjectionsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImagePropertiesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageStatisticsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
@@ -55,6 +70,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiPropertiesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsDescriptiveFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsEstimationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.statistics.StatisticsTestingFunction;
@@ -69,7 +85,14 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingFilterin
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingLinkingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.AnnotationsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DeepLearningFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingExpressionFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingImageJMacroFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingRFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MachineLearningFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ExportFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.FilamentsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
@@ -86,6 +109,8 @@ import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
@@ -103,8 +128,8 @@ import org.scijava.plugin.Plugin;
 import java.util.Set;
 
 /**
- * Registers the curated node taxonomy into the live registries: the 61
- * functions (13 top-level branches + 48 seed leaves) and the 12 frameworks.
+ * Registers the curated node taxonomy into the live registries: the 84
+ * functions (13 top-level branches + 71 seed leaves) and the 14 frameworks.
  * <p>
  * This is the single place that populates the {@code FunctionRegistry} and
  * {@code FrameworkRegistry}; node plugins only record their membership in
@@ -172,7 +197,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new StatisticsFunction(),
             new TrackingFunction(),
             new AnnotationsFunction(),
-            new DeepLearningFunction(),
+            new MachineLearningFunction(),
             new PlottingFunction(),
             new ExportFunction(),
             new GraphFunction(),
@@ -190,6 +215,11 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new RoiDataFunction(),
             new FilamentDataFunction(),
             new MiscDataFunction(),
+            // data — full-registry audit leaves (curated nodes previously in
+            // the "Misc. data" catch-all)
+            new FileSystemFunction(),
+            new OmeroFunction(),
+            new FormsFunction(),
             // images
             new PreprocessingFunction(),
             new FilteringFunction(),
@@ -200,8 +230,22 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new ResamplingFunction(),
             new MergingSplittingFunction(),
             new ColorStackFunction(),
+            // images — full-registry audit leaves (auto-discovered IJ2/CLIJ2
+            // nodes + curated strays that previously fell to Miscellaneous)
+            new ImageArithmeticFunction(),
+            new ImageComparisonFunction(),
+            new ImageProjectionsFunction(),
+            new ImageTypeConversionFunction(),
+            new ImageLabelingFunction(),
+            new ImageStatisticsFunction(),
+            new ImageMomentsFunction(),
+            new ImageTransformationsFunction(),
+            new ImagePixelManipulationFunction(),
+            new ImageNeighborMeasurementsFunction(),
+            new ImagePropertiesFunction(),
             // rois
             new RoiFiltersFunction(),
+            new RoiPropertiesFunction(),
             new RoiMeasurementsFunction(),
             new RoiMorphologyFunction(),
             new RoiIntersectionsFunction(),
@@ -227,10 +271,11 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             // annotations
             new AnnotationsEditFunction(),
             new AnnotationsConvertFunction(),
+            new GraphAnnotationsFunction(),
             // deeplearning
-            new DeepLearningInferenceFunction(),
-            new DeepLearningTrainingFunction(),
-            new DeepLearningModelsFunction(),
+            new MachineLearningInferenceFunction(),
+            new MachineLearningTrainingFunction(),
+            new MachineLearningModelsFunction(),
             // plotting
             new PlotScatterFunction(),
             new PlotLineFunction(),
@@ -243,14 +288,28 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             // graph
             new GraphCompartmentOutputsFunction(),
             new GraphWrappersFunction(),
-            new GraphDebugFunction()
+            new GraphDebugFunction(),
+            // misc — full-registry audit leaves (curated nodes previously in
+            // the "Miscellaneous" catch-all)
+            new DataUtilitiesFunction(),
+            new TextMarkupFunction(),
+            new ScriptingFunction(),
+            // scripting — language sub-leaves (re-clustering audit: users
+            // interested in one language get a dedicated branch; the
+            // matching framework facet is the orthogonal filter)
+            new ScriptingPythonFunction(),
+            new ScriptingRFunction(),
+            new ScriptingImageJMacroFunction(),
+            new ScriptingExpressionFunction()
         };
         for (JIPipeNodeTaxonomyFunction function : leaves) {
             functions.register(function);
         }
 
-        // 12 frameworks (flat set; order is irrelevant).
+        // 14 frameworks (flat set; order is irrelevant).
         frameworks.register(new CoreFramework());
+        frameworks.register(new PythonFramework());
+        frameworks.register(new RFramework());
         frameworks.register(new ImageJ1Framework());
         frameworks.register(new ImageJ2Framework());
         frameworks.register(new Cellpose2Framework());

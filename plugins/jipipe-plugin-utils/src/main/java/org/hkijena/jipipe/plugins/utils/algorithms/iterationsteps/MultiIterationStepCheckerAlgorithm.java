@@ -13,7 +13,8 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms.iterationsteps;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -41,7 +42,7 @@ import java.util.List;
 
 @SetJIPipeDocumentation(name = "Check iteration steps (multiple data per slot)", description = "Pass multiple inputs through this node to check if iteration steps are correctly created and filter out incomplete steps. " +
         "This node is designed for creating iteration steps where multiple data items can be assigned to an iteration step input slot.")
-@ConfigureJIPipeNode(function = { MiscellaneousFunction.class, AnnotationsEditFunction.class })
+@ConfigureJIPipeNode(function = { DataUtilitiesFunction.class, AnnotationsEditFunction.class })
 public class MultiIterationStepCheckerAlgorithm extends JIPipeMergingAlgorithm {
     private boolean keepOriginalAnnotations = true;
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter();

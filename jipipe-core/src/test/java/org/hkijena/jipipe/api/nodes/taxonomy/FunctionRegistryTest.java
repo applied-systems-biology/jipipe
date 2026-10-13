@@ -22,6 +22,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -126,6 +127,34 @@ class FunctionRegistryTest {
         assertEquals(List.of(cell), topChildren);
         assertEquals(List.of(leaf), registry.children(cell));
         assertTrue(registry.children(leaf).isEmpty());
+    }
+
+    /**
+     * Regression guard for the production registration pattern: a leaf's
+     * {@code getParent()} returns a <em>fresh</em> instance (e.g.
+     * {@code new DataSourcesFunction()} inside {@code ImageDataFunction}),
+     * which is equal by id to the registered top-level but is NOT the same
+     * object. {@link FunctionRegistry#children} must match on id, so the
+     * child is still found under the registered parent (reference equality
+     * would flatten the whole tree).
+     */
+    @Test
+    void childrenMatchByParentIdAcrossInstances() {
+        FunctionRegistry registry = new FunctionRegistry();
+        // The registered top-level (a distinct instance, like TaxonomyPlugin registers)
+        TestFunction registeredTop = new TestFunction("seg", "Segmentation", 0.5f);
+        registry.register(registeredTop);
+        // The leaf returns a FRESH copy of the top-level from getParent()
+        TestFunction freshTopCopy = new TestFunction("seg", "Segmentation", 0.5f);
+        TestFunction leaf = new TestFunction("leaf", "Leaf", null).withParent(freshTopCopy);
+        registry.register(leaf);
+
+        assertNotSame(registeredTop, freshTopCopy,
+            "precondition: the leaf's parent must be a different instance than the registered top-level");
+        assertEquals(List.of(leaf), registry.children(registeredTop),
+            "children() must resolve the leaf under the registered top-level by parent id");
+        // And the reverse lookup direction (by the fresh instance) also works
+        assertEquals(List.of(leaf), registry.children(freshTopCopy));
     }
 
     @Test

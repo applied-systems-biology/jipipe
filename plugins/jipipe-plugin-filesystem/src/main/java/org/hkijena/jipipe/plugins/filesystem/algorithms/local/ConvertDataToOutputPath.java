@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,13 +26,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FolderData;
 
 /**
  * Applies subfolder navigation to each input folder
  */
 @SetJIPipeDocumentation(name = "Get output path", description = "Obtains the output path of the current run where the receiving data is stored.")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Output path", create = true)
 public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {

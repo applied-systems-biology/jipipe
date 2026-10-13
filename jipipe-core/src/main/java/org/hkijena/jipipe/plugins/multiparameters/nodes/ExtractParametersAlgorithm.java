@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.context.JIPipeDataContext;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -37,7 +38,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Node", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
-@ConfigureJIPipeNode(function = TableDataFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
     private OptionalTextAnnotationNameParameter nodeUUIDAnnotation = new OptionalTextAnnotationNameParameter("Node UUID", true);

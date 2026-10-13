@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningModelsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Pretrained Cellpose 3.x segmentation model", description = "Imports one or a selection of pretrained Cellpose 3.x segmentation models")
-@ConfigureJIPipeNode(function = DeepLearningModelsFunction.class, framework = Cellpose3Framework.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = Cellpose3Framework.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
 public class ImportPretrainedCellpose3SegmentationModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

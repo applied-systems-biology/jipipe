@@ -24,7 +24,8 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.shapes.EmptyImageJ2ShapeData;
 import org.hkijena.jipipe.plugins.imagej2.datatypes.shapes.ImageJ2ShapeData;
@@ -33,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @SetJIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
-@ConfigureJIPipeNode(function = MiscDataFunction.class, framework = ImageJ2Framework.class)
+@ConfigureJIPipeNode(function = RoiDataFunction.class, framework = ImageJ2Framework.class)
 @AddJIPipeOutputSlot(value = ImageJ2ShapeData.class, name = "Shape", create = true)
 public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

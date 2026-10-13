@@ -48,6 +48,30 @@ import java.util.stream.Collectors;
  */
 public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
+    /**
+     * Op-id → function-id overrides, loaded once from the plugin's
+     * {@code taxonomy/ij2-op-ids.json} resource (package-relative to
+     * {@link ImageJ2Plugin}).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping OP_ID_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-ids.json");
+
+    /**
+     * Op-namespace → function-id defaults, loaded once from the plugin's
+     * {@code taxonomy/ij2-op-namespaces.json} resource (package-relative to
+     * {@link ImageJ2Plugin}).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping OP_NAMESPACE_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-namespaces.json");
+
+    /**
+     * Op name → tags mapping (tag-audit pipeline: per-node generation +
+     * embedding-based compression into a canonical vocabulary), loaded
+     * once from the plugin's taxonomy/ij2-op-tags.json resource.
+     */
+    private static final TaxonomyAutoAssignment.TagMapping OP_TAGS =
+            TaxonomyAutoAssignment.TagMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-tags.json");
+
     private final Context context;
     private final String id;
     private final OpInfo opInfo;
@@ -171,11 +195,36 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
-        // Task 20: name-based heuristic for the runtime-registered ImageJ2 op
-        // nodes (discovered net.imagej.ops; no @ConfigureJIPipeNode can reach
-        // them). Supersedes the flat 19.11b MiscellaneousFunction default;
-        // the framework below is final (ImageJ2).
+        // Full-registry classification audit: the op's namespace and (where
+        // needed) the exact op name are mapped to the taxonomy function via
+        // the plugin's JSON resource (taxonomy/ij2-op-mapping.json; op-id
+        // entries win over op-namespace entries, both keyed by stable
+        // function-id literals). The resource mapping supersedes the old
+        // Task-20 display-name heuristic; the heuristic remains the fallback
+        // for unmapped ops, and Miscellaneous the last resort.
+        String opName = opInfo.getName();
+        String mapped = OP_ID_MAPPING.functionIdOf(opName);
+        if (mapped == null) {
+            String namespace = opName.contains(".")
+                    ? opName.substring(0, opName.indexOf('.'))
+                    : opName;
+            mapped = OP_NAMESPACE_MAPPING.functionIdOf(namespace);
+        }
+        if (mapped != null) {
+            JIPipeNodeTaxonomyFunction function = TaxonomyAutoAssignment.functionForId(mapped);
+            if (function != null) {
+                return function;
+            }
+        }
         return TaxonomyAutoAssignment.functionForName(getName());
+    }
+
+    @Override
+    public Set<String> getMergedTags() {
+        // Auto-discovered ops have no @JIPipeNodeTaxonomyTags annotation; the
+        // tag-audit mapping (resource) is their tag source.
+        String opName = opInfo.getName();
+        return OP_TAGS.tagsOf(opName);
     }
 
     @Override

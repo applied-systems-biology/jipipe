@@ -13,9 +13,10 @@
 
 package org.hkijena.jipipe.plugins.opencv.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
+
 import org.bytedeco.javacpp.opencv_core;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,7 +34,7 @@ import org.hkijena.jipipe.plugins.opencv.utils.OpenCvDepth;
 import org.hkijena.jipipe.plugins.opencv.utils.OpenCvImageUtils;
 
 @SetJIPipeDocumentation(name = "OpenCV Convert Depth", description = "Converts an OpenCV image to another depth. Applied per channel.")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = OpenCVFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = ImageTypeConversionFunction.class, framework = OpenCVFramework.class, spatialDimensions = { SPATIAL_2D })
 @AddJIPipeInputSlot(value = OpenCvImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OpenCvImageData.class, name = "Output", create = true)
 public class ConvertDepthAlgorithm extends JIPipeSimpleIteratingAlgorithm {

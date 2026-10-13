@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.dimensions;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import com.google.common.collect.Iterables;
@@ -24,7 +25,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
+
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -51,7 +52,7 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Merge 2D slices into hyperstack", description = "Merges all incoming 2D slices into a hyperstack. The slice positions within the hyperstack can be controlled via expressions. " +
         "The node can handle missing and negative slice positions due to a remapping procedure. Please ensure that there are no duplicate locations.")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Slices", description = "The 2D slices. Each one should be annotated by the Z, C, and T position", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Hyperstack", description = "The generated hyperstack", create = true)
 public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {

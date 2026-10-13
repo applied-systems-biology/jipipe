@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.datasources;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.MarkNodeAsUnstable;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -46,7 +47,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @SetJIPipeDocumentation(name = "Select path (interactive)", description = "Asks for a path (file/folder) interactively when the node is run. Currently not recommended. Use project user paths instead.")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 @AddJIPipeOutputSlot(value = PathData.class, name = "Path", create = true)
 @MarkNodeAsUnstable
 public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {

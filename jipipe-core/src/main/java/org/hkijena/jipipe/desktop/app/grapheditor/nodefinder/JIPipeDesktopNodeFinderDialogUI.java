@@ -49,6 +49,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -94,6 +95,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JScrollPane scrollPane = new JScrollPane(nodeList);
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node finder");
     private final NodeBrowserModel model = new NodeBrowserModel();
+
+    /**
+     * Function-leaf tree rows to highlight because a search matched a node
+     * under them (bold in the tree renderer); empty when no search is active.
+     */
+    private Set<TreePath> searchHighlightedLeafPaths = Set.of();
     private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
     private JIPipeDesktopSearchTextField searchField;
 
@@ -475,21 +482,63 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
     private void populateTree() {
         FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+        // Prune function branches that carry no (visible) nodes so the tree
+        // never shows empty categories. The registered node infos are the
+        // synchronous source of truth (the database builds its entries
+        // asynchronously and may still be empty at this point); the
+        // visibility role mirrors the list query's (compartments graph ⇒
+        // compartments role, everything else ⇒ pipeline role).
+        JIPipeNodeDatabasePipelineVisibility role = JIPipeNodeDatabasePipelineVisibility.Pipeline;
+        if (canvasUI.getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench workbench
+                && canvasUI.getGraph() == workbench.getProject().getCompartmentGraph()) {
+            role = JIPipeNodeDatabasePipelineVisibility.Compartments;
+        }
+        Set<String> populated = NodeBrowserModel.populatedFunctionIds(
+            JIPipe.getNodes().getRegisteredNodeInfos().values(), role);
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
         root.removeAllChildren();
         for (JIPipeNodeTaxonomyFunction top : registry.topLevel()) {
-            root.add(buildTreeNode(top, registry));
+            DefaultMutableTreeNode node = buildTreeNode(top, registry, populated);
+            if (node != null) {
+                root.add(node);
+            }
         }
         treeModel.reload();
         tree.expandRow(0);
     }
 
-    private DefaultMutableTreeNode buildTreeNode(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry) {
+    /**
+     * Builds the function-tree subtree rooted at the given function, pruning
+     * child functions that have no node in their subtree (see
+     * {@link NodeBrowserModel#populatedFunctionIds}).
+     *
+     * @return the subtree root, or {@code null} when the function (and all
+     * its descendants) carry no node
+     */
+    private DefaultMutableTreeNode buildTreeNode(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry, Set<String> populated) {
+        if (!populated.isEmpty() && !hasNodesUnder(function, registry, populated)) {
+            return null;
+        }
         DefaultMutableTreeNode node = new DefaultMutableTreeNode(function);
         for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
-            node.add(buildTreeNode(child, registry));
+            DefaultMutableTreeNode childNode = buildTreeNode(child, registry, populated);
+            if (childNode != null) {
+                node.add(childNode);
+            }
         }
         return node;
+    }
+
+    private static boolean hasNodesUnder(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry, Set<String> populated) {
+        if (populated.contains(function.getId())) {
+            return true;
+        }
+        for (JIPipeNodeTaxonomyFunction child : registry.children(function)) {
+            if (hasNodesUnder(child, registry, populated)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -613,6 +662,16 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 return true;
             });
         }
+        // Curated (non-auto-imported) nodes first, auto-discovered IJ2/CLIJ2
+        // nodes at the bottom (stable within each group — same rule as the
+        // node browser's list)
+        filtered.sort(Comparator.comparingInt(entry -> {
+            String id = entry.getOriginNodeId();
+            return id != null && (id.startsWith("ij2:") || id.startsWith("clij:")) ? 1 : 0;
+        }));
+        // Highlight the tree leafs the search matched (same rule as the node
+        // browser; no-op without a search term)
+        updateTreeSearchHighlights(filtered);
         DefaultListModel<JIPipeNodeDatabaseEntry> listModel = new DefaultListModel<>();
         for (JIPipeNodeDatabaseEntry entry : filtered) {
             listModel.addElement(entry);
@@ -761,7 +820,54 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * Tree cell renderer: shows the function's name and icon; functions
      * without an icon fall back to a generic node icon.
      */
-    private static class FunctionTreeCellRenderer implements TreeCellRenderer {
+    /**
+     * Marks the function-leaf tree rows whose entries appear in the current
+     * results (and their ancestors) as search-highlighted — bold in the tree
+     * renderer. Only while a search term is active; otherwise clears any
+     * previous highlights.
+     */
+    private void updateTreeSearchHighlights(List<JIPipeNodeDatabaseEntry> results) {
+        if (!model.isSearchActive() || results.isEmpty()) {
+            if (!searchHighlightedLeafPaths.isEmpty()) {
+                searchHighlightedLeafPaths = Set.of();
+                tree.repaint();
+            }
+            return;
+        }
+        Set<String> matchedFunctionIds = new HashSet<>();
+        for (JIPipeNodeDatabaseEntry entry : results) {
+            matchedFunctionIds.addAll(entry.getFunctionIds());
+        }
+        Set<TreePath> highlighted = new HashSet<>();
+        markMatchedRows((DefaultMutableTreeNode) tree.getModel().getRoot(), matchedFunctionIds, highlighted);
+        searchHighlightedLeafPaths = highlighted;
+        // Expand the ancestors of the highlighted rows so the matches are
+        // visible even when their branches were collapsed
+        for (TreePath path : highlighted) {
+            Object[] components = path.getPath();
+            for (int i = 1; i < components.length; i++) {
+                tree.expandPath(new TreePath(java.util.Arrays.copyOfRange(components, 0, i)));
+            }
+        }
+        tree.repaint();
+    }
+
+    private void markMatchedRows(DefaultMutableTreeNode node, Set<String> matchedFunctionIds, Set<TreePath> highlighted) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction fn) {
+                // A row is highlighted when a result entry is filed under its
+                // own function (primary or secondary) — same rule as the node
+                // browser's search highlight.
+                if (matchedFunctionIds.contains(fn.getId())) {
+                    highlighted.add(new TreePath(mtn.getPath()));
+                }
+                markMatchedRows(mtn, matchedFunctionIds, highlighted);
+            }
+        }
+    }
+
+    private class FunctionTreeCellRenderer implements TreeCellRenderer {
 
         private static final Icon GENERIC_NODE_ICON = JIPipe.RESOURCES.getIcon16("actions/tag.png");
 
@@ -771,11 +877,17 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
             JLabel label = new JLabel();
             label.setOpaque(true);
+            label.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
             if (node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function) {
                 label.setText(function.getName());
                 Icon icon = function.getIcon();
                 label.setIcon(icon != null ? icon : GENERIC_NODE_ICON);
                 label.setToolTipText(function.getDescription());
+                // Search highlight: the search matched a node filed under this
+                // leaf (or a descendant leaf)
+                if (searchHighlightedLeafPaths.contains(new TreePath(node.getPath()))) {
+                    label.setFont(label.getFont().deriveFont(java.awt.Font.BOLD));
+                }
             } else {
                 // The root node
                 label.setText("All functions");

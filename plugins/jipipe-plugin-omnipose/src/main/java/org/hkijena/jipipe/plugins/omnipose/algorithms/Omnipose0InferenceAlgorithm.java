@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.omnipose.algorithms;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.ImagePlus;
@@ -93,7 +93,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows d")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
-@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)
 public class Omnipose0InferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 

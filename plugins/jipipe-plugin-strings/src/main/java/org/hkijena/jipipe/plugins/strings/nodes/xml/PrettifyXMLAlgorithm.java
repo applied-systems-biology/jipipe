@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.strings.nodes.xml;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,12 +24,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.strings.XMLData;
 import org.hkijena.jipipe.utils.xml.XmlUtils;
 
 @SetJIPipeDocumentation(name = "Prettify XML", description = "Prettifies/formats the input XML data")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = TextMarkupFunction.class)
 @AddJIPipeInputSlot(value = XMLData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = XMLData.class, name = "Output", create = true)
 public class PrettifyXMLAlgorithm extends JIPipeSimpleIteratingAlgorithm {

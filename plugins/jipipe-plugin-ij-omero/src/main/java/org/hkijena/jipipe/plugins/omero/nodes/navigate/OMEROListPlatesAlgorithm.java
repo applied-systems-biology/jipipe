@@ -19,7 +19,7 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.PlateData;
 import omero.gateway.model.ScreenData;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -50,7 +51,7 @@ import java.util.ArrayList;
 @SetJIPipeDocumentation(name = "List OMERO plates", description = "Returns the ID(s) of plates(s) according to search criteria.")
 @AddJIPipeInputSlot(value = OMEROScreenReferenceData.class, name = "Screens", create = true)
 @AddJIPipeOutputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = OmeroFunction.class)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListPlatesAlgorithm extends JIPipeSingleIterationAlgorithm {
 

@@ -19,7 +19,7 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.DatasetData;
 import omero.gateway.model.ProjectData;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -49,7 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Create OMERO dataset", description = "Creates a new OMERO data set an associates it to an existing project")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = OmeroFunction.class)
 @AddJIPipeInputSlot(value = OMEROProjectReferenceData.class, name = "Project", description = "The project that will contain the dataset", create = true)
 @AddJIPipeOutputSlot(value = OMERODatasetReferenceData.class, name = "Dataset", description = "The created dataset", create = true)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)

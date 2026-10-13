@@ -98,8 +98,19 @@ public class FunctionRegistry {
      */
     public List<JIPipeNodeTaxonomyFunction> children(JIPipeNodeTaxonomyFunction parent) {
         List<JIPipeNodeTaxonomyFunction> result = new ArrayList<>();
+        if (parent == null) {
+            return result;
+        }
+        // Match on the parent's id, not object identity. Functions are value
+        // objects: a child's getParent() typically returns a *fresh* instance
+        // (e.g. {@code new DataSourcesFunction()} inside ImageDataFunction),
+        // which is equal by id to the registered top-level but not the same
+        // reference. Reference equality would therefore report every branch
+        // as childless, flattening the tree (see the node browser's tree).
+        String parentId = parent.getId();
         for (JIPipeNodeTaxonomyFunction function : byId.values()) {
-            if (function.getParent() == parent) {
+            JIPipeNodeTaxonomyFunction parentFunction = function.getParent();
+            if (parentFunction != null && parentId.equals(parentFunction.getId())) {
                 result.add(function);
             }
         }

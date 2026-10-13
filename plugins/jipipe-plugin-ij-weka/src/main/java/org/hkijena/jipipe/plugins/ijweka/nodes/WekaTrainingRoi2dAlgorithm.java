@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijweka.nodes;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningTrainingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 
 @SetJIPipeDocumentation(name = "Train Weka model from ROI (2D)", description = "Trains a Weka model on 2D image data. The inputs are ROI that are assigned to the classes and trained on the input image. " +
         "Can only train on a single image. Please convert ROI to labels/masks and use the appropriate nodes if you want to train on multiple images.")
-@ConfigureJIPipeNode(function = DeepLearningTrainingFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D })
+@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D })
 @AddJIPipeInputSlot(value = ImagePlus2DData.class, name = "Image", description = "Image on which the training should be applied", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class)
 @AddJIPipeOutputSlot(value = WekaModelData.class, name = "Trained model", description = "The model", create = true)

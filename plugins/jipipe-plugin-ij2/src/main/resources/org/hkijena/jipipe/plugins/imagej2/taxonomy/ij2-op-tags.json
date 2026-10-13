@@ -1,0 +1,1290 @@
+{
+  "stats.sum": [
+    "image-arithmetic",
+    "statistics"
+  ],
+  "filter.median": [
+    "filtering",
+    "morphology",
+    "denoising"
+  ],
+  "stats.min": [
+    "minima",
+    "intensity",
+    "image-processing"
+  ],
+  "math.min": [
+    "filtering",
+    "imagej",
+    "minima"
+  ],
+  "morphology.thinHilditch": [
+    "skeletonization",
+    "morphology",
+    "2d"
+  ],
+  "convert.scale": [
+    "scaling",
+    "data-type",
+    "imagej"
+  ],
+  "threshold.moments": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "transform.extendBorderView": [
+    "boundary",
+    "image"
+  ],
+  "image.distancetransform": [
+    "distance-transform",
+    "calibration",
+    "morphology"
+  ],
+  "threshold.apply": [
+    "thresholding",
+    "manual",
+    "image-processing"
+  ],
+  "filter.partialDerivative": [
+    "derivative",
+    "filtering",
+    "image-processing"
+  ],
+  "filter.max": [
+    "morphology",
+    "filtering",
+    "maximum-filter"
+  ],
+  "filter.gauss": [
+    "filtering",
+    "gaussian",
+    "smoothing"
+  ],
+  "filter.dog": [
+    "filtering",
+    "gaussian",
+    "smoothing"
+  ],
+  "math.arctanh": [
+    "transform",
+    "intensity",
+    "image-processing"
+  ],
+  "stats.sumOfSquares": [
+    "statistics",
+    "quantification",
+    "image-processing"
+  ],
+  "filter.frangiVesselness": [
+    "morphology",
+    "vesselness",
+    "image-processing"
+  ],
+  "transform.concatenateView": [
+    "concatenation",
+    "display",
+    "imagej"
+  ],
+  "transform.permuteCoordinatesView": [
+    "dimensionality",
+    "coordinate",
+    "display"
+  ],
+  "coloc.icq": [
+    "imagej",
+    "plugin",
+    "unknown"
+  ],
+  "convert.float64": [
+    "float-32",
+    "data-type",
+    "conversion"
+  ],
+  "threshold.isoData": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "zernike.phase": [
+    "phase",
+    "imagej",
+    "microscopy"
+  ],
+  "math.arcsinh": [
+    "math",
+    "transform",
+    "intensity"
+  ],
+  "stats.max": [
+    "image-processing",
+    "morphology",
+    "filtering"
+  ],
+  "filter.bilateral": [
+    "median-filter",
+    "denoising",
+    "filtering"
+  ],
+  "transform.invertAxisView": [
+    "axis-view",
+    "inversion"
+  ],
+  "math.gamma": [
+    "gamma",
+    "intensity",
+    "image-processing"
+  ],
+  "topology.eulerCharacteristic26NFloating": [
+    "euler-characteristic",
+    "morphology",
+    "topology"
+  ],
+  "logic.xor": [
+    "image-processing",
+    "boolean-operations",
+    "binary"
+  ],
+  "filter.min": [
+    "min-filter",
+    "morphology",
+    "filtering"
+  ],
+  "threshold.localSauvolaThreshold": [
+    "thresholding",
+    "adaptive",
+    "local"
+  ],
+  "create.img": [
+    "image",
+    "interval",
+    "conversion"
+  ],
+  "filter.correlate": [
+    "correlation",
+    "fft",
+    "image-processing"
+  ],
+  "topology.eulerCorrection": [
+    "morphology",
+    "binary",
+    "correction"
+  ],
+  "image.watershed": [
+    "segmentation",
+    "morphology",
+    "watershed"
+  ],
+  "transform.zeroMinView": [
+    "display",
+    "normalization"
+  ],
+  "math.cubeRoot": [
+    "intensity-transform",
+    "math",
+    "normalization"
+  ],
+  "math.divide": [
+    "image-arithmetic",
+    "intensity",
+    "image-processing"
+  ],
+  "create.kernel2ndDerivBiGauss": [
+    "image-processing",
+    "gaussian-derivative",
+    "edge-detection"
+  ],
+  "math.max": [
+    "image-processing",
+    "constant"
+  ],
+  "math.randomGaussian": [
+    "image-generation",
+    "random-gaussian"
+  ],
+  "math.arcsec": [
+    "image-processing",
+    "imagej"
+  ],
+  "filter.allPartialDerivatives": [
+    "partial-derivatives",
+    "edge-detection",
+    "image-processing"
+  ],
+  "create.kernelGaborComplexDouble": [
+    "gabor",
+    "convolution",
+    "image-processing"
+  ],
+  "threshold.localPhansalkarThreshold": [
+    "thresholding",
+    "imagej"
+  ],
+  "threshold.localBernsenThreshold": [
+    "thresholding",
+    "imagej"
+  ],
+  "morphology.thinMorphological": [
+    "morphology",
+    "skeletonization"
+  ],
+  "math.sqr": [
+    "pixel-operation",
+    "image-processing"
+  ],
+  "morphology.topHat": [
+    "morphology",
+    "top-hat",
+    "imagej"
+  ],
+  "math.randomUniform": [
+    "random",
+    "image-generation"
+  ],
+  "stats.moment3AboutMean": [
+    "statistics",
+    "moments",
+    "intensity"
+  ],
+  "math.arcsech": [
+    "math",
+    "imagej",
+    "pixel-operation"
+  ],
+  "filter.ifft": [
+    "fft",
+    "signal-processing",
+    "image-processing"
+  ],
+  "transform.intervalView": [
+    "display",
+    "interval",
+    "minima"
+  ],
+  "convert.normalizeScale": [
+    "normalization",
+    "scaling",
+    "imagej"
+  ],
+  "coloc.pearsons": [
+    "correlation",
+    "statistics"
+  ],
+  "transform.extendView": [
+    "image",
+    "display",
+    "viewing"
+  ],
+  "math.csch": [
+    "math",
+    "transform"
+  ],
+  "math.arcsin": [
+    "math",
+    "transform"
+  ],
+  "filter.findEdges": [
+    "edge-detection",
+    "image-processing"
+  ],
+  "filter.convolve": [
+    "convolution",
+    "fft",
+    "image-processing"
+  ],
+  "math.add": [
+    "arithmetic",
+    "image-arithmetic",
+    "image-processing"
+  ],
+  "math.log10": [
+    "log-transform",
+    "intensity",
+    "image-processing"
+  ],
+  "math.unsignedRightShift": [
+    "bitwise",
+    "image-processing"
+  ],
+  "math.arccosh": [
+    "math",
+    "image-processing"
+  ],
+  "math.tanh": [
+    "intensity-transform",
+    "tanh",
+    "math"
+  ],
+  "threshold.localMedianThreshold": [
+    "thresholding",
+    "median"
+  ],
+  "threshold.mean": [
+    "statistics",
+    "quantification"
+  ],
+  "filter.addPoissonNoise": [
+    "noise",
+    "poisson",
+    "simulation"
+  ],
+  "math.abs": [
+    "image-processing",
+    "math"
+  ],
+  "math.power": [
+    "image-processing",
+    "math",
+    "intensity"
+  ],
+  "math.arccoth": [
+    "math",
+    "transform",
+    "image-processing"
+  ],
+  "math.negate": [
+    "transform",
+    "pixelwise",
+    "image-processing"
+  ],
+  "transform.extendPeriodicView": [
+    "image-processing",
+    "boundary",
+    "periodic-view"
+  ],
+  "threshold.localMidGreyThreshold": [
+    "thresholding",
+    "grayscale"
+  ],
+  "tamura.coarseness": [
+    "texture",
+    "imagej",
+    "analysis"
+  ],
+  "threshold.maxLikelihood": [
+    "thresholding",
+    "imagej",
+    "local"
+  ],
+  "stats.skewness": [
+    "statistics",
+    "skewness",
+    "imagej"
+  ],
+  "math.or": [
+    "boolean",
+    "pixelwise",
+    "image-processing"
+  ],
+  "math.round": [
+    "image-processing",
+    "rounding",
+    "quantization"
+  ],
+  "math.log2": [
+    "image-processing",
+    "log-transform",
+    "intensity"
+  ],
+  "filter.derivativeGauss": [
+    "derivative",
+    "smoothing",
+    "image-processing"
+  ],
+  "transform.extendMirrorSingleView": [
+    "image-extension",
+    "mirror-extension",
+    "imagej"
+  ],
+  "logic.greaterThan": [
+    "comparison",
+    "thresholding",
+    "logic"
+  ],
+  "logic.and": [
+    "image-processing",
+    "boolean-operations",
+    "imagej"
+  ],
+  "convert.copy": [
+    "conversion",
+    "image",
+    "real-types"
+  ],
+  "threshold.localContrastThreshold": [
+    "thresholding",
+    "feature-contrast",
+    "segmentation"
+  ],
+  "stats.integralSum": [
+    "quantification",
+    "statistics",
+    "projection"
+  ],
+  "math.sqrt": [
+    "math",
+    "intensity",
+    "transform"
+  ],
+  "imagemoments.normalizedCentralMoment03": [
+    "image-moments",
+    "shape-analysis",
+    "statistics"
+  ],
+  "imagemoments.normalizedCentralMoment02": [
+    "image-moments",
+    "shape-analysis",
+    "statistics"
+  ],
+  "create.kernelLog": [
+    "kernel",
+    "image-processing",
+    "imagej"
+  ],
+  "threshold.localNiblackThreshold": [
+    "thresholding",
+    "image-processing"
+  ],
+  "transform.hyperSliceView": [
+    "visualization",
+    "slice",
+    "imagej"
+  ],
+  "convert.cfloat32": [
+    "conversion",
+    "image",
+    "float-32"
+  ],
+  "image.integral": [
+    "integral-image",
+    "roi",
+    "statistics"
+  ],
+  "transform.flatIterableView": [
+    "data-view",
+    "imagej"
+  ],
+  "imagemoments.normalizedCentralMoment12": [
+    "statistics",
+    "moments",
+    "shape"
+  ],
+  "imagemoments.normalizedCentralMoment11": [
+    "statistics",
+    "moments",
+    "shape"
+  ],
+  "math.tan": [
+    "colormap",
+    "image-processing"
+  ],
+  "convert.int8": [
+    "conversion",
+    "image-processing",
+    "8-bit"
+  ],
+  "imagemoments.normalizedCentralMoment21": [
+    "statistics",
+    "image-moments",
+    "shape"
+  ],
+  "imagemoments.normalizedCentralMoment20": [
+    "statistics",
+    "image-moments",
+    "shape"
+  ],
+  "create.kernelGaborDouble": [
+    "gabor",
+    "filtering",
+    "image-processing"
+  ],
+  "stats.sumOfLogs": [
+    "image-arithmetic",
+    "log-transform"
+  ],
+  "convert.cfloat64": [
+    "conversion",
+    "float64"
+  ],
+  "stats.moment2AboutMean": [
+    "statistics",
+    "quantification",
+    "image-processing"
+  ],
+  "threshold.yen": [
+    "thresholding",
+    "segmentation"
+  ],
+  "convert.uint8": [
+    "conversion",
+    "uint",
+    "preprocessing"
+  ],
+  "imagemoments.normalizedCentralMoment30": [
+    "statistics",
+    "moments"
+  ],
+  "filter.variance": [
+    "variance-filter",
+    "filtering",
+    "statistics"
+  ],
+  "threshold.percentile": [
+    "thresholding",
+    "percentile"
+  ],
+  "convert.uint4": [
+    "conversion",
+    "image"
+  ],
+  "math.remainder": [
+    "arithmetic",
+    "image"
+  ],
+  "convert.uint2": [
+    "conversion",
+    "imagej",
+    "uint"
+  ],
+  "math.expMinusOne": [
+    "image-processing",
+    "math",
+    "exponential"
+  ],
+  "logic.lessThanOrEqual": [
+    "image-processing",
+    "math",
+    "comparison"
+  ],
+  "transform.rotateView": [
+    "rotation",
+    "display",
+    "image"
+  ],
+  "math.complexConjugateMultiply": [
+    "image",
+    "multiplication",
+    "image-processing"
+  ],
+  "deconvolve.accelerate": [
+    "vector-processing",
+    "acceleration",
+    "image-processing"
+  ],
+  "convert.uint128": [
+    "conversion",
+    "data-type"
+  ],
+  "morphology.outline": [
+    "morphology",
+    "outline",
+    "imagej"
+  ],
+  "logic.not": [
+    "logic",
+    "image-processing",
+    "boolean"
+  ],
+  "transform.extendZeroView": [
+    "display",
+    "transform",
+    "imagej"
+  ],
+  "threshold.li": [
+    "thresholding",
+    "local",
+    "imagej"
+  ],
+  "threshold.minimum": [
+    "thresholding",
+    "local",
+    "imagej"
+  ],
+  "stats.percentile": [
+    "statistics",
+    "quantification",
+    "imagej"
+  ],
+  "filter.tubeness": [
+    "feature-detection",
+    "tubeness",
+    "image-processing"
+  ],
+  "stats.stdDev": [
+    "statistics",
+    "quantification",
+    "imagej"
+  ],
+  "math.step": [
+    "imagej",
+    "data-processing"
+  ],
+  "image.histogram": [
+    "histogram",
+    "statistics",
+    "quantification"
+  ],
+  "transform.crop": [
+    "cropping",
+    "roi",
+    "image"
+  ],
+  "coloc.kendallTau": [
+    "statistics",
+    "rank",
+    "correlation"
+  ],
+  "math.sinh": [
+    "math",
+    "image-processing"
+  ],
+  "logic.equal": [
+    "comparison",
+    "operator",
+    "image-processing"
+  ],
+  "math.signum": [
+    "signum",
+    "operator",
+    "image-processing"
+  ],
+  "math.sinc": [
+    "sinc",
+    "filtering",
+    "image-processing"
+  ],
+  "image.equation": [
+    "equation",
+    "image-processing"
+  ],
+  "filter.mean": [
+    "filtering",
+    "smoothing",
+    "image-processing"
+  ],
+  "imagemoments.moment11": [
+    "imagej",
+    "moments",
+    "statistics"
+  ],
+  "labeling.merge": [
+    "imagej",
+    "labeling",
+    "merge"
+  ],
+  "imagemoments.moment01": [
+    "image-moments",
+    "statistics",
+    "quantification"
+  ],
+  "imagemoments.moment00": [
+    "image-moments",
+    "statistics",
+    "quantification"
+  ],
+  "transform.offsetView": [
+    "view-offset",
+    "image",
+    "transform"
+  ],
+  "stats.moment1AboutMean": [
+    "statistics",
+    "image-moments",
+    "quantification"
+  ],
+  "imagemoments.moment10": [
+    "statistics",
+    "shape-analysis",
+    "image-moments"
+  ],
+  "math.sincPi": [
+    "filtering",
+    "interpolation",
+    "image-processing"
+  ],
+  "image.ascii": [
+    "ascii",
+    "text",
+    "import"
+  ],
+  "threshold.intermodes": [
+    "thresholding",
+    "segmentation"
+  ],
+  "threshold.otsu": [
+    "thresholding",
+    "segmentation"
+  ],
+  "math.cos": [
+    "image-processing",
+    "math",
+    "transform"
+  ],
+  "math.subtract": [
+    "image-processing",
+    "subtraction",
+    "arithmetic"
+  ],
+  "morphology.dilate": [
+    "morphology",
+    "dilation",
+    "image-processing"
+  ],
+  "threshold.localMeanThreshold": [
+    "thresholding",
+    "imagej",
+    "local-mean"
+  ],
+  "math.arctan": [
+    "math",
+    "pixelwise",
+    "image-processing"
+  ],
+  "filter.sobel": [
+    "edge-detection",
+    "gradient",
+    "imagej"
+  ],
+  "transform.subsampleView": [
+    "downsample",
+    "dimensionality",
+    "image-processing"
+  ],
+  "copy.img": [
+    "image",
+    "preprocessing"
+  ],
+  "morphology.fillHoles": [
+    "morphology",
+    "hole-filling",
+    "binary"
+  ],
+  "math.invert": [
+    "image-processing",
+    "intensity"
+  ],
+  "filter.paddingIntervalOrigin": [
+    "image-processing",
+    "padding"
+  ],
+  "transform.dropSingletonDimensionsView": [
+    "dimensionality",
+    "image",
+    "preprocessing"
+  ],
+  "transform.unshearView": [
+    "time-lapse",
+    "geometry"
+  ],
+  "deconvolve.richardsonLucyCorrection": [
+    "deconvolution",
+    "microscopy"
+  ],
+  "morphology.blackTopHat": [
+    "morphology",
+    "top-hat",
+    "black-hat"
+  ],
+  "coloc.maxTKendallTau": [
+    "imagej",
+    "imported",
+    "microscopy"
+  ],
+  "transform.extendMirrorDoubleView": [
+    "image-processing",
+    "mirror-extension",
+    "display"
+  ],
+  "stats.integralMean": [
+    "statistics",
+    "median",
+    "imagej"
+  ],
+  "convert.int32": [
+    "conversion",
+    "imagej",
+    "data-type"
+  ],
+  "transform.collapseNumericView": [
+    "display",
+    "imagej",
+    "composite"
+  ],
+  "math.multiply": [
+    "arithmetic",
+    "image-processing"
+  ],
+  "stats.variance": [
+    "statistics",
+    "variance",
+    "imagej"
+  ],
+  "math.exp": [
+    "expression",
+    "imagej",
+    "computation"
+  ],
+  "transform.collapseView": [
+    "composite",
+    "display",
+    "collapse"
+  ],
+  "convert.int16": [
+    "bit-depth",
+    "image-conversion",
+    "data-type"
+  ],
+  "threshold.rosin": [
+    "thresholding",
+    "local",
+    "segmentation"
+  ],
+  "threshold.renyiEntropy": [
+    "thresholding",
+    "local",
+    "entropy"
+  ],
+  "deconvolve.richardsonLucyUpdate": [
+    "deconvolution",
+    "reconstruction",
+    "microscopy"
+  ],
+  "math.sech": [
+    "image-processing",
+    "image-arithmetic",
+    "hyperbolic"
+  ],
+  "math.reciprocal": [
+    "image-processing",
+    "arithmetic",
+    "imagej"
+  ],
+  "zernike.magnitude": [
+    "magnitude",
+    "vector-field",
+    "image-processing"
+  ],
+  "image.invert": [
+    "image-processing",
+    "intensity",
+    "inversion"
+  ],
+  "math.csc": [
+    "image-processing",
+    "math",
+    "intensity"
+  ],
+  "math.logOnePlusX": [
+    "image-processing",
+    "math",
+    "intensity"
+  ],
+  "copy.rai": [
+    "image",
+    "data-management",
+    "image-processing"
+  ],
+  "convert.clip": [
+    "clipping",
+    "integer",
+    "ij2"
+  ],
+  "convert.int64": [
+    "conversion",
+    "imagej"
+  ],
+  "math.rightShift": [
+    "bitwise",
+    "imagej"
+  ],
+  "threshold.huang": [
+    "thresholding",
+    "image-processing"
+  ],
+  "math.ceil": [
+    "math",
+    "rounding",
+    "image-processing"
+  ],
+  "filter.fft": [
+    "fft",
+    "image-processing"
+  ],
+  "math.leftShift": [
+    "bitwise",
+    "arithmetic",
+    "image-processing"
+  ],
+  "morphology.thinGuoHall": [
+    "morphology",
+    "thinning",
+    "skeletonization"
+  ],
+  "logic.notEqual": [
+    "comparison",
+    "logic",
+    "boolean"
+  ],
+  "transform.translateView": [
+    "display",
+    "transform",
+    "navigation"
+  ],
+  "math.sec": [
+    "imagej",
+    "image-processing"
+  ],
+  "transform.collapseRealView": [
+    "imagej",
+    "composite",
+    "display"
+  ],
+  "topology.eulerCharacteristic26N": [
+    "topology",
+    "morphology",
+    "quantification"
+  ],
+  "threshold.maxEntropy": [
+    "thresholding",
+    "entropy",
+    "local"
+  ],
+  "copy.imgLabeling": [
+    "labeling",
+    "metadata",
+    "imagej"
+  ],
+  "filter.sigma": [
+    "filtering",
+    "smoothing",
+    "image-processing"
+  ],
+  "copy.iterableInterval": [
+    "data-transfer",
+    "duplicate",
+    "imagej"
+  ],
+  "image.normalize": [
+    "normalization",
+    "image-processing"
+  ],
+  "transform.extendRandomView": [
+    "display",
+    "export",
+    "image-processing"
+  ],
+  "math.arccot": [
+    "math",
+    "image-processing"
+  ],
+  "math.arccos": [
+    "math",
+    "image-processing"
+  ],
+  "threshold.shanbhag": [
+    "thresholding",
+    "image-processing"
+  ],
+  "tamura.contrast": [
+    "contrast-enhancement",
+    "image-processing",
+    "display"
+  ],
+  "stats.integralVariance": [
+    "statistics",
+    "variance",
+    "image-processing"
+  ],
+  "math.floor": [
+    "image-processing",
+    "pixel-values"
+  ],
+  "math.complement": [
+    "image-processing",
+    "pixel-values"
+  ],
+  "stats.geometricMean": [
+    "image",
+    "arithmetic",
+    "statistics"
+  ],
+  "threshold.triangle": [
+    "thresholding",
+    "image",
+    "local"
+  ],
+  "math.ulp": [
+    "imagej",
+    "utility"
+  ],
+  "hog.hog": [
+    "imagej",
+    "hog",
+    "feature-detection"
+  ],
+  "morphology.thinZhangSuen": [
+    "morphology",
+    "skeletonization",
+    "thinning"
+  ],
+  "create.integerType": [
+    "image-processing",
+    "conversion",
+    "integer"
+  ],
+  "transform.permuteCoordinatesInverseView": [
+    "coordinate",
+    "dimensionality",
+    "image-processing"
+  ],
+  "transform.permuteView": [
+    "coordinate",
+    "dimensionality",
+    "image-processing"
+  ],
+  "imagemoments.centralMoment20": [
+    "moments",
+    "shape",
+    "quantification"
+  ],
+  "imagemoments.huMoment5": [
+    "moments",
+    "shape",
+    "quantification"
+  ],
+  "copy.type": [
+    "conversion",
+    "boolean",
+    "data"
+  ],
+  "imagemoments.huMoment6": [
+    "moments",
+    "shape",
+    "quantification"
+  ],
+  "math.coth": [
+    "math",
+    "image-processing"
+  ],
+  "imagemoments.centralMoment21": [
+    "statistics",
+    "image-processing"
+  ],
+  "create.kernelGauss": [
+    "gaussian",
+    "kernel",
+    "convolution"
+  ],
+  "math.sin": [
+    "sinc",
+    "math",
+    "pixelwise"
+  ],
+  "imagemoments.huMoment3": [
+    "image-moments",
+    "shape-analysis"
+  ],
+  "imagemoments.huMoment4": [
+    "image-moments",
+    "shape-analysis"
+  ],
+  "filter.hessian": [
+    "blob-detection",
+    "feature-detection"
+  ],
+  "imagemoments.huMoment7": [
+    "shape-analysis",
+    "image-moments",
+    "morphology"
+  ],
+  "tamura.directionality": [
+    "orientation",
+    "texture-analysis"
+  ],
+  "imagemoments.huMoment1": [
+    "shape-analysis",
+    "image-moments",
+    "morphology"
+  ],
+  "imagemoments.huMoment2": [
+    "shape-analysis",
+    "image-moments",
+    "morphology"
+  ],
+  "imagemoments.centralMoment30": [
+    "shape-analysis",
+    "image-moments",
+    "morphology"
+  ],
+  "logic.lessThan": [
+    "comparison",
+    "operator",
+    "image-processing"
+  ],
+  "morphology.erode": [
+    "morphology",
+    "erosion",
+    "image-processing"
+  ],
+  "stats.moment4AboutMean": [
+    "statistics",
+    "moments",
+    "quantification"
+  ],
+  "filter.addNoise": [
+    "noise",
+    "simulation",
+    "image-processing"
+  ],
+  "morphology.extractHoles": [
+    "morphology",
+    "extraction",
+    "image-processing"
+  ],
+  "convert.float32": [
+    "image-conversion",
+    "pixel-values",
+    "float-32"
+  ],
+  "stats.sumOfInverses": [
+    "image-arithmetic",
+    "pixel-operation",
+    "imagej"
+  ],
+  "imagemoments.centralMoment02": [
+    "statistics",
+    "moments",
+    "image-processing"
+  ],
+  "imagemoments.centralMoment01": [
+    "statistics",
+    "moments",
+    "image-processing"
+  ],
+  "convert.uint12": [
+    "conversion",
+    "data-type",
+    "image"
+  ],
+  "convert.uint16": [
+    "conversion",
+    "uint16",
+    "image-processing"
+  ],
+  "math.log": [
+    "log-transform",
+    "intensity",
+    "image-processing"
+  ],
+  "imagemoments.centralMoment00": [
+    "central-moments",
+    "quantification",
+    "statistics"
+  ],
+  "imagemoments.centralMoment03": [
+    "central-moments",
+    "quantification",
+    "statistics"
+  ],
+  "math.arccsch": [
+    "math",
+    "imagej",
+    "transform"
+  ],
+  "imagemoments.centralMoment11": [
+    "statistics",
+    "moments",
+    "imagej"
+  ],
+  "imagemoments.centralMoment10": [
+    "statistics",
+    "moments",
+    "imagej"
+  ],
+  "math.cosh": [
+    "image-arithmetic",
+    "math",
+    "pixel-operation"
+  ],
+  "logic.greaterThanOrEqual": [
+    "image-arithmetic",
+    "comparison",
+    "logic"
+  ],
+  "morphology.open": [
+    "data-management",
+    "list",
+    "io"
+  ],
+  "math.arccsc": [
+    "math",
+    "image-processing"
+  ],
+  "imagemoments.centralMoment12": [
+    "statistics",
+    "image-moments"
+  ],
+  "stats.quantile": [
+    "statistics",
+    "percentile"
+  ],
+  "transform.stackView": [
+    "visualization",
+    "stack-view"
+  ],
+  "image.squareIntegral": [
+    "image-processing",
+    "integral-image"
+  ],
+  "threshold.minError": [
+    "thresholding",
+    "segmentation",
+    "local-maximum"
+  ],
+  "stats.kurtosis": [
+    "statistics",
+    "kurtosis",
+    "quantification"
+  ],
+  "transform.addDimensionView": [
+    "dimensionality",
+    "image-processing",
+    "preprocessing"
+  ],
+  "math.nearestInt": [
+    "imagej",
+    "conversion",
+    "integer"
+  ],
+  "transform.shearView": [
+    "visualization",
+    "interval"
+  ],
+  "convert.uint32": [
+    "conversion",
+    "uint"
+  ],
+  "create.kernelBiGauss": [
+    "gaussian-blur",
+    "filtering",
+    "smoothing"
+  ],
+  "convert.bit": [
+    "bitwise",
+    "logic",
+    "image-processing"
+  ],
+  "threshold.ij1": [
+    "thresholding"
+  ],
+  "convert.uint64": [
+    "conversion",
+    "imagej",
+    "uint"
+  ],
+  "create.nativeType": [
+    "data-type",
+    "imagej"
+  ]
+}

@@ -265,7 +265,7 @@ Top-level function branches (each with one deliberate hue):
 | Statistics | Descriptive, Testing, Estimation |
 | Tracking | Detection, Linking, Filtering, Analysis (TrackMate/Comet nodes live here functionally) |
 | Annotations | Add/edit/remove, Convert |
-| Deep Learning | Inference, Training, Models |
+| Machine learning | Inference, Training, Models (deep-learning *and* classical classifiers: Weka, LabelKit, ilastik RF; renamed from "Deep Learning" during 1324 review) |
 | Plotting | Scatter, Line, Bar, Heatmap, … |
 | Export | File formats, Archive |
 | Graph/Project | Compartment outputs, Wrappers, Debug/internal |

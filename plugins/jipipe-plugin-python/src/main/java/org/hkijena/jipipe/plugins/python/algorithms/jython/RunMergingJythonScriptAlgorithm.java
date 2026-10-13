@@ -22,9 +22,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -50,7 +53,7 @@ import java.util.List;
         "Access to the iteration step is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 public class RunMergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm implements JIPipeScriptAlgorithm {
 
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();

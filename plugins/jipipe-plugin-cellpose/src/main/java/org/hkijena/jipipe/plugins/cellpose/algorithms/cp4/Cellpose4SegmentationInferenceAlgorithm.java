@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.cellpose.algorithms.cp4;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningInferenceFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
@@ -98,7 +98,7 @@ import java.util.Map;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows d")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
-@ConfigureJIPipeNode(function = DeepLearningInferenceFunction.class, framework = Cellpose4Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = Cellpose4Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @RegisterJIPipeEnvironmentUsage(Cellpose4Environment.class)
 public class Cellpose4SegmentationInferenceAlgorithm extends JIPipeSingleIterationAlgorithm {
 

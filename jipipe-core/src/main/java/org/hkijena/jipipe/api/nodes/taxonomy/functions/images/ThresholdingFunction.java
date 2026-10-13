@@ -26,6 +26,9 @@ import java.util.Set;
  */
 public final class ThresholdingFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:thresholding";
+
     @Override
     public String getId() {
         return "jipipe:function:thresholding";

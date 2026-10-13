@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
@@ -41,10 +44,11 @@ import java.util.Set;
  * The state splits into three independent groups, none of which resets
  * the others:
  * <ul>
- * <li><b>search text</b> — a non-empty search switches the browser into
- * flat-results mode ({@link #isSearchActive()}), overriding the tree;</li>
- * <li><b>the taxonomy facets</b> (framework / spatial / input / tags) —
- * the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
+ * <li><b>search text</b> — a non-empty search ({@link #isSearchActive()})
+ * re-queries the list and highlights the matching tree leafs (the layout
+ * itself never changes: tree + list are always shown);</li>
+ * <li><b>the taxonomy facets</b> (framework / input+output data types /
+ * tags) — the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
  * <li><b>the tree path and view toggles</b> (selected function path,
  * pinned-only, selection-only).</li>
  * </ul>
@@ -65,6 +69,10 @@ public class NodeBrowserModel {
     private Set<JIPipeNodeTaxonomySpatialDimension> spatial = Set.of();
     private Set<JIPipeNodeTaxonomyInputProfile> input = Set.of();
     private Set<String> tags = Set.of();
+    /** Selected input data types (by class); empty = no input-data-type filter. */
+    private Set<Class<? extends JIPipeData>> inputDataTypes = Set.of();
+    /** Selected output data types (by class); empty = no output-data-type filter. */
+    private Set<Class<? extends JIPipeData>> outputDataTypes = Set.of();
     private List<JIPipeNodeTaxonomyFunction> treePath = List.of();
     private boolean pinnedOnly;
     private boolean selectionOnly;
@@ -89,8 +97,8 @@ public class NodeBrowserModel {
 
     /**
      * Whether a search is active: the trimmed search text is non-empty.
-     * An active search puts the browser into flat-results mode, overriding
-     * the function tree.
+     * An active search re-queries the results list and highlights the
+     * matching function tree leafs (the tree itself stays visible).
      */
     public boolean isSearchActive() {
         return search != null && !search.trim().isEmpty();
@@ -156,6 +164,48 @@ public class NodeBrowserModel {
     }
 
     /**
+     * The input data types selected in the data-type facet; empty means
+     * "no input data type filter" (the entry passes unconditionally).
+     *
+     * @return the selected input data type classes
+     */
+    public Set<Class<? extends JIPipeData>> getInputDataTypes() {
+        return inputDataTypes;
+    }
+
+    /**
+     * @param inputDataTypes the input data types to filter by; an entry
+     *                       passes when at least one of its input slots has
+     *                       one of the selected types. An empty (or
+     *                       {@code null}) set clears the filter.
+     */
+    public void setInputDataTypes(@Nullable Set<Class<? extends JIPipeData>> inputDataTypes) {
+        this.inputDataTypes = Collections.unmodifiableSet(
+            inputDataTypes == null ? Set.of() : new LinkedHashSet<>(inputDataTypes));
+    }
+
+    /**
+     * The output data types selected in the data-type facet; empty means
+     * "no output data type filter" (the entry passes unconditionally).
+     *
+     * @return the selected output data type classes
+     */
+    public Set<Class<? extends JIPipeData>> getOutputDataTypes() {
+        return outputDataTypes;
+    }
+
+    /**
+     * @param outputDataTypes the output data types to filter by; an entry
+     *                        passes when at least one of its output slots
+     *                        has one of the selected types. An empty (or
+     *                        {@code null}) set clears the filter.
+     */
+    public void setOutputDataTypes(@Nullable Set<Class<? extends JIPipeData>> outputDataTypes) {
+        this.outputDataTypes = Collections.unmodifiableSet(
+            outputDataTypes == null ? Set.of() : new LinkedHashSet<>(outputDataTypes));
+    }
+
+    /**
      * @param tags the tags to filter by; an empty (or {@code null}) set
      * clears the tag filter without affecting the other facets
      */
@@ -188,6 +238,35 @@ public class NodeBrowserModel {
         Set<String> entryTags = entry.getTags();
         if (!tags.isEmpty() && Collections.disjoint(tags, entryTags == null ? Set.of() : entryTags)) {
             return false;
+        }
+        // Data-type facets: the entry passes the input filter iff at least
+        // one of its input slots produces one of the selected types (a
+        // slot's own type or a convertible type counts — the slot's data
+        // class IS what the node accepts), and symmetrically for outputs.
+        // An empty selection disables the respective check.
+        if (!inputDataTypes.isEmpty()) {
+            boolean passes = false;
+            for (var slot : entry.getInputSlots().values()) {
+                if (inputDataTypes.contains(slot.getDataClass())) {
+                    passes = true;
+                    break;
+                }
+            }
+            if (!passes) {
+                return false;
+            }
+        }
+        if (!outputDataTypes.isEmpty()) {
+            boolean passes = false;
+            for (var slot : entry.getOutputSlots().values()) {
+                if (outputDataTypes.contains(slot.getDataClass())) {
+                    passes = true;
+                    break;
+                }
+            }
+            if (!passes) {
+                return false;
+            }
         }
         return true;
     }
@@ -281,6 +360,60 @@ public class NodeBrowserModel {
             }
             for (JIPipeNodeTaxonomyFunction child : registry.children(current)) {
                 stack.push(child);
+            }
+        }
+        return Collections.unmodifiableSet(ids);
+    }
+
+    /**
+     * The ids of every taxonomy function under which at least one of the
+     * given node infos has a node — used to prune the function tree so it
+     * never shows empty categories (e.g. a plot sub-leaf no node is
+     * assigned to, or an entire branch with no nodes).
+     * <p>
+     * Node infos (rather than node database entries) are the authoritative
+     * source here: the database builds its entries asynchronously and may
+     * still be empty when a tree is first rendered, while the registered
+     * infos are complete as soon as the plugins are registered. A node is
+     * counted only when it is visible for the given database role, so a
+     * function whose only nodes are hidden in this editor is pruned too —
+     * matching what the browser's query would show under it.
+     * <p>
+     * For each counted node the primary <em>and</em> all secondary function
+     * ids are added, mirroring {@link JIPipeNodeDatabaseEntry#getFunctionIds()}
+     * (a node appears under every function it declares).
+     *
+     * @param infos the node infos to inspect; {@code null} yields an empty
+     *              set (the caller then keeps the full skeleton)
+     * @param role  the visibility role to filter by ({@code Both} counts
+     *              every node)
+     * @return the populated function ids (possibly empty)
+     */
+    public static Set<String> populatedFunctionIds(@Nullable Iterable<? extends JIPipeNodeInfo> infos,
+                                                   JIPipeNodeDatabasePipelineVisibility role) {
+        Set<String> ids = new LinkedHashSet<>();
+        if (infos == null) {
+            return Collections.unmodifiableSet(ids);
+        }
+        for (JIPipeNodeInfo info : infos) {
+            if (info == null) {
+                continue;
+            }
+            JIPipeNodeTaxonomyFunction primary = info.getPrimaryFunction();
+            if (primary == null) {
+                continue; // unconverted / fn-null: never appears in the tree
+            }
+            if (role == JIPipeNodeDatabasePipelineVisibility.Pipeline && !primary.isVisibleInPipeline()) {
+                continue;
+            }
+            if (role == JIPipeNodeDatabasePipelineVisibility.Compartments && !primary.isVisibleInCompartments()) {
+                continue;
+            }
+            ids.add(primary.getId());
+            for (JIPipeNodeTaxonomyFunction secondary : info.getSecondaryFunctions()) {
+                if (secondary != null) {
+                    ids.add(secondary.getId());
+                }
             }
         }
         return Collections.unmodifiableSet(ids);

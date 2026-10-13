@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.cellpose.legacy.algorithms;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningTrainingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlus3DData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = LegacyCellposeModelData.class)
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, name = "Model", create = true)
-@ConfigureJIPipeNode(function = DeepLearningTrainingFunction.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, spatialDimensions = { SPATIAL_3D })
 @LabelAsJIPipeHidden
 @RegisterJIPipeEnvironmentUsage(Cellpose2Environment.class)
 public class Cellpose1TrainingAlgorithm extends JIPipeSingleIterationAlgorithm {

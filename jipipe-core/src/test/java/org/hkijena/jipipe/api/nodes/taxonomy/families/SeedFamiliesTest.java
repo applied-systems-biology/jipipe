@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SeedFamiliesTest {
 
     private static final JIPipeNodeTaxonomyFamily[] FAMILIES = {
-        new TrackMateFamily(), new Cellpose4Family(), new DeepLearningFamily(), new PlottingFamily()
+        new TrackMateFamily(), new Cellpose4Family(), new MachineLearningFamily(), new PlottingFamily()
     };
 
     /**
@@ -55,7 +55,7 @@ class SeedFamiliesTest {
         }
         assertEquals("jipipe:family:trackmate", new TrackMateFamily().getId());
         assertEquals("jipipe:family:cellpose4", new Cellpose4Family().getId());
-        assertEquals("jipipe:family:deep-learning", new DeepLearningFamily().getId());
+        assertEquals("jipipe:family:machine-learning", new MachineLearningFamily().getId());
         assertEquals("jipipe:family:plotting", new PlottingFamily().getId());
         assertEquals(4, ids.size(), "expected exactly four unique family ids, got: " + ids);
     }

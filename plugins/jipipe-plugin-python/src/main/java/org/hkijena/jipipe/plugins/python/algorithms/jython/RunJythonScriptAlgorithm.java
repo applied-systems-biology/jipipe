@@ -23,7 +23,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeScriptAlgorithm;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -50,7 +53,7 @@ import java.util.List;
         "Slots are of their respective JIPipe types (JIPipeDataSlot) and are fully accessible from within Python. " +
         "This algorithm is capable of running over multiple parameter sets via an additional slot. Automatically generated annotations generated based on " +
         "the parameters are available as variable 'parameter_annotations'. Please do not forget to pass the annotations to the output if you want to want this.")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = ScriptingPythonFunction.class, framework = PythonFramework.class)
 public class RunJythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeScriptAlgorithm {
 
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(PythonScriptData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();

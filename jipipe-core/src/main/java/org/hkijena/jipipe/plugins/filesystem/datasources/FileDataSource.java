@@ -18,7 +18,8 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
@@ -34,7 +35,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filename", create = true)
-@ConfigureJIPipeNode(function = MiscDataFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
 public class FileDataSource extends AbstractPathDataSource {
 
     private Path fileName;

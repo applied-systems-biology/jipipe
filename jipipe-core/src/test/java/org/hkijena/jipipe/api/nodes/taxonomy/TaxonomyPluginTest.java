@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code @Plugin} annotation during {@link JIPipe#ensureInstance()}) actually
  * registers the curated taxonomy into the live registries:
  * <ul>
- * <li>the 61 functions (13 top-level branches + 48 seed leaves),</li>
- * <li>the 12 frameworks,</li>
+ * <li>the 84 functions (13 top-level branches + 71 seed leaves),</li>
+ * <li>the 14 frameworks,</li>
  * <li>a valid taxonomy ({@link JIPipeNodesServiceComponent#validateTaxonomy()}
  * empty).</li>
  * </ul>
@@ -44,11 +44,15 @@ class TaxonomyPluginTest {
 
     @Test
     void allTaxonomyRegistered() {
-        // 13 top-level branches + 48 seed leaves
-        assertEquals(61, JIPipe.getNodes().getFunctions().all().size(),
-            "Expected 61 taxonomy functions registered by TaxonomyPlugin");
-        assertEquals(12, JIPipe.getNodes().getFrameworks().all().size(),
-            "Expected 12 taxonomy frameworks registered by TaxonomyPlugin");
+        // 13 top-level branches + 71 seed leaves (incl. the dual-visible
+        // GraphAnnotationsFunction, the RoiPropertiesFunction audit leaf, the
+        // 10 full-registry-audit Images leaves, the 7
+        // curated-reorganization leaves, and the 4 Scripting language
+        // sub-leaves)
+        assertEquals(84, JIPipe.getNodes().getFunctions().all().size(),
+            "Expected 84 taxonomy functions registered by TaxonomyPlugin");
+        assertEquals(14, JIPipe.getNodes().getFrameworks().all().size(),
+            "Expected 14 taxonomy frameworks registered by TaxonomyPlugin");
 
         // No node carries a primary function yet, so no membership errors;
         // the function tree and framework set must be internally valid.

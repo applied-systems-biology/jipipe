@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms.processes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.OptionalJIPipeExpressionParameter;
@@ -40,7 +41,7 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 @SetJIPipeDocumentation(name = "Run process (Iterating)", description = "Executes a process.")
-@ConfigureJIPipeNode(function = MiscellaneousFunction.class)
+@ConfigureJIPipeNode(function = ScriptingFunction.class)
 public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ProcessEnvironment processEnvironment = new ProcessEnvironment();

@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
@@ -22,40 +22,46 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Top-level branch for deep learning operations.
+ * Leaf of the Miscellaneous branch: text, XML and JSON operations.
+ * <p>
+ * Added by the full-registry classification audit (Phase 3): the curated
+ * nodes previously fell into the Miscellaneous catch-all.
  */
-public final class DeepLearningFunction implements JIPipeNodeTaxonomyFunction {
+public final class TextMarkupFunction implements JIPipeNodeTaxonomyFunction {
+
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:text-markup";
 
     @Override
     public String getId() {
-        return "jipipe:function:deep-learning";
+        return ID;
     }
 
     @Override
     public String getName() {
-        return "Deep Learning";
+        return "Text & markup";
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getParent() {
+        return new MiscellaneousFunction();
     }
 
     @Override
     @Nullable
-    public JIPipeNodeTaxonomyFunction getParent() {
+    public Float getColorHue() {
         return null;
     }
 
     @Override
-    public Float getColorHue() {
-        return 200.0f / 360.0f;
-    }
-
-    @Override
     public String getDescription() {
-        return "Deep learning operations";
+        return "Text, XML and JSON operations: extract text, import/export markup, process text with expressions";
     }
 
     @Override
     @Nullable
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/brain.png");
+        return null;
     }
 
     @Override

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.utils.algorithms.meta;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataUtilitiesFunction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.project.JIPipeProject;
@@ -60,7 +61,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Paths to JIPipe project parameters", description = "Stores the incoming paths into parameters. This node supports path and string parameters.")
 @AddJIPipeInputSlot(value = PathData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters")
-@ConfigureJIPipeNode(function = TableDataFunction.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgorithm {
 
     private InputSlotMapParameterCollection parameterKeyAssignments;

@@ -48,7 +48,7 @@ class TopLevelBranchesTest {
             new StatisticsFunction(),
             new TrackingFunction(),
             new AnnotationsFunction(),
-            new DeepLearningFunction(),
+            new MachineLearningFunction(),
             new PlottingFunction(),
             new ExportFunction(),
             new GraphFunction(),
@@ -74,7 +74,7 @@ class TopLevelBranchesTest {
         assertEquals("jipipe:function:statistics", new StatisticsFunction().getId());
         assertEquals("jipipe:function:tracking", new TrackingFunction().getId());
         assertEquals("jipipe:function:annotations", new AnnotationsFunction().getId());
-        assertEquals("jipipe:function:deep-learning", new DeepLearningFunction().getId());
+        assertEquals("jipipe:function:machine-learning", new MachineLearningFunction().getId());
         assertEquals("jipipe:function:plotting", new PlottingFunction().getId());
         assertEquals("jipipe:function:export", new ExportFunction().getId());
         assertEquals("jipipe:function:graph", new GraphFunction().getId());
@@ -99,7 +99,7 @@ class TopLevelBranchesTest {
         assertEquals("Statistics", new StatisticsFunction().getName());
         assertEquals("Tracking", new TrackingFunction().getName());
         assertEquals("Annotations", new AnnotationsFunction().getName());
-        assertEquals("Deep Learning", new DeepLearningFunction().getName());
+        assertEquals("Machine learning", new MachineLearningFunction().getName());
         assertEquals("Plotting", new PlottingFunction().getName());
         assertEquals("Export", new ExportFunction().getName());
         assertEquals("Graph / Project", new GraphFunction().getName());
@@ -116,7 +116,7 @@ class TopLevelBranchesTest {
         assertEquals(60.0f / 360.0f, new StatisticsFunction().getColorHue());
         assertEquals(165.0f / 360.0f, new TrackingFunction().getColorHue());
         assertEquals(264.0f / 360.0f, new AnnotationsFunction().getColorHue());
-        assertEquals(200.0f / 360.0f, new DeepLearningFunction().getColorHue());
+        assertEquals(200.0f / 360.0f, new MachineLearningFunction().getColorHue());
         assertEquals(155.0f / 360.0f, new PlottingFunction().getColorHue());
         assertEquals(22.0f / 360.0f, new ExportFunction().getColorHue());
         assertNull(new GraphFunction().getColorHue());

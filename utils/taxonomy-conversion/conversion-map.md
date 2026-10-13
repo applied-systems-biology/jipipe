@@ -2683,6 +2683,14 @@ corrected in 19.11d; function + spatial below are unchanged from 19.11a).
   rule 11 places weka under `JIPipeDLFramework` and the `deeplearning/` function branch is their
   consistent home (Inference/Training/Models). **Flag for Phase 3**: if the audit prefers a dedicated
   "classical ML" framework or branch, all 9 move together (mechanical). Recorded, not silently absorbed.
+  - **RESOLVED (2026-10-12, human review of 1324):** renamed the whole branch instead of carving
+    out a classical-ML sub-branch — `jipipe:function:deep-learning` →
+    `jipipe:function:machine-learning` ("Deep Learning" → "Machine learning"), and the three
+    `deeplearning/` leaves → `machine-learning-{inference,training,models}` ("Machine learning
+    inference/training/models"), plus the `jipipe:family:deep-learning` workflow family. Weka,
+    LabelKit and ilastik (random-forest/classical) now sit under a correctly-named umbrella;
+    Cellpose/Omnipose remain deep-learning nodes (their descriptions still say so). Safe because
+    the taxonomy shipped with 6.0.0 (unreleased; no project file carries the old ids).
 - **⚠️ opencv kernel generators → `ImageDataFunction`.** `GaborKernelGenerator`/`GaussianKernelGenerator`
   emit `OpenCvImageData`, which *is* an image type (a 2D `Mat`), so rule 6's "image→`ImageDataFunction`"
   (the leaned choice) is used. **Alternative:** `MiscDataFunction` (they are OpenCV-specific *kernel*

@@ -11,10 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning;
+package org.hkijena.jipipe.api.nodes.taxonomy.functions.data;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.DeepLearningFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
@@ -22,23 +22,29 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Seed leaf of the Deep Learning branch: Running deep learning models on data.
+ * Leaf of the Data Sources branch: producing data from form inputs.
+ * <p>
+ * Added by the full-registry classification audit (Phase 3): the curated
+ * nodes previously fell into the Misc. data catch-all.
  */
-public final class DeepLearningInferenceFunction implements JIPipeNodeTaxonomyFunction {
+public final class FormsFunction implements JIPipeNodeTaxonomyFunction {
+
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:forms";
 
     @Override
     public String getId() {
-        return "jipipe:function:deeplearning-inference";
+        return ID;
     }
 
     @Override
     public String getName() {
-        return "Deep learning inference";
+        return "Forms";
     }
 
     @Override
     public JIPipeNodeTaxonomyFunction getParent() {
-        return new DeepLearningFunction();
+        return new DataSourcesFunction();
     }
 
     @Override
@@ -49,7 +55,7 @@ public final class DeepLearningInferenceFunction implements JIPipeNodeTaxonomyFu
 
     @Override
     public String getDescription() {
-        return "Running deep learning models on data";
+        return "Nodes that produce data from interactive or parameterized form inputs (values, strings, choices)";
     }
 
     @Override
@@ -60,7 +66,7 @@ public final class DeepLearningInferenceFunction implements JIPipeNodeTaxonomyFu
 
     @Override
     public Set<String> getTags() {
-        return Set.of("inference");
+        return Collections.emptySet();
     }
 
     @Override

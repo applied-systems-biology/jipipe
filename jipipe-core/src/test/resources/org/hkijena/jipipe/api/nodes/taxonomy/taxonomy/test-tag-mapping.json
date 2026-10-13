@@ -1,0 +1,4 @@
+{
+  "CLIJ2 Watershed": ["segmentation", "watershed", "labeling"],
+  "CLIJ2 Median": ["filtering", "median"]
+}

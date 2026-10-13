@@ -16,6 +16,8 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageArithmeticFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageProjectionsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 import org.junit.jupiter.api.Test;
@@ -32,6 +34,8 @@ import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfi
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -148,5 +152,71 @@ class TaxonomyAutoAssignmentTest {
             throw new IllegalStateException("boom");
         };
         assertTrue(TaxonomyAutoAssignment.spatialForFirstImageInput(List.of(String.class), throwing).isEmpty());
+    }
+
+    // ------------------------------------------------------------------
+    // Resource-file mapping (full-registry classification audit)
+    // ------------------------------------------------------------------
+
+    @Test
+    void functionForIdInstantiatesTheAuditLeaves() {
+        assertEquals(ImageArithmeticFunction.class,
+            TaxonomyAutoAssignment.functionForId("jipipe:function:image-arithmetic").getClass());
+        assertEquals(ImageProjectionsFunction.class,
+            TaxonomyAutoAssignment.functionForId("jipipe:function:image-projections").getClass());
+        assertEquals(FilteringFunction.class,
+            TaxonomyAutoAssignment.functionForId(FilteringFunction.ID).getClass());
+        assertEquals(MiscellaneousFunction.class,
+            TaxonomyAutoAssignment.functionForId("jipipe:function:misc").getClass());
+        // Unknown and null ids yield null (callers fall back to the heuristic)
+        assertNull(TaxonomyAutoAssignment.functionForId("jipipe:function:does-not-exist"));
+        assertNull(TaxonomyAutoAssignment.functionForId(null));
+    }
+
+    @Test
+    void resourceMappingWinsOverTheNameHeuristic() {
+        // The heuristic would classify "Watershed" as Miscellaneous; the
+        // mapping (as bundled for CLIJ) assigns it to segmentation.
+        TaxonomyAutoAssignment.ResourceMapping mapping =
+            TaxonomyAutoAssignment.ResourceMapping.load(TaxonomyAutoAssignmentTest.class,
+                "taxonomy/test-command-mapping.json");
+        assertEquals(SegmentationFunction.class,
+            TaxonomyAutoAssignment.functionForResource(mapping, "CLIJ2 Watershed", "CLIJ2 Watershed").getClass());
+        // Unmapped key falls through to the heuristic
+        assertEquals(FilteringFunction.class,
+            TaxonomyAutoAssignment.functionForResource(mapping, "CLIJ2 Unmapped", "Median filter").getClass());
+    }
+
+    @Test
+    void missingResourceYieldsAnEmptyMapping() {
+        TaxonomyAutoAssignment.ResourceMapping mapping =
+            TaxonomyAutoAssignment.ResourceMapping.load(TaxonomyAutoAssignmentTest.class,
+                "taxonomy/does-not-exist.json");
+        assertTrue(mapping.isEmpty());
+        assertNull(mapping.functionIdOf("anything"));
+    }
+
+    @Test
+    void tagMappingLoadsAndLooksUpTags() {
+        // Tag audit resource loader: key -> tags, lowercase + trimmed
+        TaxonomyAutoAssignment.TagMapping mapping =
+            TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
+                "taxonomy/test-tag-mapping.json");
+        assertFalse(mapping.isEmpty());
+        assertEquals(Set.of("segmentation", "watershed", "labeling"),
+            mapping.tagsOf("CLIJ2 Watershed"));
+        assertEquals(Set.of("filtering", "median"), mapping.tagsOf("CLIJ2 Median"));
+        // Unmapped / null keys yield the empty set (never null)
+        assertTrue(mapping.tagsOf("CLIJ2 Unmapped").isEmpty());
+        assertTrue(mapping.tagsOf(null).isEmpty());
+    }
+
+    @Test
+    void missingResourceYieldsAnEmptyTagMapping() {
+        TaxonomyAutoAssignment.TagMapping mapping =
+            TaxonomyAutoAssignment.TagMapping.load(TaxonomyAutoAssignmentTest.class,
+                "taxonomy/does-not-exist.json");
+        assertTrue(mapping.isEmpty());
+        assertTrue(mapping.tagsOf("anything").isEmpty());
     }
 }

@@ -1,0 +1,1601 @@
+{
+  "CLIJ2 Reslice Radial": [
+    "projection",
+    "reslicing",
+    "3d"
+  ],
+  "CLIJ2 Maximum Z Projection Bounded": [
+    "z-projection",
+    "projection",
+    "intensity"
+  ],
+  "CLIJ2 Power": [
+    "pixel-operation",
+    "power",
+    "intensity"
+  ],
+  "CLIJ2 Generate Parametric Image": [
+    "labelmap",
+    "image-generation",
+    "parameters"
+  ],
+  "CLIJ2 Get Maximum Of All Pixels": [
+    "statistics",
+    "quantification",
+    "image"
+  ],
+  "CLIJ2 Scale 3D": [
+    "scaling",
+    "3d",
+    "image-processing"
+  ],
+  "CLIJ2Downsample 3D": [
+    "downsample",
+    "resampling",
+    "nearest-neighbor"
+  ],
+  "CLIJ2 Paste 2D": [
+    "paste",
+    "image-composition",
+    "2d"
+  ],
+  "CLIJ2Detect Maxima Slice By Slice Box": [
+    "maxima-detection",
+    "image-stack",
+    "binary"
+  ],
+  "CLIJ2 Scale 2D": [
+    "image-scaling",
+    "2d",
+    "geometry"
+  ],
+  "CLIJ2 Resample": [
+    "resampling",
+    "geometry",
+    "image-processing"
+  ],
+  "CLIJ2 Absolute": [
+    "pixel-operation",
+    "intensity",
+    "image-processing"
+  ],
+  "CLIJ2 Maximum 3D Box": [
+    "local-maximum",
+    "filtering",
+    "3d"
+  ],
+  "CLIJ2 Exponential": [
+    "math",
+    "pixel-operation",
+    "gpu"
+  ],
+  "CLIJ2 Add Image And Scalar": [
+    "image-arithmetic",
+    "pixel-operation",
+    "scalar-operation"
+  ],
+  "CLIJ2 Minimum Z Projection Bounded": [
+    "z-projection",
+    "minima",
+    "projection"
+  ],
+  "CLIJ2 Gaussian Blur 3D": [
+    "gaussian-blur",
+    "smoothing",
+    "3d"
+  ],
+  "CLIJ2 Get Mean Squared Error": [
+    "image-metrics",
+    "error-metrics",
+    "mse"
+  ],
+  "CLIJ2 Threshold Shanbhag": [
+    "thresholding",
+    "gpu",
+    "image-processing"
+  ],
+  "CLIJ2 Paste 3D": [
+    "image-pasting",
+    "gpu",
+    "spatial"
+  ],
+  "CLIJ2 Count Non Zero Pixels Slice By Slice Sphere": [
+    "quantification",
+    "gpu",
+    "counting"
+  ],
+  "CLIJ2 Labelled Spots To Point List": [
+    "point-list",
+    "labelmap",
+    "coordinate"
+  ],
+  "CLIJ2 Minimum Image And Scalar": [
+    "image-processing",
+    "scalar-operation",
+    "clipping"
+  ],
+  "CLIJ2 Binary And": [
+    "binary",
+    "logic",
+    "image-processing"
+  ],
+  "CLIJ2 Mean X Projection": [
+    "projection",
+    "intensity",
+    "dimensionality"
+  ],
+  "CLIJ2 Gaussian Blur 2D": [
+    "gaussian-blur",
+    "smoothing",
+    "filtering"
+  ],
+  "CLIJ2Dilate Box Slice By Slice": [
+    "dilation",
+    "morphology",
+    "binary-image"
+  ],
+  "CLIJ2 Translate 3D": [
+    "translation",
+    "3d",
+    "imagej"
+  ],
+  "CLIJ2 Flip 3D": [
+    "flip",
+    "3d",
+    "image"
+  ],
+  "CLIJ2 Mean Slice By Slice Sphere": [
+    "median",
+    "stack",
+    "2d"
+  ],
+  "CLIJ2 Flip 2D": [
+    "image-flipping",
+    "geometry",
+    "2d"
+  ],
+  "CLIJ2 Translate 2D": [
+    "image-translation",
+    "geometry",
+    "2d"
+  ],
+  "CLIJ2 Pull String": [
+    "image-conversion",
+    "gpu",
+    "data-export"
+  ],
+  "CLIJ2 Reduce Stack": [
+    "stack",
+    "resampling",
+    "slice-selection"
+  ],
+  "CLIJ2 Close Index Gaps In Label Map": [
+    "labeling",
+    "segmentation",
+    "relabeling"
+  ],
+  "CLIJ2 Greater": [
+    "comparison",
+    "thresholding",
+    "binary"
+  ],
+  "CLIJ2 Nonzero Minimum Box": [
+    "morphology",
+    "minima",
+    "image-processing"
+  ],
+  "CLIJ2 Results Table Column To Image": [
+    "table",
+    "image",
+    "conversion"
+  ],
+  "CLIJ2 Standard Deviation Z Projection": [
+    "projection",
+    "statistics",
+    "z-axis"
+  ],
+  "CLIJ2 Maximum 2D Box": [
+    "local-maximum",
+    "morphology",
+    "filtering"
+  ],
+  "CLIJ2 Statistics Of Background And Labelled Pixels": [
+    "statistics",
+    "quantification",
+    "labeling"
+  ],
+  "CLIJ2 Local Threshold": [
+    "thresholding",
+    "binary-image",
+    "gpu"
+  ],
+  "CLIJ2 Get Sum Of All Pixels": [
+    "quantification",
+    "statistics",
+    "gpu"
+  ],
+  "CLIJ2 Mean 3D Box": [
+    "local-mean",
+    "smoothing",
+    "statistics"
+  ],
+  "CLIJ2 Generate Distance Matrix": [
+    "distance",
+    "point-list",
+    "quantification"
+  ],
+  "CLIJ2 Set Image Borders": [
+    "border-removal",
+    "mask",
+    "preprocessing"
+  ],
+  "CLIJ2 Copy Slice": [
+    "slice",
+    "stack",
+    "data-transfer"
+  ],
+  "CLIJ2 Pull Labels To Roi List": [
+    "labeling",
+    "roi-extraction",
+    "list"
+  ],
+  "CLIJ2 Set Where Xgreater Than Y": [
+    "imagej",
+    "gpu",
+    "coordinate-masking"
+  ],
+  "CLIJ2 Binary Subtract": [
+    "imagej",
+    "gpu",
+    "binary"
+  ],
+  "CLIJ2 Threshold Renyi Entropy": [
+    "thresholding",
+    "entropy"
+  ],
+  "CLIJ2 Mean 3D Sphere": [
+    "local-mean",
+    "smoothing",
+    "3d"
+  ],
+  "CLIJ2 Exclude Labels With Values Out Of Range": [
+    "filtering",
+    "labelmap",
+    "renumbering"
+  ],
+  "CLIJ2 Replace Pixels If Zero": [
+    "pixel-replacement",
+    "image-processing",
+    "zero-handling"
+  ],
+  "CLIJ2 Minimum Of Masked Pixels": [
+    "intensity",
+    "coordinate-masking",
+    "quantification"
+  ],
+  "CLIJ2 Add Images Weighted": [
+    "image-arithmetic",
+    "weighted-sum",
+    "gpu"
+  ],
+  "CLIJ2 Sum Z Projection": [
+    "projection",
+    "z-projection",
+    "quantification"
+  ],
+  "CLIJ2 Exclude Labels On Edges": [
+    "labeling",
+    "filtering",
+    "segmentation"
+  ],
+  "CLIJ2 Pull To Current Slice": [
+    "gpu",
+    "stack",
+    "slice"
+  ],
+  "CLIJ2Difference Of Gaussian 2D": [
+    "gpu",
+    "filtering",
+    "edge-detection"
+  ],
+  "CLIJ2 Pull Labels To Roi Manager": [
+    "gpu",
+    "labeling",
+    "roi"
+  ],
+  "CLIJ2 Label To Mask": [
+    "coordinate-masking",
+    "segmentation",
+    "binary-image"
+  ],
+  "CLIJ2Difference Of Gaussian 3D": [
+    "gaussian-blur",
+    "filtering",
+    "edge-detection"
+  ],
+  "CLIJ2 Exclude Labels On Surface": [
+    "filtering",
+    "surface",
+    "3d"
+  ],
+  "CLIJ2 Laplace Diamond": [
+    "edge-detection",
+    "filtering",
+    "laplacian"
+  ],
+  "CLIJ2 Threshold Min Error": [
+    "thresholding",
+    "gpu",
+    "histogram"
+  ],
+  "CLIJ2 Binary Not": [
+    "binary",
+    "logic",
+    "image-processing"
+  ],
+  "CLIJ2 Apply Vector Field 2D": [
+    "deformation",
+    "vector-field",
+    "image-processing"
+  ],
+  "CLIJ2 Mean Z Projection Bounded": [
+    "z-projection",
+    "statistics",
+    "projection"
+  ],
+  "CLIJ2 Sobel": [
+    "edge-detection",
+    "convolution",
+    "image-processing"
+  ],
+  "CLIJ2 Combine Horizontally": [
+    "image-composition",
+    "stack",
+    "gpu"
+  ],
+  "CLIJ2 Sorensen Dice Coefficient": [
+    "quantification",
+    "overlap",
+    "dice-coefficient"
+  ],
+  "CLIJ2 Bottom Hat Box": [
+    "morphology",
+    "background-subtraction",
+    "filtering"
+  ],
+  "CLIJ2 Exclude Labels With Values Within Range": [
+    "labelmap",
+    "filtering",
+    "thresholding"
+  ],
+  "CLIJ2Downsample 2D": [
+    "resampling",
+    "scaling",
+    "image-processing"
+  ],
+  "CLIJ2 Logarithm": [
+    "image-processing",
+    "log-transform",
+    "gpu"
+  ],
+  "CLIJ2 Apply Vector Field 3D": [
+    "image-deformation",
+    "vector-field",
+    "volume"
+  ],
+  "CLIJ2 Generate Binary Overlap Matrix": [
+    "overlap",
+    "binary-matrix",
+    "labelmap"
+  ],
+  "CLIJ2Downsample Slice By Slice Half Median": [
+    "resampling",
+    "median",
+    "slice"
+  ],
+  "CLIJ2 Minimum X Projection": [
+    "projection",
+    "minima",
+    "3d"
+  ],
+  "CLIJ2 Maximum 3D Sphere": [
+    "local-maximum",
+    "3d",
+    "sphere"
+  ],
+  "CLIJ2 Sum Of All Pixels": [
+    "quantification",
+    "statistics",
+    "image-processing"
+  ],
+  "CLIJ2 Median 2D Box": [
+    "median-filter",
+    "local-mean",
+    "image-processing"
+  ],
+  "CLIJ2 Push Results Table Column": [
+    "table-image",
+    "visualization",
+    "image-processing"
+  ],
+  "CLIJ2 Convolve": [
+    "convolution",
+    "filtering",
+    "gpu"
+  ],
+  "CLIJ2 Maximum Slice By Slice Sphere": [
+    "morphology",
+    "local-maximum",
+    "stack"
+  ],
+  "CLIJ2 Minimum Z Projection": [
+    "projection",
+    "z-projection",
+    "intensity"
+  ],
+  "CLIJ2Distance Map": [
+    "distance",
+    "morphology",
+    "binary"
+  ],
+  "CLIJ2 Get Minimum Of All Pixels": [
+    "statistics",
+    "quantification",
+    "minima"
+  ],
+  "CLIJ2 Push String": [
+    "text",
+    "image"
+  ],
+  "CLIJ2 Greater Or Equal": [
+    "image-comparison",
+    "pixelwise",
+    "boolean"
+  ],
+  "CLIJ2 Automatic Threshold": [
+    "thresholding",
+    "histogram"
+  ],
+  "CLIJ2 Top Hat Sphere": [
+    "top-hat",
+    "background-subtraction",
+    "morphology"
+  ],
+  "CLIJ2 Adjacency Matrix To Touch Matrix": [
+    "matrix",
+    "adjacency",
+    "touch-matrix"
+  ],
+  "CLIJ2 Squared Difference": [
+    "image-comparison",
+    "squared-difference",
+    "image"
+  ],
+  "CLIJ2 Pull To Current Slice Selection": [
+    "gpu",
+    "selection",
+    "2d"
+  ],
+  "CLIJ2 Standard Deviation Of Touching Neighbors": [
+    "statistics",
+    "object-analysis",
+    "touching-neighbors"
+  ],
+  "CLIJ2 Push Array": [
+    "array",
+    "image-conversion",
+    "imagej"
+  ],
+  "CLIJ2 Touch Matrix To Mesh": [
+    "point-list",
+    "mesh",
+    "graph"
+  ],
+  "CLIJ2 Not Equal Constant": [
+    "comparison",
+    "logic",
+    "image"
+  ],
+  "CLIJ2 Sum Image Slice By Slice": [
+    "quantification",
+    "image-arithmetic",
+    "slice"
+  ],
+  "CLIJ2 Label Spots": [
+    "feature-detection",
+    "labeling",
+    "binary-image"
+  ],
+  "CLIJ2 Mean 2D Box": [
+    "image-processing",
+    "local-mean",
+    "smoothing"
+  ],
+  "CLIJ2 Maximum Of All Pixels": [
+    "statistics",
+    "quantification",
+    "intensity"
+  ],
+  "CLIJ2 Threshold Triangle": [
+    "thresholding",
+    "histogram",
+    "segmentation"
+  ],
+  "CLIJ2Draw Line": [
+    "drawing",
+    "line",
+    "morphology"
+  ],
+  "CLIJ2 Multiply Images": [
+    "arithmetic",
+    "image-arithmetic",
+    "pixel-values"
+  ],
+  "CLIJ2 Smaller": [
+    "image-comparison",
+    "pixelwise",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Max Entropy": [
+    "thresholding",
+    "entropy",
+    "histogram"
+  ],
+  "CLIJ2 Set Random": [
+    "random",
+    "image-generation",
+    "gpu"
+  ],
+  "CLIJ2 Combine Vertically": [
+    "image-composition",
+    "stack",
+    "gpu"
+  ],
+  "CLIJ2 Maximum X Projection": [
+    "projection",
+    "local-maximum",
+    "3d-to-2d"
+  ],
+  "CLIJ2 Mean Squared Error": [
+    "quantification",
+    "image-comparison",
+    "statistics"
+  ],
+  "CLIJ2 Mean Y Projection": [
+    "projection",
+    "intensity",
+    "dimensionality"
+  ],
+  "CLIJ2 Sum Y Projection": [
+    "projection",
+    "intensity",
+    "dimensionality"
+  ],
+  "CLIJ2 Get Mean Of All Pixels": [
+    "quantification",
+    "statistics",
+    "pixel-values"
+  ],
+  "CLIJ2 Threshold Moments": [
+    "thresholding",
+    "histogram"
+  ],
+  "CLIJ2 Equalize Mean Intensities Of Slices": [
+    "illumination-correction",
+    "normalization",
+    "z-stack"
+  ],
+  "CLIJ2 Sum X Projection": [
+    "projection",
+    "z-stack",
+    "quantification"
+  ],
+  "CLIJ2 Exclude Labels Sub Surface": [
+    "labeling",
+    "3d",
+    "surface"
+  ],
+  "CLIJ2 Count Non Zero Voxels 3D Sphere": [
+    "quantification",
+    "3d",
+    "voxel-counting"
+  ],
+  "CLIJ2 Minimum Octagon": [
+    "morphology",
+    "minima",
+    "gpu"
+  ],
+  "CLIJ2 Maximum Images": [
+    "image-arithmetic",
+    "pixelwise",
+    "gpu"
+  ],
+  "CLIJ2 Rotate 2D": [
+    "image-geometry",
+    "rotation",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Minimum": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "CLIJ2 Rotate 3D": [
+    "rotation",
+    "3d",
+    "image-processing"
+  ],
+  "CLIJ2 Set Plane": [
+    "plane",
+    "3d",
+    "image-processing"
+  ],
+  "CLIJ2 Statistics Of Image": [
+    "image-statistics",
+    "quantification",
+    "intensity"
+  ],
+  "CLIJ2 Generate Touch Count Matrix": [
+    "labeling",
+    "adjacency",
+    "quantification"
+  ],
+  "CLIJ2 Reslice Bottom": [
+    "reslicing",
+    "stack",
+    "geometry"
+  ],
+  "CLIJ2 Set Non Zero Pixels To Pixel Index": [
+    "image-processing",
+    "connected-components",
+    "pixel-indexing"
+  ],
+  "CLIJ2 Undefined To Zero": [
+    "image-processing",
+    "nan-handling",
+    "gpu"
+  ],
+  "CLIJ2 Erode Box Slice By Slice": [
+    "morphology",
+    "binary-image",
+    "erosion"
+  ],
+  "CLIJ2 Threshold Iso Data": [
+    "thresholding",
+    "segmentation",
+    "isodata"
+  ],
+  "CLIJ2 Pull As Roi": [
+    "roi",
+    "gpu",
+    "binary-image"
+  ],
+  "CLIJ2 Minimum 3D Box": [
+    "morphology",
+    "local-maximum",
+    "3d"
+  ],
+  "CLIJ2 Laplace Box": [
+    "image-processing",
+    "edge-detection",
+    "morphology"
+  ],
+  "CLIJ2 Affine Transform 2D": [
+    "transform",
+    "image-effects",
+    "geometry"
+  ],
+  "CLIJ2 Shortest Distances": [
+    "distance-matrix",
+    "distance",
+    "statistics"
+  ],
+  "CLIJ2 Opening Diamond": [
+    "morphology",
+    "filtering",
+    "gpu"
+  ],
+  "CLIJ2 Multiply Stack With Plane": [
+    "image-arithmetic",
+    "stack",
+    "plane"
+  ],
+  "CLIJ2 Variance Of All Pixels": [
+    "statistics",
+    "quantification",
+    "intensity"
+  ],
+  "CLIJ2 Statistics Of Labelled Pixels": [
+    "statistics",
+    "quantification",
+    "labeling"
+  ],
+  "CLIJ2 Binary Fill Holes": [
+    "binary",
+    "morphology",
+    "hole-filling"
+  ],
+  "CLIJ2 Minimum 3D Sphere": [
+    "local-maximum",
+    "morphology",
+    "3d"
+  ],
+  "CLIJ2 Maximum Of Masked Pixels": [
+    "local-maximum",
+    "mask",
+    "quantification"
+  ],
+  "CLIJ2 Invert": [
+    "image-processing",
+    "pixel-values"
+  ],
+  "CLIJ2 Print": [
+    "image-processing",
+    "console-output"
+  ],
+  "CLIJ2 Affine Transform 3D": [
+    "transform",
+    "3d",
+    "image-processing"
+  ],
+  "CLIJ2 N Closest Distances": [
+    "distance",
+    "nearest-neighbor",
+    "point-analysis"
+  ],
+  "CLIJ2 Minimum 2D Box": [
+    "morphology",
+    "local-maximum",
+    "filtering"
+  ],
+  "CLIJ2 Count Non Zero Pixels": [
+    "quantification",
+    "pixel-count",
+    "statistics"
+  ],
+  "CLIJ2 Replace Intensity": [
+    "intensity",
+    "pixel-values",
+    "image-editing"
+  ],
+  "CLIJ2 Erode Box": [
+    "morphology",
+    "erosion",
+    "binary-image"
+  ],
+  "CLIJ2 Standard Deviation Of Masked Pixels": [
+    "statistics",
+    "quantification",
+    "mask"
+  ],
+  "CLIJ2 Binary Intersection": [
+    "binary",
+    "image-processing",
+    "boolean-operations"
+  ],
+  "CLIJ2 Spots To Point List": [
+    "point-list",
+    "feature-detection",
+    "image-processing"
+  ],
+  "CLIJ2 Median 3D Sphere": [
+    "median-filter",
+    "3d",
+    "smoothing"
+  ],
+  "CLIJ2 Reslice Radial Top": [
+    "projection",
+    "reslicing",
+    "image-stack"
+  ],
+  "CLIJ2 Generate Touch Matrix": [
+    "labelmap",
+    "adjacency",
+    "quantification"
+  ],
+  "CLIJ2 Threshold Mean": [
+    "thresholding",
+    "gpu",
+    "statistics"
+  ],
+  "CLIJ2Detect Label Edges": [
+    "label-edges",
+    "segmentation",
+    "morphology"
+  ],
+  "CLIJ2 Smaller Or Equal Constant": [
+    "comparison",
+    "binary",
+    "pixelwise"
+  ],
+  "CLIJ2 Equal Constant": [
+    "comparison",
+    "binary",
+    "pixelwise"
+  ],
+  "CLIJ2 Pull To Roi Manager": [
+    "roi",
+    "gpu",
+    "binary"
+  ],
+  "CLIJ2 Transpose Yz": [
+    "gpu",
+    "z-axis",
+    "transform"
+  ],
+  "CLIJ2 Nonzero Maximum Box": [
+    "morphology",
+    "filtering",
+    "gpu"
+  ],
+  "CLIJ2 Binary Edge Detection": [
+    "edge-detection",
+    "morphology",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Ij Iso Data": [
+    "thresholding",
+    "statistics",
+    "gpu"
+  ],
+  "CLIJ2 Median Z Projection": [
+    "projection",
+    "z-projection",
+    "quantification"
+  ],
+  "CLIJ2 Closing Diamond": [
+    "morphology",
+    "binary-closing"
+  ],
+  "CLIJ2 Get Bounding Box": [
+    "bounding-box",
+    "roi",
+    "binary"
+  ],
+  "CLIJ2Distance Matrix To Mesh": [
+    "mesh",
+    "geometry",
+    "distance-matrix"
+  ],
+  "CLIJ2 Centroids Of Background And Labels": [
+    "centroid",
+    "segmentation",
+    "labelmap"
+  ],
+  "CLIJ2 Gradient Z": [
+    "gradient",
+    "z-axis",
+    "image-processing"
+  ],
+  "CLIJ2 Gradient Y": [
+    "gradient",
+    "z-axis",
+    "image-processing"
+  ],
+  "CLIJ2 Gradient X": [
+    "gradient",
+    "image-processing"
+  ],
+  "CLIJ2 N Closest Points": [
+    "distance",
+    "nearest-neighbor",
+    "point-analysis"
+  ],
+  "CLIJ2 Set": [
+    "image-processing",
+    "pixel-values",
+    "constant"
+  ],
+  "CLIJ2 Maximum Y Projection": [
+    "projection",
+    "intensity",
+    "3d"
+  ],
+  "CLIJ2 Maximum 2D Sphere": [
+    "local-maximum",
+    "neighborhood-filter",
+    "gpu"
+  ],
+  "CLIJ2 Get Gpu Properties": [
+    "gpu",
+    "system-info",
+    "opencl"
+  ],
+  "CLIJ2 Get Automatic Threshold": [
+    "thresholding",
+    "imagej",
+    "gpu"
+  ],
+  "CLIJ2 Minimum Y Projection": [
+    "projection",
+    "intensity",
+    "3d-to-2d"
+  ],
+  "CLIJ2 Connected Components Labeling Box": [
+    "connected-components",
+    "labeling",
+    "binary-image"
+  ],
+  "CLIJ2 Threshold": [
+    "thresholding",
+    "segmentation"
+  ],
+  "CLIJ2 Maximum Image And Scalar": [
+    "image-arithmetic",
+    "pixelwise",
+    "gpu"
+  ],
+  "CLIJ2 Count Non Zero Pixels 2D Sphere": [
+    "pixel-count",
+    "morphology",
+    "quantification"
+  ],
+  "CLIJ2 Binary Union": [
+    "binary",
+    "logic",
+    "image-processing"
+  ],
+  "CLIJ2 Exclude Labels": [
+    "labeling",
+    "labelmap",
+    "renumbering"
+  ],
+  "CLIJ2 Set Row": [
+    "image-processing",
+    "pixel-operation",
+    "table-editing"
+  ],
+  "CLIJ2 Power Images": [
+    "image-processing",
+    "pixel-operation",
+    "image-arithmetic"
+  ],
+  "CLIJ2 Threshold Default": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "CLIJ2 Threshold Yen": [
+    "thresholding",
+    "segmentation",
+    "gpu"
+  ],
+  "CLIJ2Detect Minima Slice By Slice Box": [
+    "detection",
+    "local-maximum",
+    "gpu"
+  ],
+  "CLIJ2 Convert U Int 16": [
+    "image-conversion",
+    "uint16",
+    "gpu"
+  ],
+  "CLIJ2Dilate Box": [
+    "morphology",
+    "dilation",
+    "binary-image"
+  ],
+  "CLIJ2 Mean 2D Sphere": [
+    "statistics",
+    "local-mean",
+    "filtering"
+  ],
+  "CLIJ2 Push Results Table": [
+    "table-image",
+    "visualization",
+    "quantification"
+  ],
+  "CLIJ2 Binary Or": [
+    "binary",
+    "boolean-operations",
+    "image-arithmetic"
+  ],
+  "CLIJ2 Voronoi Labeling": [
+    "segmentation",
+    "labeling",
+    "morphology"
+  ],
+  "CLIJ2 Median Of Touching Neighbors": [
+    "object",
+    "statistics",
+    "neighborhood"
+  ],
+  "CLIJ2 Nonzero Minimum Diamond": [
+    "filtering",
+    "morphology",
+    "image"
+  ],
+  "CLIJ2 Multiply Matrix": [
+    "matrix",
+    "gpu"
+  ],
+  "CLIJ2 Greater Constant": [
+    "thresholding",
+    "comparison",
+    "binary"
+  ],
+  "CLIJ2 Watershed": [
+    "segmentation",
+    "morphology",
+    "watershed"
+  ],
+  "CLIJ2 Generate Parametric Image From Results Table Column": [
+    "labelmap",
+    "table",
+    "cli-j2"
+  ],
+  "CLIJ2 Mean Of Pixels Above Threshold": [
+    "thresholding",
+    "statistics",
+    "intensity"
+  ],
+  "CLIJ2 Multiply Image And Coordinate": [
+    "intensity",
+    "coordinate",
+    "preprocessing"
+  ],
+  "CLIJ2 Get Center Of Mass": [
+    "centroid",
+    "quantification",
+    "gpu"
+  ],
+  "CLIJ2 Mean Z Projection": [
+    "z-projection",
+    "projection",
+    "quantification"
+  ],
+  "CLIJ2 Erode Sphere Slice By Slice": [
+    "morphology",
+    "erosion",
+    "binary"
+  ],
+  "CLIJ2Draw Sphere": [
+    "roi",
+    "sphere",
+    "drawing"
+  ],
+  "CLIJ2Dilate Sphere": [
+    "morphology",
+    "dilation",
+    "binary"
+  ],
+  "CLIJ2 Mean Of Masked Pixels": [
+    "quantification",
+    "intensity",
+    "mask"
+  ],
+  "CLIJ2 Mean Of Touching Neighbors": [
+    "quantification",
+    "morphology",
+    "nearest-neighbor"
+  ],
+  "CLIJ2Detect Maxima 3D Box": [
+    "detection",
+    "maxima",
+    "morphology"
+  ],
+  "CLIJ2 Mask Stack With Plane": [
+    "mask",
+    "stack",
+    "2d"
+  ],
+  "CLIJ2 Mean Of All Pixels": [
+    "quantification",
+    "statistics",
+    "gpu"
+  ],
+  "CLIJ2 Get Dimensions": [
+    "dimensionality",
+    "metadata",
+    "image-size"
+  ],
+  "CLIJ2 Median Slice By Slice Sphere": [
+    "median-filter",
+    "smoothing",
+    "stack"
+  ],
+  "CLIJ2 Minimum Z Projection Thresholded Bounded": [
+    "z-projection",
+    "thresholding",
+    "intensity"
+  ],
+  "CLIJ2 Transpose Xy": [
+    "axis-transpose",
+    "image-geometry",
+    "gpu"
+  ],
+  "CLIJ2 Flood Fill Diamond": [
+    "flood-fill",
+    "pixel-replacement",
+    "morphology"
+  ],
+  "CLIJ2 Transpose Xz": [
+    "axis-transpose",
+    "image-geometry",
+    "gpu"
+  ],
+  "CLIJ2 Closing Box": [
+    "morphology",
+    "closing",
+    "gpu"
+  ],
+  "CLIJ2 Create 2D": [
+    "image",
+    "2d",
+    "gpu"
+  ],
+  "CLIJ2 Bottom Hat Sphere": [
+    "morphology",
+    "background-subtraction",
+    "gpu"
+  ],
+  "CLIJ2 Maximum Z Projection": [
+    "projection",
+    "z-projection",
+    "intensity"
+  ],
+  "CLIJ2 Reslice Left": [
+    "reslicing",
+    "image-stack",
+    "geometry"
+  ],
+  "CLIJ2 Mask Label": [
+    "mask",
+    "labeling",
+    "roi"
+  ],
+  "CLIJ2 Jaccard Index": [
+    "overlap",
+    "quantification",
+    "binary"
+  ],
+  "CLIJ2 Median Slice By Slice Box": [
+    "median-filter",
+    "local-mean",
+    "3d"
+  ],
+  "CLIJ2 Variance Of Masked Pixels": [
+    "variance",
+    "mask",
+    "statistics"
+  ],
+  "CLIJ2 Reslice Top": [
+    "image-processing",
+    "reslicing",
+    "flip"
+  ],
+  "CLIJ2 Not Equal": [
+    "image-processing",
+    "image-comparison",
+    "pixelwise"
+  ],
+  "CLIJ2 Concatenate Stacks": [
+    "stack",
+    "z-axis",
+    "concatenation"
+  ],
+  "CLIJ2 Matrix Equal": [
+    "matrix",
+    "comparison",
+    "tolerance"
+  ],
+  "CLIJ2Detect Maxima 2D Box": [
+    "detection",
+    "maxima",
+    "2d"
+  ],
+  "CLIJ2 Maximum Of Touching Neighbors": [
+    "object-analysis",
+    "touching-neighbors",
+    "statistics"
+  ],
+  "CLIJ2 Voronoi Octagon": [
+    "morphology",
+    "voronoi",
+    "gpu"
+  ],
+  "CLIJ2 Create 3D": [
+    "gpu",
+    "image",
+    "3d"
+  ],
+  "CLIJ2 Rotate Clockwise": [
+    "rotation",
+    "geometry",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Percentile": [
+    "thresholding",
+    "histogram",
+    "image-processing"
+  ],
+  "CLIJ2 Minimum Slice By Slice Sphere": [
+    "morphology",
+    "local-maximum",
+    "image-stack"
+  ],
+  "CLIJ2 Connected Components Labeling Diamond": [
+    "connected-components",
+    "labeling",
+    "morphology"
+  ],
+  "CLIJ2 Smaller Or Equal": [
+    "comparison",
+    "thresholding",
+    "pixelwise"
+  ],
+  "CLIJ2 Threshold Li": [
+    "thresholding",
+    "histogram",
+    "gpu"
+  ],
+  "CLIJ2 Onlyzero Overwrite Maximum Diamond": [
+    "local-maximum",
+    "morphology",
+    "image-processing"
+  ],
+  "CLIJ2 Copy": [
+    "copying",
+    "image-processing"
+  ],
+  "CLIJ2 Get Sorensen Dice Coefficient": [
+    "dice-coefficient",
+    "overlap",
+    "quantification"
+  ],
+  "CLIJ2 Maximum Octagon": [
+    "morphology",
+    "maximum-filter",
+    "filtering"
+  ],
+  "CLIJ2 Arg Maximum Z Projection": [
+    "projection",
+    "z-stack",
+    "argmax"
+  ],
+  "CLIJ2 Crop 2D": [
+    "image",
+    "cropping",
+    "2d"
+  ],
+  "CLIJ2 Extend Labeling Via Voronoi": [
+    "labeling",
+    "morphology",
+    "voronoi"
+  ],
+  "CLIJ2 Subtract Image From Scalar": [
+    "image-arithmetic",
+    "scalar-operation",
+    "image-processing"
+  ],
+  "CLIJ2 Generate Jaccard Index Matrix": [
+    "labelmap",
+    "overlap",
+    "dice-coefficient"
+  ],
+  "CLIJ2 Greater Or Equal Constant": [
+    "thresholding",
+    "comparison",
+    "binary"
+  ],
+  "CLIJ2 Image To Stack": [
+    "stack",
+    "3d-to-2d",
+    "gpu"
+  ],
+  "CLIJ2 Nonzero Maximum Diamond": [
+    "maximum-filter",
+    "morphology",
+    "gpu"
+  ],
+  "CLIJ2 Crop 3D": [
+    "cropping",
+    "stack",
+    "3d"
+  ],
+  "CLIJ2 Set Column": [
+    "image-editing",
+    "column",
+    "gpu"
+  ],
+  "CLIJ2 Pull To Results Table": [
+    "quantification",
+    "results-table",
+    "image"
+  ],
+  "CLIJ2 Median 3D Box": [
+    "median-filter",
+    "3d",
+    "local-mean"
+  ],
+  "CLIJ2 Average Distance Of N Closest Points": [
+    "distance",
+    "statistics",
+    "points"
+  ],
+  "CLIJ2 Get Time Tracing": [
+    "profiling",
+    "execution-time",
+    "gpu"
+  ],
+  "CLIJ2 Histogram": [
+    "histogram",
+    "statistics",
+    "gpu"
+  ],
+  "CLIJ2 Write Values To Positions": [
+    "value-writing",
+    "coordinate",
+    "gpu"
+  ],
+  "CLIJ2 Bounding Box": [
+    "roi",
+    "bounding-box",
+    "binary-image"
+  ],
+  "CLIJ2 Replace Intensities": [
+    "intensity",
+    "image-processing",
+    "gpu"
+  ],
+  "CLIJ2 Neighbors Of Neighbors": [
+    "adjacency",
+    "touch-matrix",
+    "graph"
+  ],
+  "CLIJ2 Erode Sphere": [
+    "morphology",
+    "erosion",
+    "binary-image"
+  ],
+  "CLIJ2 Subtract Images": [
+    "image",
+    "arithmetic",
+    "subtraction"
+  ],
+  "CLIJ2 Minimum Distance Of Touching Neighbors": [
+    "quantification",
+    "distance",
+    "object-analysis"
+  ],
+  "CLIJ2 Threshold Huang": [
+    "thresholding",
+    "segmentation",
+    "statistics"
+  ],
+  "CLIJ2 Centroids Of Labels": [
+    "quantification",
+    "centroid",
+    "labeling"
+  ],
+  "CLIJ2 Entropy Box": [
+    "entropy",
+    "statistics",
+    "local-filter"
+  ],
+  "CLIJ2 Median 2D Sphere": [
+    "median",
+    "statistics",
+    "local-filter"
+  ],
+  "CLIJ2 Convert Float": [
+    "conversion",
+    "pixel-values",
+    "image"
+  ],
+  "CLIJ2 Set Where Xequals Y": [
+    "image-processing",
+    "pixel-operation",
+    "gpu"
+  ],
+  "CLIJ2 Top Hat Box": [
+    "morphology",
+    "background-subtraction",
+    "filtering"
+  ],
+  "CLIJ2 Multiply Image Stack With Scalars": [
+    "image-arithmetic",
+    "scaling",
+    "gpu"
+  ],
+  "CLIJ2 Minimum Images": [
+    "image-arithmetic",
+    "pixelwise",
+    "gpu"
+  ],
+  "CLIJ2Dilate Sphere Slice By Slice": [
+    "morphology",
+    "dilation",
+    "binary-image"
+  ],
+  "CLIJ2 Minimum 2D Sphere": [
+    "local-maximum",
+    "2d",
+    "gpu"
+  ],
+  "CLIJ2 Pointlist To Labelled Spots": [
+    "spot-labeling",
+    "point-list",
+    "roi"
+  ],
+  "CLIJ2 Binary X Or": [
+    "binary-image",
+    "boolean-operations",
+    "image-processing"
+  ],
+  "CLIJ2 Standard Deviation Of All Pixels": [
+    "statistics",
+    "quantification",
+    "image-processing"
+  ],
+  "CLIJ2 Onlyzero Overwrite Maximum Box": [
+    "morphology",
+    "local-maximum",
+    "image-processing"
+  ],
+  "CLIJ2Divide Images": [
+    "arithmetic",
+    "pixelwise",
+    "image-processing"
+  ],
+  "CLIJ2 Convert U Int 8": [
+    "image-conversion",
+    "pixel-values",
+    "uint"
+  ],
+  "CLIJ2 Average Distance Of Touching Neighbors": [
+    "object-analysis",
+    "distance",
+    "touching-neighbors"
+  ],
+  "CLIJ2 Smaller Constant": [
+    "comparison",
+    "pixel-operation",
+    "image-arithmetic"
+  ],
+  "CLIJ2 Add Images": [
+    "image-arithmetic",
+    "arithmetic",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Otsu": [
+    "thresholding",
+    "otsu",
+    "segmentation"
+  ],
+  "CLIJ2 Minimum Of All Pixels": [
+    "statistics",
+    "quantification",
+    "gpu"
+  ],
+  "CLIJ2 Average Distance Of N Far Off Points": [
+    "distance-matrix",
+    "statistics",
+    "gpu"
+  ],
+  "CLIJ2 Threshold Intermodes": [
+    "thresholding",
+    "histogram",
+    "gpu"
+  ],
+  "CLIJ2 Absolute Difference": [
+    "image-arithmetic",
+    "comparison",
+    "gpu"
+  ],
+  "CLIJ2 Save As Tif": [
+    "image-export",
+    "gpu",
+    "file-io"
+  ],
+  "CLIJ2Detect Minima 2D Box": [
+    "local-maximum",
+    "detection",
+    "gpu"
+  ],
+  "CLIJ2 Reslice Right": [
+    "reslicing",
+    "axis-transpose",
+    "image-stack"
+  ],
+  "CLIJ2Depth Color Projection": [
+    "projection",
+    "colormap",
+    "shape-analysis"
+  ],
+  "CLIJ2 Label Voronoi Octagon": [
+    "morphology",
+    "segmentation",
+    "edge-detection"
+  ],
+  "CLIJ2 Center Of Mass": [
+    "centroid",
+    "quantification",
+    "gpu"
+  ],
+  "CLIJ2Draw Box": [
+    "box-drawing",
+    "roi",
+    "gpu"
+  ],
+  "CLIJ2 Multiply Image And Scalar": [
+    "image-arithmetic",
+    "scaling",
+    "gpu"
+  ],
+  "CLIJ2 Get Jaccard Index": [
+    "dice-coefficient",
+    "overlap",
+    "quantification"
+  ],
+  "CLIJ2 Count Touching Neighbors": [
+    "quantification",
+    "nearest-neighbor",
+    "labeling"
+  ],
+  "CLIJ2 Equal": [
+    "image-comparison",
+    "pixelwise",
+    "boolean"
+  ],
+  "CLIJ2Detect Minima 3D Box": [
+    "local-maximum",
+    "detection",
+    "neighborhood"
+  ],
+  "CLIJ2 Opening Box": [
+    "morphology",
+    "binary-closing",
+    "gpu"
+  ],
+  "CLIJ2 Get Mean Of Masked Pixels": [
+    "quantification",
+    "statistics",
+    "mask"
+  ],
+  "CLIJ2 Mean Closest Spot Distance": [
+    "quantification",
+    "distance",
+    "spots"
+  ],
+  "CLIJ2 Point Index List To Mesh": [
+    "point-list",
+    "mesh",
+    "geometry"
+  ],
+  "CLIJ2 Mask": [
+    "mask",
+    "binary-mask",
+    "image-processing"
+  ],
+  "CLIJ2 Rotate Counter Clockwise": [
+    "rotation",
+    "image-processing",
+    "geometry"
+  ],
+  "CLIJ2 Set Where Xsmaller Than Y": [
+    "image-editing",
+    "mask",
+    "coordinate"
+  ],
+  "CLIJ2 Set Ramp X": [
+    "image-processing",
+    "coordinate-ramp",
+    "gpu"
+  ],
+  "CLIJ2 Set Ramp Y": [
+    "coordinate-ramp",
+    "z-axis",
+    "image-processing"
+  ],
+  "CLIJ2 Set Ramp Z": [
+    "coordinate-ramp",
+    "z-axis",
+    "image-processing"
+  ],
+  "CLIJ2 Touch Matrix To Adjacency Matrix": [
+    "matrix-conversion",
+    "adjacency",
+    "graph"
+  ]
+}

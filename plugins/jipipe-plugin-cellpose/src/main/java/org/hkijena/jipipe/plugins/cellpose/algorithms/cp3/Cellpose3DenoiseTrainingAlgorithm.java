@@ -16,7 +16,7 @@ package org.hkijena.jipipe.plugins.cellpose.algorithms.cp3;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.deeplearning.DeepLearningTrainingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -86,7 +86,7 @@ import java.util.stream.Collectors;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Training data", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Test data", create = true, optional = true)
 @AddJIPipeInputSlot(value = CellposeModelData.class, name = "Pretrained model", create = true, optional = true, description = "Optional pretrained models. All workloads are repeated per model.", role = JIPipeDataSlotRole.ParametersLooping)
-@ConfigureJIPipeNode(function = DeepLearningTrainingFunction.class, framework = Cellpose3Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningTrainingFunction.class, framework = Cellpose3Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Model", create = true, description = "The trained model")
 @AddJIPipeOutputSlot(value = CellposeSizeModelData.class)
 @RegisterJIPipeEnvironmentUsage(Cellpose3Environment.class)

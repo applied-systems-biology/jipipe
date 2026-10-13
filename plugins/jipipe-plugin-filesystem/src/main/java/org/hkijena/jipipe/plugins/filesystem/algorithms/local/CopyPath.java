@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.PathData;
@@ -46,7 +47,7 @@ import java.util.stream.Collectors;
         "[Folder] to [Folder]: By default, the contents of the source folder are copied into the destination folder. You can enable a parameter that instead " +
         "copies the contents into [Destination]/[Source folder name]\n" +
         "[Folder] to [Not existing]: The destination is automatically created. The [Folder] to [Folder] rule is applied.")
-@ConfigureJIPipeNode(function = MiscDataFunction.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 
 @AddJIPipeInputSlot(value = PathData.class, name = "Source", create = true)

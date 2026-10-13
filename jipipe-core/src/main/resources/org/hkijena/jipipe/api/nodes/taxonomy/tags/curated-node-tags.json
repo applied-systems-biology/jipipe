@@ -1,0 +1,4309 @@
+{
+  "weka-classification-2d": [
+    "classification",
+    "machine-learning",
+    "labeling"
+  ],
+  "ij3d-feature-maxima-local-3d": [
+    "maxima-detection",
+    "3d",
+    "peak-detection"
+  ],
+  "ij3d-labels-to-roi": [
+    "roi",
+    "labeling",
+    "3d"
+  ],
+  "filaments-copy-across-zct": [
+    "filament",
+    "copying",
+    "time-lapse"
+  ],
+  "cellpose-segmentation-training-3.x": [
+    "segmentation",
+    "model-training",
+    "deep-learning"
+  ],
+  "ij-form-draw-mask": [
+    "image-editing",
+    "roi",
+    "annotation"
+  ],
+  "ij1-transform-tile-2d": [
+    "tiling",
+    "image-processing"
+  ],
+  "filaments-set-overlay": [
+    "filament",
+    "visualization",
+    "annotation"
+  ],
+  "filaments-connect-vertices": [
+    "filament",
+    "vertices",
+    "expression"
+  ],
+  "graph-annotation-text-box": [
+    "annotation",
+    "text",
+    "canvas"
+  ],
+  "weka-classification-3d": [
+    "classification",
+    "3d",
+    "machine-learning"
+  ],
+  "ij1-math-fast-image-arithmetics": [
+    "image-arithmetic",
+    "pixel-operation",
+    "2d"
+  ],
+  "export-imp-image": [
+    "image-export",
+    "file-io",
+    "raster"
+  ],
+  "rename-data-annotation": [
+    "annotation",
+    "metadata",
+    "rename"
+  ],
+  "annotate-data-with-image-properties": [
+    "annotation",
+    "image-properties",
+    "metadata"
+  ],
+  "ij1-roi-draw-line": [
+    "roi",
+    "2d",
+    "drawing"
+  ],
+  "ij3d-roi-calculator": [
+    "roi",
+    "boolean-operations",
+    "mask"
+  ],
+  "table-melt": [
+    "table",
+    "unpivot",
+    "data-shaping"
+  ],
+  "ij1-roi-combine": [
+    "roi",
+    "merge",
+    "ordered"
+  ],
+  "node-group": [
+    "workflow",
+    "sub-pipeline",
+    "grouping"
+  ],
+  "ij1-threshold-local-auto2d-16u-bernsen": [
+    "thresholding",
+    "segmentation"
+  ],
+  "ij1-blur-box3d": [
+    "smoothing",
+    "filtering",
+    "box-filter"
+  ],
+  "ij1-binary-volume-opening-2d": [
+    "morphology",
+    "segmentation",
+    "area-opening"
+  ],
+  "ij1-threshold-expression2d-8u": [
+    "thresholding",
+    "2d"
+  ],
+  "filaments-fix-overlaps-non-branching": [
+    "filament-segmentation",
+    "morphology",
+    "correction"
+  ],
+  "export-data-by-parameter-v2": [
+    "export",
+    "file-io"
+  ],
+  "sleep": [
+    "delay",
+    "control-flow"
+  ],
+  "threshold-hough2d-fast": [
+    "circle-detection",
+    "segmentation",
+    "hough"
+  ],
+  "ij1-calibration-draw-scale-bar": [
+    "scale-bar",
+    "overlap",
+    "roi"
+  ],
+  "define-r-script": [
+    "scripting",
+    "r-script",
+    "statistics"
+  ],
+  "ij1-generate-zero-image": [
+    "image",
+    "initialization",
+    "image-processing"
+  ],
+  "ij1-blur-box2d": [
+    "filtering",
+    "smoothing",
+    "2d"
+  ],
+  "path-extract-filename": [
+    "file-io",
+    "metadata",
+    "path"
+  ],
+  "ij1-feature-orientationj-2d": [
+    "orientation",
+    "feature-detection",
+    "2d"
+  ],
+  "ij3d-segmentation-hysteresis": [
+    "segmentation",
+    "thresholding",
+    "3d"
+  ],
+  "ij1-binary-volume-opening-3d": [
+    "morphology",
+    "filtering",
+    "volume"
+  ],
+  "ij1-threshold-manual2d-color-hsb": [
+    "thresholding",
+    "hsb"
+  ],
+  "trackmate-create-spot-tracker-kalman-tracker": [
+    "object-tracking",
+    "kalman",
+    "motion-analysis"
+  ],
+  "ij1-math-hessian2d": [
+    "feature-detection",
+    "hessian",
+    "image-processing"
+  ],
+  "ij1-roi-sort-and-extract-statistics": [
+    "roi",
+    "statistics",
+    "sorting"
+  ],
+  "parameters-multiply": [
+    "parameters",
+    "combinations",
+    "batch-processing"
+  ],
+  "trackmate-create-spot-detector-log-detector": [
+    "blob-detection",
+    "filtering",
+    "fft"
+  ],
+  "ij1-roi-split-into-connected-components": [
+    "roi",
+    "connected-components",
+    "segmentation"
+  ],
+  "ij1-feature-vesselness-frangi": [
+    "vesselness",
+    "filtering"
+  ],
+  "import-data-from-slot-folder": [
+    "table",
+    "import",
+    "file-io"
+  ],
+  "ij1-convert-matrix-to-image": [
+    "table",
+    "image-conversion",
+    "colormap"
+  ],
+  "ij1-labels-merge-labels": [
+    "roi",
+    "labeling",
+    "segmentation"
+  ],
+  "modify-and-merge-tables": [
+    "table",
+    "scripting",
+    "data-processing"
+  ],
+  "sort-rows-by-expression": [
+    "sorting",
+    "table",
+    "expression"
+  ],
+  "ij1-binary-dtwatershed2d": [
+    "watershed",
+    "distance-transform",
+    "segmentation"
+  ],
+  "opencv-photo-inpainting": [
+    "image-restoration",
+    "image-repair",
+    "mask"
+  ],
+  "threshold-by-annotation": [
+    "thresholding",
+    "annotation",
+    "segmentation"
+  ],
+  "table-split-into-columns": [
+    "table",
+    "column",
+    "data"
+  ],
+  "scene-3d-create-sphere": [
+    "3d",
+    "mesh",
+    "geometry"
+  ],
+  "ij1-analyze-statistics-threshold-value-fast": [
+    "statistics",
+    "quantification",
+    "thresholding"
+  ],
+  "ij1-roi-statistics": [
+    "roi",
+    "statistics",
+    "quantification"
+  ],
+  "ome-annotate-data-with-metadata": [
+    "metadata",
+    "annotation",
+    "grouping"
+  ],
+  "ij1-threshold-local-auto2d-niblack": [
+    "thresholding",
+    "2d",
+    "8-bit"
+  ],
+  "import-ome-zarr-from-uri-as-imgplus": [
+    "import",
+    "ome-zarr",
+    "uri"
+  ],
+  "filaments-from-json": [
+    "import",
+    "filament",
+    "json"
+  ],
+  "io-interface": [
+    "io",
+    "passthrough",
+    "interface"
+  ],
+  "weka-training-mask-2d-v2": [
+    "machine-learning",
+    "weka",
+    "mask"
+  ],
+  "trackmate-visualize-follow-spots": [
+    "tracking",
+    "visualization",
+    "time-lapse"
+  ],
+  "omero-screen-id-definition": [
+    "omero",
+    "screen-ids",
+    "metadata"
+  ],
+  "ij1-math-local-imagecalculator2d-expression": [
+    "image-arithmetic",
+    "pixelwise",
+    "2d"
+  ],
+  "ij1-turbo-reg-image-registration": [
+    "image-registration",
+    "alignment",
+    "microscopy"
+  ],
+  "ij1-roi-from-mask": [
+    "roi",
+    "thresholding",
+    "mask"
+  ],
+  "set-imagej-bioformats-settings": [
+    "ome-tif",
+    "export",
+    "metadata"
+  ],
+  "folder-annotate-by-name": [
+    "annotation",
+    "file-paths",
+    "metadata"
+  ],
+  "ij1-sharpen-laplacian2d": [
+    "image-processing",
+    "filtering",
+    "sharpening"
+  ],
+  "ij1-math-impose-maxima-3d": [
+    "maxima",
+    "morphology"
+  ],
+  "text-to-table-expression": [
+    "text",
+    "table",
+    "extraction"
+  ],
+  "ij1-roi-flood-fill": [
+    "roi",
+    "flood-fill",
+    "segmentation"
+  ],
+  "clij-execute-kernel-simple-iterating": [
+    "opencl",
+    "gpu",
+    "image-processing"
+  ],
+  "ij1-analyze-orientationj-vector-field-2d": [
+    "orientation",
+    "vector-field",
+    "2d"
+  ],
+  "ij1-dimensions-stacks-to-dimension": [
+    "hyperstack",
+    "merge",
+    "stack"
+  ],
+  "ij3d-roi-convert-to-labels": [
+    "roi",
+    "labeling",
+    "3d"
+  ],
+  "ij1-invert-lut": [
+    "colormap",
+    "lut",
+    "visualization"
+  ],
+  "trackmate-merge-spots": [
+    "spots",
+    "merge",
+    "annotation"
+  ],
+  "ij1-math-imagecalculator2d-expression": [
+    "image-arithmetic",
+    "pixelwise",
+    "expression"
+  ],
+  "path-rename-string": [
+    "file-io",
+    "path",
+    "metadata"
+  ],
+  "set-imp-image-alpha": [
+    "image-processing",
+    "alpha-channel",
+    "mask"
+  ],
+  "jipipe:compartment-output": [
+    "compartment",
+    "export",
+    "roi"
+  ],
+  "filaments-smooth-downscale": [
+    "smoothing",
+    "filament",
+    "morphology"
+  ],
+  "cellpose-segmentation-inference-3.x": [
+    "segmentation",
+    "microscopy"
+  ],
+  "ij1-export-ome-zarr": [
+    "export",
+    "ome-zarr",
+    "file-io"
+  ],
+  "select-path-interactive": [
+    "file-io",
+    "path-selection",
+    "interactive"
+  ],
+  "ij1-binary-uep2d": [
+    "morphology",
+    "distance-transform",
+    "peak-detection"
+  ],
+  "import-cellpose-3.x-pretrained-denoise-model": [
+    "cellpose",
+    "model-import",
+    "image-restoration"
+  ],
+  "annotate-data-with-table-values": [
+    "annotation",
+    "table-merge",
+    "grouping"
+  ],
+  "remove-data-annotations": [
+    "annotation",
+    "annotation-removal"
+  ],
+  "ij1-roi-filter-by-name": [
+    "roi",
+    "filtering"
+  ],
+  "define-imagej-macro": [
+    "imagej",
+    "macro"
+  ],
+  "ij1-feature-difference-of-gaussian": [
+    "gaussian-blur",
+    "filtering",
+    "edge-detection"
+  ],
+  "ij1-math-local-variance3d": [
+    "local-mean",
+    "statistics",
+    "image-processing"
+  ],
+  "ij1-blur-median2d-8u": [
+    "median-filter",
+    "morphology",
+    "image-processing"
+  ],
+  "omero-list-plate-ids": [
+    "omero",
+    "metadata",
+    "search"
+  ],
+  "jipipe-project-parameters-from-paths": [
+    "parameters",
+    "path",
+    "data-management"
+  ],
+  "ij1-transform-scale2d": [
+    "scaling",
+    "geometry",
+    "2d"
+  ],
+  "ij1-threshold-expression2d-32f-v2": [
+    "thresholding",
+    "segmentation",
+    "2d"
+  ],
+  "filaments-filter-vertices-by-properties": [
+    "filament",
+    "vertex-filtering",
+    "morphology"
+  ],
+  "jipipe-output-import-slot-folder": [
+    "import",
+    "jipipe",
+    "file-io"
+  ],
+  "import-cellpose-size-model": [
+    "import",
+    "cellpose",
+    "size-model"
+  ],
+  "ij1-contrast-apply-displayed-contrast": [
+    "comparison",
+    "image-processing",
+    "pixel-values"
+  ],
+  "ij3d-filter-sobel-3d": [
+    "sobel",
+    "edge-detection",
+    "3d-filtering"
+  ],
+  "ij1-threshold-local-auto2d": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "import-ome-zarr-from-zip-directory-as-imgplus": [
+    "import",
+    "ome-zarr",
+    "microscopy"
+  ],
+  "data-flow-tunnel-1-exit": [
+    "data-flow",
+    "tunnel",
+    "control"
+  ],
+  "table-rows-kmeans-clustering": [
+    "clustering",
+    "table"
+  ],
+  "ij1-remove-lut": [
+    "lut",
+    "colormap",
+    "preprocessing"
+  ],
+  "clij-pull-from-gpu": [
+    "gpu",
+    "data-transfer",
+    "conversion"
+  ],
+  "ij1-labels-separate-touching-labels": [
+    "labeling",
+    "morphology",
+    "segmentation"
+  ],
+  "path-filter": [
+    "file-io",
+    "filtering",
+    "path"
+  ],
+  "trackmate-split-spots": [
+    "point-analysis",
+    "list",
+    "segmentation"
+  ],
+  "table-column-to-numeric": [
+    "table",
+    "conversion",
+    "integer"
+  ],
+  "omero-upload-image": [
+    "omero",
+    "image-upload",
+    "grouping"
+  ],
+  "cellpose-segmentation-training-4.x-v2": [
+    "cellpose",
+    "segmentation",
+    "model-training"
+  ],
+  "ij1-dimensions-expression-slicer": [
+    "hyperstack",
+    "channel-splitting",
+    "expression"
+  ],
+  "ij1-color-to-rgb": [
+    "rgb",
+    "colormap",
+    "rendering"
+  ],
+  "plot-table:plot-histogram": [
+    "histogram",
+    "plotting",
+    "statistics"
+  ],
+  "run-expression": [
+    "expression",
+    "annotation",
+    "table"
+  ],
+  "ij1-contrast-histogram-enhancer": [
+    "comparison",
+    "histogram",
+    "normalization"
+  ],
+  "ij3d-roi-remove-border": [
+    "roi",
+    "border-removal",
+    "3d"
+  ],
+  "ij-convert-image-to-hsb-colors": [
+    "color-conversion",
+    "hsb"
+  ],
+  "ij1-roi-assemble-from-roi": [
+    "roi",
+    "overlap"
+  ],
+  "annotate-split-by-annotation-script": [
+    "annotation",
+    "filtering"
+  ],
+  "ij1-roi-remove-bordering": [
+    "roi",
+    "border-removal",
+    "filtering"
+  ],
+  "ij1-roi-from-rectangles": [
+    "roi",
+    "rectangle",
+    "manual"
+  ],
+  "ij1-dimensions-stack-combine": [
+    "stack",
+    "merge",
+    "arithmetic"
+  ],
+  "extract-imagej-roi-from-ome-image": [
+    "roi",
+    "ome",
+    "extraction"
+  ],
+  "opencv-convert-depth": [
+    "image-depth",
+    "conversion",
+    "image-processing"
+  ],
+  "omero-download-table": [
+    "data-import",
+    "omero",
+    "metadata"
+  ],
+  "trackmate-split-tracks": [
+    "channel-splitting",
+    "tracking",
+    "roi"
+  ],
+  "ij1-math-local-variance2d": [
+    "local-mean",
+    "statistics",
+    "image-processing"
+  ],
+  "modify-tables": [
+    "table-editing",
+    "scripting",
+    "data-processing"
+  ],
+  "annotate-with-bioformats": [
+    "metadata-annotation",
+    "metadata",
+    "file-annotation"
+  ],
+  "ij1-convert-table-to-image": [
+    "table-image",
+    "image-conversion",
+    "visualization"
+  ],
+  "import-xml-from-file": [
+    "data-import",
+    "file-io"
+  ],
+  "ij1-color-set-to-grayscale-value": [
+    "pixel-values",
+    "grayscale",
+    "image-editing"
+  ],
+  "ij1-threshold-auto2d-nbins": [
+    "thresholding",
+    "histogram",
+    "segmentation"
+  ],
+  "table-rename-columns": [
+    "table-editing",
+    "column-rename",
+    "data-management"
+  ],
+  "ij1-roi-rotate": [
+    "roi",
+    "rotation",
+    "geometry"
+  ],
+  "ij1-math-imagecalculator2d-merging": [
+    "math",
+    "image-arithmetic",
+    "merge"
+  ],
+  "plot-table:plot-category-line": [
+    "line-plot",
+    "plotting",
+    "visualization"
+  ],
+  "extract-and-replace-annotation": [
+    "annotation",
+    "extraction",
+    "replacement"
+  ],
+  "ij1-labels-filter-filter-by-expression-3d": [
+    "filtering",
+    "expression",
+    "3d"
+  ],
+  "filaments-set-vertex-properties": [
+    "filament",
+    "vertices",
+    "expression"
+  ],
+  "ij1-roi-to-mask-unreferenced": [
+    "roi",
+    "mask",
+    "conversion"
+  ],
+  "ij1-color-merge-channels": [
+    "channel-merge",
+    "rgb",
+    "composite"
+  ],
+  "table-merge-columns-supplement-merge": [
+    "table-merge",
+    "merge"
+  ],
+  "ij-imgplus-from-matrix": [
+    "image",
+    "matrix",
+    "conversion"
+  ],
+  "ij1-roi-to-rgb": [
+    "roi",
+    "mask-creation",
+    "rgb"
+  ],
+  "path-relativize-by-parameter": [
+    "path",
+    "file-io"
+  ],
+  "import-imagej-macro": [
+    "macro-import",
+    "imagej",
+    "file-io"
+  ],
+  "ij1-labels-extract-statistics": [
+    "quantification",
+    "statistics",
+    "labeling"
+  ],
+  "annotation-merge": [
+    "annotation",
+    "merge",
+    "grouping"
+  ],
+  "cellpose": [
+    "segmentation",
+    "deep-learning"
+  ],
+  "table-convert-columns": [
+    "data-processing",
+    "table",
+    "column"
+  ],
+  "trackmate-filter-tracks": [
+    "filtering",
+    "expression",
+    "tracking"
+  ],
+  "import-file-list": [
+    "file-io",
+    "data-ingestion",
+    "path"
+  ],
+  "convert-parameters-data-to-results-table-data": [
+    "data-processing",
+    "table",
+    "parameters"
+  ],
+  "filaments-split-into-cycles": [
+    "filament",
+    "channel-splitting",
+    "graph"
+  ],
+  "import-imagej-lut-from-file-as-rgb": [
+    "lut-import",
+    "colormap",
+    "image-import"
+  ],
+  "filaments-skeleton-to-filaments-2d3d-simplified": [
+    "skeletonization",
+    "filament",
+    "morphology"
+  ],
+  "ij1-contrast-illumination-correction2d": [
+    "illumination-correction",
+    "normalization",
+    "filtering"
+  ],
+  "ij1-roi-set-properties-from-annotation": [
+    "roi",
+    "annotation",
+    "properties"
+  ],
+  "ij1-roi-scale": [
+    "roi",
+    "scaling",
+    "geometry"
+  ],
+  "path-concatenate": [
+    "data-management",
+    "path-joining",
+    "grouping"
+  ],
+  "enum-form": [
+    "form",
+    "selection",
+    "input"
+  ],
+  "ij1-morph-reconstruct-2d": [
+    "morphology",
+    "reconstruction",
+    "binary"
+  ],
+  "ij1-roi-from-table-circle": [
+    "roi",
+    "table",
+    "circular"
+  ],
+  "ij-convert-image": [
+    "image-conversion",
+    "data-type"
+  ],
+  "ij1-roi-filter-statistics": [
+    "roi-filtering",
+    "statistics",
+    "3d-roi"
+  ],
+  "table-add-columns-generate": [
+    "table-editing",
+    "data-column"
+  ],
+  "ij3d-roi-split-into-connected-components": [
+    "roi-splitting",
+    "connected-components",
+    "3d-roi"
+  ],
+  "data-to-annotation-table": [
+    "annotation-table",
+    "conversion"
+  ],
+  "ij1-roi-dimension-reorder": [
+    "roi",
+    "dimension-reorder",
+    "data-processing"
+  ],
+  "list-zarr-directory-zip-datasets": [
+    "ome-zarr",
+    "dataset-ids",
+    "file-io"
+  ],
+  "jipipe-run-project": [
+    "workflow",
+    "process-execution",
+    "parameters"
+  ],
+  "import-imagej-bioformats": [
+    "image-import",
+    "microscopy"
+  ],
+  "ij3d-roi-extract-metadata": [
+    "roi",
+    "metadata",
+    "table"
+  ],
+  "ij3d-measure-pairwise-roi3d": [
+    "roi",
+    "statistics",
+    "quantification"
+  ],
+  "iji-export-roi-list-v2": [
+    "roi",
+    "export",
+    "annotation"
+  ],
+  "ij1-roi-convert-to-table": [
+    "roi",
+    "table",
+    "metadata"
+  ],
+  "ij-export-to-imagej": [
+    "export",
+    "imagej",
+    "annotation"
+  ],
+  "ij1-morph-reconstruct-3d": [
+    "morphology",
+    "3d",
+    "reconstruction"
+  ],
+  "trackmate-merge-tracks": [
+    "tracks",
+    "merge",
+    "annotation"
+  ],
+  "ij1-roi-remove-metadata": [
+    "roi-metadata",
+    "filtering",
+    "2d"
+  ],
+  "filaments-convert-to-labels": [
+    "filament",
+    "label-generation",
+    "legacy"
+  ],
+  "ij3d-roi-filter-by-overlap": [
+    "roi",
+    "filtering",
+    "overlap"
+  ],
+  "ij3d-filter-close-3d": [
+    "morphology",
+    "closing",
+    "3d"
+  ],
+  "integer-form": [
+    "input",
+    "integer",
+    "parameters"
+  ],
+  "number-form": [
+    "input",
+    "integer",
+    "parameters"
+  ],
+  "import-imagej-imgplus-from-file": [
+    "image-import",
+    "data-loading",
+    "microscopy"
+  ],
+  "threshold-hessian2d": [
+    "segmentation",
+    "hessian",
+    "morphology"
+  ],
+  "ij1-labels-replace-labels": [
+    "labeling",
+    "label-values",
+    "postprocessing"
+  ],
+  "generate-placeholder-for-missing-data": [
+    "missing-data",
+    "placeholder",
+    "iteration"
+  ],
+  "ij1-transform-scale3d": [
+    "image-scaling",
+    "3d",
+    "geometry"
+  ],
+  "omero-upload-table": [
+    "omero",
+    "table",
+    "annotation"
+  ],
+  "trackmate-create-spot-detector-mask-detector": [
+    "mask",
+    "feature-detection",
+    "binary-mask"
+  ],
+  "data-table-pull-annotations": [
+    "annotation",
+    "table",
+    "metadata"
+  ],
+  "annotation-table-to-paths": [
+    "annotation",
+    "path",
+    "conversion"
+  ],
+  "import-json-from-file": [
+    "import",
+    "json",
+    "file-io"
+  ],
+  "tsoax-analyze-snakes": [
+    "tsoax",
+    "parsing",
+    "analysis"
+  ],
+  "ij1-color-to-greyscale-expression": [
+    "color-conversion",
+    "grayscale",
+    "image-processing"
+  ],
+  "ij1-transform-equalize-dimensions-max-io": [
+    "image-processing",
+    "alignment",
+    "hyperstack"
+  ],
+  "ij1-labels-remove-largest-label": [
+    "segmentation",
+    "labeling",
+    "filtering"
+  ],
+  "ij-optical-flow-mse-gaussian-flow": [
+    "optical-flow",
+    "motion-analysis",
+    "time-lapse"
+  ],
+  "ij1-math-regional-maxima-3d": [
+    "morphology",
+    "segmentation",
+    "minima"
+  ],
+  "graph-wrapper:input": [
+    "workflow",
+    "input",
+    "grouping"
+  ],
+  "path-relativize": [
+    "file-paths",
+    "grouping",
+    "workflow"
+  ],
+  "iji-export-image-to-web": [
+    "export",
+    "file-io",
+    "image-export"
+  ],
+  "check-iteration-step-multi": [
+    "iteration",
+    "data-flow",
+    "validation"
+  ],
+  "table-rows-fuzzy-kmeans-clustering": [
+    "clustering",
+    "fuzzy-kmeans",
+    "table"
+  ],
+  "ij2-create-shape": [
+    "shape",
+    "roi",
+    "geometry"
+  ],
+  "import-cellpose-3.x-pretrained-segmentation-model": [
+    "segmentation",
+    "cellpose",
+    "model-import"
+  ],
+  "ij1-analyze-statistics-threshold-value-fast-avg": [
+    "statistics",
+    "thresholding",
+    "image-processing"
+  ],
+  "ij1-segment-classic-watershed": [
+    "segmentation",
+    "watershed",
+    "morphology"
+  ],
+  "ij1-render-color-map": [
+    "colormap",
+    "rendering",
+    "rgb"
+  ],
+  "ij1-binary-binarize": [
+    "thresholding",
+    "binary-image"
+  ],
+  "ij1-color-convert-to-lab": [
+    "color-conversion",
+    "lab",
+    "conversion"
+  ],
+  "ij1-threshold-manual2d-16u": [
+    "thresholding",
+    "segmentation",
+    "2d"
+  ],
+  "ij1-math-regional-maxima-2d": [
+    "maxima",
+    "morphology",
+    "2d"
+  ],
+  "table-apply-expression-per-row-v2": [
+    "expression",
+    "rows",
+    "table"
+  ],
+  "trackmate-spots-to-roi": [
+    "roi",
+    "trackmate",
+    "conversion"
+  ],
+  "ij1-edge-laplacian": [
+    "laplacian",
+    "filtering",
+    "2d"
+  ],
+  "ij1-binary-convexify": [
+    "convex-hull",
+    "morphology",
+    "mask"
+  ],
+  "trackmate-create-spot-detector-threshold-detector": [
+    "thresholding",
+    "feature-detection",
+    "segmentation"
+  ],
+  "folder-run-output": [
+    "output-folder",
+    "path",
+    "run-management"
+  ],
+  "ij1-color-merge-channels-rgb": [
+    "rgb",
+    "channel-merge",
+    "image-composition"
+  ],
+  "trackmate-visualize-spots": [
+    "visualization",
+    "rgb",
+    "rendering"
+  ],
+  "import-r-script": [
+    "scripting",
+    "r-language",
+    "import"
+  ],
+  "sort-rows-by-annotation": [
+    "sorting",
+    "rows",
+    "annotation"
+  ],
+  "remove-array-annotations": [
+    "annotation",
+    "data-cleaning"
+  ],
+  "import-cellpose-size-model-v2": [
+    "cellpose",
+    "model-import"
+  ],
+  "ij1-colocalization-coloc2": [
+    "colocalization",
+    "statistics",
+    "thresholding"
+  ],
+  "table-filter": [
+    "filtering",
+    "quantification"
+  ],
+  "ij1-roi-process-copy-across-zct": [
+    "roi",
+    "copying",
+    "image-processing"
+  ],
+  "ij1-roi-merge-pairwise-or": [
+    "roi",
+    "roi-merging",
+    "image-processing"
+  ],
+  "iji-export-table-v2": [
+    "export",
+    "table",
+    "data-management"
+  ],
+  "string-form": [
+    "input",
+    "form",
+    "annotation"
+  ],
+  "filaments-filter-filaments-at-border": [
+    "morphology",
+    "border-removal",
+    "filament"
+  ],
+  "ij1-dimensions-zproject-2": [
+    "projection",
+    "z-stack",
+    "time-lapse"
+  ],
+  "ij1-math-extended-maxima-3d": [
+    "morphology",
+    "maxima",
+    "3d"
+  ],
+  "table-apply-expression-to-table-by-columns": [
+    "table",
+    "expression",
+    "data-processing"
+  ],
+  "define-string": [
+    "data",
+    "string",
+    "parameters"
+  ],
+  "ij1-ml-labkit-segmentation": [
+    "segmentation",
+    "inference",
+    "probability-map"
+  ],
+  "table-slice-rows": [
+    "table",
+    "filtering",
+    "rows"
+  ],
+  "ij1-morph-find-holes-3d": [
+    "hole-detection",
+    "roi",
+    "2d"
+  ],
+  "trackmate-measure-tracks": [
+    "track-analysis",
+    "quantification",
+    "table"
+  ],
+  "ij1-math-math2d-expression-color": [
+    "image",
+    "expression",
+    "image-processing"
+  ],
+  "filaments-set-vertex-intensity-from-image": [
+    "filament",
+    "vertex-value",
+    "intensity-transform"
+  ],
+  "annotation-to-path": [
+    "annotation",
+    "path",
+    "geometry"
+  ],
+  "ij1-roi-set-image": [
+    "roi",
+    "2d",
+    "image"
+  ],
+  "convert-imp-to-imagej": [
+    "image-conversion",
+    "imp",
+    "imagej"
+  ],
+  "ij1-noise-removeoutliers2d": [
+    "outlier-removal",
+    "2d",
+    "filtering"
+  ],
+  "define-python-script": [
+    "scripting",
+    "python"
+  ],
+  "ij1-threshold-expression2d-16u": [
+    "thresholding",
+    "custom",
+    "2d"
+  ],
+  "threshold-internalgradient2d": [
+    "segmentation",
+    "gradient",
+    "2d"
+  ],
+  "ij1-threshold-local-auto2d-contrast": [
+    "thresholding",
+    "local",
+    "comparison"
+  ],
+  "distribute-data": [
+    "random",
+    "data-splitting",
+    "sampling"
+  ],
+  "generate-unique-random-annotation": [
+    "annotation",
+    "random",
+    "data-splitting"
+  ],
+  "ij1-dimensions-montage2stack": [
+    "montage",
+    "stack",
+    "image-processing"
+  ],
+  "table-merge-tables": [
+    "table-merge",
+    "data-ingestion",
+    "rows"
+  ],
+  "jipipe-output-get-slot-folder": [
+    "file-io",
+    "jipipe",
+    "folder"
+  ],
+  "export-3d-scene-to-collada-v2": [
+    "export",
+    "3d",
+    "visualization"
+  ],
+  "ij1-image-set-metadata-from-table": [
+    "metadata",
+    "table",
+    "image"
+  ],
+  "weka-training-label-2d-v2": [
+    "machine-learning",
+    "classification",
+    "weka"
+  ],
+  "ij1-generate-filter-kernel-3d": [
+    "morphology",
+    "structure-element",
+    "3d"
+  ],
+  "ij1-roi-draw-scalebar": [
+    "roi",
+    "scale-bar",
+    "overlap"
+  ],
+  "tables-from-expression": [
+    "table",
+    "expression",
+    "data"
+  ],
+  "annotate-with-path-properties": [
+    "annotation",
+    "path",
+    "metadata"
+  ],
+  "ij1-math-extended-maxima-2d": [
+    "maxima",
+    "morphology",
+    "2d"
+  ],
+  "ij1-labels-split-connected-components-2d": [
+    "labeling",
+    "connected-components",
+    "segmentation"
+  ],
+  "ij1-labels-crop-labels": [
+    "labeling",
+    "cropping",
+    "roi"
+  ],
+  "ij1-roi-filter-by-overlap": [
+    "roi",
+    "filtering",
+    "overlap"
+  ],
+  "threshold-hough2d": [
+    "circle-detection",
+    "hough",
+    "segmentation"
+  ],
+  "omnipose": [
+    "segmentation",
+    "omnipose",
+    "3d"
+  ],
+  "iji-export-table-as-xlsx": [
+    "export",
+    "table",
+    "xlsx"
+  ],
+  "ij1-transform-equalize-dimensions": [
+    "dimension-matching",
+    "hyperstack",
+    "image-processing"
+  ],
+  "parameters-define-table-expression": [
+    "parameters",
+    "expression",
+    "table"
+  ],
+  "ij1-color-split-channels": [
+    "channel-splitting",
+    "multichannel",
+    "image-processing"
+  ],
+  "parameters-define-table": [
+    "parameters",
+    "configuration",
+    "algorithm"
+  ],
+  "ij3d-roi-convert-to-mask": [
+    "roi",
+    "mask",
+    "annotation"
+  ],
+  "ij1-roi-extract-metadata": [
+    "roi",
+    "metadata",
+    "table"
+  ],
+  "table-filter-2": [
+    "filtering",
+    "metadata"
+  ],
+  "folder-temporary": [
+    "file-system",
+    "temp-file",
+    "io"
+  ],
+  "ij1-labels-filter-by-overlap": [
+    "filtering",
+    "overlap",
+    "segmentation"
+  ],
+  "converter": [
+    "conversion",
+    "preprocessing",
+    "type-casting"
+  ],
+  "ij1-roi-count": [
+    "roi",
+    "counting",
+    "quantification"
+  ],
+  "ij3d-filter-adaptive-3d": [
+    "filtering",
+    "smoothing",
+    "image-processing"
+  ],
+  "group-header-form": [
+    "form",
+    "ui",
+    "grouping"
+  ],
+  "ij1-roi-from-table-rectangular": [
+    "roi",
+    "table",
+    "segmentation"
+  ],
+  "ij-import-from-imagej": [
+    "import",
+    "imagej",
+    "microscopy"
+  ],
+  "duplicate": [
+    "duplicate",
+    "data",
+    "debugging"
+  ],
+  "ij1-image-remove-metadata": [
+    "metadata",
+    "filtering",
+    "image"
+  ],
+  "path-copy": [
+    "folder",
+    "path",
+    "copying"
+  ],
+  "ij1-roi-set-properties": [
+    "roi",
+    "properties",
+    "annotation"
+  ],
+  "ij1-color-split-channels-by-table": [
+    "channel-splitting",
+    "multichannel",
+    "image-processing"
+  ],
+  "jipipe:comment": [
+    "annotation",
+    "workflow",
+    "metadata"
+  ],
+  "ij1-math-generate-missing-from-expression": [
+    "math-expression",
+    "pixel-operation",
+    "image-generation"
+  ],
+  "ij1-fft-inverse2d": [
+    "fft",
+    "image-processing"
+  ],
+  "extract-data-annotation": [
+    "annotation",
+    "extraction"
+  ],
+  "ij1-convert-image-to-matrix": [
+    "pixel-values",
+    "matrix",
+    "extraction"
+  ],
+  "ij1-binary-keep-largest-region": [
+    "morphology",
+    "connected-components",
+    "mask"
+  ],
+  "ij1-color-convert-to-rgb": [
+    "image",
+    "rgb",
+    "conversion"
+  ],
+  "graph-annotation-image": [
+    "canvas-note",
+    "display",
+    "image"
+  ],
+  "ij-math-label-chamfer-distance-map-3d": [
+    "distance",
+    "labeling",
+    "3d"
+  ],
+  "ij1-transform-flip2d": [
+    "flip",
+    "2d",
+    "geometry"
+  ],
+  "import-uri-list": [
+    "uri",
+    "file-io"
+  ],
+  "ij1-roi-explode": [
+    "roi-list",
+    "list-splitting",
+    "2d"
+  ],
+  "table-convert-to-count-column-value-occurrences": [
+    "table",
+    "statistics",
+    "counting"
+  ],
+  "clij-push-to-gpu": [
+    "gpu",
+    "image",
+    "data-transfer"
+  ],
+  "ij1-analyze-statistics-histogram-key-value": [
+    "histogram",
+    "quantification",
+    "statistics"
+  ],
+  "annotate-set": [
+    "annotation",
+    "metadata",
+    "expression"
+  ],
+  "omero-annotate-plate-from-remote": [
+    "annotation",
+    "metadata",
+    "omero"
+  ],
+  "r-script-iterating": [
+    "scripting",
+    "r-language",
+    "iteration"
+  ],
+  "ij1-roi-outline-concave-hull-moreira-santos": [
+    "roi",
+    "outline",
+    "convex-hull"
+  ],
+  "form-processor-simple-iterating": [
+    "annotation",
+    "interactive",
+    "form"
+  ],
+  "import-weka-model-from-file": [
+    "segmentation",
+    "model-import",
+    "weka"
+  ],
+  "ij1-color-combine-rgb": [
+    "channel-merge",
+    "rgb",
+    "image-composition"
+  ],
+  "filaments-convert-to-roi": [
+    "filament",
+    "roi",
+    "conversion"
+  ],
+  "ij3d-roi-convert-2d-to-3d": [
+    "roi",
+    "conversion",
+    "3d"
+  ],
+  "opencv-convert-type": [
+    "conversion",
+    "image",
+    "opencv"
+  ],
+  "filaments-set-edge-properties-2": [
+    "filament",
+    "edge-properties",
+    "morphology"
+  ],
+  "ij1-labels-separate": [
+    "data-splitting",
+    "segmentation",
+    "image-processing"
+  ],
+  "convert-data-annotation-to-string-annotation": [
+    "annotation",
+    "metadata",
+    "conversion"
+  ],
+  "ij1-feature-amf-2d": [
+    "morphology",
+    "filtering",
+    "denoising"
+  ],
+  "ij1-labels-remap": [
+    "segmentation",
+    "labeling",
+    "remapping"
+  ],
+  "ij1-color-split-channels-2": [
+    "channels",
+    "multichannel",
+    "data-splitting"
+  ],
+  "ij3d-roi-render-overlay": [
+    "3d",
+    "visualization",
+    "rgb"
+  ],
+  "trackmate-tracking": [
+    "tracking",
+    "time-lapse"
+  ],
+  "ij1-dimensions-reslice": [
+    "reslicing",
+    "3d",
+    "geometry"
+  ],
+  "ij1-feature-shadows-2d": [
+    "image-effects",
+    "shadows",
+    "2d"
+  ],
+  "xml-prettify": [
+    "xml",
+    "formatting",
+    "data-processing"
+  ],
+  "filaments-remove-vertex-value-backups": [
+    "graph-cleaning",
+    "vertex-data",
+    "filament"
+  ],
+  "ij1-roi-extract-from-roi": [
+    "roi",
+    "image-extraction",
+    "annotation"
+  ],
+  "folder-list-files": [
+    "directory-listing",
+    "folder",
+    "io"
+  ],
+  "ij1-transform-rotate2d": [
+    "image-rotation",
+    "geometry",
+    "2d"
+  ],
+  "ij3d-measure-roi3d": [
+    "roi",
+    "statistics",
+    "quantification"
+  ],
+  "import-data-from-row-folder": [
+    "data-import",
+    "file-io",
+    "preprocessing"
+  ],
+  "table-integrate-columns": [
+    "statistics",
+    "table",
+    "quantification"
+  ],
+  "omero-list-image-ids": [
+    "omero",
+    "image-listing",
+    "metadata"
+  ],
+  "ij3d-roi-convert-to-rgb": [
+    "roi",
+    "labelmap",
+    "3d"
+  ],
+  "ij1-roi-from-table-text": [
+    "table",
+    "roi",
+    "3d-roi"
+  ],
+  "filaments-simplify": [
+    "filament",
+    "graph",
+    "simplification"
+  ],
+  "ij1-apply-lut": [
+    "colormap",
+    "lut",
+    "image"
+  ],
+  "ij3d-roi-merge": [
+    "roi",
+    "3d",
+    "merge"
+  ],
+  "ij1-transform-tile-2d-v2": [
+    "tiling",
+    "2d",
+    "image"
+  ],
+  "ij1-threshold-local-auto2d-16u-phansalkar": [
+    "thresholding",
+    "segmentation"
+  ],
+  "import-data-table-from-archive": [
+    "data-import",
+    "table",
+    "archive"
+  ],
+  "ij1-color-invert": [
+    "inversion",
+    "pixel-values"
+  ],
+  "omero-list-well-ids": [
+    "omero",
+    "well-list",
+    "metadata"
+  ],
+  "ij1-labels-filter-by-mask": [
+    "label-filter",
+    "mask",
+    "overlap"
+  ],
+  "ij1-math-math2d": [
+    "image-arithmetic",
+    "pixelwise",
+    "scalar-operation"
+  ],
+  "cellpose-training-2.x": [
+    "segmentation",
+    "model-training",
+    "deep-learning"
+  ],
+  "ij1-threshold-manual2d-32f": [
+    "thresholding",
+    "segmentation",
+    "2d"
+  ],
+  "trackmate-create-spot-detector-label-image-detector": [
+    "labelmap",
+    "detection",
+    "segmentation"
+  ],
+  "ij1-roi-split-by-statistics": [
+    "roi",
+    "statistics",
+    "classification"
+  ],
+  "table-add-annotation-columns": [
+    "table",
+    "annotation",
+    "metadata"
+  ],
+  "ij1-roi-sort-and-extract-statistics-2": [
+    "roi",
+    "statistics",
+    "sorting"
+  ],
+  "plot-table:plot-box-and-whisker": [
+    "plotting",
+    "box-plot",
+    "statistics"
+  ],
+  "ij1-roi-set-properties-from-table": [
+    "roi",
+    "table",
+    "properties"
+  ],
+  "feature-vesselness-meijering2d": [
+    "vesselness",
+    "morphology",
+    "filtering"
+  ],
+  "annotate-by-project-paths": [
+    "annotation",
+    "metadata",
+    "file-paths"
+  ],
+  "ij1-dimensions-stack2montage": [
+    "montage",
+    "stack",
+    "visualization"
+  ],
+  "plot-table:plot-pie-2d": [
+    "plotting",
+    "visualization"
+  ],
+  "ij1-analyze-annotate-by-image-statistics-expression": [
+    "annotation",
+    "statistics",
+    "image-processing"
+  ],
+  "ij1-threshold-expression2d-32f": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "ij1-math-local-maximum3d": [
+    "morphology",
+    "local-maximum",
+    "stack"
+  ],
+  "ij1-roi-to-rgb-unreferenced": [
+    "roi",
+    "visualization",
+    "image"
+  ],
+  "data-to-string-data": [
+    "conversion",
+    "string"
+  ],
+  "filaments-grow-end-vertices": [
+    "graph",
+    "skeleton-growth",
+    "vertex-growth"
+  ],
+  "run-process-iterating": [
+    "process-execution",
+    "iteration",
+    "grouping"
+  ],
+  "filaments-split-into-connected-components": [
+    "graph",
+    "connected-components",
+    "filament"
+  ],
+  "check-iteration-step-single": [
+    "iteration",
+    "validation",
+    "control"
+  ],
+  "ij1-set-lut-from-colors": [
+    "colormap",
+    "lut",
+    "visualization"
+  ],
+  "cellpose-inference-2.x": [
+    "segmentation",
+    "deep-learning"
+  ],
+  "ij1-roi-append-rectangles": [
+    "roi",
+    "rectangle",
+    "roi-list"
+  ],
+  "omero-annotate-well-from-remote": [
+    "annotation",
+    "omero",
+    "metadata"
+  ],
+  "file-annotate-by-name": [
+    "annotation",
+    "file-metadata",
+    "naming"
+  ],
+  "ij1-analyze-find-particles2d": [
+    "particle-analysis",
+    "roi",
+    "quantification"
+  ],
+  "plot-table:plot-pie-3d": [
+    "plotting",
+    "pie-chart",
+    "3d"
+  ],
+  "ij3d-roi-remove-metadata": [
+    "roi",
+    "metadata",
+    "filtering"
+  ],
+  "generate-unique-annotation": [
+    "annotation",
+    "metadata",
+    "labeling"
+  ],
+  "ij1-analyze-image-statistics": [
+    "statistics",
+    "quantification",
+    "image-processing"
+  ],
+  "ij1-color-arrange-channels": [
+    "channels",
+    "renumbering",
+    "image-processing"
+  ],
+  "import-imagej-sample": [
+    "image-import",
+    "data"
+  ],
+  "text-process-expression": [
+    "string-processing",
+    "expression"
+  ],
+  "parameters-from-node": [
+    "extraction",
+    "node-metadata"
+  ],
+  "opencv-filter-bilateral": [
+    "image-processing",
+    "denoising",
+    "smoothing"
+  ],
+  "table-column-to-string": [
+    "conversion",
+    "table",
+    "string"
+  ],
+  "ij1-roi-generate-missing": [
+    "roi",
+    "data-generation",
+    "missing-data"
+  ],
+  "ij1-labels-keep-largest-label": [
+    "morphology",
+    "segmentation",
+    "selection"
+  ],
+  "ij1-color-invert-greyscale": [
+    "preprocessing",
+    "pixel-inversion",
+    "image-processing"
+  ],
+  "export-imagej-bioformats-v2": [
+    "export",
+    "ome-tif",
+    "image-export"
+  ],
+  "ij3d-filter-max-3d": [
+    "morphology",
+    "filtering",
+    "3d"
+  ],
+  "ij1-unsharp-mask-2d": [
+    "filtering",
+    "comparison",
+    "2d"
+  ],
+  "annotate-with-data-string": [
+    "annotation",
+    "metadata",
+    "string"
+  ],
+  "ij1-labels-dilate-labels": [
+    "morphology",
+    "labeling",
+    "dilation"
+  ],
+  "table-convert-to-histogram": [
+    "histogram",
+    "table",
+    "statistics"
+  ],
+  "ij-imgplus-from-gui": [
+    "image-import",
+    "imagej",
+    "data-import"
+  ],
+  "ij1-math-compare-images-2d": [
+    "image-comparison",
+    "pixel-logic",
+    "mask"
+  ],
+  "ij1-math-imagecalculator2d": [
+    "image-arithmetic",
+    "arithmetic",
+    "2d"
+  ],
+  "ij1-image-extract-metadata": [
+    "metadata",
+    "table",
+    "extraction"
+  ],
+  "json-extract-text-from-json-path": [
+    "json",
+    "text-extraction",
+    "extraction"
+  ],
+  "table-split-into-rows": [
+    "table-editing",
+    "row-splitting"
+  ],
+  "ij1-labels-overlap-statistics": [
+    "segmentation",
+    "quantification",
+    "overlap"
+  ],
+  "ij1-binary-hough-line-segments": [
+    "line-detection",
+    "hough",
+    "image"
+  ],
+  "ij1-roi-filter-by-overlap-v2": [
+    "roi-filtering",
+    "overlap",
+    "image"
+  ],
+  "trackmate-create-spot-tracker-advanced-kalman-tracker": [
+    "tracking",
+    "kalman",
+    "time-lapse"
+  ],
+  "ij1-roi-unset-image": [
+    "roi",
+    "2d",
+    "image"
+  ],
+  "ij1-roi-calculator": [
+    "roi",
+    "2d",
+    "roi-operations"
+  ],
+  "ij1-threshold-percentile2d-16u": [
+    "thresholding",
+    "2d",
+    "histogram"
+  ],
+  "ij-convert-image-to-rgb-colors": [
+    "image-processing",
+    "color-conversion",
+    "rgb"
+  ],
+  "ij1-math-local-maximum2d": [
+    "image-processing",
+    "morphology",
+    "local-maximum"
+  ],
+  "ij1-generate-missing-results-table-2": [
+    "table",
+    "data-management",
+    "placeholder"
+  ],
+  "extract-table-to-data": [
+    "table",
+    "extraction"
+  ],
+  "ij1-edge-canny": [
+    "edge-detection",
+    "2d"
+  ],
+  "plot-table:plot-category-bar": [
+    "plotting",
+    "bar-chart",
+    "visualization"
+  ],
+  "ij3d-filter-min-3d": [
+    "filtering",
+    "local-maximum",
+    "3d"
+  ],
+  "ij3d-roi-change-properties": [
+    "roi",
+    "3d",
+    "properties"
+  ],
+  "ij1-edge-sobel": [
+    "edge-detection",
+    "filtering",
+    "2d"
+  ],
+  "ij1-threshold-local-auto2d-16u": [
+    "thresholding",
+    "segmentation",
+    "2d"
+  ],
+  "ij1-roi-set-metadata-from-statistics-expression": [
+    "roi",
+    "metadata",
+    "statistics"
+  ],
+  "ij1-transform-crop-to-roi": [
+    "roi",
+    "cropping",
+    "image-processing"
+  ],
+  "ij1-threshold-local-auto2d-sauvola": [
+    "thresholding",
+    "segmentation"
+  ],
+  "ij1-binary-connected-component-labeling-3d": [
+    "labeling",
+    "connected-components",
+    "mask"
+  ],
+  "ij1-labels-merge-small-labels": [
+    "label-merging",
+    "segmentation",
+    "morphology"
+  ],
+  "plot-table:plot-category-statistical-bar": [
+    "plotting",
+    "statistics",
+    "visualization"
+  ],
+  "ij1-convolve-convolve2d-slot": [
+    "convolution",
+    "filtering",
+    "image-processing"
+  ],
+  "filaments-flatten": [
+    "filament",
+    "dimensionality",
+    "geometry"
+  ],
+  "ij1-roi-flatten": [
+    "roi",
+    "dimensionality",
+    "flattening"
+  ],
+  "ij1-dimensions-inpput2montage": [
+    "montage",
+    "image-composition",
+    "annotation"
+  ],
+  "form-processor-merging": [
+    "annotation",
+    "interactive",
+    "merge"
+  ],
+  "xml-annotate-with-xml-data": [
+    "annotation",
+    "xml",
+    "text"
+  ],
+  "ij3d-binary-watershed-3d-splitting": [
+    "segmentation",
+    "watershed",
+    "channel-splitting"
+  ],
+  "ij1-roi-color-statistics": [
+    "roi",
+    "colormap",
+    "statistics"
+  ],
+  "omero-list-group-ids": [
+    "omero",
+    "metadata",
+    "annotation"
+  ],
+  "ij1-dimensions-input2montage-v2": [
+    "montage",
+    "image-composition",
+    "grouping"
+  ],
+  "ij1-calibration-set-physical-dimensions-from-expressions": [
+    "metadata",
+    "physical-units",
+    "expression"
+  ],
+  "define-tables": [
+    "table",
+    "data-structure",
+    "metadata"
+  ],
+  "ij3d-analyze-find-particles": [
+    "particle-detection",
+    "3d",
+    "mask"
+  ],
+  "scene-3d-create-line": [
+    "3d",
+    "mesh"
+  ],
+  "ij1-binary-connected-component-labeling-2d": [
+    "connected-components",
+    "labeling",
+    "2d"
+  ],
+  "ij3d-filter-median-3d": [
+    "median-filter",
+    "morphology",
+    "smoothing"
+  ],
+  "ij1-color-blend-images": [
+    "blending",
+    "overlap",
+    "annotation"
+  ],
+  "ij1-extract-ome-image-roi": [
+    "roi",
+    "ome",
+    "extraction"
+  ],
+  "ij1-feature-directional-filter-2d": [
+    "morphology",
+    "filtering",
+    "2d"
+  ],
+  "overwrite-annotations": [
+    "annotation",
+    "data-management",
+    "copying"
+  ],
+  "ij1-noise-despeckle2d": [
+    "filtering",
+    "denoising",
+    "2d"
+  ],
+  "filaments-measure-filaments": [
+    "quantification",
+    "morphology",
+    "filament"
+  ],
+  "filaments-convert-cycles-to-roi": [
+    "filament",
+    "roi",
+    "graph"
+  ],
+  "import-folder": [
+    "file-io",
+    "path",
+    "folder"
+  ],
+  "group-scene-3d": [
+    "3d",
+    "scene",
+    "grouping"
+  ],
+  "boolean-form": [
+    "input",
+    "boolean",
+    "ui"
+  ],
+  "ij1-analyze-statistics-threshold-partition-key-value-avg": [
+    "thresholding",
+    "statistics",
+    "quantification"
+  ],
+  "trackmate-visualize-track-scheme": [
+    "tracking",
+    "visualization"
+  ],
+  "plot-table:plot-xy-scatter": [
+    "plotting",
+    "visualization",
+    "statistics"
+  ],
+  "ij1-image-set-properties-from-expressions": [
+    "image-properties",
+    "metadata",
+    "expression"
+  ],
+  "ij-results-table-to-gui": [
+    "table-export",
+    "imagej",
+    "visualization"
+  ],
+  "download-files": [
+    "file-download",
+    "data-ingestion",
+    "web-resources"
+  ],
+  "table-unmelt": [
+    "table",
+    "pivot-table",
+    "data-shaping"
+  ],
+  "ij1-feature-featurej-derivatives": [
+    "feature-detection",
+    "derivative"
+  ],
+  "ij3d-roi-change-properties-from-table": [
+    "roi",
+    "table",
+    "properties"
+  ],
+  "import-folder-list": [
+    "folder",
+    "data"
+  ],
+  "export-data-by-parameter": [
+    "export",
+    "data",
+    "folder"
+  ],
+  "ij1-labels-expand-labels": [
+    "labeling",
+    "morphology",
+    "visualization"
+  ],
+  "annotate-with-source-slot": [
+    "annotation",
+    "metadata",
+    "data-management"
+  ],
+  "ij1-dimensions-stackinverter": [
+    "z-stack",
+    "z-axis",
+    "transform"
+  ],
+  "filaments-convert-to-roi3d": [
+    "roi",
+    "3d",
+    "filament"
+  ],
+  "ij1-roi-filter-and-merge-statistics-script": [
+    "roi",
+    "2d",
+    "statistics"
+  ],
+  "ij3d-roi-extract-overlay": [
+    "roi",
+    "3d",
+    "overlap"
+  ],
+  "cellpose-training-2": [
+    "training",
+    "cellpose",
+    "segmentation"
+  ],
+  "omero-image-id-definition": [
+    "omero",
+    "image-ids",
+    "import"
+  ],
+  "trackmate-create-spot-detector-manual-detector": [
+    "annotation",
+    "segmentation",
+    "manual"
+  ],
+  "cellpose-segmentation-training-4.x": [
+    "segmentation",
+    "training",
+    "deep-learning"
+  ],
+  "merge-scene-3d": [
+    "3d",
+    "merge",
+    "grouping"
+  ],
+  "ij3d-roi-remove-overlay": [
+    "3d",
+    "roi",
+    "overlay-removal"
+  ],
+  "ij1-dimensions-stackmerger": [
+    "3d",
+    "stack",
+    "grouping"
+  ],
+  "ij1-threshold-manual2d-color-rgb": [
+    "thresholding",
+    "colormap",
+    "rgb"
+  ],
+  "ij1-threshold-local-auto2d-16u-sauvola": [
+    "thresholding",
+    "local",
+    "sauvola"
+  ],
+  "ij1-transform-crop2d": [
+    "cropping",
+    "roi",
+    "2d"
+  ],
+  "ij1-blur-median3d": [
+    "filtering",
+    "smoothing",
+    "morphology"
+  ],
+  "ij1-transform-expand2d": [
+    "padding",
+    "canvas",
+    "preprocessing"
+  ],
+  "omero-annotate-project-from-remote": [
+    "annotation",
+    "metadata",
+    "omero"
+  ],
+  "ij1-overlay": [
+    "mask",
+    "roi",
+    "overlap"
+  ],
+  "filaments-measure-vertices": [
+    "filament",
+    "quantification",
+    "table"
+  ],
+  "omero-list-well-image-ids": [
+    "omero",
+    "well-plate",
+    "metadata"
+  ],
+  "ij1-roi-to-labels-expression": [
+    "roi",
+    "labeling",
+    "segmentation"
+  ],
+  "ij3d-binary-voronoi-3d": [
+    "voronoi",
+    "segmentation",
+    "morphology"
+  ],
+  "trackmate-create-spot-detector-hessian-detector": [
+    "blob-detection",
+    "feature-detection",
+    "microscopy"
+  ],
+  "ij1-roi-from-rectangles-referenced": [
+    "roi",
+    "rectangle",
+    "manual"
+  ],
+  "ij1-blur-median2d": [
+    "filtering",
+    "median",
+    "2d"
+  ],
+  "ij1-convolve-convolve2d-parameter": [
+    "filtering",
+    "convolution",
+    "kernel"
+  ],
+  "threshold-iterative-by-roi-statistics-2d": [
+    "thresholding",
+    "segmentation",
+    "roi"
+  ],
+  "ij1-roi-from-table-point": [
+    "roi",
+    "points",
+    "table"
+  ],
+  "run-process-merging": [
+    "merge",
+    "grouping",
+    "annotation"
+  ],
+  "ij1-labels-remove-border-labels": [
+    "labeling",
+    "border-removal",
+    "mask"
+  ],
+  "table-merge-columns": [
+    "table-merge",
+    "column",
+    "data"
+  ],
+  "ij1-dimensions-stack-to-2d": [
+    "channel-splitting",
+    "2d",
+    "dimensionality"
+  ],
+  "folder-list-subfolders": [
+    "file-system",
+    "directory-listing"
+  ],
+  "ij1-morph-binary-fillholes2d": [
+    "morphology",
+    "hole-filling",
+    "binary-image"
+  ],
+  "plot-table:plot-category-statistical-line": [
+    "plotting",
+    "statistics",
+    "visualization"
+  ],
+  "plot-from-table": [
+    "plotting",
+    "table",
+    "visualization"
+  ],
+  "python-script-merging": [
+    "scripting",
+    "merge",
+    "python"
+  ],
+  "select-data-table-rows": [
+    "filtering",
+    "rows",
+    "selection"
+  ],
+  "ome-extract-metadata-as-table": [
+    "metadata",
+    "ome",
+    "table"
+  ],
+  "r-import-dataset": [
+    "data-import",
+    "table",
+    "r-data"
+  ],
+  "import-omnipose-0.x-pretrained-model": [
+    "model-import",
+    "segmentation",
+    "deep-learning"
+  ],
+  "ij1-transform-warp2d": [
+    "warping",
+    "vector-field",
+    "geometry"
+  ],
+  "ij1-color-split-rgb": [
+    "channel-splitting",
+    "rgb",
+    "image-processing"
+  ],
+  "ij1-feature-harris-corner-2d": [
+    "edge-detection",
+    "feature-detection",
+    "image-processing"
+  ],
+  "ij1-analyze-statistics-histogram": [
+    "histogram",
+    "quantification",
+    "statistics"
+  ],
+  "ij1-roi-draw-oval": [
+    "roi",
+    "annotation",
+    "3d-roi"
+  ],
+  "import-cellpose-2.x-pretrained-model": [
+    "segmentation",
+    "model-import",
+    "deep-learning"
+  ],
+  "render-jipipe-project": [
+    "rendering",
+    "visualization",
+    "export"
+  ],
+  "opencv-generate-gabor": [
+    "filtering",
+    "gabor",
+    "image-processing"
+  ],
+  "ij1-feature-mtc-2d": [
+    "morphology",
+    "texture",
+    "comparison"
+  ],
+  "cellpose-segmentation-inference-4.x": [
+    "segmentation",
+    "deep-learning",
+    "cellpose"
+  ],
+  "ij1-threshold-local-auto2d-bernsen": [
+    "thresholding",
+    "local",
+    "auto"
+  ],
+  "ij1-threshold-manual2d-8u": [
+    "thresholding",
+    "manual"
+  ],
+  "data-flow-tunnel-1-entrance": [
+    "input",
+    "tunnel"
+  ],
+  "import-ilastik-model": [
+    "import",
+    "ilastik",
+    "workflow"
+  ],
+  "parameters-merge": [
+    "parameters",
+    "merge",
+    "workflow"
+  ],
+  "filaments-restore-vertex-value-backups": [
+    "filament",
+    "vertices",
+    "restore"
+  ],
+  "jipipe-project-parameters": [
+    "parameters",
+    "pipeline-configuration",
+    "project-settings"
+  ],
+  "ij1-labels-filter-labels-by-thickness": [
+    "filtering",
+    "thickness",
+    "morphology"
+  ],
+  "ij1-dimensions-stacksplitter": [
+    "channel-splitting",
+    "reslicing",
+    "data-splitting"
+  ],
+  "ij-optical-flow-mse-block-flow": [
+    "optical-flow",
+    "motion-analysis",
+    "time-lapse"
+  ],
+  "annotate-split-by-annotation": [
+    "filtering",
+    "data-splitting",
+    "metadata"
+  ],
+  "filaments-remove-duplicate-vertices": [
+    "graph-cleaning",
+    "vertex-deduplication",
+    "network"
+  ],
+  "omero-list-project-ids": [
+    "omero",
+    "metadata",
+    "search"
+  ],
+  "simplify-annotations": [
+    "annotation",
+    "simplification",
+    "iteration"
+  ],
+  "ij1-fft-forward2d": [
+    "fft",
+    "frequency",
+    "transform"
+  ],
+  "ij1-labels-to-rgb": [
+    "labeling",
+    "visualization",
+    "colormap"
+  ],
+  "ij1-feature-mfc-2d": [
+    "morphology",
+    "image-processing",
+    "feature-contrast"
+  ],
+  "ij1-roi-merge": [
+    "roi",
+    "annotation",
+    "roi-merging"
+  ],
+  "ij3d-filter-local-max-3d": [
+    "local-maximum",
+    "3d",
+    "filtering"
+  ],
+  "export-roi-3d": [
+    "roi",
+    "export",
+    "3d-roi"
+  ],
+  "ij-convert-image-to-8-bit": [
+    "bit-depth",
+    "image-conversion",
+    "8-bit"
+  ],
+  "ij1-roi-transform-2d": [
+    "roi",
+    "transform",
+    "geometry"
+  ],
+  "ij1-roi-set-properties-from-expressions": [
+    "roi",
+    "properties",
+    "expression"
+  ],
+  "filaments-cycles-to-components": [
+    "graph",
+    "filament",
+    "components"
+  ],
+  "import-cellpose-4.x-pretrained-segmentation-model": [
+    "segmentation",
+    "model-import",
+    "deep-learning"
+  ],
+  "ij1-math-generate-missing-zero-image": [
+    "image-generation",
+    "missing-data",
+    "annotation"
+  ],
+  "table-rename-columns-to-annotation": [
+    "annotation",
+    "metadata",
+    "column-rename"
+  ],
+  "project-user-directory": [
+    "path",
+    "project-settings",
+    "configuration"
+  ],
+  "trackmate-tracks-to-roi": [
+    "track-roi",
+    "roi",
+    "tracking"
+  ],
+  "ij3d-roi-set-metadata-from-table": [
+    "roi",
+    "metadata",
+    "table"
+  ],
+  "ij1-binary-hough-lines-global": [
+    "line-detection",
+    "hough",
+    "geometry"
+  ],
+  "import-imp-image": [
+    "import",
+    "image",
+    "transparency"
+  ],
+  "table-annotate-by-merged-columns": [
+    "annotation",
+    "table",
+    "merge"
+  ],
+  "crasher-on-input": [
+    "validation",
+    "error-handling",
+    "pipeline-control"
+  ],
+  "filaments-measure-edges": [
+    "quantification",
+    "morphology",
+    "graph"
+  ],
+  "trackmate-create-spot-tracker-simple-sparse-lap-tracker": [
+    "tracking",
+    "particle-tracking",
+    "time-lapse"
+  ],
+  "ij1-dimensions-hyper-stackslicer": [
+    "image-processing",
+    "hyperstack",
+    "reslicing"
+  ],
+  "ij3d-filter-variance-3d": [
+    "filtering",
+    "statistics",
+    "local-mean"
+  ],
+  "ome-image-from-image-plus": [
+    "conversion",
+    "ome",
+    "roi"
+  ],
+  "table-process-columns": [
+    "expression",
+    "column",
+    "table"
+  ],
+  "rename-annotation": [
+    "annotation",
+    "rename",
+    "metadata"
+  ],
+  "ij1-binary-remove-largest-region": [
+    "morphology",
+    "connected-components",
+    "mask"
+  ],
+  "graph-wrapper:output": [
+    "workflow",
+    "grouping",
+    "export"
+  ],
+  "ij1-roi-get-image": [
+    "roi",
+    "image-extraction",
+    "annotation"
+  ],
+  "table-rename-single-columns": [
+    "metadata",
+    "table",
+    "column-rename"
+  ],
+  "form-processor-iterating": [
+    "annotation",
+    "ui",
+    "interactive"
+  ],
+  "ij1-calibration-copy-physical-dimensions": [
+    "metadata",
+    "physical-dimensions",
+    "image"
+  ],
+  "ij-convert-image-to-32-bit": [
+    "image-conversion",
+    "bit-depth"
+  ],
+  "ij1-feature-laplacian-of-gaussian": [
+    "filtering",
+    "edge-detection"
+  ],
+  "distribute-data-by-count": [
+    "data-splitting",
+    "random",
+    "partitioning"
+  ],
+  "omero-plate-id-definition": [
+    "omero",
+    "plate-ids",
+    "metadata"
+  ],
+  "filaments-skeleton-to-filaments-3d": [
+    "skeletonization",
+    "filament",
+    "3d"
+  ],
+  "ij1-transform-line-mirror-by-expression": [
+    "image-flipping",
+    "geometry",
+    "2d"
+  ],
+  "ij1-roi-remove-overlay": [
+    "roi",
+    "overlap",
+    "annotation"
+  ],
+  "ij1-binary-hough-lines": [
+    "line-detection",
+    "hough",
+    "2d"
+  ],
+  "filaments-set-metadata-to-component-index": [
+    "metadata",
+    "connected-components",
+    "filament"
+  ],
+  "cellpose-2": [
+    "cellpose",
+    "segmentation",
+    "microscopy"
+  ],
+  "ij3d-roi-color-by-statistics": [
+    "roi",
+    "statistics",
+    "colormap"
+  ],
+  "ij1-binary-conditional-invert": [
+    "image-processing",
+    "statistics",
+    "conditional"
+  ],
+  "import-cellpose-model-v2": [
+    "cellpose",
+    "model-import",
+    "segmentation"
+  ],
+  "ij3d-math-eroded-volume-fraction-3d": [
+    "morphology",
+    "distance-transform",
+    "volume-fraction"
+  ],
+  "ij1-feature-maxima-local-2d": [
+    "local-maximum",
+    "detection",
+    "2d"
+  ],
+  "ij1-analyze-statistics-threshold-value": [
+    "statistics",
+    "quantification",
+    "thresholding"
+  ],
+  "python-script-iterating-simple": [
+    "scripting",
+    "iteration",
+    "python"
+  ],
+  "ij1-transform-equalize-expand2d": [
+    "image-padding",
+    "normalization",
+    "preprocessing"
+  ],
+  "filaments-filter-components-by-properties": [
+    "filtering",
+    "filament",
+    "morphology"
+  ],
+  "import-imagej-native-importer": [
+    "image-import",
+    "image-loading",
+    "imagej"
+  ],
+  "table-rename-columns-expression": [
+    "table-editing",
+    "column-rename",
+    "data-processing"
+  ],
+  "omero-download-image": [
+    "image-import",
+    "omero",
+    "microscopy"
+  ],
+  "import-roi-3d": [
+    "roi",
+    "3d-roi",
+    "imagej"
+  ],
+  "ij-math-geodesic-distance-map-2d": [
+    "distance",
+    "geodesic-distance",
+    "binary"
+  ],
+  "modify-annotation-script": [
+    "annotation",
+    "scripting",
+    "data-processing"
+  ],
+  "ij1-roi-generate-name": [
+    "roi",
+    "naming",
+    "expression"
+  ],
+  "ij-import-stack": [
+    "image-import",
+    "stack"
+  ],
+  "ij1-labels-filter-labels-by-id": [
+    "filtering",
+    "segmentation",
+    "mask"
+  ],
+  "import-imagej-results-table-from-file": [
+    "data-import",
+    "results-table",
+    "table"
+  ],
+  "cpython-script-iterating": [
+    "scripting",
+    "iteration",
+    "data-processing"
+  ],
+  "filaments-set-vertex-metadata-from-image": [
+    "filament",
+    "vertex-metadata",
+    "image"
+  ],
+  "ij1-labels-get-label-boundaries": [
+    "segmentation",
+    "boundary",
+    "mask"
+  ],
+  "ij1-roi-draw-text": [
+    "roi",
+    "text",
+    "annotation"
+  ],
+  "ij1-filter-kuwahara2d": [
+    "filtering",
+    "denoising",
+    "edge-preservation"
+  ],
+  "ij1-color-merge-channels-lab": [
+    "colormap",
+    "channel-merge"
+  ],
+  "filaments-tsoax-2d": [
+    "filament",
+    "time-lapse",
+    "quantification"
+  ],
+  "modify-path": [
+    "path",
+    "metadata"
+  ],
+  "ij3d-filter-top-hat-3d": [
+    "morphology",
+    "top-hat",
+    "3d"
+  ],
+  "ij1-analyze-image-statistics-expression": [
+    "statistics",
+    "quantification",
+    "expression"
+  ],
+  "trackmate-measure-branches": [
+    "tracking",
+    "branch-analysis",
+    "quantification"
+  ],
+  "external-imagej-macro": [
+    "imagej",
+    "macro",
+    "scripting"
+  ],
+  "ij3d-roi-filter-by-overlap-v2": [
+    "roi",
+    "overlap",
+    "3d"
+  ],
+  "ij1-threshold-auto2d": [
+    "thresholding",
+    "8-bit"
+  ],
+  "ij3d-segmentation-spot3d-local-mean": [
+    "segmentation",
+    "3d"
+  ],
+  "ij1-threshold-expression2d-color": [
+    "thresholding",
+    "colormap",
+    "grayscale"
+  ],
+  "ij1-morph-grayscale-attribute-filtering-2d": [
+    "morphology",
+    "filtering",
+    "scaling"
+  ],
+  "ij1-roi-draw-rectangle": [
+    "roi",
+    "drawing",
+    "rectangle"
+  ],
+  "import-path": [
+    "path",
+    "data",
+    "conversion"
+  ],
+  "omero-list-screen-ids": [
+    "omero",
+    "metadata",
+    "search"
+  ],
+  "ij3d-roi-change-properties-from-expressions": [
+    "roi",
+    "3d-roi",
+    "expression"
+  ],
+  "loop:start": [
+    "iteration",
+    "graph-control"
+  ],
+  "loop:end": [
+    "iteration",
+    "graph-control"
+  ],
+  "ij3d-feature-symmetry-3d": [
+    "3d-filtering",
+    "symmetry",
+    "edge-detection"
+  ],
+  "ij1-color-set-to-content-aware-2d": [
+    "content-aware",
+    "image-restoration",
+    "mask"
+  ],
+  "ij1-roi-extract-overlay": [
+    "roi",
+    "overlap",
+    "extraction"
+  ],
+  "import-cellpose-model": [
+    "cellpose",
+    "model-import",
+    "segmentation"
+  ],
+  "ij1-morph-grayscale-attribute-filtering-3d": [
+    "morphology",
+    "filtering",
+    "3d"
+  ],
+  "ij3d-segmentation-watershed-3d": [
+    "3d-segmentation",
+    "watershed",
+    "morphology"
+  ],
+  "omero-create-dataset": [
+    "omero",
+    "data",
+    "data-management"
+  ],
+  "ij1-set-lut-from-color-map": [
+    "colormap",
+    "display",
+    "lut"
+  ],
+  "ij1-dimensions-reorder-hyperstack-slices": [
+    "hyperstack",
+    "reslicing",
+    "renumbering"
+  ],
+  "ij1-dimensions-hyper-stacksplitter": [
+    "hyperstack",
+    "dimensionality",
+    "data-splitting"
+  ],
+  "convert-imagej-image": [
+    "conversion",
+    "imagej",
+    "data-type"
+  ],
+  "ij1-threshold-manual2d-color-lab": [
+    "thresholding",
+    "colormap",
+    "lab"
+  ],
+  "ij1-threshold-local-auto2d-16u-contrast": [
+    "thresholding",
+    "local",
+    "2d"
+  ],
+  "filaments-set-vertex-properties-2": [
+    "filament",
+    "edge-properties",
+    "properties"
+  ],
+  "ilastik-pixel-classification": [
+    "pixelwise",
+    "segmentation",
+    "labeling"
+  ],
+  "ij1-roi-to-centroid": [
+    "roi",
+    "centroid"
+  ],
+  "split-imp-image-alpha": [
+    "alpha-channel",
+    "channel-splitting",
+    "image-processing"
+  ],
+  "ij3d-filter-roi3d-by-statistics": [
+    "roi",
+    "statistics",
+    "filtering"
+  ],
+  "weka-training-roi-3d": [
+    "machine-learning",
+    "roi",
+    "classification"
+  ],
+  "ij1-math-vector-expression": [
+    "pixel-operation",
+    "vector-field",
+    "image-processing"
+  ],
+  "ij1-analyze-skeleton-2d3d": [
+    "skeletonization",
+    "morphology",
+    "quantification"
+  ],
+  "ij3d-segmentation-iterative-thresholding": [
+    "thresholding",
+    "segmentation",
+    "lineage"
+  ],
+  "convert-annotation-table-to-annotated-tables": [
+    "annotation",
+    "table",
+    "metadata"
+  ],
+  "clij-execute-kernel-iterating": [
+    "opencl",
+    "gpu",
+    "image-processing"
+  ],
+  "filaments-convert-to-rgb": [
+    "filament",
+    "visualization",
+    "rgb"
+  ],
+  "filaments-merge": [
+    "filament",
+    "merge",
+    "data-ingestion"
+  ],
+  "ij1-math-generate-from-expression": [
+    "math-expression",
+    "pixel-operation",
+    "image-generation"
+  ],
+  "ij1-roi-relation-2d": [
+    "roi",
+    "statistics",
+    "pairwise"
+  ],
+  "file-temporary": [
+    "file-io",
+    "temp-file",
+    "data-management"
+  ],
+  "merge-data-to-table": [
+    "table",
+    "merge",
+    "iteration"
+  ],
+  "image-properties-to-annotation": [
+    "annotation",
+    "metadata",
+    "image-properties"
+  ],
+  "ij1-roi-render-overlay": [
+    "roi",
+    "overlap",
+    "rendering"
+  ],
+  "ij1-math-generate-vector-from-expression": [
+    "vector-field",
+    "math-expression",
+    "data-generation"
+  ],
+  "ij3d-segmentation-spot3d-difference": [
+    "segmentation",
+    "3d",
+    "comparison"
+  ],
+  "r-script-merging": [
+    "scripting",
+    "merge",
+    "iteration"
+  ],
+  "import-python-script": [
+    "scripting",
+    "python",
+    "model-import"
+  ],
+  "annotate-filter-by-annotation-if-else": [
+    "filtering",
+    "annotation",
+    "branching"
+  ],
+  "data-to-output-path": [
+    "output-folder",
+    "file-io",
+    "run"
+  ],
+  "cellpose-training": [
+    "segmentation",
+    "model-training",
+    "microscopy"
+  ],
+  "ij3d-filter-roi3d-list": [
+    "roi",
+    "filtering",
+    "3d"
+  ],
+  "ij3d-roi-split-by-statistics": [
+    "roi",
+    "statistics",
+    "classification"
+  ],
+  "ij1-turbo-reg-image-registration-io": [
+    "registration",
+    "alignment",
+    "2d"
+  ],
+  "ij1-fft-bandpass2d": [
+    "filtering",
+    "fft",
+    "frequency"
+  ],
+  "ij1-threshold-percentile2d-8u": [
+    "thresholding",
+    "percentile",
+    "2d"
+  ],
+  "ij1-labels-to-roi": [
+    "roi",
+    "segmentation",
+    "labelmap"
+  ],
+  "filaments-erode-end-vertices": [
+    "graph",
+    "skeletonization",
+    "morphology"
+  ],
+  "weka-training-roi-2d": [
+    "machine-learning",
+    "classification",
+    "roi"
+  ],
+  "plot-table:plot-category-bar-stacked": [
+    "plotting",
+    "visualization",
+    "statistics"
+  ],
+  "ij1-analyze-statistics-key-value-avg": [
+    "statistics",
+    "quantification",
+    "5d"
+  ],
+  "omero-annotate-dataset-from-remote": [
+    "metadata",
+    "omero",
+    "annotation"
+  ],
+  "ij1-noise-add-salt-and-pepper-noise2d": [
+    "noise",
+    "salt-pepper",
+    "2d"
+  ],
+  "ij1-roi-to-mask": [
+    "roi",
+    "mask",
+    "conversion"
+  ],
+  "ij1-blur-gaussian2d": [
+    "smoothing",
+    "filtering",
+    "morphology"
+  ],
+  "ij1-math-math2d-expression": [
+    "pixelwise",
+    "arithmetic",
+    "image-processing"
+  ],
+  "ij1-transform-rotate2d-free": [
+    "rotation",
+    "geometry",
+    "image-processing"
+  ],
+  "cpython-script": [
+    "scripting",
+    "python",
+    "custom"
+  ],
+  "ij1-labels-annotate-with-overlap-statistics": [
+    "overlap",
+    "segmentation",
+    "quantification"
+  ],
+  "ij3d-math-distance-map-3d": [
+    "distance",
+    "3d",
+    "morphology"
+  ],
+  "jipipe:project-compartment": [
+    "workflow",
+    "graph"
+  ],
+  "ij1-math-edt2d": [
+    "morphology",
+    "distance-transform",
+    "binary"
+  ],
+  "ij1-roi-extract-profile": [
+    "roi",
+    "profile",
+    "quantification"
+  ],
+  "cellpose-denoise-training-3.x": [
+    "cellpose",
+    "denoising",
+    "training"
+  ],
+  "ij1-transform-line-mirror-by-roi": [
+    "roi",
+    "symmetry",
+    "transform"
+  ],
+  "json-annotate-with-json-data": [
+    "json-path",
+    "annotation",
+    "metadata"
+  ],
+  "iji-export-image-to-web:directory-slot": [
+    "image-export",
+    "file-format",
+    "folder"
+  ],
+  "annotate-filter-by-annotation": [
+    "filtering",
+    "annotation",
+    "selection"
+  ],
+  "filaments-set-vertex-calibration-from-image": [
+    "filament",
+    "calibration",
+    "voxel-size"
+  ],
+  "export-ilastik-hdf5-image": [
+    "export",
+    "hdf5",
+    "ilastik"
+  ],
+  "ij3d-roi-color-by-name": [
+    "roi",
+    "colormap",
+    "visualization"
+  ],
+  "ij1-calibration-set-physical-dimensions-from-annotations": [
+    "metadata",
+    "calibration",
+    "physical-dimensions"
+  ],
+  "filaments-convert-to-scene-3d": [
+    "visualization",
+    "3d",
+    "filament"
+  ],
+  "ij1-dimensions-extended-depth-of-focus": [
+    "projection",
+    "z-stack",
+    "focus"
+  ],
+  "omero-project-id-definition": [
+    "omero",
+    "metadata",
+    "project-ids"
+  ],
+  "table-merge-from-columns": [
+    "table",
+    "merge",
+    "annotation"
+  ],
+  "ij1-roi-filter-roi-lists": [
+    "roi",
+    "filtering",
+    "2d"
+  ],
+  "parameters-to-annotations": [
+    "parameters",
+    "annotation",
+    "conversion"
+  ],
+  "ij1-noise-addnormalnoise2d": [
+    "image",
+    "noise",
+    "2d"
+  ],
+  "ij1-morph-operation3d": [
+    "morphology",
+    "3d",
+    "image-processing"
+  ],
+  "filaments-connect-vertices-fast": [
+    "filament",
+    "connectivity",
+    "graph"
+  ],
+  "ij3d-roi-set-overlay": [
+    "roi",
+    "3d",
+    "overlap"
+  ],
+  "ij1-color-merge-channels-hsb": [
+    "channel-merge",
+    "colormap",
+    "hsb"
+  ],
+  "ij1-extract-ome-image-xml": [
+    "metadata",
+    "image"
+  ],
+  "table-add-missing-rows-in-series": [
+    "table",
+    "time-series",
+    "interpolation"
+  ],
+  "ij1-math-regional-minima-2d": [
+    "morphology",
+    "minima",
+    "2d"
+  ],
+  "ij1-transform-add-border-2d": [
+    "morphology",
+    "padding",
+    "2d"
+  ],
+  "ij1-calibration-set-physical-dimensions": [
+    "metadata",
+    "physical-dimensions",
+    "calibration"
+  ],
+  "ij1-color-overlay-channels": [
+    "channel-merge",
+    "image-composition",
+    "visualization"
+  ],
+  "table-merge-columns-supplement": [
+    "table-merge",
+    "data-joining",
+    "quantification"
+  ],
+  "ij3d-feature-canny-edge-3d": [
+    "edge-detection",
+    "3d",
+    "filtering"
+  ],
+  "ij3d-roi-convert-3d-to-2d": [
+    "roi",
+    "conversion",
+    "3d"
+  ],
+  "ij3d-filter-open-3d": [
+    "morphology",
+    "3d",
+    "closing"
+  ],
+  "omero-dataset-id-definition": [
+    "metadata",
+    "omero",
+    "dataset-ids"
+  ],
+  "ij-optical-flow-pmcc-block-flow": [
+    "optical-flow",
+    "motion",
+    "time-lapse"
+  ],
+  "remove-na-annotation-columns": [
+    "data-cleaning",
+    "annotation",
+    "missing-data"
+  ],
+  "omnipose-training-0.x": [
+    "model-training",
+    "deep-learning",
+    "segmentation"
+  ],
+  "ij-multi-template-matching": [
+    "template-matching",
+    "detection",
+    "image-processing"
+  ],
+  "trackmate-create-spot-tracker-nearest-neighbor-tracker": [
+    "tracking",
+    "nearest-neighbor"
+  ],
+  "ij1-math-divide-by-maximum": [
+    "normalization",
+    "scaling",
+    "intensity"
+  ],
+  "ij1-dimensions-merge-2d-to-hyperstack": [
+    "stack",
+    "hyperstack",
+    "assembly"
+  ],
+  "ij1-dimensions-stacks-to-dimension-2": [
+    "stack",
+    "hyperstack",
+    "merge"
+  ],
+  "trackmate-filter-spots": [
+    "trackmate",
+    "filtering",
+    "tracking"
+  ],
+  "python-script": [
+    "scripting",
+    "jython",
+    "data-processing"
+  ],
+  "annotations-to-parameters": [
+    "annotation",
+    "parameters",
+    "conversion"
+  ],
+  "ij-math-chamfer-distance-map-2d": [
+    "distance",
+    "morphology",
+    "binary-image"
+  ],
+  "ij1-roi-filter-slice": [
+    "roi",
+    "selection",
+    "2d"
+  ],
+  "trackmate-create-spot-tracker-sparse-lap-tracker": [
+    "tracking",
+    "particle-tracking",
+    "assignment"
+  ],
+  "ij1-blur-gaussian3d": [
+    "smoothing",
+    "convolution",
+    "3d"
+  ],
+  "ij1-labels-filter-filter-by-expression-2d": [
+    "filtering",
+    "expression",
+    "2d"
+  ],
+  "import-ilastik-hdf5-image": [
+    "import",
+    "hdf5",
+    "ilastik"
+  ],
+  "omero-annotate-screen-from-remote": [
+    "annotation",
+    "omero",
+    "metadata"
+  ],
+  "import-file": [
+    "file-io",
+    "data-loading"
+  ],
+  "ij3d-roi-split-explode": [
+    "roi",
+    "data-splitting",
+    "3d"
+  ],
+  "ij1-convert-table-column-to-image": [
+    "table-image",
+    "conversion",
+    "image"
+  ],
+  "trackmate-measure-spots": [
+    "quantification",
+    "spots",
+    "table"
+  ],
+  "import-path-list": [
+    "path",
+    "data",
+    "list"
+  ],
+  "ij1-background-rollingball2d": [
+    "background",
+    "correction",
+    "2d"
+  ],
+  "ij1-contrast-apply-ij-per-slice": [
+    "auto-contrast",
+    "histogram",
+    "image-processing"
+  ],
+  "filaments-set-edge-properties": [
+    "filament-edges",
+    "expression",
+    "properties"
+  ],
+  "annotate-set-single": [
+    "annotation",
+    "expression",
+    "metadata"
+  ],
+  "graph-annotation-arrow": [
+    "annotation",
+    "canvas",
+    "arrow"
+  ],
+  "list-zarr-uri-datasets": [
+    "ome-zarr",
+    "data",
+    "uri"
+  ],
+  "ij1-binary-bitwise": [
+    "bitwise",
+    "mask-combining",
+    "binary-image"
+  ],
+  "ij-math-chamfer-distance-map-3d": [
+    "distance",
+    "binary-image",
+    "3d"
+  ],
+  "ij1-contrast-clahe": [
+    "contrast-enhancement",
+    "clahe",
+    "image"
+  ],
+  "ij-convert-image-to-16-bit-ij-auto-contrast": [
+    "bit-depth",
+    "comparison",
+    "preprocessing"
+  ],
+  "ij1-morph-binary-skeletonize2d": [
+    "morphology",
+    "skeletonization",
+    "binary"
+  ],
+  "ij1-roi-append-rectangles-referenced": [
+    "roi",
+    "rectangle",
+    "annotation"
+  ],
+  "ij3d-roi-convert-to-3d-mesh": [
+    "roi",
+    "3d",
+    "scene"
+  ],
+  "ij1-labels-merge-labels-to-bins": [
+    "label-merging",
+    "binning",
+    "quantification"
+  ],
+  "python-script-iterating": [
+    "scripting",
+    "iteration",
+    "automation"
+  ],
+  "plot-table:plot-xy-line": [
+    "plotting",
+    "visualization",
+    "statistics"
+  ],
+  "ij1-data-to-preview": [
+    "preview-image",
+    "visualization",
+    "data"
+  ],
+  "ij1-roi-filter-statistics-script": [
+    "roi-filtering",
+    "statistics",
+    "scripting"
+  ],
+  "export-data": [
+    "data-export",
+    "file-io",
+    "path"
+  ],
+  "data-batch-slicer": [
+    "iteration",
+    "data",
+    "index-range"
+  ],
+  "ij1-color-convert-to-hsb": [
+    "color-conversion",
+    "hsb",
+    "image"
+  ],
+  "ij-roi-from-gui": [
+    "roi",
+    "import",
+    "imagej"
+  ],
+  "ome-annotate-with-metadata": [
+    "metadata",
+    "ome",
+    "annotation"
+  ],
+  "ij1-roi-outline": [
+    "roi",
+    "geometry",
+    "morphology"
+  ],
+  "ij1-analyze-statistics-threshold-partition-key-value": [
+    "statistics",
+    "thresholding",
+    "quantification"
+  ],
+  "filaments-convert-to-mask": [
+    "segmentation",
+    "roi",
+    "morphology"
+  ],
+  "ij1-blur-box2d-v2": [
+    "filtering",
+    "smoothing",
+    "morphology"
+  ],
+  "ij1-roi-set-metadata-from-table": [
+    "roi",
+    "metadata",
+    "table"
+  ],
+  "ij1-roi-interpolate": [
+    "roi",
+    "interpolation",
+    "sub-pixel"
+  ],
+  "ij1-labels-replace-labels-by-table": [
+    "labeling",
+    "remapping",
+    "table"
+  ],
+  "ij1-transform-un-tile-2d": [
+    "image-composition",
+    "tiling",
+    "annotation"
+  ],
+  "ij1-blur-median2d-rgb": [
+    "filtering",
+    "denoising",
+    "image"
+  ],
+  "ij1-convert-image-to-table": [
+    "extraction",
+    "quantification",
+    "table"
+  ],
+  "weka-training-mask-2d": [
+    "machine-learning",
+    "classification",
+    "mask"
+  ],
+  "data-table-annotate-with-properties": [
+    "annotation",
+    "table",
+    "metadata"
+  ],
+  "ij1-math-local-mean3d": [
+    "filtering",
+    "morphology",
+    "3d"
+  ],
+  "cellpose-denoise-inference-3.x": [
+    "image-restoration",
+    "denoising",
+    "upsampling"
+  ],
+  "parameters-from-global": [
+    "parameters",
+    "project-wide",
+    "configuration"
+  ],
+  "tesseract-ocr": [
+    "ocr",
+    "image-processing"
+  ],
+  "omero-group-id-definition": [
+    "omero",
+    "group-ids",
+    "metadata"
+  ],
+  "ij1-contrast-calibrate": [
+    "comparison",
+    "display",
+    "calibration"
+  ],
+  "ij1-roi-sort-by-statistics-expression": [
+    "roi",
+    "sorting",
+    "annotation"
+  ],
+  "json-annotate-with-text-data": [
+    "annotation",
+    "text",
+    "extraction"
+  ],
+  "parameters-define": [
+    "parameters",
+    "configuration",
+    "algorithm"
+  ],
+  "omero-well-id-definition": [
+    "well-ids",
+    "omero",
+    "metadata"
+  ],
+  "ij1-convert-multiple-images-to-table": [
+    "image-extraction",
+    "table",
+    "quantification"
+  ],
+  "filaments-skeleton-to-filaments-2d": [
+    "skeletonization",
+    "morphology",
+    "filament"
+  ],
+  "iji-export-table-as-xlsx-v2": [
+    "export",
+    "table",
+    "xlsx"
+  ],
+  "ij1-roi-enlarge-shrink": [
+    "roi",
+    "morphology",
+    "annotation"
+  ],
+  "table-split-by-columns": [
+    "table",
+    "grouping",
+    "data-processing"
+  ],
+  "ij1-transform-set-dimensions": [
+    "hyperstack",
+    "dimensionality",
+    "image-processing"
+  ],
+  "ij1-morph-binary-skeletonize3d": [
+    "morphology",
+    "skeletonization",
+    "binary-image"
+  ],
+  "xml-extract-data-as-table-xpath": [
+    "xml",
+    "extraction",
+    "table"
+  ],
+  "ij1-roi-to-annotations": [
+    "roi",
+    "annotation",
+    "properties"
+  ],
+  "ij1-convert-image-to-table-column": [
+    "table",
+    "data-transfer",
+    "image"
+  ],
+  "import-string-from-file": [
+    "import",
+    "text",
+    "file-io"
+  ],
+  "ij1-labels-filter-by-statistics": [
+    "roi",
+    "statistics",
+    "filtering"
+  ],
+  "ij1-generate-filter-kernel": [
+    "morphology",
+    "structure-element",
+    "image-processing"
+  ],
+  "annotate-remove": [
+    "annotation",
+    "metadata",
+    "filtering"
+  ],
+  "ij1-morph-operation2d": [
+    "morphology",
+    "image-processing",
+    "filtering"
+  ],
+  "filaments-find-linear-vertex-order": [
+    "filament",
+    "graph",
+    "quantification"
+  ],
+  "trackmate-detector": [
+    "feature-detection",
+    "tracking",
+    "annotation"
+  ],
+  "filaments-subdivide-edges": [
+    "filament",
+    "mesh-refinement",
+    "topology"
+  ],
+  "ij-convert-image-to-lab-colors": [
+    "color-conversion",
+    "image-processing"
+  ],
+  "ij1-roi-color-by-name": [
+    "roi",
+    "drawing",
+    "visualization"
+  ],
+  "table-sort-columns": [
+    "table",
+    "sorting",
+    "data"
+  ],
+  "trackmate-visualize-tracks": [
+    "tracks",
+    "visualization",
+    "rgb"
+  ],
+  "merge-slots": [
+    "data-flow",
+    "merge",
+    "structural"
+  ],
+  "ij1-morph-binary-outline2d": [
+    "morphology",
+    "outline",
+    "binary"
+  ],
+  "folder-mkdir": [
+    "file-system",
+    "folder"
+  ],
+  "ij-convert-image-to-16-bit": [
+    "image-conversion",
+    "bit-depth"
+  ],
+  "trackmate-create-spot-detector-dog-detector": [
+    "feature-detection",
+    "filtering"
+  ],
+  "ij1-math-local-minimum2d": [
+    "morphology",
+    "local-maximum",
+    "filtering"
+  ],
+  "xml-extract-text-from-xpath": [
+    "xml",
+    "text-extraction",
+    "data-processing"
+  ],
+  "ij1-roi-to-labels-name": [
+    "roi",
+    "labeling",
+    "image-processing"
+  ],
+  "table-to-parameters": [
+    "table",
+    "parameters"
+  ],
+  "ij-results-table-from-gui": [
+    "data-import",
+    "imagej"
+  ],
+  "ij1-math-local-minimum3d": [
+    "morphology",
+    "local-maximum",
+    "image-processing"
+  ],
+  "ij1-math-local-mean2d": [
+    "local-filter",
+    "smoothing",
+    "filtering"
+  ],
+  "ij1-math-transform2d": [
+    "transform",
+    "intensity-transform",
+    "math"
+  ],
+  "filaments-convert-to-labels-v2": [
+    "filament",
+    "labeling",
+    "segmentation"
+  ],
+  "ij1-feature-featurej-hessian": [
+    "hessian",
+    "feature-detection",
+    "morphology"
+  ],
+  "table-convert-to-histogram-key-value": [
+    "labeling",
+    "quantification",
+    "table-editing"
+  ],
+  "annotation-table-from-file": [
+    "annotation-import",
+    "table-editing",
+    "metadata"
+  ],
+  "annotate-with-annotation-table": [
+    "annotation",
+    "table-merge",
+    "metadata"
+  ],
+  "ij1-roi-from-table-line": [
+    "roi",
+    "table"
+  ],
+  "path-concatenate-by-parameter": [
+    "path",
+    "file-io",
+    "string-processing"
+  ],
+  "ij1-threshold-local-auto2d-phansalkar": [
+    "thresholding",
+    "segmentation"
+  ],
+  "filaments-convert-roi2d-to-filaments": [
+    "roi",
+    "filament",
+    "morphology"
+  ],
+  "ij1-fft-swap2d": [
+    "fft",
+    "image-processing"
+  ],
+  "opencv-generate-gaussian": [
+    "gaussian-kernel",
+    "filtering",
+    "convolution"
+  ],
+  "ij3d-segmentation-spot3d-constant": [
+    "segmentation",
+    "3d"
+  ],
+  "ij1-math-round-32f": [
+    "image-processing",
+    "rounding"
+  ],
+  "json-extract-data-as-table-json-path": [
+    "json",
+    "table",
+    "extraction"
+  ],
+  "ij1-threshold-auto2d-16u": [
+    "thresholding",
+    "image-processing",
+    "8-bit"
+  ],
+  "ij1-roi-crop-list": [
+    "roi",
+    "cropping",
+    "image-processing"
+  ],
+  "annotate-with-data": [
+    "annotation",
+    "grouping",
+    "metadata"
+  ],
+  "omero-list-dataset-ids": [
+    "omero",
+    "data",
+    "search"
+  ],
+  "omero-annotate-image-from-remote": [
+    "omero",
+    "metadata",
+    "annotation"
+  ],
+  "export-data-table": [
+    "data-export",
+    "table",
+    "file-io"
+  ],
+  "import-imagej-roi-from-file": [
+    "roi",
+    "import",
+    "file-io"
+  ],
+  "filaments-filter-edges-by-properties": [
+    "filament",
+    "filtering"
+  ],
+  "threshold-brightspots2d": [
+    "segmentation",
+    "thresholding",
+    "morphology"
+  ],
+  "table-rows-dbscan-clustering": [
+    "clustering",
+    "dbscan",
+    "table"
+  ],
+  "filaments-tsoax": [
+    "filament",
+    "time-lapse",
+    "3d"
+  ],
+  "ij1-threshold-expression2d-8u-v2": [
+    "thresholding",
+    "segmentation",
+    "image-processing"
+  ],
+  "table-remove-columns": [
+    "table",
+    "data-cleaning",
+    "column-removal"
+  ],
+  "ij1-roi-split": [
+    "roi",
+    "segmentation",
+    "object-analysis"
+  ],
+  "trackmate-create-spot-tracker-overlap-tracker": [
+    "tracking",
+    "time-lapse",
+    "overlap"
+  ],
+  "mask-to-3d-mesh": [
+    "3d",
+    "mesh",
+    "mask"
+  ],
+  "path-to-annotation-simple": [
+    "annotation",
+    "metadata",
+    "file-name"
+  ],
+  "table-sort": [
+    "table",
+    "sorting",
+    "data"
+  ],
+  "ij-convert-image-to-8-bit-ij-auto-contrast": [
+    "image",
+    "bit-depth",
+    "auto-contrast"
+  ],
+  "ij3d-filter-mean-3d": [
+    "filtering",
+    "3d",
+    "smoothing"
+  ],
+  "ij1-threshold-local-auto2d-16u-niblack": [
+    "thresholding",
+    "local",
+    "2d"
+  ],
+  "ij1-enhance-bleach-correction": [
+    "bleach-correction",
+    "time-lapse",
+    "channels"
+  ],
+  "ij1-labels-to-mask": [
+    "labelmap",
+    "mask",
+    "segmentation"
+  ],
+  "cpython-script-merging": [
+    "python",
+    "scripting",
+    "merge"
+  ],
+  "trackmate-measure-edges": [
+    "edge-measurement",
+    "quantification",
+    "morphology"
+  ],
+  "path-modify-with-expression": [
+    "path",
+    "roi",
+    "expression"
+  ],
+  "ij1-binary-voronoi2d": [
+    "segmentation",
+    "morphology",
+    "voronoi"
+  ],
+  "export-data-table-by-parameter": [
+    "export",
+    "table",
+    "annotation"
+  ],
+  "ij1-color-set-to-color": [
+    "colormap",
+    "rgb",
+    "constant"
+  ],
+  "ij1-feature-featurej-structure": [
+    "structure-tensor",
+    "texture-analysis",
+    "image-processing"
+  ],
+  "ij3d-roi-outline": [
+    "roi",
+    "bounding-box",
+    "convex-hull"
+  ],
+  "ij1-dimensions-zproject": [
+    "z-projection",
+    "3d"
+  ],
+  "tables-from-script": [
+    "scripting",
+    "table",
+    "data"
+  ],
+  "path-form": [
+    "input",
+    "path",
+    "form"
+  ],
+  "ij3d-segmentation-nuclei-3d": [
+    "segmentation",
+    "nuclei",
+    "microscopy"
+  ],
+  "ij1-threshold-expression2d-16u-v2": [
+    "thresholding",
+    "2d"
+  ],
+  "ij2-create-out-of-bounds-factory": [
+    "boundary",
+    "factory",
+    "imagej"
+  ],
+  "ij1-math-extended-minima-3d": [
+    "morphology",
+    "3d",
+    "minima"
+  ],
+  "import-ome-xml-from-bioformats": [
+    "metadata",
+    "xml",
+    "file-io"
+  ],
+  "table-to-csv-text": [
+    "table",
+    "csv",
+    "export"
+  ],
+  "ij1-color-invert-rgb": [
+    "colormap",
+    "rgb",
+    "inversion"
+  ],
+  "ij1-math-replace-nan-by-median2d": [
+    "missing-data",
+    "filtering",
+    "local-mean"
+  ],
+  "ij1-segment-seeded-watershed": [
+    "segmentation",
+    "watershed",
+    "labeling"
+  ],
+  "ij-roi-to-gui": [
+    "roi",
+    "imagej",
+    "export"
+  ],
+  "ij1-math-extended-minima-2d": [
+    "morphology",
+    "minima",
+    "thresholding"
+  ],
+  "data-slicer": [
+    "table",
+    "filtering",
+    "row-selection"
+  ],
+  "ij3d-segmentation-spot3d-gaussian-fit": [
+    "segmentation",
+    "gaussian",
+    "image-processing"
+  ],
+  "ij-imgplus-to-gui": [
+    "image",
+    "imagej"
+  ],
+  "table-annotate-with-properties": [
+    "table",
+    "annotation",
+    "metadata"
+  ],
+  "get-exported-path": [
+    "export-path",
+    "file-io",
+    "path"
+  ]
+}
