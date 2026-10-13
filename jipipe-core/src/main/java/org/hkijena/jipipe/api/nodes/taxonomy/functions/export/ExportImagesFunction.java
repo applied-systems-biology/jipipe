@@ -22,18 +22,18 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Seed leaf of the Export branch: Exporting data to file formats.
+ * Seed leaf of the Export branch: exporting image data.
  */
-public final class ExportFileFormatsFunction implements JIPipeNodeTaxonomyFunction {
+public final class ExportImagesFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:export-file-formats";
+        return "jipipe:function:export-images";
     }
 
     @Override
     public String getName() {
-        return "Export file formats";
+        return "Images";
     }
 
     @Override
@@ -49,7 +49,7 @@ public final class ExportFileFormatsFunction implements JIPipeNodeTaxonomyFuncti
 
     @Override
     public String getDescription() {
-        return "Exporting data to file formats";
+        return "Exporting images (TIFF, OME-TIFF, OME-ZARR, BMP, AVI, web formats, OMERO, …)";
     }
 
     @Override

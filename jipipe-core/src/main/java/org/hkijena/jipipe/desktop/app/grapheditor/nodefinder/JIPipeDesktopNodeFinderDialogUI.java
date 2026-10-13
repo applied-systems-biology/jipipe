@@ -44,12 +44,12 @@ import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -101,7 +101,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * Function-leaf tree rows to highlight because a search matched a node
      * under them (bold in the tree renderer); empty when no search is active.
      */
-    private Set<TreePath> searchHighlightedLeafPaths = Set.of();
+    public Set<TreePath> searchHighlightedLeafPaths = Set.of();
     private final JToggleButton aiSearchButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/ai.png"));
     private JIPipeDesktopSearchTextField searchField;
 
@@ -109,6 +109,8 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JTree tree;
     private final DefaultTreeModel treeModel;
     private final JScrollPane treeScroll;
+    /** The tree plus the slim control bar under it (collapse / select-first). */
+    private final JPanel treePanel;
     private final NodeFinderDetailRail detailRail;
     private final JSplitPane leftSplit;
     private final JSplitPane rightSplit;
@@ -164,7 +166,25 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         this.treeScroll = new JScrollPane(tree);
         this.treeScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         this.treeScroll.setPreferredSize(new Dimension(240, 400));
-        tree.setCellRenderer(new FunctionTreeCellRenderer());
+        // Slim control bar under the tree (no border, minimal height): a
+        // collapse-all reset and a "select the first result node in the
+        // tree" crosshairs button.
+        JPanel treeToolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
+        treeToolbar.setBorder(null);
+        JButton collapseAllButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/collapse-all.png"));
+        UIUtils.makeButtonFlatWithSize(collapseAllButton, 26);
+        collapseAllButton.setToolTipText("Collapse the function tree");
+        collapseAllButton.addActionListener(e -> collapseTreeToRoot());
+        treeToolbar.add(collapseAllButton);
+        JButton selectFirstButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/crosshairs.png"));
+        UIUtils.makeButtonFlatWithSize(selectFirstButton, 26);
+        selectFirstButton.setToolTipText("Select the first result node in the tree");
+        selectFirstButton.addActionListener(e -> selectFirstNodeInTree());
+        treeToolbar.add(selectFirstButton);
+        this.treePanel = new JPanel(new BorderLayout());
+        treePanel.add(treeScroll, BorderLayout.CENTER);
+        treePanel.add(treeToolbar, BorderLayout.SOUTH);
+        tree.setCellRenderer(new FunctionTreeCellRenderer(this));
         tree.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         tree.addTreeSelectionListener(e -> {
             if (programmaticUpdate) {
@@ -186,7 +206,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         this.rightSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, detailRail);
         this.rightSplit.setResizeWeight(0.75);
         this.rightSplit.setContinuousLayout(true);
-        this.leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treeScroll, rightSplit);
+        this.leftSplit = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, treePanel, rightSplit);
         this.leftSplit.setResizeWeight(0.25);
         this.leftSplit.setContinuousLayout(true);
 
@@ -580,6 +600,116 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         }
     }
 
+    /**
+     * Collapses every expanded function branch, leaving only the "All
+     * functions" root open — the tree's default depth. The
+     * {@code programmaticUpdate} guard keeps the selection changes of the
+     * collapse from re-querying the list.
+     */
+    private void collapseTreeToRoot() {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        TreePath rootPath = new TreePath(new Object[]{root});
+        // Collect the expanded paths first — collapsing changes the row
+        // count, so iterating the rows while collapsing is not safe.
+        List<TreePath> expandedPaths = new ArrayList<>();
+        for (int i = 0; i < tree.getRowCount(); i++) {
+            TreePath p = tree.getPathForRow(i);
+            if (p != null && tree.isExpanded(p) && p.getPath().length > 1) {
+                expandedPaths.add(p);
+            }
+        }
+        programmaticUpdate = true;
+        try {
+            for (TreePath p : expandedPaths) {
+                tree.collapsePath(p);
+            }
+            tree.expandPath(rootPath);
+            tree.scrollPathToVisible(rootPath);
+        } finally {
+            programmaticUpdate = false;
+        }
+    }
+
+    /**
+     * Selects the first result node in the tree (the "select first node"
+     * crosshairs button). The finder's tree is functions-only, so this is the
+     * primary function of the first center-list row. Expands the ancestors so
+     * the target is visible and keeps the selection change from re-querying.
+     */
+    private void selectFirstNodeInTree() {
+        int size = nodeList.getModel().getSize();
+        if (size == 0) {
+            return;
+        }
+        JIPipeNodeDatabaseEntry first = nodeList.getModel().getElementAt(0);
+        Set<String> ids = first.getFunctionIds();
+        if (ids.isEmpty()) {
+            return;
+        }
+        // getFunctionIds() is a LinkedHashSet with the primary id added first.
+        JIPipeNodeTaxonomyFunction primary = JIPipe.getNodes().getFunctions().byId(ids.iterator().next());
+        if (primary == null) {
+            return;
+        }
+        TreePath target = functionRow(primary);
+        if (target == null) {
+            return;
+        }
+        int row = expandAndReturnRow(target);
+        if (row < 0) {
+            return;
+        }
+        programmaticUpdate = true;
+        try {
+            tree.setSelectionRow(row);
+        } finally {
+            programmaticUpdate = false;
+        }
+        tree.makeVisible(target);
+    }
+
+    /**
+     * The {@link TreePath} of the tree row carrying the given function, or
+     * {@code null} when the function is not part of the visible tree.
+     */
+    private TreePath functionRow(JIPipeNodeTaxonomyFunction function) {
+        DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
+        return findFunctionRow(root, new TreePath(new Object[]{root}), function);
+    }
+
+    private TreePath findFunctionRow(DefaultMutableTreeNode node, TreePath parentPath,
+                                     JIPipeNodeTaxonomyFunction function) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (!(child instanceof DefaultMutableTreeNode mtn)) {
+                continue;
+            }
+            TreePath path = parentPath.pathByAddingChild(mtn);
+            if (mtn.getUserObject() == function) {
+                return path;
+            }
+            if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+                TreePath found = findFunctionRow(mtn, path, function);
+                if (found != null) {
+                    return found;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Expands the given path's ancestors (so the row becomes visible) and
+     * returns the row index, or {@code -1} if the path does not exist.
+     */
+    private int expandAndReturnRow(TreePath path) {
+        Object[] components = path.getPath();
+        for (int i = 1; i < components.length; i++) {
+            tree.expandPath(new TreePath(Arrays.copyOfRange(components, 0, i)));
+        }
+        return tree.getRowForPath(path);
+    }
+
     // ------------------------------------------------------------------
     // Rail → center list entry selection (with recursion guard)
     // ------------------------------------------------------------------
@@ -866,37 +996,4 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         }
     }
 
-    private class FunctionTreeCellRenderer implements TreeCellRenderer {
-
-        private static final Icon GENERIC_NODE_ICON = JIPipe.RESOURCES.getIcon16("actions/tag.png");
-
-        @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected,
-                                                       boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-            JLabel label = new JLabel();
-            label.setOpaque(true);
-            label.setBorder(BorderFactory.createEmptyBorder(3, 4, 3, 4));
-            if (node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function) {
-                label.setText(function.getName());
-                Icon icon = function.getIcon();
-                label.setIcon(icon != null ? icon : GENERIC_NODE_ICON);
-                label.setToolTipText(function.getDescription());
-                // Search highlight: the search matched a node filed under this
-                // leaf (or a descendant leaf)
-                if (searchHighlightedLeafPaths.contains(new TreePath(node.getPath()))) {
-                    label.setFont(label.getFont().deriveFont(java.awt.Font.BOLD));
-                }
-            } else {
-                // The root node
-                label.setText("All functions");
-                label.setIcon(GENERIC_NODE_ICON);
-            }
-            Color selectionBackground = UIManager.getColor("Tree.selectionBackground");
-            Color selectionForeground = UIManager.getColor("Tree.selectionForeground");
-            label.setForeground(selected && selectionForeground != null ? selectionForeground : tree.getForeground());
-            label.setBackground(selected && selectionBackground != null ? selectionBackground : tree.getBackground());
-            return label;
-        }
-    }
 }

@@ -22,8 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportArchiveFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportRoiFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -46,7 +45,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Export ROI", description = "Deprecated. Please use the new node. Exports a ROI list into one or multiple ROI files")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = { ExportArchiveFunction.class, ExportFileFormatsFunction.class }, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = ExportRoiFunction.class, framework = ImageJ1Framework.class)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {

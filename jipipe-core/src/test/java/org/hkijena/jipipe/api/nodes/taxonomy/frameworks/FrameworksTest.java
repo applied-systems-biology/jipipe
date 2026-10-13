@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the 14 seed {@link JIPipeNodeTaxonomyFramework}s (the exact
+ * Verifies the 16 seed {@link JIPipeNodeTaxonomyFramework}s (the exact
  * table in the Phase 1a plan for Task 11, plus the Python and R frameworks
  * of the scripting re-clustering audit): the exact stable literal ids,
  * display names, abbreviations (at most 4 characters, unique) and
@@ -39,7 +39,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FrameworksTest {
 
     /**
-     * The 14 seed framework class literals, in the order of the plan's table,
+     * The 16 seed framework class literals, in the order of the plan's table,
      * plus the Python and R frameworks of the scripting re-clustering audit.
      */
     private static List<Class<? extends JIPipeNodeTaxonomyFramework>> allFrameworks() {
@@ -55,6 +55,8 @@ class FrameworksTest {
             JIPipeDLFramework.class,
             JFreeChartFramework.class,
             OpenCVFramework.class,
+            OmniposeFramework.class,
+            IlastikFramework.class,
             ClijFramework.class,
             ImageJ1Framework.class,
             ImageJ2Framework.class
@@ -78,7 +80,7 @@ class FrameworksTest {
                 "Id of " + framework.getName() + " must be a non-null literal starting with 'jipipe:framework:', got: " + id);
             ids.add(id);
         }
-        assertEquals(14, ids.size(), "Expected 14 unique framework ids, got " + ids.size() + " for: " + ids);
+        assertEquals(16, ids.size(), "Expected 16 unique framework ids, got " + ids.size() + " for: " + ids);
         assertFalse(ids.contains(new NoFramework().getId()),
             "A seed framework must not collide with the NoFramework sentinel id");
     }
@@ -138,8 +140,8 @@ class FrameworksTest {
                 "Abbreviation of " + framework.getName() + " must be at most 4 characters: " + abbreviation);
             abbreviations.add(abbreviation);
         }
-        assertEquals(14, abbreviations.size(),
-            "Expected 14 unique abbreviations, got " + abbreviations.size() + " for: " + abbreviations);
+        assertEquals(16, abbreviations.size(),
+            "Expected 16 unique abbreviations, got " + abbreviations.size() + " for: " + abbreviations);
     }
 
     @Test
@@ -173,7 +175,7 @@ class FrameworksTest {
         for (Class<? extends JIPipeNodeTaxonomyFramework> framework : allFrameworks()) {
             registry.register(instantiate(framework));
         }
-        assertEquals(14, registry.all().size());
+        assertEquals(16, registry.all().size());
         Set<String> errors = registry.validate();
         assertTrue(errors.isEmpty(), "Expected no validation errors but got: " + errors);
     }
@@ -194,6 +196,6 @@ class FrameworksTest {
             .map(f -> instantiate(f).getColor())
             .collect(Collectors.toSet());
         assertTrue(colors.size() > 1,
-            "Expected the 14 seed frameworks to span more than one palette color, got: " + colors);
+            "Expected the 16 seed frameworks to span more than one palette color, got: " + colors);
     }
 }

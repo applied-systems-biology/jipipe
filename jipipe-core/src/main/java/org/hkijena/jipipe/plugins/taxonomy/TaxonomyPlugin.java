@@ -29,12 +29,16 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.Scene3DDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportArchiveFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportImagesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportRoiFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportScenesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
@@ -115,6 +119,8 @@ import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
 import org.hkijena.jipipe.api.service.JIPipeService;
@@ -129,7 +135,7 @@ import java.util.Set;
 
 /**
  * Registers the curated node taxonomy into the live registries: the 84
- * functions (13 top-level branches + 71 seed leaves) and the 14 frameworks.
+ * functions (13 top-level branches + 71 seed leaves) and the 16 frameworks.
  * <p>
  * This is the single place that populates the {@code FunctionRegistry} and
  * {@code FrameworkRegistry}; node plugins only record their membership in
@@ -220,6 +226,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new FileSystemFunction(),
             new OmeroFunction(),
             new FormsFunction(),
+            new Scene3DDataFunction(),
             // images
             new PreprocessingFunction(),
             new FilteringFunction(),
@@ -282,9 +289,12 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new PlotBarFunction(),
             new PlotHeatmapFunction(),
             new PlotMiscFunction(),
-            // export
-            new ExportFileFormatsFunction(),
-            new ExportArchiveFunction(),
+            // export — organized by WHAT is exported
+            new ExportImagesFunction(),
+            new ExportTablesFunction(),
+            new ExportRoiFunction(),
+            new ExportScenesFunction(),
+            new ExportDataFunction(),
             // graph
             new GraphCompartmentOutputsFunction(),
             new GraphWrappersFunction(),
@@ -306,7 +316,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             functions.register(function);
         }
 
-        // 14 frameworks (flat set; order is irrelevant).
+        // 16 frameworks (flat set; order is irrelevant).
         frameworks.register(new CoreFramework());
         frameworks.register(new PythonFramework());
         frameworks.register(new RFramework());
@@ -319,6 +329,8 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         frameworks.register(new CometFramework());
         frameworks.register(new JFreeChartFramework());
         frameworks.register(new JIPipeDLFramework());
+        frameworks.register(new OmniposeFramework());
+        frameworks.register(new IlastikFramework());
         frameworks.register(new OpenCVFramework());
         frameworks.register(new TrackMateFramework());
     }

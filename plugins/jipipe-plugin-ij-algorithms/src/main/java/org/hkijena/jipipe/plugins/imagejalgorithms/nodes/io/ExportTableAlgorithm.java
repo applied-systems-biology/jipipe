@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
@@ -44,7 +44,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Export table", description = "Deprecated. Please use the new node. Exports a results table to CSV/XLSX")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = ExportTablesFunction.class, framework = ImageJ1Framework.class)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {

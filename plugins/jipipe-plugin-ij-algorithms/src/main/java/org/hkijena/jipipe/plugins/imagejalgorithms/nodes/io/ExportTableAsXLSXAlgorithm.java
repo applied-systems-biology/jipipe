@@ -25,7 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
@@ -49,7 +49,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Export table as XLSX", description = "Deprecated. Please use the new node. Exports a results table to XLSX. Merge multiple tables into the same batch to create a multi-sheet table.")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = ExportTablesFunction.class, framework = ImageJ1Framework.class)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {

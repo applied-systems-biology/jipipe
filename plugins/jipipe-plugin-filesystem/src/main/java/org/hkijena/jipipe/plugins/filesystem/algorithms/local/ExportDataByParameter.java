@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -37,7 +37,7 @@ import java.nio.file.Paths;
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data", create = true)
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Output path", create = true)
-@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class)
+@ConfigureJIPipeNode(function = ExportDataFunction.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
     private Path outputDirectory = Paths.get("exported-data");

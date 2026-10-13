@@ -19,7 +19,7 @@ import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.facility.TablesFacility;
 import omero.gateway.model.ImageData;
 import omero.gateway.model.TableData;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -46,7 +46,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 @SetJIPipeDocumentation(name = "Attach table to OMERO image", description = "Attaches a table to an OMERO image")
-@ConfigureJIPipeNode(function = ExportFileFormatsFunction.class)
+@ConfigureJIPipeNode(function = ExportTablesFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Tables", create = true, description = "The table to attach")
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Target", create = true, description = "The target OMERO image")
 @AddJIPipeOutputSlot(value = OMEROAnnotationReferenceData.class, name = "Tables", create = true, description = "Reference to the generated table annotation")

@@ -25,12 +25,16 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.MiscDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.RoiDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.Scene3DDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningTrainingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportArchiveFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportFileFormatsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportImagesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportRoiFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportScenesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportTablesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
@@ -96,7 +100,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the 71 seed {@link JIPipeNodeTaxonomyFunction} leaves (the exact
+ * Verifies the 75 seed {@link JIPipeNodeTaxonomyFunction} leaves (the exact
  * list in the Phase 1a plan for Task 10, plus the dual-visible
  * {@link GraphAnnotationsFunction} that restores the legacy
  * {@code GraphAnnotationsNodeTypeCategory}, the {@link RoiPropertiesFunction}
@@ -114,7 +118,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FunctionLeavesTest {
 
     /**
-     * The 48 leaf class literals, grouped by subpackage.
+     * The 75 leaf class literals, grouped by subpackage.
      */
     private static List<Class<? extends JIPipeNodeTaxonomyFunction>> allLeaves() {
         return List.of(
@@ -124,6 +128,7 @@ class FunctionLeavesTest {
             RoiDataFunction.class,
             FilamentDataFunction.class,
             MiscDataFunction.class,
+            Scene3DDataFunction.class,
             // images
             PreprocessingFunction.class,
             FilteringFunction.class,
@@ -199,8 +204,11 @@ class FunctionLeavesTest {
             PlotHeatmapFunction.class,
             PlotMiscFunction.class,
             // export
-            ExportFileFormatsFunction.class,
-            ExportArchiveFunction.class,
+            ExportImagesFunction.class,
+            ExportTablesFunction.class,
+            ExportRoiFunction.class,
+            ExportScenesFunction.class,
+            ExportDataFunction.class,
             // graph
             GraphCompartmentOutputsFunction.class,
             GraphWrappersFunction.class,
@@ -246,7 +254,7 @@ class FunctionLeavesTest {
                 "Id of " + leaf.getName() + " must be a non-null literal starting with 'jipipe:function:', got: " + id);
             ids.add(id);
         }
-        assertEquals(71, ids.size(), "Expected 71 unique leaf ids, got " + ids.size() + " for: " + ids);
+        assertEquals(75, ids.size(), "Expected 75 unique leaf ids, got " + ids.size() + " for: " + ids);
     }
 
     @Test
@@ -256,6 +264,7 @@ class FunctionLeavesTest {
         assertEquals("jipipe:function:roi-data", new RoiDataFunction().getId());
         assertEquals("jipipe:function:filament-data", new FilamentDataFunction().getId());
         assertEquals("jipipe:function:misc-data", new MiscDataFunction().getId());
+        assertEquals("jipipe:function:scene-3d-data", new Scene3DDataFunction().getId());
         assertEquals("jipipe:function:preprocessing", new PreprocessingFunction().getId());
         assertEquals("jipipe:function:filtering", new FilteringFunction().getId());
         assertEquals("jipipe:function:thresholding", new ThresholdingFunction().getId());
@@ -317,8 +326,11 @@ class FunctionLeavesTest {
         assertEquals("jipipe:function:plot-bar", new PlotBarFunction().getId());
         assertEquals("jipipe:function:plot-heatmap", new PlotHeatmapFunction().getId());
         assertEquals("jipipe:function:plot-misc", new PlotMiscFunction().getId());
-        assertEquals("jipipe:function:export-file-formats", new ExportFileFormatsFunction().getId());
-        assertEquals("jipipe:function:export-archive", new ExportArchiveFunction().getId());
+        assertEquals("jipipe:function:export-images", new ExportImagesFunction().getId());
+        assertEquals("jipipe:function:export-tables", new ExportTablesFunction().getId());
+        assertEquals("jipipe:function:export-roi", new ExportRoiFunction().getId());
+        assertEquals("jipipe:function:export-scenes", new ExportScenesFunction().getId());
+        assertEquals("jipipe:function:export-data", new ExportDataFunction().getId());
         assertEquals("jipipe:function:graph-compartment-outputs", new GraphCompartmentOutputsFunction().getId());
         assertEquals("jipipe:function:graph-wrappers", new GraphWrappersFunction().getId());
         assertEquals("jipipe:function:graph-debug", new GraphDebugFunction().getId());
@@ -444,7 +456,7 @@ class FunctionLeavesTest {
         for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
             registry.register(instantiate(leaf));
         }
-        assertEquals(13 + 71, registry.all().size());
+        assertEquals(13 + 75, registry.all().size());
         Set<String> errors = registry.validate();
         assertTrue(errors.isEmpty(), "Expected no validation errors but got: " + errors);
     }

@@ -22,18 +22,18 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Seed leaf of the Export branch: Exporting data to archives.
+ * Seed leaf of the Export branch: exporting ROI lists.
  */
-public final class ExportArchiveFunction implements JIPipeNodeTaxonomyFunction {
+public final class ExportRoiFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:export-archive";
+        return "jipipe:function:export-roi";
     }
 
     @Override
     public String getName() {
-        return "Export archives";
+        return "ROI";
     }
 
     @Override
@@ -49,7 +49,7 @@ public final class ExportArchiveFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getDescription() {
-        return "Exporting data to archives";
+        return "Exporting ROI lists and 3D ROI archives";
     }
 
     @Override
