@@ -32,6 +32,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
@@ -662,13 +663,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 return true;
             });
         }
-        // Curated (non-auto-imported) nodes first, auto-discovered IJ2/CLIJ2
-        // nodes at the bottom (stable within each group — same rule as the
-        // node browser's list)
-        filtered.sort(Comparator.comparingInt(entry -> {
-            String id = entry.getOriginNodeId();
-            return id != null && (id.startsWith("ij2:") || id.startsWith("clij:")) ? 1 : 0;
-        }));
+        // Down-ranked nodes (auto-imported, deprecated, unstable — the
+        // generalized state classifiers, see JIPipeNodeStateChips) come
+        // after the standard curated nodes (same rule as the node browser).
+        filtered.sort(Comparator.comparingInt(entry ->
+            JIPipeNodeStateChips.isDownRanked(entry) ? 1 : 0));
         // Highlight the tree leafs the search matched (same rule as the node
         // browser; no-op without a search term)
         updateTreeSearchHighlights(filtered);

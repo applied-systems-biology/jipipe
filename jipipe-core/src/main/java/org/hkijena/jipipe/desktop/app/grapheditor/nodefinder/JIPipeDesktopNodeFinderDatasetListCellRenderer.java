@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodefinder;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,6 +31,7 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     private final JLabel iconLabel = new JLabel();
     private final JLabel nameLabel = new JLabel();
     private final JLabel categoryLabel = new JLabel();
+    private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
     private final JLabel descriptionLabel = new JLabel();
     private final JButton addButton = new JButton();
     private final Border defaultBorder;
@@ -54,11 +56,13 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
 
         categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         categoryLabel.setForeground(Color.GRAY);
+        stateChips.setOpaque(false);
 
         Insets insets = new Insets(2, 2, 2, 2);
 //        add(indicator, new GridBagConstraints(0, 0, 1, 4, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, insets, 0, 0));
         add(iconLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
         add(nameLabel, new GridBagConstraints(2, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+        add(stateChips, new GridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
         add(categoryLabel, new GridBagConstraints(2, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
         add(descriptionLabel, new GridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
@@ -78,6 +82,11 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         setPreferredSize(new Dimension(list.getWidth() - 16, CELL_HEIGHT));
         iconLabel.setIcon(value.getIcon());
         nameLabel.setText(value.getName());
+        // The node's state (imported / unstable / deprecated), per the
+        // state label system
+        stateChips.removeAll();
+        stateChips.add(JIPipeNodeStateChips.panel(value));
+        stateChips.revalidate();
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
         String descriptionText = value.getDescription().toPlainText();
         if (descriptionText.length() > 200) {

@@ -48,6 +48,7 @@ import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDial
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -700,11 +701,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             });
         }
 
-        // Curated (non-auto-imported) nodes first, auto-discovered IJ2/CLIJ2
-        // nodes at the bottom (stable within each group, so the query's
-        // ranking — pinned, AI relevance — is preserved).
+        // Down-ranked nodes (auto-imported, deprecated, unstable — the
+        // generalized state classifiers, see JIPipeNodeStateChips) come
+        // after the standard curated nodes; the query's own ranking is
+        // preserved within each group (stable partition).
         List<JIPipeNodeDatabaseEntry> ordered = new ArrayList<>(filtered);
-        ordered.sort(Comparator.comparingInt(e -> isAutoImportedEntry(e) ? 1 : 0));
+        ordered.sort(Comparator.comparingInt(e -> JIPipeNodeStateChips.isDownRanked(e) ? 1 : 0));
         lastFiltered = ordered;
 
         DefaultListModel<JIPipeNodeDatabaseEntry> listModel = new DefaultListModel<>();
@@ -719,17 +721,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         updateTreeSearchHighlights();
         // Re-apply the layout (idempotent; needed after compartments toggles).
         applyViewIfNeeded();
-    }
-
-    /**
-     * Whether the entry is an auto-discovered (not curated) node: the
-     * auto-imported ImageJ2 ops ({@code ij2:op:...}) and CLIJ2 commands
-     * ({@code clij:plugin:...}). Used to keep the curated JIPipe nodes at
-     * the top of the result list.
-     */
-    private static boolean isAutoImportedEntry(JIPipeNodeDatabaseEntry entry) {
-        String id = entry.getOriginNodeId();
-        return id != null && (id.startsWith("ij2:") || id.startsWith("clij:"));
     }
 
     /**

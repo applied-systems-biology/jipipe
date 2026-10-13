@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
@@ -76,6 +77,9 @@ class NodeBrowserModelTest {
     private static final String VOLUME_NODE_ID = "nodebrowser:volume-node";
     private static final String OTHER_NODE_ID = "nodebrowser:other-node";
     private static final String COMP_NODE_ID = "nodebrowser:comp-node";
+    private static final String UNSTABLE_NODE_ID = "nodebrowser:unstable-node";
+    private static final String DEPRECATED_NODE_ID = "nodebrowser:deprecated-node";
+    private static final String AUTOIMPORT_NODE_ID = "nodebrowser:autoimport-node";
     private static final String TAG_A = "nodebrowser:tag-a";
     private static final String TAG_B = "nodebrowser:tag-b";
     private static final String TAG_C = "nodebrowser:tag-c";
@@ -98,6 +102,9 @@ class NodeBrowserModelTest {
         nodes.unregister(VOLUME_NODE_ID);
         nodes.unregister(OTHER_NODE_ID);
         nodes.unregister(COMP_NODE_ID);
+        nodes.unregister(UNSTABLE_NODE_ID);
+        nodes.unregister(DEPRECATED_NODE_ID);
+        nodes.unregister(AUTOIMPORT_NODE_ID);
         nodes.unregisterInputProfileProviders(List.of(TEST_PROFILE_PROVIDER));
         // Re-run the (idempotent) registration pipeline so that enrichment
         // recomputes over the surviving real nodes only.
@@ -288,6 +295,51 @@ class NodeBrowserModelTest {
         assertEquals(Set.of(NodeBrowserModelTestPlaneData.class), model.getInputDataTypes());
         assertTrue(model.matches(plane));
         assertFalse(model.matches(volume));
+    }
+
+    // ------------------------------------------------------------------
+    // Node state: deprecated / unstable / auto-imported (order + labels)
+    // ------------------------------------------------------------------
+
+    @Test
+    void nodeStateClassificationAndDownRanking() {
+        registerNodes();
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
+        registerNode(UnstableNode.class, UNSTABLE_NODE_ID, nodes);
+        registerNode(DeprecatedNode.class, DEPRECATED_NODE_ID, nodes);
+        registerNode(AutoImportNode.class, AUTOIMPORT_NODE_ID, nodes);
+
+        // The entry mirrors the node info's state flags
+        JIPipeNodeDatabaseEntry stable = entryOf(PLANE_NODE_ID);
+        JIPipeNodeDatabaseEntry unstable = entryOf(UNSTABLE_NODE_ID);
+        JIPipeNodeDatabaseEntry deprecated = entryOf(DEPRECATED_NODE_ID);
+        JIPipeNodeDatabaseEntry autoImport = entryOf(AUTOIMPORT_NODE_ID);
+        assertFalse(stable.isUnstable());
+        assertFalse(stable.isDeprecated());
+        assertTrue(unstable.isUnstable());
+        assertFalse(unstable.isDeprecated());
+        assertTrue(deprecated.isDeprecated());
+        assertFalse(deprecated.isUnstable());
+        assertEquals(JIPipeNodeClassification.AutoImport, autoImport.getNodeClassification());
+
+        // isDeprecatedOrUnstable must cover BOTH flags (the name-suffix and
+        // search-penalty consumers rely on it)
+        assertFalse(stable.isDeprecatedOrUnstable());
+        assertTrue(unstable.isDeprecatedOrUnstable());
+        assertTrue(deprecated.isDeprecatedOrUnstable());
+
+        // The generalized down-ranking rule: standard curated nodes rank
+        // first; auto-imported, unstable and deprecated nodes rank after
+        // them — no node-id or plugin heuristics involved
+        assertFalse(JIPipeNodeStateChips.isDownRanked(stable));
+        assertTrue(JIPipeNodeStateChips.isDownRanked(unstable));
+        assertTrue(JIPipeNodeStateChips.isDownRanked(deprecated));
+        assertTrue(JIPipeNodeStateChips.isDownRanked(autoImport));
+    }
+
+    private static JIPipeNodeDatabaseEntry entryOf(String nodeId) {
+        JIPipeNodeInfo info = JIPipe.getNodes().getRegisteredNodeInfos().get(nodeId);
+        return new CreateNewNodeByInfoDatabaseEntry("create-node-by-info:" + nodeId, info);
     }
 
     // ------------------------------------------------------------------
@@ -632,6 +684,66 @@ class NodeBrowserModelTest {
                                    JIPipeValidationReportSettings reportSettings,
                                    JIPipeValidationReport report,
                                    JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /** Unstable node: {@code @MarkNodeAsUnstable} (the node-info flag source). */
+    @MarkNodeAsUnstable
+    public static class UnstableNode extends JIPipeGraphNode {
+        public UnstableNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                    JIPipeValidationReportSettings reportSettings,
+                                    JIPipeValidationReport report,
+                                    JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /** Deprecated node: {@code @Deprecated} (the node-info flag source). */
+    @Deprecated
+    public static class DeprecatedNode extends JIPipeGraphNode {
+        public DeprecatedNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                    JIPipeValidationReportSettings reportSettings,
+                                    JIPipeValidationReport report,
+                                    JIPipeProgressInfo progressInfo) {
+        }
+
+        @Override
+        public void run(JIPipeGraphNodeRunContext runContext, JIPipeProgressInfo progressInfo) {
+        }
+    }
+
+    /**
+     * Auto-imported node: {@code nodeClassification = AutoImport} (the same
+     * classification the IJ2/CLIJ node infos report).
+     */
+    @ConfigureJIPipeNode(nodeClassification = JIPipeNodeClassification.AutoImport)
+    public static class AutoImportNode extends JIPipeGraphNode {
+        public AutoImportNode(JIPipeNodeInfo info) {
+            super(info);
+        }
+
+        @Override
+        public void reportValidity(JIPipeValidationReportContext reportContext,
+                                    JIPipeValidationReportSettings reportSettings,
+                                    JIPipeValidationReport report,
+                                    JIPipeProgressInfo progressInfo) {
         }
 
         @Override

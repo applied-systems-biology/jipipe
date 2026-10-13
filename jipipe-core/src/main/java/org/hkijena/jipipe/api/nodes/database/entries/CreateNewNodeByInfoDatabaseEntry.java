@@ -332,7 +332,17 @@ public class CreateNewNodeByInfoDatabaseEntry extends DefaultJIPipeNodeDatabaseE
 
     @Override
     public boolean isDeprecatedOrUnstable() {
+        return nodeInfo.isDeprecated() || nodeInfo.isUnstable();
+    }
+
+    @Override
+    public boolean isDeprecated() {
         return nodeInfo.isDeprecated();
+    }
+
+    @Override
+    public boolean isUnstable() {
+        return nodeInfo.isUnstable();
     }
 
     @Override

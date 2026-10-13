@@ -191,4 +191,14 @@ public class CreateNewNodeByExampleDatabaseEntry extends DefaultJIPipeNodeDataba
     public boolean isDeprecatedOrUnstable() {
         return exampleNode.getInfo().isDeprecated() || exampleNode.getInfo().isUnstable();
     }
+
+    @Override
+    public boolean isDeprecated() {
+        return exampleNode.getInfo().isDeprecated();
+    }
+
+    @Override
+    public boolean isUnstable() {
+        return exampleNode.getInfo().isUnstable();
+    }
 }

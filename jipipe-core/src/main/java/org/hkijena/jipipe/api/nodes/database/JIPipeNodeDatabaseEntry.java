@@ -64,6 +64,28 @@ public interface JIPipeNodeDatabaseEntry {
 
     boolean isDeprecatedOrUnstable();
 
+    /**
+     * Whether the entry's node is marked deprecated (the
+     * {@code @Deprecated} / node-info flag). Surfaced by the state label
+     * system and the down-ranking rule.
+     *
+     * @return {@code true} for deprecated nodes
+     */
+    default boolean isDeprecated() {
+        return false;
+    }
+
+    /**
+     * Whether the entry's node is marked unstable (the
+     * {@code @MarkNodeAsUnstable} / node-info flag). Surfaced by the state
+     * label system and the down-ranking rule.
+     *
+     * @return {@code true} for unstable nodes
+     */
+    default boolean isUnstable() {
+        return false;
+    }
+
     <T> T getAttachment(Class<T> attachmentClass);
 
     <T> void attach(T attachment);

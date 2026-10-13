@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
@@ -146,6 +147,7 @@ public class NodeFinderDetailRail extends JPanel {
     private final JLabel frameworkChipLabel = new JLabel();
     private final JLabel tagsLabel = new JLabel();
     private final JLabel profileLabel = new JLabel();
+    private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
 
     // --- Pill tabs + pages ---
     private final JPanel pillBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
@@ -256,8 +258,11 @@ public class NodeFinderDetailRail extends JPanel {
     // ------------------------------------------------------------------
 
     private void fillContent(JIPipeNodeDatabaseEntry entry) {
-        // Title block: name + framework chip + tags + profile line
+        // Title block: name + state chips + framework chip + tags + profile line
         nameLabel.setText(entry.getName());
+        stateChips.removeAll();
+        stateChips.add(JIPipeNodeStateChips.panel(entry));
+        stateChips.revalidate();
         JIPipeNodeTaxonomyFramework framework = entry.getFramework();
         frameworkChipLabel.setText(framework.getAbbreviation());
         boolean noFramework = NoFramework.ID.equals(framework.getId());
@@ -453,8 +458,10 @@ public class NodeFinderDetailRail extends JPanel {
     private JPanel titleBlock() {
         JPanel block = new JPanel();
         block.setLayout(new BoxLayout(block, BoxLayout.Y_AXIS));
+        stateChips.setOpaque(false);
         JPanel nameRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
         nameRow.add(nameLabel);
+        nameRow.add(stateChips);
         nameRow.add(frameworkChip);
         block.add(nameRow);
         block.add(tagsLabel);

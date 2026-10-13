@@ -32,6 +32,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
     private SolidColorIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
+    private JPanel stateChips;
     private JLabel pathLabel;
 
     private JLabel alternativeLabel;
@@ -50,6 +51,8 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         nodeColor = new SolidColorIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
+        stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        stateChips.setOpaque(false);
         pathLabel = new JLabel();
         pathLabel.setForeground(Color.GRAY);
         alternativeLabel = new JLabel();
@@ -76,6 +79,13 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 gridy = 0;
                 fill = HORIZONTAL;
                 weightx = 1;
+            }
+        });
+        add(stateChips, new GridBagConstraints() {
+            {
+                gridx = 3;
+                gridy = 0;
+                anchor = WEST;
             }
         });
         add(pathLabel, new GridBagConstraints() {
@@ -106,6 +116,11 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
             nodeColor.setFillColor(obj.getFillColor());
             pathLabel.setText(locationOf(obj));
             nodeIcon.setIcon(obj.getIcon());
+            // The node's state (imported / unstable / deprecated), per the
+            // state label system
+            stateChips.removeAll();
+            stateChips.add(JIPipeNodeStateChips.panel(obj));
+            stateChips.revalidate();
         }
 
         if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
