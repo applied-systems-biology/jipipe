@@ -448,8 +448,9 @@ def render_section6(sel, reg_by_id, top, fname, s5, coll_total, mod_unknown):
         "an extraction weakness, NOT absence from the corpus). The "
         f"**{s5['gaps']:,} library gaps** of section 5c are the "
         "mined-but-undocumented patterns (support >= 5, no doc at overlap >= "
-        "50%); section 6 documents the top of that list, the rest stays in "
-        "`patterns/patterns.json` — refer, don't re-list.",
+        "50%); section 6 documents the top of that list — the full id list is "
+        "NOT in `patterns/patterns.json` (it is emission-capped; only the "
+        "counts survive in its `summary`) — refer, don't re-list.",
         "",
         f"**Correction candidates ({s5['corrections']}, from 5b):**",
         "",

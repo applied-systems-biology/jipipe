@@ -105,17 +105,38 @@ shared detector class to every dynamically-registered detector node.
   on `dataType`; the `functions` block resolves each node's function leaf id
   to its top-level branch; the `families` block feeds the family-coverage
   analysis.
-- `report.md` — the combined research report. Section 1 is owned by the Task 3
-  script (regenerated in place on re-run; later tasks append sections 2–7).
-- `analysis/t3_datatype_usage.py` — Task 3 analysis script (stdlib-only
-  Python 3): joins `corpus.json` + `registry.json` into the data-type
-  producer/consumer usage map. Re-run: `python3
+- `report.md` — the combined research report. **Section ownership:** section N
+  (1–6) is owned by `analysis/t{N+1}_*.py` and is regenerated IN PLACE on
+  re-run (each script replaces only its own `^## N. ` → next `^## `/EOF span;
+  the rest of the file is untouched); section 7 + the executive summary are
+  hand-written (native Task 9). Re-run order does not matter.
+- `analysis/t3_datatype_usage.py` — Task 3: data-type producer/consumer usage
+  map (report §1). Re-run: `python3
   utils/taxonomy-research/analysis/t3_datatype_usage.py`.
-- `analysis/t3_table.md` — the raw Task 3 table (also embedded as report
-  section 1).
+- `analysis/t4_workflows.py` — Task 4: workflow chains + function-branch
+  fragmentation (report §2). Re-run: `python3
+  utils/taxonomy-research/analysis/t4_workflows.py`.
+- `analysis/t5_families.py` — Task 5: family coverage vs real usage (report
+  §3). Re-run: `python3
+  utils/taxonomy-research/analysis/t5_families.py`.
+- `analysis/t6_functions.py` — Task 6: function-tree fit + secondary-function
+  value (report §4). Re-run: `python3
+  utils/taxonomy-research/analysis/t6_functions.py`.
+- `analysis/t7_patterns.py` — Task 7: pattern mining + LLM-library
+  cross-check (report §5; also writes `patterns/patterns.json`). Re-run:
+  `python3 utils/taxonomy-research/analysis/t7_patterns.py`.
+- `analysis/t8_pattern_docs.py` — Task 8: pattern docs + templates + report
+  §6 (also writes `patterns/*.md` + `patterns/templates/*.json`). Re-run:
+  `python3 utils/taxonomy-research/analysis/t8_pattern_docs.py`.
+- `analysis/t{3..8}_table.md` — the raw per-task tables (also embedded in
+  their report sections).
 - `analysis/unresolved_types.md` — corpus data-class tokens that do not
   resolve against the registry (raw token, edge/project counts, example
   project).
+- `patterns/` — Task 7/8 outputs: `patterns.json` (mined patterns, emission-
+  capped, with a `summary` object preserving the long tail numerically),
+  `<pattern-id>.md` (185 curated pattern docs), `templates/<pattern-id>.json`
+  (185 JIPipeGraph-shaped template data files).
 - `extract/ProjectCorpusDumper.java` — standalone dumper (Jackson only, no
   jipipe-core dependency, not a Maven module).
 - `extract/classes/` — `javac` build scratch (git-ignored).
@@ -138,6 +159,16 @@ java -cp utils/taxonomy-research/extract/classes:$CP ProjectCorpusDumper selftes
 java -Xmx4g -cp utils/taxonomy-research/extract/classes:$CP ProjectCorpusDumper \
     "/data/JIPipe/Example workflows" "/data/JIPipe/AIAgentTests" utils/taxonomy-research/corpus.json
 ```
+
+Regenerate `registry.json` (runs the full JIPipe registry boot in
+jipipe-launcher, the only module with all plugins on its classpath):
+
+```bash
+mvn -o -pl jipipe-launcher -am test -Dtest='RegistryDumperTest' -Dsurefire.failIfNoSpecifiedTests=false
+```
+
+The corpus dumper's walk is fully recursive (both corpus roots and all
+subdirectories; benign here — no nested `.jip` files exist in either root).
 
 ## On-disk format notes (JIPipe 6.0.0, flat-graph project format)
 

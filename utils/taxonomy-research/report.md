@@ -709,7 +709,7 @@ Cross-check over 24 docs: **11 matched** a mined pattern (overlap >= 50%), **5 c
 | `chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation` | 40 |
 | `compartment-boundary-jipipe-compartment-output-ij1-color-blend-images` | 40 |
 | `conversion-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d` | 40 |
-| … 5365 more (full list in `patterns/patterns.json`) | |
+| … 5365 more (counts preserved in `patterns/patterns.json` `summary`; only the top rows are listed/emitted) | |
 
 Compartment cycles: **M = 0** (JIPipe dataflow is a DAG; DFS found no back-edge in any of the 710 compartments).
 ## 6. Pattern library
@@ -953,7 +953,7 @@ For each curated pattern and each CONSECUTIVE role pair, the suggestion: after a
 
 ### 6c — Corrections to the LLM-branch library (seeding hand-off)
 
-Re-presentation of Task 7's cross-check (committed section 5): **11 matched** (validated by the corpus), **5 correction candidates** (hand-written docs the corpus does not sufficiently exhibit — the seeding work list), **8 unmatchable** (< 2 extracted registry ids — an extraction weakness, NOT absence from the corpus). The **5,390 library gaps** of section 5c are the mined-but-undocumented patterns (support >= 5, no doc at overlap >= 50%); section 6 documents the top of that list, the rest stays in `patterns/patterns.json` — refer, don't re-list.
+Re-presentation of Task 7's cross-check (committed section 5): **11 matched** (validated by the corpus), **5 correction candidates** (hand-written docs the corpus does not sufficiently exhibit — the seeding work list), **8 unmatchable** (< 2 extracted registry ids — an extraction weakness, NOT absence from the corpus). The **5,390 library gaps** of section 5c are the mined-but-undocumented patterns (support >= 5, no doc at overlap >= 50%); section 6 documents the top of that list — the full id list is NOT in `patterns/patterns.json` (it is emission-capped; only the counts survive in its `summary`) — refer, don't re-list.
 
 **Correction candidates (5, from 5b):**
 
@@ -991,7 +991,6 @@ Re-presentation of Task 7's cross-check (committed section 5): **11 matched** (v
 - `segmentation.md` (0 extracted id(s))
 
 This is the hand-off list for when the LLM branch (1290-ai-llm-integration) resumes: seed the correction-candidate docs from the curated patterns above (their docs carry the `corpus` evidence), and note the unmatchable docs as an extraction-format issue (they name nodes by display name or prose, not raw ids in backticks).
-
 ## 7. Recommendations
 
 Generated natively (Task 9); no new data — every row cites the section and table it comes from. Priorities: P1 = high evidence + low risk, P2 = high evidence or low risk, P3 = judgment call. Renames are **6.0.0-only** (pre-release; every rename row flags the conversion-map update per the stable-ID rule).
@@ -1000,7 +999,7 @@ Generated natively (Task 9); no new data — every row cites the section and tab
 
 | # | P | change | evidence | risk (stable-ID rule) | round |
 |--:|---|---|---|---|---|
-| 1 | P1 | **Register `Cellpose4Family` and `MachineLearningFamily`** — annotate ≥1 registered node each with a first family step so the families register (defined in source, 0 annotated nodes today). Cellpose 2.x–4.x nodes are heavily used (e.g. `cellpose-segmentation-inference-3.x` 102–170 occ; §3c shows cellpose types with families absent). | §3c: families=2 of 4 defined; cellpose nodes among top corpus nodes (§2a) | none (adds annotations; no id changes) | next |
+| 1 | P1 | **Register `Cellpose4Family` and `MachineLearningFamily`** — annotate ≥1 registered node each with a first family step so the families register (defined in source, 0 annotated nodes today). Cellpose nodes carry real corpus usage (§1: e.g. `cellpose-segmentation-inference-3.x` 138–190 consumer occurrences; §3b: cellpose3/4 frameworks 6 pairs/138 occ, cellpose2 2/94). | §3c: families=2 of 4 defined; §1 (cellpose types' corpus usage), §3b (cellpose framework pairs) | none (adds annotations; no id changes) | next |
 | 2 | P1 | **Add `trackmate-detector` as a family-step predecessor of `trackmate-tracking`** (or re-anchor the declared edge from the 7 generated `create-spot-detector-*` nodes to the generic one users actually wire). | §3a: 4/20 declared after-edges wired; all 7 `create-spot-detector-*→tracking` edges never wired while generic `detector→tracking` = 122 occ/14 proj | none (family graph, not registration ids) | next |
 | 3 | P1 | **Wire the mined pattern follow-ups into the family follow-up system** (table 6a's 416 mechanical rows; top: `io-interface`/`jipipe:compartment-output` → `ij1-roi-to-rgb` chain, 52–71 occ). Start with the top-30 support rows (6a). | §6a (416 rows), §5 (13,122 mined patterns) | none (follow-ups are advisory UI, not persisted ids) | next |
 | 4 | P1 | **Fix the 7 `plot*` + `imagej-imgplus-2d-greyscale-16u` unresolved data-type tokens** (they appear in 929 corpus edges but do not resolve against the 6.0.0 registry — legacy tokens or registry gaps). | §1 (`unresolved_types.md`: 8 tokens, e.g. `plot-histogram` 623 occ/63 proj), §2 method note (929 edges) | none for registry additions; renames not needed | next |
@@ -1016,10 +1015,10 @@ Generated natively (Task 9); no new data — every row cites the section and tab
 ### 7b — Review-Focus answers (from the plan)
 
 1. **Coverage numbers** (do corpus nodes resolve?): 336 distinct corpus node ids; 327 resolve into the 1,510-node registry; 9 absent (legacy, listed in §2's method note). All 31,826 corpus edges resolved project-wide (0 dangling uids).
-2. **Unresolvable nodes**: the 9 legacy ids above (6 with typed out-edges, 238 occ; the largest is `clij:plugin:net.haesleinhuepf.clij2.plugins.GaussianBlur2D` with 214 occ). Plus 8 raw data-type tokens unresolved (§1) — 929 edges riding on legacy tokens (7 `plot*` + `imagej-imgplus-2d-greyscale-16u`).
+2. **Unresolvable nodes**: the 9 legacy ids above (6 with typed out-edges, 238 occ; the largest is `clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection` with 214 occ). Plus 8 raw data-type tokens unresolved (§1) — 929 edges riding on legacy tokens (7 `plot*` + `imagej-imgplus-2d-greyscale-16u`).
 3. **Family graph vs reality** (the TrackMate test): §3a — 4/20 declared after-edges wired; the 7 generated-detector edges are declared but never wired; 4 undeclared real pairs (138 occ) exist. The round-9 deferred resolution works (all `after` ids resolve; fan-out verified).
 4. **Do users navigate the tree or search?** Indirect evidence: the top used nodes concentrate in 12 of 13 branches (`statistics` unused, §4c); the most-used chains ride a handful of hub nodes (`jipipe:compartment-output`, `ij1-roi-to-rgb`, `path-filter`) — consistent with hub-and-spoke search behavior more than deep tree browsing. The tree is fine as an organizer; follow-ups (row 3) and templates (row 5) serve the search-driven path.
-5. **Secondary functions** (the round-9 ask): only 10 of 327 used nodes have any secondary function today; 4 measured candidates with pm=0 (§4d) — secondary assignments are underused and the data says where to start (row 6).
+5. **Secondary functions** (the round-9 ask): only 10 of 327 used nodes have a secondary function landing in a *different top-level branch* than their primary (39 have at least one secondary function at all); 4 measured candidates with pm=0 (§4d) — cross-branch secondary assignments are underused and the data says where to start (row 6).
 
 ### 7c — What NOT to change (measured non-findings)
 

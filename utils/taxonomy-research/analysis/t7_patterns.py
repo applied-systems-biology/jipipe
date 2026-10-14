@@ -590,8 +590,9 @@ def render_section(acc, docs, doc_rows, corrections, gaps, unmatchable, edge_cnt
         for gid, sup in gaps[:TOPN]:
             body.append(f"| `{gid}` | {sup} |")
         if len(gaps) > TOPN:
-            body.append(f"| … {len(gaps)-TOPN} more (full list in "
-                        f"`patterns/patterns.json`) | |")
+            body.append(f"| … {len(gaps)-TOPN} more (counts preserved in "
+                        f"`patterns/patterns.json` `summary`; only the top rows "
+                        f"are listed/emitted) | |")
     else:
         body.append("(none)")
     body.append("")
