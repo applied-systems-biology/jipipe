@@ -33,6 +33,35 @@ processes every `*.jip` it finds under both roots (161 files total).
 
 Extracted totals: 710 compartments, 22,557 nodes, 31,826 edges.
 
+## Registry provenance
+
+The registry-side twin of the corpus above, dumped from the fully-booted
+JIPipe instance (`JIPipe.ensureInstance()`, all `jipipe-plugin-*` on the
+jipipe-launcher test classpath) by
+`jipipe-launcher/…/taxonomy/RegistryDumperTest`. The two files together are
+the locked interface for the later analysis tasks: `corpus.json` (real
+pipelines) joins to `registry.json` (the registry) on each slot's
+`dataType`.
+
+- Date: 2026-10-14
+- Source: the live node registry at boot (not a static file read)
+
+`registry: N nodes, M families, K family-graph edges` (K = sum over families
+of declared resolved edges):
+
+**registry: 1510 nodes, 2 families, 20 family-graph edges**
+
+**Families actually registered: `jipipe:family:trackmate` (21 step nodes)
+and `jipipe:family:plotting` (1 step node), 22 steps in total.** A family is
+only present in the registry if at least one *registered* node carries its
+`@JIPipeNodeTaxonomyFamilyStepAnnotation`; `Cellpose4Family` and
+`MachineLearningFamily` are defined in source but no registered node is
+annotated with them, so they do not appear. (The dispatch brief estimated
+~72 families; the live registry is authoritative — 2.) Note the 21 trackmate
+steps come from 15 annotated *classes*, not 21: `CreateSpotDetectorNode` is
+the shared instance class behind the 7 dynamically-registered
+`trackmate-create-spot-detector-*` nodes, so it contributes 7 steps.
+
 ## Files
 
 - `corpus.json` — generated corpus (structure only, no embedded data payloads;
@@ -41,6 +70,12 @@ Extracted totals: 710 compartments, 22,557 nodes, 31,826 edges.
   `loadError`, `compartments[]` → `name`, `nodes[]` (`uid`, `id`, `name`,
   `slots.input[]`/`slots.output[]` with `name` + raw on-disk `dataClass` token),
   `edges[]` (`fromUid`, `fromSlot`, `dataClass`, `toUid`, `toSlot`).
+- `registry.json` — generated registry (~705 KB), byte-stable across runs
+  (nodes sorted by id; every registry set/array sorted lexicographically).
+  Locked shape: `nodes[]` (`id`, `name`, `framework`, `functions[]` primary
+  first then secondaries, `tags[]`, `familySteps[]` (`family`, `label`),
+  `followUps[]`, `inputs[]`/`outputs[]` each `{"class": <FQN>, "dataType":
+  <data-type id or null>}`). Joined to `corpus.json` on `dataType`.
 - `extract/ProjectCorpusDumper.java` — standalone dumper (Jackson only, no
   jipipe-core dependency, not a Maven module).
 - `extract/classes/` — `javac` build scratch (git-ignored).
