@@ -173,9 +173,47 @@ brief's assumed shape suggested) — the dumper adapts to what is real:
 - Structure only: node `data` fields / embedded payloads are never copied;
   verified: 0 base64-looking blobs in `corpus.json`, longest string 91 chars.
 
+## Pattern library (Task 8)
+
+`analysis/t8_pattern_docs.py` **owns doc generation** (the task brief allowed
+folding it into `t7_patterns.py --emit-docs`; a separate script was chosen —
+t7 is reviewed and frozen). Re-run: `python3
+utils/taxonomy-research/analysis/t8_pattern_docs.py`. Stdlib only; reads
+`patterns/patterns.json` (locked) + `registry.json` + `report.md` section 5,
+writes:
+
+- `patterns/<pattern-id>.md` — one doc per CURATED pattern (**185 docs**:
+  graph-shaped `chain`/`conversion`/`fan-out`/`fan-in` with support >= 25, OR
+  any `annotation-sandwich`; the controller's R8 rule overrides the plan's
+  "one doc per pattern, support >= 3" — 13,122 docs would be a data dump).
+  Frontmatter keeps the LLM-branch shape (`audience`, `modality`, `tags`,
+  `biologicalContext`, `prerequisiteKnowledge`) but fills only what is
+  mechanically derivable: `modality` (registry data types flowing through the
+  pattern) and `tags` (top-level function branches, deduped + sorted); the
+  other three keys are the literal `tbd` (domain framing cannot honestly be
+  derived from generic algorithm node ids). Plus a `corpus` block (support,
+  top-5 projects, example subgraph) and a `template` block.
+- `patterns/templates/<pattern-id>.json` — the minimal JIPipeGraph-shaped
+  `data` per doc (R8b contract in report section 6 method note).
+- `report.md` section 6 (method note + tables 6a/6b/6c; in-place
+  architecture — only the `^## 6. ` → next `^## `/EOF span is replaced,
+  sections 1–5 untouched, byte-stable).
+- `analysis/t8_table.md` — the raw 6a rows (all 416, not just top-30).
+
+End-to-end check of one template `data` (candidate
+`fan-in-ij1-roi-to-rgb-core-io-1-other-1`, the highest-support pattern):
+`jipipe-launcher/src/test/java/.../taxonomy/TemplateDataDeserializationTest.java`
+(deserializes via `JsonUtils.readFromString(data, JIPipeGraph.class)`, the
+exact `JIPipeNodeTemplate.getGraph()` path) — PASS (3 nodes, 1 connection).
+Run: `mvn -o -pl jipipe-launcher -am test
+-Dtest='TemplateDataDeserializationTest' -Dsurefire.failIfNoSpecifiedTests=false`.
+
 ## Verification
 
 - Selftest output (2026-10-14): `SELFTEST: PASS` (exit 0).
+- t8 re-run (2026-10-14): the 185 `.md` + 185 `templates/*.json` files,
+  `report.md` section 6 and `analysis/t8_table.md` are byte-identical across
+  two runs; sections 1–5 of `report.md` byte-identical to the committed state.
 - Full dump (2026-10-14): dumper exit 0; `corpus.json` 11,847,569 bytes.
 - Independent Python cross-check of `corpus.json` against the raw `.jip` files:
   per-file node/edge counts match for all 161 projects (0 mismatches), and the
