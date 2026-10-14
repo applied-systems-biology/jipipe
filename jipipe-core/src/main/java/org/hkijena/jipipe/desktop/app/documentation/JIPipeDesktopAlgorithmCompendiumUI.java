@@ -69,6 +69,23 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
 
     @Override
     public MarkdownText generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
+        return buildAlgorithmDocumentation(info);
+    }
+
+    /**
+     * Builds the full documentation of a single algorithm node as markdown:
+     * the title, the description, the input/output slot table and the
+     * parameter documentation (grouped per source, in UI order).
+     * <p>
+     * This is the canonical node documentation used by the compendium and by
+     * any UI that shows "the node documentation" — keep the node finder's
+     * detail rail in sync by reusing this builder rather than re-implementing
+     * it.
+     *
+     * @param info the node to document
+     * @return the node's documentation as markdown
+     */
+    public static MarkdownText buildAlgorithmDocumentation(JIPipeNodeInfo info) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
@@ -169,7 +186,7 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         return new MarkdownText(builder.toString());
     }
 
-    private void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
+    private static void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
         builder.append("### ").append(access.getName()).append("\n\n");
         builder.append("<table>");
 

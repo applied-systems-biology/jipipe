@@ -14,24 +14,20 @@
 package org.hkijena.jipipe.desktop.app.grapheditor.nodefinder;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.SetJIPipeDocumentation;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
-import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamily;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
+import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
+import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
-import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jetbrains.annotations.Nullable;
@@ -40,8 +36,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,31 +52,28 @@ import java.util.Set;
  * renders as a neutral chip with a dash) and the entry's tags,</li>
  * <li>a one-line summary of the spatial dimensions and the input profile
  * (e.g. "Spatial: 2D, 3D · Input: 3D volume"),</li>
- * <li>a <b>custom pill tab bar</b> (styled like the AI monitor's top pills)
- * switching between the detail pages:
+ * <li>a tab bar — the shared {@code JIPipeDesktopTabPane} in the AI
+ * monitor's TopPill style, so the tabs stay consistent with the rest of
+ * the application — switching between the detail pages:
  * <ul>
- * <li><b>Documentation</b> (default, help/info icon) — the entry's
- * description rendered as markdown, then per-parameter documentation
- * (the same {@link SetJIPipeDocumentation} scan the node settings UI
- * performs) and the class documentation when present;</li>
+ * <li><b>Documentation</b> (default, help/info icon) — the canonical
+ * node documentation: the same markdown the algorithm compendium and
+ * the graph editor's node settings show (title, description,
+ * input/output slot table, per-parameter documentation);</li>
  * <li><b>Related</b> — the {@code database.related(entry, 6)} list;</li>
  * <li><b>Follow-ups</b> (diagram-next icon, matching the node browser's
  * follow-up strip) — the {@code database.followUps(entry)} list.</li>
  * </ul>
  * Clicking a related/follow-up item tells the dialog (via the
  * {@link EntrySelector} callback) to select that entry in the center list,
- * so the rail cannot recurse into itself.</li>
- * <li>the actions: <b>▶ Insert setup</b> — when the entry's node belongs to
- * a workflow family with a non-null
- * {@link JIPipeNodeTaxonomyFamily#getTemplate() template}, the template is
- * inserted via
- * {@link CreateNewNodesByTemplateDatabaseEntry#addToGraph(JIPipeDesktopGraphCanvasUI)};
- * otherwise the entry's follow-ups are each inserted unconnected; when the
- * node has neither (the common case — most nodes belong to no workflow
- * family), the node <em>itself</em> is inserted, so the button always does
- * something. <b>Open example</b> — inserts the node's registered example
- * ({@code JIPipe.getNodes().getNodeExamples(originNodeId)}); when none is
- * registered the button stays enabled and its tooltip says so.
+ * so the rail cannot recurse into itself.
+ * <p>
+ * <b>Follow-up (deferred, see work item comment):</b> the rail previously
+ * offered "▶ Insert setup" and "Open example" actions that inserted nodes
+ * into the graph. Both were removed from the finder — "Open example"
+ * inserting a node is not what users expect there, and both actions are to
+ * be reworked into a dedicated feature based on node templates (which
+ * support multiple nodes).
  * </li>
  * </ul>
  * <p>
@@ -90,10 +81,7 @@ import java.util.Set;
  * <p>
  * All data comes from the shared node database layer (Task 15/16):
  * {@code related}/{@code followUps} resolve the entry through its
- * {@link JIPipeNodeDatabaseEntry#getOriginNodeId() origin node id}; the
- * family used for the actions is looked up by walking the node registry's
- * family map against
- * {@code JIPipe.getNodes().getFamilyAssembler().familyIdsOf(originNodeId)}.
+ * {@link JIPipeNodeDatabaseEntry#getOriginNodeId() origin node id}.
  */
 public class NodeFinderDetailRail extends JPanel {
 
@@ -108,18 +96,13 @@ public class NodeFinderDetailRail extends JPanel {
 
     private static final int FRAMEWORK_CHIP_WIDTH = 52;
     private static final int FRAMEWORK_CHIP_HEIGHT = 16;
-    private static final int PILL_H = 26;
-    private static final int PILL_ARC = 13;
     private static final String CARD_EMPTY = "empty";
     private static final String CARD_CONTENT = "content";
 
     private final JIPipeNodeDatabase database;
-    private final JIPipeDesktopGraphCanvasUI canvasUI;
     private final EntrySelector entrySelector;
     private final CardLayout cardLayout = new CardLayout();
-    private final CardLayout pageLayout = new CardLayout();
     private JPanel cards;
-    private JPanel pages;
 
     private final JLabel emptyLabel = new JLabel("Select a node to see details, related nodes and follow-ups.",
         SwingConstants.CENTER);
@@ -149,12 +132,10 @@ public class NodeFinderDetailRail extends JPanel {
     private final JLabel profileLabel = new JLabel();
     private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
 
-    // --- Pill tabs + pages ---
-    private final JPanel pillBar = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 0));
-    private PillButton docsPill;
-    private PillButton relatedPill;
-    private PillButton followUpsPill;
-    private final JEditorPane documentationPane = new JEditorPane();
+    // --- Tabs + pages (the shared tab pane, same component + style as the
+    // AI monitor's tabs — see JIPipeDesktopAIMonitorWindow) ---
+    private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
+    private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
     private final JList<JIPipeNodeDatabaseEntry> relatedList = new JList<>();
     private final JList<JIPipeNodeDatabaseEntry> followUpsList = new JList<>();
     private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listPanels = new IdentityHashMap<>();
@@ -162,9 +143,6 @@ public class NodeFinderDetailRail extends JPanel {
     private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listBodies = new IdentityHashMap<>();
     private final JLabel relatedEmpty = new JLabel("No related nodes", SwingConstants.CENTER);
     private final JLabel followUpsEmpty = new JLabel("No follow-ups", SwingConstants.CENTER);
-
-    private final JButton insertSetupButton = new JButton("▶ Insert setup");
-    private final JButton openExampleButton = new JButton("Open example");
 
     private JIPipeNodeDatabaseEntry currentEntry;
     /**
@@ -179,16 +157,16 @@ public class NodeFinderDetailRail extends JPanel {
      *
      * @param database      the node database to query for related entries
      *                      and follow-ups
-     * @param canvasUI      the graph canvas UI that inserted nodes are
-     *                      added to
      * @param entrySelector called when the user clicks a related/follow-up
      *                      entry (the dialog selects it in the center list)
      */
-    public NodeFinderDetailRail(JIPipeNodeDatabase database, JIPipeDesktopGraphCanvasUI canvasUI, EntrySelector entrySelector) {
+    public NodeFinderDetailRail(JIPipeNodeDatabase database, EntrySelector entrySelector) {
         this.database = database;
-        this.canvasUI = canvasUI;
         this.entrySelector = entrySelector;
+        initialize();
+    }
 
+    private void initialize() {
         setLayout(new BorderLayout());
 
         // Empty state
@@ -201,26 +179,17 @@ public class NodeFinderDetailRail extends JPanel {
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         initializeTitleBlock();
-        initializePillBar();
-        initializeDocumentationPage();
-        initializeEntryList("Related", relatedList, relatedEmpty);
-        initializeEntryList("Follow-ups", followUpsList, followUpsEmpty);
-        initializeActions();
+        initializeEntryList(relatedList, relatedEmpty);
+        initializeEntryList(followUpsList, followUpsEmpty);
+        initializeTabs();
         contentPanel.add(titleBlock());
         contentPanel.add(Box.createVerticalStrut(8));
-        contentPanel.add(pillBar);
-        contentPanel.add(Box.createVerticalStrut(4));
-        pages = new JPanel(pageLayout);
-        pages.add(new JScrollPane(documentationPane), "docs");
-        pages.add(listPanels.get(relatedList), "related");
-        pages.add(listPanels.get(followUpsList), "followups");
-        pages.setPreferredSize(new Dimension(0, 160));
-        pages.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        contentPanel.add(pages);
-        contentPanel.add(Box.createVerticalStrut(8));
-        contentPanel.add(insertSetupButton);
-        contentPanel.add(openExampleButton);
-        selectPill(docsPill);
+        // Minimum footprint 160 px, grows with the dialog (the tab content
+        // is internally scrollable)
+        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
+        tabPane.setPreferredSize(new Dimension(0, 160));
+        tabPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+        contentPanel.add(tabPane);
 
         this.cards = new JPanel(cardLayout);
         cards.add(emptyPanel, CARD_EMPTY);
@@ -275,10 +244,9 @@ public class NodeFinderDetailRail extends JPanel {
         tagsLabel.setVisible(!tags.isEmpty());
         profileLabel.setText(buildProfileLine(entry));
 
-        // Documentation page (markdown-rendered description + parameter
-        // docs + class docs)
-        documentationPane.setText(buildDocumentationHtml(entry));
-        documentationPane.setCaretPosition(0);
+        // Documentation page: the same markdown the compendium and the
+        // graph editor's node documentation use (see buildDocumentation)
+        documentationReader.setDocument(buildDocumentation(entry));
 
         // Related + follow-ups (synchronous; the database caches both).
         // The updatingLists guard suppresses the list selection listeners
@@ -292,26 +260,8 @@ public class NodeFinderDetailRail extends JPanel {
         }
         updateListEmptyStates();
 
-        // Actions: family resolution
-        JIPipeNodeTaxonomyFamily family = resolveFamily(entry);
-        String familyName = family != null ? family.getName() : null;
-        List<JIPipeNodeDatabaseEntry> followUps = database.followUps(entry);
-        if (family != null && family.getTemplate() != null) {
-            insertSetupButton.setToolTipText("Inserts the '" + familyName + "' family's setup template");
-        } else if (!followUps.isEmpty()) {
-            insertSetupButton.setToolTipText(familyName == null
-                ? "Inserts the follow-up nodes of this node, unconnected"
-                : "Inserts the follow-up nodes of this node, unconnected (the '" + familyName + "' family has no template)");
-        } else {
-            insertSetupButton.setToolTipText("Inserts this node");
-        }
-        boolean hasExample = hasNodeExample(entry);
-        openExampleButton.setToolTipText(hasExample
-            ? "Inserts the example of this node"
-            : "No example is available for this node");
-
-        // Back to the documentation page (the default) on every entry change
-        selectPill(docsPill);
+        // Back to the documentation tab (the default) on every entry change
+        tabPane.switchToContent(documentationReader);
 
         contentPanel.revalidate();
         contentPanel.repaint();
@@ -326,7 +276,7 @@ public class NodeFinderDetailRail extends JPanel {
         Set<JIPipeNodeTaxonomySpatialDimension> spatial = entry.getSpatialDimensions();
         builder.append("Spatial: ");
         if (spatial.isEmpty()) {
-            builder.append("—");
+            builder.append("N/A");
         } else if (spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D)
             && spatial.contains(JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D)) {
             builder.append("2D, 3D");
@@ -340,7 +290,7 @@ public class NodeFinderDetailRail extends JPanel {
             case PLANE_2D -> builder.append("2D plane");
             case VOLUME_3D -> builder.append("3D volume");
             case ANY -> builder.append("any");
-            default -> builder.append("—");
+            default -> builder.append("N/A");
         }
         return builder.toString();
     }
@@ -357,80 +307,6 @@ public class NodeFinderDetailRail extends JPanel {
             listCards.get(list).show(listBodies.get(list),
                 list.getModel().getSize() == 0 ? "empty" : "list");
         }
-    }
-
-    /**
-     * The Documentation page content as HTML: the entry's description
-     * rendered from markdown (the same way the node settings and the node
-     * browser's context help render it), then the per-parameter
-     * documentation (every {@link SetJIPipeDocumentation} on the node
-     * class's methods — the same source the settings UI shows) and the
-     * class documentation when present.
-     */
-    private String buildDocumentationHtml(JIPipeNodeDatabaseEntry entry) {
-        StringBuilder builder = new StringBuilder();
-        builder.append("<h3>").append(escapeHtml(entry.getName())).append("</h3>");
-        HTMLText description = entry.getDescription();
-        if (description != null && !StringUtils.isNullOrEmpty(description.getBody())) {
-            builder.append(new MarkdownText(description.getBody()).getRenderedHTML());
-        }
-        JIPipeNodeInfo info = entryNodeInfo(entry);
-        if (info != null) {
-            // Per-parameter documentation (same scan as the node settings UI)
-            for (Method method : info.getInstanceClass().getMethods()) {
-                SetJIPipeDocumentation docs = method.getAnnotation(SetJIPipeDocumentation.class);
-                if (docs == null) {
-                    continue;
-                }
-                String text = DocumentationUtils.getDocumentationDescription(docs);
-                if (StringUtils.isNullOrEmpty(text)) {
-                    continue;
-                }
-                builder.append("<p><b>").append(escapeHtml(docs.name()))
-                    .append("</b>: ").append(escapeHtml(text)).append("</p>");
-            }
-            // Class documentation (last resort: not every node has it)
-            String classDocs = DocumentationUtils.getDocumentationDescription(info.getInstanceClass());
-            if (!StringUtils.isNullOrEmpty(classDocs)) {
-                builder.append("<p>").append(escapeHtml(classDocs).replace("\n", "<br>")).append("</p>");
-            }
-        }
-        return builder.toString();
-    }
-
-    private static String escapeHtml(String text) {
-        return text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;");
-    }
-
-    /**
-     * Resolves the workflow family the entry's node belongs to: the first
-     * (in assembler registration order) family that has a step for the
-     * entry's origin node id. Returns {@code null} when the entry wraps no
-     * node type or the node belongs to no family.
-     */
-    @Nullable
-    private JIPipeNodeTaxonomyFamily resolveFamily(JIPipeNodeDatabaseEntry entry) {
-        String originNodeId = entry.getOriginNodeId();
-        if (originNodeId == null) {
-            return null;
-        }
-        Set<String> familyIds = JIPipe.getNodes().getFamilyAssembler().familyIdsOf(originNodeId);
-        if (familyIds.isEmpty()) {
-            return null;
-        }
-        Map<String, JIPipeNodeTaxonomyFamily> families = JIPipe.getNodes().getFamilies();
-        for (String id : familyIds) {
-            JIPipeNodeTaxonomyFamily family = families.get(id);
-            if (family != null) {
-                return family;
-            }
-        }
-        return null;
-    }
-
-    private boolean hasNodeExample(JIPipeNodeDatabaseEntry entry) {
-        String originNodeId = entry.getOriginNodeId();
-        return originNodeId != null && !JIPipe.getNodes().getNodeExamples(originNodeId).isEmpty();
     }
 
     // ------------------------------------------------------------------
@@ -470,112 +346,44 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     // ------------------------------------------------------------------
-    // Pill tab bar + pages
+    // Tabs (the shared tab pane, same component as the AI monitor)
     // ------------------------------------------------------------------
 
-    private void initializePillBar() {
-        pillBar.setOpaque(false);
-        docsPill = new PillButton("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"));
-        relatedPill = new PillButton("Related", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
-        followUpsPill = new PillButton("Follow-ups", JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"));
-        for (PillButton pill : new PillButton[]{docsPill, relatedPill, followUpsPill}) {
-            pill.addActionListener(e -> selectPill(pill));
-            pillBar.add(pill);
-        }
-    }
-
-    private void selectPill(PillButton selectedPill) {
-        for (PillButton pill : new PillButton[]{docsPill, relatedPill, followUpsPill}) {
-            pill.setSelectedPill(pill == selectedPill);
-        }
-        if (selectedPill == docsPill) {
-            pageLayout.show(pages, "docs");
-        } else if (selectedPill == relatedPill) {
-            pageLayout.show(pages, "related");
-        } else {
-            pageLayout.show(pages, "followups");
-        }
-        contentPanel.revalidate();
-        contentPanel.repaint();
+    private void initializeTabs() {
+        tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
+            documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Related", JIPipe.RESOURCES.getIcon16("actions/tag.png"),
+            listPanels.get(relatedList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Follow-ups", JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"),
+            listPanels.get(followUpsList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     /**
-     * A rounded "pill" tab button (custom, matching the AI monitor's top
-     * pills): accent-filled when selected, transparent + accent border
-     * otherwise.
+     * The Documentation tab content. For node entries this is the canonical
+     * node documentation — the same markdown the algorithm compendium and
+     * the graph editor's node settings show (title, description, input/output
+     * slot table, parameter documentation). Non-node entries (templates,
+     * examples, existing graph nodes) fall back to name + description.
      */
-    private static class PillButton extends JButton {
-
-        private boolean selectedPill;
-
-        PillButton(String text, Icon icon) {
-            super(text, icon);
-            setFocusable(false);
-            setContentAreaFilled(false);
-            setBorderPainted(false);
-            setMargin(new Insets(2, 10, 2, 10));
-            setForeground(pillForeground(false));
+    private MarkdownText buildDocumentation(JIPipeNodeDatabaseEntry entry) {
+        JIPipeNodeInfo info = entryNodeInfo(entry);
+        if (info != null) {
+            return JIPipeDesktopAlgorithmCompendiumUI.buildAlgorithmDocumentation(info);
         }
-
-        void setSelectedPill(boolean selectedPill) {
-            if (this.selectedPill == selectedPill) {
-                return;
-            }
-            this.selectedPill = selectedPill;
-            // The foreground changes with the selection state (white on the
-            // accent fill), so set it here — never inside paintComponent,
-            // which would re-trigger an endless repaint loop.
-            setForeground(pillForeground(selectedPill));
-            repaint();
+        StringBuilder builder = new StringBuilder();
+        builder.append("# ").append(entry.getName()).append("\n\n");
+        HTMLText description = entry.getDescription();
+        if (description != null && !StringUtils.isNullOrEmpty(description.getBody())) {
+            builder.append(description.getBody());
         }
-
-        private static Color pillForeground(boolean selectedPill) {
-            Color accent = UIManager.getColor("TabbedPane.selected");
-            return selectedPill && accent != null ? Color.WHITE : UIManager.getColor("Label.foreground");
-        }
-
-        @Override
-        protected void paintComponent(Graphics g) {
-            Graphics2D g2d = (Graphics2D) g.create();
-            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            Color accent = UIManager.getColor("TabbedPane.selected");
-            if (accent == null) {
-                accent = UIManager.getColor("Button.select");
-            }
-            if (accent == null) {
-                accent = Color.GRAY;
-            }
-            Color fill;
-            if (selectedPill) {
-                fill = accent;
-            } else {
-                fill = new Color(Math.min(255, (int) (accent.getRed() * 0.75f)),
-                    Math.min(255, (int) (accent.getGreen() * 0.75f)),
-                    Math.min(255, (int) (accent.getBlue() * 0.75f)));
-            }
-            g2d.setColor(fill);
-            g2d.fillRoundRect(0, 0, getWidth() - 1, getHeight() - 1, PILL_ARC, PILL_ARC);
-            g2d.dispose();
-            super.paintComponent(g);
-        }
-    }
-
-    // ------------------------------------------------------------------
-    // Documentation page
-    // ------------------------------------------------------------------
-
-    private void initializeDocumentationPage() {
-        documentationPane.setEditable(false);
-        documentationPane.setContentType("text/html");
-        documentationPane.setOpaque(false);
-        documentationPane.setBackground(getBackground());
+        return new MarkdownText(builder.toString());
     }
 
     // ------------------------------------------------------------------
     // Related / follow-up lists
     // ------------------------------------------------------------------
 
-    private void initializeEntryList(String title, JList<JIPipeNodeDatabaseEntry> list, JLabel emptyState) {
+    private void initializeEntryList(JList<JIPipeNodeDatabaseEntry> list, JLabel emptyState) {
         list.setOpaque(false);
         listCards.put(list, new CardLayout());
         list.setCellRenderer(new DefaultListCellRenderer() {
@@ -611,7 +419,7 @@ public class NodeFinderDetailRail extends JPanel {
         JPanel body = new JPanel(listCards.get(list));
         listBodies.put(list, body);
         JScrollPane scroll = new JScrollPane(list);
-        scroll.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+        scroll.setBorder(null);
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         body.add(scroll, "list");
@@ -621,8 +429,6 @@ public class NodeFinderDetailRail extends JPanel {
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        panel.add(new JLabel(title, JIPipe.RESOURCES.getIcon16("actions/caret-right.png"), SwingConstants.LEFT),
-            BorderLayout.NORTH);
         panel.add(body, BorderLayout.CENTER);
         listPanels.put(list, panel);
     }
@@ -630,78 +436,6 @@ public class NodeFinderDetailRail extends JPanel {
     // ------------------------------------------------------------------
     // Actions
     // ------------------------------------------------------------------
-
-    private void initializeActions() {
-        Font buttonFont = new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal());
-        for (JButton button : new JButton[]{insertSetupButton, openExampleButton}) {
-            button.setFont(buttonFont);
-            button.setAlignmentX(LEFT_ALIGNMENT);
-            button.setMaximumSize(new Dimension(Integer.MAX_VALUE, button.getPreferredSize().height));
-        }
-        insertSetupButton.setToolTipText("Inserts this node's family setup (its template), its follow-up nodes, or the node itself");
-        insertSetupButton.addActionListener(e -> onInsertSetup());
-        openExampleButton.setToolTipText("No example is available for this node");
-        openExampleButton.addActionListener(e -> onOpenExample());
-    }
-
-    private void onInsertSetup() {
-        JIPipeNodeDatabaseEntry entry = currentEntry;
-        if (entry == null) {
-            return;
-        }
-        JIPipeNodeTaxonomyFamily family = resolveFamily(entry);
-        if (family != null && family.getTemplate() != null) {
-            // Template path: insert the family's setup template (the same
-            // entry type the dialog's own list uses for templates)
-            JIPipeDesktopGraphNodeUI nodeUI = new CreateNewNodesByTemplateDatabaseEntry(family.getTemplate())
-                .addToGraph(canvasUI).iterator().next();
-            canvasUI.getSelectionManager().setSelection(Set.of(nodeUI));
-            return;
-        }
-        List<JIPipeNodeDatabaseEntry> followUps = database.followUps(entry);
-        if (!followUps.isEmpty()) {
-            // No template: insert each follow-up unconnected
-            Set<JIPipeDesktopGraphNodeUI> added = new HashSet<>();
-            for (JIPipeNodeDatabaseEntry followUp : followUps) {
-                added.addAll(followUp.addToGraph(canvasUI));
-            }
-            if (!added.isEmpty()) {
-                canvasUI.getSelectionManager().setSelection(added);
-            }
-            return;
-        }
-        // No family template and no follow-ups (the common case): insert the
-        // node itself, so the button always does something visible.
-        Set<JIPipeDesktopGraphNodeUI> added = entry.addToGraph(canvasUI);
-        if (!added.isEmpty()) {
-            canvasUI.getSelectionManager().setSelection(added);
-        }
-    }
-
-    private void onOpenExample() {
-        JIPipeNodeDatabaseEntry entry = currentEntry;
-        if (entry == null) {
-            return;
-        }
-        String originNodeId = entry.getOriginNodeId();
-        if (originNodeId == null) {
-            return;
-        }
-        var examples = JIPipe.getNodes().getNodeExamples(originNodeId);
-        if (examples.isEmpty()) {
-            // The tooltip already says no example is available; do nothing
-            return;
-        }
-        JIPipeNodeExample example = examples.iterator().next();
-        // Insert the example via the same entry type the dialog's own list
-        // uses for example entries
-        CreateNewNodeByExampleDatabaseEntry exampleEntry =
-            new CreateNewNodeByExampleDatabaseEntry("example-" + originNodeId, example);
-        Set<JIPipeDesktopGraphNodeUI> added = exampleEntry.addToGraph(canvasUI);
-        if (!added.isEmpty()) {
-            canvasUI.getSelectionManager().setSelection(added);
-        }
-    }
 
     // ------------------------------------------------------------------
     // Helpers

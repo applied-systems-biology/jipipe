@@ -1,4 +1,17 @@
-package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
@@ -15,20 +28,22 @@ import java.awt.*;
 import java.util.Set;
 
 /**
- * Tree cell renderer. Function branch rows keep the original look
- * (name + icon, generic icon for icon-less leaves); node-leaf rows
- * (compact view) show the entry's icon, name, a framework badge (a
- * rounded chip in the framework's color, mirroring the node finder's
- * detail rail), and spatial chips ("2D" / "3D").
+ * Shared tree cell renderer of the node browser and the node finder dialog.
+ * <p>
+ * Function branch rows keep the original look (name + icon, generic icon
+ * for icon-less leaves, bold when a search matches under them); node-leaf
+ * rows (the browser's compact single-pane) show the entry's icon, name, a
+ * framework badge (a rounded chip in the framework's color, mirroring the
+ * node finder's detail rail) and spatial chips ("2D" / "3D").
  */
-class FunctionTreeCellRenderer implements TreeCellRenderer {
+public class FunctionTreeCellRenderer implements TreeCellRenderer {
 
     private static final Icon GENERIC_NODE_ICON = JIPipe.RESOURCES.getIcon16("actions/tag.png");
     private static final int CHIP_ARC = 6;
-    private final JIPipeDesktopNodeBrowser nodeBrowser;
+    private final NodeBrowserTreeController controller;
 
-    public FunctionTreeCellRenderer(JIPipeDesktopNodeBrowser nodeBrowser) {
-        this.nodeBrowser = nodeBrowser;
+    public FunctionTreeCellRenderer(NodeBrowserTreeController controller) {
+        this.controller = controller;
     }
 
     @Override
@@ -116,7 +131,7 @@ class FunctionTreeCellRenderer implements TreeCellRenderer {
             label.setToolTipText(function.getDescription());
             // Search highlight: the search matched a node filed under this
             // leaf (or one of its descendant leaves)
-            if (nodeBrowser.searchHighlightedLeafPaths.contains(new TreePath(((DefaultMutableTreeNode) value).getPath()))) {
+            if (controller.getSearchHighlightedLeafPaths().contains(new TreePath(node.getPath()))) {
                 label.setFont(label.getFont().deriveFont(Font.BOLD));
             }
         } else {
