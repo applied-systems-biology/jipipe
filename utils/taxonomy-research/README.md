@@ -76,6 +76,17 @@ the shared instance class behind the 7 dynamically-registered
   first then secondaries, `tags[]`, `familySteps[]` (`family`, `label`),
   `followUps[]`, `inputs[]`/`outputs[]` each `{"class": <FQN>, "dataType":
   <data-type id or null>}`). Joined to `corpus.json` on `dataType`.
+- `report.md` — the combined research report. Section 1 is owned by the Task 3
+  script (regenerated in place on re-run; later tasks append sections 2–7).
+- `analysis/t3_datatype_usage.py` — Task 3 analysis script (stdlib-only
+  Python 3): joins `corpus.json` + `registry.json` into the data-type
+  producer/consumer usage map. Re-run: `python3
+  utils/taxonomy-research/analysis/t3_datatype_usage.py`.
+- `analysis/t3_table.md` — the raw Task 3 table (also embedded as report
+  section 1).
+- `analysis/unresolved_types.md` — corpus data-class tokens that do not
+  resolve against the registry (raw token, edge/project counts, example
+  project).
 - `extract/ProjectCorpusDumper.java` — standalone dumper (Jackson only, no
   jipipe-core dependency, not a Maven module).
 - `extract/classes/` — `javac` build scratch (git-ignored).
