@@ -73,6 +73,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *   "functions": [
  *     {"id": "jipipe:function:…", "name": "…", "parent": "jipipe:function:…"},
  *     {"id": "jipipe:function:images", "name": "Images", "parent": null}
+ *   ],
+ *   "families": [
+ *     {"id": "jipipe:family:trackmate",
+ *      "steps": [
+ *        {"nodeId": "trackmate-detector", "label": "Detect spots", "after": []},
+ *        {"nodeId": "trackmate-tracking", "label": "Track spots",
+ *         "after": ["trackmate-create-spot-detector-dog-detector", …, "trackmate-detector"]}
+ *      ]}
  *   ]
  * }
  * }</pre>
@@ -91,13 +99,27 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * resolve which top-level branch every node's leaf function id lives under
  * without re-deriving the tree.
  * <p>
+ * The top-level {@code families} array carries the <em>declared after-edges</em>
+ * of each registered family (added for the family-coverage-vs-usage
+ * analysis): per family, {@code steps[]} lists every step with its
+ * {@code nodeId}, {@code label}, and {@code after} = the step's resolved
+ * after <em>node</em> ids — {@link JIPipeNodeTaxonomyFamilyStep#afterIds(FamilyAssembler)}
+ * returns step ids ({@code familyId + "#" + nodeId}); the family prefix is
+ * stripped because steps are per-family. The resolution itself is the lazy
+ * class→node-id mapping only the live assembler can do; a shared instance
+ * class behind programmatically generated entries fans out to all of their
+ * node ids. The total number of emitted after-ids is
+ * exactly the reported family-graph edge count K.
+ * <p>
  * <b>Determinism.</b> The output is byte-stable across runs: nodes sorted
  * by id, and every set/array taken from the registry sorted lexicographically
  * ({@code functions} keeps the primary function first, its secondaries are
  * then sorted; {@code familySteps} sorted by family id, then label;
  * {@code followUps} sorted; input/output slot entries deduplicated by class
  * FQN and sorted by FQN; the top-level {@code functions} array sorted by
- * function id). Written compact via the default Jackson mapper,
+ * function id; the top-level {@code families} array sorted by family id, its
+ * {@code steps} sorted by node id, and each {@code after} array sorted).
+ * Written compact via the default Jackson mapper,
  * matching {@code corpus.json}.
  * <p>
  * Mirrors {@link TaxonomyFullValidationTest}'s bootstrap: this module's
@@ -221,6 +243,52 @@ class RegistryDumperTest {
             }
         }
 
+        // Top-level family block (R7): the declared after-edges of every
+        // registered family. id = the family id; steps = every step the
+        // assembler knows for the family (sorted by nodeId), each carrying
+        // nodeId, label, and after = the step's resolved after NODE ids
+        // (step.afterIds(assembler) returns step ids "familyId#nodeId" —
+        // the prefix is stripped, injective within a family; the lazy
+        // class→node-id resolution itself is only the live assembler can
+        // perform, and a shared instance class behind programmatically
+        // generated entries fans out to all of their node ids). after is
+        // sorted lexicographically. families sorted by id. Immutable
+        // collections are copied before any in-place sort (R6 lesson:
+        // never sort registry-owned state).
+        long emittedAfterEdges = 0;
+        long emittedSteps = 0;
+        List<String> familyIdOrder = new ArrayList<>(families.keySet());
+        familyIdOrder.sort(Comparator.naturalOrder());
+        ArrayNode familiesJson = root.putArray("families");
+        for (String familyId : familyIdOrder) {
+            JIPipeNodeTaxonomyFamily family = families.get(familyId);
+            ObjectNode familyJson = familiesJson.addObject();
+            familyJson.put("id", familyId);
+            List<JIPipeNodeTaxonomyFamilyStep> familySteps =
+                new ArrayList<>(assembler.steps(family));
+            familySteps.sort(Comparator.comparing(JIPipeNodeTaxonomyFamilyStep::nodeId));
+            emittedSteps += familySteps.size();
+            ArrayNode stepsJson = familyJson.putArray("steps");
+            // afterIds() returns STEP ids ("familyId + '#' + nodeId", see
+            // JIPipeNodeTaxonomyFamilyStep#afterIds); the locked block shape
+            // carries NODE ids, so the family prefix is stripped (injective
+            // within a family — no duplicates can arise).
+            String stepPrefix = FamilyAssembler.stepId(familyId, "");
+            for (JIPipeNodeTaxonomyFamilyStep step : familySteps) {
+                ObjectNode stepJson = stepsJson.addObject();
+                stepJson.put("nodeId", step.nodeId());
+                stepJson.put("label", step.label());
+                List<String> after = new ArrayList<>();
+                for (String stepId : step.afterIds(assembler)) {
+                    after.add(stepId.substring(stepPrefix.length()));
+                }
+                after.sort(Comparator.naturalOrder());
+                emittedAfterEdges += after.size();
+                ArrayNode afterJson = stepJson.putArray("after");
+                after.forEach(afterJson::add);
+            }
+        }
+
         // The test runs with working dir jipipe-launcher/; resolve to the
         // repo root and write (creating the directory if missing).
         Path out = Paths.get("..", "utils", "taxonomy-research", "registry.json").toAbsolutePath().normalize();
@@ -230,7 +298,9 @@ class RegistryDumperTest {
         MAPPER.writeValue(out.toFile(), root);
         System.out.println("RegistryDumperTest: registry: " + nodeIds.size() + " nodes, "
             + functions.size() + " functions, "
-            + families.size() + " families, " + familyGraphEdges + " family-graph edges -> " + out);
+            + families.size() + " families (" + emittedSteps + " steps, "
+            + emittedAfterEdges + " after-edges), " + familyGraphEdges
+            + " family-graph edges -> " + out);
 
         // Assertions (d)-(h) against the file as written on disk.
         JsonNode parsed = MAPPER.readTree(out.toFile());
@@ -310,6 +380,36 @@ class RegistryDumperTest {
             }
         }
         assertTrue(hasTopLevel, "registry.json functions array has no top-level entry (parent == null)");
+
+        // (iv) the emitted families block is consistent with the reported
+        // family-graph edge count K: sum of len(after) over all emitted
+        // steps == K (both computed from step.afterIds(assembler))
+        ArrayNode parsedFamilies = (ArrayNode) parsed.get("families");
+        assertNotNull(parsedFamilies, "registry.json is missing the 'families' array");
+        long emittedEdgeCount = 0;
+        for (JsonNode family : parsedFamilies) {
+            for (JsonNode step : family.get("steps")) {
+                emittedEdgeCount += step.get("after").size();
+            }
+        }
+        assertEquals(familyGraphEdges, emittedEdgeCount,
+            "Emitted families block carries " + emittedEdgeCount
+                + " after-edges but the reported family-graph edge count K is "
+                + familyGraphEdges);
+
+        // (v) every after id resolves to an existing registry node id
+        // (from the emitted nodes array)
+        for (JsonNode family : parsedFamilies) {
+            for (JsonNode step : family.get("steps")) {
+                for (JsonNode afterId : step.get("after")) {
+                    String nodeId = afterId.asText();
+                    assertTrue(parsedById.containsKey(nodeId),
+                        "Family '" + family.get("id").asText() + "' step '"
+                            + step.get("nodeId").asText()
+                            + "' references unknown node id '" + nodeId + "'");
+                }
+            }
+        }
     }
 
     private static void assertFollowUpsContain(JsonNode node, String expectedFollowUp) {

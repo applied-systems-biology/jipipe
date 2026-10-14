@@ -49,7 +49,8 @@ pipelines) joins to `registry.json` (the registry) on each slot's
 `registry: N nodes, F functions, M families, K family-graph edges` (K = sum
 over families of declared resolved edges; F = registered taxonomy functions):
 
-**registry: 1510 nodes, 88 functions, 2 families, 20 family-graph edges**
+**registry: 1510 nodes, 88 functions, 2 families (22 steps, 20 after-edges),
+20 family-graph edges**
 
 **Families actually registered: `jipipe:family:trackmate` (21 step nodes)
 and `jipipe:family:plotting` (1 step node), 22 steps in total.** A family is
@@ -69,6 +70,18 @@ branches (`getParent() == null`, the `FunctionRegistry.topLevel()`
 definition). Added so the workflow-chain / branch analyses can resolve which
 top-level branch each node's function leaf id lives under.
 
+**Family after-edges:** the declared workflow edges of each registered family
+are dumped as the top-level `families` array — per family, `steps[]` lists
+every step as `{nodeId, label, after}`, where `after` = the step's resolved
+after **node ids** (sorted; `step.afterIds(assembler)` with the family step-id
+prefix stripped). The 20 after-edges across the 22 steps equal the reported
+K. Added so the family-coverage-vs-usage analysis can compare the declared
+"which step runs after which step" against the real corpus chains. Note the
+fan-out: `trackmate-tracking`'s `after` lists 8 node ids — `trackmate-detector`
+plus all 7 `trackmate-create-spot-detector-*` nodes, because the annotation's
+`after = {SpotDetectorNode.class, CreateSpotDetectorNode.class}` resolves the
+shared detector class to every dynamically-registered detector node.
+
 ## Files
 
 - `corpus.json` — generated corpus (structure only, no embedded data payloads;
@@ -77,16 +90,21 @@ top-level branch each node's function leaf id lives under.
   `loadError`, `compartments[]` → `name`, `nodes[]` (`uid`, `id`, `name`,
   `slots.input[]`/`slots.output[]` with `name` + raw on-disk `dataClass` token),
   `edges[]` (`fromUid`, `fromSlot`, `dataClass`, `toUid`, `toSlot`).
-- `registry.json` — generated registry (~714 KB), byte-stable across runs
-  (nodes sorted by id; the `functions` array sorted by function id; every
-  registry set/array sorted lexicographically). Locked shape: `nodes[]` (`id`,
-  `name`, `framework`, `functions[]` primary first then secondaries, `tags[]`,
-  `familySteps[]` (`family`, `label`), `followUps[]`, `inputs[]`/`outputs[]`
-  each `{"class": <FQN>, "dataType": <data-type id or null>}`) plus a
-  top-level `functions[]` (the taxonomy function tree: `id`, `name`, `parent`
-  = parent id or `null` for top-level branches). `nodes` is joined to
-  `corpus.json` on `dataType`; the `functions` block resolves each node's
-  function leaf id to its top-level branch.
+- `registry.json` — generated registry (~716 KB), byte-stable across runs
+  (nodes sorted by id; the `functions` array sorted by function id; the
+  `families` array sorted by family id, its `steps` by node id, and each
+  `after` array lexicographically; every registry set/array sorted
+  lexicographically). Locked shape: `nodes[]` (`id`, `name`, `framework`,
+  `functions[]` primary first then secondaries, `tags[]`, `familySteps[]`
+  (`family`, `label`), `followUps[]`, `inputs[]`/`outputs[]` each
+  `{"class": <FQN>, "dataType": <data-type id or null>}`) plus a top-level
+  `functions[]` (the taxonomy function tree: `id`, `name`, `parent` = parent
+  id or `null` for top-level branches) and a top-level `families[]` (the
+  declared family workflow edges: `id`, `steps[]` = `{nodeId, label, after[]}`
+  with `after` = resolved after node ids). `nodes` is joined to `corpus.json`
+  on `dataType`; the `functions` block resolves each node's function leaf id
+  to its top-level branch; the `families` block feeds the family-coverage
+  analysis.
 - `report.md` — the combined research report. Section 1 is owned by the Task 3
   script (regenerated in place on re-run; later tasks append sections 2–7).
 - `analysis/t3_datatype_usage.py` — Task 3 analysis script (stdlib-only
