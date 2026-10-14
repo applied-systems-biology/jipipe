@@ -106,8 +106,8 @@ class FamilyAssemblerTest {
      */
     private static FamilyAssembler twoStepAssembler() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, "detect",
-            TrackSpots.class, "track"));
+            DetectSpots.class, List.of("detect"),
+            TrackSpots.class, List.of("track")));
         assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         return assembler;
@@ -140,7 +140,7 @@ class FamilyAssemblerTest {
 
         assertEquals(2, assembler.steps(tm).size());
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(tm), "track");
-        assertEquals(List.of("jipipe:family:trackmate#detect"), track.afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#detect"), track.afterIds(assembler));
     }
 
     /**
@@ -227,15 +227,15 @@ class FamilyAssemblerTest {
     @Test
     void afterResolvedByInjectedMapping() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, "tm-detect",
-            TrackSpots.class, "tm-track"));
+            DetectSpots.class, List.of("tm-detect"),
+            TrackSpots.class, List.of("tm-track")));
         assembler.addStep("tm-detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("tm-track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
 
         assertEquals(List.of("tm-track"), assembler.followUps("tm-detect"));
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(tm), "tm-track");
-        assertEquals(List.of("jipipe:family:trackmate#tm-detect"), track.afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#tm-detect"), track.afterIds(assembler));
         assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#tm-detect"));
         assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#tm-track"));
     }
@@ -247,15 +247,15 @@ class FamilyAssemblerTest {
     @Test
     void explicitFamilyIdInStepIds() {
         FamilyAssembler assembler = new FamilyAssembler(Map.of(
-            DetectSpots.class, "detect",
-            TrackSpots.class, "track"));
+            DetectSpots.class, List.of("detect"),
+            TrackSpots.class, List.of("track")));
         assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
         assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
         Tm tm = new Tm();
 
         assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#detect"));
         assertTrue(assembler.graph(tm).containsVertex("jipipe:family:trackmate#track"));
-        assertEquals(List.of("jipipe:family:trackmate#detect"), step(assembler.steps(tm), "track").afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#detect"), step(assembler.steps(tm), "track").afterIds(assembler));
         assertEquals(List.of("track"), assembler.followUps("detect"));
 
         // A conflicting family id for the same family class is rejected.
@@ -274,8 +274,54 @@ class FamilyAssemblerTest {
         assembler.addStep("TrackSpots", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
 
         JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "TrackSpots");
-        assertEquals(List.of("jipipe:family:trackmate#DetectSpots"), track.afterIds());
+        assertEquals(List.of("jipipe:family:trackmate#DetectSpots"), track.afterIds(assembler));
         assertEquals(List.of("TrackSpots"), assembler.followUps("DetectSpots"));
+    }
+
+    /**
+     * A step registered BEFORE its predecessor's class is known to the
+     * mapping still resolves once the mapping is updated (deferred
+     * resolution — registration order must not break the edges).
+     */
+    @Test
+    void afterResolvesLazilyAfterMappingUpdate() {
+        FamilyAssembler assembler = new FamilyAssembler();
+        // "track" is added first, while the mapping still does not know
+        // DetectSpots — at query time it must resolve via the mapping
+        // added later, not the (stale) simple-name fallback.
+        assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
+        assertEquals(List.of(), assembler.followUps("detect"),
+            "no edge while the predecessor mapping is unknown");
+        assembler.addStep("detect", TM_FAMILY_ID, step(Tm.class, "Detect spots"));
+        assembler.updateClassToNodeId(Map.of(DetectSpots.class, List.of("detect")));
+
+        assertEquals(List.of("track"), assembler.followUps("detect"),
+            "the edge must appear once the mapping knows the predecessor's id");
+        JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "track");
+        assertEquals(List.of("jipipe:family:trackmate#detect"), track.afterIds(assembler));
+    }
+
+    /**
+     * A class mapped to several node ids (a shared factory class behind
+     * programmatically generated entries) contributes one predecessor per
+     * node id, so every instance gets the follow-up edges.
+     */
+    @Test
+    void afterClassMappedToMultipleNodeIds() {
+        FamilyAssembler assembler = new FamilyAssembler(Map.of(
+            DetectSpots.class, List.of("detect-dog", "detect-log")));
+        assembler.addStep("detect-dog", TM_FAMILY_ID, step(Tm.class, "Detect (DoG)"));
+        assembler.addStep("detect-log", TM_FAMILY_ID, step(Tm.class, "Detect (LoG)"));
+        assembler.addStep("track", TM_FAMILY_ID, step(Tm.class, "Track spots", DetectSpots.class));
+
+        assertEquals(List.of("track"), assembler.followUps("detect-dog"),
+            "every detector instance must link to tracking");
+        assertEquals(List.of("track"), assembler.followUps("detect-log"));
+        JIPipeNodeTaxonomyFamilyStep track = step(assembler.steps(new Tm()), "track");
+        assertEquals(List.of("jipipe:family:trackmate#detect-dog", "jipipe:family:trackmate#detect-log"),
+            track.afterIds(assembler));
+        var graph = assembler.graph(new Tm());
+        assertEquals(2, graph.edgeSet().size(), "one edge per resolved predecessor id");
     }
 
     // ------------------------------------------------------------------

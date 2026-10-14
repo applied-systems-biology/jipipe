@@ -60,8 +60,8 @@ public class TaxonomyResolver {
     /** nodeId → the node's taxonomy framework */
     private final Map<String, JIPipeNodeTaxonomyFramework> nodeFrameworks = new HashMap<>();
 
-    /** Class → node id, lazily rebuilt from the node registry */
-    private Map<Class<?>, String> classToNodeId;
+    /** Class → node ids (registration order), lazily rebuilt from the node registry */
+    private Map<Class<?>, List<String>> classToNodeIds;
 
     private FamilyAssembler familyAssembler;
 
@@ -74,12 +74,12 @@ public class TaxonomyResolver {
 
     /**
      * Creates a resolver that resolves family {@code after} classes
-     * through the given class→node-id mapping.
+     * through the given class→node-ids mapping.
      *
-     * @param classToNodeId node class → registered node id
+     * @param classToNodeIds node class → registered node ids (registration order)
      */
-    public TaxonomyResolver(Map<Class<?>, String> classToNodeId) {
-        this.classToNodeId = classToNodeId == null ? null : new LinkedHashMap<>(classToNodeId);
+    public TaxonomyResolver(Map<Class<?>, List<String>> classToNodeIds) {
+        this.classToNodeIds = classToNodeIds == null ? null : new LinkedHashMap<>(classToNodeIds);
     }
 
     /**
@@ -98,32 +98,35 @@ public class TaxonomyResolver {
 
     /**
      * @return the family assembler; created on first use. The
-     * class→node-id mapping is rebuilt from the supplied map (if any)
+     * class→node-ids mapping is taken from the supplied map (if any)
      * before the assembler is created, so {@code after} classes resolve
      * to real node ids wherever possible.
      */
     public FamilyAssembler getFamilyAssembler() {
         if (familyAssembler == null) {
-            familyAssembler = new FamilyAssembler(classToNodeId == null ? Map.of() : classToNodeId);
+            familyAssembler = new FamilyAssembler(classToNodeIds == null ? Map.of() : classToNodeIds);
         }
         return familyAssembler;
     }
 
     /**
-     * Rebuilds the class→node-id mapping used by the
-     * {@link FamilyAssembler} to resolve {@code after} classes.
+     * Rebuilds the class→node-ids mapping used by the
+     * {@link FamilyAssembler} to resolve {@code after} classes. A class
+     * behind several registered node infos (e.g. a shared factory class
+     * of programmatically generated node entries) maps to <em>all</em> of
+     * their ids, in registration order.
      *
      * @param nodeClasses node class → the node infos that use the class
      */
     public void refreshClassToNodeIdMapping(Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> nodeClasses) {
-        Map<Class<?>, String> mapping = new LinkedHashMap<>();
+        Map<Class<?>, List<String>> mapping = new LinkedHashMap<>();
         for (Map.Entry<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> entry : nodeClasses.entries()) {
-            // Deterministic choice: the first registered info for a class wins
-            mapping.putIfAbsent(entry.getKey(), entry.getValue().getId());
+            mapping.computeIfAbsent(entry.getKey(), key -> new ArrayList<>()).add(entry.getValue().getId());
         }
-        this.classToNodeId = mapping;
+        this.classToNodeIds = mapping;
         // Keep the existing assembler (its steps survive); only its
-        // class→node-id mapping is updated for future addStep calls.
+        // class→node-ids mapping is updated — the steps resolve their
+        // predecessors lazily against it at query time.
         if (familyAssembler != null) {
             familyAssembler.updateClassToNodeId(mapping);
         }

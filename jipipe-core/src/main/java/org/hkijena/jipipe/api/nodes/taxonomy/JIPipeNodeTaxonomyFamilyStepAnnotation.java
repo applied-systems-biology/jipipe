@@ -31,10 +31,12 @@ import java.lang.annotation.Target;
  * <p>
  * A step without {@link #after()} entries is a <em>start step</em>:
  * nothing has to run before it. Otherwise the listed predecessor node
- * classes are resolved to node ids (see
- * {@link FamilyAssembler#resolveNodeId(Class)}), and each resolved node
- * id contributes a directed edge predecessor → this node to the family's
- * workflow graph.
+ * classes are resolved to node ids <em>lazily at query time</em> (see
+ * {@link FamilyAssembler#resolveNodeIds(Class)}) against the mapping in
+ * effect then, and each resolved node id contributes a directed edge
+ * predecessor → this node to the family's workflow graph. A class behind
+ * several registered node ids (a shared factory class of generated
+ * entries) contributes one edge per node id.
  *
  * @see JIPipeNodeTaxonomyFamily
  * @see FamilyAssembler

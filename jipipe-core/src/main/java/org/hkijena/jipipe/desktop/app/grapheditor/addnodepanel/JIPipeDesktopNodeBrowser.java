@@ -57,6 +57,8 @@ import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.ui.JIPipeDesktopDockPanel;
 
 import javax.swing.*;
+import javax.swing.event.TreeExpansionEvent;
+import javax.swing.event.TreeExpansionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.awt.*;
@@ -152,6 +154,14 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private boolean selectionSuppressed;
 
+    /**
+     * Suspends the tree-expansion persistence while the browser applies
+     * programmatic model changes (populate, state restore, node-leaf
+     * rebuild) — their transient collapse/expand events must not overwrite
+     * the user's saved state.
+     */
+    private boolean treeStateSavingSuspended;
+
     // --- Last post-filtered results (the single source of truth for the
     // compact node leaves and the search highlights; see applyQueryResult) ---
     private List<JIPipeNodeDatabaseEntry> lastFiltered = List.of();
@@ -221,6 +231,27 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         tree.getTree().setTransferHandler(new TreeNodeTransferHandler(tree));
         tree.getTree().addTreeSelectionListener(e -> updateTreePathFromSelection());
         tree.setReferenceEntrySupplier(this::referenceEntry);
+        // Persist the user's expand/collapse state (function ids) for the
+        // current run (in-memory, shared across all node-browser
+        // instances) so it survives the panel being recreated (new
+        // browser instance). The guard keeps the programmatic model
+        // reloads (populate, node-leaf rebuild) from clobbering the state
+        // with their transient intermediate expansion.
+        tree.getTree().addTreeExpansionListener(new TreeExpansionListener() {
+            @Override
+            public void treeExpanded(TreeExpansionEvent e) {
+                if (!treeStateSavingSuspended) {
+                    saveTreeExpansionState();
+                }
+            }
+
+            @Override
+            public void treeCollapsed(TreeExpansionEvent e) {
+                if (!treeStateSavingSuspended) {
+                    saveTreeExpansionState();
+                }
+            }
+        });
         tree.getTree().addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -299,10 +330,19 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // Only the root ("All functions") is expanded by default: the
         // top-level function categories stay collapsed, so the tree opens
         // to a short overview, not a wall of categories (the controller's
-        // populateTree expands exactly the root).
-        tree.populateTree(isCompartmentsEditor ?
-            JIPipeNodeDatabasePipelineVisibility.Compartments :
-            JIPipeNodeDatabasePipelineVisibility.Pipeline);
+        // populateTree expands exactly the root). The user's previous
+        // expand/collapse state (persisted function ids) is restored right
+        // after the populate — suspended, so the populate's collapse
+        // events do not overwrite the saved state first.
+        treeStateSavingSuspended = true;
+        try {
+            tree.populateTree(isCompartmentsEditor ?
+                JIPipeNodeDatabasePipelineVisibility.Compartments :
+                JIPipeNodeDatabasePipelineVisibility.Pipeline);
+            tree.restoreExpandedFunctionIds(loadTreeExpansionState());
+        } finally {
+            treeStateSavingSuspended = false;
+        }
         applyViewIfNeeded();
 
         // The layout is tier-adaptive (a pure function of the width);
@@ -597,10 +637,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             return;
         }
         selectionSuppressed = true;
+        treeStateSavingSuspended = true;
         try {
             tree.rebuildNodeLeaves(lastFiltered);
         } finally {
             selectionSuppressed = false;
+            treeStateSavingSuspended = false;
         }
     }
 
@@ -863,6 +905,37 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         JIPipe.getSettings().save();
         reloadList();
+    }
+
+    // ------------------------------------------------------------------
+    // Tree expansion state (current run only — in-memory, shared by all
+    // node-browser instances in this process; deliberately NOT persisted
+    // to settings)
+    // ------------------------------------------------------------------
+
+    /**
+     * The expanded function branches as of the last save. Kept in memory
+     * only (the current run): it survives browser instances being
+     * recreated (panel close/reopen, editor tab recreation) — which is
+     * where the state was lost — without the brittleness of a
+     * settings-registry round-trip (JSON serialization, autosave timing,
+     * stale ids across versions).
+     */
+    private static volatile List<String> sessionExpandedFunctionIds = List.of();
+
+    /**
+     * The expanded function ids saved during this run, empty on first use.
+     */
+    private List<String> loadTreeExpansionState() {
+        return sessionExpandedFunctionIds;
+    }
+
+    /**
+     * Remembers the tree's current expanded function branches (called on
+     * every user expansion/collapse; cheap — a reference swap).
+     */
+    private void saveTreeExpansionState() {
+        sessionExpandedFunctionIds = List.copyOf(tree.expandedFunctionIds());
     }
 
     // ------------------------------------------------------------------

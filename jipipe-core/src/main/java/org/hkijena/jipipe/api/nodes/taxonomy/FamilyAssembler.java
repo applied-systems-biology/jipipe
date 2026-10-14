@@ -18,6 +18,7 @@ import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleDirectedGraph;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -46,24 +47,31 @@ import java.util.Set;
  * <p>
  * <b>Resolution of {@code after} node classes.</b> Annotation values are
  * node <em>classes</em>, but steps are keyed by node <em>ids</em>. The
- * assembler resolves a class to a node id via an injectable class→node-id
- * mapping (see {@link #resolveNodeId(Class)}):
+ * assembler resolves a class to node ids via an injectable class→node-ids
+ * mapping (see {@link #resolveNodeIds(Class)}), applied <em>lazily at
+ * query time</em> — a step stores the raw {@code after} classes and
+ * resolves them against the mapping in effect when
+ * {@link #graph}, {@link #followUps(String)}, {@link #siblingNodeIds(String)}
+ * or {@link #validate(Set)} runs:
  * <ol>
- * <li>the mapping registered with the assembler wins — production
- * callers build it from the real node type registry, where node ids are
- * stable string literals that are generally <em>not</em> the class
- * simple name;</li>
+ * <li>the ids registered with the assembler win — production callers build
+ * the mapping from the real node type registry, where node ids are stable
+ * string literals that are generally <em>not</em> the class simple name. A
+ * class mapped to several node ids (a shared factory class behind
+ * programmatically generated entries) contributes all of them;</li>
  * <li>otherwise the class's simple name is used, which is convenient for
  * tests with stub node classes whose ids equal their simple names.</li>
  * </ol>
+ * Deferred resolution makes registration order irrelevant: a step whose
+ * predecessor registers later still resolves once the mapping is current.
  * <p>
  * The assembler is not thread-safe; populate it during startup, then
  * query it.
  */
 public class FamilyAssembler {
 
-    /** node class → node id mapping registered by the caller */
-    private final Map<Class<?>, String> classToNodeId;
+    /** node class → registered node ids, in registration order */
+    private final Map<Class<?>, List<String>> classToNodeIds;
 
     /** family class → (node id → step), insertion-ordered */
     private final Map<Class<? extends JIPipeNodeTaxonomyFamily>,
@@ -77,7 +85,7 @@ public class FamilyAssembler {
 
     /**
      * Creates an assembler that resolves {@code after} classes by their
-     * simple name only (the fallback rule, see {@link #resolveNodeId(Class)}).
+     * simple name only (the fallback rule, see {@link #resolveNodeIds(Class)}).
      */
     public FamilyAssembler() {
         this(Map.of());
@@ -85,14 +93,15 @@ public class FamilyAssembler {
 
     /**
      * Creates an assembler that resolves {@code after} classes through
-     * the supplied class→node-id mapping first, falling back to the
+     * the supplied class→node-ids mapping first, falling back to the
      * class's simple name.
      *
-     * @param classToNodeId the caller's mapping from node classes to their
-     *                      registered node ids; may be empty
+     * @param classToNodeIds the caller's mapping from node classes to their
+     *                       registered node ids (in registration order); may be empty
      */
-    public FamilyAssembler(Map<Class<?>, String> classToNodeId) {
-        this.classToNodeId = new LinkedHashMap<>(classToNodeId);
+    public FamilyAssembler(Map<Class<?>, List<String>> classToNodeIds) {
+        this.classToNodeIds = new LinkedHashMap<>();
+        classToNodeIds.forEach((clazz, ids) -> this.classToNodeIds.put(clazz, new ArrayList<>(ids)));
     }
 
     /**
@@ -103,11 +112,11 @@ public class FamilyAssembler {
      * never derived from the family class; real families use ids of the
      * form {@code "jipipe:family:…"}.
      * <p>
-     * The annotation's {@code after} classes are resolved via
-     * {@link #resolveNodeId(Class)}; a predecessor that is not registered
-     * in the same family (or not resolvable at all) is reported at
-     * {@link #validate(Set)} time, not here, so that all steps can be
-     * added before the graph is checked.
+     * The annotation's {@code after} classes are stored <em>unresolved</em>
+     * and resolved lazily at query time (see the class Javadoc); a
+     * predecessor that is not registered in the same family (or not
+     * resolvable at all) is reported at {@link #validate(Set)} time, not
+     * here, so that all steps can be added before the graph is checked.
      * <p>
      * All registrations for one family class must agree on the family id;
      * the first one wins and a conflicting later one is rejected.
@@ -137,13 +146,13 @@ public class FamilyAssembler {
             throw new IllegalArgumentException(
                 "Duplicate step for node id '" + nodeId + "' in family '" + familyId + "'");
         }
-        List<String> afterIds = new ArrayList<>();
-        for (Class<?> predecessor : annotation.after()) {
-            String predecessorNodeId = resolveNodeId(predecessor);
-            afterIds.add(stepId(familyId, predecessorNodeId));
-        }
+        // The raw after classes are stored, not resolved step ids:
+        // resolution happens lazily at query time against the mapping in
+        // effect then (see the class Javadoc), so registration order and
+        // late mapping updates do not break the edges.
+        List<Class<?>> afterClasses = new ArrayList<>(Arrays.asList(annotation.after()));
         familySteps.put(nodeId, new JIPipeNodeTaxonomyFamilyStep(
-            familyId, annotation.label(), nodeId, annotation.purpose(), afterIds));
+            familyId, annotation.label(), nodeId, annotation.purpose(), afterClasses));
         stepOrder.computeIfAbsent(familyClass, id -> new ArrayList<>()).add(nodeId);
     }
 
@@ -176,39 +185,47 @@ public class FamilyAssembler {
     }
 
     /**
-     * Resolves an {@code after} node class to a node id: the registered
-     * class→node-id mapping wins, otherwise the class's simple name is
-     * used (see the class Javadoc for the rationale).
+     * Resolves an {@code after} node class to the node ids that fill its
+     * role: the registered class→node-ids mapping wins (a class behind
+     * programmatically generated entries maps to all of their ids, in
+     * registration order), otherwise the class's simple name is used (see
+     * the class Javadoc for the rationale).
+     * <p>
+     * Resolution happens lazily at query time: the mapping in effect when
+     * this is called determines the result, so a predecessor registered
+     * after the step was added still resolves correctly.
      *
      * @param nodeClass the predecessor node class from an annotation
-     * @return the node id to use as the predecessor step id
+     * @return the node ids to use as the predecessor step ids; never empty
      */
-    public String resolveNodeId(Class<?> nodeClass) {
-        String mapped = classToNodeId.get(nodeClass);
-        if (mapped != null) {
+    public List<String> resolveNodeIds(Class<?> nodeClass) {
+        List<String> mapped = classToNodeIds.get(nodeClass);
+        if (mapped != null && !mapped.isEmpty()) {
             return mapped;
         }
-        return nodeClass.getSimpleName();
+        return List.of(nodeClass.getSimpleName());
     }
 
     /**
-     * Replaces the class→node-id mapping used to resolve {@code after}
-     * classes in future {@link #addStep} calls. Already-registered steps
-     * are not affected: their predecessor step ids were resolved when
-     * they were added.
+     * Replaces the class→node-ids mapping used to resolve {@code after}
+     * classes. Already-registered steps are not affected structurally:
+     * their predecessor ids are resolved lazily against this mapping at
+     * query time.
      *
-     * @param classToNodeId node class → registered node id; may be empty
+     * @param classToNodeIds node class → registered node ids (in
+     *                       registration order); may be empty
      */
-    public void updateClassToNodeId(Map<Class<?>, String> classToNodeId) {
-        this.classToNodeId.clear();
-        if (classToNodeId != null) {
-            this.classToNodeId.putAll(classToNodeId);
+    public void updateClassToNodeId(Map<Class<?>, List<String>> classToNodeIds) {
+        this.classToNodeIds.clear();
+        if (classToNodeIds != null) {
+            classToNodeIds.forEach((clazz, ids) -> this.classToNodeIds.put(clazz, new ArrayList<>(ids)));
         }
     }
 
     /**
      * Builds the directed workflow graph of a family: one vertex per step
-     * id, one edge predecessor → successor for each {@code after} entry.
+     * id, one edge predecessor → successor for each resolved {@code after}
+     * id.
      *
      * @param family the family
      * @return a {@link SimpleDirectedGraph} whose vertices are the
@@ -218,7 +235,7 @@ public class FamilyAssembler {
         Graph<String, DefaultEdge> graph = new SimpleDirectedGraph<>(DefaultEdge.class);
         for (JIPipeNodeTaxonomyFamilyStep step : steps(family)) {
             graph.addVertex(step.getStepId());
-            for (String afterId : step.afterIds()) {
+            for (String afterId : step.afterIds(this)) {
                 graph.addVertex(afterId);
                 graph.addEdge(afterId, step.getStepId());
             }
@@ -259,7 +276,7 @@ public class FamilyAssembler {
             for (String successorNodeId :
                 stepOrder.getOrDefault(familyEntry.getKey(), List.of())) {
                 JIPipeNodeTaxonomyFamilyStep successor = familyEntry.getValue().get(successorNodeId);
-                if (successor != null && successor.afterIds().contains(stepId)) {
+                if (successor != null && successor.afterIds(this).contains(stepId)) {
                     seen.add(successorNodeId);
                 }
             }
@@ -327,22 +344,35 @@ public class FamilyAssembler {
 
     /**
      * Checks that every registered step refers to a node id the caller
-     * has in its set of registered node ids.
+     * has in its set of registered node ids, and that every step's
+     * resolved {@code after} predecessors refer to node ids of steps that
+     * actually exist in the same family (a dangling predecessor means the
+     * edge would silently never fire — e.g. because the predecessor's
+     * class does not map to a registered step).
      *
      * @param registeredNodeIds the node ids that exist in the node type
      *                          registry
-     * @return one human-readable error per dangling step (a step whose
-     * node id is not in {@code registeredNodeIds}), naming the family
-     * and the node id; empty if all steps are resolvable
+     * @return one human-readable error per dangling step or dangling
+     * predecessor, naming the family and the node id; empty if all steps
+     * are resolvable
      */
     public Set<String> validate(Set<String> registeredNodeIds) {
         Set<String> errors = new LinkedHashSet<>();
         for (Map.Entry<Class<? extends JIPipeNodeTaxonomyFamily>,
             Map<String, JIPipeNodeTaxonomyFamilyStep>> familyEntry : stepsByFamily.entrySet()) {
+            String familyId = familyIdByClass.get(familyEntry.getKey());
             for (JIPipeNodeTaxonomyFamilyStep step : familyEntry.getValue().values()) {
                 if (!registeredNodeIds.contains(step.nodeId())) {
-                    errors.add("Workflow family step in family '" + familyIdByClass.get(familyEntry.getKey())
+                    errors.add("Workflow family step in family '" + familyId
                         + "' references unregistered node id '" + step.nodeId() + "'");
+                    continue;
+                }
+                for (String afterId : step.afterIds(this)) {
+                    String predecessorNodeId = afterId.substring(familyId.length() + 1);
+                    if (!familyEntry.getValue().containsKey(predecessorNodeId)) {
+                        errors.add("Workflow family step '" + step.nodeId() + "' in family '" + familyId
+                            + "' references a missing predecessor step for node id '" + predecessorNodeId + "'");
+                    }
                 }
             }
         }
@@ -354,7 +384,7 @@ public class FamilyAssembler {
      * @param nodeId   the node id
      * @return the step id {@code familyId + "#" + nodeId}
      */
-    private static String stepId(String familyId, String nodeId) {
+    public static String stepId(String familyId, String nodeId) {
         return familyId + "#" + nodeId;
     }
 }

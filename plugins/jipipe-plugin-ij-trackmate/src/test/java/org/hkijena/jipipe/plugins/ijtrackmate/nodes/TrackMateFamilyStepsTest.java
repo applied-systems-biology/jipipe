@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotat
 import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.ConvertSpotsToRoiNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.converters.ConvertTracksToRoiNode;
+import org.hkijena.jipipe.plugins.ijtrackmate.nodes.detectors.CreateSpotDetectorNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.SpotDetectorNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.SpotFilterNode;
@@ -61,7 +62,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * Steps are keyed by the node class's <em>simple name</em> — the
  * {@link FamilyAssembler} fallback rule for an empty class→node-id mapping.
- * In production the registry provides the real stable node ids.
+ * In production the registry provides the real stable node ids, and the
+ * {@code after} classes resolve lazily against that mapping at query time.
+ * The generated detector entries (DoG, LoG, …) share the
+ * {@link CreateSpotDetectorNode} class, which carries the "Detect spots"
+ * step: in production its class→node-ids mapping fans the "Track spots"
+ * edge out to every generated detector id.
  * <p>
  * The annotated workflow: the main chain
  * Detect spots → Track spots → Filter tracks → Measure tracks, with
@@ -86,7 +92,12 @@ class TrackMateFamilyStepsTest {
         FollowSpotsPerTrackNode.class,
         TracksToRGBNode.class,
         ConvertTracksToRoiNode.class,
-        TrackSchemeRendererNode.class
+        TrackSchemeRendererNode.class,
+        // The shared factory class of the generated detector entries (DoG,
+        // LoG, …) — each generated node id becomes a "Detect spots" step,
+        // and "Track spots" follows all of them (deferred, multi-id
+        // resolution in production; the simple-name fallback here).
+        CreateSpotDetectorNode.class
     );
 
     /** Builds an assembler with all annotated TrackMate steps registered. */
@@ -224,6 +235,14 @@ class TrackMateFamilyStepsTest {
         // Terminal steps have no successors.
         assertTrue(assembler.followUps(TrackSchemeRendererNode.class.getSimpleName()).isEmpty(),
             "render track scheme is terminal");
+
+        // The generated detector entries (shared CreateSpotDetectorNode
+        // class, simple-name fallback here) link into "Track spots" — this
+        // is the "DoG detector → Track spots" follow-up the finder must
+        // show for every generated detector node id in production.
+        assertTrue(assembler.followUps(CreateSpotDetectorNode.class.getSimpleName())
+            .contains(TrackingNode.class.getSimpleName()),
+            "tracking must be a follow-up of the created spot detectors");
     }
 
     /**

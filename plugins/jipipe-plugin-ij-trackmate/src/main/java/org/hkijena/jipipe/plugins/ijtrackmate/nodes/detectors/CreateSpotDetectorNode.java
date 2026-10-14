@@ -24,12 +24,26 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.TrackMateFamily;
 import org.hkijena.jipipe.plugins.ijtrackmate.TrackMatePluginResourceManagerSupplier;
 import org.hkijena.jipipe.plugins.ijtrackmate.datatypes.SpotDetectorData;
 
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * The shared class of the generated "create spot detector" nodes (one per
+ * TrackMate detector factory, e.g. DoG / LoG). Every generated node id
+ * becomes a "Detect spots" step of the TrackMate workflow family — the
+ * step annotation below is looked up on the instance class, and each
+ * generated node's own id becomes the step. All detectors therefore link
+ * into "Track spots" (see {@link
+ * org.hkijena.jipipe.plugins.ijtrackmate.nodes.tracks.TrackingNode}, whose
+ * {@code after} references this class and resolves, lazily at query time,
+ * to every registered detector id).
+ */
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots", purpose = "Create the spot detector (e.g. DoG, LoG) that finds the candidate spots linked into tracks")
 public class CreateSpotDetectorNode extends JIPipeSimpleIteratingAlgorithm {
 
     private final CreateSpotDetectorNodeInfo nodeInfo;

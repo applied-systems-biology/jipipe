@@ -85,8 +85,11 @@ import java.util.Set;
  * query; the {@code null} case is the generic "Find node".
  * <p>
  * In search-active mode (non-empty search text) the flat query results
- * override the function tree: the tree stays visible but is dimmed/disabled
- * and its filter is not applied, while the list and rail keep working.
+ * override the function tree: the tree stays visible, enabled and
+ * navigable, but its branch filter is not applied to the flat results
+ * (the stored branch is dropped on the transition into search and, once
+ * the search is cleared, re-synced from the tree's current selection),
+ * while the list and rail keep working.
  */
 public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private static boolean AI_SEARCH = false;
@@ -144,6 +147,12 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * the flag would otherwise go stale).
      */
     private boolean broadening;
+    /**
+     * The search-active state of the last {@link #applySearchActiveState()}
+     * call, so the branch filter is dropped exactly once per inactive→active
+     * transition (see its javadoc) instead of on every debounced keystroke.
+     */
+    private boolean searchWasActive;
     /**
      * Monotonic counter bumped on every {@link #reloadList()}. A
      * {@link ReloadListRun} only applies its result if this value is still
@@ -525,23 +534,25 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     }
 
     /**
-     * In search-active mode (non-empty search) the flat query results
-     * override the function tree, so the tree is dimmed/disabled but stays
-     * visible. When the search is cleared the tree is re-enabled.
+     * Keeps the stored tree branch filter consistent with the search
+     * state. When a search becomes active the flat query results override
+     * the function tree, so the stored branch filter is dropped ONCE (on
+     * the inactive→active transition). When the search is cleared again,
+     * the filter is re-synced from the tree's current selection ONCE
+     * (active→inactive) — the user may have navigated the tree while
+     * searching, and that branch then applies to the (no longer flat)
+     * results. The tree itself is left alone at all times — it stays
+     * enabled and navigable (dimming/disabling it blocked all interaction,
+     * which the evaluation flagged).
      */
     private void applySearchActiveState() {
         boolean searchActive = model.isSearchActive();
-        tree.getTree().setEnabled(!searchActive);
-        if (searchActive) {
-            // Selecting the root removes the tree filter for flat results
-            programmaticUpdate = true;
-            try {
-                tree.getTree().setSelectionRow(0);
-            } finally {
-                programmaticUpdate = false;
-            }
+        if (searchActive && !searchWasActive) {
             model.setTreePath(List.of());
+        } else if (!searchActive && searchWasActive) {
+            updateModelTreePathFromSelection();
         }
+        searchWasActive = searchActive;
     }
 
     // ------------------------------------------------------------------
@@ -550,12 +561,13 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
     /**
      * Called by the detail rail when the user clicks a related / follow-up
-     * entry. If the entry is already visible in the center list it is
-     * selected directly (which, via the list's selection listener, updates
-     * the rail — one hop, and the rail's {@code setEntry} does not call the
-     * selector again, so there is no loop). Otherwise the view is broadened
-     * (search cleared, tree reset to the root) and the entry is selected
-     * once the reloaded list is applied by {@link #applyResult(List, Set)}.
+     * entry. If the entry is already visible in the center list (matched by
+     * id — see {@link #indexOfEntry}) it is selected directly (which, via
+     * the list's selection listener, updates the rail — one hop, and the
+     * rail's {@code setEntry} does not call the selector again, so there is
+     * no loop). Otherwise the view is broadened (search cleared, tree reset
+     * to the entry's function branch) and the entry is selected once the
+     * reloaded list is applied by {@link #applyResult(List, Set)}.
      */
     private void selectEntryFromRail(JIPipeNodeDatabaseEntry entry) {
         int index = indexOfEntry(nodeList.getModel(), entry);
@@ -575,12 +587,29 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 broadening = true;
             }
             searchField.setText("");
-            tree.getTree().setSelectionRow(0);
+            // Reveal the entry's function branch in the tree (instead of
+            // resetting to "All functions"): expand it and select its row,
+            // so the broadened view is visibly scoped to the clicked entry.
+            // The tree filter is NOT applied (the list keeps the full,
+            // broadened result — the entry must be in it).
+            JIPipeNodeTaxonomyFunction primaryFunction = NodeBrowserTreeController.primaryFunctionOf(entry);
+            TreePath functionRow = primaryFunction != null ? tree.functionRow(primaryFunction) : null;
+            if (functionRow != null) {
+                tree.selectRow(functionRow);
+            } else {
+                tree.getTree().setSelectionRow(0);
+            }
         } finally {
             programmaticUpdate = false;
         }
         model.setSearch("");
-        model.setTreePath(List.of());
+        // The tree now shows the clicked entry's branch — make the stored
+        // branch filter match what the tree displays, so list and tree
+        // agree (the reloaded list is scoped to that branch, which
+        // contains the clicked entry by definition). The applyResult
+        // pending-rail selection still lands on the entry even though the
+        // list is branch-scoped.
+        updateModelTreePathFromSelection();
         applySearchActiveState();
         long gen = reloadList();
         pendingRailSelectionGeneration = gen;
@@ -652,6 +681,9 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             int index = indexOfEntry(listModel, pendingRailSelection);
             if (index >= 0) {
                 nodeList.setSelectedIndex(index);
+                // Make the clicked rail entry visible (the list was just
+                // re-created and the scrollbar reset to the top).
+                nodeList.ensureIndexIsVisible(index);
             }
             pendingRailSelection = null;
             pendingRailSelectionGeneration = -1;
@@ -662,17 +694,26 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             pendingRailSelectionGeneration = -1;
             if (!listModel.isEmpty()) {
                 nodeList.setSelectedIndex(0);
+                nodeList.ensureIndexIsVisible(0);
             }
         }
     }
 
     /**
-     * The index of the given entry in a list model, or -1 (the
-     * {@link ListModel} interface does not expose a lookup by value).
+     * The index of the first entry with the same id in the given list
+     * model, or -1. Entries carry no {@code equals()} override (reference
+     * identity only), and related / follow-up lookups resolve entries
+     * through a different code path than the list query, so the id — not
+     * the instance — is the stable identity (the {@link ListModel}
+     * interface does not expose a lookup by value either way).
      */
     private static int indexOfEntry(ListModel<? extends JIPipeNodeDatabaseEntry> model, JIPipeNodeDatabaseEntry entry) {
+        if (entry == null) {
+            return -1;
+        }
+        String entryId = entry.getId();
         for (int i = 0; i < model.getSize(); i++) {
-            if (model.getElementAt(i) == entry) {
+            if (entryId.equals(model.getElementAt(i).getId())) {
                 return i;
             }
         }

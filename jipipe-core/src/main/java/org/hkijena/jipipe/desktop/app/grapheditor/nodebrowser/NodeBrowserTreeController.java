@@ -28,6 +28,7 @@ import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -160,6 +161,69 @@ public class NodeBrowserTreeController extends JPanel {
             }
         }
         return node;
+    }
+
+    // ------------------------------------------------------------------
+    // Expansion-state persistence (call site decides WHEN to save/restore;
+    // the ids are the stable taxonomy function ids — safe to persist, see
+    // the project's stable-ID rule)
+    // ------------------------------------------------------------------
+
+    /**
+     * The stable ids of all currently expanded function branches (function
+     * rows only — the root's expansion is implicit and entry leaves are
+     * never persisted). The call site decides how long to keep the list
+     * (the node browser holds it in memory for the current run only).
+     */
+    public List<String> expandedFunctionIds() {
+        List<String> ids = new ArrayList<>();
+        collectExpandedFunctionIds((DefaultMutableTreeNode) treeModel.getRoot(), ids);
+        return ids;
+    }
+
+    private void collectExpandedFunctionIds(DefaultMutableTreeNode node, List<String> ids) {
+        if (node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function
+            && node.getPath() != null
+            && tree.isExpanded(new TreePath(node.getPath()))) {
+            ids.add(function.getId());
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            if (node.getChildAt(i) instanceof DefaultMutableTreeNode child) {
+                collectExpandedFunctionIds(child, ids);
+            }
+        }
+    }
+
+    /**
+     * Expands every branch whose stable function id is in the given list
+     * (top-down, so an ancestor listed after its child still expands).
+     * Unknown ids (a function removed or pruned from the current view) are
+     * ignored. Call after {@link #populateTree} /
+     * {@link #rebuildNodeLeaves(List)}.
+     *
+     * @param functionIds the persisted expanded function ids
+     */
+    public void restoreExpandedFunctionIds(Collection<String> functionIds) {
+        if (functionIds == null || functionIds.isEmpty()) {
+            return;
+        }
+        Set<String> wanted = new HashSet<>(functionIds);
+        restoreExpandedFunctionIds((DefaultMutableTreeNode) treeModel.getRoot(), wanted);
+    }
+
+    private void restoreExpandedFunctionIds(DefaultMutableTreeNode node, Set<String> wanted) {
+        if (node.getPath() != null
+            && node.getUserObject() instanceof JIPipeNodeTaxonomyFunction function
+            && wanted.remove(function.getId())) {
+            // JTree.expandPath expands every node on the path, so the
+            // root/ancestors follow along automatically.
+            tree.expandPath(new TreePath(node.getPath()));
+        }
+        for (int i = 0; i < node.getChildCount(); i++) {
+            if (node.getChildAt(i) instanceof DefaultMutableTreeNode child) {
+                restoreExpandedFunctionIds(child, wanted);
+            }
+        }
     }
 
     private static boolean hasNodesUnder(JIPipeNodeTaxonomyFunction function, FunctionRegistry registry, Set<String> populated) {
