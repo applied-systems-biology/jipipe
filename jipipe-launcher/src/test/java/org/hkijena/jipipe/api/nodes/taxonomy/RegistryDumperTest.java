@@ -69,6 +69,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       "inputs":  [{"class": "…FQN…", "dataType": "…data-type id or null…"}],
  *       "outputs": [{"class": "…FQN…", "dataType": "…data-type id or null…"}]
  *     }
+ *   ],
+ *   "functions": [
+ *     {"id": "jipipe:function:…", "name": "…", "parent": "jipipe:function:…"},
+ *     {"id": "jipipe:function:images", "name": "Images", "parent": null}
  *   ]
  * }
  * }</pre>
@@ -79,12 +83,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code dataType}). An unregistered data class yields
  * {@code dataType: null}.
  * <p>
+ * The top-level {@code functions} array is the taxonomy function tree
+ * (added for the workflow-chain / branch analyses): one entry per
+ * registered function with {@code parent} = the parent function's id, or
+ * {@code null} for top-level branches ({@code getParent() == null}, exactly
+ * the {@link FunctionRegistry#topLevel()} definition). It lets a consumer
+ * resolve which top-level branch every node's leaf function id lives under
+ * without re-deriving the tree.
+ * <p>
  * <b>Determinism.</b> The output is byte-stable across runs: nodes sorted
  * by id, and every set/array taken from the registry sorted lexicographically
  * ({@code functions} keeps the primary function first, its secondaries are
  * then sorted; {@code familySteps} sorted by family id, then label;
  * {@code followUps} sorted; input/output slot entries deduplicated by class
- * FQN and sorted by FQN). Written compact via the default Jackson mapper,
+ * FQN and sorted by FQN; the top-level {@code functions} array sorted by
+ * function id). Written compact via the default Jackson mapper,
  * matching {@code corpus.json}.
  * <p>
  * Mirrors {@link TaxonomyFullValidationTest}'s bootstrap: this module's
@@ -186,6 +199,28 @@ class RegistryDumperTest {
                 slotEntries(info.getOutputSlots().stream().map(AddJIPipeOutputSlot::value).collect(Collectors.toList())));
         }
 
+        // Top-level function tree block (R6): one entry per registered
+        // function, sorted by id. parent = the parent function's id, null for
+        // top-level branches (getParent() == null, the FunctionRegistry
+        // .topLevel() definition). all() returns a fresh set per call, but
+        // we copy it anyway before sorting (the registry's sets may be
+        // immutable; in-place sort must never touch registry-owned state).
+        FunctionRegistry functionRegistry = nodes.getFunctions();
+        List<JIPipeNodeTaxonomyFunction> functions = new ArrayList<>(functionRegistry.all());
+        functions.sort(Comparator.comparing(JIPipeNodeTaxonomyFunction::getId));
+        ArrayNode functionsJson = root.putArray("functions");
+        for (JIPipeNodeTaxonomyFunction function : functions) {
+            ObjectNode functionJson = functionsJson.addObject();
+            functionJson.put("id", function.getId());
+            functionJson.put("name", function.getName());
+            JIPipeNodeTaxonomyFunction parent = function.getParent();
+            if (parent == null) {
+                functionJson.putNull("parent");
+            } else {
+                functionJson.put("parent", parent.getId());
+            }
+        }
+
         // The test runs with working dir jipipe-launcher/; resolve to the
         // repo root and write (creating the directory if missing).
         Path out = Paths.get("..", "utils", "taxonomy-research", "registry.json").toAbsolutePath().normalize();
@@ -194,6 +229,7 @@ class RegistryDumperTest {
         }
         MAPPER.writeValue(out.toFile(), root);
         System.out.println("RegistryDumperTest: registry: " + nodeIds.size() + " nodes, "
+            + functions.size() + " functions, "
             + families.size() + " families, " + familyGraphEdges + " family-graph edges -> " + out);
 
         // Assertions (d)-(h) against the file as written on disk.
@@ -201,9 +237,16 @@ class RegistryDumperTest {
         assertNotNull(parsed, "registry.json is missing its root object");
         ArrayNode parsedNodes = (ArrayNode) parsed.get("nodes");
         assertNotNull(parsedNodes, "registry.json is missing the 'nodes' array");
+        ArrayNode parsedFunctions = (ArrayNode) parsed.get("functions");
+        assertNotNull(parsedFunctions, "registry.json is missing the 'functions' array");
         Map<String, JsonNode> parsedById = new HashMap<>();
         for (JsonNode n : parsedNodes) {
             parsedById.put(n.get("id").asText(), n);
+        }
+        // function id -> entry, for the new-block self-consistency checks
+        Map<String, JsonNode> functionById = new HashMap<>();
+        for (JsonNode f : parsedFunctions) {
+            functionById.put(f.get("id").asText(), f);
         }
 
         // (d) the dump contains the DoG spot-detector node. The brief writes the
@@ -236,6 +279,37 @@ class RegistryDumperTest {
         assertEquals(nodeInfos.size(), parsedNodes.size(),
             "registry.json node count (" + parsedNodes.size()
                 + ") does not match the live registry size (" + nodeInfos.size() + ")");
+
+        // (i) every node's functions[] entry (primary + secondary ids)
+        // resolves to an entry in the top-level functions array
+        for (JsonNode n : parsedNodes) {
+            for (JsonNode functionId : n.get("functions")) {
+                String id = functionId.asText();
+                assertTrue(functionById.containsKey(id),
+                    "Node '" + n.get("id").asText() + "' references unknown function '" + id + "'");
+            }
+        }
+
+        // (ii) every non-null parent resolves to another entry in the array
+        for (JsonNode f : parsedFunctions) {
+            JsonNode parent = f.get("parent");
+            if (!parent.isNull()) {
+                String parentId = parent.asText();
+                assertTrue(functionById.containsKey(parentId),
+                    "Function '" + f.get("id").asText() + "' references unknown parent '" + parentId + "'");
+            }
+        }
+
+        // (iii) at least one top-level entry (parent == null); count not
+        // asserted (the tree shape is not a locked expectation)
+        boolean hasTopLevel = false;
+        for (JsonNode f : parsedFunctions) {
+            if (f.get("parent").isNull()) {
+                hasTopLevel = true;
+                break;
+            }
+        }
+        assertTrue(hasTopLevel, "registry.json functions array has no top-level entry (parent == null)");
     }
 
     private static void assertFollowUpsContain(JsonNode node, String expectedFollowUp) {

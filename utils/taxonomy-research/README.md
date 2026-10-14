@@ -46,10 +46,10 @@ pipelines) joins to `registry.json` (the registry) on each slot's
 - Date: 2026-10-14
 - Source: the live node registry at boot (not a static file read)
 
-`registry: N nodes, M families, K family-graph edges` (K = sum over families
-of declared resolved edges):
+`registry: N nodes, F functions, M families, K family-graph edges` (K = sum
+over families of declared resolved edges; F = registered taxonomy functions):
 
-**registry: 1510 nodes, 2 families, 20 family-graph edges**
+**registry: 1510 nodes, 88 functions, 2 families, 20 family-graph edges**
 
 **Families actually registered: `jipipe:family:trackmate` (21 step nodes)
 and `jipipe:family:plotting` (1 step node), 22 steps in total.** A family is
@@ -62,6 +62,13 @@ steps come from 15 annotated *classes*, not 21: `CreateSpotDetectorNode` is
 the shared instance class behind the 7 dynamically-registered
 `trackmate-create-spot-detector-*` nodes, so it contributes 7 steps.
 
+**Function tree:** the 88 registered taxonomy functions are dumped as the
+top-level `functions` array — one `{id, name, parent}` entry per function,
+`parent` being the parent function's id or `null` for the 13 top-level
+branches (`getParent() == null`, the `FunctionRegistry.topLevel()`
+definition). Added so the workflow-chain / branch analyses can resolve which
+top-level branch each node's function leaf id lives under.
+
 ## Files
 
 - `corpus.json` — generated corpus (structure only, no embedded data payloads;
@@ -70,12 +77,16 @@ the shared instance class behind the 7 dynamically-registered
   `loadError`, `compartments[]` → `name`, `nodes[]` (`uid`, `id`, `name`,
   `slots.input[]`/`slots.output[]` with `name` + raw on-disk `dataClass` token),
   `edges[]` (`fromUid`, `fromSlot`, `dataClass`, `toUid`, `toSlot`).
-- `registry.json` — generated registry (~705 KB), byte-stable across runs
-  (nodes sorted by id; every registry set/array sorted lexicographically).
-  Locked shape: `nodes[]` (`id`, `name`, `framework`, `functions[]` primary
-  first then secondaries, `tags[]`, `familySteps[]` (`family`, `label`),
-  `followUps[]`, `inputs[]`/`outputs[]` each `{"class": <FQN>, "dataType":
-  <data-type id or null>}`). Joined to `corpus.json` on `dataType`.
+- `registry.json` — generated registry (~714 KB), byte-stable across runs
+  (nodes sorted by id; the `functions` array sorted by function id; every
+  registry set/array sorted lexicographically). Locked shape: `nodes[]` (`id`,
+  `name`, `framework`, `functions[]` primary first then secondaries, `tags[]`,
+  `familySteps[]` (`family`, `label`), `followUps[]`, `inputs[]`/`outputs[]`
+  each `{"class": <FQN>, "dataType": <data-type id or null>}`) plus a
+  top-level `functions[]` (the taxonomy function tree: `id`, `name`, `parent`
+  = parent id or `null` for top-level branches). `nodes` is joined to
+  `corpus.json` on `dataType`; the `functions` block resolves each node's
+  function leaf id to its top-level branch.
 - `report.md` — the combined research report. Section 1 is owned by the Task 3
   script (regenerated in place on re-run; later tasks append sections 2–7).
 - `analysis/t3_datatype_usage.py` — Task 3 analysis script (stdlib-only
