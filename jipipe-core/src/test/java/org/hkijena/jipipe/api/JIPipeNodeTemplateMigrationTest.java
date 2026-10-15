@@ -38,15 +38,32 @@ class JIPipeNodeTemplateMigrationTest {
 
     // --- the pure name→id matcher ---
     @Test
-    void firstSegmentMatchesAFunction() {
-        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("Image");
-        assertThat(ref.isResolved()).isTrue();
-        assertThat(ref.getId()).startsWith("jipipe:function:");
+    void imageSegmentMapsToTopLevelBranchNotExportLeaf() {
+        // "Image" (→ "Images") must map to the top-level branch, NOT the
+        // childless export sub-leaf jipipe:function:export-images that
+        // shadows it with the same display name.
+        assertThat(JIPipeNodeTemplateMigration.migrate("Image").getId()).isEqualTo("jipipe:function:images");
+    }
+
+    @Test
+    void tableSegmentMapsToTopLevelBranchNotExportLeaf() {
+        // "Table" (→ "Tables") must map to the top-level branch, NOT
+        // jipipe:function:export-tables.
+        assertThat(JIPipeNodeTemplateMigration.migrate("Table").getId()).isEqualTo("jipipe:function:tables");
+    }
+
+    @Test
+    void leafOnlyNameFallsThroughToLeaf() {
+        // "Thresholding" has no same-named top-level branch → the child pass
+        // must still resolve it to the leaf under Images.
+        assertThat(JIPipeNodeTemplateMigration.migrate("Thresholding").getId()).isEqualTo("jipipe:function:thresholding");
     }
 
     @Test
     void unknownSegmentYieldsUnset() {
-        assertThat(JIPipeNodeTemplateMigration.migrate("TotallyUnknownXyz").isResolved()).isFalse();
+        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("TotallyUnknownXyz");
+        assertThat(ref.isResolved()).isFalse();
+        assertThat(ref.getId()).isNull();
     }
 
     @Test
@@ -60,7 +77,7 @@ class JIPipeNodeTemplateMigrationTest {
         String json = "{\"name\":\"legacy\",\"menu-path\":[\"Image\",\"Threshold\"]}";
         JIPipeNodeTemplate t = JsonUtils.readFromString(json, JIPipeNodeTemplate.class);
         t.migrateLegacyMenuPath();
-        assertThat(t.getTaxonomyFunction().isResolved()).isTrue();   // "Image"→a real function
+        assertThat(t.getTaxonomyFunction().getId()).isEqualTo("jipipe:function:images");   // "Image"→top-level branch
         assertThat(t.getDescription().getHtml()).contains("Previously");  // auditable footer
     }
 

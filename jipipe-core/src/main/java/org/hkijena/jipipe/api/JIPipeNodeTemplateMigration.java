@@ -29,8 +29,9 @@ import java.util.Map;
  * (spec §9 of the template-taxonomy integration design).
  * <p>
  * The first segment of the old menu path is matched case-insensitively against
- * the display names of the registered taxonomy functions — leaves first, then
- * branches — with a small abbreviation table for the legacy menu categories
+ * the display names of the registered taxonomy functions — top-level branches
+ * first (on a name tie), then child functions — with a small abbreviation
+ * table for the legacy menu categories
  * (e.g. {@code "Image" → "Images"}). The result is the referenced function's id;
  * when nothing matches (or the segment is blank), an <b>unset</b> reference is
  * returned — the catch-all placement ({@code jipipe:function:templates}) is
@@ -65,7 +66,9 @@ public final class JIPipeNodeTemplateMigration {
      * The segment is normalized (trimmed and, if it is a legacy abbreviation,
      * replaced by the matching function name) and then matched
      * case-insensitively against the display names of all registered taxonomy
-     * functions, preferring leaves (functions without children) over branches.
+     * functions, preferring top-level branches (parent == null) on a name tie
+     * (the export sub-leaves "Images"/"Tables" shadow the top-level branches
+     * of the same name), then any child function.
      *
      * @param firstMenuSegment the first segment of the legacy menu path, or
      *                         {@code null}/blank for no path
@@ -84,18 +87,26 @@ public final class JIPipeNodeTemplateMigration {
         String candidate = ABBREVIATIONS.getOrDefault(name.toLowerCase(Locale.ROOT), name);
         var functions = JIPipe.getNodes().getFunctions();
 
-        // Pass 1: leaves (functions without children) — the most specific match
+        // Pass 1: top-level branches (parent == null). On a display-name tie the
+        // top-level branch wins over any child — the registry contains childless
+        // export sub-leaves literally named "Images" and "Tables"
+        // (jipipe:function:export-images / export-tables) that shadow the
+        // top-level Images/Tables branches, but a legacy menu-path FIRST segment
+        // is a top-level menu category and must map to the branch
+        // ("Image" → jipipe:function:images, NOT jipipe:function:export-images).
+        // Do not "fix" this back to leaf-first.
         JIPipeNodeTaxonomyFunction match = null;
-        for (JIPipeNodeTaxonomyFunction function : functions.all()) {
-            if (equalsIgnoreCase(candidate, function.getName()) && functions.children(function).isEmpty()) {
+        for (JIPipeNodeTaxonomyFunction function : functions.topLevel()) {
+            if (equalsIgnoreCase(candidate, function.getName())) {
                 match = function;
                 break;
             }
         }
-        // Pass 2: remaining functions (branches)
+        // Pass 2: any child function (leaf or branch) — a segment without a
+        // same-named top-level branch (e.g. "Thresholding") falls through here
         if (match == null) {
             for (JIPipeNodeTaxonomyFunction function : functions.all()) {
-                if (equalsIgnoreCase(candidate, function.getName())) {
+                if (function.getParent() != null && equalsIgnoreCase(candidate, function.getName())) {
                     match = function;
                     break;
                 }
