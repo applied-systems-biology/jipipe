@@ -106,6 +106,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.PlottingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.RoisFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.StatisticsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.TablesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TemplatesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.TrackingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework;
@@ -304,6 +305,8 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             new DataUtilitiesFunction(),
             new TextMarkupFunction(),
             new ScriptingFunction(),
+            // misc — templates catch-all (template-taxonomy integration)
+            new TemplatesFunction(),
             // scripting — language sub-leaves (re-clustering audit: users
             // interested in one language get a dedicated branch; the
             // matching framework facet is the orthogonal filter)

@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code @Plugin} annotation during {@link JIPipe#ensureInstance()}) actually
  * registers the curated taxonomy into the live registries:
  * <ul>
- * <li>the 84 functions (13 top-level branches + 71 seed leaves),</li>
+ * <li>the 89 functions (13 top-level branches + 76 leaves),</li>
  * <li>the 16 frameworks,</li>
  * <li>a valid taxonomy ({@link JIPipeNodesServiceComponent#validateTaxonomy()}
  * empty).</li>
@@ -44,13 +44,14 @@ class TaxonomyPluginTest {
 
     @Test
     void allTaxonomyRegistered() {
-        // 13 top-level branches + 71 seed leaves (incl. the dual-visible
+        // 13 top-level branches + 76 leaves (incl. the dual-visible
         // GraphAnnotationsFunction, the RoiPropertiesFunction audit leaf, the
         // 10 full-registry-audit Images leaves, the 7
-        // curated-reorganization leaves, and the 4 Scripting language
-        // sub-leaves)
-        assertEquals(88, JIPipe.getNodes().getFunctions().all().size(),
-            "Expected 88 taxonomy functions registered by TaxonomyPlugin");
+        // curated-reorganization leaves, the 4 Scripting language
+        // sub-leaves, and the jipipe:function:templates catch-all leaf of
+        // the template-taxonomy integration)
+        assertEquals(89, JIPipe.getNodes().getFunctions().all().size(),
+            "Expected 89 taxonomy functions registered by TaxonomyPlugin");
         assertEquals(16, JIPipe.getNodes().getFrameworks().all().size(),
             "Expected 16 taxonomy frameworks registered by TaxonomyPlugin");
 
