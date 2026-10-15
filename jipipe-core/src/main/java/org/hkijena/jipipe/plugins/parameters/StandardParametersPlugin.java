@@ -76,6 +76,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.*;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.ImageJMacroParameter;
 import org.hkijena.jipipe.plugins.parameters.library.scripts.PythonScriptParameter;
 import org.hkijena.jipipe.plugins.parameters.library.table.ParameterTable;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 import org.hkijena.jipipe.plugins.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.plugins.parameters.tools.ExpressionTesterJIPipeDesktopMenuExtension;
@@ -83,6 +84,7 @@ import org.hkijena.jipipe.plugins.parameters.tools.FileChooserTesterJIPipeDeskto
 import org.hkijena.jipipe.plugins.parameters.tools.ParameterTesterJIPipeDesktopMenuExtension;
 import org.hkijena.jipipe.plugins.parameters.ui.api.*;
 import org.hkijena.jipipe.plugins.parameters.ui.library.*;
+import org.hkijena.jipipe.plugins.parameters.ui.taxonomy.JIPipeDesktopTaxonomyFunctionRefParameterEditorUI;
 import org.hkijena.jipipe.utils.PathForm;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -149,6 +151,7 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
         registerPrimitives();
         registerCommonJavaTypes();
         registerJIPipeTypes();
+        registerTaxonomyFunctionRef();
         registerGeneratingParameters();
         registerPairParameters();
         registerEnumParameters();
@@ -780,6 +783,16 @@ public class StandardParametersPlugin extends JIPipePrepackagedDefaultJavaPlugin
                 JIPipeNodeDatabaseSearchImplementation.class,
                 "Node database search implementation",
                 "Method that implements the node search");
+    }
+
+    private void registerTaxonomyFunctionRef() {
+        // Taxonomy function reference (function-tree picker)
+        registerParameterType("jipipe:taxonomy-function",
+                JIPipeTaxonomyFunctionRef.class,
+                JIPipeParameterArchetype.Value, JIPipeTaxonomyFunctionRef::new,
+                r -> new JIPipeTaxonomyFunctionRef((JIPipeTaxonomyFunctionRef) r),
+                "Taxonomy function", "The taxonomy function this template is filed under",
+                JIPipeDesktopTaxonomyFunctionRefParameterEditorUI.class);
     }
 
     private void registerCommonJavaTypes() {
