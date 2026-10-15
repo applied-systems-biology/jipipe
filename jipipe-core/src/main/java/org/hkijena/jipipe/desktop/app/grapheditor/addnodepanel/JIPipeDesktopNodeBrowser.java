@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -25,12 +26,14 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
@@ -45,8 +48,11 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.compartments.JIPipeDesktopCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.flavors.pipeline.JIPipeDesktopPipelineGraphEditorUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementController;
+import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
+import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
@@ -114,6 +120,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     /** The model holds all non-Swing browser state. */
     private final NodeBrowserModel model = new NodeBrowserModel();
+    private final TemplateManagementController templateController = new TemplateManagementController();
 
     private final JIPipeNodeDatabase database;
     private final JIPipeDesktopGraphEditorUI graphEditorUI;
@@ -396,6 +403,29 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (AIApplicationSettings.getInstance().isEnableAI()) {
             toolBar.add(aiSearchButton);
         }
+
+        // "Configure templates" gear (spec §8.3): opens the TemplateManagement
+        // modal on Global by default (or the selected entry's scope when a
+        // template entry is selected — see openTemplateManagementFromToolbar).
+        JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
+        configureTemplatesButton.setToolTipText("Configure node templates");
+        UIUtils.makeButtonFlatWithSize(configureTemplatesButton, 28);
+        configureTemplatesButton.addActionListener(e -> openTemplateManagementFromToolbar());
+        toolBar.add(configureTemplatesButton);
+    }
+
+    /**
+     * The gear's entry point (spec §8.3): opens the "Configure templates" modal
+     * on the scope tab of the currently selected template entry, falling back
+     * to Global when the selection is empty or a node entry.
+     */
+    private void openTemplateManagementFromToolbar() {
+        TemplateScope scope = null;
+        JIPipeNodeDatabaseEntry selected = resultList.getSelectedValue();
+        if (selected instanceof CreateNewNodesByTemplateDatabaseEntry templateEntry) {
+            scope = templateEntry.getScope();
+        }
+        openTemplateManagement(scope == null ? TemplateScope.Global : scope);
     }
 
     // ------------------------------------------------------------------
@@ -1148,10 +1178,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * Multi-selection (list rows): pin/unpin acts on the WHOLE selection
      * (as before); insert-at-cursor and show-documentation act on the first
      * selected entry (as before). The tree selection is single, so there the
-     * selection list is always exactly one entry. The template quick actions
-     * (edit / copy / delete / configure) are deliberately NOT supplied here
-     * — Task 9 adds them; until then
-     * {@link NodeEntryContextMenu#buildJPopupMenu} skips those specs.
+     * selection list is always exactly one entry.
+     * <p>
+     * The template quick actions (edit / copy-to-global / copy-to-project /
+     * delete / configure-templates) are supplied ONLY when the first selected
+     * entry is a {@link CreateNewNodesByTemplateDatabaseEntry} (the five ids
+     * that {@code specs()} declared for that scope). A node entry supplies none
+     * of them, so its menu is unchanged; and because
+     * {@link NodeEntryContextMenu#buildJPopupMenu} skips any spec id that has
+     * no action, the scope-gated omission in {@code specs()} (e.g. System has
+     * no edit/delete) is what actually controls what renders.
      *
      * @param selected the selected entries (the list's selection, or the
      *                 single tree-leaf entry)
@@ -1169,7 +1205,108 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         actions.put(NodeEntryContextMenu.PIN, () -> pinNodes(selected));
         actions.put(NodeEntryContextMenu.UNPIN, () -> unpinNodes(selected));
         actions.put(NodeEntryContextMenu.SHOW_DOC, () -> showDocumentation(selected.get(0)));
+
+        // Template quick actions (spec §8.2/§8.3): only supplied when the FIRST
+        // selected entry is a template entry. The scope-gated ids that specs()
+        // declared for that scope are supplied here; any template id NOT in the
+        // first entry's scope (and every node entry, which has none) is simply
+        // absent, so buildJPopupMenu skips it. This is what makes a node entry's
+        // menu unchanged (node entries' specs() carry no template ids).
+        if (selected.get(0) instanceof CreateNewNodesByTemplateDatabaseEntry templateEntry) {
+            TemplateScope scope = templateEntry.getScope();
+            actions.put(NodeEntryContextMenu.EDIT, () -> templateEdit(templateEntry));
+            actions.put(NodeEntryContextMenu.COPY_TO_GLOBAL, () -> templateCopyToGlobal(templateEntry));
+            actions.put(NodeEntryContextMenu.COPY_TO_PROJECT, () -> templateCopyToProject(templateEntry));
+            actions.put(NodeEntryContextMenu.DELETE, () -> templateDelete(templateEntry));
+            actions.put(NodeEntryContextMenu.CONFIGURE_TEMPLATES, () -> openTemplateManagement(scope));
+        }
         return actions;
+    }
+
+    /**
+     * The current project (from the workbench), or {@code null} when the browser
+     * is not hosted in a project workbench (e.g. the compartments editor).
+     */
+    private JIPipeProject currentProject() {
+        return getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench projectWorkbench ?
+            projectWorkbench.getProject() : null;
+    }
+
+    /**
+     * Opens the "Configure templates" modal on the given scope tab (the
+     * context-menu "Configure templates" item, spec §8.3).
+     */
+    private void openTemplateManagement(TemplateScope scope) {
+        TemplateManagementDialog dialog = new TemplateManagementDialog(getDesktopWorkbench(), scope);
+        dialog.setVisible(true);
+        reloadList();
+    }
+
+    /**
+     * The Edit action: opens the template editor dialog on a COPY (exactly as
+     * the old template box's edit action did) — because
+     * {@code taxonomyFunction} is a registered {@code @JIPipeParameter}, the
+     * form automatically shows the taxonomy-function picker (spec §8.2).
+     * Restricted to Global/Project by specs() (System omits edit).
+     */
+    private void templateEdit(CreateNewNodesByTemplateDatabaseEntry entry) {
+        JIPipeNodeTemplate template = entry.getTemplate();
+        if (template.isFromExtension()) {
+            return; // System templates are read-only (specs() also omits edit)
+        }
+        JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
+        if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), copy,
+            new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."),
+            "Edit template",
+            JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
+                | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
+            JIPipe.getNodeTemplates().editTemplate(template, copy, currentProject());
+            reloadList();
+        }
+    }
+
+    /**
+     * The Copy-to-Global action (spec §8.2): copies the template into the global
+     * store via the controller (the "Copy to Global" escape hatch, valid from
+     * System/Project). The controller emits the refresh event; reloadList()
+     * makes the browser list/tree update immediately.
+     */
+    private void templateCopyToGlobal(CreateNewNodesByTemplateDatabaseEntry entry) {
+        if (templateController.copyTo(currentProject(), entry.getScope(), TemplateScope.Global, entry.getTemplate())) {
+            reloadList();
+        }
+    }
+
+    /**
+     * The Copy-to-Project action (spec §8.2): copies the template into the
+     * current project's metadata via the controller (valid from System/Global).
+     */
+    private void templateCopyToProject(CreateNewNodesByTemplateDatabaseEntry entry) {
+        JIPipeProject project = currentProject();
+        if (project == null) {
+            return;
+        }
+        if (templateController.copyTo(project, entry.getScope(), TemplateScope.Project, entry.getTemplate())) {
+            reloadList();
+        }
+    }
+
+    /**
+     * The Delete action (spec §8.2): removes the template from its scope via the
+     * controller after confirmation (System is read-only, so specs() omits
+     * delete there). A refresh is emitted on success.
+     */
+    private void templateDelete(CreateNewNodesByTemplateDatabaseEntry entry) {
+        JIPipeNodeTemplate template = entry.getTemplate();
+        TemplateScope scope = entry.getScope();
+        if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the template \"" + template.getName() + "\"?",
+            "Delete template", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+            return;
+        }
+        if (templateController.delete(currentProject(), scope, template)) {
+            reloadList();
+        }
     }
 
     private void showDocumentation(JIPipeNodeDatabaseEntry entry) {

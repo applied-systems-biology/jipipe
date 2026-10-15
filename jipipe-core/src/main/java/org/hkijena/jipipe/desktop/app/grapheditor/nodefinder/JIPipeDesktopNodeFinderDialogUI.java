@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeCon
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -478,6 +480,15 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             mainToolBar.add(aiSearchButton);
         }
 
+        // "Configure templates" gear (spec §8.3): opens the TemplateManagement
+        // modal on Global by default (or the selected entry's scope when a
+        // template entry is selected).
+        JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
+        configureTemplatesButton.setToolTipText("Configure node templates");
+        UIUtils.makeButtonFlatWithSize(configureTemplatesButton, 28);
+        configureTemplatesButton.addActionListener(e -> openTemplateManagementFromToolbar());
+        mainToolBar.add(configureTemplatesButton);
+
         if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
             findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindExistingNodes());
@@ -501,6 +512,21 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         toolbarPanel.add(mainToolBar);
 
         getContentPane().add(toolbarPanel, BorderLayout.NORTH);
+    }
+
+    /**
+     * The gear's entry point (spec §8.3): opens the "Configure templates" modal
+     * on the scope tab of the currently selected template entry, falling back
+     * to Global when the selection is empty or a node entry.
+     */
+    private void openTemplateManagementFromToolbar() {
+        TemplateScope scope = null;
+        JIPipeNodeDatabaseEntry selected = nodeList.getSelectedValue();
+        if (selected instanceof CreateNewNodesByTemplateDatabaseEntry templateEntry) {
+            scope = templateEntry.getScope();
+        }
+        TemplateManagementDialog dialog = new TemplateManagementDialog(canvasUI.getDesktopWorkbench(), scope == null ? TemplateScope.Global : scope);
+        dialog.setVisible(true);
     }
 
     private void openFirstEntryMenu() {
