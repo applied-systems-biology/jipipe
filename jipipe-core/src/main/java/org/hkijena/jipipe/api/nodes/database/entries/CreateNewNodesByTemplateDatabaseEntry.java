@@ -8,9 +8,11 @@ import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TemplatesFunction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.jsoup.Jsoup;
 
@@ -21,15 +23,23 @@ import java.util.List;
 
 public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeDatabaseEntry {
 
+    private static final String BADGE_PATTERN = "Pattern";
+    private static final String BADGE_CUSTOM = "Custom";
+
     private final JIPipeNodeTemplate template;
     private final JIPipeNodeDatabasePipelineVisibility visibility;
     private final WeightedTokens tokens = new WeightedTokens();
     private final String id;
     private final String descriptionPlain;
-    private final String locationInfo;
+    private final TemplateScope scope;
 
     public CreateNewNodesByTemplateDatabaseEntry(JIPipeNodeTemplate template) {
+        this(template, TemplateScope.Global);
+    }
+
+    public CreateNewNodesByTemplateDatabaseEntry(JIPipeNodeTemplate template, TemplateScope scope) {
         this.template = template;
+        this.scope = scope;
         this.id = "node-template:" + template.getUUID();
 
         // Find visibility
@@ -42,17 +52,40 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         visibility = foundPipelineOnly ? JIPipeNodeDatabasePipelineVisibility.Pipeline : JIPipeNodeDatabasePipelineVisibility.Both;
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
 
-        // Build location info (minimal transition form; the scoped
-        // "Templates / <scope>" location info is introduced with TemplateScope)
-        this.locationInfo = template.getLocationInfo();
-
         initializeTokens();
     }
 
     private void initializeTokens() {
         tokens.add(template.getName(), WeightedTokens.WEIGHT_NAME);
-        tokens.add(locationInfo, WeightedTokens.WEIGHT_NAME);
+        tokens.add(getLocationInfos().get(0), WeightedTokens.WEIGHT_NAME);
+        tokens.add(scope.name(), WeightedTokens.WEIGHT_NAME);
+        tokens.add(getBadge(), WeightedTokens.WEIGHT_NAME);
         tokens.add(template.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
+    }
+
+    public TemplateScope getScope() {
+        return scope;
+    }
+
+    /**
+     * The display badge for this template entry: {@code Pattern} when the template
+     * graph contains two or more nodes, otherwise {@code Custom}. Computed on demand
+     * (never stored) from the live graph node count.
+     */
+    public String getBadge() {
+        int nodeCount = template.getGraph() == null ? 0 : template.getGraph().getGraphNodes().size();
+        return nodeCount >= 2 ? BADGE_PATTERN : BADGE_CUSTOM;
+    }
+
+    @Override
+    public Set<String> getFunctionIds() {
+        JIPipeTaxonomyFunctionRef ref = template.getTaxonomyFunction();
+        if (ref != null && ref.isResolved()) {
+            return Set.of(ref.getId());
+        }
+        // Unset or stale ref: fall back to the catch-all leaf so the template
+        // always has a defined function-tree placement.
+        return Set.of(TemplatesFunction.ID);
     }
 
     public JIPipeNodeTemplate getTemplate() {
@@ -96,7 +129,7 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
 
     @Override
     public List<String> getLocationInfos() {
-        return Collections.singletonList(locationInfo);
+        return Collections.singletonList("Templates / " + scope.name());
     }
 
     @Override

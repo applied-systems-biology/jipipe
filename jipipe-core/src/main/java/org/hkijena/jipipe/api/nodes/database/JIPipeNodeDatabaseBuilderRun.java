@@ -98,7 +98,7 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
         // Create from templates
         for (JIPipeNodeTemplate template : JIPipe.getNodeTemplates().getAllTemplates(database.getProject())) {
             try {
-                CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template);
+                CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template, determineTemplateScope(template));
                 newEntries.add(newEntry);
             } catch (Throwable ignored) {
             }
@@ -106,5 +106,22 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
 
         database.setEntries(newEntries);
         database.buildIndex();
+    }
+
+    /**
+     * Determines the {@link TemplateScope} of a template from its storage
+     * location: plugin-provided templates are {@link TemplateScope#System},
+     * those in the user's global store are {@link TemplateScope#Global}, and
+     * everything else (which came from the project metadata) is
+     * {@link TemplateScope#Project}.
+     */
+    private TemplateScope determineTemplateScope(JIPipeNodeTemplate template) {
+        if (JIPipe.getNodeTemplates().isPluginTemplate(template)) {
+            return TemplateScope.System;
+        }
+        if (JIPipe.getNodeTemplates().isInGlobal(template)) {
+            return TemplateScope.Global;
+        }
+        return TemplateScope.Project;
     }
 }
