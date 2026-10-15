@@ -38,6 +38,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.NodeEntryContextMenu;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEvent;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.events.JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
@@ -74,6 +75,7 @@ import java.awt.datatransfer.Transferable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -1031,14 +1033,25 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * Right-click trigger for the function tree (the {@code isPopupTrigger}
-     * check on both press and release covers all platforms). When the clicked
-     * row is on the {@code DataSourcesFunction} branch or one of its
-     * {@code *DataFunction} leaf branches, the full data-source menu is shown
-     * — rebuilt on each show (reloaded-on-show, like the old panel's
-     * reloadable pattern). Right-clicks on any other tree row (or on a node
-     * leaf row) are ignored: the old per-category {@code menuPath} popups are
-     * removed by the redesign. The full menu is shown on the branch <em>and</em>
-     * its leaves (a verifiable per-leaf data-type pre-scope is not available).
+     * check on both press and release covers all platforms).
+     * <p>
+     * When the clicked row is a <b>node leaf</b> (a
+     * {@link JIPipeNodeDatabaseEntry} user object — what the compact
+     * single-pane shows, the tree having taken over the node-list role),
+     * the shared node-entry menu is shown — the SAME
+     * {@link NodeEntryContextMenu#specs} +
+     * {@link NodeEntryContextMenu#buildJPopupMenu} +
+     * {@link #entryActionsMap} the node list uses (spec §7.3, the 1-pane
+     * context-menu bug fix: before, the tree leaves had NO context menu, so
+     * Insert at cursor / Pin / Unpin / Show documentation were unreachable).
+     * <p>
+     * When the clicked row is on the {@code DataSourcesFunction} branch or
+     * one of its {@code *DataFunction} leaf branches, the full data-source
+     * menu is shown — rebuilt on each show (reloaded-on-show, like the old
+     * panel's reloadable pattern). Right-clicks on any other tree row are
+     * ignored: the old per-category {@code menuPath} popups are removed by
+     * the redesign. The full menu is shown on the branch <em>and</em> its
+     * leaves (a verifiable per-leaf data-type pre-scope is not available).
      */
     private void handleTreePopupMenuTrigger(MouseEvent e) {
         if (!e.isPopupTrigger()) {
@@ -1046,6 +1059,23 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         TreePath path = tree.getTree().getPathForLocation(e.getX(), e.getY());
         if (path == null) {
+            return;
+        }
+        // Node leaf (the compact single-pane's insert target): the shared
+        // node-entry menu — the SAME builder + actions map the node list
+        // uses, so a tree leaf and a list row of the same entry render the
+        // identical menu (spec §7.3).
+        JIPipeNodeDatabaseEntry entry = tree.entryFromPath(path);
+        if (entry != null) {
+            Set<String> pinned = getPinnedNodeDatabaseEntries();
+            List<JIPipeNodeDatabaseEntry> selected = List.of(entry);
+            JPopupMenu popupMenu = NodeEntryContextMenu.buildJPopupMenu(
+                NodeEntryContextMenu.specs(entry, pinned),
+                entryActionsMap(selected, pinned));
+            if (popupMenu.getComponentCount() > 0) {
+                popupMenu.revalidate();
+                popupMenu.show(tree, e.getX(), e.getY());
+            }
             return;
         }
         JIPipeNodeTaxonomyFunction branch = tree.functionFromTreePath(path);
@@ -1086,23 +1116,60 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             contextMenu.removeAll();
             List<JIPipeNodeDatabaseEntry> selected = resultList.getSelectedValuesList();
             if (!selected.isEmpty()) {
+                // Shared menu builder (spec §7.3): the specs are the single
+                // source of truth for WHICH items the selection gets — the
+                // same specs + buildJPopupMenu the compact-mode tree leaves
+                // use, so a list row and a tree leaf of the same entry render
+                // the identical menu (structural parity, not copy-paste).
+                // specsForSelection delegates to specs(first, pinned) for a
+                // single-entry selection (== the tree's path) and only
+                // restores BOTH pin+unpin for a MIXED multi-selection (the
+                // pre-refactor list-menu display). The built menu's
+                // components are re-parented into the (single) reloadable
+                // contextMenu that addRightClickPopupMenuToJList shows.
                 Set<String> pinned = getPinnedNodeDatabaseEntries();
-                contextMenu.add(UIUtils.createMenuItem("Insert at cursor", "Inserts the node at the cursor",
-                    JIPipe.RESOURCES.getIcon16("actions/add.png"), () -> insertAtCursor(selected.get(0))));
-                UIUtils.addSeparatorIfNeeded(contextMenu);
-                if (selected.stream().anyMatch(entry -> !pinned.contains(entry.getId()))) {
-                    contextMenu.add(UIUtils.createMenuItem("Pin", "Adds the item to the list of pinned items",
-                        JIPipe.RESOURCES.getIcon16("actions/window-pin.png"), () -> pinNodes(selected)));
+                JPopupMenu built = NodeEntryContextMenu.buildJPopupMenu(
+                    NodeEntryContextMenu.specsForSelection(selected, pinned),
+                    entryActionsMap(selected, pinned));
+                for (Component component : built.getComponents()) {
+                    contextMenu.add(component);
                 }
-                if (selected.stream().anyMatch(entry -> pinned.contains(entry.getId()))) {
-                    contextMenu.add(UIUtils.createMenuItem("Unpin", "Removes the item from the list of pinned items",
-                        JIPipe.RESOURCES.getIcon16("actions/window-unpin.png"), () -> unpinNodes(selected)));
-                }
-                contextMenu.addSeparator();
-                contextMenu.add(UIUtils.createMenuItem("Show documentation", "Displays the documentation of this node",
-                    JIPipe.RESOURCES.getIcon16("actions/help.png"), () -> showDocumentation(selected.get(0))));
             }
         });
+    }
+
+    /**
+     * The shared actions map for the node-entry context menu (spec §7.3):
+     * the list menu supplier and the compact-mode tree-leaf handler BOTH
+     * build their menu from {@link NodeEntryContextMenu#specs} +
+     * {@link NodeEntryContextMenu#buildJPopupMenu} with the map from this
+     * helper, so the two surfaces cannot diverge.
+     * <p>
+     * Multi-selection (list rows): pin/unpin acts on the WHOLE selection
+     * (as before); insert-at-cursor and show-documentation act on the first
+     * selected entry (as before). The tree selection is single, so there the
+     * selection list is always exactly one entry. The template quick actions
+     * (edit / copy / delete / configure) are deliberately NOT supplied here
+     * — Task 9 adds them; until then
+     * {@link NodeEntryContextMenu#buildJPopupMenu} skips those specs.
+     *
+     * @param selected the selected entries (the list's selection, or the
+     *                 single tree-leaf entry)
+     * @param pinned   the currently pinned node ids
+     */
+    private Map<String, Runnable> entryActionsMap(List<JIPipeNodeDatabaseEntry> selected, Set<String> pinned) {
+        Map<String, Runnable> actions = new HashMap<>();
+        actions.put(NodeEntryContextMenu.INSERT_AT_CURSOR, () -> insertAtCursor(selected.get(0)));
+        // Pin and Unpin are BOTH always supplied — the menu shows whichever
+        // one specs() (driven by the first selected entry) includes, and the
+        // action acts on the WHOLE selection (pinNodes/unpinNodes walk every
+        // selected entry, as before). Supplying both keeps this helper
+        // uniform for the single-selection tree case and the multi-selection
+        // list case; the specs + builder decide what actually renders.
+        actions.put(NodeEntryContextMenu.PIN, () -> pinNodes(selected));
+        actions.put(NodeEntryContextMenu.UNPIN, () -> unpinNodes(selected));
+        actions.put(NodeEntryContextMenu.SHOW_DOC, () -> showDocumentation(selected.get(0)));
+        return actions;
     }
 
     private void showDocumentation(JIPipeNodeDatabaseEntry entry) {
