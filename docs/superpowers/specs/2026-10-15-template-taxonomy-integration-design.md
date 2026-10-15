@@ -275,10 +275,10 @@ JIPipeNodeDatabase.relations(entry, maxPerList)   // the new public API
    *and* Project — the user directed "mine the full extent from the templates";
    relations are per-entry database data, and the database already holds all scopes).
    Each in-template edge `A→B` contributes `next(A) += B` and `previous(B) += A`.
-   Template mining feeds the same index as family steps via the internal
-   `TemplateRelationFamily` (virtual; excluded from public `getFamilies()`), so
-   `FamilyAssembler`'s deferred-resolution machinery (class→node-id multimap, lazy
-   `afterIds`) is reused unchanged and `TaxonomyFullValidationTest` stays green.
+   Template edges feed the same relation index directly via
+   `TemplateRelationSource` (a `NodeRelationSource` implementation, alongside
+   `FamilyRelationSource`); no virtual family is introduced, so `FamilyAssembler`,
+   the public `getFamilies()` views, and `TaxonomyFullValidationTest` are untouched.
 
 Future (out of scope): a starter-pattern source, an LLM source, and #1333's repository
 templates as source material — all attach without touching the model.
@@ -330,8 +330,9 @@ templates as source material — all attach without touching the model.
   - Spot-check mined relations: `path-to-annotation-simple`'s next includes
     `import-imagej-imgplus-from-file`; `folder-list-files`' previous is empty, next
     includes `path-to-annotation-simple`.
-  - Registry dumper: `jipipe:function:templates` appears in `functions[]`; the virtual
-    `TemplateRelationFamily` does **not** appear in `families[]`.
+  - Registry dumper: `jipipe:function:templates` appears in `functions[]`; the
+    registry dumper's `families[]` output is unchanged by this feature (no new
+    family is introduced).
 - **UI:** context-menu parity — compact-mode tree leaf and list produce identical items
   for the same entry (the named bug); badge rendering in both renderers.
 - **Regression guards:** `TaxonomyFullValidationTest` green; jipipe-core suite green

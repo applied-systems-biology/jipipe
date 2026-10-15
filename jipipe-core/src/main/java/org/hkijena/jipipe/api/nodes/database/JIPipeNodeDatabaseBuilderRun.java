@@ -106,6 +106,10 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
 
         database.setEntries(newEntries);
         database.buildIndex();
+        // Rebuild the Similar/Previous/Next relation index eagerly so that,
+        // after this rebuild, the first UI relations() query reads current
+        // family-step + template-graph data without a lazy re-mine.
+        database.rebuildRelationIndex();
     }
 
     /**

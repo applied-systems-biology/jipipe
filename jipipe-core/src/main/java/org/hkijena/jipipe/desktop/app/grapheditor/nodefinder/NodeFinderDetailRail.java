@@ -60,11 +60,18 @@ import java.util.Set;
  * node documentation: the same markdown the algorithm compendium and
  * the graph editor's node settings show (title, description,
  * input/output slot table, per-parameter documentation);</li>
- * <li><b>Related</b> — the {@code database.related(entry, 6)} list;</li>
- * <li><b>Follow-ups</b> (diagram-next icon, matching the node browser's
- * follow-up strip) — the {@code database.followUps(entry)} list.</li>
+ * <li><b>Similar</b> — the {@code database.relations(entry, 6)}
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#similar() similar}
+ * list (same function → framework → tags, workflow neighbors excluded);</li>
+ * <li><b>Previous steps</b> (diagram-predecessor icon) — the
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#previous() previous}
+ * list (nodes that run before this one);</li>
+ * <li><b>Next steps</b> (diagram-successor icon, matching the node browser's
+ * relation strip) — the
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#next() next}
+ * list (nodes that run after this one).</li>
  * </ul>
- * Clicking a related/follow-up item tells the dialog (via the
+ * Clicking a similar/previous/next item tells the dialog (via the
  * {@link EntrySelector} callback) to select that entry in the center list,
  * so the rail cannot recurse into itself.
  * <p>
@@ -80,14 +87,14 @@ import java.util.Set;
  * When no entry is selected the rail shows an empty-state label.
  * <p>
  * All data comes from the shared node database layer (Task 15/16):
- * {@code related}/{@code followUps} resolve the entry through its
+ * {@code relations()} resolves the entry through its
  * {@link JIPipeNodeDatabaseEntry#getOriginNodeId() origin node id}.
  */
 public class NodeFinderDetailRail extends JPanel {
 
     /**
-     * Callback for entry clicks in the rail's "Related" / "Follow-ups"
-     * lists: the dialog selects the entry in the center list.
+     * Callback for entry clicks in the rail's "Similar" / "Previous steps" /
+     * "Next steps" lists: the dialog selects the entry in the center list.
      */
     @FunctionalInterface
     public interface EntrySelector {
@@ -104,7 +111,7 @@ public class NodeFinderDetailRail extends JPanel {
     private final CardLayout cardLayout = new CardLayout();
     private JPanel cards;
 
-    private final JLabel emptyLabel = new JLabel("Select a node to see details, related nodes and follow-ups.",
+    private final JLabel emptyLabel = new JLabel("Select a node to see details, similar nodes and workflow steps.",
         SwingConstants.CENTER);
     private final JPanel contentPanel = new JPanel();
 
@@ -136,18 +143,20 @@ public class NodeFinderDetailRail extends JPanel {
     // AI monitor's tabs — see JIPipeDesktopAIMonitorWindow) ---
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
-    private final JList<JIPipeNodeDatabaseEntry> relatedList = new JList<>();
-    private final JList<JIPipeNodeDatabaseEntry> followUpsList = new JList<>();
+    private final JList<JIPipeNodeDatabaseEntry> similarList = new JList<>();
+    private final JList<JIPipeNodeDatabaseEntry> previousList = new JList<>();
+    private final JList<JIPipeNodeDatabaseEntry> nextList = new JList<>();
     private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listPanels = new IdentityHashMap<>();
     private final Map<JList<JIPipeNodeDatabaseEntry>, CardLayout> listCards = new IdentityHashMap<>();
     private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listBodies = new IdentityHashMap<>();
-    private final JLabel relatedEmpty = new JLabel("No related nodes", SwingConstants.CENTER);
-    private final JLabel followUpsEmpty = new JLabel("No follow-ups", SwingConstants.CENTER);
+    private final JLabel similarEmpty = new JLabel("No similar nodes", SwingConstants.CENTER);
+    private final JLabel previousEmpty = new JLabel("No previous steps", SwingConstants.CENTER);
+    private final JLabel nextEmpty = new JLabel("No next steps", SwingConstants.CENTER);
 
     private JIPipeNodeDatabaseEntry currentEntry;
     /**
-     * Guards the related/follow-up list selection listeners while the rail
-     * programmatically swaps their contents, so the rail cannot recurse
+     * Guards the similar/previous/next list selection listeners while the
+     * rail programmatically swaps their contents, so the rail cannot recurse
      * (center list → rail → center list).
      */
     private boolean updatingLists;
@@ -155,9 +164,9 @@ public class NodeFinderDetailRail extends JPanel {
     /**
      * Creates a new detail rail.
      *
-     * @param database      the node database to query for related entries
-     *                      and follow-ups
-     * @param entrySelector called when the user clicks a related/follow-up
+     * @param database      the node database to query for the entry's
+     *                      similar / previous / next relations
+     * @param entrySelector called when the user clicks a similar/previous/next
      *                      entry (the dialog selects it in the center list)
      */
     public NodeFinderDetailRail(JIPipeNodeDatabase database, EntrySelector entrySelector) {
@@ -179,8 +188,9 @@ public class NodeFinderDetailRail extends JPanel {
         contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         initializeTitleBlock();
-        initializeEntryList(relatedList, relatedEmpty);
-        initializeEntryList(followUpsList, followUpsEmpty);
+        initializeEntryList(similarList, similarEmpty);
+        initializeEntryList(previousList, previousEmpty);
+        initializeEntryList(nextList, nextEmpty);
         initializeTabs();
         contentPanel.add(titleBlock());
         contentPanel.add(Box.createVerticalStrut(8));
@@ -248,13 +258,16 @@ public class NodeFinderDetailRail extends JPanel {
         // graph editor's node documentation use (see buildDocumentation)
         documentationReader.setDocument(buildDocumentation(entry));
 
-        // Related + follow-ups (synchronous; the database caches both).
-        // The updatingLists guard suppresses the list selection listeners
-        // so programmatic list data changes do not fire the EntrySelector.
+        // Similar + previous + next (synchronous; the database caches all
+        // three in one NodeRelations). The updatingLists guard suppresses
+        // the list selection listeners so programmatic list data changes
+        // do not fire the EntrySelector.
         updatingLists = true;
         try {
-            relatedList.setListData(database.related(entry, 6).toArray(new JIPipeNodeDatabaseEntry[0]));
-            followUpsList.setListData(database.followUps(entry).toArray(new JIPipeNodeDatabaseEntry[0]));
+            var relations = database.relations(entry, 6);
+            similarList.setListData(relations.similar().toArray(new JIPipeNodeDatabaseEntry[0]));
+            previousList.setListData(relations.previous().toArray(new JIPipeNodeDatabaseEntry[0]));
+            nextList.setListData(relations.next().toArray(new JIPipeNodeDatabaseEntry[0]));
         } finally {
             updatingLists = false;
         }
@@ -297,10 +310,10 @@ public class NodeFinderDetailRail extends JPanel {
 
     /**
      * Shows the empty-state label (instead of the list box) when a
-     * related/follow-up list has no entries.
+     * similar/previous/next list has no entries.
      */
     private void updateListEmptyStates() {
-        for (JList<JIPipeNodeDatabaseEntry> list : new JList[]{relatedList, followUpsList}) {
+        for (JList<JIPipeNodeDatabaseEntry> list : new JList[]{similarList, previousList, nextList}) {
             // The list body is a CardLayout: the empty-state card shows only
             // when the list has no entries (two components cannot share a
             // BorderLayout CENTER — only the last-added one would lay out)
@@ -352,10 +365,12 @@ public class NodeFinderDetailRail extends JPanel {
     private void initializeTabs() {
         tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
             documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        tabPane.addTab("Related", JIPipe.RESOURCES.getIcon16("actions/tag.png"),
-            listPanels.get(relatedList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        tabPane.addTab("Follow-ups", JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"),
-            listPanels.get(followUpsList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Similar", JIPipe.RESOURCES.getIcon16("actions/tag.png"),
+            listPanels.get(similarList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Previous steps", JIPipe.RESOURCES.getIcon16("actions/diagram-predecessor.png"),
+            listPanels.get(previousList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        tabPane.addTab("Next steps", JIPipe.RESOURCES.getIcon16("actions/diagram-successor.png"),
+            listPanels.get(nextList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     /**
@@ -380,7 +395,7 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     // ------------------------------------------------------------------
-    // Related / follow-up lists
+    // Similar / previous / next lists
     // ------------------------------------------------------------------
 
     private void initializeEntryList(JList<JIPipeNodeDatabaseEntry> list, JLabel emptyState) {

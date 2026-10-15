@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewCompartmentNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
@@ -47,9 +48,8 @@ import static org.junit.jupiter.api.Assertions.*;
  * Tests the taxonomy facets of the node database ({@link NodeDatabaseTaxonomyTest}):
  * the five new {@link JIPipeNodeDatabaseEntry} facet getters populated from
  * {@link JIPipeNodeInfo} in the "create node by info" entries, and the
- * {@link JIPipeNodeDatabase#followUps(JIPipeNodeDatabaseEntry) follow-ups} /
- * {@link JIPipeNodeDatabase#related(JIPipeNodeDatabaseEntry, int) related}
- * queries backed by the {@code FamilyAssembler}.
+ * {@link JIPipeNodeDatabase#relations(JIPipeNodeDatabaseEntry, int) relations}
+ * query (Similar / Previous / Next) backed by the relation index.
  * <p>
  * The synthetic nodes are three steps of {@link TrackMateFamily}
  * (detect → track → filter), plus same-framework, shared-tag,
@@ -177,57 +177,67 @@ class NodeDatabaseTaxonomyTest {
     }
 
     /**
-     * {@link JIPipeNodeDatabase#followUps(JIPipeNodeDatabaseEntry)} returns
-     * the direct family successors of an entry, mapped back to entries, in
-     * assembler order; an entry whose node has no successors (or whose
-     * origin is unknown) yields an empty list.
+     * {@link JIPipeNodeDatabase#relations(JIPipeNodeDatabaseEntry, int)}
+     * exposes the workflow successors as {@code next} and the workflow
+     * predecessors as {@code previous}, mapped back to entries, ranked by
+     * edge support; an entry whose node has no workflow neighbors yields
+     * empty lists. The synthetic TrackMate chain is detect → track →
+     * filter, so detect's next is track, track's next is filter and its
+     * previous is detect, and filter's next is empty.
      */
     @Test
-    void followUpsReturnsFamilySuccessorsMappedToEntries() {
+    void relationsExposeFamilyNextAndPreviousMappedToEntries() {
         registerNodes();
         JIPipeNodeDatabase database = databaseWithAllEntries();
         CreateNewNodeByInfoDatabaseEntry detect = byInfo(database, SPOT_DETECT_ID);
         CreateNewNodeByInfoDatabaseEntry track = byInfo(database, TRACK_ID);
         CreateNewNodeByInfoDatabaseEntry filter = byInfo(database, FILTER_ID);
 
-        List<JIPipeNodeDatabaseEntry> followUps = database.followUps(detect);
-        assertEquals(List.of(track), followUps);
-        assertEquals(List.of(filter), database.followUps(track));
+        // Family successors (the old followUps) now surface as `next`
+        assertEquals(List.of(track), database.relations(detect, 10).next());
+        assertEquals(List.of(filter), database.relations(track, 10).next());
 
-        assertEquals(List.of(), database.followUps(filter));
-        assertEquals(List.of(), database.followUps(byInfo(database, NO_TAGS_ID)));
+        // The previously-missing `previous` direction: the family
+        // predecessors, mapped back to entries
+        assertEquals(List.of(), database.relations(detect, 10).previous());
+        assertEquals(List.of(detect), database.relations(track, 10).previous());
+        assertEquals(List.of(track), database.relations(filter, 10).previous());
+
+        // A terminal node and a node outside any family have no neighbors
+        assertEquals(List.of(), database.relations(filter, 10).next());
+        assertEquals(List.of(), database.relations(byInfo(database, NO_TAGS_ID), 10).next());
+        assertEquals(List.of(), database.relations(byInfo(database, NO_TAGS_ID), 10).previous());
     }
 
     /**
-     * {@link JIPipeNodeDatabase#related(JIPipeNodeDatabaseEntry, int)} ranks
-     * candidates in tiers: same-family siblings (excluding follow-ups)
-     * first, then same-function, then same-framework, then shared-tag (≥2
-     * shared before 1), de-duplicated and capped, with auto-import entries
-     * down-ranked to the end of their tier.
+     * {@link JIPipeNodeDatabase#relations(JIPipeNodeDatabaseEntry, int)}
+     * returns {@code similar} ranked in tiers: same-function, then
+     * same-framework, then shared-tag (≥2 shared before 1), de-duplicated and
+     * capped, with auto-import entries down-ranked to the end of their tier.
+     * The workflow-neighbor nodes are NOT in {@code similar} — they are
+     * surfaced by {@code next}/{@code previous} instead, so the three lists
+     * stay disjoint.
      * <p>
-     * Expected order for {@code related(detect, 10)} with the synthetic set:
+     * Expected for the synthetic set (detect's family chain is
+     * detect → track → filter, so track is a {@code next} neighbor and is
+     * excluded from {@code similar}; filter is two hops away, so it is NOT a
+     * neighbor but qualifies for no tier and is absent):
      * <ol>
-     * <li>{@code filter} — the only family sibling that is not a follow-up
-     * (the sibling {@code track} is a follow-up and is excluded from this
-     * tier);</li>
-     * <li>{@code track} — same function as detect (its family follow-up);</li>
-     * <li>{@code sameFunction} — shares detect's function leaf but has a
-     * different framework: it ranks in the function tier, i.e. <em>above</em>
-     * the same-framework siblings below, even though it appears later in the
-     * entry list. This is the regression guard for the "identical
-     * follow-ups for functionally different nodes" issue: shared
-     * functionality outranks a large shared framework.</li>
-     * <li>{@code otherFramework} — same framework, standard classification;</li>
-     * <li>{@code autoImport} — same-framework candidate that is
-     * auto-import classified, hence down-ranked to the end of its tier; it
-     * is de-duplicated out of the tag tier where it would also qualify;</li>
-     * <li>{@code sharedTagOne} — two shared tags;</li>
-     * <li>{@code sharedTagTwo} — exactly one shared tag.</li>
+     * <li>{@code similar(detect, 10)} =
+     * [{@code sameFunction}, {@code otherFramework}, {@code autoImport},
+     * {@code sharedTagOne}, {@code sharedTagTwo}] — {@code sameFunction}
+     * ranks in the function tier (above the same-framework siblings, the
+     * "shared functionality outranks a large shared framework" guard), then
+     * the framework tier ({@code otherFramework} before the down-ranked
+     * {@code autoImport}), then the tag tier;</li>
+     * <li>{@code next(detect, 10)} = [{@code track}] (the family successor);</li>
+     * <li>{@code previous(detect, 10)} = [] (a family start step).</li>
      * </ol>
-     * {@code noTags} qualifies for no tier and must be absent.
+     * {@code track} must appear in {@code next} and NOT in {@code similar};
+     * {@code noTags} and {@code filter} qualify for no tier and are absent.
      */
     @Test
-    void relatedRanksFamilyThenFunctionThenFrameworkThenTags() {
+    void relationsRankSimilarAndKeepWorkflowNeighborsDisjoint() {
         registerNodes();
         JIPipeNodeDatabase database = databaseWithAllEntries();
         CreateNewNodeByInfoDatabaseEntry detect = byInfo(database, SPOT_DETECT_ID);
@@ -239,47 +249,69 @@ class NodeDatabaseTaxonomyTest {
         CreateNewNodeByInfoDatabaseEntry autoImport = byInfo(database, AUTO_IMPORT_ID);
         CreateNewNodeByInfoDatabaseEntry sameFunction = byInfo(database, SAME_FUNCTION_ID);
 
-        List<JIPipeNodeDatabaseEntry> expected = List.of(
-            filter, track, sameFunction, otherFramework, autoImport, sharedTag1, sharedTag2);
-        assertEquals(expected, database.related(detect, 10));
+        NodeRelations relations = database.relations(detect, 10);
+
+        // The three lists are disjoint
+        assertEquals(List.of(track), relations.next());
+        assertEquals(List.of(), relations.previous());
+        List<JIPipeNodeDatabaseEntry> expectedSimilar = List.of(
+            sameFunction, otherFramework, autoImport, sharedTag1, sharedTag2);
+        assertEquals(expectedSimilar, relations.similar());
+
+        // The family successor (track) is in `next`, NOT in `similar`
+        assertTrue(relations.next().contains(track));
+        assertFalse(relations.similar().contains(track),
+            "a next-neighbor must be excluded from similar (the lists stay disjoint)");
+        // filter is two hops away (not a direct neighbor) and qualifies for
+        // no similar tier, so it is absent from all three lists
+        assertFalse(relations.similar().contains(filter));
+        assertFalse(relations.next().contains(filter));
 
         // The same-function node outranks the same-framework node, even
         // though it is registered (and listed) after them.
-        int sameFunctionIdx = expected.indexOf(sameFunction);
-        int otherFrameworkIdx = expected.indexOf(otherFramework);
+        int sameFunctionIdx = relations.similar().indexOf(sameFunction);
+        int otherFrameworkIdx = relations.similar().indexOf(otherFramework);
         assertTrue(sameFunctionIdx < otherFrameworkIdx,
             "a same-function entry must rank above a same-framework entry");
 
-        // Cap
-        assertEquals(List.of(filter, track), database.related(detect, 2));
+        // Cap: each list is independently capped at maxPerList
+        assertEquals(List.of(sameFunction, otherFramework),
+            database.relations(detect, 2).similar());
+        assertEquals(List.of(track), database.relations(detect, 2).next());
     }
 
     /**
-     * A second {@code related} call returns the same cached list instance;
-     * the cache is invalidated when the entries are replaced, after which
-     * a fresh (differently ordered) result is computed.
+     * A second {@code relations} call returns the same cached
+     * {@link NodeRelations} instance; the cache is invalidated when the
+     * entries are replaced, after which a fresh (differently ordered) result
+     * is computed.
      */
     @Test
-    void relatedResultIsCachedUntilEntriesAreReplaced() {
+    void relationsResultIsCachedUntilEntriesAreReplaced() {
         registerNodes();
         JIPipeNodeDatabase database = databaseWithAllEntries();
         CreateNewNodeByInfoDatabaseEntry detect = byInfo(database, SPOT_DETECT_ID);
         CreateNewNodeByInfoDatabaseEntry track = byInfo(database, TRACK_ID);
         CreateNewNodeByInfoDatabaseEntry otherFramework = byInfo(database, OTHER_FRAMEWORK_ID);
 
-        List<JIPipeNodeDatabaseEntry> first = database.related(detect, 10);
-        assertSame(first, database.related(detect, 10), "related() must be cached per entry");
+        NodeRelations first = database.relations(detect, 10);
+        assertSame(first, database.relations(detect, 10), "relations() must be cached per entry");
 
         // Replacing the entries (e.g. the builder run) invalidates the
-        // cache; in the new entry set the family sibling (filter) and the
-        // same-function node are gone, so the same-function candidate
-        // (track) becomes the first result
+        // cache; in the new entry set detect's same-function siblings
+        // (sameFunction, track) are gone from the `similar` tier, so the
+        // only remaining similar candidate is the same-framework
+        // {@code otherFramework}, while {@code track} (the family
+        // successor) still surfaces as the first `next` entry.
         List<JIPipeNodeDatabaseEntry> reordered = List.of(
             otherFramework, detect, track);
         database.setEntries(reordered);
-        List<JIPipeNodeDatabaseEntry> second = database.related(detect, 10);
-        assertNotSame(first, second, "replacing the entries must invalidate the related cache");
-        assertEquals(track, second.get(0), "the related order must reflect the new entry set (same-function tier)");
+        NodeRelations second = database.relations(detect, 10);
+        assertNotSame(first, second, "replacing the entries must invalidate the relations cache");
+        assertEquals(List.of(otherFramework), second.similar(),
+            "the similar order must reflect the new entry set (framework tier)");
+        assertEquals(List.of(track), second.next(),
+            "the next neighbor (family successor) is unaffected by the entry-set change");
     }
 
     // ------------------------------------------------------------------

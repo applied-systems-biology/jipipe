@@ -158,7 +158,8 @@ public interface JIPipeNodeDatabaseEntry {
      * <p>
      * Entries that wrap a node type (the "create node by info" entries and
      * their aliases) return the node type's id, so that database queries
-     * such as {@link JIPipeNodeDatabase#followUps(JIPipeNodeDatabaseEntry)}
+     * such as
+     * {@link JIPipeNodeDatabase#relations(JIPipeNodeDatabaseEntry, int)}
      * can resolve the entry to its place in the node taxonomy (family
      * steps, frameworks, ...). Entries that do not wrap a node type
      * (compartments, templates, existing nodes, examples) return

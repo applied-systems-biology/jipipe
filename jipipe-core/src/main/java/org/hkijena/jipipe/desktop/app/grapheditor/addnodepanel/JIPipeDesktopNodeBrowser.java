@@ -1111,13 +1111,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     }
 
     // ------------------------------------------------------------------
-    // Follow-up strip
+    // Relation strip (next / previous / similar)
     // ------------------------------------------------------------------
 
     /**
-     * Populates (or collapses) the follow-up strip based on the current
-     * canvas selection: when exactly one node is selected and its entry
-     * has follow-ups, the strip shows them as clickable buttons.
+     * Populates (or collapses) the relation strip based on the current
+     * canvas selection: when exactly one node is selected, the strip shows
+     * its workflow relations as clickable buttons — the "next steps" first
+     * (the workflow successors, as before), then the "previous steps", then
+     * the "similar" nodes, de-duplicated by entry id.
      */
     private void updateFollowUpStrip() {
         followUpContent.removeAll();
@@ -1130,18 +1132,18 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 String nodeId = node.getInfo().getId();
                 JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(nodeId);
                 if (entry != null) {
-                    // Follow-ups first (the workflow successors), then related
-                    // nodes (same-family / same-framework / shared-tag) that
-                    // are not already follow-ups, de-duplicated by entry id.
-                    List<JIPipeNodeDatabaseEntry> followUps = database.followUps(entry);
+                    // Next steps first (the workflow successors, as before),
+                    // then previous steps, then similar nodes — de-duplicated
+                    // by entry id. The three groups come from the one
+                    // relations() call; the database caches it per entry.
+                    var relations = database.relations(entry, 6);
                     Set<String> added = new HashSet<>();
-                    for (JIPipeNodeDatabaseEntry followUp : followUps) {
-                        added.add(followUp.getId());
-                    }
-                    List<JIPipeNodeDatabaseEntry> suggestions = new ArrayList<>(followUps);
-                    for (JIPipeNodeDatabaseEntry related : database.related(entry, 6)) {
-                        if (added.add(related.getId())) {
-                            suggestions.add(related);
+                    List<JIPipeNodeDatabaseEntry> suggestions = new ArrayList<>();
+                    for (var group : List.of(relations.next(), relations.previous(), relations.similar())) {
+                        for (JIPipeNodeDatabaseEntry suggestion : group) {
+                            if (added.add(suggestion.getId())) {
+                                suggestions.add(suggestion);
+                            }
                         }
                     }
                     if (!suggestions.isEmpty()) {
@@ -1149,7 +1151,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                         followUpContent.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png")));
                         for (JIPipeNodeDatabaseEntry suggestion : suggestions) {
                             JButton button = new JButton(suggestion.getName(), suggestion.getIcon());
-                            button.setToolTipText("Suggested next step for the selected node");
+                            button.setToolTipText("Suggested related step for the selected node");
                             button.setBorder(UIUtils.createControlBorder());
                             button.addActionListener(e -> insertAtCursor(suggestion));
                             followUpContent.add(button);

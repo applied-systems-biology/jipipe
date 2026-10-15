@@ -17,7 +17,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
-import org.hkijena.jipipe.api.nodes.taxonomy.FamilyAssembler;
+import org.hkijena.jipipe.api.nodes.database.relations.FamilyRelationSource;
+import org.hkijena.jipipe.api.nodes.database.relations.NodeRelationIndex;
+import org.hkijena.jipipe.api.nodes.database.relations.NodeRelationSource;
+import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
+import org.hkijena.jipipe.api.nodes.database.relations.TemplateRelationSource;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
@@ -30,6 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -58,27 +63,41 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
     private final JIPipeAINodeDatabaseSearch aiSearch;
     private List<JIPipeNodeDatabaseEntry> entries = new ArrayList<>();
     /**
-     * Cache of {@link #related(JIPipeNodeDatabaseEntry, int)} results,
-     * keyed by the entry's id and the requested {@code max}. Invalidated
-     * whenever the entry list is replaced ({@link #setEntries(List)}) or
-     * a rebuild is scheduled ({@link #rebuildImmediately()}), i.e. on
-     * every rebuild.
+     * The cached Similar / Previous / Next workflow-edge index (spec §10.1).
+     * A snapshot of the directed edges mined from the pluggable
+     * {@link NodeRelationSource}s (family steps + template graphs, all
+     * scopes). It drives the {@code previous} / {@code next} directions of
+     * {@link #relations(JIPipeNodeDatabaseEntry, int)}.
      * <p>
-     * <b>Concurrency contract.</b> This is a best-effort cache read from
-     * the UI thread and written/invalidated from several threads (UI,
-     * the SwingWorker builder, the updater's Swing timer). It is
-     * therefore a {@code volatile} reference to an <em>immutable</em>
-     * map that is never mutated in place: invalidation swaps in a fresh
-     * empty map, and a cache miss publishes its result via a
-     * copy-on-write swap of a new map (see
-     * {@link #cacheRelated(String, List)}). A concurrent miss may thus
-     * lose another thread's just-published entry — that is acceptable:
-     * a lost or momentarily stale entry is at worst recomputed, and
-     * correctness never depends on the cache. What matters is
-     * visibility: every thread observes either the pre-swap or the
-     * post-swap map, never a half-built one.
+     * It is rebuilt on the same triggers as the entry list: invalidated by
+     * {@link #rebuildImmediately()} and {@link #setEntries(List)}, then
+     * rebuilt eagerly by the builder run (off the UI thread, see
+     * {@link #rebuildRelationIndex()}) and lazily on the first query after
+     * invalidation (see {@link #relationIndex()}).
+     * <p>
+     * <b>Concurrency contract.</b> A {@code volatile} reference to an
+     * immutable index that is never mutated in place: invalidation swaps the
+     * reference to {@code null}, and a build publishes a fresh snapshot. A
+     * concurrent build may discard another thread's just-published snapshot
+     * — acceptable for a best-effort cache (at worst a momentarily stale or
+     * recomputed result; correctness never depends on it). Every thread sees
+     * either the pre-swap or the post-swap index, never a half-built one.
      */
-    private volatile Map<String, List<JIPipeNodeDatabaseEntry>> relatedCache = Collections.emptyMap();
+    private volatile NodeRelationIndex relationIndex;
+    /**
+     * Cache of {@link #relations(JIPipeNodeDatabaseEntry, int)} results,
+     * keyed by the entry's id and the requested {@code maxPerList} (same
+     * contract the removed {@code related(entry, max)} had: a second call
+     * with the same arguments returns the same {@link NodeRelations}
+     * instance). Invalidated whenever the entry list is replaced
+     * ({@link #setEntries(List)}) or a rebuild is scheduled
+     * ({@link #rebuildImmediately()}).
+     * <p>
+     * Best-effort, like {@link #relationIndex}: a {@code volatile} reference
+     * to an immutable map, never mutated in place. A copy-on-write publish
+     * may lose a concurrent entry, which is at worst a recompute.
+     */
+    private volatile Map<String, NodeRelations> relationsCache = Collections.emptyMap();
 
     public JIPipeNodeDatabase() {
         this(null);
@@ -103,148 +122,163 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
 
     public void rebuildImmediately() {
         queue.cancelAll();
-        // Invalidate by swapping in a fresh empty map (see the field's
-        // concurrency contract); never mutate the current map in place.
-        relatedCache = Collections.emptyMap();
+        // Invalidate both caches by swapping the references (see the fields'
+        // concurrency contracts); never mutate the current values in place.
+        relationIndex = null;
+        relationsCache = Collections.emptyMap();
         queue.enqueue(new JIPipeNodeDatabaseBuilderRun(this));
     }
 
     /**
-     * The direct workflow successors (follow-ups) of the given entry:
-     * the entries whose origin node id is a direct successor of the
-     * entry's origin node in the taxonomy family workflow graphs
-     * (see {@link org.hkijena.jipipe.api.nodes.taxonomy.FamilyAssembler#followUps(String)}).
+     * The generalized workflow relations of the given entry (spec §10.1):
+     * the replacement for the removed {@code followUps(entry)} /
+     * {@code related(entry, max)} API pair.
      * <p>
-     * Successor node ids are mapped back to database entries; the first
-     * entry (in entry order) whose origin node id matches wins. The
-     * result preserves the assembler's order and is never {@code null}.
-     *
-     * @param e the entry whose follow-ups are requested
-     * @return an unmodifiable list of the follow-up entries, ordered;
-     * empty if the entry does not wrap a node type or the node has no
-     * successors (or the successor is not present in the database)
-     */
-    public List<JIPipeNodeDatabaseEntry> followUps(JIPipeNodeDatabaseEntry e) {
-        String originNodeId = e.getOriginNodeId();
-        if (originNodeId == null) {
-            return Collections.emptyList();
-        }
-        List<String> successorNodeIds = JIPipe.getNodes().getFamilyAssembler().followUps(originNodeId);
-        if (successorNodeIds.isEmpty()) {
-            return Collections.emptyList();
-        }
-        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>(successorNodeIds.size());
-        for (String successorNodeId : successorNodeIds) {
-            JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(successorNodeId);
-            if (entry != null) {
-                result.add(entry);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
-
-    /**
-     * Entries related to the given entry, ranked by how strongly they
-     * belong to its workflow neighborhood:
-     * <ol>
-     * <li><b>same-family siblings</b> — entries whose origin node is a
-     * step in any family that the entry's origin node is a step in,
-     * <i>excluding the entry's follow-ups</i> (those are surfaced by
-     * {@link #followUps(JIPipeNodeDatabaseEntry)});</li>
-     * <li><b>same function</b> — entries that appear under at least one of
-     * the entry's
-     * {@link JIPipeNodeDatabaseEntry#getFunctionIds() function leaves}
-     * (i.e. they share a taxonomy function with the entry). This ranks
-     * <em>what the node does</em> above <em>where it comes from</em>: two
-     * nodes in the same function are contextually more useful "next
-     * steps" than arbitrary nodes from the same framework, which is what
-     * keeps the suggestions distinct for functionally different nodes that
-     * happen to share a large framework (e.g. many ImageJ 1 nodes);</li>
-     * <li><b>same framework</b> — entries whose
-     * {@link JIPipeNodeDatabaseEntry#getFramework() framework id} equals
-     * the entry's (the {@code NoFramework} sentinel never matches);</li>
-     * <li><b>shared tags</b> — entries sharing taxonomy tags with the
-     * entry; candidates sharing at least two tags rank before those
-     * sharing exactly one.</li>
-     * </ol>
-     * The entry itself, and other entries representing the same node
-     * (e.g. alias entries of a "create node by info" entry), are
-     * excluded from the candidates. Candidates are de-duplicated (an
-     * entry qualifies for several tiers at once and appears in the
-     * highest one), and capped at {@code max}.
+     * The result bundles three disjoint, per-list-capped lists:
+     * <ul>
+     * <li><b>{@link NodeRelations#next next}</b> — the entries that run
+     * <em>after</em> this one in a workflow (family successors ∪ template
+     * edges pointing out of it), from the cached {@link NodeRelationIndex};</li>
+     * <li><b>{@link NodeRelations#previous previous}</b> — the entries that
+     * run <em>before</em> this one (family predecessors ∪ template edges
+     * pointing into it), from the index; and</li>
+     * <li><b>{@link NodeRelations#similar similar}</b> — entries that do the
+     * same kind of thing as this one, ranked by taxonomy tiers
+     * (same function → same framework → shared tags), with any entry that is
+     * also a {@code previous}/{@code next} neighbor <em>excluded</em> so the
+     * three lists stay disjoint (and the entry itself / its alias entries
+     * excluded, as before).</li>
+     * </ul>
+     * The previous/next node ids are mapped back to database entries (the
+     * first entry in entry order whose origin node id matches wins; ids with
+     * no entry are dropped). Each list is capped at {@code maxPerList}.
      * <p>
-     * <b>Down-ranking.</b> Within each tier, entries whose
-     * {@link JIPipeNodeClassification} is not {@link JIPipeNodeClassification#Standard}
-     * (i.e. {@link JIPipeNodeClassification#AutoImport AutoImport} and
-     * {@link JIPipeNodeClassification#EdgeCase EdgeCase}, mirroring the
-     * search ranking) are sorted to the end of their tier, preserving
-     * entry order otherwise.
-     * <p>
-     * The result is cached per entry and {@code max}: a second call with
-     * the same arguments returns the same list instance. The cache is
-     * invalidated whenever the entries are replaced
+     * The result is cached per entry and {@code maxPerList}: a second call
+     * with the same arguments returns the same {@link NodeRelations}
+     * instance. The cache is invalidated whenever the entries are replaced
      * ({@link #setEntries(List)}) or a rebuild is scheduled
      * ({@link #rebuildImmediately()}).
      *
-     * @param e   the entry to find related entries for
-     * @param max the maximum number of results to return
-     * @return the related entries, ordered by rank; empty if {@code e}
-     * wraps no node type or no entry qualifies
+     * @param e          the entry to compute relations for
+     * @param maxPerList the maximum number of entries per list
+     * @return the three relation lists (never {@code null}, each possibly
+     * empty); all lists empty if {@code e} wraps no node type
      */
-    public List<JIPipeNodeDatabaseEntry> related(JIPipeNodeDatabaseEntry e, int max) {
-        if (max <= 0) {
-            return Collections.emptyList();
-        }
+    public NodeRelations relations(JIPipeNodeDatabaseEntry e, int maxPerList) {
+        int max = Math.max(maxPerList, 0);
         String cacheKey = e.getId() + ":" + max;
         // Read the volatile cache reference once: this thread then works
         // with a single immutable map snapshot.
-        Map<String, List<JIPipeNodeDatabaseEntry>> cache = relatedCache;
-        List<JIPipeNodeDatabaseEntry> cached = cache.get(cacheKey);
+        NodeRelations cached = relationsCache.get(cacheKey);
         if (cached != null) {
             return cached;
         }
 
         String originNodeId = e.getOriginNodeId();
-        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>();
+        NodeRelations result;
         if (originNodeId == null) {
-            List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
-            cacheRelated(cacheKey, immutable);
-            return immutable;
+            result = new NodeRelations(Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        } else {
+            // Previous / next come from the cached relation index (family
+            // steps + template graphs), ranked by edge support then node id.
+            NodeRelationIndex index = relationIndex();
+            List<JIPipeNodeDatabaseEntry> next = toEntries(index.next(originNodeId), max);
+            List<JIPipeNodeDatabaseEntry> previous = toEntries(index.previous(originNodeId), max);
+
+            // Similar: taxonomy tiers (function → framework → tags) with the
+            // workflow-neighbor nodes excluded so the three lists stay
+            // disjoint.
+            Set<String> neighborIds = new HashSet<>();
+            neighborIds.addAll(index.next(originNodeId));
+            neighborIds.addAll(index.previous(originNodeId));
+            List<JIPipeNodeDatabaseEntry> similar = computeSimilar(e, originNodeId, neighborIds, max);
+
+            result = new NodeRelations(
+                Collections.unmodifiableList(similar),
+                Collections.unmodifiableList(previous),
+                Collections.unmodifiableList(next));
         }
+        cacheRelations(cacheKey, result);
+        return result;
+    }
 
-        FamilyAssembler assembler = JIPipe.getNodes().getFamilyAssembler();
-        String selfId = e.getId();
-        // Entries representing the same node (e.g. alias entries of
-        // "create node by info") are never "related": a node is not
-        // related to itself under a different menu path
-        Predicate<JIPipeNodeDatabaseEntry> sameNode =
-            entry -> selfId.equals(entry.getId()) || originNodeId.equals(entry.getOriginNodeId());
-        Set<String> added = new LinkedHashSet<>();
+    /**
+     * Publishes a computed {@link #relations(JIPipeNodeDatabaseEntry, int)}
+     * result into the per-entry cache by swapping in a copy of the current
+     * map plus the new entry (copy-on-write; see the {@link #relationsCache}
+     * concurrency contract — a concurrent publish may lose one of the two
+     * entries, which is harmless for a best-effort cache).
+     */
+    private void cacheRelations(String cacheKey, NodeRelations result) {
+        Map<String, NodeRelations> current = relationsCache;
+        Map<String, NodeRelations> updated = new LinkedHashMap<>(current);
+        updated.put(cacheKey, result);
+        relationsCache = Collections.unmodifiableMap(updated);
+    }
 
-        // Tier 1: same-family siblings, excluding follow-ups (a follow-up
-        // is also a sibling, so it is removed here and surfaced by
-        // followUps() instead)
-        Set<String> siblingNodeIds = new LinkedHashSet<>(assembler.siblingNodeIds(originNodeId));
-        siblingNodeIds.removeAll(assembler.followUps(originNodeId));
-        List<JIPipeNodeDatabaseEntry> tier1 = new ArrayList<>();
-        for (String siblingNodeId : siblingNodeIds) {
-            JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(siblingNodeId);
-            if (entry != null && !sameNode.test(entry) && added.add(entry.getId())) {
-                tier1.add(entry);
+    /**
+     * Maps an ordered list of node ids (as returned by the relation index)
+     * back to database entries and caps it at {@code max}. The first entry
+     * (in entry order) whose origin node id matches wins; ids with no
+     * database entry are dropped.
+     */
+    private List<JIPipeNodeDatabaseEntry> toEntries(List<String> nodeIds, int max) {
+        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>(Math.min(nodeIds.size(), max));
+        Set<String> seen = new LinkedHashSet<>();
+        for (String nodeId : nodeIds) {
+            if (result.size() >= max) {
+                break;
+            }
+            JIPipeNodeDatabaseEntry entry = entryByOriginNodeId(nodeId);
+            if (entry != null && seen.add(entry.getId())) {
+                result.add(entry);
             }
         }
+        return result;
+    }
 
-        // Tier 2: same function — entries that appear under at least one of
+    /**
+     * The taxonomy-tier similarity query refactored from the removed
+     * {@code related(entry, max)}: same function → same framework → shared
+     * tags (≥2 shared before exactly 1), de-duplicated, down-ranking
+     * non-Standard entries to the end of their tier, and capped at
+     * {@code max}.
+     * <p>
+     * Unlike the old {@code related}, the first tier (same-family siblings
+     * minus follow-ups — the workflow neighborhood) is gone: those nodes are
+     * now surfaced by {@link NodeRelations#previous()}/{@link NodeRelations#next()}.
+     * Candidates that are also in {@code neighborIds} (i.e. already a
+     * previous/next neighbor) are excluded so the three lists stay disjoint.
+     */
+    private List<JIPipeNodeDatabaseEntry> computeSimilar(JIPipeNodeDatabaseEntry e, String originNodeId,
+                                                         Set<String> neighborIds, int max) {
+        if (max <= 0) {
+            return Collections.emptyList();
+        }
+        String selfId = e.getId();
+        // Entries representing the same node (e.g. alias entries of a
+        // "create node by info" entry) are never "similar": a node is not
+        // similar to itself under a different menu path.
+        Predicate<JIPipeNodeDatabaseEntry> sameNode =
+            entry -> selfId.equals(entry.getId()) || originNodeId.equals(entry.getOriginNodeId());
+        // A candidate is excluded if it is the entry's own node, already
+        // surfaced as a previous/next neighbor, or has no database entry.
+        Predicate<JIPipeNodeDatabaseEntry> excluded =
+            entry -> sameNode.test(entry)
+                || (entry.getOriginNodeId() != null && neighborIds.contains(entry.getOriginNodeId()));
+        Set<String> added = new LinkedHashSet<>();
+
+        // Tier 1: same function — entries that appear under at least one of
         // the entry's function leaves (an exact shared function id). Ranking
         // shared functionality above framework is what keeps the suggestions
         // distinct for functionally different nodes that share a large
         // framework (e.g. the many ImageJ 1 nodes): two "Filtering" nodes are
-        // a better "next step" pair than two arbitrary ImageJ 1 nodes.
+        // a better "similar" pair than two arbitrary ImageJ 1 nodes.
         List<JIPipeNodeDatabaseEntry> tierFunction = new ArrayList<>();
         Set<String> myFunctionIds = e.getFunctionIds();
         if (!myFunctionIds.isEmpty()) {
             for (JIPipeNodeDatabaseEntry entry : entries) {
-                if (sameNode.test(entry)) {
+                if (excluded.test(entry)) {
                     continue;
                 }
                 for (String fid : entry.getFunctionIds()) {
@@ -256,27 +290,27 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             }
         }
 
-        // Tier 3: same framework (the NoFramework sentinel never matches:
+        // Tier 2: same framework (the NoFramework sentinel never matches:
         // it would make every framework-less entry a "sibling")
-        List<JIPipeNodeDatabaseEntry> tier2 = new ArrayList<>();
+        List<JIPipeNodeDatabaseEntry> tierFramework = new ArrayList<>();
         String frameworkId = e.getFramework().getId();
         if (!NoFramework.ID.equals(frameworkId)) {
             for (JIPipeNodeDatabaseEntry entry : entries) {
                 if (frameworkId.equals(entry.getFramework().getId())
-                    && !sameNode.test(entry) && added.add(entry.getId())) {
-                    tier2.add(entry);
+                    && !excluded.test(entry) && added.add(entry.getId())) {
+                    tierFramework.add(entry);
                 }
             }
         }
 
-        // Tier 4: shared tags (>=2 shared before exactly 1)
-        List<JIPipeNodeDatabaseEntry> tier3 = new ArrayList<>();
+        // Tier 3: shared tags (>=2 shared before exactly 1)
+        List<JIPipeNodeDatabaseEntry> tierTags = new ArrayList<>();
         Set<String> myTags = e.getTags();
         if (!myTags.isEmpty()) {
             List<JIPipeNodeDatabaseEntry> twoShared = new ArrayList<>();
             List<JIPipeNodeDatabaseEntry> oneShared = new ArrayList<>();
             for (JIPipeNodeDatabaseEntry entry : entries) {
-                if (sameNode.test(entry)) {
+                if (excluded.test(entry)) {
                     continue;
                 }
                 int shared = 0;
@@ -293,19 +327,20 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
             }
             for (JIPipeNodeDatabaseEntry entry : twoShared) {
                 if (added.add(entry.getId())) {
-                    tier3.add(entry);
+                    tierTags.add(entry);
                 }
             }
             for (JIPipeNodeDatabaseEntry entry : oneShared) {
                 if (added.add(entry.getId())) {
-                    tier3.add(entry);
+                    tierTags.add(entry);
                 }
             }
         }
 
         // Merge the tiers in priority order; within each tier,
-        // down-ranked (non-Standard) entries are sorted to the end
-        for (List<JIPipeNodeDatabaseEntry> tier : List.of(tier1, tierFunction, tier2, tier3)) {
+        // down-ranked (non-Standard) entries are sorted to the end.
+        List<JIPipeNodeDatabaseEntry> result = new ArrayList<>(max);
+        for (List<JIPipeNodeDatabaseEntry> tier : List.of(tierFunction, tierFramework, tierTags)) {
             if (result.size() >= max) {
                 break;
             }
@@ -316,24 +351,50 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
                 result.add(entry);
             }
         }
-
-        List<JIPipeNodeDatabaseEntry> immutable = Collections.unmodifiableList(result);
-        cacheRelated(cacheKey, immutable);
-        return immutable;
+        return result;
     }
 
     /**
-     * Publishes a computed {@link #related(JIPipeNodeDatabaseEntry, int)}
-     * result into the cache by swapping in a copy of the current map plus
-     * the new entry (copy-on-write; see the {@link #relatedCache}
-     * concurrency contract — a concurrent miss may lose one of the two
-     * entries, which is harmless for a best-effort cache).
+     * Returns the current cached {@link NodeRelationIndex}, building it
+     * eagerly on the first query after the cache was invalidated (i.e. after
+     * {@link #rebuildImmediately()} or {@link #setEntries(List)}). The build
+     * is guarded so that concurrent first queries do not each re-mine the
+     * sources (a lost build is harmless — it is a best-effort cache; see the
+     * {@link #relationIndex} concurrency contract).
      */
-    private void cacheRelated(String cacheKey, List<JIPipeNodeDatabaseEntry> result) {
-        Map<String, List<JIPipeNodeDatabaseEntry>> current = relatedCache;
-        Map<String, List<JIPipeNodeDatabaseEntry>> updated = new LinkedHashMap<>(current);
-        updated.put(cacheKey, result);
-        relatedCache = Collections.unmodifiableMap(updated);
+    private NodeRelationIndex relationIndex() {
+        NodeRelationIndex index = relationIndex;
+        if (index == null) {
+            synchronized (this) {
+                index = relationIndex;
+                if (index == null) {
+                    index = buildRelationIndex();
+                    relationIndex = index;
+                }
+            }
+        }
+        return index;
+    }
+
+    /**
+     * Mines all {@link NodeRelationSource}s (family steps + every template
+     * graph, all scopes) into a fresh, immutable {@link NodeRelationIndex}.
+     * The sources resolve and warn about stale edges themselves, so this
+     * never throws on a stale template edge (Review Focus #2).
+     * <p>
+     * The source list is the pluggable seam (spec §10.2): a future source
+     * (starter patterns, #1333 repository templates, ...) attaches by adding
+     * one entry here — no change to the index or to {@link #relations}.
+     */
+    private NodeRelationIndex buildRelationIndex() {
+        List<NodeRelationSource> sources = List.of(
+            new FamilyRelationSource(),
+            new TemplateRelationSource(project));
+        NodeRelationIndex index = new NodeRelationIndex();
+        for (NodeRelationSource source : sources) {
+            source.contribute(index::addEdge);
+        }
+        return index;
     }
 
     /**
@@ -369,15 +430,28 @@ public class JIPipeNodeDatabase implements JIPipeNodeDatabaseSearch {
         return null;
     }
 
+    /**
+     * The current relation index snapshot, rebuilt immediately on the
+     * calling thread. Invoked from the builder run so that after every
+     * registry/template refresh the Similar/Previous/Next data is current
+     * before the first UI query (the lazy path in
+     * {@link #relationIndex()} still covers the window between invalidation
+     * and the builder run finishing).
+     */
+    public void rebuildRelationIndex() {
+        relationIndex = buildRelationIndex();
+    }
+
     public List<JIPipeNodeDatabaseEntry> getEntries() {
         return entries;
     }
 
     public synchronized void setEntries(List<JIPipeNodeDatabaseEntry> entries) {
         this.entries = entries;
-        // Invalidate by swapping in a fresh empty map (see the field's
-        // concurrency contract); never mutate the current map in place.
-        relatedCache = Collections.emptyMap();
+        // Invalidate both caches by swapping the references (see the fields'
+        // concurrency contracts); never mutate the current values in place.
+        relationIndex = null;
+        relationsCache = Collections.emptyMap();
         aiSearch.setEntries(entries);
     }
 
