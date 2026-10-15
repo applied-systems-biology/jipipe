@@ -29,6 +29,7 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.plugins.parameters.ui.library.JIPipeDesktopIconRefParameterEditorUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -47,7 +48,14 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     private UUID uuid = UUID.randomUUID();
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
+    /**
+     * Transient legacy capture of the removed {@code menu-path} key (R7):
+     * kept on deserialization so {@link #migrateLegacyMenuPath()} can map it
+     * to {@link #taxonomyFunction}, but never serialized (no getter) and no
+     * longer a user-facing parameter. Empty after one save cycle.
+     */
     private StringList menuPath = new StringList();
+    private JIPipeTaxonomyFunctionRef taxonomyFunction = new JIPipeTaxonomyFunctionRef();
     private float colorHue = 40.0f / 360.0f;
     private IconRef icon = new IconRef("actions/configure.png");
     private String data;
@@ -64,7 +72,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     public static Map<String, Set<JIPipeNodeTemplate>> groupByMenuPaths(Collection<JIPipeNodeTemplate> infos) {
         Map<String, Set<JIPipeNodeTemplate>> result = new HashMap<>();
         for (JIPipeNodeTemplate template : infos) {
-            String menuPath = String.join("\n", template.getMenuPath());
+            String menuPath = String.join("\n", template.getMenuPathLegacy());
             Set<JIPipeNodeTemplate> group = result.getOrDefault(menuPath, null);
             if (group == null) {
                 group = new HashSet<>();
@@ -141,6 +149,7 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.data = other.data;
         this.graph = other.graph;
         this.icon = new IconRef(other.icon);
+        this.taxonomyFunction = new JIPipeTaxonomyFunctionRef(other.taxonomyFunction);
         this.menuPath = new StringList(other.menuPath);
         this.source = other.source;
         this.colorHue = other.colorHue;
@@ -192,17 +201,76 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
         this.description = description;
     }
 
-    @SetJIPipeDocumentation(name = "Menu path", description = "The path inside the 'Templates' menu")
-    @JIPipeParameter(value = "menu-path", uiOrder = -70)
-    @JsonGetter("menu-path")
-    public StringList getMenuPath() {
-        return menuPath;
-    }
-
-    @JIPipeParameter("menu-path")
+    /**
+     * Captures the legacy {@code menu-path} key on deserialization (R7).
+     * <p>
+     * Intentionally <b>not</b> a {@code @JIPipeParameter} and intentionally
+     * without a getter: the value is read in from old template files, consumed
+     * by {@link #migrateLegacyMenuPath()} (which maps it onto
+     * {@link #getTaxonomyFunction() taxonomyFunction} and appends an auditable
+     * footer to the description), and then never written back — so the key
+     * vanishes from a file after one save cycle.
+     *
+     * @param menuPath the legacy menu path (may be {@code null})
+     */
     @JsonSetter("menu-path")
     public void setMenuPath(StringList menuPath) {
-        this.menuPath = menuPath;
+        this.menuPath = menuPath == null ? new StringList() : menuPath;
+    }
+
+    /**
+     * Returns the captured legacy menu path (read-only, never serialized).
+     *
+     * @return the legacy menu path, empty when absent
+     */
+    private StringList getMenuPathLegacy() {
+        return menuPath == null ? new StringList() : menuPath;
+    }
+
+    /**
+     * One-shot migration of the legacy {@code menu-path} key to the
+     * {@link #taxonomyFunction} reference (spec §9): when the captured
+     * legacy path is non-empty and no taxonomy function is set yet, the first
+     * menu segment is matched against the registered taxonomy functions
+     * (case-insensitively, leaves before branches, with the legacy
+     * abbreviation table), the old path is appended to the description as an
+     * auditable italic footer ("*Previously: Image → Threshold*"), and the
+     * captured key is cleared.
+     * <p>
+     * <b>Order-safe:</b> a file that already carries a resolved
+     * {@code taxonomy-function} is left untouched (the function wins over the
+     * legacy key, no footer is appended). <b>Idempotent:</b> after the first
+     * call the captured key is empty, so later calls are no-ops (no double
+     * footer). Must be called after deserialization, on both load paths
+     * (global files and project metadata).
+     */
+    public void migrateLegacyMenuPath() {
+        StringList oldPath = getMenuPathLegacy();
+        if (oldPath.isEmpty()) {
+            return;
+        }
+        if (taxonomyFunction != null && taxonomyFunction.getId() != null) {
+            // An explicit taxonomy function already exists: it wins, nothing to migrate
+            menuPath = new StringList();
+            return;
+        }
+        String oldPathJoined = String.join(" → ", oldPath);
+        taxonomyFunction = JIPipeNodeTemplateMigration.migrate(oldPath.get(0));
+        description = JIPipeNodeTemplateMigration.appendPreviouslyFooter(description, oldPathJoined);
+        menuPath = new StringList();
+    }
+
+    @SetJIPipeDocumentation(name = "Taxonomy function", description = "The taxonomy function this template is filed under")
+    @JIPipeParameter(value = "taxonomy-function", uiOrder = -70)
+    @JsonGetter("taxonomy-function")
+    public JIPipeTaxonomyFunctionRef getTaxonomyFunction() {
+        return taxonomyFunction;
+    }
+
+    @JIPipeParameter("taxonomy-function")
+    @JsonSetter("taxonomy-function")
+    public void setTaxonomyFunction(JIPipeTaxonomyFunctionRef taxonomyFunction) {
+        this.taxonomyFunction = taxonomyFunction;
     }
 
     @SetJIPipeDocumentation(name = "Icon", description = "The icon assigned to the menu entry")
@@ -322,7 +390,10 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
     }
 
     public String getLocationInfo() {
-        return ("Templates\n" + String.join("\n", getMenuPath())).trim();
+        if (taxonomyFunction != null && taxonomyFunction.isResolved()) {
+            return ("Templates\n" + taxonomyFunction.getFunction().getName()).trim();
+        }
+        return "Templates";
     }
 
 }

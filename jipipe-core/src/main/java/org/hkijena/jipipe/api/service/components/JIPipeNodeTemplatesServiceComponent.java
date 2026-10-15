@@ -63,6 +63,9 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
                 try {
                     progressInfo.log("Loading " + jsonPath);
                     JIPipeNodeTemplate nodeTemplate = JsonUtils.readFromFile(jsonPath, JIPipeNodeTemplate.class);
+                    // One-shot migration of the legacy "menu-path" key to the
+                    // taxonomy-function reference (idempotent, order-safe)
+                    nodeTemplate.migrateLegacyMenuPath();
                     globalTemplates.add(nodeTemplate);
                     globalTemplatesPaths.put(nodeTemplate, jsonPath);
                 } catch (Throwable e) {

@@ -42,12 +42,9 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
         visibility = foundPipelineOnly ? JIPipeNodeDatabasePipelineVisibility.Pipeline : JIPipeNodeDatabasePipelineVisibility.Both;
         this.descriptionPlain = Jsoup.parse(getDescription().getHtml()).text();
 
-        // Build location info
-        if (template.getMenuPath().isEmpty()) {
-            this.locationInfo = "Templates";
-        } else {
-            this.locationInfo = "Templates\n" + String.join("\n", template.getMenuPath());
-        }
+        // Build location info (minimal transition form; the scoped
+        // "Templates / <scope>" location info is introduced with TemplateScope)
+        this.locationInfo = template.getLocationInfo();
 
         initializeTokens();
     }
