@@ -51,6 +51,13 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     }
 
     public void reloadGlobalTemplates(JIPipeProgressInfo progressInfo) {
+        // Plugin templates (registered via addFromPlugin, e.g. the bundled
+        // corpus-mined System patterns) are a persistent subset of
+        // globalTemplates that does NOT come from the user's node-templates
+        // directory. Preserve them across the clear() so the disk reload only
+        // affects the user's own templates.
+        List<JIPipeNodeTemplate> pluginSubset =
+            new ArrayList<>(globalTemplates).stream().filter(this::isPluginTemplate).toList();
         globalTemplates.clear();
         globalTemplatesPaths.clear();
 
@@ -78,6 +85,10 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
             e.printStackTrace();
             IJ.handleException(e);
         }
+
+        // Re-add the preserved plugin templates (they are not on disk in the
+        // user store; they live in the bundle/plugin registry).
+        globalTemplates.addAll(pluginSubset);
 
         emitRefreshedEvent();
     }

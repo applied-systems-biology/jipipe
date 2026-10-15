@@ -13,11 +13,14 @@
 
 package org.hkijena.jipipe.plugins.taxonomy;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.JIPipeMutableDependency;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsConvertFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
@@ -129,9 +132,20 @@ import org.hkijena.jipipe.plugins.JIPipePrepackagedDefaultJavaPlugin;
 import org.hkijena.jipipe.plugins.core.CorePlugin;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.plugins.parameters.library.references.IconRef;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
+import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -336,6 +350,186 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         frameworks.register(new IlastikFramework());
         frameworks.register(new OpenCVFramework());
         frameworks.register(new TrackMateFramework());
+
+        // Ship the corpus-mined workflow patterns as System (plugin) node
+        // templates. Runs at the END of registration: the function tree above
+        // is fully populated so the icon/hue derivation below can resolve every
+        // top-level branch, and the registered templates feed the
+        // TemplateRelationSource which mines their graphs into the
+        // Similar/Previous/Next relations index at startup.
+        registerSystemTemplates();
+    }
+
+    /**
+     * Registers the corpus-mined workflow patterns as bundled System node
+     * templates (task 8, spec §11).
+     * <p>
+     * The 145 deduplicated patterns (185 research artifacts, 40 collapsed
+     * shape-label duplicates + 1 kept-both fan-in/fan-out pair with distinct
+     * names — see {@code utils/generate-system-template-metadata.py}) ship as
+     * bundled resources under
+     * {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/}:
+     * <ul>
+     *   <li>one raw {@code JIPipeGraph}-shaped JSON per pattern
+     *       ({@code {"nodes": …, "edges": …}}) — the exact shape
+     *       {@link JIPipeNodeTemplate#getGraph()} deserializes;</li>
+     *   <li>{@code system-templates.json} — a committed metadata sidecar
+     *       mapping pattern id → {@code {name, description, functionId,
+     *       file}} (no runtime markdown parsing).</li>
+     * </ul>
+     * For each pattern the template's {@code data} is the raw graph JSON, its
+     * {@code name} and {@code description} come from the sidecar, its
+     * {@code taxonomyFunction} is the sidecar's {@code functionId} (a top-level
+     * branch, computed by the generator), and its icon/hue are derived from the
+     * LIVE function registry at registration time (the top-level branch's
+     * {@code getColorHue()} / {@code getIcon()} — never stored in the sidecar).
+     * The {@code source} is left at its default: {@code addFromPlugin}
+     * force-sets it to {@link JIPipeNodeTemplate#SOURCE_EXTENSION}
+     * ("Extension"), which is what makes these System-scoped
+     * ({@code isPluginTemplate} → {@code true}).
+     * <p>
+     * Registration is deferred: {@link #registerNodeTemplate(JIPipeNodeTemplate)}
+     * schedules the templates (executed after all plugin registration), so a
+     * failed graph would not abort the rest.
+     */
+    private void registerSystemTemplates() {
+        JsonNode sidecar = readPatternsSidecar();
+        if (sidecar == null) {
+            return;
+        }
+        FunctionRegistry functions = JIPipe.getNodes().getFunctions();
+        Map<String, IconRef> iconCache = new HashMap<>();
+        int registered = 0;
+        for (String id : sortedKeys(sidecar)) {
+            JsonNode entry = sidecar.get(id);
+            String file = entry.path("file").asText(id + ".json");
+            String data = readPatternGraphResource(file);
+            if (data == null) {
+                JIPipe.getInstance().getProgressInfo().log(
+                    "ERROR: missing bundled system template graph resource " + file + " (pattern " + id + ")");
+                continue;
+            }
+            String functionId = entry.path("functionId").asText(null);
+            if (StringUtils.isNullOrEmpty(functionId)) {
+                JIPipe.getInstance().getProgressInfo().log(
+                    "ERROR: bundled system template " + id + " has no functionId in its sidecar entry");
+                continue;
+            }
+            JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+            template.setName(entry.path("name").asText(id));
+            template.setDescription(new HTMLText(entry.path("description").asText("")));
+            template.setTaxonomyFunction(new JIPipeTaxonomyFunctionRef(functionId));
+            template.setData(data);
+            // Icon + hue from the LIVE registry (the top-level branch carries
+            // both; the assigned functionId is itself top-level). Derived, not
+            // stored in the sidecar.
+            JIPipeNodeTaxonomyFunction function = functions.byId(functionId);
+            if (function != null) {
+                Float hue = function.getColorHue();
+                if (hue != null) {
+                    template.setColorHue(hue);
+                }
+                IconRef icon = iconCache.get(functionId);
+                if (icon == null && function.getIcon() != null) {
+                    icon = reverseMapIcon(function.getIcon());
+                    if (icon != null) {
+                        iconCache.put(functionId, icon);
+                    }
+                }
+                if (icon != null) {
+                    template.setIcon(icon);
+                }
+            }
+            registerNodeTemplate(template);
+            registered++;
+        }
+        JIPipe.getInstance().getProgressInfo().log(
+            "Registered " + registered + " corpus-mined System node templates (bundled patterns)");
+    }
+
+    /**
+     * Reads the committed {@code system-templates.json} metadata sidecar from
+     * the bundled classpath resources.
+     *
+     * @return the sidecar object, or {@code null} if the resource is absent
+     *         (the caller then registers nothing)
+     */
+    private static JsonNode readPatternsSidecar() {
+        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(SYSTEM_TEMPLATE_SIDECAR)) {
+            if (in == null) {
+                return null;
+            }
+            return JsonUtils.getObjectMapper().readTree(in);
+        } catch (Exception e) {
+            JIPipe.getInstance().getProgressInfo().log(
+                "ERROR: could not read the bundled system-template sidecar: " + e);
+            return null;
+        }
+    }
+
+    /** Reads a bundled raw graph JSON resource (absolute classpath path). */
+    private static String readPatternGraphResource(String file) {
+        String path = SYSTEM_TEMPLATE_RESOURCE_DIR + file;
+        try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(path)) {
+            if (in == null) {
+                return null;
+            }
+            return new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            JIPipe.getInstance().getProgressInfo().log("ERROR reading pattern graph " + path + ": " + e);
+            return null;
+        }
+    }
+
+    /**
+     * Classpath base directory of the bundled system-template graph resources
+     * (absolute, as required by {@link Class#getResourceAsStream}).
+     */
+    static final String SYSTEM_TEMPLATE_RESOURCE_DIR =
+        "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+    /** The committed metadata sidecar (pattern id → name/description/functionId/file). */
+    static final String SYSTEM_TEMPLATE_SIDECAR = SYSTEM_TEMPLATE_RESOURCE_DIR + "system-templates.json";
+
+    /**
+     * Maps a function's live {@link javax.swing.Icon} back to its
+     * {@code IconRef} name. Every top-level branch builds its icon via
+     * {@code JIPipe.RESOURCES.getIcon16("<name>")}, which is cached by name and
+     * therefore returns the SAME instance on every call for a given name. So
+     * we reverse-map by reference equality: probe each known 16px icon name and
+     * return the one whose cached instance is the very icon the function
+     * reported. Falls back to {@code null} (the template keeps its default
+     * icon) if no match is found.
+     */
+    private static IconRef reverseMapIcon(javax.swing.Icon icon) {
+        if (icon == null) {
+            return null;
+        }
+        // walkInternalResourceFolder returns FULL resource paths; the IconRef
+        // name is the relative path (e.g. "actions/document-import.png"), so
+        // strip the light 16px base path first (mirrors getAvailableIcons()).
+        String basePath = ResourceUtils.getResourcePath("icons/light/icons-16/");
+        for (String fullPath : ResourceUtils.walkInternalResourceFolder("icons/light/icons-16/")) {
+            if (!fullPath.startsWith(basePath) || !fullPath.endsWith(".png")) {
+                continue;
+            }
+            String name = fullPath.substring(basePath.length());
+            try {
+                if (icon == JIPipe.RESOURCES.getIcon16(name)) {
+                    return new IconRef(name);
+                }
+            } catch (Throwable ignored) {
+                // a name that does not resolve to an icon — skip
+            }
+        }
+        return null;
+    }
+
+    /** Sorted property-name list of a JSON object (deterministic iteration). */
+    private static List<String> sortedKeys(JsonNode object) {
+        List<String> keys = new ArrayList<>();
+        object.fieldNames().forEachRemaining(keys::add);
+        Collections.sort(keys);
+        return keys;
     }
 
     @Override

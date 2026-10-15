@@ -1,0 +1,872 @@
+{
+  "annotation-sandwich-import-file-list-path-to-annotation-simple-other": {
+    "description": "Mined from the HKI corpus — support 4 across 4 projects.<br>Sequence: File list → Add path to annotations → Import Cellpose model from file.<br>Wiring: File list.Filenames → Add path to annotations.Paths; Add path to annotations.Annotated paths → Import Cellpose model from file.Input.",
+    "file": "annotation-sandwich-import-file-list-path-to-annotation-simple-other.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "File list -> Annotate with file/directory name -> other"
+  },
+  "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io": {
+    "description": "Mined from the HKI corpus — support 6 across 6 projects.<br>Sequence: Bio-Formats importer → Annotate with image properties → Output.<br>Wiring: Annotate with image properties.Annotated image → Output.Raw; Bio-Formats importer.Output → Annotate with image properties.Image.",
+    "file": "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-core-io.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Bio-Formats importer -> Annotate with image properties -> core-io"
+  },
+  "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-other": {
+    "description": "Mined from the HKI corpus — support 16 across 16 projects.<br>Sequence: Bio-Formats importer → Annotate with image properties → Split by dimension.<br>Wiring: Annotate with image properties.Annotated image → Split by dimension.Input; Bio-Formats importer.Output → Annotate with image properties.Image.",
+    "file": "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-other.json",
+    "functionId": "jipipe:function:images",
+    "name": "Bio-Formats importer -> Annotate with image properties -> other"
+  },
+  "annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other": {
+    "description": "Mined from the HKI corpus — support 18 across 18 projects.<br>Sequence: Import image → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Import image.Image → Annotate with data.Input.",
+    "file": "annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Import image -> Annotate with data -> other"
+  },
+  "chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Cellpose segmentation (2.x) → Filter ROI by statistics → Convert ROI to RGB: Cellpose results.<br>Wiring: Cellpose segmentation (2.x).ROI → Filter ROI by statistics.ROI; Filter ROI by statistics.Output → Convert ROI to RGB: Cellpose results.ROI.",
+    "file": "chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB"
+  },
+  "chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Cellpose segmentation (3.x) → Filter 2D ROI by statistics → Masks and ROIs.<br>Wiring: Cellpose segmentation (3.x).ROI → Filter 2D ROI by statistics.ROI; Filter 2D ROI by statistics.Output → Masks and ROIs.Nucleus ROI.",
+    "file": "chain-3-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output"
+  },
+  "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 43 across 43 projects.<br>Sequence: List files → Annotate with file/directory name → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import image.Files.",
+    "file": "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Import image"
+  },
+  "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List ZIP → Add path to annotations → ROI from file.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Import ROI"
+  },
+  "chain-3-folder-list-files-path-to-annotation-simple-path-filter": {
+    "description": "Mined from the HKI corpus — support 38 across 38 projects.<br>Sequence: List files → Annotate with file/directory name → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
+    "file": "chain-3-folder-list-files-path-to-annotation-simple-path-filter.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Filter paths"
+  },
+  "chain-3-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 50 across 50 projects.<br>Sequence: List subfolders → Annotate with file/directory name → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders.",
+    "file": "chain-3-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> List files"
+  },
+  "chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List subfolders → Add path to annotations → Filter paths.<br>Wiring: List subfolders.Subfolders → Add path to annotations.Paths; Add path to annotations.Annotated paths → Filter paths.Input.",
+    "file": "chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> Filter paths"
+  },
+  "chain-3-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d": {
+    "description": "Mined from the HKI corpus — support 40 across 40 projects.<br>Sequence: Morphological hole filling 2D → Morphological operation 2D: Erode → Find particles 2D.<br>Wiring: Morphological hole filling 2D.Output → Morphological operation 2D: Erode.Input; Morphological operation 2D: Erode.Output → Find particles 2D.Mask.",
+    "file": "chain-3-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d.json",
+    "functionId": "jipipe:function:images",
+    "name": "Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D"
+  },
+  "chain-3-ij1-morph-operation2d-annotate-with-data-distribute-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation.",
+    "file": "chain-3-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
+  },
+  "chain-3-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 38 across 38 projects.<br>Sequence: Morphological operation 2D: Erode → Find particles 2D → Convert ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert ROI to RGB.ROI; Morphological operation 2D: Erode.Output → Find particles 2D.Mask.",
+    "file": "chain-3-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:images",
+    "name": "Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB"
+  },
+  "chain-3-ij1-roi-filter-statistics-ij1-roi-to-rgb-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Filter ROI by statistics → Convert ROI to RGB: Cellpose results → Output.<br>Wiring: Filter ROI by statistics.Output → Convert ROI to RGB: Cellpose results.ROI; Convert ROI to RGB: Cellpose results.Output → Output.Overlay.",
+    "file": "chain-3-ij1-roi-filter-statistics-ij1-roi-to-rgb-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics -> Convert 2D ROI to RGB -> Compartment output"
+  },
+  "chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-ij1-roi-filter-by-overlap": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Filter ROI by statistics → Output → Filter ROI by overlap.<br>Wiring: Filter ROI by statistics.Output → Output.ROIs; Output.ROIs → Filter ROI by overlap.ROI 2.",
+    "file": "chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-ij1-roi-filter-by-overlap.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics -> Compartment output -> Filter 2D ROI by overlap (old)"
+  },
+  "chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Filter ROI by statistics → Output #1 → Output #2.<br>Wiring: Filter ROI by statistics.Output → Output #2.ROIs; Output #2.ROIs → Output #2.Model2 ROI.",
+    "file": "chain-3-ij1-roi-filter-statistics-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Filter 2D ROI by statistics -> Compartment output -> Compartment output"
+  },
+  "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Convert ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert ROI to mask.Output → Morphological operation 2D.Input.",
+    "file": "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
+  },
+  "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: Convert ROI to mask → Morphological operation 2D → Output.<br>Wiring: Morphological operation 2D.Output → Output.Mask; Convert ROI to mask.Output → Morphological operation 2D.Input.",
+    "file": "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output"
+  },
+  "chain-3-ij1-roi-to-rgb-jipipe-compartment-output-ij1-roi-filter-by-overlap": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Convert ROI to RGB: Cellpose results → Output → Filter ROI by overlap.<br>Wiring: Convert ROI to RGB: Cellpose results.Output → Output.Ovedrlay combined ROIs; Output.Image with ridges → Filter ROI by overlap.Reference.",
+    "file": "chain-3-ij1-roi-to-rgb-jipipe-compartment-output-ij1-roi-filter-by-overlap.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Convert 2D ROI to RGB -> Compartment output -> Filter 2D ROI by overlap (old)"
+  },
+  "chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Convert ROI to RGB: Cellpose results → Output #1 → Output #2.<br>Wiring: Convert ROI to RGB: Cellpose results.Output → Output #2.Overlay; Output #2.ROIs → Output #2.Model2 ROI.",
+    "file": "chain-3-ij1-roi-to-rgb-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Convert 2D ROI to RGB -> Compartment output -> Compartment output"
+  },
+  "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set LUT (color map) → Mask → Copy physical dimensions.<br>Wiring: Set LUT (color map).Output → Mask.3D labels; Mask.Green trimmed → Copy physical dimensions.Source.",
+    "file": "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Set LUT (color map) -> Compartment output -> Copy physical dimensions"
+  },
+  "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-color-blend-images": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set LUT (color map) → Mask → Blend images.<br>Wiring: Set LUT (color map).Output → Mask.3D labels; Mask.3D labels → Blend images.Cell.",
+    "file": "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-color-blend-images.json",
+    "functionId": "jipipe:function:images",
+    "name": "Set LUT (color map) -> Compartment output -> Blend images"
+  },
+  "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 42 across 42 projects.<br>Sequence: Set LUT (color map) → Images and masks → Convert 2D ROI to RGB.<br>Wiring: Set LUT (color map).Output → Images and masks.Normalized red; Images and masks.Raw green → Convert 2D ROI to RGB.Image.",
+    "file": "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB"
+  },
+  "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Set LUT (color map) → Mask → Extract ROI 3D statistics.<br>Wiring: Set LUT (color map).Output → Mask.3D labels; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-ij3d-measure-roi3d.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Extract IJ3D ROI statistics"
+  },
+  "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 38 across 38 projects.<br>Sequence: Set LUT (color map): label → Channels → Masks and ROIs.<br>Wiring: Set LUT (color map): label.Output → Masks and ROIs.Label; Masks and ROIs.Label → Masks and ROIs.Label.",
+    "file": "chain-3-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Compartment output"
+  },
+  "chain-3-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Auto threshold 2D → Find particles 2D → Convert ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert ROI to RGB.ROI; Auto threshold 2D.Output → Find particles 2D.Mask.",
+    "file": "chain-3-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:images",
+    "name": "Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB"
+  },
+  "chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Auto threshold 2D → Morphological operation 2D: Dilate → Morphological hole filling 2D.<br>Wiring: Morphological operation 2D: Dilate.Output → Morphological hole filling 2D.Input; Auto threshold 2D.Output → Morphological operation 2D: Dilate.Input.",
+    "file": "chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d.json",
+    "functionId": "jipipe:function:images",
+    "name": "Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D"
+  },
+  "chain-3-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: IJ3D Labels to 3D ROI → For analysis → Extract ROI 3D statistics.<br>Wiring: IJ3D Labels to 3D ROI.ROI → For analysis.Bacteria from blue; For analysis.Bacteria from blue → Extract ROI 3D statistics.ROI.",
+    "file": "chain-3-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d.json",
+    "functionId": "jipipe:function:graph",
+    "name": "IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics"
+  },
+  "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 34 across 34 projects.<br>Sequence: Set 3D ROI properties → Convert 3D ROI to RGB → Copy physical dimensions.<br>Wiring: Set 3D ROI properties.Output → Convert 3D ROI to RGB.ROI; Convert 3D ROI to RGB.Output → Copy physical dimensions.Target.",
+    "file": "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions"
+  },
+  "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set 3D ROI properties → Convert 3D ROI to RGB → Blend images.<br>Wiring: Set 3D ROI properties.Output → Convert 3D ROI to RGB.ROI; Convert 3D ROI to RGB.Output → Blend images.Magenta.",
+    "file": "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images"
+  },
+  "chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Convert 3D ROI to RGB → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Convert 3D ROI to RGB.Output → Blend images.Magenta.",
+    "file": "chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions"
+  },
+  "chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Filter 3D ROI by overlap → Set 3D ROI properties → Convert 3D ROI to RGB.<br>Wiring: Set 3D ROI properties.Output → Convert 3D ROI to RGB.ROI; Filter 3D ROI by overlap.ROI 2 → Set 3D ROI properties.Input.",
+    "file": "chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB"
+  },
+  "chain-3-iji-export-image-v2-io-interface-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Export image → IO Interface: save HSB histograms per image and per condition → Raw nodules from direct ROI medium size.<br>Wiring: Export image.Exported file → IO Interface: save HSB histograms per image and per condition.Data 6; IO Interface: save HSB histograms per image and per condition.Data → Raw nodules from direct ROI medium size.Save color histograms.",
+    "file": "chain-3-iji-export-image-v2-io-interface-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Export image -> IO Interface -> Compartment output"
+  },
+  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Filter 2D ROI by statistics.<br>Wiring: Cellpose segmentation (3.x).ROI → Filter 2D ROI by statistics.ROI; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
+    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics"
+  },
+  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-mask": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Convert 2D ROI to mask.<br>Wiring: Cellpose segmentation (3.x).Probabilities → Convert 2D ROI to mask.Image; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
+    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-mask.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to mask"
+  },
+  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 34 across 34 projects.<br>Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Convert 2D ROI to RGB.<br>Wiring: Cellpose segmentation (3.x).ROI → Convert 2D ROI to RGB.ROI; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
+    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB"
+  },
+  "chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 51 across 51 projects.<br>Sequence: Folder list → List subfolders → Annotate with file/directory name.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Folder list.Folder paths → List subfolders.Folders.",
+    "file": "chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "Folder list -> List subfolders -> Annotate with file/directory name"
+  },
+  "chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: ROI from file → Convert ROI to mask → Morphological operation 2D.<br>Wiring: Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI.",
+    "file": "chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
+    "functionId": "jipipe:function:data",
+    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
+  },
+  "chain-3-jipipe-comment-node-group-import-imagej-bioformats": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: Comment → READ: folders, subfolders and files → Bio-Formats importer.<br>Wiring: Comment.Comment → READ: folders, subfolders and files.Input folder; READ: folders, subfolders and files.Annotated paths → Bio-Formats importer.Input.",
+    "file": "chain-3-jipipe-comment-node-group-import-imagej-bioformats.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Comment -> Group -> Bio-Formats importer"
+  },
+  "chain-3-jipipe-comment-path-to-annotation-simple-folder-list-subfolders": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Comment → Add path to annotations → List subfolders.<br>Wiring: Comment.Comment → Add path to annotations.Paths; Add path to annotations.Annotated paths → List subfolders.Folders.",
+    "file": "chain-3-jipipe-comment-path-to-annotation-simple-folder-list-subfolders.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Comment -> Annotate with file/directory name -> List subfolders"
+  },
+  "chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Mask → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Mask.3D labels → Blend images.Cell.",
+    "file": "chain-3-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Compartment output -> Blend images -> Copy physical dimensions"
+  },
+  "chain-3-jipipe-compartment-output-ij1-roi-filter-by-overlap-ij1-roi-filter-by-overlap": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: ROIs → Filter ROI by overlap #1 → Filter ROI by overlap #2.<br>Wiring: Filter ROI by overlap #2.ROI 1 → Filter ROI by overlap #2.ROI 2; ROIs.Blue spores → Filter ROI by overlap #2.ROI 2.",
+    "file": "chain-3-jipipe-compartment-output-ij1-roi-filter-by-overlap-ij1-roi-filter-by-overlap.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Filter 2D ROI by overlap (old) -> Filter 2D ROI by overlap (old)"
+  },
+  "chain-3-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: Output #1 → Filter ROI by overlap → Output #2.<br>Wiring: Filter ROI by overlap.ROI 1 → Output #2.False negatives ROI; Output #2.ROI → Filter ROI by overlap.ROI 1.",
+    "file": "chain-3-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Filter 2D ROI by overlap (old) -> Compartment output"
+  },
+  "chain-3-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Raw and masked images → Filter ROI by statistics → Convert ROI to RGB.<br>Wiring: Filter ROI by statistics.Output → Convert ROI to RGB.ROI; Raw and masked images.Masked raw image → Filter ROI by statistics.Reference.",
+    "file": "chain-3-jipipe-compartment-output-ij1-roi-filter-statistics-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Compartment output -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB"
+  },
+  "chain-3-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 52 across 52 projects.<br>Sequence: Output #1 → Convert ROI to RGB → Output #2.<br>Wiring: Convert ROI to RGB.Output → Output #2.Visualization; Output #2.Raw → Convert ROI to RGB.Image.",
+    "file": "chain-3-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Convert 2D ROI to RGB -> Compartment output"
+  },
+  "chain-3-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Mask → Extract ROI 3D statistics → Annotate data with table values.<br>Wiring: Extract ROI 3D statistics.Measurements → Annotate data with table values.Table; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-3-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values"
+  },
+  "chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Output → Filter 3D ROI by overlap → Extract ROI 3D statistics.<br>Wiring: Filter 3D ROI by overlap.ROI 2 → Extract ROI 3D statistics.ROI; Output.Green ROIs → Filter 3D ROI by overlap.ROI 1.",
+    "file": "chain-3-jipipe-compartment-output-ij3d-roi-filter-by-overlap-ij3d-measure-roi3d.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Compartment output -> Filter IJ3D ROI by overlap (old) -> Extract IJ3D ROI statistics"
+  },
+  "chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Output #1 → Output #2 → Filter ROI by overlap.<br>Wiring: Output #2.Merged ROIs → Filter ROI by overlap.ROI 2; Output #2.ROIs → Output #2.Model2 ROI.",
+    "file": "chain-3-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Compartment output -> Filter 2D ROI by overlap (old)"
+  },
+  "chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Output → Mask → Extract ROI 3D statistics.<br>Wiring: Mask.Green trimmed → Mask.Green trimmed; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-3-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Compartment output -> Extract IJ3D ROI statistics"
+  },
+  "chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Mask → Output → Distances.<br>Wiring: Distances.3D cell mask → Distances.3D cell mask; Distances.Green distances → Distances.Green to green closest distances.",
+    "file": "chain-3-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Compartment output -> Compartment output"
+  },
+  "chain-3-node-group-import-imagej-bioformats-image-properties-to-annotation": {
+    "description": "Mined from the HKI corpus — support 44 across 44 projects.<br>Sequence: READ: folders, subfolders and files → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; READ: folders, subfolders and files.Annotated paths → Bio-Formats importer.Input.",
+    "file": "chain-3-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Group -> Bio-Formats importer -> Annotate with image properties"
+  },
+  "chain-3-path-filter-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Filter paths → List TIFF or JPG → Add path to annotations.<br>Wiring: List TIFF or JPG.Files → Add path to annotations.Paths; Filter paths.Output → List TIFF or JPG.Folders.",
+    "file": "chain-3-path-filter-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "Filter paths -> List files -> Annotate with file/directory name"
+  },
+  "chain-3-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 50 across 50 projects.<br>Sequence: Annotate with file/directory name #1 → List files → Annotate with file/directory name #2.<br>Wiring: List files.Files → Annotate with file/directory name #2.Paths; Annotate with file/directory name #2.Annotated paths → List files.Folders.",
+    "file": "chain-3-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name"
+  },
+  "chain-3-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations #1 → List subfolders → Add path to annotations #2.<br>Wiring: List subfolders.Subfolders → Add path to annotations #2.Paths; Add path to annotations #2.Annotated paths → List subfolders.Folders.",
+    "file": "chain-3-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name"
+  },
+  "chain-3-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 25 across 25 projects.<br>Sequence: Annotate with file/directory name → Import image → Output.<br>Wiring: Import image.Image → Output.Raw; Annotate with file/directory name.Annotated paths → Import image.Files.",
+    "file": "chain-3-path-to-annotation-simple-import-imagej-imgplus-from-file-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import image -> Compartment output"
+  },
+  "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations → ROI from file → Convert ROI to mask.<br>Wiring: ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
+  },
+  "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations → ROI from file → Output.<br>Wiring: ROI from file.Output → Output.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import ROI -> Compartment output"
+  },
+  "chain-3-path-to-annotation-simple-path-filter-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations → Filter paths → List TIFF or JPG.<br>Wiring: Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations.Annotated paths → Filter paths.Input.",
+    "file": "chain-3-path-to-annotation-simple-path-filter-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> Filter paths -> List files"
+  },
+  "chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Annotate with file/directory name → Filter paths → Import image.<br>Wiring: Filter paths.Output → Import image.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
+    "file": "chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> Filter paths -> Import image"
+  },
+  "chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Histogram plot → Export image → Output.<br>Wiring: Export image.Exported file → Output.Histogram distances; Histogram plot.Output → Export image.Input.",
+    "file": "chain-3-plot-table-plot-histogram-iji-export-image-v2-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:export",
+    "name": "JFreeChart Histogram plot -> Export image -> Compartment output"
+  },
+  "chain-3-project-user-directory-node-group-import-imagej-bioformats": {
+    "description": "Mined from the HKI corpus — support 54 across 54 projects.<br>Sequence: Project user directory → READ: folders, subfolders and files → Bio-Formats importer.<br>Wiring: READ: folders, subfolders and files.Annotated paths → Bio-Formats importer.Input; Project user directory.Output → READ: folders, subfolders and files.Input folder.",
+    "file": "chain-3-project-user-directory-node-group-import-imagej-bioformats.json",
+    "functionId": "jipipe:function:data",
+    "name": "Project user path -> Group -> Bio-Formats importer"
+  },
+  "chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 38 across 38 projects.<br>Sequence: Add annotations as columns → Merge table rows → Colocalization per component.<br>Wiring: Add annotations as columns.Output → Merge table rows.Input; Merge table rows.Output → Colocalization per component.Green vs. Magenta, STED.",
+    "file": "chain-3-table-add-annotation-columns-table-merge-tables-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:tables",
+    "name": "Add annotations as columns -> Merge table rows -> Compartment output"
+  },
+  "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List ZIP → Add path to annotations → ROI from file → Convert ROI to mask.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
+  },
+  "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List ZIP → Add path to annotations → ROI from file → Output.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; ROI from file.Output → Output.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Import ROI -> Compartment output"
+  },
+  "chain-4-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: List files → Annotate with file/directory name → Filter paths → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → Import image.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
+    "file": "chain-4-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Filter paths -> Import image"
+  },
+  "chain-4-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 50 across 50 projects.<br>Sequence: List subfolders → Annotate with file/directory name #1 → List files → Annotate with file/directory name #2.<br>Wiring: List files.Files → Annotate with file/directory name #2.Paths; List subfolders.Subfolders → Annotate with file/directory name #2.Paths; Annotate with file/directory name #2.Annotated paths → List files.Folders.",
+    "file": "chain-4-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name"
+  },
+  "chain-4-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List subfolders → Add path to annotations → Filter paths → List TIFF or JPG.<br>Wiring: List subfolders.Subfolders → Add path to annotations.Paths; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations.Annotated paths → Filter paths.Input.",
+    "file": "chain-4-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> Filter paths -> List files"
+  },
+  "chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 34 across 34 projects.<br>Sequence: Morphological hole filling 2D → Morphological operation 2D: Erode → Find particles 2D → Convert ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert ROI to RGB.ROI; Morphological hole filling 2D.Output → Morphological operation 2D: Erode.Input; Morphological operation 2D: Erode.Output → Find particles 2D.Mask.",
+    "file": "chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:images",
+    "name": "Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB"
+  },
+  "chain-4-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Convert ROI to mask → Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation; Convert ROI to mask.Output → Morphological operation 2D.Input.",
+    "file": "chain-4-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
+  },
+  "chain-4-ij1-roi-to-rgb-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Convert ROI to RGB → Output #1 → Filter ROI by overlap → Output #2.<br>Wiring: Filter ROI by overlap.ROI 1 → Output #2.False negatives ROI; Convert ROI to RGB.Output → Output #2.Merged ROI overlay; Output #2.Merged ROIs → Filter ROI by overlap.ROI 2.",
+    "file": "chain-4-ij1-roi-to-rgb-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Convert 2D ROI to RGB -> Compartment output -> Filter 2D ROI by overlap (old) -> Compartment output"
+  },
+  "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Set LUT (color map) → Mask → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Set LUT (color map).Output → Mask.3D labels; Mask.3D labels → Blend images.Cell.",
+    "file": "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Set LUT (color map) -> Compartment output -> Blend images -> Copy physical dimensions"
+  },
+  "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Set LUT (color map): grey → Output #1 → Convert ROI to RGB: green overlay → Output #2.<br>Wiring: Convert ROI to RGB: green overlay.Output → Output #2.Green overlay; Set LUT (color map): grey.Output → Output #2.TL stack; Output #2.Green → Convert ROI to RGB: green overlay.Image.",
+    "file": "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB -> Compartment output"
+  },
+  "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Set LUT (color map): magenta → Output → Mask → Extract ROI 3D statistics.<br>Wiring: Set LUT (color map): magenta.Output → Mask.Magenta raw; Mask.Green trimmed → Mask.Green trimmed; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Compartment output -> Extract IJ3D ROI statistics"
+  },
+  "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set LUT (color map) → Mask → Output → Distances.<br>Wiring: Set LUT (color map).Output → Distances.3D labels; Distances.3D cell mask → Distances.3D cell mask; Distances.Green distances → Distances.Green to green closest distances.",
+    "file": "chain-4-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Compartment output -> Compartment output"
+  },
+  "chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Labels to 3D ROI → Mask → Extract ROI 3D statistics → Annotate data with table values.<br>Wiring: Labels to 3D ROI.ROI → Mask.3D cell membranes; Extract ROI 3D statistics.Measurements → Annotate data with table values.Table; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-4-ij3d-labels-to-roi-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "IJ3D Labels to 3D ROI -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values"
+  },
+  "chain-4-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set 3D ROI properties → Convert 3D ROI to RGB → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Set 3D ROI properties.Output → Convert 3D ROI to RGB.ROI; Convert 3D ROI to RGB.Output → Blend images.Magenta.",
+    "file": "chain-4-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions"
+  },
+  "chain-4-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Filter 2D ROI by statistics → Masks and ROIs.<br>Wiring: Cellpose segmentation (3.x).ROI → Filter 2D ROI by statistics.ROI; Filter 2D ROI by statistics.Output → Masks and ROIs.Nucleus ROI; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
+    "file": "chain-4-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics -> Compartment output"
+  },
+  "chain-4-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Folder list → List subfolders → Add path to annotations → Filter paths.<br>Wiring: List subfolders.Subfolders → Add path to annotations.Paths; Folder list.Folder paths → List subfolders.Folders; Add path to annotations.Annotated paths → Filter paths.Input.",
+    "file": "chain-4-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter.json",
+    "functionId": "jipipe:function:data",
+    "name": "Folder list -> List subfolders -> Annotate with file/directory name -> Filter paths"
+  },
+  "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: ROI from file → Convert ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI.",
+    "file": "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
+  },
+  "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: ROI from file → Convert ROI to mask → Morphological operation 2D → Output.<br>Wiring: Morphological operation 2D.Output → Output.Mask; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI.",
+    "file": "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:data",
+    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output"
+  },
+  "chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Comment → READ: folders, subfolders and files → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Comment.Comment → READ: folders, subfolders and files.Input folder; READ: folders, subfolders and files.Annotated paths → Bio-Formats importer.Input.",
+    "file": "chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Comment -> Group -> Bio-Formats importer -> Annotate with image properties"
+  },
+  "chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Comment → Add path to annotations #1 → List subfolders → Add path to annotations #2.<br>Wiring: List subfolders.Subfolders → Add path to annotations #2.Paths; Comment.Comment → Add path to annotations #2.Paths; Add path to annotations #2.Annotated paths → List subfolders.Folders.",
+    "file": "chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name"
+  },
+  "chain-4-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Output #1 → Output #2 → Filter ROI by overlap → Output #3.<br>Wiring: Filter ROI by overlap.ROI 1 → Output #3.False negatives ROI; Output #3.Merged ROIs → Filter ROI by overlap.ROI 2; Output #3.ROIs → Output #3.Model2 ROI.",
+    "file": "chain-4-jipipe-compartment-output-jipipe-compartment-output-ij1-roi-filter-by-overlap-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Compartment output -> Compartment output -> Filter 2D ROI by overlap (old) -> Compartment output"
+  },
+  "chain-4-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Output → Mask → Extract ROI 3D statistics → Annotate data with table values.<br>Wiring: Extract ROI 3D statistics.Measurements → Annotate data with table values.Table; Mask.Green trimmed → Mask.Green trimmed; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-4-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values"
+  },
+  "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Filter paths → List TIFF or JPG → Add path to annotations → Import image.<br>Wiring: List TIFF or JPG.Files → Add path to annotations.Paths; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations.Annotated paths → Import image.Files.",
+    "file": "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import image"
+  },
+  "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Filter paths → List ZIP → Add path to annotations → ROI from file.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; Filter paths.Output → List ZIP.Folders; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import ROI"
+  },
+  "chain-4-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: Annotate with file/directory name #1 → List files → Annotate with file/directory name #2 → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name #2.Paths; Annotate with file/directory name #2.Annotated paths → List files.Folders; Annotate with file/directory name #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-4-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths"
+  },
+  "chain-4-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations #1 → List subfolders → Add path to annotations #2 → List files.<br>Wiring: List subfolders.Subfolders → Add path to annotations #2.Paths; Add path to annotations #2.Annotated paths → List files.Folders; Add path to annotations #2.Annotated paths → List subfolders.Folders.",
+    "file": "chain-4-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files"
+  },
+  "chain-4-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations → ROI from file → Convert ROI to mask → Morphological operation 2D.<br>Wiring: Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-4-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
+  },
+  "chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations #1 → Filter paths → List TIFF or JPG → Add path to annotations #2.<br>Wiring: List TIFF or JPG.Files → Add path to annotations #2.Paths; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name"
+  },
+  "chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation": {
+    "description": "Mined from the HKI corpus — support 40 across 40 projects.<br>Sequence: Project user directory → READ: folders, subfolders and files → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; READ: folders, subfolders and files.Annotated paths → Bio-Formats importer.Input; Project user directory.Output → READ: folders, subfolders and files.Input folder.",
+    "file": "chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
+    "functionId": "jipipe:function:data",
+    "name": "Project user path -> Group -> Bio-Formats importer -> Annotate with image properties"
+  },
+  "chain-5-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: List ZIP → Add path to annotations → ROI from file → Convert ROI to mask → Morphological operation 2D.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-5-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
+    "functionId": "jipipe:function:data",
+    "name": "List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
+  },
+  "chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: List subfolders → Annotate with file/directory name #1 → List files → Annotate with file/directory name #2 → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name #2.Paths; List subfolders.Subfolders → Annotate with file/directory name #2.Paths; Annotate with file/directory name #2.Annotated paths → List files.Folders; Annotate with file/directory name #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths"
+  },
+  "chain-5-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: List subfolders → Add path to annotations #1 → Filter paths → List TIFF or JPG → Add path to annotations #2.<br>Wiring: List TIFF or JPG.Files → Add path to annotations #2.Paths; List subfolders.Subfolders → Add path to annotations #2.Paths; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "List subfolders -> Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name"
+  },
+  "chain-5-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Set LUT (color map): magenta → Output → Mask → Extract ROI 3D statistics → Annotate data with table values.<br>Wiring: Set LUT (color map): magenta.Output → Mask.Magenta raw; Extract ROI 3D statistics.Measurements → Annotate data with table values.Table; Mask.Green trimmed → Mask.Green trimmed; Mask.Magenta trimmed → Extract ROI 3D statistics.Reference.",
+    "file": "chain-5-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output-ij3d-measure-roi3d-annotate-data-with-table-values.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Set LUT (color map) -> Compartment output -> Compartment output -> Extract IJ3D ROI statistics -> Annotate data with table values"
+  },
+  "chain-5-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Folder list → List subfolders → Add path to annotations → Filter paths → List TIFF or JPG.<br>Wiring: List subfolders.Subfolders → Add path to annotations.Paths; Folder list.Folder paths → List subfolders.Folders; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "Folder list -> List subfolders -> Annotate with file/directory name -> Filter paths -> List files"
+  },
+  "chain-5-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: ROI from file → Convert ROI to mask → Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI.",
+    "file": "chain-5-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
+  },
+  "chain-5-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Comment → Add path to annotations #1 → List subfolders → Add path to annotations #2 → List files.<br>Wiring: List subfolders.Subfolders → Add path to annotations #2.Paths; Comment.Comment → Add path to annotations #2.Paths; Add path to annotations #2.Annotated paths → List files.Folders; Add path to annotations #2.Annotated paths → List subfolders.Folders.",
+    "file": "chain-5-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
+    "functionId": "jipipe:function:data",
+    "name": "Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files"
+  },
+  "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Filter paths → List ZIP → Add path to annotations → ROI from file → Convert ROI to mask.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; ROI from file.Output → Convert ROI to mask.ROI; Filter paths.Output → List ZIP.Folders; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
+    "functionId": "jipipe:function:data",
+    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
+  },
+  "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Filter paths → List ZIP → Add path to annotations → ROI from file → Output.<br>Wiring: List ZIP.Files → Add path to annotations.Paths; ROI from file.Output → Output.ROI; Filter paths.Output → List ZIP.Folders; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:data",
+    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import ROI -> Compartment output"
+  },
+  "chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Annotate with file/directory name #1 → List files → Annotate with file/directory name #2 → Filter paths → Import image.<br>Wiring: List files.Files → Annotate with file/directory name #2.Paths; Filter paths.Output → Import image.Files; Annotate with file/directory name #2.Annotated paths → List files.Folders; Annotate with file/directory name #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths -> Import image"
+  },
+  "chain-5-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations #1 → List subfolders → Add path to annotations #2 → List files → Add path to annotations #3.<br>Wiring: List files.Files → Add path to annotations #3.Paths; List subfolders.Subfolders → Add path to annotations #3.Paths; Add path to annotations #3.Annotated paths → List files.Folders; Add path to annotations #3.Annotated paths → List subfolders.Folders.",
+    "file": "chain-5-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name"
+  },
+  "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations → ROI from file → Convert ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
+  },
+  "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations → ROI from file → Convert ROI to mask → Morphological operation 2D → Output.<br>Wiring: Morphological operation 2D.Output → Output.Mask; Convert ROI to mask.Output → Morphological operation 2D.Input; ROI from file.Output → Convert ROI to mask.ROI; Add path to annotations.Annotated paths → ROI from file.Files.",
+    "file": "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Compartment output"
+  },
+  "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations #1 → Filter paths → List TIFF or JPG → Add path to annotations #2 → Import image.<br>Wiring: List TIFF or JPG.Files → Add path to annotations #2.Paths; Filter paths.Output → List TIFF or JPG.Folders; Add path to annotations #2.Annotated paths → Import image.Files; Add path to annotations #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image"
+  },
+  "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Add path to annotations #1 → Filter paths → List ZIP → Add path to annotations #2 → ROI from file.<br>Wiring: List ZIP.Files → Add path to annotations #2.Paths; Filter paths.Output → List ZIP.Folders; Add path to annotations #2.Annotated paths → ROI from file.Files; Add path to annotations #2.Annotated paths → Filter paths.Input.",
+    "file": "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import ROI"
+  },
+  "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set LUT (color map) → Mask → Copy physical dimensions.<br>Wiring: Set LUT (color map).Output → Mask.3D labels; Mask.Magenta trimmed → Copy physical dimensions.Source.",
+    "file": "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-calibration-copy-physical-dimensions.json",
+    "functionId": "jipipe:function:images",
+    "name": "Set LUT (color map) -> Compartment output -> Copy physical dimensions"
+  },
+  "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: Set LUT (color map) → Images and masks → Convert 2D ROI to RGB.<br>Wiring: Set LUT (color map).Output → Images and masks.Normalized red; Images and masks.Raw red → Convert 2D ROI to RGB.Image.",
+    "file": "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-ij1-roi-to-rgb.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Convert 2D ROI to RGB"
+  },
+  "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Set LUT (color map) → Mask → Output.<br>Wiring: Set LUT (color map).Output → Output.3D labels; Output.3D cell mask → Output.3D cell mask.",
+    "file": "conversion-ij1-set-lut-from-color-map-jipipe-compartment-output-jipipe-compartment-output.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Set LUT (color map) -> Compartment output -> Compartment output"
+  },
+  "fan-in-cellpose-inference-2-x-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Import Cellpose model from file → Raw and masked images → Cellpose prediction (2.x): 30, small nodules.<br>Wiring: Raw and masked images.Masked raw image → Cellpose prediction (2.x): 30, small nodules.Input.",
+    "file": "fan-in-cellpose-inference-2-x-core-io-1-other-1.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Cellpose segmentation (2.x) fans in from 3 source ids (roles: core-io, other)"
+  },
+  "fan-in-cellpose-inference-2-x-other-2": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Import Cellpose model from file → Fast image arithmetics 2D → Cellpose segmentation (2.x).<br>Wiring: Fast image arithmetics 2D.Output → Cellpose segmentation (2.x).Input.",
+    "file": "fan-in-cellpose-inference-2-x-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Cellpose segmentation (2.x) fans in from 8 source ids (roles: other)"
+  },
+  "fan-in-cellpose-segmentation-inference-3-x-other-2": {
+    "description": "Mined from the HKI corpus — support 38 across 38 projects.<br>Sequence: CLIJ2 Gaussian Blur 2D → Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x).<br>Wiring: Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
+    "file": "fan-in-cellpose-segmentation-inference-3-x-other-2.json",
+    "functionId": "jipipe:function:machine-learning",
+    "name": "Cellpose segmentation (3.x) fans in from 9 source ids (roles: other)"
+  },
+  "fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 36 across 36 projects.<br>Sequence: IO Interface → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; IO Interface.RL → Blend images.RL.",
+    "file": "fan-in-ij1-calibration-copy-physical-dimensions-core-io-1-other-1.json",
+    "functionId": "jipipe:function:images",
+    "name": "Copy physical dimensions fans in from 7 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-color-blend-images-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 42 across 42 projects.<br>Sequence: Masks and ROIs → Dilate labels → Blend images: Blend two images.<br>Wiring: Dilate labels.Output → Blend images: Blend two images.Top.",
+    "file": "fan-in-ij1-color-blend-images-core-io-1-other-1.json",
+    "functionId": "jipipe:function:images",
+    "name": "Blend images fans in from 8 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-color-blend-images-other-2": {
+    "description": "Mined from the HKI corpus — support 32 across 32 projects.<br>Sequence: Convert filaments to mask → Set LUT (color map) → Blend images.<br>Wiring: Set LUT (color map).Output → Blend images.Magenta STED.",
+    "file": "fan-in-ij1-color-blend-images-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Blend images fans in from 13 source ids (roles: other)"
+  },
+  "fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 34 across 34 projects.<br>Sequence: ROIs → Filter ROI by overlap #1 → Filter ROI by overlap #2.<br>Wiring: Filter ROI by overlap #2.ROI 1 → Filter ROI by overlap #2.ROI 1; ROIs.Green spores → Filter ROI by overlap #2.ROI 1.",
+    "file": "fan-in-ij1-roi-filter-by-overlap-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by overlap (old) fans in from 7 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-roi-filter-statistics-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 37 across 37 projects.<br>Sequence: Output → Find particles 2D → Filter ROI by statistics.<br>Wiring: Find particles 2D.ROI → Filter ROI by statistics.ROI.",
+    "file": "fan-in-ij1-roi-filter-statistics-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-roi-filter-statistics-other-2": {
+    "description": "Mined from the HKI corpus — support 37 across 37 projects.<br>Sequence: Cellpose segmentation (2.x) → Fast image arithmetics 2D → Filter ROI by statistics.<br>Wiring: Fast image arithmetics 2D.Output → Filter ROI by statistics.Reference.",
+    "file": "fan-in-ij1-roi-filter-statistics-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Filter 2D ROI by statistics fans in from 14 source ids (roles: other)"
+  },
+  "fan-in-ij1-roi-statistics-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Merge ROI lists → Output → Extract ROI statistics.<br>Wiring: Output.Image with ridges → Extract ROI statistics.Reference.",
+    "file": "fan-in-ij1-roi-statistics-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Extract 2D ROI statistics fans in from 10 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-roi-to-mask-other-2": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Enlarge/shrink 2D ROI → Cellpose segmentation (3.x) → Convert 2D ROI to mask.<br>Wiring: Cellpose segmentation (3.x).Probabilities → Convert 2D ROI to mask.Image.",
+    "file": "fan-in-ij1-roi-to-mask-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Convert 2D ROI to mask fans in from 14 source ids (roles: other)"
+  },
+  "fan-in-ij1-roi-to-rgb-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 71 across 71 projects.<br>Sequence: Output → Find particles 2D → Convert ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert ROI to RGB.ROI.",
+    "file": "fan-in-ij1-roi-to-rgb-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Convert 2D ROI to RGB fans in from 13 source ids (roles: core-io, other)"
+  },
+  "fan-in-ij1-roi-to-rgb-other-2": {
+    "description": "Mined from the HKI corpus — support 53 across 53 projects.<br>Sequence: Find particles 2D: Circ &gt;= 0.7, no size limits → Convert 2D ROI to RGB #1 → Convert 2D ROI to RGB #2.<br>Wiring: Convert 2D ROI to RGB #2.Output → Convert 2D ROI to RGB #2.Image.",
+    "file": "fan-in-ij1-roi-to-rgb-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Convert 2D ROI to RGB fans in from 27 source ids (roles: other)"
+  },
+  "fan-in-ij1-threshold-auto2d-other-2": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Convert filaments to mask → Cellpose prediction (2.x) → Auto threshold 2D.<br>Wiring: Cellpose prediction (2.x).Probabilities → Auto threshold 2D.Input.",
+    "file": "fan-in-ij1-threshold-auto2d-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Auto threshold 2D (8-bit) fans in from 6 source ids (roles: other)"
+  },
+  "fan-in-ij3d-measure-roi3d-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Mask → Filter 3D ROI by statistics → Extract ROI 3D statistics.<br>Wiring: Filter 3D ROI by statistics.Output → Extract ROI 3D statistics.ROI; Mask.Magenta trimmed → Filter 3D ROI by statistics.Reference.",
+    "file": "fan-in-ij3d-measure-roi3d-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Extract IJ3D ROI statistics fans in from 6 source ids (roles: core-io, other)"
+  },
+  "fan-in-jipipe-compartment-output-export-1-other-1": {
+    "description": "Mined from the HKI corpus — support 42 across 42 projects.<br>Sequence: Export image → Extract pairwise 2D ROI statistics → Output.<br>Wiring: Extract pairwise 2D ROI statistics.Measurements → Output.Cell to cell distances.",
+    "file": "fan-in-jipipe-compartment-output-export-1-other-1.json",
+    "functionId": "jipipe:function:tables",
+    "name": "Compartment output fans in from 11 source ids (roles: export, other)"
+  },
+  "fan-in-jipipe-compartment-output-other-2": {
+    "description": "Mined from the HKI corpus — support 44 across 44 projects.<br>Sequence: Convert ROI to RGB → Find particles 2D → Output.<br>Wiring: Find particles 2D.Measurements → Output.Measurements.",
+    "file": "fan-in-jipipe-compartment-output-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Compartment output fans in from 27 source ids (roles: other)"
+  },
+  "fan-in-jipipe-compartment-output-other-3": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Convert labels to RGB: resutls after seeded watershed → Convert ROI to RGB:  results after watershed → Mask to ROI → Output.<br>Wiring: Mask to ROI.Output → Output.ROIs after watershed.",
+    "file": "fan-in-jipipe-compartment-output-other-3.json",
+    "functionId": "jipipe:function:images",
+    "name": "Compartment output fans in from 22 source ids (roles: other)"
+  },
+  "fan-in-jipipe-compartment-output-other-4": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Filter ROI by statistics → Image calculator 2D → Extract ROI statistics → Convert ROI to RGB: Cellpose results → Output.<br>Wiring: Image calculator 2D.Output → Extract ROI statistics.Reference; Convert ROI to RGB: Cellpose results.Output → Output.Overlay.",
+    "file": "fan-in-jipipe-compartment-output-other-4.json",
+    "functionId": "jipipe:function:images",
+    "name": "Compartment output fans in from 23 source ids (roles: other)"
+  },
+  "fan-in-node-group-import-1-other-1": {
+    "description": "Mined from the HKI corpus — support 40 across 40 projects.<br>Sequence: Project user directory → Comment → READ: folders, subfolders and files, with subfolder output.<br>Wiring: Comment.Comment → READ: folders, subfolders and files, with subfolder output.Input folder.",
+    "file": "fan-in-node-group-import-1-other-1.json",
+    "functionId": "jipipe:function:data",
+    "name": "Group fans in from 3 source ids (roles: import, other)"
+  },
+  "fan-in-path-filter-annotate-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Add path to annotations → Comment → Filter paths.<br>Wiring: Comment.Comment → Filter paths.Input.",
+    "file": "fan-in-path-filter-annotate-1-other-1.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Filter paths fans in from 3 source ids (roles: annotate, other)"
+  },
+  "fan-in-path-to-annotation-simple-import-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Project user directory → Comment → Add path to annotations.<br>Wiring: Comment.Comment → Add path to annotations.Paths.",
+    "file": "fan-in-path-to-annotation-simple-import-1-other-1.json",
+    "functionId": "jipipe:function:data",
+    "name": "Annotate with file/directory name fans in from 3 source ids (roles: import, other)"
+  },
+  "fan-out-cellpose-segmentation-inference-3-x-other-2": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Cellpose segmentation (3.x) → Convert 2D ROI to mask → Convert 2D ROI to RGB.<br>Wiring: Cellpose segmentation (3.x).ROI → Convert 2D ROI to mask.ROI.",
+    "file": "fan-out-cellpose-segmentation-inference-3-x-other-2.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Cellpose segmentation (3.x) fans out to 5 target ids (roles: other)"
+  },
+  "fan-out-ij1-analyze-find-particles2d-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 37 across 37 projects.<br>Sequence: Find particles 2D → Output → Convert ROI to RGB.<br>Wiring: Find particles 2D.Measurements → Output.Measurements.",
+    "file": "fan-out-ij1-analyze-find-particles2d-core-io-1-other-1.json",
+    "functionId": "jipipe:function:graph",
+    "name": "Find particles 2D fans out to 5 target ids (roles: core-io, other)"
+  },
+  "fan-out-ij1-morph-operation2d-annotate-1-core-io-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Morphological operation 2D → Output → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Output.Mask.",
+    "file": "fan-out-ij1-morph-operation2d-annotate-1-core-io-1.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Morphological operation 2D fans out to 2 target ids (roles: annotate, core-io)"
+  },
+  "fan-out-ij1-roi-filter-statistics-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Filter 2D ROI by statistics: Filter ROI by area and circularity → ROIs → Convert ROI to RGB: TL overlay flows.<br>Wiring: Filter 2D ROI by statistics: Filter ROI by area and circularity.Output → ROIs.Green spores.",
+    "file": "fan-out-ij1-roi-filter-statistics-core-io-1-other-1.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics fans out to 3 target ids (roles: core-io, other)"
+  },
+  "fan-out-ij1-roi-filter-statistics-core-io-1-other-2": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Filter ROI by statistics → Extract ROI statistics → Output → Convert ROI to RGB: Cellpose results.<br>Wiring: Filter ROI by statistics.Output → Extract ROI statistics.ROI; Extract ROI statistics.Measurements → Output.ROI results.",
+    "file": "fan-out-ij1-roi-filter-statistics-core-io-1-other-2.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics fans out to 6 target ids (roles: core-io, other)"
+  },
+  "fan-out-ij1-roi-filter-statistics-other-2": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Filter 2D ROI by statistics → Extract 2D ROI statistics → Convert 2D ROI to RGB.<br>Wiring: Filter 2D ROI by statistics.Output → Extract 2D ROI statistics.ROI.",
+    "file": "fan-out-ij1-roi-filter-statistics-other-2.json",
+    "functionId": "jipipe:function:rois",
+    "name": "Filter 2D ROI by statistics fans out to 5 target ids (roles: other)"
+  },
+  "fan-out-ij3d-labels-to-roi-core-io-1-other-2": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Labels to 3D ROI → Mask → Split into individual 3D ROI lists → Extract ROI 3D statistics.<br>Wiring: Labels to 3D ROI.ROI → Mask.3D cell membranes.",
+    "file": "fan-out-ij3d-labels-to-roi-core-io-1-other-2.json",
+    "functionId": "jipipe:function:rois",
+    "name": "IJ3D Labels to 3D ROI fans out to 7 target ids (roles: core-io, other)"
+  },
+  "fan-out-ij3d-roi-convert-to-rgb-other-2": {
+    "description": "Mined from the HKI corpus — support 30 across 30 projects.<br>Sequence: Convert 3D ROI to RGB → Blend images → Copy physical dimensions.<br>Wiring: Convert 3D ROI to RGB.Output → Blend images.Magenta.",
+    "file": "fan-out-ij3d-roi-convert-to-rgb-other-2.json",
+    "functionId": "jipipe:function:images",
+    "name": "Convert IJ3D ROI to RGB fans out to 2 target ids (roles: other)"
+  },
+  "fan-out-import-folder-list-import-1-other-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Folder list → List subfolders → Comment.<br>Wiring: Folder list.Folder paths → List subfolders.Folders.",
+    "file": "fan-out-import-folder-list-import-1-other-1.json",
+    "functionId": "jipipe:function:data",
+    "name": "Folder list fans out to 2 target ids (roles: import, other)"
+  },
+  "fan-out-import-imagej-roi-from-file-core-io-1-other-1": {
+    "description": "Mined from the HKI corpus — support 34 across 34 projects.<br>Sequence: ROI from file → Convert ROI to mask → Output.<br>Wiring: ROI from file.Output → Convert ROI to mask.ROI.",
+    "file": "fan-out-import-imagej-roi-from-file-core-io-1-other-1.json",
+    "functionId": "jipipe:function:data",
+    "name": "Import ROI fans out to 2 target ids (roles: core-io, other)"
+  },
+  "fan-out-jipipe-compartment-output-annotate-1-other-1": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Raw images → Copy/overwrite annotations #1 → Copy/overwrite annotations #2 → Cellpose prediction (2.x).<br>Wiring: Raw images.Annotated with ROI → Copy/overwrite annotations #2.Source.",
+    "file": "fan-out-jipipe-compartment-output-annotate-1-other-1.json",
+    "functionId": "jipipe:function:annotations",
+    "name": "Compartment output fans out to 8 target ids (roles: annotate, other)"
+  },
+  "fan-out-table-apply-expression-per-row-v2-core-io-1-export-1": {
+    "description": "Mined from the HKI corpus — support 26 across 26 projects.<br>Sequence: Apply expression per row → Export table: per image spores → Phagocytic measures.<br>Wiring: Export table: per image spores.Exported file → Phagocytic measures.Results from JIPipe native; Apply expression per row.Output → Export table: per image spores.Input.",
+    "file": "fan-out-table-apply-expression-per-row-v2-core-io-1-export-1.json",
+    "functionId": "jipipe:function:export",
+    "name": "Apply expression per row fans out to 3 target ids (roles: core-io, export)"
+  },
+  "fan-out-table-merge-tables-core-io-1-export-1": {
+    "description": "Mined from the HKI corpus — support 28 across 28 projects.<br>Sequence: Merge table rows → Processed curves → Export table as XLSX: root widths summary empirical.<br>Wiring: Merge table rows.Output → Processed curves.Mean empirical values.",
+    "file": "fan-out-table-merge-tables-core-io-1-export-1.json",
+    "functionId": "jipipe:function:export",
+    "name": "Merge table rows fans out to 4 target ids (roles: core-io, export)"
+  }
+}
