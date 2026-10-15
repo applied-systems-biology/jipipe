@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
@@ -49,8 +51,9 @@ import java.util.Set;
  * itself never changes: tree + list are always shown);</li>
  * <li><b>the taxonomy facets</b> (framework / input+output data types /
  * tags) — the shared filter predicate {@link #matches(JIPipeNodeDatabaseEntry)};</li>
- * <li><b>the tree path and view toggles</b> (selected function path,
- * pinned-only, selection-only).</li>
+ * <li><b>the tree path and view toggles</b> (selected function path —
+ * mutually exclusive with a selected template scope — pinned-only,
+ * selection-only).</li>
  * </ul>
  */
 public class NodeBrowserModel {
@@ -74,6 +77,13 @@ public class NodeBrowserModel {
     /** Selected output data types (by class); empty = no output-data-type filter. */
     private Set<Class<? extends JIPipeData>> outputDataTypes = Set.of();
     private List<JIPipeNodeTaxonomyFunction> treePath = List.of();
+    /**
+     * The selected template scope of the synthetic {@code Templates /
+     * <scope>} branch (spec §7.2). MUTUALLY EXCLUSIVE with {@link #treePath}
+     * (setting one clears the other). {@code null} = no scope selected.
+     */
+    @Nullable
+    private TemplateScope selectedScope;
     private boolean pinnedOnly;
     private boolean selectionOnly;
 
@@ -285,10 +295,79 @@ public class NodeBrowserModel {
 
     /**
      * @param treePath the selected function path (a single leaf, or a chain
-     * ending at a leaf); an empty (or {@code null}) list clears the selection
+     *                 ending at a leaf); an empty (or {@code null}) list clears
+     *                 the selection
      */
     public void setTreePath(@Nullable List<JIPipeNodeTaxonomyFunction> treePath) {
         this.treePath = Collections.unmodifiableList(treePath == null ? List.of() : new ArrayList<>(treePath));
+        // A function path and a template scope are mutually exclusive
+        // selections (spec §7.2): choosing one cancels the other.
+        this.selectedScope = null;
+    }
+
+    /**
+     * @return the selected template scope of the synthetic
+     *         {@code Templates / <scope>} branch, or {@code null} when a
+     *         function path (or the root) is selected instead
+     */
+    @Nullable
+    public TemplateScope getSelectedScope() {
+        return selectedScope;
+    }
+
+    /**
+     * @param selectedScope the template scope to select in the synthetic
+     *                      branch; {@code null} clears the scope selection.
+     *                      Mutually exclusive with {@link #setTreePath}:
+     *                      selecting a scope clears the function path.
+     */
+    public void setSelectedScope(@Nullable TemplateScope selectedScope) {
+        this.selectedScope = selectedScope;
+        if (selectedScope != null) {
+            this.treePath = List.of();
+        }
+    }
+
+    /**
+     * The shared SELECTION predicate with an explicitly supplied function
+     * registry (spec §7.2): whether the given entry belongs in the results
+     * list given the current tree selection — a template scope, else a
+     * function tree path, else the root (all entries).
+     * <p>
+     * This is the single non-Swing, {@code JIPipe}-instance-free predicate
+     * both node-browser surfaces (the docked
+     * {@link JIPipeDesktopNodeBrowser} and the
+     * {@code JIPipeDesktopNodeFinderDialogUI}) call after their query, so
+     * their list filters agree. A template scope selection lists only
+     * template entries of that scope; a function-path selection lists every
+     * entry (node or template) filed under the selected leaf's subtree; the
+     * root lists everything.
+     *
+     * @param entry    the entry to test; must not be {@code null}
+     * @param registry the function registry used to resolve the function-path
+     *                 selection to a descendant-id set ({@code null} disables
+     *                 the function side, so only a scope or the root applies)
+     * @return {@code true} if the entry belongs in the list for the current
+     *         selection
+     */
+    public boolean matchesSelection(JIPipeNodeDatabaseEntry entry, FunctionRegistry registry) {
+        if (selectedScope != null) {
+            return entry instanceof CreateNewNodesByTemplateDatabaseEntry template
+                && template.getScope() == selectedScope;
+        }
+        if (!treePath.isEmpty()) {
+            JIPipeNodeTaxonomyFunction leaf = treePath.get(treePath.size() - 1);
+            Set<String> ids = descendantIds(registry, leaf);
+            for (String functionId : entry.getFunctionIds()) {
+                if (ids.contains(functionId)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        // Root: every entry passes the selection (de-dup is inherent to the
+        // single query-driven list, so a dually-placed template is listed once).
+        return true;
     }
 
     public boolean isPinnedOnly() {

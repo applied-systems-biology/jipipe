@@ -120,6 +120,12 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
             // state label system
             stateChips.removeAll();
             stateChips.add(JIPipeNodeStateChips.panel(obj));
+            // The template badge (Pattern / Custom), read from the entry —
+            // spec §7.2. Non-templates get no badge.
+            JComponent badge = JIPipeNodeStateChips.templateBadge(obj);
+            if (badge != null) {
+                stateChips.add(badge);
+            }
             stateChips.revalidate();
         }
 

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -118,6 +119,12 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
                 chip.add(chipLabel);
                 rowPanel.add(chip);
             }
+            // The template badge (Pattern / Custom), read from the entry —
+            // spec §7.2. Non-templates get no badge.
+            JComponent badge = JIPipeNodeStateChips.templateBadge(entry);
+            if (badge != null) {
+                rowPanel.add(badge);
+            }
             return rowPanel;
         }
 
@@ -134,6 +141,17 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             if (controller.getSearchHighlightedLeafPaths().contains(new TreePath(node.getPath()))) {
                 label.setFont(label.getFont().deriveFont(Font.BOLD));
             }
+        } else if (userObject instanceof TemplateScopeTreeNode scopeNode) {
+            // The synthetic "Templates" branch (spec §7.2): the header row and
+            // its System/Global/Project children. Pure UI grouping — distinct
+            // template icon, not a taxonomy function.
+            label.setText(scopeNode.isRoot()
+                ? "Templates"
+                : scopeNode.getScope().name());
+            label.setIcon(JIPipe.RESOURCES.getIcon16("actions/template.png"));
+            label.setToolTipText(scopeNode.isRoot()
+                ? "Node templates grouped by storage scope"
+                : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
         } else {
             // The root node
             label.setText("All functions");

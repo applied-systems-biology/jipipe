@@ -16,6 +16,8 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
@@ -145,6 +147,16 @@ public class NodeBrowserTreeController extends JPanel {
                 root.add(node);
             }
         }
+        // The synthetic "Templates" branch (spec §7.2): a UI-only scope
+        // grouping, appended AFTER the registry branches so it is never
+        // pruned by the node-info logic. It carries all three scopes
+        // (System/Global/Project) regardless of population.
+        DefaultMutableTreeNode templatesBranch =
+            new DefaultMutableTreeNode(TemplateScopeTreeNode.ROOT);
+        for (TemplateScope scope : TemplateScope.values()) {
+            templatesBranch.add(new DefaultMutableTreeNode(TemplateScopeTreeNode.forScope(scope)));
+        }
+        root.add(templatesBranch);
         treeModel.reload();
         tree.expandPath(new TreePath(new Object[]{root}));
     }
@@ -260,6 +272,12 @@ public class NodeBrowserTreeController extends JPanel {
                 if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction && branchHasEntryChildren(mtn)) {
                     return true;
                 }
+                // A synthetic Templates/<scope> row (or the header) also
+                // carries entry leaves — recurse so its expandability is
+                // treated like a function branch with entry children.
+                if (mtn.getUserObject() instanceof TemplateScopeTreeNode && branchHasEntryChildren(mtn)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -330,19 +348,42 @@ public class NodeBrowserTreeController extends JPanel {
         Object userObject = functionNode.getUserObject();
         if (userObject instanceof JIPipeNodeTaxonomyFunction function) {
             // A function row: attach the entries that list this function
-            // (own id — rows appear at the level the node declares)
+            // (own id — rows appear at the level the node declares). This is
+            // the dual-placement "taxonomy" side; it is free for templates
+            // too (Task 4 makes their getFunctionIds() return the function id).
             String functionId = function.getId();
             for (JIPipeNodeDatabaseEntry entry : entries) {
                 if (entry.getFunctionIds().contains(functionId)) {
                     functionNode.add(new DefaultMutableTreeNode(entry));
                 }
             }
+        } else if (userObject instanceof TemplateScopeTreeNode scopeNode && !scopeNode.isRoot()) {
+            // The "scope placement": a synthetic Templates/<scope> row lists
+            // the template entries of exactly that scope (guaranteed home).
+            // The ROOT header is a pure grouping row — it forwards only.
+            TemplateScope scope = scopeNode.getScope();
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                if (entry instanceof CreateNewNodesByTemplateDatabaseEntry template
+                    && template.getScope() == scope) {
+                    functionNode.add(new DefaultMutableTreeNode(entry));
+                }
+            }
         }
-        // Forward to the function children (never to entry leaves)
+        // Forward to the function children (the taxonomy side) ...
         for (int i = 0; i < functionNode.getChildCount(); i++) {
             Object child = functionNode.getChildAt(i);
             if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
                 attachNodeLeaves(mtn, entries);
+            }
+        }
+        // ... and to the scope children of the Templates header (the scope
+        // side). Scope rows carry no further function/scope children.
+        if (userObject instanceof TemplateScopeTreeNode) {
+            for (int i = 0; i < functionNode.getChildCount(); i++) {
+                Object child = functionNode.getChildAt(i);
+                if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof TemplateScopeTreeNode) {
+                    attachNodeLeaves(mtn, entries);
+                }
             }
         }
     }
@@ -380,7 +421,10 @@ public class NodeBrowserTreeController extends JPanel {
                 if (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
                     return path;
                 }
-                if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+                // Recurse into function branches AND the synthetic scope
+                // branches (templates attached under Templates/<scope>).
+                if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
+                    || mtn.getUserObject() instanceof TemplateScopeTreeNode) {
                     TreePath found = findFirstNodeLeafPath(mtn, path);
                     if (found != null) {
                         return found;
@@ -418,6 +462,25 @@ public class NodeBrowserTreeController extends JPanel {
         Object last = path.getLastPathComponent();
         if (last instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction fn) {
             return fn;
+        }
+        return null;
+    }
+
+    /**
+     * The template scope carried by the last node of the given tree path, or
+     * {@code null} when the path is empty or ends on a row that is not a
+     * non-root synthetic {@code Templates / <scope>} row (i.e. a function,
+     * node-leaf, root, or the "Templates" header row).
+     */
+    public TemplateScope scopeFromTreePath(TreePath path) {
+        if (path == null) {
+            return null;
+        }
+        Object last = path.getLastPathComponent();
+        if (last instanceof DefaultMutableTreeNode mtn
+            && mtn.getUserObject() instanceof TemplateScopeTreeNode scopeNode
+            && !scopeNode.isRoot()) {
+            return scopeNode.getScope();
         }
         return null;
     }
@@ -549,7 +612,10 @@ public class NodeBrowserTreeController extends JPanel {
             if (mtn.getUserObject() == entry) {
                 return path;
             }
-            if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction) {
+            // Recurse into function branches AND the synthetic scope branches
+            // (templates attached under Templates/<scope>).
+            if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
+                || mtn.getUserObject() instanceof TemplateScopeTreeNode) {
                 TreePath found = findNodeLeafRow(mtn, path, entry);
                 if (found != null) {
                     return found;

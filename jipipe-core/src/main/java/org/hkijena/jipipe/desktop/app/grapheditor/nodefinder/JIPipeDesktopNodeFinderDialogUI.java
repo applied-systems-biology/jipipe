@@ -24,7 +24,9 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.run.JIPipeEphemeralRunnableExecutor;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
@@ -121,7 +123,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * The entry the user clicked in the detail rail's related/follow-up
      * lists, which may not be present in the current (filtered) list view.
      * Set by {@link #selectEntryFromRail(JIPipeNodeDatabaseEntry)} and consumed
-     * by {@link #applyResult(List, Set)} once the broadened view has loaded.
+     * by {@link #applyResult(List)} once the broadened view has loaded.
      */
     private JIPipeNodeDatabaseEntry pendingRailSelection;
     /**
@@ -517,11 +519,23 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
     /**
      * Reads the selected tree path into the shared {@link NodeBrowserModel}.
+     * <p>
+     * A synthetic {@code Templates / <scope>} row selects a template scope
+     * (spec §7.2), which is MUTUALLY EXCLUSIVE with the function path:
+     * {@code setSelectedScope} clears the function path and
+     * {@code setTreePath} clears the scope. The "Templates" header row (ROOT)
+     * and the "All functions" root both clear to "everything" (an empty
+     * function path with no scope).
      */
     private void updateModelTreePathFromSelection() {
         TreePath path = tree.getTree().getSelectionPath();
         if (path == null) {
             model.setTreePath(List.of());
+            return;
+        }
+        TemplateScope scope = tree.scopeFromTreePath(path);
+        if (scope != null) {
+            model.setSelectedScope(scope);
             return;
         }
         List<JIPipeNodeTaxonomyFunction> pathFunctions = new ArrayList<>();
@@ -548,6 +562,10 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private void applySearchActiveState() {
         boolean searchActive = model.isSearchActive();
         if (searchActive && !searchWasActive) {
+            // Enter search: the flat results override BOTH the function tree
+            // and any template scope — clear the stored selection (once).
+            // setTreePath also clears selectedScope (they are mutually
+            // exclusive), so one call resets both.
             model.setTreePath(List.of());
         } else if (!searchActive && searchWasActive) {
             updateModelTreePathFromSelection();
@@ -567,7 +585,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
      * rail's {@code setEntry} does not call the selector again, so there is
      * no loop). Otherwise the view is broadened (search cleared, tree reset
      * to the entry's function branch) and the entry is selected once the
-     * reloaded list is applied by {@link #applyResult(List, Set)}.
+     * reloaded list is applied by {@link #applyResult(List)}.
      */
     private void selectEntryFromRail(JIPipeNodeDatabaseEntry entry) {
         int index = indexOfEntry(nodeList.getModel(), entry);
@@ -634,27 +652,23 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
 
     /**
      * Applies a query result (already off the EDT) to the center list:
-     * post-filters by the selected function tree (unless a search is active),
-     * renders the list and (re)selects the first row or the pending rail
-     * selection.
+     * post-filters by the current SELECTION (a template scope, a function
+     * tree, or the root) via the shared {@link
+     * NodeBrowserModel#matchesSelection(JIPipeNodeDatabaseEntry,
+     * FunctionRegistry)} predicate (unless a search is active), renders the
+     * list and (re)selects the first row or the pending rail selection.
      *
-     * @param queryResult       the raw node-database query result
-     * @param treeDescendantIds  when non-null and non-empty, the function ids
-     *                           of the selected tree node + its descendants
-     *                           (the tree filter); {@code null} means "no
-     *                           tree filter"
+     * @param queryResult the raw node-database query result
      */
-    private void applyResult(List<JIPipeNodeDatabaseEntry> queryResult, Set<String> treeDescendantIds) {
+    private void applyResult(List<JIPipeNodeDatabaseEntry> queryResult) {
         List<JIPipeNodeDatabaseEntry> filtered = new ArrayList<>(queryResult);
-        if (treeDescendantIds != null && !treeDescendantIds.isEmpty()) {
-            filtered.removeIf(entry -> {
-                for (String fid : entry.getFunctionIds()) {
-                    if (treeDescendantIds.contains(fid)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+        // Selection filter (spec §7.2, shared predicate): the same
+        // NodeBrowserModel#matchesSelection the docked browser uses, so both
+        // surfaces agree on scope / function-path / root. In search mode the
+        // flat results override the tree, so the selection filter is skipped.
+        if (!model.isSearchActive()) {
+            FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+            filtered.removeIf(entry -> !model.matchesSelection(entry, registry));
         }
         // Down-ranked nodes (auto-imported, deprecated, unstable — the
         // generalized state classifiers, see JIPipeNodeStateChips) come
@@ -769,8 +783,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             }
 
             // The slot-targeted / generic query is preserved verbatim. The
-            // function tree only ADDS a post-filter (never removes the slot
-            // query), so it is captured here and applied on the EDT.
+            // function tree / template scope only ADDS a post-filter (never
+            // removes the slot query); that filter is applied on the EDT by
+            // applyResult via the shared NodeBrowserModel#matchesSelection
+            // predicate (reading the live model there), so nothing is
+            // captured here.
             List<JIPipeNodeDatabaseEntry> queryResult = new ArrayList<>();
             if (querySlot != null) {
                 for (JIPipeNodeDatabaseEntry entry : nodeDatabase.query(dialogUI.searchField.getText(),
@@ -798,15 +815,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 }
             }
 
-            // Capture the tree filter at query time (search-active ⇒ no tree
-            // filter; otherwise the selected node + its descendants).
-            // Computed as a single expression so the local is effectively
-            // final for the lambda below.
-            Set<String> treeDescendantIds = (!dialogUI.model.isSearchActive() && !dialogUI.model.getTreePath().isEmpty())
-                ? NodeBrowserModel.descendantIds(JIPipe.getNodes().getFunctions(),
-                    dialogUI.model.getTreePath().get(dialogUI.model.getTreePath().size() - 1))
-                : null;
-
             final long runGeneration = generation;
             SwingUtilities.invokeLater(() -> {
                 // Discard a stale result: a newer reload was enqueued after
@@ -815,7 +823,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
                 if (runGeneration != dialogUI.reloadGeneration) {
                     return;
                 }
-                dialogUI.applyResult(queryResult, treeDescendantIds);
+                dialogUI.applyResult(queryResult);
             });
         }
     }

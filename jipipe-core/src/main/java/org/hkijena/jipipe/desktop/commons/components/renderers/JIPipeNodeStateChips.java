@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -106,5 +107,29 @@ public final class JIPipeNodeStateChips {
         label.setFont(label.getFont().deriveFont(Font.BOLD, 9f));
         chip.add(label);
         return chip;
+    }
+
+    /**
+     * The template <em>badge</em> chip (spec §7.2): reads the badge text
+     * ({@code Pattern} / {@code Custom}) straight from
+     * {@link CreateNewNodesByTemplateDatabaseEntry#getBadge()} (Task 4 — never
+     * re-derived here) and renders it as the same small filled chip used for
+     * the state labels.
+     *
+     * @param entry the entry to label
+     * @return a chip reading the entry's badge, or {@code null} when the entry
+     *         is not a template entry
+     */
+    public static JComponent templateBadge(JIPipeNodeDatabaseEntry entry) {
+        if (!(entry instanceof CreateNewNodesByTemplateDatabaseEntry template)) {
+            return null;
+        }
+        String badge = template.getBadge();
+        var style = ThemeUtils.getCurrentStyle();
+        // Pattern = curated/reusable (info tone); Custom = user-made (primary
+        // accent). Both are filled chips with white text, matching the state
+        // label visual language.
+        Color color = "Pattern".equals(badge) ? style.getInfoColor() : style.getPrimaryColor();
+        return chip(badge, color);
     }
 }

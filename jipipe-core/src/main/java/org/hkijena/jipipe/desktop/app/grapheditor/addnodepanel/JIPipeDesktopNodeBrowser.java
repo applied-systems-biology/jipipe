@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
+import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
+import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
@@ -660,6 +662,18 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (path != null && tree.entryFromPath(path) != null) {
             return;
         }
+        // A synthetic Templates/<scope> row selects a template scope (spec
+        // §7.2). It is MUTUALLY EXCLUSIVE with the function path: choosing a
+        // scope clears the function path (setSelectedScope does this) and a
+        // function path clears the scope (setTreePath does this). The
+        // "Templates" header (ROOT) and the "All functions" root both fall
+        // through to the function-path branch below and reset to "everything".
+        TemplateScope scope = tree.scopeFromTreePath(path);
+        if (scope != null) {
+            model.setSelectedScope(scope);
+            reloadList();
+            return;
+        }
         // Function rows filter by their path; the root row ("All
         // functions") and an empty selection both clear the branch filter
         // (the root IS "all nodes", so selecting it must not be a no-op).
@@ -707,20 +721,16 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             filtered.add(entry);
         }
 
-        // Tree filter: when not in search mode and a leaf is selected, only
-        // entries whose function ids intersect the selected leaf (+descendants)
-        if (!model.isSearchActive() && !model.getTreePath().isEmpty()) {
-            JIPipeNodeTaxonomyFunction leaf = model.getTreePath().get(model.getTreePath().size() - 1);
-            Set<String> descendantIds = NodeBrowserModel.descendantIds(JIPipe.getNodes().getFunctions(), leaf);
-            filtered.removeIf(entry -> {
-                Set<String> functionIds = entry.getFunctionIds();
-                for (String fid : functionIds) {
-                    if (descendantIds.contains(fid)) {
-                        return false;
-                    }
-                }
-                return true;
-            });
+        // Selection filter (spec §7.2, shared predicate): when not in search
+        // mode, only entries matching the current selection — a template
+        // scope, a function path, or the root — are listed. This replaces the
+        // old inline function-path filter and covers the new scope selection;
+        // both surfaces call the same NodeBrowserModel#matchesSelection so
+        // they agree. (In search mode the flat results override the tree, so
+        // the selection filter is skipped, as before.)
+        if (!model.isSearchActive()) {
+            FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+            filtered.removeIf(entry -> !model.matchesSelection(entry, registry));
         }
 
         // Down-ranked nodes (auto-imported, deprecated, unstable — the
