@@ -98,6 +98,12 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
         // Create from templates
         for (JIPipeNodeTemplate template : JIPipe.getNodeTemplates().getAllTemplates(database.getProject())) {
             try {
+                // R7 call site (b): migrate project-scope (and re-affirm global)
+                // legacy "menu-path" at entry-build time, before the entry reads
+                // the migrated taxonomy function / footer. Idempotent +
+                // order-safe, so the double-call with the global-reload path
+                // (call site a) is harmless.
+                template.migrateLegacyMenuPath();
                 CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template, determineTemplateScope(template));
                 newEntries.add(newEntry);
             } catch (Throwable ignored) {

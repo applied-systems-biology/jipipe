@@ -220,10 +220,13 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
 
     /**
      * Returns the captured legacy menu path (read-only, never serialized).
+     * Package-private (not part of the public API) so same-package tests can
+     * assert the capture is populated before, and emptied after,
+     * {@link #migrateLegacyMenuPath()}.
      *
      * @return the legacy menu path, empty when absent
      */
-    private StringList getMenuPathLegacy() {
+    StringList getMenuPathLegacy() {
         return menuPath == null ? new StringList() : menuPath;
     }
 
@@ -232,10 +235,12 @@ public class JIPipeNodeTemplate extends AbstractJIPipeParameterCollection {
      * {@link #taxonomyFunction} reference (spec §9): when the captured
      * legacy path is non-empty and no taxonomy function is set yet, the first
      * menu segment is matched against the registered taxonomy functions
-     * (case-insensitively, leaves before branches, with the legacy
-     * abbreviation table), the old path is appended to the description as an
-     * auditable italic footer ("*Previously: Image → Threshold*"), and the
-     * captured key is cleared.
+     * (case-insensitively, top-level branches before same-named leaves — the
+     * childless export sub-leaves "Images"/"Tables" must not shadow the
+     * top-level branches of the same name — with the legacy abbreviation
+     * table), the old path is appended to the description as an auditable
+     * italic footer ("*Previously: Image → Threshold*"), and the captured key
+     * is cleared.
      * <p>
      * <b>Order-safe:</b> a file that already carries a resolved
      * {@code taxonomy-function} is left untouched (the function wins over the

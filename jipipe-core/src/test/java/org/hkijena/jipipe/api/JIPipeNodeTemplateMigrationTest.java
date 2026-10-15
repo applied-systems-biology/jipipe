@@ -14,6 +14,10 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
+import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -106,5 +110,62 @@ class JIPipeNodeTemplateMigrationTest {
             "{\"name\":\"x\",\"menu-path\":[\"Image\",\"Threshold\"]}", JIPipeNodeTemplate.class);
         t.migrateLegacyMenuPath();
         assertThat(JsonUtils.toPrettyJsonString(t)).doesNotContain("menu-path");
+    }
+
+    // --- R7 call site (b): the database builder migrates project-scope templates ---
+    @Test
+    void projectTemplateIsMigratedByTheDatabaseBuilder() throws Exception {
+        // A legacy (pre-6.0.0) project-stored template: deserialized from a JSON
+        // string that still carries the removed "menu-path" key, so the transient
+        // capture is populated and the taxonomy function is unset.
+        String json = "{\"name\":\"legacy-project-template\",\"menu-path\":[\"Image\",\"Threshold\"]}";
+        JIPipeNodeTemplate t = JsonUtils.readFromString(json, JIPipeNodeTemplate.class);
+        t.setGraph(new JIPipeGraph()); // minimal valid graph so the entry can construct
+        assertThat(t.getMenuPathLegacy()).hasSize(2);          // capture populated (legacy)
+        assertThat(t.getTaxonomyFunction().getId()).isNull();  // function unset (legacy)
+
+        JIPipeProject project = new JIPipeProject();
+        assertThat(JIPipe.getNodeTemplates().addToProject(t, project)).isTrue();
+
+        // Trigger the database build. rebuildImmediately() enqueues the builder
+        // run ASYNCHRONOUSLY (SwingWorker), so — like NodeDatabaseTaxonomyTest —
+        // we use a database whose virtual rebuildImmediately() is a no-op and
+        // run the builder synchronously to assert its effect deterministically.
+        // The database must hold the SAME project, because the builder's
+        // getAllTemplates(database.getProject()) is what surfaces the
+        // project-scope template for migration.
+        JIPipeNodeDatabaseBuilderRun run = new JIPipeNodeDatabaseBuilderRun(new NoRebuildDatabase(project));
+        run.run();
+
+        // The builder loop must have called migrateLegacyMenuPath() on the
+        // project-scope instance: the function resolved to a real function, the
+        // auditable footer was appended, and the legacy capture was cleared (so
+        // a subsequent project save drops the "menu-path" key for free).
+        assertThat(t.getTaxonomyFunction().isResolved()).isTrue();
+        assertThat(t.getTaxonomyFunction().getId()).isEqualTo("jipipe:function:images");
+        assertThat(t.getDescription().getHtml()).contains("Previously");
+        assertThat(t.getMenuPathLegacy()).isEmpty();
+
+        // Clean up: do not leak the project template (the project is local to
+        // this test, but drop it explicitly for tidiness / GC determinism).
+        JIPipe.getNodeTemplates().removeFromProject(t, project);
+    }
+
+    /**
+     * A node database that never schedules its async builder run: the
+     * constructor (and the updater's one-shot timer) invoke the virtual
+     * {@link #rebuildImmediately()}, which is overridden here to a no-op so the
+     * test can run {@link JIPipeNodeDatabaseBuilderRun#run()} directly and
+     * synchronously. Same technique as {@code NodeDatabaseTaxonomyTest}.
+     */
+    private static class NoRebuildDatabase extends JIPipeNodeDatabase {
+        private NoRebuildDatabase(JIPipeProject project) {
+            super(project);
+        }
+
+        @Override
+        public void rebuildImmediately() {
+            // No-op: the test drives the builder run synchronously.
+        }
     }
 }
