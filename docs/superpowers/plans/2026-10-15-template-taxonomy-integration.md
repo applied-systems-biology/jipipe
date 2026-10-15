@@ -179,12 +179,15 @@ git commit -m "feat: register jipipe:function:templates catch-all leaf under Mis
 **Spec:** §5 (data model), §9 (migration).
 
 **Files:**
-- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeNodeTemplate.java` (remove `menuPath`, add `taxonomyFunction` ref, lenient deserialization)
-- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeNodeTemplateMigration.java` (the converter)
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeNodeTemplate.java` (add `taxonomyFunction` ref + `migrateLegacyMenuPath()`; `menuPath` becomes a transient legacy capture — keep `@JsonSetter`, drop `@JsonGetter` + `@JIPipeParameter`)
+- Modify: `jipipe-core/src/main/java/org/hkijena/jipipe/api/service/components/JIPipeNodeTemplatesServiceComponent.java` (call `migrateLegacyMenuPath()` in `reloadGlobalTemplates()` after each read)
+- Create: `jipipe-core/src/main/java/org/hkijena/jipipe/api/JIPipeNodeTemplateMigration.java` (the converter: `migrate(String)` + `appendPreviouslyFooter`)
 - Test: `jipipe-core/src/test/java/org/hkijena/jipipe/api/JIPipeNodeTemplateMigrationTest.java`
 
 **Interfaces:**
-- Produces: `JIPipeNodeTemplate.getTaxonomyFunction()` / `setTaxonomyFunction(JIPipeTaxonomyFunctionRef)` (field `taxonomyFunction`, `@JIPipeParameter("taxonomy-function", uiOrder = -70)`). `JIPipeNodeTemplateMigration.migrate(String id, String firstMenuSegment) -> JIPipeTaxonomyFunctionRef` (pure: given the old menu path's first segment, return the ref or unset) + `appendPreviouslyFooter(HTMLText desc, String oldPath)`. The template JSON key `menu-path` still **reads** (lenient) but is dropped on save.
+- Produces: `JIPipeNodeTemplate.getTaxonomyFunction()` / `setTaxonomyFunction(JIPipeTaxonomyFunctionRef)` (field `taxonomyFunction`, `@JIPipeParameter("taxonomy-function", uiOrder = -70)`, `@JsonGetter("taxonomy-function")`/`@JsonSetter("taxonomy-function")`). `JIPipeNodeTemplate.migrateLegacyMenuPath()` (public, **idempotent**, order-safe — see mechanism below). `JIPipeNodeTemplateMigration.migrate(String firstMenuSegment) -> JIPipeTaxonomyFunctionRef` (pure-ish: needs the booted `FunctionRegistry` for the name→id match; returns the ref or an unset ref) + `appendPreviouslyFooter(HTMLText desc, String oldPath) -> HTMLText`.
+- **The legacy `menu-path` mechanism (R7 — supersedes the plan's earlier "ignore on read" wording):** `JIPipeNodeTemplate` is a Jackson *bean* (explicit `@JsonGetter`/`@JsonSetter` pairs; no class-level deserializer) loaded via `JsonUtils.readFromFile(..., JIPipeNodeTemplate.class)`. Simply dropping `menu-path` would make the lenient mapper silently ignore the key — LOSING the value the migration must map + footer. Instead: keep the `menuPath` field as a **transient legacy capture** — keep `@JsonSetter("menu-path")` (captured on read) but **remove `@JsonGetter("menu-path")`** (never written → "gone after one save cycle" for free). `migrateLegacyMenuPath()`: if `menuPath` non-empty AND `taxonomyFunction.getId()==null` → `taxonomyFunction = migrate(firstSegment)`; `description = appendPreviouslyFooter(description, oldPath)`; then empty `menuPath`. The `getId()==null` guard makes it **order-safe** (a file with BOTH keys: Jackson sets `taxonomy-function` too, so by the post-deserialization call the guard is false → no-op, existing function preserved) and **idempotent** (second call: `menuPath` empty → no-op).
+- **Call sites for `migrateLegacyMenuPath()`** (post-deserialization, both load paths): (a) `JIPipeNodeTemplatesServiceComponent.reloadGlobalTemplates()` after each `readFromFile` (global); (b) `JIPipeNodeDatabaseBuilderRun` before building each template entry (Task 4 — covers the project-metadata path uniformly; idempotent so double-calling is harmless). This is the faithful reading of the spec's "at deserialization time" (no arbitrary logic can run during Jackson bean construction without a custom deserializer, and spec §9.5 requires the key to vanish after one save, which the no-getter transient capture gives).
 - Consumes: `JIPipeTaxonomyFunctionRef` (Task 1), `FunctionRegistry.all()` (for the name→id match), `jipipe:function:templates` (Task 2) as the catch-all id.
 
 - [ ] **Step 1: Write the failing test** (pure converter logic + round-trip):
@@ -192,34 +195,64 @@ git commit -m "feat: register jipipe:function:templates catch-all leaf under Mis
 ```java
 class JIPipeNodeTemplateMigrationTest {
     @BeforeAll static void boot() { JIPipe.ensureInstance(); }
-    @Test void menuPathFirstSegmentMatchesLeaf() {
-        JIPipeTaxonomyFunctionRef ref =
-            JIPipeNodeTemplateMigration.migrate("tpl", "Image");
-        assertThat(ref.isResolved()).isTrue();
-        assertThat(ref.getId()).startsWith("jipipe:function:");
+
+    // --- the name→id matcher (R7b: a name tie resolves to the TOP-LEVEL branch before a leaf) ---
+    @Test void imageSegmentMapsToTopLevelBranchNotExportLeaf() {
+        // the registry has a childless leaf "Images" (export-images) AND the 18-child
+        // top-level "Images" branch — R7b must pick the branch.
+        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("Image");
+        assertThat(ref.getId()).isEqualTo("jipipe:function:images");
     }
-    @Test void menuPathUnknownSegmentYieldsUnset() {
-        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("tpl", "TotallyUnknownXyz");
-        assertThat(ref.isResolved()).isFalse();
+    @Test void tableSegmentMapsToTopLevelBranchNotExportLeaf() {
+        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("Table");
+        assertThat(ref.getId()).isEqualTo("jipipe:function:tables");
     }
-    @Test void emptyPathYieldsUnset() {
-        assertThat(JIPipeNodeTemplateMigration.migrate("tpl", "").isResolved()).isFalse();
+    @Test void leafOnlyNameFallsThroughToLeaf() {
+        // "Thresholding" is a leaf with no same-named top-level branch → leaf pass applies
+        JIPipeTaxonomyFunctionRef ref = JIPipeNodeTemplateMigration.migrate("Thresholding");
+        assertThat(ref.getId()).isEqualTo("jipipe:function:thresholding");
     }
-    @Test void templateStillDeserializesWithLegacyMenuPathKey() throws Exception {
-        String json = "{\"name\":\"legacy\",\"menu-path\":[\"Image\",\"Threshold\"],\"data\":\"{}\"}";
-        JIPipeNodeTemplate t = JsonUtils.readFromString(json, JIPipeNodeTemplate.class);
-        assertThat(t.getName()).isEqualTo("legacy");          // no throw on the legacy key
+    @Test void unknownSegmentYieldsUnset() {
+        assertThat(JIPipeNodeTemplateMigration.migrate("TotallyUnknownXyz").isResolved()).isFalse();
+        assertThat(JIPipeNodeTemplateMigration.migrate("TotallyUnknownXyz").getId()).isNull();
     }
-    @Test void saveDropsLegacyKey() throws Exception {
+    @Test void emptySegmentYieldsUnset() {
+        assertThat(JIPipeNodeTemplateMigration.migrate("").isResolved()).isFalse();
+    }
+
+    // --- the model migration (transient capture + order-safe + footer + drop-on-save) ---
+    @Test void legacyTemplateMigratesFunctionAndFooters() throws Exception {
         String json = "{\"name\":\"legacy\",\"menu-path\":[\"Image\",\"Threshold\"]}";
         JIPipeNodeTemplate t = JsonUtils.readFromString(json, JIPipeNodeTemplate.class);
-        String saved = JsonUtils.toPrettyJsonString(t);
-        assertThat(saved, not(containsString("menu-path")));
+        t.migrateLegacyMenuPath();
+        assertThat(t.getTaxonomyFunction().isResolved()).isTrue();   // "Image"→a real function
+        assertThat(t.getDescription().getHtml(), containsString("Previously"));  // auditable footer
+    }
+    @Test void existingFunctionWinsOverMenuPath() throws Exception {  // order-safety
+        String json = "{\"name\":\"x\",\"menu-path\":[\"Image\"],\"taxonomy-function\":\"jipipe:function:tables\"}";
+        JIPipeNodeTemplate t = JsonUtils.readFromString(json, JIPipeNodeTemplate.class);
+        t.migrateLegacyMenuPath();
+        assertThat(t.getTaxonomyFunction().getId()).isEqualTo("jipipe:function:tables");  // preserved
+        assertThat(t.getDescription().getHtml(), not(containsString("Previously")));      // no footer
+    }
+    @Test void migrationIsIdempotent() throws Exception {
+        JIPipeNodeTemplate t = JsonUtils.readFromString(
+            "{\"name\":\"x\",\"menu-path\":[\"Image\"]}", JIPipeNodeTemplate.class);
+        t.migrateLegacyMenuPath();
+        String afterFirst = t.getDescription().getHtml();
+        t.migrateLegacyMenuPath();
+        assertThat(t.getDescription().getHtml()).isEqualTo(afterFirst);  // no double footer
+    }
+    @Test void saveDropsLegacyKey() throws Exception {
+        JIPipeNodeTemplate t = JsonUtils.readFromString(
+            "{\"name\":\"x\",\"menu-path\":[\"Image\",\"Threshold\"]}", JIPipeNodeTemplate.class);
+        t.migrateLegacyMenuPath();
+        assertThat(JsonUtils.toPrettyJsonString(t), not(containsString("menu-path")));
     }
 }
 ```
 
-(Adjust the last two if `JIPipeNodeTemplate` requires the `data` field to be non-null to construct — provide a minimal valid graph JSON; the point is the `menu-path` key reads without error and does not re-serialize.)
+(If `JIPipeNodeTemplate` requires a non-null `data` field to construct, give each JSON a minimal valid `data` graph string — the point is the migration behavior, not the graph.)
 
 - [ ] **Step 2: Run test to verify it fails**
 
@@ -227,26 +260,26 @@ Run: `mvn -o -pl jipipe-core test -Dtest='JIPipeNodeTemplateMigrationTest' -Dsur
 Expected: compile failure (no `migrate` / no `taxonomyFunction`).
 
 - [ ] **Step 3: Implement the model change** in `JIPipeNodeTemplate`:
-  - Remove the `menuPath` field + its `@JIPipeParameter("menu-path")` accessors.
-  - Add `private JIPipeTaxonomyFunctionRef taxonomyFunction = new JIPipeTaxonomyFunctionRef();` with `@JIPipeParameter(value = "taxonomy-function", uiOrder = -70)` getter/setter.
-  - Make deserialization **lenient** for `menu-path`: since `JIPipeNodeTemplate extends AbstractJIPipeParameterCollection`, an unknown/legacy key must not break loading — add a static Jackson mix-in (or rely on `AbstractJIPipeParameterCollection`'s tolerant deserialization) so `menu-path` is ignored on read. Confirm with the `templateStillDeserializesWithLegacyMenuPathKey` test.
-  - Update `getLocationInfo()` and the copy constructor to drop menu-path references.
+  - Add `private JIPipeTaxonomyFunctionRef taxonomyFunction = new JIPipeTaxonomyFunctionRef();` with `@JIPipeParameter(value = "taxonomy-function", uiOrder = -70)` + `@JsonGetter("taxonomy-function")` getter / `@JsonSetter("taxonomy-function")` setter.
+  - Rework `menuPath` into the **transient legacy capture** (R7): keep the field + `@JsonSetter("menu-path")` (so it is captured on read), but **remove `@JsonGetter("menu-path")`** and the `@JIPipeParameter("menu-path")` annotation (it is no longer a user-facing parameter and must never be written). Keep a private accessor for the migration.
+  - Add `public void migrateLegacyMenuPath()` per the R7 interface (the `getId()==null` guard + footer + clear `menuPath`).
+  - Update the copy constructor + `getLocationInfo()` to use `taxonomyFunction` (the old `locationInfo` menu-path rendering becomes the scoped string — Task 4 finalizes the entry's `locationInfo`, so here just make it compile and not reference the removed getter).
 
 - [ ] **Step 4: Implement `JIPipeNodeTemplateMigration`**:
-  - `migrate(String id, String firstSegment)`: if `firstSegment` blank → unset ref. Else match case-insensitively against **leaf** names then **branch** names from `FunctionRegistry.all()` (with a small abbreviation table Image→Images, Table→Tables, Track→Tracking, Roi→ROIs, Plot→Plotting, Annotation→Annotations, Export→Export, Data→"Data Sources"); on match return `new JIPipeTaxonomyFunctionRef(matchedId)`, else unset. (Unresolved = catch-all, handled by the entry in Task 4.)
-  - `appendPreviouslyFooter(HTMLText desc, String oldPath)`: appends `<i><br>Previously: Image → Threshold</i>`.
-  - Hook: on load of a template that has a legacy `menu-path` present (captured before drop) and no `taxonomy-function`, call `migrate` + `appendPreviouslyFooter`. (This is the one-shot converter — idempotent because `menu-path` is gone after one save.)
+  - `migrate(String firstSegment)`: if blank → unset ref. Else normalize via the abbreviation table (Image→Images, Table→Tables, Track→Tracking, Roi→ROIs, Plot→Plotting, Annotation→Annotations, Export→Export, Data→"Data Sources"), then match case-insensitively against function display names from `JIPipe.getNodes().getFunctions().all()` — **a name tie resolves to the TOP-LEVEL branch (parent==null) before a leaf** (R7b), then to a leaf. On match `new JIPipeTaxonomyFunctionRef(matchedId)`, else unset. **R7b rationale:** the registry has childless export sub-leaves literally named "Images"/"Tables" (`jipipe:function:export-images`/`export-tables`) that would shadow the 18-child top-level `Images` branch / `Tables` branch under a naive leaf-first pass — but legacy menuPath first-segments are top-level menu categories, so "Image" must map to `jipipe:function:images` and "Table" to `jipipe:function:tables`. (Unresolved = unset; the catch-all is applied by the entry in Task 4, never here.)
+  - `appendPreviouslyFooter(HTMLText desc, String oldPath) -> HTMLText`: appends `<i><br>Previously: Image → Threshold</i>` (oldPath = the menu segments joined with " → ").
+  - **Wire the call sites** (R7): `JIPipeNodeTemplatesServiceComponent.reloadGlobalTemplates()` → `template.migrateLegacyMenuPath()` after each `readFromFile`. (The `JIPipeNodeDatabaseBuilderRun` call site is added in Task 4; idempotency makes the double-call harmless.)
 
 - [ ] **Step 5: Run test to verify it passes**
 
 Run: `mvn -o -pl jipipe-core test -Dtest='JIPipeNodeTemplateMigrationTest' -Dsurefire.failIfNoSpecifiedTests=false`
-Expected: PASS (5 tests).
+Expected: PASS (9 tests).
 
 - [ ] **Step 6: Run the full core suite** to catch any other `menuPath` consumer:
 
 Run: `grep -rn "getMenuPath\|menuPath\|setMenuPath" --include=*.java jipipe-core/src/main plugins/*/src/main` then fix/compile.
 Run: `mvn -o -pl jipipe-core test`
-Expected: BUILD SUCCESS, 384 + (new) tests green. (Update any in-tree `menuPath` reference the grep surfaces — e.g. `CreateNewNodesByTemplateDatabaseEntry`'s `locationInfo` uses `getMenuPath()` — change it to the `taxonomyFunction` ref; that file is fully reworked in Task 4, so a minimal compile fix here is acceptable.)
+Expected: BUILD SUCCESS, all green (baseline 389 from Tasks 1–2 + the 7 new migration tests). (Update any in-tree `getMenuPath()` reference the grep surfaces — e.g. `CreateNewNodesByTemplateDatabaseEntry`'s `locationInfo` — to a minimal compile fix; that file is fully reworked in Task 4.)
 
 - [ ] **Step 7: Commit**
 
