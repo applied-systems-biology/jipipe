@@ -264,6 +264,43 @@ class TemplateManagementControllerTest {
     }
 
     @Test
+    void deleteUneditedEscapeCopyKeepsBundledOriginalInMemory() {
+        // Whole-branch follow-up: the bundled original P and its unedited user
+        // copy C are VALUE-equal (JIPipeNodeTemplate.equals compares
+        // name+description+data). removeFromGlobal used to match by value
+        // (globalTemplates.contains/remove), so removing C evicted P — the
+        // FIRST value match in the list (P was added before C) — from the
+        // in-memory store. The on-disk file deleted was still C's (the BiMap
+        // only maps C), so no data was lost and P re-registered on the next
+        // start, but P silently vanished from the System tab for the rest of
+        // the session. (FAILS on the value-based removal: P is gone from the
+        // System scope after deleting C.)
+        JIPipeNodeTemplate pattern = tmpl("Keep Me Bundled");
+        JIPipe.getNodeTemplates().addFromPlugin(pattern);
+        addedPlugin.add(pattern);
+        assertThat(controller.forScope(null, TemplateScope.System))
+            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
+
+        boolean ok = controller.copyTo(null, TemplateScope.System, TemplateScope.Global, pattern);
+        assertThat(ok).isTrue();
+        JIPipeNodeTemplate copy = controller.forScope(null, TemplateScope.Global).stream()
+            .filter(t -> t.getName().equals("Keep Me Bundled")).findFirst().orElseThrow();
+        assertThat(copy).isNotSameAs(pattern);
+        addedGlobal.add(copy);
+
+        // Delete the UNEDITED copy.
+        assertThat(controller.delete(null, TemplateScope.Global, copy)).isTrue();
+
+        // The copy is gone from Global ...
+        assertThat(controller.forScope(null, TemplateScope.Global).stream()
+            .map(JIPipeNodeTemplate::getName)).doesNotContain("Keep Me Bundled");
+        // ... AND the bundled original is still in the System scope (pre-fix it
+        // was the one evicted from the in-memory list).
+        assertThat(controller.forScope(null, TemplateScope.System))
+            .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
+    }
+
+    @Test
     void deletedGlobalTemplateFileIsRemovedFromDisk() throws Exception {
         // The tests write into the REAL user dir (service.getStoragePath()), so
         // this test must leave the directory exactly as it found it: add a

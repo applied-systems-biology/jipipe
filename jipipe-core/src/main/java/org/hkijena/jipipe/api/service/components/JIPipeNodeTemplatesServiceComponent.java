@@ -267,8 +267,15 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     }
 
     public boolean removeFromGlobal(JIPipeNodeTemplate template) {
-        if (globalTemplates.contains(template)) {
-            globalTemplates.remove(template);
+        // Remove by INSTANCE, not value: JIPipeNodeTemplate.equals compares
+        // name+description+data only, so a value-based remove would evict the
+        // first value-equal entry — e.g. deleting an unedited user copy of a
+        // bundled pattern would delete the bundled original from the in-memory
+        // store (the on-disk file mapping below is still per-instance, so only
+        // the list membership was wrong). The membership check uses the same
+        // instance match; the file lookup keeps the value-based get (the
+        // BiMap is value-keyed) and resolves to the removed instance's own file.
+        if (globalTemplates.removeIf(t -> t == template)) {
             Path targetPath = globalTemplatesPaths.get(template);
             if (targetPath != null && Files.isRegularFile(targetPath)) {
                 try {
