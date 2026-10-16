@@ -36,7 +36,7 @@ Node templates live in a separate world from the node taxonomy:
 6. Relations generalize into one model — **Similar / Previous steps / Next steps** — mined
    from family steps and from **all** template graphs (both edge directions).
 7. The 185 corpus-mined patterns ship as **System** templates.
-8. No explicit ordering for templates (name-sorted everywhere).
+8. No explicit ordering for templates (they follow the add-nodes list's ranked order).
 9. The design must not preclude #1333 (custom-node repository: sharing/downloading
    templates) — seams only, no implementation.
 
@@ -48,7 +48,7 @@ Node templates live in a separate world from the node taxonomy:
   the `NodeRelationSource` seam + the source-node concept slot it in later.
 - Editing a template's **graph** from the management UI (graph editing stays on the canvas;
   the manager edits metadata: name, description, taxonomy function, icon, hue, scope).
-- Reordering templates (no sort index; name-sorted).
+- Reordering templates (no sort index; they follow the list's ranked order).
 - Mining relations from AI/LLM sources.
 
 ## 4. Naming
@@ -61,7 +61,7 @@ Node templates live in a separate world from the node taxonomy:
 | Catch-all function leaf for unclassified templates | name "Templates", id `jipipe:function:templates`, **leaf under the `Miscellaneous` top-level branch** (a real registered function, stable literal id) |
 | Synthetic tree grouping | **Templates** branch (UI-only; children System/Global/Project; *not* a registered function) |
 | Entry badges | `Pattern` (graph ≥ 2 nodes) / `Custom` (graph = 1 node) |
-| Internal relation family fed by template mining | `TemplateRelationFamily` (virtual, excluded from public `getFamilies()` views and validation-relevant registries) |
+| Relation sources (pluggable, §10.2) | `FamilyRelationSource` + `TemplateRelationSource` (both `NodeRelationSource`s feeding one `NodeRelationIndex` directly; **no virtual family**, so `getFamilies()` and validation are untouched) |
 
 Naming rationale: "Taxonomy function" (not "function") avoids the collision with
 `JIPipeFunctionParameter` (a different, expression-related concept).
@@ -173,7 +173,9 @@ Templates ◈                              ← synthetic
   - Selecting either the *f* subtree or the `Templates / <scope>` group lists the template
     in the node list alongside regular entries (de-duplicated by entry id if both are
     visible in the same query).
-- All placements are **name-sorted**; no ordering control anywhere (user decision).
+- All placements follow the node list's **relevance-ranked order** (the same order the
+  add-nodes list already uses — the synthetic `Templates / <scope>` branch mirrors it);
+  there is no separate ordering control for templates (user decision).
 - Badges render as small chips in the tree-leaf renderer and list cell renderer
   (reusing existing template cell-renderer assets).
 - *Naming note:* the synthetic top-level `Templates` branch (System/Global/Project
@@ -212,8 +214,9 @@ docked browser's control bar) + context-menu item "Configure templates" (on temp
 entries; opens the tab matching the entry's scope). A modal dialog with tabs:
 
 - **System** — read-only list; "Copy to Global" (the escape hatch); no add/delete.
-- **Global** — add (from selection / new), edit, rename, delete, copy to project,
-  export, import.
+- **Global** — edit, rename, delete, copy to project,
+  export, import. (In-modal "add" was ruled out: the canvas "Add template" action
+  covers "from selection"; "new" is covered by import.)
 - **Project** — same, scoped to the current project's metadata (project templates travel
   with saved projects).
 - **Download** — the existing `NodeTemplateDownloaderDialog` embedded (repository URL +
@@ -230,7 +233,8 @@ Converter at deserialization time; one-shot, idempotent:
    catch-all placement.
 2. `menuPath` present → match the **first segment** against registered function display
    names (case-insensitive + a small abbreviation table: Image→Images, Table→Tables,
-   Track→Tracking, …; matching against **leaves then branches**). Match → a
+   Track→Tracking, …; matching against **top-level branches before same-named
+   leaves**). Match → a
    `JIPipeTaxonomyFunctionRef` holding that function id. No match → unset → catch-all.
 3. `taxonomyFunction` present (a string id on disk → the ref) → no-op.
 4. On conversion, the old menu path is appended to the template description as an italic
@@ -345,6 +349,8 @@ templates as source material — all attach without touching the model.
   Global template with a repository source string; nothing in this design forces a
   different mechanism later.
 - **Starter patterns:** template *source* nodes (no incoming in-template edge) are
-  recorded by the index as "start candidates"; a future relation kind
-  ("starts like this") or a new source can surface them without redesign.
+  computable from the same template graph — a future relation kind ("starts like
+  this") or a new `NodeRelationSource` can surface them as "start candidates" with
+  **no index/model change** (the index already stores only next/previous support
+  maps; `previous(id)` is already empty for source nodes).
 - **Template graph editing** in the management UI (canvas-based editing only).
