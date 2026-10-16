@@ -35,7 +35,8 @@ Node templates live in a separate world from the node taxonomy:
    button next to the AI search button + a context-menu item.
 6. Relations generalize into one model — **Similar / Previous steps / Next steps** — mined
    from family steps and from **all** template graphs (both edge directions).
-7. The 185 corpus-mined patterns ship as **System** templates.
+7. The corpus-mined patterns ship as **System** templates (curated: see §11 —
+   the 64 with derivable names at this revision).
 8. No explicit ordering for templates (they follow the add-nodes list's ranked order).
 9. The design must not preclude #1333 (custom-node repository: sharing/downloading
    templates) — seams only, no implementation.
@@ -296,7 +297,7 @@ templates as source material — all attach without touching the model.
 - `JIPipeNodeDatabase.followUps(entry)` and `related(entry, max)` are **removed**
   (all consumers are in-tree: rail, browser strip; 6.0.0 unreleased, break is contained).
 
-## 11. Shipping the 185 patterns as System templates
+## 11. Shipping the curated patterns as System templates
 
 - The `utils/taxonomy-research/patterns/templates/*.json` files move to bundled
   resources `jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/`.
@@ -305,10 +306,18 @@ templates as source material — all attach without touching the model.
   - `taxonomyFunction` = the pattern's **primary function branch** (deterministic rule:
     the most common primary top-level branch among the pattern's nodes; ties →
     lexicographic). The pattern docs' `tags` block is the source data.
-  - `name` = pattern name; `description` = corpus block (support, top projects, role
-    sequence); `source = "System (corpus-mined)"`.
+  - `name` = pattern name; `description` = corpus block (role sequence, wiring);
+    `source = "System (corpus-mined)"`.
   - `colorHue`/icon derived from the function branch (visual clustering).
-- All 185 ship (research report §7a row 5: publish the template feature).
+- **Curation (added after the 1324 manual review):** a pattern ships only if
+  it has a proper **derivable name of what it does**. From the 185 research
+  artifacts, the statistical fan shapes ("X fans in from N source ids") and
+  every pattern containing a `jipipe:compartment-output` sink (workflow-
+  specific plumbing) are excluded, and the survivors' shape-label duplicates
+  are deduped → the shipped set (64 at this revision; a DAG-aware mining
+  round is scheduled — `docs/superpowers/plans/2026-10-16-dag-pattern-mining.md`).
+  The generator asserts the shipped set's function distribution and fails on
+  any name that still carries a raw role token.
 - At startup the `TemplateRelationSource` mines their edges → the round-9 ask ("every
   import-role node gains 'Annotate with path' as a follow-up") is realized from shipped
   data; the research's 6a table (416 rows) is what the index produces at runtime.
@@ -329,8 +338,10 @@ templates as source material — all attach without touching the model.
     (`TaxonomyFullValidationTest`, per-module conversion report) — it is a normal
     registered function leaf.
 - **Integration (jipipe-launcher, mirrors `RegistryDumperTest`):**
-  - All 185 shipped patterns deserialize via `JIPipeNodeTemplate.getGraph()`
-    (generalizes the existing `TemplateDataDeserializationTest` from 1 to 185).
+  - All shipped patterns deserialize via `JIPipeNodeTemplate.getGraph()`
+    (generalizes the existing `TemplateDataDeserializationTest` from 1 to the
+    full shipped set), and the curation rules hold (no compartment sink, no
+    statistical fan name).
   - Spot-check mined relations: `path-to-annotation-simple`'s next includes
     `import-imagej-imgplus-from-file`; `folder-list-files`' previous is empty, next
     includes `path-to-annotation-simple`.
