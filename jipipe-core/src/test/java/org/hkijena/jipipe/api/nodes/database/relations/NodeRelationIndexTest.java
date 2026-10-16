@@ -65,4 +65,39 @@ class NodeRelationIndexTest {
             List.of(new Edge("known-node", "ghost-node"), new Edge("known-node", "other-known")));
         assertThat(idx.next("known-node")).isEqualTo(List.of("other-known"));  // ghost edge dropped
     }
+
+    @Test
+    void aThirdSourceAttachesWithoutTouchingTheIndex() {
+        // §12 "pluggability via a fake source": the index is source-agnostic —
+        // it consumes ANY NodeRelationSource via source.contribute(index::addEdge)
+        // (exactly the JIPipeNodeDatabase.buildRelationIndex loop). A future
+        // source (starter patterns, #1333 repository templates, ...) attaches by
+        // adding one entry to that list; no change to the index or to relations().
+        // The two real sources (FamilyRelationSource / TemplateRelationSource)
+        // are JIPipe-coupled, so this uses fake sources to prove the seam is
+        // purely the interface + the loop.
+        NodeRelationSource familyLike = sink -> {
+            sink.accept(new Edge("f1", "f2"));
+            sink.accept(new Edge("f2", "f3"));
+        };
+        // The fake "third" source — the whole point: a new contributor that
+        // requires zero changes to NodeRelationIndex.
+        NodeRelationSource futureLike = sink -> {
+            sink.accept(new Edge("s1", "f1"));   // links into the familyLike chain
+            sink.accept(new Edge("f3", "s2"));
+        };
+
+        NodeRelationIndex idx = new NodeRelationIndex();
+        List<NodeRelationSource> sources = List.of(familyLike, futureLike);
+        for (NodeRelationSource source : sources) {
+            source.contribute(idx::addEdge);
+        }
+
+        // The fake source's edges are in the same index as the "family" ones,
+        // both directions, so a node is reachable across source boundaries.
+        assertThat(idx.next("s1")).containsExactly("f1");
+        assertThat(idx.previous("f1")).containsExactly("s1");
+        assertThat(idx.next("f3")).containsExactly("s2");
+        assertThat(idx.previous("s2")).containsExactly("f3");
+    }
 }
