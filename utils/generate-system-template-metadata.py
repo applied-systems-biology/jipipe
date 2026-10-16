@@ -29,31 +29,45 @@ Inputs (all under ``utils/taxonomy-research/`` -- read-only):
   * ``registry.json``              -- the node + function registry the rule is
     computed against (``nodes[].functions[]``, ``functions[].parent``).
 
-Dedup rule (R8 revised -- ship 145 of the 185):
-  Group the 185 by graph signature = (sorted list of node-info-ids, sorted list
-  of ``(sourceNodeInfoId, sourceSlot, targetNodeInfoId, targetSlot)`` edge
-  tuples; instance node keys and compartment UUIDs are excluded). A group
-  collapses to ONE shipped file -- the lexicographically-smallest filename/id
-  -- ONLY IF every member shares the identical ``template.name`` AND the
-  identical FUNCTIONAL graph content: all node fields and edges except the
-  per-instance artifacts (node instance keys, ``jipipe:graph-compartment``
-  UUIDs) and the cosmetic node display labels (``jipipe:node:name`` -- a
-  user-chosen label, not execution-relevant configuration). A group that
-  differs in name or in functional content keeps ALL of its members (the
-  ``fan-in-*``/``fan-out-*`` pair is the only such case in the shipped
-  corpus: an identical example subgraph but distinct pattern identities, so
-  dropping one would lose a named pattern).
+Curation + dedup rule (revised after the 1324 manual review -- ship 64 of the 185):
+   A pattern ships ONLY if it has a proper DERIVABLE name of what it does
+   (user rule: "otherwise they are noise"). Two exclusions implement this:
+     * fan shapes (``shape`` fan-in/fan-out): their mined names are corpus
+       statistics ("X fans in from N source ids"), not derivable;
+     * compartment sinks: any pattern containing a
+       ``jipipe:compartment-output`` node is workflow-specific plumbing and
+       carries no general information (checked on the GRAPH, not the
+       filename -- several fan patterns contain the sink without it being in
+       the stem).
+   The remaining patterns are the node-sequence (linear-chain) shapes.
+   Then dedup: group by graph signature = (sorted list of node-info-ids,
+   sorted list of ``(sourceNodeInfoId, sourceSlot, targetNodeInfoId,
+   targetSlot)`` edge tuples; instance node keys and compartment UUIDs are
+   excluded). A group collapses to ONE shipped file -- the
+   lexicographically-smallest filename/id -- ONLY IF every member shares the
+   identical ``template.name`` AND the identical FUNCTIONAL graph content:
+   all node fields and edges except the per-instance artifacts (node
+   instance keys, ``jipipe:graph-compartment`` UUIDs) and the cosmetic node
+   display labels (``jipipe:node:name`` -- a user-chosen label, not
+   execution-relevant configuration). A group that differs in name or in
+   functional content keeps ALL of its members.
 
-  Content-identity guard: the signature only covers node ids + edges, so two
-  same-named members could in principle still differ in other functional
-  content (parameters, wiring, structure). Collapsing such a group would
-  drop that content silently, so any functional-content difference keeps
-  ALL members instead of collapsing. The guard is a LIVE condition of the
-  collapse (not a post-hoc assertion that can never fire): on any future
-  corpus re-run it fails closed (keep all) rather than shipping a
-  silently-wrong set. The shipped corpus exercises the guard: the
-  ``path-filter`` group differs ONLY in a node display label, so it
-  collapses but is reported as a label-only collapse.
+   Content-identity guard: the signature only covers node ids + edges, so two
+   same-named members could in principle still differ in other functional
+   content (parameters, wiring, structure). Collapsing such a group would
+   drop that content silently, so any functional-content difference keeps
+   ALL members instead of collapsing. The guard is a LIVE condition of the
+   collapse (not a post-hoc assertion that can never fire): on any future
+   corpus re-run it fails closed (keep all) rather than shipping a
+   silently-wrong set.
+
+   Name guard: a mined ``template.name`` whose LAST segment is a raw role
+   token (``other``/``core-io``/...) is a mining artifact; the generator
+   re-derives that segment from the topologically-last node's registry
+   display name, and FAILS if any shipped name still contains a role token.
+
+   Stale sweep: after writing, any ``patterns/*.json`` that is not in the
+   shipped set is deleted, so a curation change cannot orphan resources.
 
 Function rule (R8c revised -- each distinct node id counts ONCE):
   For each pattern, its ``taxonomyFunction`` id = the most common TOP-LEVEL
@@ -82,7 +96,8 @@ Function rule (R8c revised -- each distinct node id counts ONCE):
      real guard.)
 
 Output (all under ``jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/``):
-  * the 145 deduplicated graph JSON files (copied under their kept filenames);
+  * the curated + deduplicated graph JSON files (copied under their kept
+    filenames; currently 64 of the 185);
   * ``system-templates.json`` -- a JSON object mapping pattern id ->
     ``{"name", "description", "functionId", "file"}``.
 
@@ -269,6 +284,64 @@ def node_labels(g: dict):
     return frozenset(v.get("jipipe:node:name") for v in g["nodes"].values())
 
 
+def topo_sequence(g: dict):
+    """The node instance keys in topological order for a LINEAR graph (a
+    single source, a single sink, exactly one edge into/out of every
+    intermediate node), or None when the graph is not a simple chain."""
+    nodes = g["nodes"]
+    indeg = {k: 0 for k in nodes}
+    outdeg = {k: 0 for k in nodes}
+    adj = {}
+    for e in g["edges"]:
+        indeg[e["target-node"]] += 1
+        outdeg[e["source-node"]] += 1
+        adj.setdefault(e["source-node"], []).append(e["target-node"])
+    if any(d > 1 for d in indeg.values()) or any(d > 1 for d in outdeg.values()):
+        return None
+    starts = [k for k in nodes if indeg[k] == 0]
+    if len(starts) != 1:
+        return None
+    seq = [starts[0]]
+    cur = starts[0]
+    while True:
+        nxt = adj.get(cur)
+        if not nxt:
+            break
+        cur = nxt[0]
+        seq.append(cur)
+        if len(seq) > len(nodes):
+            return None  # cycle
+    if len(seq) != len(nodes):
+        return None  # disconnected
+    return seq
+
+
+# The research role vocabulary (patterns.json nodes[].role). A pattern name
+# whose segment is one of these is a mining-artifact leak, not a derivable
+# name — the curation guard below rejects any shipped name containing them.
+ROLE_WORDS = {
+    "annotate", "core-io", "export", "import", "other",
+    "plotting", "trackmate", "unknown",
+}
+
+
+def fix_role_name(stem, g, name, node_names):
+    """Re-derive the display name when its LAST segment is a raw role token
+    (a mining artifact, e.g. '... -> other'): replace it with the registry
+    display name of the topologically-last node. Returns the (possibly
+    changed) name."""
+    last = name.split("->")[-1].strip()
+    if last not in ROLE_WORDS:
+        return name
+    seq = topo_sequence(g)
+    if not seq:
+        fail(f"{stem}: name ends in a role token ({last!r}) but the graph is "
+             f"not linear — re-derive the name manually")
+    last_id = g["nodes"][seq[-1]]["jipipe:node-info-id"]
+    segs = [s.strip() for s in name.split("->")]
+    return " -> ".join(segs[:-1]) + " -> " + node_names[last_id]
+
+
 # --------------------------------------------------------------------------- #
 # Main
 # --------------------------------------------------------------------------- #
@@ -276,6 +349,10 @@ def node_labels(g: dict):
 def main() -> None:
     funcs, nodes = load_registry()
     pattern_nodes = load_patterns()
+    # The mined SHAPE per pattern id (patterns.json) — the curation's fan
+    # exclusion needs it (the .md frontmatter does not carry shape).
+    with open(PATTERNS_JSON, encoding="utf-8") as fh:
+        pattern_shapes = {e["id"]: e.get("shape") for e in json.load(fh)["patterns"]}
 
     md_files = sorted(f for f in os.listdir(PATTERNS_DIR) if f.endswith(".md"))
     if len(md_files) != 185:
@@ -363,9 +440,25 @@ def main() -> None:
              f"got {dict(dist.most_common())}; expected "
              f"{ {k.replace('jipipe:function:',''): v for k, v in EXPECTED_DIST.items()} }")
 
-    # ---- dedup (R8 revised) ----
+    # ---- curation (user rule: a pattern must have a proper derivable name
+    # of what it does, otherwise it is noise) + dedup (R8 revised) ----
+    excluded_shapes = 0
+    excluded_sinks = 0
     groups = {}
     for stem in sorted(graphs):
+        if pattern_shapes.get(stem) in ("fan-in", "fan-out"):
+            # Statistical fan shapes name themselves by corpus statistics
+            # ("X fans in from N source ids") — not derivable from what the
+            # graph does.
+            excluded_shapes += 1
+            continue
+        if any(v["jipipe:node-info-id"] == "jipipe:compartment-output"
+               for v in graphs[stem]["nodes"].values()):
+            # Compartment sinks are workflow-specific plumbing (they exist to
+            # hand data to other compartments) and carry no general
+            # information about what the pattern does.
+            excluded_sinks += 1
+            continue
         groups.setdefault(graph_signature(graphs[stem]), []).append(stem)
 
     kept = {}   # stem -> record
@@ -397,26 +490,28 @@ def main() -> None:
             for m in members:
                 kept[m] = None
     kept_stems = sorted(kept)
-    dropped = 185 - len(kept_stems)
 
     # ---- build sidecar ----
-    sidecar = {}
+    # Registry display names (the authoritative node names, not the
+    # per-instance jipipe:node:name labels which can be stale user edits).
+    node_names = {nid: n["name"] for nid, n in nodes.items()}
+    shipped = {}  # stem -> sidecar record (for the role-name guard below)
+    renamed = 0
     for stem in kept_stems:
         g = graphs[stem]
         m = meta[stem]
-        c = m["corpus"]
-        support = c.get("support", 0)
-        projects = c.get("projectCount", 0)
         seq = m["corpus"].get("exampleGraphNodes", [])
         seq_names = [n for _, n in seq]
-        lines = [
-            f"Mined from the HKI corpus — support {support} across {projects} projects.",
-        ]
+        # (The leading "Mined from the HKI corpus — support N across M
+        # projects." line was internal mining statistics with no user
+        # value; the description starts with the pattern's own Sequence.)
+        lines = []
         if seq_names:
             lines.append("Sequence: " + " → ".join(unescape(n) for n in seq_names) + ".")
         # wiring from the raw graph edges, ordered source -> target
         im = {k: v["jipipe:node-info-id"] for k, v in g["nodes"].items()}
-        name_of = {v["jipipe:node-info-id"]: v["jipipe:node:name"] for v in g["nodes"].values()}
+        name_of = {v["jipipe:node-info-id"]: v.get("jipipe:node:name") or v["jipipe:node-info-id"]
+                   for v in g["nodes"].values()}
         edges = sorted(
             ((im[e["source-node"]], e["source-slot"], im[e["target-node"]], e["target-slot"])
              for e in g["edges"])
@@ -426,15 +521,56 @@ def main() -> None:
             lines.append("Wiring: " + wire + ".")
         desc = "<br>".join(html.escape(l, quote=False) for l in lines)
 
-        sidecar[stem] = {
+        display_name = fix_role_name(stem, g, m["name"], node_names)
+        if display_name != m["name"]:
+            renamed += 1
+            print(f"   role-name fixed: {m['name']!r} -> {display_name!r}")
+
+        shipped[stem] = {
             "file": stem + ".json",
             "functionId": chosen[stem],
-            "name": m["name"],
+            "name": display_name,
             "description": desc,
         }
+    sidecar = shipped
+
+    # ---- shipped distribution + role-name guard (the user's curation rule) ----
+    # The SHIPPED set's function distribution must match the curation target
+    # (a change to the corpus, the curation exclusions, or the function rule
+    # all move this — fail loudly rather than ship a silently-wrong set).
+    shipped_dist = Counter(shipped[s]["functionId"] for s in shipped)
+    EXPECTED_SHIPPED_DIST = {
+        "jipipe:function:data": 32,
+        "jipipe:function:annotations": 15,
+        "jipipe:function:images": 8,
+        "jipipe:function:rois": 4,
+        "jipipe:function:machine-learning": 3,
+        "jipipe:function:graph": 2,
+    }
+    if dict(shipped_dist) != EXPECTED_SHIPPED_DIST:
+        fail("shipped function distribution differs from the curation target: "
+             f"got {dict(shipped_dist.most_common())}; expected "
+             f"{ {k.replace('jipipe:function:',''): v for k, v in EXPECTED_SHIPPED_DIST.items()} }")
+
+    # No shipped name may carry a raw role token (a mining artifact, not a
+    # derivable name) — fix_role_name repairs the linear last-segment case;
+    # anything left here is a genuine violation that needs a manual name.
+    for stem, rec in shipped.items():
+        for seg in rec["name"].split("->"):
+            if seg.strip() in ROLE_WORDS:
+                fail(f"{stem}: shipped name still contains a role token: {rec['name']!r}")
 
     # ---- write outputs ----
     os.makedirs(OUT_DIR, exist_ok=True)
+    # Sweep stale pattern files: a pattern that dropped out of the shipped
+    # set between runs (curation change) must not leave an orphan resource
+    # behind. Only *.json in OUT_DIR that are not in the shipped set are
+    # removed; system-templates.json itself is rewritten below.
+    shipped_files = {rec["file"] for rec in shipped.values()}
+    for existing in sorted(os.listdir(OUT_DIR)):
+        if existing.endswith(".json") and existing != "system-templates.json" \
+                and existing not in shipped_files:
+            os.remove(os.path.join(OUT_DIR, existing))
     for stem in kept_stems:
         src = os.path.join(TEMPLATES_DIR, stem + ".json")
         dst = os.path.join(OUT_DIR, stem + ".json")
@@ -449,9 +585,13 @@ def main() -> None:
     print(f"research dir : {RESEARCH} (read-only)")
     print(f"output dir   : {OUT_DIR}")
     print(f"total patterns   : 185")
+    print(f"excluded (curation): {excluded_shapes + excluded_sinks} "
+          f"(fan shapes: {excluded_shapes}, compartment sinks: {excluded_sinks})")
     print(f"shipped (kept)   : {len(kept_stems)}")
+    print(f"role names fixed : {renamed}")
     print(f"collapsed groups : {collapsed} (name + functional-content identity: PASS)")
-    print(f"dropped files    : {dropped}")
+    print(f"dropped files    : {185 - len(kept_stems)} "
+          f"(excluded + deduped)")
     print(f"kept-all groups  : {len(kept_all_groups)}")
     for members in kept_all_groups:
         print(f"   kept-all (name or functional content differs): {members}")

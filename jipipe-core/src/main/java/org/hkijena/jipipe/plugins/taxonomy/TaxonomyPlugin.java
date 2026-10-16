@@ -364,9 +364,11 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * Registers the corpus-mined workflow patterns as bundled System node
      * templates (task 8, spec §11).
      * <p>
-     * The 145 deduplicated patterns (185 research artifacts, 40 collapsed
-     * shape-label duplicates + 1 kept-both fan-in/fan-out pair with distinct
-     * names — see {@code utils/generate-system-template-metadata.py}) ship as
+     * The 64 curated, deduplicated patterns (185 research artifacts: the
+     * statistical fan shapes and the compartment-sink patterns are excluded
+     * as workflow-specific noise, and the survivors' shape-label duplicates
+     * are collapsed — see {@code utils/generate-system-template-metadata.py})
+     * ship as
      * bundled resources under
      * {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/}:
      * <ul>

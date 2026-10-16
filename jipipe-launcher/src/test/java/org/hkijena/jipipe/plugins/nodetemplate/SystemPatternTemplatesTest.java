@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -46,27 +47,33 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * Integration gate for shipping the corpus-mined workflow patterns as bundled
  * System node templates (task 8, spec §11 + the revised R8 rulings).
  * <p>
- * The 145 deduplicated patterns are registered by
+ * The 64 curated, deduplicated patterns are registered by
  * {@code TaxonomyPlugin.registerSystemTemplates()} from the bundled resources
- * under {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/} (145 raw
+ * under {@code org/hkijena/jipipe/plugins/nodetemplate/patterns/} (64 raw
  * {@code JIPipeGraph} JSONs + the committed {@code system-templates.json}
  * metadata sidecar). They arrive through the plugin-template path
  * ({@link JIPipeNodeTemplatesServiceComponent#addFromPlugin(JIPipeNodeTemplate)}),
  * so {@link JIPipeNodeTemplatesServiceComponent#isPluginTemplate(JIPipeNodeTemplate)}
  * is {@code true} for each (System scope).
  * <p>
+ * Curation (the 1324 manual review): a pattern ships only if it has a
+ * proper <b>derivable name of what it does</b>. The 185 research artifacts
+ * are therefore cut down: the statistical fan shapes ("X fans in from N
+ * source ids") and every pattern containing a {@code jipipe:compartment-output}
+ * sink (workflow-specific plumbing) are excluded, and the survivors' shape-
+ * label duplicates are deduped to the shipped 64.
+ * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 145</b> — the dedup from the 185 research artifacts is
- *       pinned to a number (40 collapsed shape-label duplicates + 1 kept-both
- *       fan-in/fan-out pair with distinct names); not "≥145".</li>
+ *   <li><b>exact count 64</b> — the curation + dedup from the 185 research
+ *       artifacts is pinned to a number; not "≥64".</li>
  *   <li><b>per-template deserialization guard</b> — each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
  *       path with the same node count as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       from 1 template to all 145).</li>
+ *       to all 64).</li>
  *   <li><b>top-level function</b> — every template's {@code taxonomyFunction}
  *       resolves and its assigned function is a top-level branch
  *       ({@code getParent() == null}).</li>
@@ -76,9 +83,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       {@code next} relations of {@code path-to-annotation-simple} include an
  *       entry named "Import image".</li>
  *   <li><b>consumer-side dedup</b> — no two shipped templates share
- *       (name, graph data); the 40 collapsed shape-label duplicates must not
- *       reappear, and the 3 same-name Set-LUT pairs are kept distinct (same
- *       name + node ids, different slot wiring → different graph data).</li>
+ *       (name, graph data); the deduped shape-label duplicates must not
+ *       reappear, and same-name patterns that ship are kept distinct
+ *       (different slot wiring → different graph data).</li>
+ *   <li><b>curation rules</b> — no shipped pattern contains a
+ *       {@code jipipe:compartment-output} node and no shipped name is a
+ *       statistical "fans in/out from N ids" name.</li>
+ *   <li><b>function tie-break</b> — a surviving 3-way tie (annotations/
+ *       images/rois at max count) resolves to the lexicographically-first id.</li>
  * </ol>
  * <p>
  * Mirrors {@link org.hkijena.jipipe.api.nodes.taxonomy.RegistryDumperTest}'s
@@ -95,8 +107,9 @@ class SystemPatternTemplatesTest {
         "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 145 distinct patterns ship (185 research artifacts, 40 collapsed). */
-    static final int EXPECTED_SYSTEM_TEMPLATES = 145;
+    /** Exactly 64 distinct patterns ship (185 research artifacts, curation
+     *  + 25 collapsed shape-label duplicates). */
+    static final int EXPECTED_SYSTEM_TEMPLATES = 64;
 
     /** The flagship mined pattern (a Data Sources chain). */
     static final String FLAGSHIP = "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file";
@@ -137,8 +150,9 @@ class SystemPatternTemplatesTest {
     void allSystemPatternsAreRegistered() {
         List<JIPipeNodeTemplate> templates = systemTemplates();
         assertEquals(EXPECTED_SYSTEM_TEMPLATES, templates.size(),
-            "the dedup from the 185 research artifacts is pinned to an exact "
-                + "count (40 collapsed + 1 kept-both fan-in/fan-out pair); got "
+            "the curation + dedup from the 185 research artifacts is pinned "
+                + "to an exact count (fan shapes + compartment sinks excluded, "
+                + "shape-label duplicates collapsed); got "
                 + templates.size() + " System (plugin) templates");
 
         // The flagship must be among them (it is one of the shipped patterns).
@@ -172,25 +186,15 @@ class SystemPatternTemplatesTest {
             "the flagship pattern's function must be jipipe:function:data "
                 + "(complete node set {data:2, annotations:1} -> most-common data)");
 
-        // Tie-break pin: this annotation-sandwich is a GENUINE 3-way tie
-        // (annotations/data/machine-learning all at max count), so the winner is
-        // the lexicographically-first id = jipipe:function:annotations. This pins
+        // Tie-break pin: this surviving 3-node pattern is a GENUINE 3-way tie
+        // (annotations/images/rois all at max count), so the winner is the
+        // lexicographically-first id = jipipe:function:annotations. This pins
         // the "ties -> lexicographically first" rule end-to-end.
         assertEquals("jipipe:function:annotations",
-            templateByName("File list -> Annotate with file/directory name -> other")
+            templateByName("Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data")
                 .getTaxonomyFunction().getId(),
             "the 3-way-tie pattern must resolve to the lexicographically-first "
                 + "branch jipipe:function:annotations");
-
-        // Complete-node-set pin: one of the 6 patterns whose markdown role table is
-        // truncated. Over the complete structured node set the most-common branch
-        // is ROIs (the truncated table would have yielded Machine learning). This
-        // pins that the rule uses patterns.json's complete node list.
-        assertEquals("jipipe:function:rois",
-            templateByName("Filter 2D ROI by statistics fans in from 10 source ids (roles: core-io, other)")
-                .getTaxonomyFunction().getId(),
-            "the truncated-role-table pattern must resolve to jipipe:function:rois "
-                + "(complete node set), not the machine-learning a truncated table yields");
     }
 
     /** Finds the registered System template by its (unique) display name. */
@@ -210,12 +214,11 @@ class SystemPatternTemplatesTest {
         assertEquals(EXPECTED_SYSTEM_TEMPLATES, templates.size());
 
         // Map each bundled resource's NAME to its node count. Matching by name
-        // is deterministic because no name is shared by resources with
-        // different node counts (the 3 same-name Set-LUT pairs each have
-        // identical 3-node graphs; see the generator). This sidesteps the
-        // getData() re-serialization (which, once getGraph() has cached the
-        // graph, pretty-prints the data and no longer byte-matches the
-        // bundled raw — e.g. trailing newline).
+        // is deterministic because no name is shared by more than one shipped
+        // resource (verified at generation; see the generator's name-unique
+        // output). This sidesteps the getData() re-serialization (which, once
+        // getGraph() has cached the graph, pretty-prints the data and no longer
+        // byte-matches the bundled raw — e.g. trailing newline).
         Map<String, Integer> nodeCountByName = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
             String name = entry.getValue().get("name").asText();
@@ -233,7 +236,7 @@ class SystemPatternTemplatesTest {
         for (JIPipeNodeTemplate t : templates) {
             Integer expected = nodeCountByName.get(t.getName());
             assertNotNull(expected,
-                "template '" + t.getName() + "' is not one of the 145 shipped patterns");
+                "template '" + t.getName() + "' is not one of the shipped patterns");
 
             // (i) the exact JIPipeNodeTemplate.getGraph() path must not throw /
             //     must not return null.
@@ -300,17 +303,14 @@ class SystemPatternTemplatesTest {
     @Test
     void noDuplicateNamesWithSameGraph() {
         // The consumer-side dedup pin: no two shipped System templates share
-        // the identity (name, graph data). This is the graph signature R8
-        // deduped on, viewed from the registered side.
+        // the identity (name, graph data). This is the graph signature the
+        // generator deduped on, viewed from the registered side.
         // <p>
-        // The graph data (not just the node id set) is REQUIRED: the 3
-        // same-name Set-LUT pairs (chain-3-* vs conversion-*) each ship BOTH
-        // members with identical names and identical node id sets, differing
-        // only in which compartment-output slot they connect through ("Green
-        // trimmed" vs "Magenta trimmed", etc.). A (name, node-ids) key would
-        // false-positive on each of those, so the honest key uses the full
-        // graph data. The 40 collapsed shape-label duplicates must not
-        // reappear as two identical (name, data) entries.
+        // The graph data (not just the node id set) is REQUIRED: same-name
+        // patterns that differ only in which slot they connect through would
+        // false-positive under a (name, node-ids) key. The deduped
+        // shape-label duplicates must not reappear as two identical
+        // (name, data) entries.
         Set<String> seen = new HashSet<>();
         List<String> dupes = new ArrayList<>();
         for (JIPipeNodeTemplate t : systemTemplates()) {
@@ -321,6 +321,27 @@ class SystemPatternTemplatesTest {
         }
         assertTrue(dupes.isEmpty(),
             "no two shipped System templates may share (name, graph data); duplicates: " + dupes);
+    }
+
+    @Test
+    void curationRulesHold() {
+        // The manual-review curation: a pattern ships only if it has a proper
+        // derivable name of what it does. That means NO compartment sink
+        // (workflow-specific plumbing) and NO statistical "fans in/out from N
+        // ids" name — both were the shipped noise.
+        for (JIPipeNodeTemplate t : systemTemplates()) {
+            boolean hasCompartmentSink = false;
+            for (JIPipeGraphNode node : t.getGraph().getGraphNodes()) {
+                if ("jipipe:compartment-output".equals(node.getInfo().getId())) {
+                    hasCompartmentSink = true;
+                    break;
+                }
+            }
+            assertFalse(hasCompartmentSink,
+                "shipped pattern '" + t.getName() + "' contains a compartment-output sink");
+            assertFalse(t.getName().matches(".*fans (in from|out to) \\d+.*"),
+                "shipped pattern name is a statistical fan name: " + t.getName());
+        }
     }
 
     // ------------------------------------------------------------------

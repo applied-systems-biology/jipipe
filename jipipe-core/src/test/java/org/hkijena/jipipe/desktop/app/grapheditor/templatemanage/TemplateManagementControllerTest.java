@@ -218,7 +218,7 @@ class TemplateManagementControllerTest {
         assertThat(globalScope.stream().noneMatch(JIPipe.getNodeTemplates()::isPluginTemplate)).isTrue();
 
         // The System tab, by contrast, IS exactly the plugin (bundled) set and
-        // here is non-empty (the 145 corpus patterns are registered at init).
+        // here is non-empty (the 64 curated corpus patterns are registered at init).
         List<JIPipeNodeTemplate> systemScope = controller.forScope(null, TemplateScope.System);
         assertThat(systemScope).isNotEmpty();
         assertThat(systemScope.stream().allMatch(JIPipe.getNodeTemplates()::isPluginTemplate)).isTrue();
