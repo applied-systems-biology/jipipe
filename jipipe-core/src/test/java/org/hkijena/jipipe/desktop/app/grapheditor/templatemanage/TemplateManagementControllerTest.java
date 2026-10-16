@@ -385,6 +385,92 @@ class TemplateManagementControllerTest {
     }
 
     // ------------------------------------------------------------------
+    // Downloaded scope (round-2 spec: downloaded templates are read-only;
+    // the escape hatch is a copy into the user's own templates, publishing
+    // the local version is the future #1333 feature)
+    // ------------------------------------------------------------------
+
+    /** Adds a template to the global store whose source is a repository URL (a downloaded template). */
+    private JIPipeNodeTemplate addUniqueDownloaded(String baseName) {
+        String name = baseName + " " + System.nanoTime();
+        JIPipeNodeTemplate template = tmpl(name);
+        template.setSource("https://asb-git.hki-jena.de/RGerst/jipipe-templates/raw/main/repo.json");
+        boolean added = JIPipe.getNodeTemplates().addToGlobal(template);
+        assertThat(added).as("addToGlobal(" + name + ")").isTrue();
+        addedGlobal.add(template);
+        return template;
+    }
+
+    @Test
+    void downloadedTemplatesArePartitionedOutOfUserGlobal() {
+        JIPipeNodeTemplate user = addUniqueGlobal("User Global Template");
+        JIPipeNodeTemplate downloaded = addUniqueDownloaded("Downloaded Template");
+
+        // The partition is membership-based (the shared store may hold other
+        // user/downloaded templates from elsewhere): the repository-sourced
+        // template is in Downloaded and NOT in the user's own list, and the
+        // user-sourced one is in Global and NOT in Downloaded.
+        assertThat(controller.forScope(null, TemplateScope.Downloaded)).contains(downloaded);
+        assertThat(controller.forScope(null, TemplateScope.Global))
+            .contains(user)
+            .doesNotContain(downloaded);
+        assertThat(controller.forScope(null, TemplateScope.Downloaded)).doesNotContain(user);
+        // ... and neither leaks into System or Project.
+        assertThat(controller.forScope(null, TemplateScope.System)).doesNotContain(downloaded, user);
+        assertThat(controller.forScope(null, TemplateScope.Project)).doesNotContain(downloaded, user);
+    }
+
+    @Test
+    void downloadedTemplateCannotBeEdited() {
+        JIPipeNodeTemplate downloaded = addUniqueDownloaded("Downloaded Read-Only");
+        JIPipeNodeTemplate edited = new JIPipeNodeTemplate(downloaded);
+        edited.setDescription(new HTMLText("edited"));
+
+        assertThat(controller.edit(null, TemplateScope.Downloaded, downloaded, edited))
+            .as("editing a downloaded template is rejected (read-only repository artifact)")
+            .isFalse();
+        assertThat(downloaded.getDescription().getHtml()).doesNotContain("edited");
+    }
+
+    @Test
+    void downloadedTemplateCopyToGlobalCreatesAnEditableUserVersion() {
+        JIPipeProject project = new JIPipeProject();
+        JIPipeNodeTemplate downloaded = addUniqueDownloaded("Downloaded Copy Src");
+
+        boolean ok = controller.copyTo(project, TemplateScope.Downloaded, TemplateScope.Global, downloaded);
+        assertThat(ok).as("the escape hatch must store the user copy").isTrue();
+
+        // The copy is a USER-owned template (source re-stamped) ...
+        JIPipeNodeTemplate copy = controller.forScope(null, TemplateScope.Global).stream()
+            .filter(t -> t.getName().equals(downloaded.getName()))
+            .findFirst().orElseThrow();
+        assertThat(copy).isNotSameAs(downloaded);
+        assertThat(copy.getSource()).isEqualTo(JIPipeNodeTemplate.SOURCE_USER);
+        // ... the downloaded original is untouched and still read-only scoped,
+        // and Downloaded is never a copy TARGET.
+        assertThat(downloaded.getSource()).isNotEqualTo(JIPipeNodeTemplate.SOURCE_USER);
+        assertThat(controller.forScope(null, TemplateScope.Downloaded)).contains(downloaded);
+        assertThat(controller.copyTo(project, TemplateScope.Global, TemplateScope.Downloaded, copy))
+            .as("Downloaded is a valid source, never a target")
+            .isFalse();
+
+        // Tidy: remove the user copy we just made (the addedGlobal cleanup
+        // tracks the downloaded original, not the copy).
+        assertThat(controller.delete(null, TemplateScope.Global, copy)).isTrue();
+    }
+
+    @Test
+    void downloadedTemplateCanBeRemovedButNotViaSystemPath() {
+        JIPipeNodeTemplate downloaded = addUniqueDownloaded("Downloaded Removable");
+
+        assertThat(controller.delete(null, TemplateScope.Downloaded, downloaded))
+            .as("removing a download is allowed (re-obtainable via 'Get more')")
+            .isTrue();
+        assertThat(controller.forScope(null, TemplateScope.Downloaded)).doesNotContain(downloaded);
+        assertThat(JIPipe.getNodeTemplates().isInGlobal(downloaded)).isFalse();
+    }
+
+    // ------------------------------------------------------------------
     // Stub node
     // ------------------------------------------------------------------
 

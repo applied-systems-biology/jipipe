@@ -121,16 +121,19 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
     /**
      * Determines the {@link TemplateScope} of a template from its storage
      * location: plugin-provided templates are {@link TemplateScope#System},
-     * those in the user's global store are {@link TemplateScope#Global}, and
-     * everything else (which came from the project metadata) is
-     * {@link TemplateScope#Project}.
+     * repository-downloaded templates in the user's global store are
+     * {@link TemplateScope#Downloaded}, the remaining user-global templates
+     * are {@link TemplateScope#Global}, and everything else (which came from
+     * the project metadata) is {@link TemplateScope#Project}.
      */
     private TemplateScope determineTemplateScope(JIPipeNodeTemplate template) {
         if (JIPipe.getNodeTemplates().isPluginTemplate(template)) {
             return TemplateScope.System;
         }
         if (JIPipe.getNodeTemplates().isInGlobal(template)) {
-            return TemplateScope.Global;
+            return JIPipe.getNodeTemplates().isDownloadedTemplate(template)
+                ? TemplateScope.Downloaded
+                : TemplateScope.Global;
         }
         return TemplateScope.Project;
     }

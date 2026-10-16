@@ -123,18 +123,7 @@ public class TemplateManagementDialog extends JDialog implements NodeTemplatesRe
         if (project != null) {
             sections.add(new TemplateSection("This project", TemplateScope.Project, true));
         }
-        sections.add(new TemplateSection("Downloaded", TemplateScope.Global, true) {
-            @Override
-            protected boolean accepts(JIPipeNodeTemplate template) {
-                // The "Downloaded" section: user-global templates that came
-                // from a repository (a source URL), distinct from the ones
-                // the user authored themselves.
-                String source = template.getSource();
-                return super.accepts(template) && source != null
-                    && !JIPipeNodeTemplate.SOURCE_USER.equals(source)
-                    && !JIPipeNodeTemplate.SOURCE_EXTENSION.equals(source);
-            }
-
+        sections.add(new TemplateSection("Downloaded", TemplateScope.Downloaded, true) {
             @Override
             protected JComponent buildHeaderExtra() {
                 JButton getMore = UIUtils.createButton("Get more", JIPipe.RESOURCES.getIcon16("actions/download.png"),
@@ -356,15 +345,19 @@ public class TemplateManagementDialog extends JDialog implements NodeTemplatesRe
 
     private void rebuildButtonRow() {
         buttonRow.removeAll();
-        // The primary action depends on where the selection came from
-        boolean allSystem = !selection.isEmpty();
+        // The primary actions depend on the scopes of the selection (spec §8.3):
+        // System is read-only (copy out), Downloaded is read-only too but a
+        // removable download (copy out = make a local editable version, plus
+        // delete = remove the download), user-owned scopes are fully
+        // manageable.
+        boolean anySystem = false;
+        boolean anyDownloaded = false;
         boolean anyEditable = false;
         for (JIPipeNodeTemplate t : selection) {
-            if (!controller.forScope(project, TemplateScope.System).contains(t)) {
-                allSystem = false;
-            }
-            if (canEdit(t)) {
-                anyEditable = true;
+            switch (scopeOf(t)) {
+                case System -> anySystem = true;
+                case Downloaded -> anyDownloaded = true;
+                case Global, Project -> anyEditable = true;
             }
         }
         if (selection.isEmpty()) {
@@ -373,19 +366,38 @@ public class TemplateManagementDialog extends JDialog implements NodeTemplatesRe
             selectionLabel.setText(selection.size() + " selected");
         }
         if (!selection.isEmpty()) {
-            if (allSystem) {
+            if (anyEditable && selection.size() == 1) {
+                buttonRow.add(makeButton("actions/document-edit.png", "Edit", this::editSelected));
+            }
+            if (anySystem) {
+                // The escape hatch for a bundled pattern: copy it into the
+                // user's own templates.
                 buttonRow.add(makeButton("actions/edit-copy.png", "Copy to Global", this::copySelectedToGlobal));
-            } else {
-                if (anyEditable && selection.size() == 1) {
-                    buttonRow.add(makeButton("actions/document-edit.png", "Edit", this::editSelected));
-                }
-                buttonRow.add(makeButton("actions/edit-copy.png", "Copy to Global", this::copySelectedToGlobal));
-                if (project != null) {
+            }
+            if (anyDownloaded) {
+                // The escape hatch for a downloaded template: make a local
+                // (editable) version in the user's own templates. (Publishing
+                // the local version back to the repository is a future feature,
+                // #1333.)
+                buttonRow.add(makeButton("actions/edit-copy.png", "Copy to Your templates", this::copySelectedToGlobal));
+            }
+            if (anyEditable && !anySystem && !anyDownloaded) {
+                // Mixed user-owned selection (Global + Project): only the
+                // operations valid for every selected scope.
+                if (project != null && !selection.stream().allMatch(t -> scopeOf(t) == TemplateScope.Project)) {
                     buttonRow.add(makeButton("actions/folder.png", "Copy to Project", this::copySelectedToProject));
                 }
-                buttonRow.add(makeButton("actions/edit-delete.png", "Delete", this::deleteSelected));
-                buttonRow.add(makeButton("actions/document-export.png", "Export", this::exportSelected));
+                if (!selection.stream().allMatch(t -> scopeOf(t) == TemplateScope.Global)) {
+                    buttonRow.add(makeButton("actions/edit-copy.png", "Copy to Your templates", this::copySelectedToGlobal));
+                }
             }
+            if (!anySystem) {
+                // Deletable: user-owned templates and downloads (remove the
+                // download — re-obtainable via "Get more"). System patterns
+                // are bundled and cannot be removed.
+                buttonRow.add(makeButton("actions/edit-delete.png", "Delete", this::deleteSelected));
+            }
+            buttonRow.add(makeButton("actions/document-export.png", "Export", this::exportSelected));
         }
         buttonRow.add(makeButton("actions/document-import.png", "Import", this::importTemplates));
         buttonRow.revalidate();
@@ -393,7 +405,11 @@ public class TemplateManagementDialog extends JDialog implements NodeTemplatesRe
     }
 
     private boolean canEdit(JIPipeNodeTemplate template) {
-        return !template.isFromExtension();
+        // System (bundled) and Downloaded (repository artifact) templates are
+        // read-only: the escape hatch for both is a copy into the user's own
+        // templates.
+        return !template.isFromExtension()
+            && !JIPipe.getNodeTemplates().isDownloadedTemplate(template);
     }
 
     private TemplateScope scopeOf(JIPipeNodeTemplate template) {

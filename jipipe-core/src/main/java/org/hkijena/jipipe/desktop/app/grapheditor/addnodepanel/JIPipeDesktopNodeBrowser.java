@@ -1273,8 +1273,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private void templateEdit(CreateNewNodesByTemplateDatabaseEntry entry) {
         JIPipeNodeTemplate template = entry.getTemplate();
-        if (template.isFromExtension()) {
-            return; // System templates are read-only (specs() also omits edit)
+        if (entry.getScope() == TemplateScope.System || entry.getScope() == TemplateScope.Downloaded) {
+            // System (bundled) and Downloaded (repository artifact) templates
+            // are read-only: the escape hatch is a copy into the user's own
+            // templates (specs() omits edit for both).
+            return;
         }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
         if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), copy,

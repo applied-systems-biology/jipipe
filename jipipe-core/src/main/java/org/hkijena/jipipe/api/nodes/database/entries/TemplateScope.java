@@ -21,7 +21,12 @@ package org.hkijena.jipipe.api.nodes.database.entries;
  * <ul>
  * <li>{@link #System} — bundled / plugin-provided templates (registered at
  *     plugin init, or carrying the extension source);</li>
- * <li>{@link #Global} — the user's {@code node-templates/} directory
+ * <li>{@link #Downloaded} — templates in the user's global store that came
+ *     from a repository (their source is the repository URL, not the user
+ *     source). Read-only like System: they can be copied into the user's own
+ *     templates (the copy becomes editable) and removed, but not edited;</li>
+ * <li>{@link #Global} — the user's own templates in the
+ *     {@code node-templates/} directory
  *     ({@code JIPipeNodeTemplatesServiceComponent});</li>
  * <li>{@link #Project} — the current project's {@code node-templates} metadata
  *     (travels with saved projects).</li>
@@ -30,5 +35,6 @@ package org.hkijena.jipipe.api.nodes.database.entries;
 public enum TemplateScope {
     System,
     Global,
-    Project
+    Project,
+    Downloaded
 }

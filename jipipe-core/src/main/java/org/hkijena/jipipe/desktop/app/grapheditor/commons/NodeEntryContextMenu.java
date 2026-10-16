@@ -101,12 +101,16 @@ public final class NodeEntryContextMenu {
      * scope-gated template quick actions (spec §7.3/§8.2), appended AFTER
      * the base items:
      * <ul>
-     * <li><b>Global</b> — {@code edit}, {@code copy-to-project},
-     * {@code delete}, {@code configure-templates};</li>
+     * <li><b>Global</b> (the user's own templates) — {@code edit},
+     * {@code copy-to-project}, {@code delete}, {@code configure-templates};</li>
      * <li><b>Project</b> — {@code edit}, {@code copy-to-global},
      * {@code delete}, {@code configure-templates};</li>
      * <li><b>System</b> (read-only) — {@code copy-to-global},
-     * {@code configure-templates} (no edit, no delete).</li>
+     * {@code configure-templates} (no edit, no delete);</li>
+     * <li><b>Downloaded</b> (read-only repository artifacts) —
+     * {@code copy-to-global} (make a local editable version),
+     * {@code delete} (remove the download), {@code configure-templates}
+     * (no edit).</li>
      * </ul>
      *
      * @param entry     the node database entry the menu is for (non-null)
@@ -138,6 +142,10 @@ public final class NodeEntryContextMenu {
                     new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
                 case System -> specs.addAll(List.of(
                     new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Global", true),
+                    new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
+                case Downloaded -> specs.addAll(List.of(
+                    new MenuItemSpec(COPY_TO_GLOBAL, "Copy to Your templates", true),
+                    new MenuItemSpec(DELETE, "Remove download", true),
                     new MenuItemSpec(CONFIGURE_TEMPLATES, "Configure templates", true)));
             }
         }

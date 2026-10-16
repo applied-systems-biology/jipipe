@@ -88,7 +88,10 @@ public class TemplateManagementController {
                 .filter(service::isPluginTemplate)
                 .toList();
             case Global -> service.getGlobalTemplates().stream()
-                .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t))
+                .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && !service.isDownloadedTemplate(t))
+                .toList();
+            case Downloaded -> service.getGlobalTemplates().stream()
+                .filter(t -> service.isInGlobal(t) && !service.isPluginTemplate(t) && service.isDownloadedTemplate(t))
                 .toList();
             case Project -> project == null ?
                 List.of() :
@@ -106,9 +109,10 @@ public class TemplateManagementController {
      * method does not emit again (exactly-once, matching {@link #edit}).
      *
      * @param project the project; required when {@code to} is {@link TemplateScope#Project}
-     * @param from    the source scope (System is a valid source; never a target).
-     *                Drives the System -> Global branch, which uses the
-     *                dedicated user-copy path (see below).
+     * @param from    the source scope (System and Downloaded are valid
+     *                sources; never targets). Drives the read-only -> Global
+     *                branch, which uses the dedicated user-copy path (see
+     *                below).
      * @param to      the target scope (Global or Project)
      * @param t       the template to copy
      * @return whether the copy was actually stored (false when {@code to} is
@@ -120,12 +124,14 @@ public class TemplateManagementController {
             // System is read-only: it is a valid source, never a target.
             return false;
         }
-        if (to == TemplateScope.Global && from == TemplateScope.System) {
-            // The System -> Global "Copy to Global" escape hatch (spec §8.3):
-            // the copy is value-equal to the bundled original, so the normal
-            // addToGlobal (whose isPluginTemplate / globalTemplates.contains
-            // guards are value-based) would reject it. Use the dedicated
-            // user-copy path, which dedups only against existing user copies.
+        if (to == TemplateScope.Global && (from == TemplateScope.System || from == TemplateScope.Downloaded)) {
+            // The System -> Global "Copy to Global" escape hatch (spec §8.3)
+            // and its Downloaded analogue: the copy is value-equal (equals
+            // ignores the source field) to the read-only original, which
+            // sits in the global store itself, so the normal addToGlobal
+            // (whose isPluginTemplate / globalTemplates.contains guards are
+            // value-based) would reject it. Use the dedicated user-copy
+            // path, which dedups only against existing user copies.
             return service.addToGlobalAsUserCopy(t);
         }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(t);
@@ -133,15 +139,21 @@ public class TemplateManagementController {
         return switch (to) {
             case Global -> service.addToGlobal(copy);
             case Project -> project != null && service.addToProject(copy, project);
-            case System -> false;
+            // Downloaded is a valid source, never a target: only the
+            // repository downloader places templates there (with the
+            // repository URL as source).
+            case System, Downloaded -> false;
         };
     }
 
     /**
      * Deletes a template from the given scope. System scope is a no-op
-     * (read-only), returning {@code false}. {@code removeFromGlobal} /
-     * {@code removeFromProject} emit the refresh event on success, so no
-     * explicit emit here (exactly-once, matching {@link #edit}).
+     * (read-only and bundled), returning {@code false}. Downloaded templates
+     * CAN be removed (a download is a re-obtainable artifact of the user's
+     * store — the feature-manager "uninstall"), like user-global ones.
+     * {@code removeFromGlobal} / {@code removeFromProject} emit the refresh
+     * event on success, so no explicit emit here (exactly-once, matching
+     * {@link #edit}).
      *
      * @param project the project; required when {@code scope} is {@link TemplateScope#Project}
      * @param scope   the scope the template is being deleted from
@@ -153,7 +165,10 @@ public class TemplateManagementController {
             return false;
         }
         return switch (scope) {
-            case Global -> service.removeFromGlobal(t);
+            // Downloaded templates live in the global store (the URL source
+            // is a marker, not a separate storage location), so removing one
+            // is the same removeFromGlobal path as a user-global template.
+            case Global, Downloaded -> service.removeFromGlobal(t);
             case Project -> project != null && service.removeFromProject(t, project);
             case System -> false;
         };
@@ -162,16 +177,19 @@ public class TemplateManagementController {
     /**
      * Edits a template in place: the live {@code original} is overwritten with
      * the contents of the {@code editedCopy}. System scope is a no-op
-     * (read-only), returning {@code false}.
+     * (read-only and bundled), and Downloaded scope is rejected the same way
+     * (read-only: a downloaded template is a repository artifact — the escape
+     * hatch is copying it into the user's own templates, where the copy is
+     * editable; publishing the local version back is a future feature).
      *
      * @param project     the project; nullable
      * @param scope       the scope the template is being edited in
      * @param original    the live template object to mutate
      * @param editedCopy  the copy carrying the edited values
-     * @return whether the edit was applied (false for System scope)
+     * @return whether the edit was applied (false for System and Downloaded scope)
      */
     public boolean edit(JIPipeProject project, TemplateScope scope, JIPipeNodeTemplate original, JIPipeNodeTemplate editedCopy) {
-        if (scope == TemplateScope.System) {
+        if (scope == TemplateScope.System || scope == TemplateScope.Downloaded) {
             return false;
         }
         service.editTemplate(original, editedCopy, project);
@@ -244,7 +262,7 @@ public class TemplateManagementController {
                     service.addToProject(templates, project);
                 }
             }
-            case System -> {
+            case System, Downloaded -> {
             }
         }
         return templates;

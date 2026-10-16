@@ -154,6 +154,28 @@ class TemplateManagementDialogTest {
         });
     }
 
+    @Test
+    void downloadedSectionIsItsOwnReadonlyScope() {
+        // Round-2 spec: "Downloaded" is a first-class scope (repository
+        // artifacts in the global store, source = the repository URL) —
+        // distinct from "Your templates" (user-owned global templates), and
+        // listed in the design's position.
+        withDialog(stubWorkbench(null), dialog -> {
+            assertThat(dialog.sectionTitlesForTest())
+                .containsExactly("Your templates", "Downloaded", "System");
+            List<JIPipeNodeTemplate> downloaded = dialog.sectionTemplatesForTest("Downloaded");
+            for (JIPipeNodeTemplate t : downloaded) {
+                assertThat(JIPipe.getNodeTemplates().isDownloadedTemplate(t))
+                    .as("Downloaded section lists repository-sourced templates: " + t.getName())
+                    .isTrue();
+            }
+            // ... and user-owned templates never leak into it.
+            for (JIPipeNodeTemplate t : dialog.sectionTemplatesForTest("Your templates")) {
+                assertThat(JIPipe.getNodeTemplates().isDownloadedTemplate(t)).isFalse();
+            }
+        });
+    }
+
     // ------------------------------------------------------------------
     // Harness
     // ------------------------------------------------------------------

@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -149,6 +151,43 @@ class JIPipeNodeTemplateMigrationTest {
         // Clean up: do not leak the project template (the project is local to
         // this test, but drop it explicitly for tidiness / GC determinism).
         JIPipe.getNodeTemplates().removeFromProject(t, project);
+    }
+
+    // --- Round 2: the database builder assigns the Downloaded scope to
+    // repository-sourced global templates (the true proof they land under the
+    // Templates / Downloaded row of the node browser, not Global) ---
+    @Test
+    void downloadedGlobalTemplateGetsTheDownloadedScopeInTheDatabase() throws Exception {
+        JIPipeNodeTemplate downloaded = JsonUtils.readFromString(
+            "{\"name\":\"builder-downloaded-probe\"}", JIPipeNodeTemplate.class);
+        downloaded.setGraph(new JIPipeGraph());
+        downloaded.setSource("https://example.org/repo/node-templates.json");
+        JIPipeNodeTemplate userOwned = JsonUtils.readFromString(
+            "{\"name\":\"builder-user-probe\"}", JIPipeNodeTemplate.class);
+        userOwned.setGraph(new JIPipeGraph()); // default source = the user source
+
+        JIPipeProject project = new JIPipeProject();
+        assertThat(JIPipe.getNodeTemplates().addToGlobal(downloaded)).isTrue();
+        assertThat(JIPipe.getNodeTemplates().addToGlobal(userOwned)).isTrue();
+        try {
+            NoRebuildDatabase database = new NoRebuildDatabase(project);
+            new JIPipeNodeDatabaseBuilderRun(database).run();
+
+            var downloadedEntry = database.getEntries().stream()
+                .filter(e -> "builder-downloaded-probe".equals(e.getName()))
+                .findFirst().orElseThrow();
+            var userEntry = database.getEntries().stream()
+                .filter(e -> "builder-user-probe".equals(e.getName()))
+                .findFirst().orElseThrow();
+
+            assertThat(((CreateNewNodesByTemplateDatabaseEntry) downloadedEntry).getScope())
+                .isEqualTo(TemplateScope.Downloaded);
+            assertThat(((CreateNewNodesByTemplateDatabaseEntry) userEntry).getScope())
+                .isEqualTo(TemplateScope.Global);
+        } finally {
+            JIPipe.getNodeTemplates().removeFromGlobal(downloaded);
+            JIPipe.getNodeTemplates().removeFromGlobal(userOwned);
+        }
     }
 
     /**

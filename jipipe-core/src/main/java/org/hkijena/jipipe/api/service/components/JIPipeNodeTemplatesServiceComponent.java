@@ -131,6 +131,26 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         return JIPipeNodeTemplate.SOURCE_EXTENSION.equals(template.getSource()) || pluginTemplates.contains(template);
     }
 
+    /**
+     * Whether the template is a <b>downloaded</b> template: it lives in the
+     * user's global store and its source is neither the user source (an
+     * authored template) nor the extension source (a plugin template, see
+     * {@link #isPluginTemplate}). The downloader stamps downloaded templates
+     * with the repository URL as source, so that is the distinguishing mark.
+     * Downloaded templates are read-only (edit is rejected); the escape hatch
+     * is copying them into the user's own templates, where the copy is
+     * re-stamped with the user source and becomes editable.
+     *
+     * @param template the template to inspect
+     * @return true when the template's source marks it as repository-downloaded
+     */
+    public boolean isDownloadedTemplate(JIPipeNodeTemplate template) {
+        String source = template.getSource();
+        return source != null && !source.isEmpty()
+            && !JIPipeNodeTemplate.SOURCE_USER.equals(source)
+            && !JIPipeNodeTemplate.SOURCE_EXTENSION.equals(source);
+    }
+
     public boolean addToGlobal_(JIPipeNodeTemplate template) {
         if (isPluginTemplate(template)) {
             return false;
@@ -194,10 +214,12 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
         // Re-stamp user-owned (belt-and-suspenders with the identity-based
         // pluginTemplates set, so the copy is classified Global, not System).
         copy.setSource(JIPipeNodeTemplate.SOURCE_USER);
-        // Dedup ONLY against existing USER global copies (the bundled original is
-        // a plugin template, so isPluginTemplate(existing) is true and skipped).
+        // Dedup ONLY against existing user-owned copies: the read-only
+        // originals (a bundled plugin template, or a repository-downloaded
+        // template still in the global store) are value-equal to the copy but
+        // must not block it — they are exactly what this path escapes from.
         for (JIPipeNodeTemplate existing : globalTemplates) {
-            if (!isPluginTemplate(existing) && existing.equals(copy)) {
+            if (!isPluginTemplate(existing) && !isDownloadedTemplate(existing) && existing.equals(copy)) {
                 return false;
             }
         }
