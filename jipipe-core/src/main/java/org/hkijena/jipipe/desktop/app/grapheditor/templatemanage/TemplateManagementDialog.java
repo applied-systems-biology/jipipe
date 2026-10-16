@@ -45,6 +45,7 @@ import java.awt.event.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -342,17 +343,59 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             // selection, wheel scroll, clickthrough (renderer labels don't
             // block), virtualized for many items.
             //
-            // The list lives in a JViewport (its own scroll pane, see
-            // buildSectionOn) and forces its width to the viewport width, so it
-            // is always given a STABLE width to wrap into — no layout manager
-            // (BoxLayout, the form's GridBag) does that for a wrap list on its
-            // own.
+            // The list lives in a plain width-forcing host panel (see
+            // buildSectionOn), so it is always given a STABLE width to wrap
+            // into — no layout manager (BoxLayout, the form's GridBag) does
+            // that for a wrap list on its own. The host must NOT be a
+            // JScrollPane: BasicScrollPaneUI installs a MouseWheelListener on
+            // every scroll pane, and AWT re-targets wheel events to the
+            // nearest wheel-enabled ancestor (Component.dispatch
+            // MouseWheelToAncestor) — an inner, non-scrolling scroll pane
+            // would swallow every wheel over the list and the form's outer
+            // scroll would never move.
             this.list = new JList<>(new DefaultListModel<>()) {
+                // The selection captured on each press, BEFORE the
+                // BasicListUI handler runs (it collapses the selection to the
+                // clicked row on every press).
+                private int[] selectionBefore;
+
                 @Override
                 public boolean getScrollableTracksViewportWidth() {
                     // Always track the viewport width so the wrapping grid
                     // reflows to the available width on every resize.
                     return true;
+                }
+
+                @Override
+                protected void processMouseEvent(MouseEvent e) {
+                    if (e.getID() == MouseEvent.MOUSE_PRESSED) {
+                        selectionBefore = getSelectedIndices();
+                    }
+                    super.processMouseEvent(e); // the BasicListUI handler runs here
+                    if (e.isPopupTrigger()) {
+                        // Right-click selection spec: when nothing is selected,
+                        // or the clicked template is NOT part of the selection,
+                        // the selection becomes exactly that template; when it
+                        // IS part of the selection (single or multi), the
+                        // selection is kept. The BasicListUI handler has just
+                        // collapsed the selection to the clicked row, so the
+                        // pre-press state is restored before the menu is built.
+                        int index = locationToIndex(e.getPoint());
+                        if (index >= 0 && selectionBefore != null) {
+                            if (Arrays.binarySearch(selectionBefore, index) >= 0) {
+                                setSelectedIndices(selectionBefore);
+                            } else {
+                                clearSelection();
+                                addSelectionInterval(index, index);
+                            }
+                        }
+                        showTemplateMenu(e, this);
+                    } else if (e.getID() == MouseEvent.MOUSE_CLICKED && e.getClickCount() == 2) {
+                        JIPipeNodeTemplate t = getSelectedValue();
+                        if (t != null && canEdit(t)) {
+                            editTemplate(t, scopeOf(t));
+                        }
+                    }
                 }
             };
             // HORIZONTAL_WRAP — NOT VERTICAL_WRAP. This is what fixes the
@@ -385,42 +428,11 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             list.setSelectionBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
             list.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
             list.setOpaque(false); // the island/form background provides the surface
-            list.addMouseListener(new MouseAdapter() {
-                // Plain / shift / ctrl selection is handled by the JList itself
-                // (the standard list UX the user asked for); only the popup and
-                // the double-click-edit are wired here. The popup-trigger check
-                // runs on BOTH press and release to cover all platforms (the
-                // JIPipe convention, see the node browser's list/tree menus).
-                @Override
-                public void mousePressed(MouseEvent e) {
-                    if (e.isPopupTrigger()) {
-                        showTemplateMenu(e, list);
-                    }
-                }
 
-                @Override
-                public void mouseReleased(MouseEvent e) {
-                    if (e.isPopupTrigger()) {
-                        showTemplateMenu(e, list);
-                    }
-                }
-
-                @Override
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        JIPipeNodeTemplate t = list.getSelectedValue();
-                        if (t != null && canEdit(t)) {
-                            editTemplate(t, scopeOf(t));
-                        }
-                    }
-                }
-            });
-
-            // The list lives in its own viewport (buildSectionOn). With both
-            // scrollbars set to NEVER that scroll pane is not a nested
-            // scroller — it is just what forces the width-tracking list to the
-            // available width. The form panel's single outer scroll
-            // (buildManageView) still scrolls the whole page.
+            // The list is hosted by a plain width-forcing panel (buildSectionOn),
+            // NOT a scroll pane (which would swallow the mouse wheel — see
+            // buildSectionOn). The form panel's single outer scroll
+            // (buildManageView) scrolls the whole page.
             list.setMinimumSize(new Dimension(CARD_CELL_WIDTH, 0));
         }
 
@@ -439,17 +451,26 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             // (item 12 placement, fixes the ellipsis of item 4).
             this.header = formPanel.addGroupHeader(title, icon);
 
-            // The card list in its own viewport. Both scrollbars are NEVER, so
-            // this is NOT a nested scroller — it is the width-forcing wrapper
-            // the wrap list needs (see the list's construction). The form
-            // panel's single outer scroll scrolls the whole page.
-            JScrollPane listScroll = new JScrollPane(list,
-                ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
-                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            listScroll.setBorder(null);
-            listScroll.setOpaque(false);
-            listScroll.getViewport().setOpaque(false);
-            listScroll.setVisible(expanded);
+            // The card list in a plain width-forcing host. The form's GridBag
+            // (fill=HORIZONTAL, weightx=1) stretches the host to the page
+            // width, and BorderLayout.CENTER stretches the list to the host
+            // width — so the HORIZONTAL_WRAP list (columns = width / cellWidth)
+            // reflows on every resize ("list expands to the right beyond the
+            // edge" fix).
+            //
+            // CRITICAL: the host must be a JPanel, NOT a JScrollPane.
+            // BasicScrollPaneUI installs a MouseWheelListener on every scroll
+            // pane, and AWT re-targets wheel events to the nearest wheel-enabled
+            // ancestor (Component.dispatchMouseWheelToAncestor) — an inner
+            // scroll pane (its scrollbars were NEVER, so it had nothing to
+            // scroll) swallowed every wheel over the list, and the form's
+            // outer scroll never moved. A plain panel has no wheel listener, so
+            // wheel events re-target to the form's scroll pane, which scrolls
+            // the page.
+            JPanel listHost = new JPanel(new BorderLayout());
+            listHost.setOpaque(false);
+            listHost.add(list, BorderLayout.CENTER);
+            listHost.setVisible(expanded);
 
             CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("",
                 JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
@@ -469,20 +490,19 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                 boolean nowExpanded = collapseButton.getState();
                 header.setCollapsed(!nowExpanded);
                 // The form's GridBag skips invisible components, so hiding the
-                // list collapses the section to just its header (the proven
+                // host collapses the section to just its header (the proven
                 // collapse mechanism of the parameter forms).
-                listScroll.setVisible(nowExpanded);
+                listHost.setVisible(nowExpanded);
                 collapseButton.setToolTipText(nowExpanded ? "Collapse" : "Expand");
                 formPanel.revalidate();
             });
 
             // Full-width row: the form's GridBag (fill=HORIZONTAL, weightx=1)
-            // stretches the scroll pane to the page width; its viewport then
-            // forces the width-tracking list to exactly that width, so the
-            // HORIZONTAL_WRAP list reflows its column count (width-derived) on
-            // every resize (the "list expands to the right beyond the edge"
-            // fix).
-            formPanel.addWideToForm(listScroll);
+            // stretches the host to the page width, and BorderLayout.CENTER
+            // then gives the list exactly that width, so the HORIZONTAL_WRAP
+            // list reflows its column count (width-derived) on every resize
+            // (the "list expands to the right beyond the edge" fix).
+            formPanel.addWideToForm(listHost);
         }
 
         /** (Re)loads this section's card list from the store. */
