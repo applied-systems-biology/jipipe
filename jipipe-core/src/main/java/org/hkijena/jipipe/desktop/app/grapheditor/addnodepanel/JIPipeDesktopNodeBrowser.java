@@ -377,6 +377,14 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         applySelectionOnlyState();
         updateFollowUpStrip();
         reloadList();
+
+        // The "Configure node templates" manager is a non-blocking (non-modal)
+        // window, so while it is open in the background the workbench stays
+        // interactive. When the store changes there (copy / delete / edit /
+        // import / download), refresh this browser so the node list and the
+        // template tree leaves reflect it immediately.
+        JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter()
+            .subscribeWeak(event -> reloadList());
     }
 
     // ------------------------------------------------------------------
@@ -1259,8 +1267,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      * context-menu "Configure templates" item, spec §8.3).
      */
     private void openTemplateManagement(TemplateScope scope) {
-        TemplateManagementDialog dialog = new TemplateManagementDialog(getDesktopWorkbench(), scope);
-        dialog.setVisible(true);
+        // Unique, non-blocking window: at most one instance per owner window;
+        // opening again brings the existing one to the front.
+        TemplateManagementDialog.show(getDesktopWorkbench(), scope);
         reloadList();
     }
 

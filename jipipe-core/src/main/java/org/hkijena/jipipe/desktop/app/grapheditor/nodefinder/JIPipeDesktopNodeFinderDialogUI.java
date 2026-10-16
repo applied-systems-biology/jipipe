@@ -525,8 +525,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         if (selected instanceof CreateNewNodesByTemplateDatabaseEntry templateEntry) {
             scope = templateEntry.getScope();
         }
-        TemplateManagementDialog dialog = new TemplateManagementDialog(canvasUI.getDesktopWorkbench(), scope == null ? TemplateScope.Global : scope);
-        dialog.setVisible(true);
+        TemplateManagementDialog.show(canvasUI.getDesktopWorkbench(), scope == null ? TemplateScope.Global : scope);
     }
 
     private void openFirstEntryMenu() {

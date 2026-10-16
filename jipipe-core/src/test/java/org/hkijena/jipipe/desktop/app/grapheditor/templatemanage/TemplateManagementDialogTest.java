@@ -176,6 +176,63 @@ class TemplateManagementDialogTest {
         });
     }
 
+    @Test
+    void windowIsANonBlockingUniqueJFrame() {
+        // Round-2: a non-modal JFrame (not a modal JDialog) of the same size
+        // as the AI overview window; the unique-enforcement show() opens one
+        // instance per owner window and re-opens bring the existing one to the
+        // front (item 1 + item 3).
+        withDialog(stubWorkbench(null), dialog -> {
+            // A JFrame (not a modal JDialog) => non-blocking, and the unique
+            // show() below enforces one instance per owner window (item 1).
+            assertThat(dialog instanceof JFrame)
+                .as("a non-modal JFrame (not a JDialog)").isTrue();
+            // Same size as the AI overview window (800x600). A never-shown
+            // frame reports its setSize() value exactly (the probe confirms
+            // the WM decoration is not yet resolved at construction).
+            assertThat(dialog.getSize()).isEqualTo(new Dimension(800, 600));
+        });
+    }
+
+    @Test
+    void uniqueShowReusesTheExistingWindowPerOwner() {
+        // show() is unique-enforcing: a second call for the same owner returns
+        // the SAME window (bringing it to the front) instead of opening a
+        // second instance.
+        JIPipeDesktopWorkbench wb = stubWorkbench(null);
+        TemplateManagementDialog first = TemplateManagementDialog.show(wb, null);
+        TemplateManagementDialog second = TemplateManagementDialog.show(wb, null);
+        try {
+            assertThat(second).isSameAs(first);
+        } finally {
+            first.dispose();
+        }
+    }
+
+    @Test
+    void contextMenuIsScopeGated() {
+        // Item 6: operations live in the right-click context menu (no bottom
+        // toolbar), gated by scope. Build a small selection covering the three
+        // read/edit classes and check the menu labels.
+        withDialog(stubWorkbench(null), dialog -> {
+            // A user-owned (editable) template: has Edit + Delete + Export.
+            List<JIPipeNodeTemplate> user = dialog.sectionTemplatesForTest("Your templates");
+            if (!user.isEmpty()) {
+                List<String> labels = dialog.templateMenuLabelsForTest(user.subList(0, 1));
+                assertThat(labels).contains("Edit", "Delete", "Export…");
+                assertThat(labels).doesNotContain("Remove download");
+            }
+            // A System template (read-only): NO Edit, NO Delete.
+            List<JIPipeNodeTemplate> system = dialog.sectionTemplatesForTest("System");
+            if (!system.isEmpty()) {
+                List<String> labels = dialog.templateMenuLabelsForTest(system.subList(0, 1));
+                assertThat(labels).doesNotContain("Edit", "Delete", "Remove download");
+                // The escape hatch: copy into the user's own templates.
+                assertThat(labels).anySatisfy(l -> assertThat(l).contains("Copy to"));
+            }
+        });
+    }
+
     // ------------------------------------------------------------------
     // Harness
     // ------------------------------------------------------------------
