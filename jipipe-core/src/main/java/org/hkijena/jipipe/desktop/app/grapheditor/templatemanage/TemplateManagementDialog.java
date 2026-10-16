@@ -25,6 +25,8 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
+import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.plugins.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
@@ -36,6 +38,8 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jdesktop.swingx.JXPanel;
+import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
@@ -79,8 +83,10 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     /** True once the window has been closed (Swing has no isDisposed()). */
     private boolean disposed;
 
-    private static final int CARD_WIDTH = 200;
-    private static final int CARD_HEIGHT = 58;
+    private static final int CARD_CELL_WIDTH = 210;
+    private static final int CARD_CELL_HEIGHT = 66;
+    private static final int CARD_INSET = 5;
+    private static final int CARD_ARC = 10;
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeProject project;
@@ -189,26 +195,46 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             this::buildGetMoreButton));
         sections.add(new TemplateSection("System", TemplateScope.System, JIPipe.RESOURCES.getIcon16("actions/dialog-templates.png"), false));
 
-        JPanel sectionsPanel = new JPanel();
-        sectionsPanel.setLayout(new BoxLayout(sectionsPanel, BoxLayout.Y_AXIS));
-        sectionsPanel.setOpaque(false);
-        sectionsPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        for (TemplateSection section : sections) {
-            section.getSectionComponent().setMaximumSize(new Dimension(Integer.MAX_VALUE, 500));
-            sectionsPanel.add(section.getSectionComponent());
-            sectionsPanel.add(Box.createVerticalStrut(6));
-        }
-
         // A single vertical-only scroll for the whole manage view (item 2: no
-        // horizontal bar — the JList grid never overflows horizontally).
-        JScrollPane scroll = new JScrollPane(sectionsPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        // horizontal bar). The content is a JXPanel with a FIT width hint (the
+        // JIPipeDesktopFormPanel pattern) so its width tracks the viewport and
+        // never overflows past the right edge — the cause of the "list expands
+        // to the right after resizing" bug.
+        JXPanel sectionsStack = new JXPanel();
+        sectionsStack.setScrollableWidthHint(ScrollableSizeHint.FIT);
+        sectionsStack.setScrollableHeightHint(ScrollableSizeHint.NONE);
+        sectionsStack.setLayout(new BoxLayout(sectionsStack, BoxLayout.Y_AXIS));
+        sectionsStack.setOpaque(false);
+        sectionsStack.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        for (TemplateSection section : sections) {
+            // No height cap: with the per-section scroll panes removed, a tall
+            // section (System, 64 cards) must grow to its full preferred height
+            // so the single outer scroll below can scroll it — capping it here
+            // (the old 500px) would clip the excess cards with no scroll to
+            // reach them.
+            sectionsStack.add(section.getSectionComponent());
+            sectionsStack.add(Box.createVerticalStrut(6));
+        }
+        // A trailing glue so the stack fills the viewport without stretching
+        // the sections (BoxLayout otherwise grows them to their max size when
+        // there is spare vertical space).
+        sectionsStack.add(Box.createVerticalGlue());
+
+        JScrollPane scroll = new JScrollPane(sectionsStack, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setBorder(null);
-        scroll.getViewport().setOpaque(false);
+        scroll.setOpaque(true);
+        scroll.getViewport().setOpaque(true);
+        scroll.getViewport().setBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
         scroll.getVerticalScrollBar().setUnitIncrement(16);
 
+        // The islands design (item 11) — like the AI monitor: ONE rounded
+        // island wraps the whole scrollable page (the window background shows
+        // as the gutter around it), NOT one island per list. The scroll content
+        // is the same panel background as the island fill, so it reads as one
+        // rounded surface.
         JPanel view = new JPanel(new BorderLayout());
         view.setOpaque(false);
-        view.add(scroll, BorderLayout.CENTER);
+        view.add(new JIPipeDesktopIslandPanel(scroll), BorderLayout.CENTER);
         return view;
     }
 
@@ -219,6 +245,20 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     private JPanel buildRepositoryView() {
         JPanel view = new JPanel(new BorderLayout());
         view.setOpaque(false);
+
+        // Header (the round-3 fix: this was dropped in the (76) rewrite — the
+        // "Back" button and the search bar are back). [← Back] returns to the
+        // manage view; the search field filters the (future) marketplace.
+        JPanel header = new JPanel(new BorderLayout(8, 0));
+        header.setOpaque(false);
+        header.setBorder(BorderFactory.createEmptyBorder(0, 0, 6, 0));
+        JButton backButton = UIUtils.createButton("Back", JIPipe.RESOURCES.getIcon16("actions/go-previous.png"), this::showManageView);
+        UIUtils.setStandardButtonBorder(backButton);
+        header.add(backButton, BorderLayout.WEST);
+        JIPipeDesktopSearchTextField searchField = new JIPipeDesktopSearchTextField();
+        searchField.setToolTipText("Search the marketplace (a future feature)");
+        header.add(searchField, BorderLayout.CENTER);
+        view.add(header, BorderLayout.NORTH);
 
         // Sidebar: Featured / Collections (a future feature) / function branches.
         JPanel sidebar = new JPanel();
@@ -241,8 +281,8 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         JPanel content = new JPanel(new BorderLayout(8, 8));
         content.setOpaque(false);
         content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
-        JLabel header = UIUtils.createJLabel("Template marketplace", JIPipe.RESOURCES.getIcon32("actions/download.png"), 20);
-        content.add(header, BorderLayout.NORTH);
+        JLabel header2 = UIUtils.createJLabel("Template marketplace", JIPipe.RESOURCES.getIcon32("actions/download.png"), 20);
+        content.add(header2, BorderLayout.NORTH);
         JLabel note = new JLabel("<html>The full template marketplace — searching, categories, and sharing your own "
             + "templates — is a future feature.<br/><br/>You can already download templates from the configured "
             + "repositories.</html>");
@@ -291,7 +331,6 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         private final boolean expanded;
         private final JPanel sectionPanel;
         private final JIPipeDesktopFormPanel.GroupHeaderPanel header;
-        private final JScrollPane listScroll;
         private final JList<JIPipeNodeTemplate> list;
         private final CardRenderer cardRenderer = new CardRenderer();
 
@@ -306,16 +345,18 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
             // The wrapping card list (items 6,7,8,9): standard shift/ctrl
             // selection, wheel scroll, clickthrough (renderer labels don't
-            // block), virtualized for many items. Created before the collapse
-            // button so the collapse handler can reference the scroll pane.
+            // block), virtualized for many items.
             this.list = new JList<>(new DefaultListModel<>());
             list.setLayoutOrientation(JList.VERTICAL_WRAP);
-            list.setFixedCellWidth(CARD_WIDTH);
-            list.setFixedCellHeight(CARD_HEIGHT);
+            // Fixed cells give a deterministic wrap grid; the modern card (with
+            // its gutter + rounded corners) is painted INSIDE each cell by the
+            // renderer, so the cells act as the inter-card spacing.
+            list.setFixedCellWidth(CARD_CELL_WIDTH);
+            list.setFixedCellHeight(CARD_CELL_HEIGHT);
             list.setCellRenderer(cardRenderer);
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-            list.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
-            list.setOpaque(false);
+            list.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
+            list.setOpaque(false); // the single outer island provides the surface
             list.addMouseListener(new MouseAdapter() {
                 // Plain / shift / ctrl selection is handled by the JList itself
                 // (the standard list UX the user asked for); only the popup and
@@ -347,10 +388,15 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                 }
             });
 
-            this.listScroll = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            listScroll.setBorder(BorderFactory.createEmptyBorder(2, 4, 4, 4));
-            listScroll.getViewport().setOpaque(false);
-            listScroll.setVisible(expanded);
+            // No per-section scroll pane: the list is added directly to the
+            // section and the SINGLE outer scroll (buildManageView, the
+            // AI-monitor pattern) scrolls the whole page. The nested per-list
+            // scroll panes were the round-3 "list expands to the right" bug —
+            // a wrapping JList reports its current (many-column) width as its
+            // minimum, so once the System section (64 cards) was laid out the
+            // BoxLayout stack could not shrink when the window was resized.
+            // Capping the minimum width to one card lets it shrink freely.
+            list.setMinimumSize(new Dimension(CARD_CELL_WIDTH, 0));
 
             // The shared group header (item 5): title + icon, the parameter-panel
             // collapse caret at the START of the title, and any extra button
@@ -375,7 +421,7 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
                 boolean nowExpanded = collapseButton.getState();
                 header.setCollapsed(!nowExpanded);
-                listScroll.setVisible(nowExpanded);
+                list.setVisible(nowExpanded);
                 collapseButton.setToolTipText(nowExpanded ? "Collapse" : "Expand");
             });
 
@@ -383,7 +429,14 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
             sectionPanel.setOpaque(false);
             sectionPanel.add(header);
-            sectionPanel.add(UIUtils.wrapInIslandPanelIfNeeded(listScroll)); // islands design (item 11)
+            // The list directly (no nested scroll pane, no per-list island):
+            // the single outer island + scroll in buildManageView (the
+            // AI-monitor pattern) provides the rounded surface and all
+            // scrolling. The round-3 bugs — one island per list and the
+            // right-edge overflow after resizing — both came from the nested
+            // per-section panes, now removed.
+            list.setVisible(expanded);
+            sectionPanel.add(list);
         }
 
         JPanel getSectionComponent() {
@@ -632,21 +685,31 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     }
 
     // ------------------------------------------------------------------
-    // The card row renderer for the section lists
+    // The modern card row renderer for the section lists
     // ------------------------------------------------------------------
 
+    /**
+     * A modern template card (round-3): a rounded-rectangle surface inset by a
+     * gutter within its (fixed-size) list cell, with the template icon, name
+     * and a one-line description. The cell is transparent; the card is painted
+     * in {@link #paintComponent} so the corners are rounded (a plain
+     * {@code LineBorder} is square) and the inter-card spacing (the gutter) is
+     * guaranteed by the fixed cell size regardless of theme metrics.
+     */
     private class CardRenderer extends JPanel implements ListCellRenderer<JIPipeNodeTemplate> {
         private final JLabel icon = new JLabel();
         private final JLabel name = new JLabel();
         private final JLabel desc = new JLabel();
+        private boolean cardSelected = false;
 
         CardRenderer() {
             setLayout(new BorderLayout(8, 2));
-            setOpaque(true);
-            setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UIUtils.getControlBorderColor(), 1, true),
-                BorderFactory.createEmptyBorder(6, 8, 6, 8)));
+            setOpaque(false);
+            // Inset by the gutter + a little, so the painted rounded card sits
+            // inside the cell and cards never touch each other.
+            setBorder(BorderFactory.createEmptyBorder(CARD_INSET, CARD_INSET, CARD_INSET, CARD_INSET));
 
+            icon.setVerticalAlignment(SwingConstants.CENTER);
             name.setOpaque(false);
             name.setFont(name.getFont().deriveFont(Font.BOLD));
             name.setVerticalAlignment(SwingConstants.CENTER);
@@ -664,9 +727,34 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         }
 
         @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g;
+            Object oldAA = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            try {
+                int w = getWidth() - 1;
+                int h = getHeight() - 1;
+                Color fill = cardSelected
+                    ? UIManager.getColor("List.selectionBackground")
+                    : ThemeUtils.getCurrentStyle().getPanelBackground();
+                Color stroke = cardSelected
+                    ? UIManager.getColor("List.selectionBackground")
+                    : ThemeUtils.getCurrentStyle().getBorderColor();
+                g2.setColor(fill);
+                g2.fillRoundRect(0, 0, w, h, CARD_ARC, CARD_ARC);
+                g2.setColor(stroke);
+                g2.drawRoundRect(0, 0, w, h, CARD_ARC, CARD_ARC);
+            } finally {
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
+            }
+        }
+
+        @Override
         public Component getListCellRendererComponent(JList<? extends JIPipeNodeTemplate> list, JIPipeNodeTemplate value,
                                                       int index, boolean isSelected, boolean cellHasFocus) {
-            setPreferredSize(new Dimension(CARD_WIDTH, CARD_HEIGHT));
+            setPreferredSize(new Dimension(CARD_CELL_WIDTH, CARD_CELL_HEIGHT));
+            cardSelected = isSelected;
             if (value != null) {
                 icon.setIcon(value.getIconImage() != null ? value.getIconImage() : JIPipe.RESOURCES.getIcon32("actions/tag.png"));
                 name.setText(value.getName());
@@ -678,14 +766,14 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                 desc.setText("");
             }
             if (isSelected) {
-                setBackground(UIManager.getColor("List.selectionBackground"));
                 setForeground(UIManager.getColor("List.selectionForeground"));
                 name.setForeground(UIManager.getColor("List.selectionForeground"));
+                desc.setForeground(UIManager.getColor("List.selectionForeground"));
                 icon.setForeground(UIManager.getColor("List.selectionForeground"));
             } else {
-                setBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
                 setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
                 name.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
+                desc.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
                 icon.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
             }
             return this;
