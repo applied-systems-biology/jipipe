@@ -1,0 +1,8 @@
+# dag-embeddings.json is the regenerable embedding cache (55 MB: 624 x
+# 4096-dim vectors). It is a WORKING artifact, not a source: re-running
+# utils/merge-dag-patterns.py without it re-embeds in ~3 min (16 requests)
+# and reproduces the same clustering (the endpoint is deterministic to
+# cosine distance ~0.0002 between calls, two orders of magnitude below the
+# 0.15 merge threshold). Not committed to keep the repo lean (precedent:
+# the largest committed research artifact, corpus.json, is 11.8 MB).
+dag-embeddings.json
