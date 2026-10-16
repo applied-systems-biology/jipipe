@@ -34,15 +34,26 @@ Dedup rule (R8 revised -- ship 145 of the 185):
   of ``(sourceNodeInfoId, sourceSlot, targetNodeInfoId, targetSlot)`` edge
   tuples; instance node keys and compartment UUIDs are excluded). A group
   collapses to ONE shipped file -- the lexicographically-smallest filename/id
-  -- ONLY IF every member shares the identical ``template.name``. A group with
-  differing names keeps ALL of its members (the ``fan-in-*``/``fan-out-*``
-  pair is the only such case: an identical example subgraph but distinct
-  pattern identities, so dropping one would lose a named pattern).
+  -- ONLY IF every member shares the identical ``template.name`` AND the
+  identical FUNCTIONAL graph content: all node fields and edges except the
+  per-instance artifacts (node instance keys, ``jipipe:graph-compartment``
+  UUIDs) and the cosmetic node display labels (``jipipe:node:name`` -- a
+  user-chosen label, not execution-relevant configuration). A group that
+  differs in name or in functional content keeps ALL of its members (the
+  ``fan-in-*``/``fan-out-*`` pair is the only such case in the shipped
+  corpus: an identical example subgraph but distinct pattern identities, so
+  dropping one would lose a named pattern).
 
-  Name-identity assertion: for every COLLAPSED group, the generator asserts
-  all members' ``template.name`` equals the kept file's. If this ever fires it
-  means real content loss, so the generator FAILS LOUDLY (SystemExit, non-zero)
-  instead of shipping a silently-wrong set.
+  Content-identity guard: the signature only covers node ids + edges, so two
+  same-named members could in principle still differ in other functional
+  content (parameters, wiring, structure). Collapsing such a group would
+  drop that content silently, so any functional-content difference keeps
+  ALL members instead of collapsing. The guard is a LIVE condition of the
+  collapse (not a post-hoc assertion that can never fire): on any future
+  corpus re-run it fails closed (keep all) rather than shipping a
+  silently-wrong set. The shipped corpus exercises the guard: the
+  ``path-filter`` group differs ONLY in a node display label, so it
+  collapses but is reported as a label-only collapse.
 
 Function rule (R8c revised -- each distinct node id counts ONCE):
   For each pattern, its ``taxonomyFunction`` id = the most common TOP-LEVEL
@@ -227,6 +238,37 @@ def graph_signature(g: dict):
     return ids, edges
 
 
+# Instance-identity fields excluded from content identity: the instance node
+# keys and the compartment UUIDs are per-project artifacts (already excluded
+# from the signature), and jipipe:node:name is a cosmetic user label, not
+# functional configuration (execution uses node type + parameters).
+_NON_FUNCTIONAL_NODE_FIELDS = ("jipipe:graph-compartment", "jipipe:node:name")
+
+
+def graph_content(g: dict):
+    """Canonical FUNCTIONAL content of a pattern graph: every node field
+    except the non-functional instance-identity fields above, plus the
+    normalized edges. Members of a dedup group that differ only in those
+    fields are the same pattern mined from different corpus projects and
+    collapse safely; any other difference (node type, parameters, structure,
+    wiring) keeps ALL members."""
+    nodes = []
+    for v in g["nodes"].values():
+        body = {f: val for f, val in v.items() if f not in _NON_FUNCTIONAL_NODE_FIELDS}
+        nodes.append((v["jipipe:node-info-id"],
+                      json.dumps(body, sort_keys=True, ensure_ascii=False)))
+    nodes.sort(key=lambda t: t[0])
+    im = {k: v["jipipe:node-info-id"] for k, v in g["nodes"].items()}
+    edges = sorted((im[e["source-node"]], e["source-slot"],
+                    im[e["target-node"]], e["target-slot"]) for e in g["edges"])
+    return json.dumps([nodes, edges], sort_keys=True, ensure_ascii=False)
+
+
+def node_labels(g: dict):
+    """The set of node display labels (for reporting label-only collapses)."""
+    return frozenset(v.get("jipipe:node:name") for v in g["nodes"].values())
+
+
 # --------------------------------------------------------------------------- #
 # Main
 # --------------------------------------------------------------------------- #
@@ -247,6 +289,7 @@ def main() -> None:
 
     graphs = {}
     meta = {}
+    content = {}   # stem -> normalized JSON (full content identity for dedup)
     for f in tpl_files:
         stem = os.path.splitext(f)[0]
         with open(os.path.join(TEMPLATES_DIR, f), encoding="utf-8") as fh:
@@ -254,6 +297,7 @@ def main() -> None:
         if "nodes" not in g or "edges" not in g:
             fail(f"{f} is not JIPipeGraph-shaped (missing nodes/edges)")
         graphs[stem] = g
+        content[stem] = graph_content(g)
         with open(os.path.join(PATTERNS_DIR, stem + ".md"), encoding="utf-8") as fh:
             text = fh.read()
         fm = frontmatter(text)
@@ -327,20 +371,27 @@ def main() -> None:
     kept = {}   # stem -> record
     collapsed = 0
     kept_all_groups = []
+    label_only_collapses = []
     for sig, members in groups.items():
         if len(members) == 1:
             kept[members[0]] = None
             continue
         names = {meta[m]["name"] for m in members}
-        if len(names) == 1:
-            # collapse: keep lex-smallest; NAME-IDENTITY ASSERTION (fatal)
-            kept_stem = min(members)
-            for m in members:
-                if meta[m]["name"] != meta[kept_stem]["name"]:
-                    fail(f"name-identity assertion violated in dedup group "
-                         f"{members!r} (kept {kept_stem})")
-            kept[kept_stem] = None
+        contents = {content[m] for m in members}
+        if len(names) == 1 and len(contents) == 1:
+            # collapse: keep lex-smallest. BOTH conditions are live safety
+            # guards: the signature only covers node ids + edges, so two
+            # same-named members could still differ in other functional
+            # content (parameters, wiring, structure). Collapsing a group
+            # that differs in that would drop the content silently, so any
+            # such difference keeps ALL members instead.
+            kept[min(members)] = None
             collapsed += 1
+            # Informational: node display labels are a cosmetic (non-functional)
+            # exclusion, so label-only differences still collapse; report them
+            # for transparency of what "identical" meant.
+            if len({node_labels(graphs[m]) for m in members}) > 1:
+                label_only_collapses.append(members)
         else:
             kept_all_groups.append(members)
             for m in members:
@@ -399,11 +450,15 @@ def main() -> None:
     print(f"output dir   : {OUT_DIR}")
     print(f"total patterns   : 185")
     print(f"shipped (kept)   : {len(kept_stems)}")
-    print(f"collapsed groups : {collapsed} (name-identity assertion: PASS)")
+    print(f"collapsed groups : {collapsed} (name + functional-content identity: PASS)")
     print(f"dropped files    : {dropped}")
     print(f"kept-all groups  : {len(kept_all_groups)}")
     for members in kept_all_groups:
-        print(f"   kept-both (names differ): {members}")
+        print(f"   kept-all (name or functional content differs): {members}")
+    if label_only_collapses:
+        print(f"label-only collapses (cosmetic jipipe:node:name differences, informational):")
+        for members in label_only_collapses:
+            print(f"   {members}")
     print(f"unresolved nodes : {unresolved}")
     print(f"tags cross-check : {len(tag_mismatches)} mismatch(es) (expect 0)")
     for stem, fn, tg in tag_mismatches[:10]:
