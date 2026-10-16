@@ -28,7 +28,7 @@ the test (unnameable ⇒ noise), no workflow plumbing (compartment sinks).
 ## 2. The five human signals (all verified in the `.jip` JSON, measured)
 
 The corpus is `/data/JIPipe`: **541 projects** (535 with named compartments,
-148 with at least one grouping signal). Each signal is mechanically
+148 with at least one authored grouping signal). Each signal is mechanically
 harvestable — no structure discovery needed:
 
 | # | Signal | Storage | Membership | Measured |
@@ -36,10 +36,12 @@ harvestable — no structure discovery needed:
 | 1 | **Canvas-note sections** (`graph-annotation-text-box`, + `graph-annotation-group-box`) | `text-title` + `grid-width/height` + `location/x,y` (grid rect) | **geometric**: nodes whose grid coords fall inside the rect | 1000 notes + 105 boxes; verified on the flagship: 4 titled sections cover 13/13 nodes, "Loading raw images and ROIs" = 8-node DAG with 8 intra edges |
 | 2 | **Group nodes** (`node-group`) | `jipipe:node:name` + `contents: {nodes, edges}` | **explicit** (embedded subgraph) | 215 (all with contents; 200 in the 3–12 node band); names e.g. "READ: folders, subfolders and files" |
 | 3 | **Named compartments** (`jipipe:project-compartment` in `compartments["compartment-graph"]`) | `jipipe:node:name` | **shared UUID**: pipeline nodes whose `jipipe:graph-compartment` equals the compartment node's key | 535 projects; 480 compartments in the 3–12 band; names e.g. "Analysis", "Main" |
+| 3b | **Geometric clusters (unannotated)** — the user's addition: related nodes are placed together, distinct from other parts, even without a canvas note | node grid coordinates (`location/<comp>/x,y`) | **single-linkage clustering with an automatic gap cut**: the largest ratio between consecutive merge distances is the natural separation ("distinct from other parts"); fixed-epsilon DBSCAN was rejected as eps-sensitive (jaccard 0.67–1.0 across eps 4–12) | measured over the corpus: 41/78 checked projects (6–60 nodes) show clean auto-cutable clusters (ratios 1.3–2.5); **18 are unannotated** — e.g. `cellpose4-training.jip` (no notes) auto-cuts into its real blocks (9-node image/ROI loading + 5-node label loading + the 3.x/4.x training pairs); on the annotated flagship the auto-cut agrees with the human sections (jaccard 0.67–1.0) |
 | 4 | **Named nodes** (`jipipe:node:name` ≠ default) | per node | n/a (naming signal, feeds the namer) | the corpus is full of them; default-name detection = name ≠ node-info-id display name |
 | 5 | **Comment nodes** (`jipipe:comment`) | `jipipe:node:description` (HTML) | adjacency (they attach to a node via the Comment slot) | 385; same class as 4 — text + attachment, not grouping |
 
-Signals 1–3 yield the candidate **patterns** (with a human-authored name);
+Signals 1–3b yield the candidate **patterns** (1–3 with a human-authored
+name; 3b without — see the harvest stage);
 signals 4–5 yield naming **evidence** (for the merge/namer stage), not
 candidates.
 
@@ -65,6 +67,18 @@ For each `.jip` in the corpus (same exclusions: tmp dirs, Fiji, docs):
   compartment's UUID-sharing nodes; title = the compartment name (reject
   "Analysis"/"Main"-class generic names via a small stop-list, or let the
   JEV gate reject them — see 3.3).
+- **Geometric clusters (signal 3b)**: candidate = the induced subgraph over
+  each auto-cut cluster (single-linkage + largest-merge-distance-ratio cut,
+  capped at 8 clusters; clusters of 3–12 real nodes). No title — these
+  candidates carry NO authored name, so they route differently: the merge
+  stage (3.2) first tries to match them against a titled candidate
+  (same-cluster ⇒ the title transfers); unmatched ones rely entirely on the
+  JEV Q3 namer, and `none` ⇒ reject (no name, no ship — the §1 rule). The
+  annotated and unannotated variants interact: where notes exist, the note
+  rectangles are the ground truth and geometric clustering only fills the
+  uncovered gaps (the flagship's 8-node section abuts its neighbor — pure
+  geometry merges them; the note boundary separates them); where no notes
+  exist, geometry is the only signal.
 - Cross-cutting filters: 3–12 real nodes (band verified), exclude candidates
   containing a compartment sink, exclude pure chains already shipped (de-dup
   against the 64 by the functional-content signature from (69)).
