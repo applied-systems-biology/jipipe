@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.nodes.database.entries;
 
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -10,6 +11,7 @@ import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.TemplatesFunction;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
+import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
@@ -129,6 +131,18 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
 
     @Override
     public List<String> getLocationInfos() {
+        // The function chain ("Data Sources > Image data") — the same
+        // location form the node entries use — so a template reads as its
+        // function, not as storage bookkeeping. The catch-all case (an
+        // unset taxonomy function) falls back to the scope line so there is
+        // always a location (the round-2 review: "Templates / System" was
+        // not helpful in the 2-pane list).
+        JIPipeTaxonomyFunctionRef ref = template.getTaxonomyFunction();
+        if (ref != null && ref.isResolved() && ref.getFunction() != null
+            && !TemplatesFunction.ID.equals(ref.getId())) {
+            return Collections.singletonList(
+                CreateNewNodeByInfoDatabaseEntry.functionChainLocation(ref.getFunction()));
+        }
         return Collections.singletonList("Templates / " + scope.name());
     }
 
@@ -157,6 +171,17 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
 
         JIPipeGraph graph = template.getGraph().duplicate();
 
+        // Give the inserted nodes an arrangement derived from the template's
+        // own structure (longest-path layering, top-to-bottom), anchored at
+        // the current editor cursor. Without this, template nodes carry no
+        // location (the mined/extracted graphs store none) and the canvas
+        // drops every one of them onto the cursor position (the round-2
+        // review bug: an inserted pattern arrived as a bunch at one spot).
+        // Locations are keyed under "" (no compartment) exactly like
+        // JIPipeGraph.extract stores them, so the canvas's
+        // moveToStoredGridLocation picks them up after the merge.
+        arrangeTemplateGraph(graph, canvasUI);
+
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforeAddNodes(graph.getGraphNodes(), canvasUI.getCompartmentUUID());
         }
@@ -170,6 +195,60 @@ public class CreateNewNodesByTemplateDatabaseEntry extends DefaultJIPipeNodeData
             }
         }
         return nodeUISet;
+    }
+
+    /**
+     * Computes grid locations for the template's nodes from the template's
+     * own wiring (a lightweight local layout — NOT a full-canvas Sugiyama,
+     * which would re-arrange the surrounding pipeline and can over-expand
+     * larger patterns): each node's column is its longest distance from a
+     * source node (longest-path layering, left-to-right), nodes of the same
+     * layer stack top-to-bottom. The whole arrangement is translated so its
+     * top-left sits at the editor cursor (converted to grid units).
+     */
+    private static void arrangeTemplateGraph(JIPipeGraph graph, JIPipeDesktopGraphCanvasUI canvasUI) {
+        Map<JIPipeGraphNode, Integer> layer = new HashMap<>();
+        for (JIPipeDataSlot slot : graph.traverseSlots()) {
+            // traverseSlots yields inputs before their consumers, so a
+            // node's inputs are all layered before the node is visited.
+            JIPipeGraphNode node = slot.getNode();
+            if (layer.containsKey(node)) {
+                continue;
+            }
+            int l = 0;
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                for (JIPipeDataSlot sourceSlot : graph.getInputIncomingSourceSlots(inputSlot)) {
+                    Integer sourceLayer = layer.get(sourceSlot.getNode());
+                    if (sourceLayer != null) {
+                        l = Math.max(l, sourceLayer + 1);
+                    }
+                }
+            }
+            layer.put(node, l);
+        }
+        // A node with no slots at all never appears in traverseSlots —
+        // assign it layer 0 so it still gets a location.
+        for (JIPipeGraphNode node : graph.getGraphNodes()) {
+            layer.putIfAbsent(node, 0);
+        }
+        // Stack the nodes of each layer top-to-bottom (traverse order is
+        // stable and input-first)
+        Map<Integer, List<JIPipeGraphNode>> columns = new TreeMap<>();
+        for (Map.Entry<JIPipeGraphNode, Integer> e : layer.entrySet()) {
+            columns.computeIfAbsent(e.getValue(), k -> new ArrayList<>()).add(e.getKey());
+        }
+        // Anchor at the editor cursor in grid units (rounding like the canvas)
+        Point cursor = canvasUI.getGraphEditorCursor();
+        int baseX = (int) Math.round((cursor.x / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_WIDTH);
+        int baseY = (int) Math.round((cursor.y / canvasUI.getZoom()) / JIPipeDesktopGraphCanvasGrid.GRID_HEIGHT);
+        // Reserve ~2 grid rows per node so stacked nodes do not overlap
+        for (Map.Entry<Integer, List<JIPipeGraphNode>> column : columns.entrySet()) {
+            List<JIPipeGraphNode> nodes = column.getValue();
+            for (int i = 0; i < nodes.size(); i++) {
+                nodes.get(i).setNodeUILocationWithin("",
+                    new Point(baseX + column.getKey(), baseY + i * 2));
+            }
+        }
     }
 
     @Override

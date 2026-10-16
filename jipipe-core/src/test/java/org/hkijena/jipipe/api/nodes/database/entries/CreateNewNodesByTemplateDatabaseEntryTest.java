@@ -101,7 +101,19 @@ class CreateNewNodesByTemplateDatabaseEntryTest {
 
     @Test
     void locationInfoIsScoped() {
+        // The location reads as the template's FUNCTION ("Images" — the same
+        // form the node entries use), not as storage bookkeeping ("Templates /
+        // Global"). The scope line remains only as the fallback for an unset
+        // function.
         var e = new CreateNewNodesByTemplateDatabaseEntry(tmpl(1, "jipipe:function:images"), TemplateScope.Global);
+        assertThat(e.getLocationInfos()).containsExactly("Images");
+    }
+
+    @Test
+    void locationInfoFallsBackToScopeWithoutFunction() {
+        // Unset taxonomy function: the catch-all placement keeps the scope
+        // line as the location (there is no function to show).
+        var e = new CreateNewNodesByTemplateDatabaseEntry(tmpl(1, null), TemplateScope.Global);
         assertThat(e.getLocationInfos()).containsExactly("Templates / Global");
     }
 

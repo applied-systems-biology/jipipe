@@ -104,14 +104,16 @@ class NodeBrowserTreeControllerTest {
             templateEntry(TemplateScope.System, IMAGES_FN_ID);
 
         controller.rebuildNodeLeaves(List.of(node, template));
-        assertThat(leafCount()).isEqualTo(2);
+        // The template is dual-placed (under its function branch AND under
+        // Templates/System), so the whole-tree count is node + 2 = 3.
+        assertThat(leafCount()).isEqualTo(3);
 
         JIPipeNodeTaxonomyFunction images = JIPipe.getNodes().getFunctions().byId(IMAGES_FN_ID);
         assertThat(images).isNotNull();
         TreePath row = controller.functionRow(images);
         assertThat(row).isNotNull();
         expandTo(row);
-        assertThat(leafCount()).isEqualTo(2);
+        assertThat(leafCount()).isEqualTo(3);
         assertThat(controller.nodeLeafRow(template)).isNotNull();
         assertThat(controller.nodeLeafRow(node)).isNotNull();
     }
@@ -136,7 +138,54 @@ class NodeBrowserTreeControllerTest {
         assertThat(scopeSystem).isNotNull();
         expandTo(scopeSystem);
         assertThat(controller.nodeLeafRow(systemTemplate)).isNotNull();
-        assertThat(leafCount()).isEqualTo(2);
+        assertThat(leafCount()).isEqualTo(3);
+    }
+
+    /**
+     * The round-2 review bug: the tree ROOT (a String user object, "All
+     * functions") never forwarded into the synthetic Templates header, so the
+     * System/Global/Project scope rows received NO leaves in any tier — the
+     * Templates/System branch appeared empty while the same entries were in
+     * the results list. The leaf must hang directly under the scope row
+     * (Templates → System), not only under the function branch.
+     */
+    @Test
+    void scopeRowsCarryTheirLeavesDirectly() {
+        CreateNewNodesByTemplateDatabaseEntry systemTemplate =
+            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+        CreateNewNodesByTemplateDatabaseEntry globalTemplate =
+            templateEntry(TemplateScope.Global, IMAGES_FN_ID);
+        JIPipeNodeDatabaseEntry node = nodeEntry();
+        controller.rebuildNodeLeaves(List.of(systemTemplate, globalTemplate, node));
+
+        // Each scope row's OWN leaf count (children of the scope row, not the
+        // whole tree): System carries the System template, Global the Global
+        // one, Project none.
+        assertThat(scopeRowLeafCount(TemplateScope.System)).isEqualTo(1);
+        assertThat(scopeRowLeafCount(TemplateScope.Global)).isEqualTo(1);
+        assertThat(scopeRowLeafCount(TemplateScope.Project)).isEqualTo(0);
+        // ... and the whole-tree count reflects the dual placement (each
+        // template hangs under its function branch AND its scope row: 2x2
+        // templates + 1 node = 5).
+        assertThat(leafCount()).isEqualTo(5);
+    }
+
+    /** The entry leaves that hang DIRECTLY under the given scope row. */
+    private int scopeRowLeafCount(TemplateScope scope) {
+        TreePath row = scopeRow(scope);
+        assertThat(row).isNotNull();
+        Object last = row.getLastPathComponent();
+        if (!(last instanceof DefaultMutableTreeNode mtn)) {
+            return 0;
+        }
+        int count = 0;
+        for (int i = 0; i < mtn.getChildCount(); i++) {
+            if (mtn.getChildAt(i) instanceof DefaultMutableTreeNode child
+                && child.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+                count++;
+            }
+        }
+        return count;
     }
 
     @Test
@@ -147,7 +196,7 @@ class NodeBrowserTreeControllerTest {
             templateEntry(TemplateScope.Global, IMAGES_FN_ID);
         JIPipeNodeDatabaseEntry node = nodeEntry();
         controller.rebuildNodeLeaves(List.of(template, node));
-        assertThat(leafCount()).isEqualTo(2);
+        assertThat(leafCount()).isEqualTo(3);
 
         controller.rebuildNodeLeaves(List.of(node));
         assertThat(leafCount()).isEqualTo(1);

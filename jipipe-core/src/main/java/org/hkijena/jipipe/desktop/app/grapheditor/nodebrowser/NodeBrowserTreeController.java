@@ -408,8 +408,14 @@ public class NodeBrowserTreeController extends JPanel {
             }
         }
         // ... and to the scope children of the Templates header (the scope
-        // side). Scope rows carry no further function/scope children.
-        if (userObject instanceof TemplateScopeTreeNode) {
+        // side). Scope rows carry no further function/scope children. The
+        // tree ROOT (a String user object) also carries the Templates header
+        // as a direct child — forward there too, or the scope rows never
+        // receive their leaves (the round-2 review bug: the root only ran
+        // the function forwarding, so Templates/System was empty in every
+        // tier).
+        if (userObject instanceof TemplateScopeTreeNode
+            || userObject instanceof String) {
             for (int i = 0; i < functionNode.getChildCount(); i++) {
                 Object child = functionNode.getChildAt(i);
                 if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof TemplateScopeTreeNode) {

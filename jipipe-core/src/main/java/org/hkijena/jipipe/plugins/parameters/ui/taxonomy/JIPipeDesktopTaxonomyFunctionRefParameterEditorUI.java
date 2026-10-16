@@ -80,7 +80,7 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
             currentlyDisplayed.setText(function.getName());
             currentlyDisplayed.setToolTipText("<html><u><strong>" + function.getName() + "</strong></u><br/>"
                     + HtmlEscapers.htmlEscaper().escape(function.getDescription()) + "</html>");
-            currentlyDisplayed.setIcon(function.getIcon() != null ? function.getIcon() : NOT_SET_ICON);
+            currentlyDisplayed.setIcon(displayIcon(function));
         } else {
             currentlyDisplayed.setText("Not set");
             currentlyDisplayed.setToolTipText(ref.getId() != null
@@ -88,6 +88,26 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
                     : "No taxonomy function selected");
             currentlyDisplayed.setIcon(NOT_SET_ICON);
         }
+    }
+
+    /**
+     * The icon for a resolved function: the function's own icon, or the
+     * icon of its closest ancestor that carries one (leaf functions have no
+     * icon of their own — falling back to the branch icon instead of the
+     * "not set" emblem, which wrongly signalled an error for a selected
+     * function).
+     */
+    private static Icon displayIcon(JIPipeNodeTaxonomyFunction function) {
+        Set<String> visited = new HashSet<>();
+        JIPipeNodeTaxonomyFunction current = function;
+        while (current != null && visited.add(current.getId())) {
+            Icon icon = current.getIcon();
+            if (icon != null) {
+                return icon;
+            }
+            current = current.getParent();
+        }
+        return JIPipe.RESOURCES.getIcon16("actions/tag.png");
     }
 
     @Override
@@ -149,9 +169,10 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         UIUtils.setStandardButtonBorder(selectButton);
         selectButton.addActionListener(e -> confirmSelection());
 
-        JButton unsetButton = new JButton("Unset");
-        UIUtils.setStandardButtonBorder(unsetButton);
-        unsetButton.addActionListener(e -> {
+        JButton resetButton = new JButton("Reset");
+        UIUtils.setStandardButtonBorder(resetButton);
+        resetButton.setToolTipText("Clear the taxonomy function");
+        resetButton.addActionListener(e -> {
             setParameter(new JIPipeTaxonomyFunctionRef(), true);
             closePicker();
         });
@@ -160,10 +181,13 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         UIUtils.setStandardButtonBorder(cancelButton);
         cancelButton.addActionListener(e -> closePicker());
 
+        // [Reset] ←glue→ [Cancel][Select] — the standard dialog button order
+        // (reset separated; affirmative last, nearest the corner).
         JPanel buttonBar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonBar.add(selectButton);
-        buttonBar.add(unsetButton);
+        buttonBar.add(resetButton);
+        buttonBar.add(Box.createHorizontalGlue());
         buttonBar.add(cancelButton);
+        buttonBar.add(selectButton);
 
         JPanel filterBar = new JPanel(new BorderLayout(6, 0));
         filterBar.setBorder(BorderFactory.createEmptyBorder(8, 8, 0, 8));
@@ -179,6 +203,7 @@ public class JIPipeDesktopTaxonomyFunctionRefParameterEditorUI extends JIPipeDes
         pickerDialog.setTitle("Select taxonomy function");
         pickerDialog.setModal(true);
         pickerDialog.setContentPane(content);
+        pickerDialog.setIconImage(UIUtils.getJIPipeIcon128());
         pickerDialog.getRootPane().setDefaultButton(selectButton);
         pickerDialog.pack();
         pickerDialog.setSize(new Dimension(480, 420));
