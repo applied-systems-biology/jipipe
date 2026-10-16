@@ -133,6 +133,40 @@ functionId + name + description; the "Wiring:" line stays — BFS-ordered for
 DAGs). All (69) guards apply unchanged; the distribution target is extended
 at the first DAG ship and re-pinned in `SystemPatternTemplatesTest`.
 
+**Node locations (the positioning fix, data-side).** The round-2 review
+found that mined templates carried **no node locations**, so a double-click /
+"Add to graph" drop landed every node on the same grid cell (a "bunch"). A
+first attempt computed a layout at insert time (in `addToGraph`) and was
+reverted on request — the real fix is to bake the positions into the mined
+template *data*, so they travel with the shipped JSON like a user-authored
+template's do. Contract for the harvest + generator:
+
+- **Source of truth = the source project's layout.** When a candidate is
+  induced from a real project (group `contents`, a canvas-note section, a
+  named compartment, or a geometric cluster), copy each member node's
+  `jipipe:metadata-v1` `location/<compartment>/x|y` grid coordinates verbatim
+  into the mined template's node metadata, **normalized** so the candidate's
+  bounding-box top-left is at the origin (subtract the min x / min y across
+  members). This keeps the pattern compact and drop-anchored (the canvas
+  re-anchors stored locations at the cursor on insert).
+- **Normalize the compartment key.** The source node's location is stored
+  under its *source project's* compartment UUID. In the mined template every
+  node must instead store its location under the template's own (single,
+  shared) `jipipe:graph-compartment` — the same compartment string the node
+  already carries in the template. Insert then re-keys it to the canvas'
+  compartment (see `rekeyTemplateGraphToCompartment`, (75)) and the stored
+  location resolves.
+- **Fallback for candidates with no usable source layout** (a group whose
+  `contents` nodes carry no metadata, a purely geometric cluster): run a
+  compact longest-path layering at *mine time* (same algorithm the reverted
+  runtime used — topological column, stack rows), anchored at the origin.
+  Prefer the real layout; the computed one is the fallback, not the default.
+- **Guard:** the (69) dedup signature already ignores
+  `jipipe:graph-compartment` and is location-agnostic, so two functionally
+  identical patterns with different layouts still collapse correctly. A new
+  generator assertion: every shipped DAG template's nodes carry a
+  `location/<their-compartment>/x|y` pair (no bunch-on-drop possible).
+
 ## 4. First patterns to land (acceptance bar)
 
 1. **Cellpose training setup** — flagship DAG from the flagship project's
@@ -144,7 +178,9 @@ at the first DAG ship and re-pinned in `SystemPatternTemplatesTest`.
 ## 5. Sequence (each a reviewable commit)
 
 - **(A)** `utils/mine-dag-patterns.py` harvest (signals 1–3) + filters +
-  support counts; commit `dag-candidates.json`. (Deterministic; no AI.)
+  support counts + **node locations** (verbatim from the source layout,
+  normalized to the origin, re-keyed to the template's compartment — §3.4);
+  commit `dag-candidates.json`. (Deterministic; no AI.)
 - **(B)** embedding merge stage (Qwen) + name-evidence collection; commit
   clusters + threshold note.
 - **(C)** JEV gate/name/classify (imajev); commit survivors + Q1–Q3 answers.
