@@ -102,7 +102,9 @@ import java.util.Set;
  * <b>single function tree with node leaves</b> — the tree takes over the
  * node-view role, so the panel stays usable in a narrow dock;</li>
  * <li>comfortable ({@link NodeBrowserModel#TIER_COMFORTABLE}): the
- * <b>function tree | filtered node list</b> side by side.</li>
+ * <b>function tree (with the same node leaves) | filtered node list</b> side
+ * by side — the tree is a stable navigator of the full result set; the list
+ * applies the selection (function path / template scope) on top of it.</li>
  * </ul>
  * An active search never changes the layout: the list re-queries in place
  * while the tree <b>highlights the matching leafs</b> (bold, see
@@ -173,8 +175,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private boolean treeStateSavingSuspended;
 
-    // --- Last post-filtered results (the single source of truth for the
-    // compact node leaves and the search highlights; see applyQueryResult) ---
+    // --- Last search + facet filtered results (before the tree selection
+    // filter): the single source of truth for the tree's node leaves (all
+    // tiers) and the search highlights; see applyQueryResult ---
+    private List<JIPipeNodeDatabaseEntry> lastFacets = List.of();
+    // --- Last fully filtered results (also the tree selection filter):
+    // the results list's model + the reference-entry fallback ---
     private List<JIPipeNodeDatabaseEntry> lastFiltered = List.of();
 
     /**
@@ -648,32 +654,42 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             split.setContinuousLayout(true);
             bodyPanel.add(split, BorderLayout.CENTER);
         }
-        // Keep the compact node leaves in sync with the view
+        // Keep the node leaves in sync with the view (the full entry set —
+        // see rebuildNodeLeaves); in the comfortable tier the tree carries
+        // them alongside the results list.
         rebuildNodeLeaves();
         bodyPanel.revalidate();
         bodyPanel.repaint();
     }
 
     // ------------------------------------------------------------------
-    // Compact node leaves (children of the function tree)
+    // Node leaves (children of the function tree — every tier)
     // ------------------------------------------------------------------
 
     /**
-     * Syncs the controller's node leaves with the current view tier: only
-     * the compact single-pane shows the results as node leaves (the tree
-     * takes over the node-view role there). The {@code selectionSuppressed}
-     * guard keeps the leaf rebuild's model reload from tripping the tree
+     * Syncs the controller's node leaves with the current results. The
+     * leaves are attached from the FULL search+facet filtered set (see
+     * {@link #lastFacets}) — NOT from the selection-filtered list — so the
+     * tree is a stable full navigator in every tier: every branch is
+     * expandable and every {@code Templates / <scope>} group shows its
+     * entries regardless of what is currently selected (selecting a branch
+     * filters the results list and highlights the tree; it does not add or
+     * remove the tree's leaves). In the compact tier the tree doubles as
+     * the node view; in the comfortable tier it carries the same leaves
+     * alongside the (selection-filtered) results list.
+     * <p>
+     * The {@code selectionSuppressed}/{@code treeStateSavingSuspended}
+     * guards keep the leaf rebuild's model reload from tripping the tree
      * selection listener (which would re-query the list).
      */
     private void rebuildNodeLeaves() {
-        if (isCompartmentsEditor
-            || model.getTier(getWidth()) != NodeBrowserModel.TIER_COMPACT) {
+        if (isCompartmentsEditor) {
             return;
         }
         selectionSuppressed = true;
         treeStateSavingSuspended = true;
         try {
-            tree.rebuildNodeLeaves(lastFiltered);
+            tree.rebuildNodeLeaves(lastFacets);
         } finally {
             selectionSuppressed = false;
             treeStateSavingSuspended = false;
@@ -752,6 +768,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
             filtered.add(entry);
         }
+        // The tree's node leaves use the FULL filtered set (all tiers — the
+        // tree is a stable navigator; the selection below must not add or
+        // remove its leaves). Search mode: the flat results override the
+        // tree, so no leaves (matching the old compact-only behavior).
+        lastFacets = model.isSearchActive() ? List.of() : new ArrayList<>(filtered);
 
         // Selection filter (spec §7.2, shared predicate): when not in search
         // mode, only entries matching the current selection — a template
@@ -851,6 +872,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 model.setSelectionOnly(false);
                 selectionOnlyButton.setSelected(false);
                 reloadList();
+                updateFollowUpStrip(); // the strip tracks the ⊂ toggle
             }
         }
     }

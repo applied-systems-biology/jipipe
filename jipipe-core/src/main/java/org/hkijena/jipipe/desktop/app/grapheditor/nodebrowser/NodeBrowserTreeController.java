@@ -131,14 +131,44 @@ public class NodeBrowserTreeController extends JPanel {
     /**
      * Populates the tree with the live function registry, pruning branches
      * that carry no node visible for the given role (so the tree never
-     * shows empty categories). The root stays expanded.
+     * shows empty categories). The root stays expanded. No node leaves are
+     * attached — call {@link #rebuildNodeLeaves(List)} (or the 2-arg
+     * overload) to add them.
      *
      * @param role the visibility role of the calling editor
      */
     public void populateTree(JIPipeNodeDatabasePipelineVisibility role) {
+        populateTree(role, List.of());
+    }
+
+    /**
+     * Populates the tree with the live function registry and attaches the
+     * given entries as node leaves (the full current result set — see
+     * {@link #rebuildNodeLeaves(List)}). The branches are pruned by the
+     * entries' own function ids when the list is non-empty (a tree that
+     * carries leaves is a full navigator, so its pruning follows the same
+     * set the leaves follow); when the list is empty, pruning falls back to
+     * the role-visible registered nodes.
+     *
+     * @param role    the visibility role of the calling editor
+     * @param entries the entries to attach as node leaves (may be empty)
+     */
+    public void populateTree(JIPipeNodeDatabasePipelineVisibility role, List<JIPipeNodeDatabaseEntry> entries) {
         FunctionRegistry registry = JIPipe.getNodes().getFunctions();
-        Set<String> populated = NodeBrowserModel.populatedFunctionIds(
-            JIPipe.getNodes().getRegisteredNodeInfos().values(), role);
+        Set<String> populated;
+        if (entries.isEmpty()) {
+            populated = NodeBrowserModel.populatedFunctionIds(
+                JIPipe.getNodes().getRegisteredNodeInfos().values(), role);
+        } else {
+            // Prune by the entries themselves: a function branch stays when
+            // any entry is filed under it (primary or secondary). This keeps
+            // the tree and the leaves on the exact same set, so no leaf is
+            // ever orphaned and no populated branch is hidden.
+            populated = new LinkedHashSet<>();
+            for (JIPipeNodeDatabaseEntry entry : entries) {
+                populated.addAll(entry.getFunctionIds());
+            }
+        }
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
         root.removeAllChildren();
         for (JIPipeNodeTaxonomyFunction top : registry.topLevel()) {
@@ -157,6 +187,7 @@ public class NodeBrowserTreeController extends JPanel {
             templatesBranch.add(new DefaultMutableTreeNode(TemplateScopeTreeNode.forScope(scope)));
         }
         root.add(templatesBranch);
+        attachNodeLeaves(root, entries);
         treeModel.reload();
         tree.expandPath(new TreePath(new Object[]{root}));
     }
@@ -597,7 +628,12 @@ public class NodeBrowserTreeController extends JPanel {
         selectRow(target);
     }
 
-    private TreePath nodeLeafRow(JIPipeNodeDatabaseEntry entry) {
+    /**
+     * The {@link TreePath} of the tree row carrying the given entry's node
+     * leaf, or {@code null} when the entry has no leaf in the current tree
+     * (no leaves attached, or the entry is not in the attached set).
+     */
+    public TreePath nodeLeafRow(JIPipeNodeDatabaseEntry entry) {
         DefaultMutableTreeNode root = (DefaultMutableTreeNode) treeModel.getRoot();
         return findNodeLeafRow(root, new TreePath(new Object[]{root}), entry);
     }
