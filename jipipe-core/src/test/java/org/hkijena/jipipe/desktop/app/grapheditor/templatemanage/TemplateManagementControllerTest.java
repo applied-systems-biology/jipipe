@@ -32,6 +32,8 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportSettings;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
+import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -298,6 +300,34 @@ class TemplateManagementControllerTest {
         // was the one evicted from the in-memory list).
         assertThat(controller.forScope(null, TemplateScope.System))
             .anySatisfy(t -> assertThat(t.getName()).isEqualTo("Keep Me Bundled"));
+    }
+
+    @Test
+    void rePickingTheFunctionClearsThePreviouslyFooter() {
+        // §9.4: on auto-migration the old menu path is appended to the
+        // description as a "Previously:" footer; RE-PICKING the function in
+        // the editor clears it (the function is now an explicit user choice,
+        // not the auto-mapped one). A mere re-save that does NOT change the
+        // function keeps the footer.
+        JIPipeNodeTemplate t = addUniqueGlobal("Footer RePick Template");
+        JIPipeTaxonomyFunctionRef fnImages = new JIPipeTaxonomyFunctionRef("jipipe:function:images");
+        JIPipeTaxonomyFunctionRef fnTables = new JIPipeTaxonomyFunctionRef("jipipe:function:tables");
+        t.setTaxonomyFunction(fnImages);
+        t.setDescription(new HTMLText("<p>My desc</p><i><br>Previously: Image → Threshold</i>"));
+
+        // Re-pick: the edited copy has a DIFFERENT function -> footer cleared.
+        JIPipeNodeTemplate edited = new JIPipeNodeTemplate(t);
+        edited.setTaxonomyFunction(fnTables);
+        assertThat(controller.edit(null, TemplateScope.Global, t, edited)).isTrue();
+        assertThat(t.getTaxonomyFunction().getId()).isEqualTo("jipipe:function:tables");
+        assertThat(t.getDescription().getHtml()).doesNotContain("Previously");
+
+        // Re-save WITHOUT changing the function -> footer kept.
+        t.setDescription(new HTMLText("<p>My desc</p><i><br>Previously: Image → Threshold</i>"));
+        JIPipeNodeTemplate editedSame = new JIPipeNodeTemplate(t); // same function (copy)
+        assertThat(controller.edit(null, TemplateScope.Global, t, editedSame)).isTrue();
+        assertThat(t.getTaxonomyFunction().getId()).isEqualTo("jipipe:function:tables");
+        assertThat(t.getDescription().getHtml()).contains("Previously");
     }
 
     @Test

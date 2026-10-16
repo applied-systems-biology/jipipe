@@ -18,12 +18,14 @@ import com.google.common.collect.HashBiMap;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeNodeTemplateMigration;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventEmitter;
+import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -249,8 +251,17 @@ public final class JIPipeNodeTemplatesServiceComponent extends JIPipeServiceComp
     }
 
     public void editTemplate(JIPipeNodeTemplate target, JIPipeNodeTemplate source, JIPipeProject project) {
+        JIPipeTaxonomyFunctionRef oldFunction = target.getTaxonomyFunction();
         target.copyFrom(source);
         target.setSource(JIPipeNodeTemplate.SOURCE_USER);
+        // §9.4: re-picking the function in the editor clears the
+        // auto-mapping "Previously:" footer (the function is now an explicit
+        // user choice). A save that does NOT change the function keeps it.
+        JIPipeTaxonomyFunctionRef newFunction = target.getTaxonomyFunction();
+        if (oldFunction != null && newFunction != null
+            && !Objects.equals(oldFunction.getId(), newFunction.getId())) {
+            target.setDescription(JIPipeNodeTemplateMigration.clearPreviouslyFooter(target.getDescription()));
+        }
         if (project != null) {
             project.getMetadata().emitParameterChangedEvent("node-templates");
         }

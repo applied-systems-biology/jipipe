@@ -143,4 +143,31 @@ public final class JIPipeNodeTemplateMigration {
         String footer = "<i><br>Previously: " + oldPath + "</i>";
         return new HTMLText(body.isEmpty() ? footer : body + footer);
     }
+
+    /**
+     * The inverse of {@link #appendPreviouslyFooter}: removes a
+     * "Previously: …" footer line from the description (spec §9.4 — re-picking
+     * the function in the editor clears the auto-mapping audit line, because
+     * the function is now an explicit user choice). Returns an
+     * {@link HTMLText#EMPTY}-equivalent when the footer was the entire
+     * description.
+     */
+    public static HTMLText clearPreviouslyFooter(HTMLText desc) {
+        if (desc == null) {
+            return new HTMLText();
+        }
+        String html = desc.getHtml();
+        if (!html.contains("Previously")) {
+            return desc;
+        }
+        // The footer is always the trailing "<i><br>Previously: …</i>" block.
+        int start = html.lastIndexOf("<i><br>Previously:");
+        if (start < 0) {
+            // Defensive: a "Previously" mention that is not our footer format —
+            // leave it untouched rather than corrupting user text.
+            return desc;
+        }
+        String body = html.substring(0, start);
+        return new HTMLText(body);
+    }
 }
