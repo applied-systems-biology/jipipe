@@ -26,7 +26,7 @@ import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
-import org.hkijena.jipipe.desktop.commons.theme.helpers.JIPipeDesktopIslandPanel;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEvent;
 import org.hkijena.jipipe.plugins.nodetemplate.NodeTemplatesRefreshedEventListener;
 import org.hkijena.jipipe.plugins.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
@@ -38,8 +38,6 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXPanel;
-import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
@@ -85,8 +83,12 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
     private static final int CARD_CELL_WIDTH = 210;
     private static final int CARD_CELL_HEIGHT = 66;
-    private static final int CARD_INSET = 5;
-    private static final int CARD_ARC = 10;
+    // The painted card is inset by CARD_INSET within its cell: this inset is the
+    // GUTTER, so adjacent cards never touch and every card has clear spacing
+    // around it (round-3 "gutter" ask).
+    private static final int CARD_INSET = 6;
+    // A clearly visible corner radius (round-3 "rounded corners" ask).
+    private static final int CARD_ARC = 12;
 
     private final JIPipeDesktopWorkbench workbench;
     private final JIPipeProject project;
@@ -185,6 +187,26 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     // ------------------------------------------------------------------
 
     private JPanel buildManageView() {
+        // Build the manage view EXACTLY the way the AI monitor does (the design
+        // reference the user keeps pointing at): a JIPipeDesktopFormPanel with
+        // WITH_SCROLLING, wrapped in ONE island. The form panel IS the proven
+        // machinery that my hand-rolled attempts kept getting wrong:
+        //   - its content is a JXPanel with ScrollableSizeHint.FIT width, so the
+        //     page width always tracks the scroll viewport (no right-edge
+        //     overflow — fixes the "list expands to the right after resizing
+        //     with System expanded" bug);
+        //   - addGroupHeader / addWideToForm lay rows out with GridBag
+        //     fill=HORIZONTAL + weightx=1, so every row is STRETCHED to the full
+        //     page width. A VERTICAL_WRAP list reflows its column count to the
+        //     width it is actually given, so the cards always fit (BoxLayout —
+        //     what (76)/(77) used — only gives children their self-referential
+        //     preferred width, which is why the list used to overflow);
+        //   - the WITH_SCROLLING scroll handles all vertical scrolling; the
+        //     opaque panel background is the same color as the island fill, so
+        //     the whole thing reads as ONE rounded island (the "compare with
+        //     the AI monitor" islands ask).
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
+
         // Sections (the design's order; System last and collapsed by default).
         sections.clear();
         sections.add(new TemplateSection("Your templates", TemplateScope.Global, JIPipe.RESOURCES.getIcon16("actions/configure.png"), true));
@@ -194,47 +216,16 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         sections.add(new TemplateSection("Downloaded", TemplateScope.Downloaded, JIPipe.RESOURCES.getIcon16("actions/download.png"), true,
             this::buildGetMoreButton));
         sections.add(new TemplateSection("System", TemplateScope.System, JIPipe.RESOURCES.getIcon16("actions/dialog-templates.png"), false));
-
-        // A single vertical-only scroll for the whole manage view (item 2: no
-        // horizontal bar). The content is a JXPanel with a FIT width hint (the
-        // JIPipeDesktopFormPanel pattern) so its width tracks the viewport and
-        // never overflows past the right edge — the cause of the "list expands
-        // to the right after resizing" bug.
-        JXPanel sectionsStack = new JXPanel();
-        sectionsStack.setScrollableWidthHint(ScrollableSizeHint.FIT);
-        sectionsStack.setScrollableHeightHint(ScrollableSizeHint.NONE);
-        sectionsStack.setLayout(new BoxLayout(sectionsStack, BoxLayout.Y_AXIS));
-        sectionsStack.setOpaque(false);
-        sectionsStack.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         for (TemplateSection section : sections) {
-            // No height cap: with the per-section scroll panes removed, a tall
-            // section (System, 64 cards) must grow to its full preferred height
-            // so the single outer scroll below can scroll it — capping it here
-            // (the old 500px) would clip the excess cards with no scroll to
-            // reach them.
-            sectionsStack.add(section.getSectionComponent());
-            sectionsStack.add(Box.createVerticalStrut(6));
+            section.buildSectionOn(formPanel);
         }
-        // A trailing glue so the stack fills the viewport without stretching
-        // the sections (BoxLayout otherwise grows them to their max size when
-        // there is spare vertical space).
-        sectionsStack.add(Box.createVerticalGlue());
+        formPanel.addVerticalGlue();
 
-        JScrollPane scroll = new JScrollPane(sectionsStack, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.setBorder(null);
-        scroll.setOpaque(true);
-        scroll.getViewport().setOpaque(true);
-        scroll.getViewport().setBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-
-        // The islands design (item 11) — like the AI monitor: ONE rounded
-        // island wraps the whole scrollable page (the window background shows
-        // as the gutter around it), NOT one island per list. The scroll content
-        // is the same panel background as the island fill, so it reads as one
-        // rounded surface.
+        // ONE island wraps the whole scrollable page (the window background
+        // shows as the gutter around it), matching the AI monitor.
         JPanel view = new JPanel(new BorderLayout());
         view.setOpaque(false);
-        view.add(new JIPipeDesktopIslandPanel(scroll), BorderLayout.CENTER);
+        view.add(UIUtils.wrapInIslandPanelIfNeeded(formPanel), BorderLayout.CENTER);
         return view;
     }
 
@@ -329,8 +320,10 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         private final String title;
         private final TemplateScope scope;
         private final boolean expanded;
-        private final JPanel sectionPanel;
-        private final JIPipeDesktopFormPanel.GroupHeaderPanel header;
+        private final Icon icon;
+        private final java.util.function.Supplier<JComponent> headerExtra;
+        private JIPipeDesktopFormPanel formPanel;
+        private JIPipeDesktopFormPanel.GroupHeaderPanel header;
         private final JList<JIPipeNodeTemplate> list;
         private final CardRenderer cardRenderer = new CardRenderer();
 
@@ -342,12 +335,43 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             this.title = title;
             this.scope = scope;
             this.expanded = expanded;
+            this.icon = icon;
+            this.headerExtra = headerExtra;
 
             // The wrapping card list (items 6,7,8,9): standard shift/ctrl
             // selection, wheel scroll, clickthrough (renderer labels don't
             // block), virtualized for many items.
-            this.list = new JList<>(new DefaultListModel<>());
-            list.setLayoutOrientation(JList.VERTICAL_WRAP);
+            //
+            // The list lives in a JViewport (its own scroll pane, see
+            // buildSectionOn) and forces its width to the viewport width, so it
+            // is always given a STABLE width to wrap into — no layout manager
+            // (BoxLayout, the form's GridBag) does that for a wrap list on its
+            // own.
+            this.list = new JList<>(new DefaultListModel<>()) {
+                @Override
+                public boolean getScrollableTracksViewportWidth() {
+                    // Always track the viewport width so the wrapping grid
+                    // reflows to the available width on every resize.
+                    return true;
+                }
+            };
+            // HORIZONTAL_WRAP — NOT VERTICAL_WRAP. This is what fixes the
+            // "list expands to the right beyond the edge" bug. HORIZONTAL_WRAP
+            // lays the cards out left-to-right and computes the number of
+            // COLUMNS from the list's WIDTH (columnCount = width / cellWidth),
+            // so the grid fills the available width and grows DOWNWARD as
+            // needed, reflowing its column count on every resize. VERTICAL_WRAP
+            // instead computes the column count from the HEIGHT and grows the
+            // list RIGHTWARD to fit all of its columns — which is exactly the
+            // right-edge overflow the user reported.
+            list.setLayoutOrientation(JList.HORIZONTAL_WRAP);
+            // CRITICAL: force visibleRowCount to 0. The default (8) makes
+            // BasicListUI compute the column count from the VISIBLE ROW COUNT
+            // (ignoring the actual width), which is wrong for a card grid. With
+            // 0 it uses the WIDTH-derived branch (columnCount = width /
+            // cellWidth), so the grid fills the available width, reflows its
+            // column count on every resize, and never overflows the right edge.
+            list.setVisibleRowCount(0);
             // Fixed cells give a deterministic wrap grid; the modern card (with
             // its gutter + rounded corners) is painted INSIDE each cell by the
             // renderer, so the cells act as the inter-card spacing.
@@ -355,8 +379,12 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             list.setFixedCellHeight(CARD_CELL_HEIGHT);
             list.setCellRenderer(cardRenderer);
             list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            // The card renderer paints its OWN rounded selection; suppress the
+            // list's default rectangular selection fill so it doesn't show
+            // through the card's gutter or square off the corners.
+            list.setSelectionBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
             list.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
-            list.setOpaque(false); // the single outer island provides the surface
+            list.setOpaque(false); // the island/form background provides the surface
             list.addMouseListener(new MouseAdapter() {
                 // Plain / shift / ctrl selection is handled by the JList itself
                 // (the standard list UX the user asked for); only the popup and
@@ -388,21 +416,40 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                 }
             });
 
-            // No per-section scroll pane: the list is added directly to the
-            // section and the SINGLE outer scroll (buildManageView, the
-            // AI-monitor pattern) scrolls the whole page. The nested per-list
-            // scroll panes were the round-3 "list expands to the right" bug —
-            // a wrapping JList reports its current (many-column) width as its
-            // minimum, so once the System section (64 cards) was laid out the
-            // BoxLayout stack could not shrink when the window was resized.
-            // Capping the minimum width to one card lets it shrink freely.
+            // The list lives in its own viewport (buildSectionOn). With both
+            // scrollbars set to NEVER that scroll pane is not a nested
+            // scroller — it is just what forces the width-tracking list to the
+            // available width. The form panel's single outer scroll
+            // (buildManageView) still scrolls the whole page.
             list.setMinimumSize(new Dimension(CARD_CELL_WIDTH, 0));
+        }
 
-            // The shared group header (item 5): title + icon, the parameter-panel
-            // collapse caret at the START of the title, and any extra button
-            // (e.g. "Get more") at the END (item 12 placement, fixes the
-            // ellipsis of item 4).
-            this.header = new JIPipeDesktopFormPanel.GroupHeaderPanel(title, icon, 8);
+        /**
+         * Adds this section to the form panel: a full-width group header (with
+         * the collapse caret + optional extra button) and the full-width card
+         * list right below it — the same addGroupHeader + addWideToForm pattern
+         * the AI monitor and the parameter forms use.
+         */
+        void buildSectionOn(JIPipeDesktopFormPanel formPanel) {
+            this.formPanel = formPanel;
+
+            // The shared group header (item 5), added full-width by the form:
+            // title + icon, the parameter-panel collapse caret at the START of
+            // the title, and any extra button (e.g. "Get more") at the END
+            // (item 12 placement, fixes the ellipsis of item 4).
+            this.header = formPanel.addGroupHeader(title, icon);
+
+            // The card list in its own viewport. Both scrollbars are NEVER, so
+            // this is NOT a nested scroller — it is the width-forcing wrapper
+            // the wrap list needs (see the list's construction). The form
+            // panel's single outer scroll scrolls the whole page.
+            JScrollPane listScroll = new JScrollPane(list,
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_NEVER,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            listScroll.setBorder(null);
+            listScroll.setOpaque(false);
+            listScroll.getViewport().setOpaque(false);
+            listScroll.setVisible(expanded);
 
             CustomStateLessToggleButton collapseButton = new CustomStateLessToggleButton("",
                 JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
@@ -421,26 +468,21 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
                 boolean nowExpanded = collapseButton.getState();
                 header.setCollapsed(!nowExpanded);
-                list.setVisible(nowExpanded);
+                // The form's GridBag skips invisible components, so hiding the
+                // list collapses the section to just its header (the proven
+                // collapse mechanism of the parameter forms).
+                listScroll.setVisible(nowExpanded);
                 collapseButton.setToolTipText(nowExpanded ? "Collapse" : "Expand");
+                formPanel.revalidate();
             });
 
-            this.sectionPanel = new JPanel();
-            sectionPanel.setLayout(new BoxLayout(sectionPanel, BoxLayout.Y_AXIS));
-            sectionPanel.setOpaque(false);
-            sectionPanel.add(header);
-            // The list directly (no nested scroll pane, no per-list island):
-            // the single outer island + scroll in buildManageView (the
-            // AI-monitor pattern) provides the rounded surface and all
-            // scrolling. The round-3 bugs — one island per list and the
-            // right-edge overflow after resizing — both came from the nested
-            // per-section panes, now removed.
-            list.setVisible(expanded);
-            sectionPanel.add(list);
-        }
-
-        JPanel getSectionComponent() {
-            return sectionPanel;
+            // Full-width row: the form's GridBag (fill=HORIZONTAL, weightx=1)
+            // stretches the scroll pane to the page width; its viewport then
+            // forces the width-tracking list to exactly that width, so the
+            // HORIZONTAL_WRAP list reflows its column count (width-derived) on
+            // every resize (the "list expands to the right beyond the edge"
+            // fix).
+            formPanel.addWideToForm(listScroll);
         }
 
         /** (Re)loads this section's card list from the store. */
@@ -690,11 +732,12 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
 
     /**
      * A modern template card (round-3): a rounded-rectangle surface inset by a
-     * gutter within its (fixed-size) list cell, with the template icon, name
+     * GUTTER within its (fixed-size) list cell, with the template icon, name
      * and a one-line description. The cell is transparent; the card is painted
-     * in {@link #paintComponent} so the corners are rounded (a plain
-     * {@code LineBorder} is square) and the inter-card spacing (the gutter) is
-     * guaranteed by the fixed cell size regardless of theme metrics.
+     * in {@link #paintComponent} INSET by {@link #CARD_INSET} so the corners
+     * are rounded (a plain {@code LineBorder} is square) and the inter-card
+     * spacing (the gutter) is a real gap of the list background between cards,
+     * not just a border.
      */
     private class CardRenderer extends JPanel implements ListCellRenderer<JIPipeNodeTemplate> {
         private final JLabel icon = new JLabel();
@@ -705,9 +748,9 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
         CardRenderer() {
             setLayout(new BorderLayout(8, 2));
             setOpaque(false);
-            // Inset by the gutter + a little, so the painted rounded card sits
-            // inside the cell and cards never touch each other.
-            setBorder(BorderFactory.createEmptyBorder(CARD_INSET, CARD_INSET, CARD_INSET, CARD_INSET));
+            // The CONTENT (icon + text) sits inside the painted card: the
+            // CARD_INSET gutter plus a little inner padding.
+            setBorder(BorderFactory.createEmptyBorder(CARD_INSET + 6, CARD_INSET + 10, CARD_INSET + 6, CARD_INSET + 10));
 
             icon.setVerticalAlignment(SwingConstants.CENTER);
             name.setOpaque(false);
@@ -733,18 +776,20 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
             Object oldAA = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             try {
-                int w = getWidth() - 1;
-                int h = getHeight() - 1;
-                Color fill = cardSelected
-                    ? UIManager.getColor("List.selectionBackground")
-                    : ThemeUtils.getCurrentStyle().getPanelBackground();
-                Color stroke = cardSelected
-                    ? UIManager.getColor("List.selectionBackground")
-                    : ThemeUtils.getCurrentStyle().getBorderColor();
+                // The card is INSET by the gutter within the cell, so adjacent
+                // cards are separated by a 2*CARD_INSET gap of the list
+                // background (the "gutter" the user asked for).
+                int x = CARD_INSET;
+                int y = CARD_INSET;
+                int w = getWidth() - 2 * CARD_INSET - 1;
+                int h = getHeight() - 2 * CARD_INSET - 1;
+                JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+                Color fill = cardSelected ? style.getSelectionBackground() : style.getPanelBackground();
+                Color stroke = cardSelected ? style.getSelectionHighlight() : style.getBorderColor();
                 g2.setColor(fill);
-                g2.fillRoundRect(0, 0, w, h, CARD_ARC, CARD_ARC);
+                g2.fillRoundRect(x, y, w, h, CARD_ARC, CARD_ARC);
                 g2.setColor(stroke);
-                g2.drawRoundRect(0, 0, w, h, CARD_ARC, CARD_ARC);
+                g2.drawRoundRect(x, y, w, h, CARD_ARC, CARD_ARC);
             } finally {
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, oldAA);
             }
@@ -765,16 +810,18 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
                 name.setText("<null>");
                 desc.setText("");
             }
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
             if (isSelected) {
-                setForeground(UIManager.getColor("List.selectionForeground"));
-                name.setForeground(UIManager.getColor("List.selectionForeground"));
-                desc.setForeground(UIManager.getColor("List.selectionForeground"));
-                icon.setForeground(UIManager.getColor("List.selectionForeground"));
+                Color fg = style.getSelectionForeground();
+                setForeground(fg);
+                name.setForeground(fg);
+                desc.setForeground(fg);
+                icon.setForeground(fg);
             } else {
-                setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
-                name.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
-                desc.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
-                icon.setForeground(ThemeUtils.getCurrentStyle().getTextForeground());
+                setForeground(style.getTextForeground());
+                name.setForeground(style.getTextForeground());
+                desc.setForeground(style.getTextMuted());
+                icon.setForeground(style.getTextForeground());
             }
             return this;
         }
