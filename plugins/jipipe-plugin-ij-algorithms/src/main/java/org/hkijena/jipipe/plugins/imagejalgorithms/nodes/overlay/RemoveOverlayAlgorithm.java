@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
-@SetJIPipeDocumentation(name = "Remove overlay", description = "It takes an ImageJ image (ImagePlusData) and produces a copy (ImagePlusData) with the overlay removed, so any 2D ROI or 3D ROI markings are no longer displayed.")
+@SetJIPipeDocumentation(name = "Remove overlay", description = "It takes an ImageJ image and produces a copy with the overlay removed, so any 2D ROI or 3D ROI markings are no longer displayed.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })

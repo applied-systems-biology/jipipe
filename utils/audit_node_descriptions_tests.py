@@ -123,24 +123,55 @@ class AuditDraftingTests(unittest.TestCase):
     missing) — a node whose description is known-wrong gets a different
     instruction than one that is merely thin."""
 
-    def _slots(self, *ids):
+    def _slots(self, *data_types):
         # the registry.json shape: {class (FQ), dataType}
-        return [{"class": f"org.x.{i}", "dataType": i.lower()} for i in ids]
+        return [{"class": f"org.hkijena.jipipe.{dt}", "dataType": dt}
+                for dt in data_types]
 
     def test_prompt_states_the_wrong_defect(self):
         p = AUDIT.build_draft_prompt(
             name="Convert 2D ROI to RGB", node_id="ij1-roi-to-rgb",
             current="Converts ROI lists to masks.", bucket="wrong",
             wrong_note="describes ij1-roi-to-mask",
-            inputs=self._slots("ImagePlusData", "Roi2dListData"),
-            outputs=self._slots("ImagePlusColorRGBData"),
+            inputs=self._slots("imagej-imgplus", "imagej-roi-2d"),
+            outputs=self._slots("imagej-imgplus-color-rgb"),
             source="public class RoiToRGBAlgorithm { void execute() { /* ... */ } }")
         self.assertIn("WRONG", p)
         self.assertIn("ij1-roi-to-mask", p)
-        self.assertIn("Roi2dListData", p)
-        self.assertIn("ImagePlusColorRGBData", p)
+        self.assertIn("an ImageJ image", p)
         self.assertIn("public class RoiToRGBAlgorithm", p)
         self.assertIn('{"description"', p)
+
+    def test_prompt_shows_data_types_not_java_classes(self):
+        # the (C) review follow-up: feeding raw Java class names as anchors made
+        # the model copy them into the prose ("an ImagePlusData image"). The
+        # prompt must present data types by user-facing display name and must
+        # ban internal class names outright (the ban rule itself may quote the
+        # class names as examples of what NOT to write).
+        p = AUDIT.build_draft_prompt(
+            name="Remove LUT", node_id="ij1-remove-lut",
+            current="Removes the LUT.", bucket="thin", wrong_note=None,
+            inputs=[{"class": "org.hkijena.jipipe...ImagePlusData",
+                     "dataType": "imagej-imgplus"}],
+            outputs=[{"class": "org.hkijena.jipipe...ImagePlusData",
+                      "dataType": "imagej-imgplus"}],
+            source="class X {}")
+        self.assertIn("an ImageJ image", p)
+        # no class name may appear OUTSIDE the ban rule (the rule quotes them)
+        body = p.split("NEVER mention internal Java class names")[0]
+        self.assertNotIn("ImagePlusData", body)
+        self.assertIn("class name", p.lower())  # the ban rule is stated
+
+    def test_parse_draft_rejects_internal_class_names(self):
+        # fail-closed: a draft that leaks an internal class name must not pass
+        import json
+        leak = json.dumps({"description":
+            "Takes an ImagePlusData image and returns a ResultsTableData table."})
+        self.assertIsNone(AUDIT.parse_draft(leak))
+        clean = json.dumps({"description":
+            "Takes an ImageJ image and returns a results table."})
+        self.assertEqual(AUDIT.parse_draft(clean),
+                         "Takes an ImageJ image and returns a results table.")
 
     def test_prompt_states_the_thin_defect(self):
         p = AUDIT.build_draft_prompt(

@@ -25,8 +25,8 @@
    "class": "TrackFilterNode",
    "bucket": "wrong",
    "current": "Filter TrackMate spots via expressions",
-   "proposed": "Takes a TrackMate track collection (TrackCollectionData), keeps only the tracks that satisfy a per-track expression, and outputs a filtered TrackCollectionData with non-matching tracks hidden.",
-   "note": null
+   "proposed": "Takes a TrackMate track collection, keeps only the tracks that satisfy a per-track expression, and outputs a filtered TrackMate track collection with non-matching tracks hidden.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "data-flow-tunnel-1-entrance",
@@ -61,8 +61,8 @@
    "class": "FileListDataSource",
    "bucket": "thin",
    "current": "Converts each provided path into file data.",
-   "proposed": "Creates a list of file data items from the files you specify. It takes the file names entered in the node settings and produces one FileData item for each, ready for downstream file processing.",
-   "note": null
+   "proposed": "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "ij1-color-blend-images",
@@ -169,8 +169,8 @@
    "class": "RenameTableColumns2Algorithm",
    "bucket": "thin",
    "current": "Renames columns",
-   "proposed": "Renames one or more columns in a ResultsTableData table and outputs the same table as ResultsTableData with updated column names. Each renaming entry matches an old column name and assigns a new name, optionally using the current name in an expression.",
-   "note": null
+   "proposed": "Renames one or more columns in a results table and outputs the same table with updated column names. Each renaming entry matches an old column name and assigns a new name, optionally using the current name in an expression.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "iji-export-table-v2",
@@ -295,8 +295,8 @@
    "class": "RenderOverlayAlgorithm",
    "bucket": "thin",
    "current": "Renders the overlay ROI of an image to RGB",
-   "proposed": "Creates a color image in which the 2D ROIs from the input image's overlay are drawn over the image. It takes an ImagePlusData image and produces an ImagePlusColorRGBData image, applying the selected outline, fill, label, opacity, and magnification settings.",
-   "note": null
+   "proposed": "Creates a color image in which the 2D ROIs from the input image's overlay are drawn over the image. It takes an ImageJ image and produces a color ImageJ image, applying the selected outline, fill, label, opacity, and magnification settings.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "import-cellpose-model-v2",
@@ -367,8 +367,8 @@
    "class": "RemoveLUTAlgorithm",
    "bucket": "thin",
    "current": "Removes LUT information from the input image.",
-   "proposed": "Takes an ImageJ image (ImagePlusData) and produces an ImageJ image (ImagePlusData) with its lookup table (LUT) color mapping removed, leaving pixel values unchanged. By default it works on a duplicate, and you can restrict the removal to selected channels.",
-   "note": null
+   "proposed": "Takes an ImageJ image and produces an ImageJ image with its lookup table (LUT) color mapping removed, leaving pixel values unchanged. By default it works on a duplicate, and you can restrict the removal to selected channels.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "ij1-roi-from-table-text",
@@ -385,8 +385,8 @@
    "class": "RemoveOverlayAlgorithm",
    "bucket": "thin",
    "current": "Remove overlay ROIs",
-   "proposed": "It takes an ImageJ image (ImagePlusData) and produces a copy (ImagePlusData) with the overlay removed, so any 2D ROI or 3D ROI markings are no longer displayed.",
-   "note": null
+   "proposed": "It takes an ImageJ image and produces a copy with the overlay removed, so any 2D ROI or 3D ROI markings are no longer displayed.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "ij3d-filter-roi3d-by-statistics",
@@ -592,8 +592,8 @@
    "class": "RenameTableColumnsAlgorithm",
    "bucket": "thin",
    "current": "Renames columns",
-   "proposed": "Renames one or more columns in a results table by matching column names with the From entries and replacing them with the To entries. It takes a ResultsTableData table and outputs the same table with updated column headers.",
-   "note": null
+   "proposed": "Renames one or more columns in a results table by matching column names with the From entries and replacing them with the To entries. It takes a results table and outputs the same table with updated column headers.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "trackmate-visualize-spots",
@@ -610,8 +610,8 @@
    "class": "TrackSchemeRendererNode",
    "bucket": "thin",
    "current": "Renders the track scheme as image",
-   "proposed": "Creates a visual track scheme image from a TrackMate track collection, showing each detected object and its connections over time as a diagram. The input is a TrackCollectionData and the output is an ImagePlusData containing the rendered scheme.",
-   "note": null
+   "proposed": "Creates a visual track scheme image from a TrackMate track collection, showing each detected object and its connections over time as a diagram. The input is a TrackMate track collection and the output is an ImageJ image containing the rendered scheme.",
+   "note": "redrafted: removed internal class names"
   },
   {
    "nodeId": "trackmate-visualize-tracks",

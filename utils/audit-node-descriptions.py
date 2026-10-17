@@ -65,11 +65,60 @@ MAX_SOURCE_CHARS = 12000
 EDITABLE_BUCKETS = ("wrong", "missing", "thin")
 
 
-def _judge_module():
-    spec = importlib.util.spec_from_file_location("judge_dag_patterns", JUDGE_SCRIPT)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    return mod
+# user-facing display names for the data types the pattern-relevant nodes use
+# (the registry's dataType ids; anything unknown falls back to a spaced id).
+# Feeding raw Java class names as anchors made the model copy them into the
+# prose ("an ImagePlusData image") — the (C) review flagged them as internals
+# users do not care about.
+DATA_TYPE_DISPLAY = {
+    "imagej-imgplus": "an ImageJ image",
+    "imagej-imgplus-2d": "a 2D image",
+    "imagej-imgplus-3d": "a 3D image",
+    "imagej-imgplus-3d-greyscale": "a 3D greyscale image",
+    "imagej-imgplus-greyscale": "a greyscale image",
+    "imagej-imgplus-greyscale-8u": "an 8-bit greyscale image",
+    "imagej-imgplus-greyscale-32f": "a 32-bit greyscale image",
+    "imagej-imgplus-greyscale-mask": "a binary mask image",
+    "imagej-imgplus-color-rgb": "a color (RGB) image",
+    "imagej-roi": "a 2D ROI list",
+    "roi-3d-list": "a 3D ROI list",
+    "imagej-results-table": "a results table",
+    "table-column": "a table column",
+    "trackmate-track-collection": "a TrackMate track collection",
+    "trackmate-spot-collection": "a TrackMate spot collection",
+    "trackmate-spot-detector": "a TrackMate spot detector",
+    "trackmate-spot-tracker": "a TrackMate spot tracker",
+    "file": "a file",
+    "folder": "a folder",
+    "path": "a file/folder location",
+    "uri": "a file location (URI)",
+    "string": "a text",
+    "json": "JSON data",
+    "xml": "XML data",
+    "ome-xml": "OME-XML metadata",
+    "imagej-ome": "OME image data",
+    "filaments": "3D filament data",
+    "scene-3d": "a 3D scene",
+    "cellpose-model": "a Cellpose model",
+    "cellpose-model-v2": "a Cellpose 2.x model",
+    "omero-image-id": "an OMERO image ID",
+    "omero-dataset-id": "an OMERO dataset ID",
+    "omero-annotation-id": "an OMERO annotation ID",
+    "jipipe:data": "any data",
+}
+
+# internal Java type/class names that must not appear in a description. The
+# suffix families cover the registry's data classes; the JIPipe/ prefix family
+# covers API classes.
+_INTERNAL_CLASS = re.compile(
+    r"\b(?:JIPipe[A-Za-z]*|[A-Z][A-Za-z0-9]*(?:Data|Collection|Algorithm|Node|Info|Slot|Context))\b")
+
+
+def data_type_display(data_type):
+    """The user-facing name of a registry dataType id (or None)."""
+    if not data_type:
+        return None
+    return DATA_TYPE_DISPLAY.get(data_type, data_type.replace("-", " "))
 
 
 # --------------------------------------------------------------------------- #
@@ -209,12 +258,20 @@ def apply_description(text: str, new_desc: str) -> str:
 def build_draft_prompt(*, name, node_id, current, bucket, wrong_note,
                        inputs, outputs, source) -> str:
     """The per-node drafting prompt. ``inputs``/``outputs`` are the registry
-    slot lists ([{class, dataType}]); ``source`` is the (capped) class source."""
+    slot lists ([{class, dataType}]) — shown to the model by user-facing
+    DISPLAY NAME, never by Java class name; ``source`` is the (capped) class
+    source."""
     def slots(lst):
         if not lst:
             return "  (none)"
-        return "\n".join(f"  - {s['class'].rsplit('.', 1)[-1]}"
-                         for s in lst)
+        shown = []
+        for s in lst:
+            disp = data_type_display(s.get("dataType"))
+            if disp and disp not in shown:
+                shown.append(disp)
+        if not shown:
+            return "  (none)"
+        return "\n".join(f"  - {d}" for d in shown)
     if bucket == "wrong":
         defect = (f"The CURRENT description is WRONG — it was copy-pasted from a "
                   f"sibling node ({wrong_note}). It does not describe THIS node. "
@@ -234,13 +291,14 @@ Node: {name} (id: {node_id})
 
 {defect}
 
-{current_block}Input data types the node receives:
+{current_block}Input data the node receives:
 {slots(inputs)}
 
-Output data types the node produces:
+Output data the node produces:
 {slots(outputs)}
 
-The node's own source code (ground truth of what it does):
+The node's own source code (ground truth of what it does — for YOUR
+understanding only; do not quote its identifiers in the description):
 ```java
 {source}
 ```
@@ -250,12 +308,15 @@ Write ONE description for this node.
 Audience: TWO readers — bioinformaticians who know image-analysis tools, AND
 biologists who do not. Requirements:
 - State concretely what the node TAKES IN, what it DOES, and what it PRODUCES
-  (the data types above are the anchors).
+  (the input/output data above are the anchors).
 - Lead with the outcome in plain terms; the technical specifics follow in the
   same sentence or a second one.
 - NEVER use JIPipe data-model jargon ("path", "annotated path", "slot", "graph",
   "compartment", "wrapper", "hyperstack"). Say what the analyst gets instead
   (e.g. "a list of image files", not "annotated paths").
+- NEVER mention internal Java class names or implementation identifiers (no
+  "ImagePlusData", "ResultsTableData", "TrackCollectionData", "JIPipe…" or
+  similar). Call data what it is: "an ImageJ image", "a results table".
 - If the node operates on ROIs, say "2D ROI" or "3D ROI" — they are different
   data types and must not be conflated.
 - 1-3 sentences, at most ~400 characters. Plain prose; a single inline <code>
@@ -290,6 +351,10 @@ def parse_draft(response, max_chars: int = MAX_DESC_CHARS):
         return None
     d = re.sub(r"\s+", " ", d).strip()
     if not d or len(d) > max_chars:
+        return None
+    # internal Java class names are internals users do not care about (the
+    # (C) review follow-up) — fail closed on them
+    if _INTERNAL_CLASS.search(d):
         return None
     return d
 

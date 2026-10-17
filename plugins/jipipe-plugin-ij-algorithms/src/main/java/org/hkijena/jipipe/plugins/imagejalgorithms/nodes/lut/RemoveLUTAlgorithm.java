@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Remove LUT", description = "Takes an ImageJ image (ImagePlusData) and produces an ImageJ image (ImagePlusData) with its lookup table (LUT) color mapping removed, leaving pixel values unchanged. By default it works on a duplicate, and you can restrict the removal to selected channels.")
+@SetJIPipeDocumentation(name = "Remove LUT", description = "Takes an ImageJ image and produces an ImageJ image with its lookup table (LUT) color mapping removed, leaving pixel values unchanged. By default it works on a duplicate, and you can restrict the removal to selected channels.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
