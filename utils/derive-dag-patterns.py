@@ -940,9 +940,16 @@ def cmd_run(limit: int, start: int = 0, count: int = 0,
 
     client = J.LLMClient.from_credentials()
     cache = J.load_cache(cache_path or CACHE)
+    calls_made = [0]
 
     def llm(prompt):
-        return J.fetch_verdict(client.complete, cache, prompt)
+        v = J.fetch_verdict(client.complete, cache, prompt)
+        calls_made[0] += 1
+        # periodic save: a killed shard must not lose its LLM calls (the
+        # cache is content-keyed, so re-runs resume for free)
+        if calls_made[0] % 5 == 0:
+            J.save_cache(cache_path or CACHE, cache)
+        return v
 
     candidates = []  # (cluster-like dict, provenance) — what-next only
     rejected = []
