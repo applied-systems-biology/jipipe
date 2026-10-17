@@ -1,0 +1,4243 @@
+{
+ "_note": "Derived patterns (C'): the 'what next' siblings the mined set under-covers. mechanism=twin-swap entries are deterministic (verified structural equivalent of a shipped pattern — no LLM re-gate); mechanism=what-next entries went through the (C) gate. provenance is recorded here only; they ship as normal patterns in (D). support is 0 (derived, not observed). The graph in state.pattern is in the (A) minimal format with 3.4 locations.",
+ "rejected": [],
+ "entries": [
+  {
+   "clusterId": "derived-mech-cluster-0003-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Filter 3D ROIs by overlap",
+   "description": "Takes two lists of 3D ROIs and produces filtered 3D ROI lists containing the ROIs that overlap with ROIs in the other list. Chained overlap filters can be used to include or exclude ROIs based on their spatial relationship to reference ROIs.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0003",
+    "direction": "Filter 2D ROIs by overlap -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      },
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      },
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      },
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      },
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      },
+      {
+       "id": "ij3d-roi-filter-by-overlap",
+       "name": "Filter IJ3D ROI by overlap (old)",
+       "description": "Filters the 3D ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI."
+      }
+     ],
+     "nodeSequence": "Filter IJ3D ROI by overlap (old) -> Filter IJ3D ROI by overlap (old) -> Filter IJ3D ROI by overlap (old) -> Filter IJ3D ROI by overlap (old) -> Filter IJ3D ROI by overlap (old) -> Filter IJ3D ROI by overlap (old)",
+     "wiring": "Filter IJ3D ROI by overlap (old) ROI 1 -> Filter IJ3D ROI by overlap (old) ROI 2",
+     "nodeCount": 6,
+     "edgeCount": 1,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 550
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 700
+        },
+        "jipipe:node-info-id": "ij3d-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter IJ3D ROI by overlap (old)"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n1",
+        "source-slot": "ROI 1",
+        "target-node": "n3",
+        "target-slot": "ROI 2",
+        "source_slot": "ROI 1",
+        "target_slot": "ROI 1"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0005-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Attach 2D ROI measurements to data",
+   "description": "Takes 2D ROIs and optionally a reference image, and produces data annotated with 2D ROI statistics. It extracts the ROI measurements, adds a table column, and attaches the resulting table values to the incoming data.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0005",
+    "direction": "Attach 3D ROI measurements to data -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-roi-statistics",
+       "name": "Extract 2D ROI statistics",
+       "description": "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, an empty reference image is automatically generated."
+      },
+      {
+       "id": "table-add-columns-generate",
+       "name": "Add table column",
+       "description": "Adds a new column. By default no changes are applied if the column already exists. Can be optionally configured to replace existing columns."
+      },
+      {
+       "id": "annotate-data-with-table-values",
+       "name": "Annotate data with table values",
+       "description": "Annotates the incoming data with values from the input table"
+      }
+     ],
+     "nodeSequence": "Extract 2D ROI statistics -> Add table column -> Annotate data with table values",
+     "wiring": "Extract 2D ROI statistics Measurements -> Annotate data with table values Table",
+     "nodeCount": 3,
+     "edgeCount": 1,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-statistics",
+        "jipipe:node:name": "Extract 2D ROI statistics"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-data-with-table-values",
+        "jipipe:node:name": "Annotate data with table values"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "table-add-columns-generate",
+        "jipipe:node:name": "Add table column"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Measurements",
+        "target-node": "n1",
+        "target-slot": "Table",
+        "source_slot": "Measurements",
+        "target_slot": "Table"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0008-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Visualize 2D ROIs as colored label images",
+   "description": "Takes a list of 2D ROIs and an optional reference image, colors each ROI by a selected measurement, and converts the colored 2D ROIs into RGB label images for visualization.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0008",
+    "direction": "Visualize 3D ROIs as colored label images -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-roi-color-statistics",
+       "name": "Color 2D ROI by statistics",
+       "description": "Sets the ROI item colors by measurements."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      }
+     ],
+     "nodeSequence": "Color 2D ROI by statistics -> Convert 2D ROI to RGB -> Convert 2D ROI to RGB -> Convert 2D ROI to RGB",
+     "wiring": "Convert 2D ROI to RGB Output -> Convert 2D ROI to RGB Image; Color 2D ROI by statistics Output -> Convert 2D ROI to RGB ROI; Convert 2D ROI to RGB Output -> Convert 2D ROI to RGB Image",
+     "nodeCount": 4,
+     "edgeCount": 3,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-color-statistics",
+        "jipipe:node:name": "Color 2D ROI by statistics"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "ROI",
+        "source_slot": "ROI",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0028-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Color overlay of overlapping 2D ROIs",
+   "description": "Takes two lists of 2D ROIs and produces an exported RGB image showing which objects overlap. It filters each list to ROIs that overlap the other, rasterizes them onto blank images, blends the two label images in different colors, copies physical pixel sizes, and exports the result.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0028",
+    "direction": "Color overlay of overlapping 3D ROIs -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-generate-zero-image",
+       "name": "Create empty image",
+       "description": "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image."
+      },
+      {
+       "id": "ij1-generate-zero-image",
+       "name": "Create empty image",
+       "description": "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image."
+      },
+      {
+       "id": "ij1-roi-filter-by-overlap",
+       "name": "Filter 2D ROI by overlap (old)",
+       "description": "Filters the ROI lists by testing for mutual overlap. The ROI1 output contains all ROI1 input ROI that overlap with any of ROI2. The ROI2 output contains all ROI2 input ROI that overlap with a ROI1 ROI. This node is deprecated and was replaced with 'Filter 2D ROI by overlap'."
+      },
+      {
+       "id": "ij1-roi-set-properties",
+       "name": "Set 2D ROI properties",
+       "description": "Sets properties of all Roi to a user-defined value."
+      },
+      {
+       "id": "ij1-roi-set-properties",
+       "name": "Set 2D ROI properties",
+       "description": "Sets properties of all Roi to a user-defined value."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      },
+      {
+       "id": "ij1-calibration-copy-physical-dimensions",
+       "name": "Copy physical dimensions",
+       "description": "Copies the phyiscal pixel sizes from the source to the target"
+      },
+      {
+       "id": "ij1-calibration-copy-physical-dimensions",
+       "name": "Copy physical dimensions",
+       "description": "Copies the phyiscal pixel sizes from the source to the target"
+      },
+      {
+       "id": "ij1-color-blend-images",
+       "name": "Blend images",
+       "description": "Takes one or more same-size greyscale or RGB images and combines them into one RGB image by overlaying them in priority order with chosen blend modes and opacities."
+      },
+      {
+       "id": "ij1-calibration-copy-physical-dimensions",
+       "name": "Copy physical dimensions",
+       "description": "Copies the phyiscal pixel sizes from the source to the target"
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      }
+     ],
+     "nodeSequence": "Create empty image -> Create empty image -> Filter 2D ROI by overlap (old) -> Set 2D ROI properties -> Set 2D ROI properties -> Convert 2D ROI to RGB -> Convert 2D ROI to RGB -> Copy physical dimensions -> Copy physical dimensions -> Blend images -> Copy physical dimensions -> Export image",
+     "wiring": "Create empty image Output -> Convert 2D ROI to RGB Image; Create empty image Output -> Convert 2D ROI to RGB Image; Filter 2D ROI by overlap (old) ROI 1 -> Set 2D ROI properties Input; Filter 2D ROI by overlap (old) ROI 2 -> Set 2D ROI properties Input; Set 2D ROI properties Output -> Convert 2D ROI to RGB ROI; Convert 2D ROI to RGB Output -> Copy physical dimensions Target; Convert 2D ROI to RGB Output -> Blend images Magenta; Convert 2D ROI to RGB Output -> Copy physical dimensions Target; Convert 2D ROI to RGB Output -> Blend images Green; Copy physical dimensions Output -> Export image Input; Blend images Output -> Copy physical dimensions Target; Set 2D ROI properties Output -> Convert 2D ROI to RGB ROI",
+     "nodeCount": 12,
+     "edgeCount": 12,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions",
+        "jipipe:node:name": "Copy physical dimensions"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-generate-zero-image",
+        "jipipe:node:name": "Create empty image"
+       },
+       "n10": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions",
+        "jipipe:node:name": "Copy physical dimensions"
+       },
+       "n11": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-generate-zero-image",
+        "jipipe:node:name": "Create empty image"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij1-roi-filter-by-overlap",
+        "jipipe:node:name": "Filter 2D ROI by overlap (old)"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-set-properties",
+        "jipipe:node:name": "Set 2D ROI properties"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       },
+       "n7": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions",
+        "jipipe:node:name": "Copy physical dimensions"
+       },
+       "n8": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij1-color-blend-images",
+        "jipipe:node:name": "Blend images"
+       },
+       "n9": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-roi-set-properties",
+        "jipipe:node:name": "Set 2D ROI properties"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n6",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       },
+       {
+        "source-node": "n11",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "ROI 1",
+        "target-node": "n9",
+        "target-slot": "Input",
+        "source_slot": "ROI 1",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "ROI 2",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "ROI 1",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n10",
+        "target-slot": "Target",
+        "source_slot": "Output",
+        "target_slot": "Source"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n8",
+        "target-slot": "Magenta",
+        "source_slot": "Output",
+        "target_slot": "Magenta"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Target",
+        "source_slot": "Output",
+        "target_slot": "Source"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Output",
+        "target-node": "n8",
+        "target-slot": "Green",
+        "source_slot": "Output",
+        "target_slot": "Green"
+       },
+       {
+        "source-node": "n7",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Source",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n8",
+        "source-slot": "Output",
+        "target-node": "n7",
+        "target-slot": "Target",
+        "source_slot": "Output",
+        "target_slot": "Source"
+       },
+       {
+        "source-node": "n9",
+        "source-slot": "Output",
+        "target-node": "n6",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0029-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Pairwise 2D ROI distance statistics",
+   "description": "Takes 2D ROIs, extracts all pairwise ROI statistics such as distances, plots the measurements as histograms, and exports the measurement table and rendered plot images.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0029",
+    "direction": "Pairwise 3D ROI distance statistics -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-roi-relation-2d",
+       "name": "Extract pairwise 2D ROI statistics",
+       "description": "Extracts all pairwise statistics between the 2D ROI"
+      },
+      {
+       "id": "ij1-roi-relation-2d",
+       "name": "Extract pairwise 2D ROI statistics",
+       "description": "Extracts all pairwise statistics between the 2D ROI"
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "export-data-by-parameter-v2",
+       "name": "Export data",
+       "description": "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s)."
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "export-data-by-parameter-v2",
+       "name": "Export data",
+       "description": "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s)."
+      },
+      {
+       "id": "ij1-color-to-rgb",
+       "name": "Render to RGB",
+       "description": "Converts the incoming image to RGB. This applies the LUT if any is set. Compared to the image converter node, this operation renders the image into a representation equivalent to an image viewer, meaning that contrast settings are preserved."
+      },
+      {
+       "id": "ij1-color-to-rgb",
+       "name": "Render to RGB",
+       "description": "Converts the incoming image to RGB. This applies the LUT if any is set. Compared to the image converter node, this operation renders the image into a representation equivalent to an image viewer, meaning that contrast settings are preserved."
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      },
+      {
+       "id": "io-interface",
+       "name": "IO Interface",
+       "description": "Sends the connected data onward without changing it, so it can serve as a neutral connection point. It takes in any data type and produces the same data type unchanged."
+      }
+     ],
+     "nodeSequence": "Extract pairwise 2D ROI statistics -> Extract pairwise 2D ROI statistics -> JFreeChart Histogram plot -> Export data -> JFreeChart Histogram plot -> Export data -> Render to RGB -> Render to RGB -> Export image -> Export image -> IO Interface",
+     "wiring": "Export image Exported file -> IO Interface Data 4; Render to RGB Output -> Export image Input; JFreeChart Histogram plot Output -> Render to RGB Input; Export data Output path -> IO Interface Data; JFreeChart Histogram plot Output -> Render to RGB Input; Export image Exported file -> IO Interface Data 3; Extract pairwise 2D ROI statistics Measurements -> JFreeChart Histogram plot Input; Extract pairwise 2D ROI statistics Measurements -> Export data Data; Export data Output path -> IO Interface Data 1; Render to RGB Output -> Export image Input; Extract pairwise 2D ROI statistics Measurements -> JFreeChart Histogram plot Input; Extract pairwise 2D ROI statistics Measurements -> Export data Data",
+     "nodeCount": 11,
+     "edgeCount": 12,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "io-interface",
+        "jipipe:node:name": "IO Interface"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n10": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-color-to-rgb",
+        "jipipe:node:name": "Render to RGB"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "export-data-by-parameter-v2",
+        "jipipe:node:name": "Export data"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-relation-2d",
+        "jipipe:node:name": "Extract pairwise 2D ROI statistics"
+       },
+       "n7": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 550
+        },
+        "jipipe:node-info-id": "export-data-by-parameter-v2",
+        "jipipe:node:name": "Export data"
+       },
+       "n8": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-color-to-rgb",
+        "jipipe:node:name": "Render to RGB"
+       },
+       "n9": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-roi-relation-2d",
+        "jipipe:node:name": "Extract pairwise 2D ROI statistics"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n1",
+        "source-slot": "Exported file",
+        "target-node": "n0",
+        "target-slot": "Data 4",
+        "source_slot": "Exported file",
+        "target_slot": "Data 4"
+       },
+       {
+        "source-node": "n10",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n8",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output path",
+        "target-node": "n0",
+        "target-slot": "Data",
+        "source_slot": "Output path",
+        "target_slot": "Data"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n10",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Exported file",
+        "target-node": "n0",
+        "target-slot": "Data 3",
+        "source_slot": "Exported file",
+        "target_slot": "Data 3"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Measurements",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Measurements",
+        "target-node": "n7",
+        "target-slot": "Data",
+        "source_slot": "Measurements",
+        "target_slot": "Data"
+       },
+       {
+        "source-node": "n7",
+        "source-slot": "Output path",
+        "target-node": "n0",
+        "target-slot": "Data 1",
+        "source_slot": "Output path",
+        "target_slot": "Data 1"
+       },
+       {
+        "source-node": "n8",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n9",
+        "source-slot": "Measurements",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n9",
+        "source-slot": "Measurements",
+        "target-node": "n3",
+        "target-slot": "Data",
+        "source_slot": "Measurements",
+        "target_slot": "Data"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0035-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Load and denoise images from folders",
+   "description": "Takes a configured project folder, lists subfolders and image files, annotates and filters the paths, imports each image, and applies a 3D median filter to reduce noise in each channel or slice. It produces denoised image data with folder and file annotations.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0035",
+    "direction": "Load and denoise images from folders -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "import-folder-list",
+       "name": "Folder list",
+       "description": "Produces a list of folder entries from the folders you specify, so each folder can be processed separately by later nodes."
+      },
+      {
+       "id": "project-user-directory",
+       "name": "Project user path",
+       "description": "Returns a project user path as data. You can configure paths within the project settings."
+      },
+      {
+       "id": "folder-list-subfolders",
+       "name": "List subfolders",
+       "description": "Takes folders and lists the subfolders inside each one, optionally starting from a named subfolder and searching recursively. It can keep only folders matching filter conditions. The result is a list of folders for downstream steps."
+      },
+      {
+       "id": "path-to-annotation-simple",
+       "name": "Annotate with file/directory name",
+       "description": "Creates an annotation for each path based on its name or its full path."
+      },
+      {
+       "id": "folder-list-files",
+       "name": "List files",
+       "description": "Takes each input folder and outputs the files it contains, optionally from a named subfolder and, if enabled, from all subfolders. A filter expression can keep only matching files, and recursive search can follow symbolic links."
+      },
+      {
+       "id": "path-to-annotation-simple",
+       "name": "Annotate with file/directory name",
+       "description": "Creates an annotation for each path based on its name or its full path."
+      },
+      {
+       "id": "path-filter",
+       "name": "Filter paths",
+       "description": "Filters the paths (files/folders) by their name or absolute path"
+      },
+      {
+       "id": "annotate-set",
+       "name": "Set/Edit annotations",
+       "description": "Modifies the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values."
+      },
+      {
+       "id": "import-imagej-imgplus-from-file",
+       "name": "Import image",
+       "description": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title."
+      },
+      {
+       "id": "ij1-blur-median3d",
+       "name": "Median filter 3D",
+       "description": "Applies convolution with a local median function in 3D space for smoothing. If higher-dimensional data is provided, the filter is applied to each 3D slice."
+      }
+     ],
+     "nodeSequence": "Folder list -> Project user path -> List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths -> Set/Edit annotations -> Import image -> Median filter 3D",
+     "wiring": "Annotate with file/directory name Annotated paths -> List files Folders; Set/Edit annotations Output -> Import image Files; Import image Image -> Median filter 3D Input; List subfolders Subfolders -> Annotate with file/directory name Paths; Filter paths Output -> Set/Edit annotations Input; List files Files -> Annotate with file/directory name Paths; Project user path Output -> List subfolders Folders; Annotate with file/directory name Annotated paths -> Filter paths Input",
+     "nodeCount": 10,
+     "edgeCount": 8,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-to-annotation-simple",
+        "jipipe:node:name": "Annotate with file/directory name"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set",
+        "jipipe:node:name": "Set/Edit annotations"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+        "jipipe:node:name": "Import image"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-folder-list",
+        "jipipe:node:name": "Folder list"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "folder-list-subfolders",
+        "jipipe:node:name": "List subfolders"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-filter",
+        "jipipe:node:name": "Filter paths"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 2100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-blur-median3d",
+        "jipipe:node:name": "Median filter 3D"
+       },
+       "n7": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "folder-list-files",
+        "jipipe:node:name": "List files"
+       },
+       "n8": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "project-user-directory",
+        "jipipe:node:name": "Project user path"
+       },
+       "n9": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-to-annotation-simple",
+        "jipipe:node:name": "Annotate with file/directory name"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Annotated paths",
+        "target-node": "n7",
+        "target-slot": "Folders",
+        "source_slot": "Paths",
+        "target_slot": "Folders"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Files",
+        "source_slot": "Input",
+        "target_slot": "Files"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Image",
+        "target-node": "n6",
+        "target-slot": "Input",
+        "source_slot": "Image",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Subfolders",
+        "target-node": "n0",
+        "target-slot": "Paths",
+        "source_slot": "Folders",
+        "target_slot": "Paths"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n7",
+        "source-slot": "Files",
+        "target-node": "n9",
+        "target-slot": "Paths",
+        "source_slot": "Files",
+        "target_slot": "Paths"
+       },
+       {
+        "source-node": "n8",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Folders",
+        "source_slot": "Output",
+        "target_slot": "Folders"
+       },
+       {
+        "source-node": "n9",
+        "source-slot": "Annotated paths",
+        "target-node": "n5",
+        "target-slot": "Input",
+        "source_slot": "Paths",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0060-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:statistics",
+   "name": "Pairwise 2D ROI statistics and histogram",
+   "description": "Takes 2D ROIs and computes all pairwise measurements between them, producing a statistics table. It exports that table and a histogram plot image of the measurements.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0060",
+    "direction": "Pairwise 3D ROI statistics and histogram -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-roi-relation-2d",
+       "name": "Extract pairwise 2D ROI statistics",
+       "description": "Extracts all pairwise statistics between the 2D ROI"
+      },
+      {
+       "id": "export-data-by-parameter-v2",
+       "name": "Export data",
+       "description": "Exports the input data via JIPipe's standard exporter. The output is the directory that contains the generated file(s)."
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      }
+     ],
+     "nodeSequence": "Extract pairwise 2D ROI statistics -> Export data -> JFreeChart Histogram plot -> Export image",
+     "wiring": "Extract pairwise 2D ROI statistics Measurements -> Export data Data; Extract pairwise 2D ROI statistics Measurements -> JFreeChart Histogram plot Input; JFreeChart Histogram plot Output -> Export image Input",
+     "nodeCount": 4,
+     "edgeCount": 3,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "export-data-by-parameter-v2",
+        "jipipe:node:name": "Export data"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-relation-2d",
+        "jipipe:node:name": "Extract pairwise 2D ROI statistics"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n1",
+        "source-slot": "Measurements",
+        "target-node": "n0",
+        "target-slot": "Data",
+        "source_slot": "Measurements",
+        "target_slot": "Data"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Measurements",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0067-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Import images and denoise with median filter",
+   "description": "Takes a list of image files, imports each as an image, and applies a 3D median filter to each channel or slice. It produces denoised images suitable for downstream analysis.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0067",
+    "direction": "Import images and denoise with median filter -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "import-file-list",
+       "name": "File list",
+       "description": "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing."
+      },
+      {
+       "id": "import-imagej-imgplus-from-file",
+       "name": "Import image",
+       "description": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title."
+      },
+      {
+       "id": "ij1-blur-median3d",
+       "name": "Median filter 3D",
+       "description": "Applies convolution with a local median function in 3D space for smoothing. If higher-dimensional data is provided, the filter is applied to each 3D slice."
+      }
+     ],
+     "nodeSequence": "File list -> Import image -> Median filter 3D",
+     "wiring": "Import image Image -> Median filter 3D Input; File list Filenames -> Import image Files",
+     "nodeCount": 3,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+        "jipipe:node:name": "Import image"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-file-list",
+        "jipipe:node:name": "File list"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-blur-median3d",
+        "jipipe:node:name": "Median filter 3D"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Image",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Image",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Filenames",
+        "target-node": "n0",
+        "target-slot": "Files",
+        "source_slot": "Filenames",
+        "target_slot": "Files"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0071-2d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:export",
+   "name": "Export 2D ROIs as a labeled image",
+   "description": "Takes a list of 2D ROIs and a blank image, updates the ROIs' properties, converts them into a labeled image, copies the physical pixel dimensions, and exports the image as a file.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0071",
+    "direction": "Export 3D ROIs as a labeled image -> 2D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-roi-set-properties",
+       "name": "Set 2D ROI properties",
+       "description": "Sets properties of all Roi to a user-defined value."
+      },
+      {
+       "id": "cpython-script-iterating",
+       "name": "Run Python script (iterating)",
+       "description": "Runs a Python script that iterates through each iteration step in the input slots. This node uses an existing dedicated Python interpreter that must be set up in the application settings.  To learn more about the JIPipe Python API, visit https://jipipe.hki-jena.de/apidocs/python-current/index.html"
+      },
+      {
+       "id": "ij1-generate-zero-image",
+       "name": "Create empty image",
+       "description": "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image."
+      },
+      {
+       "id": "ij1-roi-to-rgb",
+       "name": "Convert 2D ROI to RGB",
+       "description": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization."
+      },
+      {
+       "id": "ij1-calibration-copy-physical-dimensions",
+       "name": "Copy physical dimensions",
+       "description": "Copies the phyiscal pixel sizes from the source to the target"
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      }
+     ],
+     "nodeSequence": "Set 2D ROI properties -> Run Python script (iterating) -> Create empty image -> Convert 2D ROI to RGB -> Copy physical dimensions -> Export image",
+     "wiring": "Copy physical dimensions Output -> Export image Input; Set 2D ROI properties Output -> Convert 2D ROI to RGB ROI; Convert 2D ROI to RGB Output -> Copy physical dimensions Target; Create empty image Output -> Convert 2D ROI to RGB Image",
+     "nodeCount": 6,
+     "edgeCount": 4,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-calibration-copy-physical-dimensions",
+        "jipipe:node:name": "Copy physical dimensions"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-set-properties",
+        "jipipe:node:name": "Set 2D ROI properties"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-roi-to-rgb",
+        "jipipe:node:name": "Convert 2D ROI to RGB"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "cpython-script-iterating",
+        "jipipe:node:name": "Run Python script (iterating)"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij1-generate-zero-image",
+        "jipipe:node:name": "Create empty image"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Source",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Target",
+        "source_slot": "Output",
+        "target_slot": "Source"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0096-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Render 3D ROIs as RGB images",
+   "description": "Takes 3D ROI lists, assigns user-defined properties to the ROIs, and converts them into RGB images that draw the ROIs as colored outlines, fills, and optional labels. It can combine two ROI visualizations by using one rendered image as the reference canvas for the other.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0096",
+    "direction": "Render 2D ROIs as RGB images -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-change-properties",
+       "name": "Set IJ3D ROI properties",
+       "description": "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list."
+      },
+      {
+       "id": "ij3d-roi-change-properties",
+       "name": "Set IJ3D ROI properties",
+       "description": "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      }
+     ],
+     "nodeSequence": "Set IJ3D ROI properties -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Convert IJ3D ROI to RGB",
+     "wiring": "Set IJ3D ROI properties Output -> Convert IJ3D ROI to RGB ROI; Set IJ3D ROI properties Output -> Convert IJ3D ROI to RGB ROI; Convert IJ3D ROI to RGB Output -> Convert IJ3D ROI to RGB Image",
+     "nodeCount": 4,
+     "edgeCount": 3,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-change-properties",
+        "jipipe:node:name": "Set IJ3D ROI properties"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij3d-roi-change-properties",
+        "jipipe:node:name": "Set IJ3D ROI properties"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0099-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Render 3D ROIs as an RGB image",
+   "description": "Takes a 3D ROI list and an optional reference image, and produces an RGB image in which the ROIs are drawn as colored outlines, fills, and optional labels.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0099",
+    "direction": "Render 2D ROIs as an RGB image -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      }
+     ],
+     "nodeSequence": "Convert IJ3D ROI to RGB -> Convert IJ3D ROI to RGB -> Convert IJ3D ROI to RGB",
+     "wiring": "",
+     "nodeCount": 3,
+     "edgeCount": 0,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       }
+      },
+      "edges": []
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0107-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:plotting",
+   "name": "Plot pixel values from a masked image",
+   "description": "Takes an image, applies a 3D morphological operation to create a mask, sets the masked pixels to a color, extracts the pixel values into a table, filters and computes row expressions, and produces multiple XY scatter plots.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0107",
+    "direction": "Plot pixel values from a masked image -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-morph-operation3d",
+       "name": "Morphological operation 3D",
+       "description": "Applies a morphological operation to greyscale images. Following operations are included: Erosion, Dilation, Opening, Closing, White Top Hat, Black Top Hat, Gradient, Laplacian, Internal Gradient, and External Gradient. More information (including examples) can be found at https://imagej.net/MorphoLibJ.html If a multi-channel image is provided, the operation is applied to each channel."
+      },
+      {
+       "id": "ij1-color-set-to-color",
+       "name": "Set to color (RGB)",
+       "description": "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value."
+      },
+      {
+       "id": "ij1-convert-image-to-table",
+       "name": "Get pixels as table",
+       "description": "Extracts the pixel values of an image and puts them into a table. The table always includes columns <code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, and <code>t</code>. For greyscale images, the value is stored into a column <code>value</code>. For color images, column names depend on the color space."
+      },
+      {
+       "id": "table-filter",
+       "name": "Filter table rows",
+       "description": "Filters tables by iterating through each row and testing a filter expression."
+      },
+      {
+       "id": "table-apply-expression-per-row-v2",
+       "name": "Apply expression per row",
+       "description": "Applies an expression for each row. The column values are available as variables."
+      },
+      {
+       "id": "plot-table:plot-xy-scatter",
+       "name": "JFreeChart XY scatter plot",
+       "description": ""
+      },
+      {
+       "id": "plot-table:plot-xy-scatter",
+       "name": "JFreeChart XY scatter plot",
+       "description": ""
+      },
+      {
+       "id": "plot-table:plot-xy-scatter",
+       "name": "JFreeChart XY scatter plot",
+       "description": ""
+      },
+      {
+       "id": "plot-table:plot-xy-scatter",
+       "name": "JFreeChart XY scatter plot",
+       "description": ""
+      }
+     ],
+     "nodeSequence": "Morphological operation 3D -> Set to color (RGB) -> Get pixels as table -> Filter table rows -> Apply expression per row -> JFreeChart XY scatter plot -> JFreeChart XY scatter plot -> JFreeChart XY scatter plot -> JFreeChart XY scatter plot",
+     "wiring": "Morphological operation 3D Output -> Set to color (RGB) Mask; Filter table rows Output -> Apply expression per row Input; Set to color (RGB) Output -> Get pixels as table Input; Apply expression per row Output -> JFreeChart XY scatter plot Input; Apply expression per row Output -> JFreeChart XY scatter plot Input; Apply expression per row Output -> JFreeChart XY scatter plot Input; Apply expression per row Output -> JFreeChart XY scatter plot Input; Get pixels as table Output -> Filter table rows Input",
+     "nodeCount": 9,
+     "edgeCount": 8,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-morph-operation3d",
+        "jipipe:node:name": "Morphological operation 3D"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "plot-table:plot-xy-scatter",
+        "jipipe:node:name": "JFreeChart XY scatter plot"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-filter",
+        "jipipe:node:name": "Filter table rows"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "plot-table:plot-xy-scatter",
+        "jipipe:node:name": "JFreeChart XY scatter plot"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-color-set-to-color",
+        "jipipe:node:name": "Set to color (RGB)"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-apply-expression-per-row-v2",
+        "jipipe:node:name": "Apply expression per row"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "plot-table:plot-xy-scatter",
+        "jipipe:node:name": "JFreeChart XY scatter plot"
+       },
+       "n7": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 550
+        },
+        "jipipe:node-info-id": "plot-table:plot-xy-scatter",
+        "jipipe:node:name": "JFreeChart XY scatter plot"
+       },
+       "n8": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-convert-image-to-table",
+        "jipipe:node:name": "Get pixels as table"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Mask",
+        "source_slot": "Input",
+        "target_slot": "Mask"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n8",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n6",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n7",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n8",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0128-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Overlay 3D ROIs on an image",
+   "description": "Takes an input image and a list of 3D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0128",
+    "direction": "Overlay 2D ROIs on an image -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "graph-wrapper:input",
+       "name": "Group input",
+       "description": "Marks the entry point of a grouped set of analysis steps. It takes no specific data type and produces no separate result; it simply lets the data you connect to the group enter unchanged for the steps inside to use."
+      },
+      {
+       "id": "ij1-contrast-histogram-enhancer",
+       "name": "Histogram-based contrast enhancer",
+       "description": "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "graph-wrapper:output",
+       "name": "Group output",
+       "description": "It makes the final result of a node group available to the rest of the workflow. It takes that result from the grouped steps and passes it on without changing it."
+      }
+     ],
+     "nodeSequence": "Group input -> Histogram-based contrast enhancer -> Convert IJ3D ROI to RGB -> Group output",
+     "wiring": "Histogram-based contrast enhancer Output -> Convert IJ3D ROI to RGB Image; Convert IJ3D ROI to RGB Output -> Group output Output; Group input Input -> Histogram-based contrast enhancer Input; Group input ROI -> Convert IJ3D ROI to RGB ROI",
+     "nodeCount": 4,
+     "edgeCount": 4,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-contrast-histogram-enhancer",
+        "jipipe:node:name": "Histogram-based contrast enhancer"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "graph-wrapper:input",
+        "jipipe:node:name": "Group input"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "graph-wrapper:output",
+        "jipipe:node:name": "Group output"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Image",
+        "source_slot": "Input",
+        "target_slot": "Image"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Output",
+        "source_slot": "Output",
+        "target_slot": "Output"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Input",
+        "target-node": "n0",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "ROI",
+        "target-node": "n1",
+        "target-slot": "ROI",
+        "source_slot": "ROI",
+        "target_slot": "ROI"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0132-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Import and scale 3D images",
+   "description": "Takes a list of image file names, imports each file as an ImageJ image, and applies a 3D scaling transform to each image or 3D slice, producing rescaled 3D images.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0132",
+    "direction": "Import and scale 2D images -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "import-file-list",
+       "name": "File list",
+       "description": "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing."
+      },
+      {
+       "id": "import-imagej-imgplus-from-file",
+       "name": "Import image",
+       "description": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title."
+      },
+      {
+       "id": "ij1-transform-scale3d",
+       "name": "Scale 3D image",
+       "description": "Scales a 3D image."
+      }
+     ],
+     "nodeSequence": "File list -> Import image -> Scale 3D image",
+     "wiring": "Import image Image -> Scale 3D image Input; File list Filenames -> Import image Files",
+     "nodeCount": 3,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+        "jipipe:node:name": "Import image"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-file-list",
+        "jipipe:node:name": "File list"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-transform-scale3d",
+        "jipipe:node:name": "Scale 3D image"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Image",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Image",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Filenames",
+        "target-node": "n0",
+        "target-slot": "Files",
+        "source_slot": "Filenames",
+        "target_slot": "Files"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0139-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Load and filter 3D ROI files",
+   "description": "Produces filtered 3D ROI data by importing ROI files from file paths, adding metadata from file/directory names and expressions, and splitting the ROIs based on an annotation value.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0139",
+    "direction": "Load and filter 2D ROI files -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "path-to-annotation-simple",
+       "name": "Annotate with file/directory name",
+       "description": "Creates an annotation for each path based on its name or its full path."
+      },
+      {
+       "id": "import-roi-3d",
+       "name": "Import IJ3D ROI",
+       "description": "Imports a 3D ROI list from a *.zip file"
+      },
+      {
+       "id": "annotate-set-single",
+       "name": "Set annotation (expression)",
+       "description": "Sets a single annotation. The name and the value are determined by expressions"
+      },
+      {
+       "id": "annotate-set-single",
+       "name": "Set annotation (expression)",
+       "description": "Sets a single annotation. The name and the value are determined by expressions"
+      },
+      {
+       "id": "annotate-set-single",
+       "name": "Set annotation (expression)",
+       "description": "Sets a single annotation. The name and the value are determined by expressions"
+      },
+      {
+       "id": "annotate-set-single",
+       "name": "Set annotation (expression)",
+       "description": "Sets a single annotation. The name and the value are determined by expressions"
+      },
+      {
+       "id": "annotate-filter-by-annotation-if-else",
+       "name": "Filter by annotation (If else)",
+       "description": "Filters data based on the annotation value. Has two outputs, one that contains the data that matches the filter, and another output that contains all data that does not match the filter"
+      }
+     ],
+     "nodeSequence": "Annotate with file/directory name -> Import IJ3D ROI -> Set annotation (expression) -> Set annotation (expression) -> Set annotation (expression) -> Set annotation (expression) -> Filter by annotation (If else)",
+     "wiring": "Annotate with file/directory name Annotated paths -> Import IJ3D ROI Files; Set annotation (expression) Output -> Filter by annotation (If else) Input; Set annotation (expression) Output -> Set annotation (expression) Input; Set annotation (expression) Output -> Set annotation (expression) Input; Set annotation (expression) Output -> Set annotation (expression) Input; Import IJ3D ROI Output -> Set annotation (expression) Input",
+     "nodeCount": 7,
+     "edgeCount": 6,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-to-annotation-simple",
+        "jipipe:node:name": "Annotate with file/directory name"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set-single",
+        "jipipe:node:name": "Set annotation (expression)"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-filter-by-annotation-if-else",
+        "jipipe:node:name": "Filter by annotation (If else)"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set-single",
+        "jipipe:node:name": "Set annotation (expression)"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set-single",
+        "jipipe:node:name": "Set annotation (expression)"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set-single",
+        "jipipe:node:name": "Set annotation (expression)"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-roi-3d",
+        "jipipe:node:name": "Import IJ3D ROI"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Annotated paths",
+        "target-node": "n6",
+        "target-slot": "Files",
+        "source_slot": "Paths",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0141-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "Summarize 3D ROI measurements by label",
+   "description": "Takes 3D ROIs, sets ROI properties from expressions, extracts per-ROI statistics optionally from a reference image, and produces a table summarizing those statistics by label.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0141",
+    "direction": "Summarize 2D ROI measurements by label -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-change-properties-from-expressions",
+       "name": "Set IJ3D ROI properties from expressions",
+       "description": "Sets the properties of all 3D ROI via expressions"
+      },
+      {
+       "id": "ij3d-measure-roi3d",
+       "name": "Extract IJ3D ROI statistics",
+       "description": "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned."
+      },
+      {
+       "id": "table-convert-to-histogram-key-value",
+       "name": "Apply expression per label",
+       "description": "Given a table with two numeric columns containing a key and a value, summarize all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms."
+      }
+     ],
+     "nodeSequence": "Set IJ3D ROI properties from expressions -> Extract IJ3D ROI statistics -> Apply expression per label",
+     "wiring": "Extract IJ3D ROI statistics Measurements -> Apply expression per label Input; Set IJ3D ROI properties from expressions Output -> Extract IJ3D ROI statistics ROI",
+     "nodeCount": 3,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-measure-roi3d",
+        "jipipe:node:name": "Extract IJ3D ROI statistics"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-convert-to-histogram-key-value",
+        "jipipe:node:name": "Apply expression per label"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-change-properties-from-expressions",
+        "jipipe:node:name": "Set IJ3D ROI properties from expressions"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Measurements",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0145-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Create colored images from 3D ROIs",
+   "description": "Takes image paths and matching 3D ROI files, imports the ROIs, and applies a specified color to the image using those ROIs, producing a colored image that visualizes manual annotations.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0145",
+    "direction": "Create colored images from 2D ROIs -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "path-to-annotation-simple",
+       "name": "Annotate with file/directory name",
+       "description": "Creates an annotation for each path based on its name or its full path."
+      },
+      {
+       "id": "import-roi-3d",
+       "name": "Import IJ3D ROI",
+       "description": "Imports a 3D ROI list from a *.zip file"
+      },
+      {
+       "id": "ij1-color-set-to-color",
+       "name": "Set to color (RGB)",
+       "description": "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value."
+      }
+     ],
+     "nodeSequence": "Annotate with file/directory name -> Import IJ3D ROI -> Set to color (RGB)",
+     "wiring": "Import IJ3D ROI Output -> Set to color (RGB) ROI; Annotate with file/directory name Annotated paths -> Import IJ3D ROI Files",
+     "nodeCount": 3,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-roi-3d",
+        "jipipe:node:name": "Import IJ3D ROI"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-to-annotation-simple",
+        "jipipe:node:name": "Annotate with file/directory name"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-color-set-to-color",
+        "jipipe:node:name": "Set to color (RGB)"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "ROI",
+        "source_slot": "Output",
+        "target_slot": "ROI"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Annotated paths",
+        "target-node": "n0",
+        "target-slot": "Files",
+        "source_slot": "Paths",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0154-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:plotting",
+   "name": "3D ROI measurement histogram montage",
+   "description": "Produces an exported montage image of histogram plots summarizing 3D ROI measurements. It takes 3D ROI statistics measurements, creates histogram plots, converts the plots to RGB, combines them into a montage, and exports the montage as an image.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0154",
+    "direction": "2D ROI measurement histogram montage -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-measure-roi3d",
+       "name": "Extract IJ3D ROI statistics",
+       "description": "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned."
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "ij-convert-image-to-rgb-colors",
+       "name": "Convert image to RGB",
+       "description": "Takes a 2D or 3D image and converts it to RGB color data, producing an image whose pixels are represented as red, green, and blue channels. This makes the image suitable for steps that expect RGB color input."
+      },
+      {
+       "id": "ij1-dimensions-input2montage-v2",
+       "name": "Create montage",
+       "description": "Creates a montage of all input images. Supports 2D and 3D images."
+      },
+      {
+       "id": "iji-export-image-v2",
+       "name": "Export image",
+       "description": "Exports incoming images into a non-JIPipe format (PNG, JPEG, BMP, AVI, TIFF). Please note support for input images depending on the file format: <ul><li>PNG, JPEG, BMP: 2D images only</li><li>AVI: 2D or 3D images only</li><li>TIFF: All images supported</li></ul>"
+      }
+     ],
+     "nodeSequence": "Extract IJ3D ROI statistics -> JFreeChart Histogram plot -> Convert image to RGB -> Create montage -> Export image",
+     "wiring": "Extract IJ3D ROI statistics Measurements -> JFreeChart Histogram plot Input; Create montage Output -> Export image Input; JFreeChart Histogram plot Output -> Convert image to RGB Input; Convert image to RGB Output -> Create montage Input",
+     "nodeCount": 5,
+     "edgeCount": 4,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-measure-roi3d",
+        "jipipe:node:name": "Extract IJ3D ROI statistics"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "iji-export-image-v2",
+        "jipipe:node:name": "Export image"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-dimensions-input2montage-v2",
+        "jipipe:node:name": "Create montage"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij-convert-image-to-rgb-colors",
+        "jipipe:node:name": "Convert image to RGB"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Measurements",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0173-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Quick RGB preview of 3D ROIs on images",
+   "description": "Takes a 3D ROI list and images, draws the 3D ROIs as colored outlines, applies color maps to the images, and blends them into one RGB image for quick visual inspection.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0173",
+    "direction": "Quick RGB preview of 2D ROIs on images -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "ij1-set-lut-from-color-map",
+       "name": "Set LUT (color map)",
+       "description": "Sets the LUT of the image from a predefined color map. This does not change the pixel data."
+      },
+      {
+       "id": "ij1-set-lut-from-color-map",
+       "name": "Set LUT (color map)",
+       "description": "Sets the LUT of the image from a predefined color map. This does not change the pixel data."
+      },
+      {
+       "id": "ij1-color-blend-images",
+       "name": "Blend images",
+       "description": "Takes one or more same-size greyscale or RGB images and combines them into one RGB image by overlaying them in priority order with chosen blend modes and opacities."
+      },
+      {
+       "id": "ij1-color-blend-images",
+       "name": "Blend images",
+       "description": "Takes one or more same-size greyscale or RGB images and combines them into one RGB image by overlaying them in priority order with chosen blend modes and opacities."
+      }
+     ],
+     "nodeSequence": "Convert IJ3D ROI to RGB -> Set LUT (color map) -> Set LUT (color map) -> Blend images -> Blend images",
+     "wiring": "Convert IJ3D ROI to RGB Output -> Blend images Bottom; Set LUT (color map) Output -> Blend images Red; Set LUT (color map) Output -> Blend images Red; Set LUT (color map) Output -> Blend images Green; Set LUT (color map) Output -> Blend images Green",
+     "nodeCount": 5,
+     "edgeCount": 5,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-color-blend-images",
+        "jipipe:node:name": "Blend images"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+        "jipipe:node:name": "Set LUT (color map)"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-color-blend-images",
+        "jipipe:node:name": "Blend images"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+        "jipipe:node:name": "Set LUT (color map)"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Bottom",
+        "source_slot": "Output",
+        "target_slot": "Bottom"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Red",
+        "source_slot": "Input",
+        "target_slot": "Red"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Red",
+        "source_slot": "Input",
+        "target_slot": "Red"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Green",
+        "source_slot": "Input",
+        "target_slot": "Green"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Green",
+        "source_slot": "Input",
+        "target_slot": "Green"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0200-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:plotting",
+   "name": "Plot histograms of 3D ROI statistics",
+   "description": "Takes 3D ROIs (with an optional reference image) and computes ROI statistics, sets/edits annotations, and creates histogram plots of the statistics, then splits/filters the plotted data by annotation value.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0200",
+    "direction": "Plot histograms of 2D ROI statistics -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-measure-roi3d",
+       "name": "Extract IJ3D ROI statistics",
+       "description": "Generates a results table containing 3D ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, NaN is returned."
+      },
+      {
+       "id": "annotate-set",
+       "name": "Set/Edit annotations",
+       "description": "Modifies the specified annotations to the specified values. Supports expressions to combine existing annotations or generate new values."
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "annotate-split-by-annotation",
+       "name": "Split & filter by annotation",
+       "description": "Splits the input data by a specified annotation or filters data based on the annotation value."
+      },
+      {
+       "id": "annotate-split-by-annotation",
+       "name": "Split & filter by annotation",
+       "description": "Splits the input data by a specified annotation or filters data based on the annotation value."
+      }
+     ],
+     "nodeSequence": "Extract IJ3D ROI statistics -> Set/Edit annotations -> JFreeChart Histogram plot -> JFreeChart Histogram plot -> Split & filter by annotation -> Split & filter by annotation",
+     "wiring": "JFreeChart Histogram plot Output -> Split & filter by annotation Input; Extract IJ3D ROI statistics Measurements -> Set/Edit annotations Input; Set/Edit annotations Output -> JFreeChart Histogram plot Input; Set/Edit annotations Output -> JFreeChart Histogram plot Input; JFreeChart Histogram plot Output -> Split & filter by annotation Input",
+     "nodeCount": 6,
+     "edgeCount": 5,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-measure-roi3d",
+        "jipipe:node:name": "Extract IJ3D ROI statistics"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-set",
+        "jipipe:node:name": "Set/Edit annotations"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-split-by-annotation",
+        "jipipe:node:name": "Split & filter by annotation"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "annotate-split-by-annotation",
+        "jipipe:node:name": "Split & filter by annotation"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Measurements",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0202-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:plotting",
+   "name": "Pairwise 3D ROI statistics histogram",
+   "description": "Takes 3D ROIs and produces histogram plots of selected pairwise ROI measurements. It extracts pairwise 3D ROI statistics, filters and transforms the resulting table, annotates the data with the computed values, and plots the selected column as histograms.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0202",
+    "direction": "Pairwise 2D ROI statistics histogram -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-measure-pairwise-roi3d",
+       "name": "Extract pairwise IJ3D ROI statistics",
+       "description": "Extracts all pairwise statistics between the 3D ROI"
+      },
+      {
+       "id": "table-filter",
+       "name": "Filter table rows",
+       "description": "Filters tables by iterating through each row and testing a filter expression."
+      },
+      {
+       "id": "table-convert-to-histogram",
+       "name": "Table column to histogram",
+       "description": "Deprecated. Replace with a new node with the same name. Generates a histogram of table column values. Also supports weighting the values via an additional column."
+      },
+      {
+       "id": "table-filter",
+       "name": "Filter table rows",
+       "description": "Filters tables by iterating through each row and testing a filter expression."
+      },
+      {
+       "id": "table-process-columns",
+       "name": "Apply expression to columns",
+       "description": "Applies an expression function to all column values. The result of the operation is stored in the same or a new column. It is now recommended to use 'Apply expression to table (columns)' instead of this node."
+      },
+      {
+       "id": "annotate-data-with-table-values",
+       "name": "Annotate data with table values",
+       "description": "Annotates the incoming data with values from the input table"
+      },
+      {
+       "id": "annotation-merge",
+       "name": "Merge annotations",
+       "description": "Merges the annotations of all incoming data and outputs the same data with those merged annotations."
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      },
+      {
+       "id": "plot-table:plot-histogram",
+       "name": "JFreeChart Histogram plot",
+       "description": ""
+      }
+     ],
+     "nodeSequence": "Extract pairwise IJ3D ROI statistics -> Filter table rows -> Table column to histogram -> Filter table rows -> Apply expression to columns -> Annotate data with table values -> Merge annotations -> JFreeChart Histogram plot -> JFreeChart Histogram plot",
+     "wiring": "Extract pairwise IJ3D ROI statistics Measurements -> Filter table rows Input; Apply expression to columns Output -> Annotate data with table values Table; Filter table rows Output -> Table column to histogram Input; Filter table rows Output -> Merge annotations Histogram; Table column to histogram Output -> Filter table rows Input; Filter table rows Output -> Apply expression to columns Input; Filter table rows Output -> Annotate data with table values Data; Annotate data with table values Annotated data -> Merge annotations AUC100; Merge annotations Histogram -> JFreeChart Histogram plot Input; Merge annotations Histogram -> JFreeChart Histogram plot Input",
+     "nodeCount": 9,
+     "edgeCount": 10,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-measure-pairwise-roi3d",
+        "jipipe:node:name": "Extract pairwise IJ3D ROI statistics"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-process-columns",
+        "jipipe:node:name": "Apply expression to columns"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-filter",
+        "jipipe:node:name": "Filter table rows"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-convert-to-histogram",
+        "jipipe:node:name": "Table column to histogram"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "table-filter",
+        "jipipe:node:name": "Filter table rows"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotate-data-with-table-values",
+        "jipipe:node:name": "Annotate data with table values"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "annotation-merge",
+        "jipipe:node:name": "Merge annotations"
+       },
+       "n7": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       },
+       "n8": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1850,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "plot-table:plot-histogram",
+        "jipipe:node:name": "JFreeChart Histogram plot"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Measurements",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Measurements",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Table",
+        "source_slot": "Input",
+        "target_slot": "Table"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n6",
+        "target-slot": "Histogram",
+        "source_slot": "Input",
+        "target_slot": "Histogram"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n5",
+        "target-slot": "Data",
+        "source_slot": "Input",
+        "target_slot": "Data"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Annotated data",
+        "target-node": "n6",
+        "target-slot": "AUC100",
+        "source_slot": "Data",
+        "target_slot": "AUC100"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Histogram",
+        "target-node": "n7",
+        "target-slot": "Input",
+        "source_slot": "Histogram",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Histogram",
+        "target-node": "n8",
+        "target-slot": "Input",
+        "source_slot": "Histogram",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0204-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Render 3D ROIs as an RGB image",
+   "description": "Takes a 3D ROI list and produces an RGB image that draws the ROIs as colored outlines, fills, or labels. It renders the ROIs to RGB, applies a predefined color map LUT, and renders them again using the first rendered image as the reference canvas.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0204",
+    "direction": "Render 2D ROIs as an RGB image -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      },
+      {
+       "id": "ij1-set-lut-from-color-map",
+       "name": "Set LUT (color map)",
+       "description": "Sets the LUT of the image from a predefined color map. This does not change the pixel data."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      }
+     ],
+     "nodeSequence": "Convert IJ3D ROI to RGB -> Set LUT (color map) -> Convert IJ3D ROI to RGB",
+     "wiring": "Convert IJ3D ROI to RGB Output -> Convert IJ3D ROI to RGB Image",
+     "nodeCount": 3,
+     "edgeCount": 1,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+        "jipipe:node:name": "Set LUT (color map)"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0224-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Import images with scale bar and 3D ROI overlay",
+   "description": "Takes a list of image files, imports them as ImageJ images, sets their physical dimensions, draws a scale bar, and applies a 3D ROI overlay, producing calibrated images ready for display or further analysis.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0224",
+    "direction": "Import images with scale bar and 2D ROI overlay -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "import-file-list",
+       "name": "File list",
+       "description": "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing."
+      },
+      {
+       "id": "import-imagej-imgplus-from-file",
+       "name": "Import image",
+       "description": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title."
+      },
+      {
+       "id": "ij1-calibration-set-physical-dimensions",
+       "name": "Set physical dimensions",
+       "description": "Allows to set the physical dimensions of the incoming images"
+      },
+      {
+       "id": "ij1-calibration-draw-scale-bar",
+       "name": "Draw scale bar",
+       "description": "Draws a scale bar onto the image (via an overlay ROI)"
+      },
+      {
+       "id": "ij3d-roi-set-overlay",
+       "name": "IJ3D Set 3D overlay",
+       "description": "Set overlay ROIs. Please note that 3D overlays are not natively supported by ImageJ."
+      }
+     ],
+     "nodeSequence": "File list -> Import image -> Set physical dimensions -> Draw scale bar -> IJ3D Set 3D overlay",
+     "wiring": "Import image Image -> Set physical dimensions Input; File list Filenames -> Import image Files; Set physical dimensions Output -> Draw scale bar Input; Set physical dimensions Output -> IJ3D Set 3D overlay Input",
+     "nodeCount": 5,
+     "edgeCount": 4,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-calibration-draw-scale-bar",
+        "jipipe:node:name": "Draw scale bar"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+        "jipipe:node:name": "Import image"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-file-list",
+        "jipipe:node:name": "File list"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij3d-roi-set-overlay",
+        "jipipe:node:name": "IJ3D Set 3D overlay"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-calibration-set-physical-dimensions",
+        "jipipe:node:name": "Set physical dimensions"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n1",
+        "source-slot": "Image",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "Image",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Filenames",
+        "target-node": "n1",
+        "target-slot": "Files",
+        "source_slot": "Filenames",
+        "target_slot": "Files"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0250-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Smooth images with Gaussian blur",
+   "description": "Takes image data and produces smoothed images by applying a 3D Gaussian blur to each slice.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0250",
+    "direction": "Smooth images with Gaussian blur -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "data-flow-tunnel-1-entrance",
+       "name": "Tunnel entrance",
+       "description": "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node."
+      },
+      {
+       "id": "data-flow-tunnel-1-exit",
+       "name": "Tunnel exit",
+       "description": "Outputs the data sent through the matching tunnel as a collection of data items, taking no direct input and passing it unchanged."
+      },
+      {
+       "id": "data-flow-tunnel-1-exit",
+       "name": "Tunnel exit",
+       "description": "Outputs the data sent through the matching tunnel as a collection of data items, taking no direct input and passing it unchanged."
+      },
+      {
+       "id": "data-flow-tunnel-1-entrance",
+       "name": "Tunnel entrance",
+       "description": "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node."
+      },
+      {
+       "id": "ij1-blur-gaussian3d",
+       "name": "Gaussian blur 3D",
+       "description": "Applies convolution with a Gaussian function in 3D space for smoothing. If higher-dimensional data is provided, the filter is applied to each 3D slice."
+      }
+     ],
+     "nodeSequence": "Tunnel entrance -> Tunnel exit -> Tunnel exit -> Tunnel entrance -> Gaussian blur 3D",
+     "wiring": "Tunnel exit T1 -> Gaussian blur 3D Input; Tunnel exit T1 -> Tunnel entrance T1",
+     "nodeCount": 5,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "data-flow-tunnel-1-entrance",
+        "jipipe:node:name": "Tunnel entrance"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "data-flow-tunnel-1-entrance",
+        "jipipe:node:name": "Tunnel entrance"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "data-flow-tunnel-1-exit",
+        "jipipe:node:name": "Tunnel exit"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 400
+        },
+        "jipipe:node-info-id": "data-flow-tunnel-1-exit",
+        "jipipe:node:name": "Tunnel exit"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij1-blur-gaussian3d",
+        "jipipe:node:name": "Gaussian blur 3D"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n2",
+        "source-slot": "T1",
+        "target-node": "n4",
+        "target-slot": "Input",
+        "source_slot": "T1",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "T1",
+        "target-node": "n1",
+        "target-slot": "T1",
+        "source_slot": "T1",
+        "target_slot": "T1"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0267-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Create image montage from files",
+   "description": "Takes a list of image files, imports each image, scales and converts it to 8-bit RGB, and combines the results into a single montage image.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0267",
+    "direction": "Create image montage from files -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "import-file-list",
+       "name": "File list",
+       "description": "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing."
+      },
+      {
+       "id": "path-to-annotation-simple",
+       "name": "Annotate with file/directory name",
+       "description": "Creates an annotation for each path based on its name or its full path."
+      },
+      {
+       "id": "import-imagej-imgplus-from-file",
+       "name": "Import image",
+       "description": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title."
+      },
+      {
+       "id": "ij1-transform-scale3d",
+       "name": "Scale 3D image",
+       "description": "Scales a 3D image."
+      },
+      {
+       "id": "ij-convert-image-to-8-bit",
+       "name": "Convert image to 8-bit",
+       "description": "Produces an 8-bit grayscale ImageJ image by converting the input 2D or 3D ImageJ image to 8-bit, with intensity values from 0 to 255."
+      },
+      {
+       "id": "ij1-color-to-rgb",
+       "name": "Render to RGB",
+       "description": "Converts the incoming image to RGB. This applies the LUT if any is set. Compared to the image converter node, this operation renders the image into a representation equivalent to an image viewer, meaning that contrast settings are preserved."
+      },
+      {
+       "id": "ij1-dimensions-input2montage-v2",
+       "name": "Create montage",
+       "description": "Creates a montage of all input images. Supports 2D and 3D images."
+      }
+     ],
+     "nodeSequence": "File list -> Annotate with file/directory name -> Import image -> Scale 3D image -> Convert image to 8-bit -> Render to RGB -> Create montage",
+     "wiring": "Scale 3D image Output -> Convert image to 8-bit Input; Convert image to 8-bit Output -> Render to RGB Input; Render to RGB Output -> Create montage Input; File list Filenames -> Annotate with file/directory name Paths; Annotate with file/directory name Annotated paths -> Import image Files; Import image Image -> Scale 3D image Input",
+     "nodeCount": 7,
+     "edgeCount": 6,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-transform-scale3d",
+        "jipipe:node:name": "Scale 3D image"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-dimensions-input2montage-v2",
+        "jipipe:node:name": "Create montage"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij-convert-image-to-8-bit",
+        "jipipe:node:name": "Convert image to 8-bit"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 1350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-color-to-rgb",
+        "jipipe:node:name": "Render to RGB"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-file-list",
+        "jipipe:node:name": "File list"
+       },
+       "n5": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "path-to-annotation-simple",
+        "jipipe:node:name": "Annotate with file/directory name"
+       },
+       "n6": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "import-imagej-imgplus-from-file",
+        "jipipe:node:name": "Import image"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input",
+        "source_slot": "Output",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Filenames",
+        "target-node": "n5",
+        "target-slot": "Paths",
+        "source_slot": "Filenames",
+        "target_slot": "Paths"
+       },
+       {
+        "source-node": "n5",
+        "source-slot": "Annotated paths",
+        "target-node": "n6",
+        "target-slot": "Files",
+        "source_slot": "Paths",
+        "target_slot": "Files"
+       },
+       {
+        "source-node": "n6",
+        "source-slot": "Image",
+        "target-node": "n0",
+        "target-slot": "Input",
+        "source_slot": "Image",
+        "target_slot": "Input"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-mech-cluster-0323-3d",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:rois",
+   "name": "RGB image with 3D ROI overlays",
+   "description": "Takes an image and a list of 3D ROIs, enhances contrast, applies a color map to create an RGB image, and draws the 3D ROIs as colored outlines, fills, or labels, producing a single RGB visualization image.",
+   "error": null,
+   "verdict": null,
+   "provenance": {
+    "mechanism": "twin-swap",
+    "derivedFrom": "cluster-0323",
+    "direction": "RGB image with 2D ROI overlays -> 3D"
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "ij1-contrast-histogram-enhancer",
+       "name": "Histogram-based contrast enhancer",
+       "description": "Implementation of the ImageJ contrast enhancer feature that uses histograms and normalization methods."
+      },
+      {
+       "id": "ij3d-roi-change-properties",
+       "name": "Set IJ3D ROI properties",
+       "description": "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list."
+      },
+      {
+       "id": "ij1-set-lut-from-color-map",
+       "name": "Set LUT (color map)",
+       "description": "Sets the LUT of the image from a predefined color map. This does not change the pixel data."
+      },
+      {
+       "id": "ij1-apply-lut",
+       "name": "Apply LUT",
+       "description": "Applies the currently set LUT of an image and converts the image to an RGB image. To modify the LUT,  please use one of the 'Set LUT' nodes."
+      },
+      {
+       "id": "ij3d-roi-convert-to-rgb",
+       "name": "Convert IJ3D ROI to RGB",
+       "description": "Converts 3D ROI lists to a label image. Depending on the number of objects, an 8-bit, 16-bit, or 32-bit label image is generated."
+      }
+     ],
+     "nodeSequence": "Histogram-based contrast enhancer -> Set IJ3D ROI properties -> Set LUT (color map) -> Apply LUT -> Convert IJ3D ROI to RGB",
+     "wiring": "Set LUT (color map) Output -> Apply LUT Input; Apply LUT Output -> Convert IJ3D ROI to RGB Image; Histogram-based contrast enhancer Output -> Set LUT (color map) Input; Set IJ3D ROI properties Output -> Convert IJ3D ROI to RGB ROI",
+     "nodeCount": 5,
+     "edgeCount": 4,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-set-lut-from-color-map",
+        "jipipe:node:name": "Set LUT (color map)"
+       },
+       "n1": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij3d-roi-convert-to-rgb",
+        "jipipe:node:name": "Convert IJ3D ROI to RGB"
+       },
+       "n2": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-apply-lut",
+        "jipipe:node:name": "Apply LUT"
+       },
+       "n3": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        },
+        "jipipe:node-info-id": "ij1-contrast-histogram-enhancer",
+        "jipipe:node:name": "Histogram-based contrast enhancer"
+       },
+       "n4": {
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 250
+        },
+        "jipipe:node-info-id": "ij3d-roi-change-properties",
+        "jipipe:node:name": "Set IJ3D ROI properties"
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Image",
+        "source_slot": "Output",
+        "target_slot": "Image"
+       },
+       {
+        "source-node": "n3",
+        "source-slot": "Output",
+        "target-node": "n0",
+        "target-slot": "Input",
+        "source_slot": "Input",
+        "target_slot": "Input"
+       },
+       {
+        "source-node": "n4",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "ROI",
+        "source_slot": "Input",
+        "target_slot": "ROI"
+       }
+      ]
+     }
+    }
+   }
+  },
+  {
+   "clusterId": "derived-wn-cluster-0004-3",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:filaments",
+   "name": "Segmented 2D ROI filament visualization",
+   "description": "Segments an image and converts the detected 2D ROIs into filaments for RGB visualization. It uses Cellpose to produce ROIs and labels, converts the ROIs to filaments, and renders them onto the label image.",
+   "error": null,
+   "provenance": {
+    "mechanism": "what-next",
+    "derivedFrom": "cluster-0004",
+    "draftName": "Cellpose 3.x 2D ROIs to filament RGB overlay",
+    "draftDescription": "Takes Cellpose 3.x segmentation 2D ROIs, converts them to 2D filaments, and draws the filaments as an RGB image using the Cellpose label image as reference."
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "cellpose-segmentation-inference-3.x",
+       "name": "cellpose-segmentation-inference-3.x",
+       "description": "Runs Cellpose on the input image with the given model(s). This node supports both segmentation in 3D and executing Cellpose for each 2D image plane. This node can generate a multitude of outputs, although only ROI is activated by default. Go to the 'Outputs' parameter section to enable the other outputs.<ul><li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value.</li><li><b>Flows XY:</b> An RGB image that indicates the x and y flow of each pixel</li><li><b>Flows Z:</b> Flows in Z direction (black for non-3D images)</li><li><b>Flows d:</b> Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)</li><li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li><li><b>ROI:</b> ROI of the segmented areas.</li></ul>Please note that you need to setup a valid Python environment with Cellpose installed."
+      },
+      {
+       "id": "filaments-convert-roi2d-to-filaments",
+       "name": "filaments-convert-roi2d-to-filaments",
+       "description": "Converts 2D ROI into equivalent filaments"
+      },
+      {
+       "id": "filaments-convert-to-rgb",
+       "name": "filaments-convert-to-rgb",
+       "description": "Visualizes filaments by rendering them onto an RGB image"
+      }
+     ],
+     "nodeSequence": " ->  -> ",
+     "wiring": "n0 ROI -> n1 Input; n1 Output -> n2 Input; n0 Labels -> n2 Reference",
+     "nodeCount": 3,
+     "edgeCount": 3,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:node-info-id": "cellpose-segmentation-inference-3.x",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        }
+       },
+       "n1": {
+        "jipipe:node-info-id": "filaments-convert-roi2d-to-filaments",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        }
+       },
+       "n2": {
+        "jipipe:node-info-id": "filaments-convert-to-rgb",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        }
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "ROI",
+        "target-node": "n1",
+        "target-slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Input"
+       },
+       {
+        "source-node": "n0",
+        "source-slot": "Labels",
+        "target-node": "n2",
+        "target-slot": "Reference"
+       }
+      ]
+     }
+    }
+   },
+   "verdict": {
+    "gate": "general_pattern",
+    "function": "filaments",
+    "name": "Segmented 2D ROI filament visualization",
+    "description": "Segments an image and converts the detected 2D ROIs into filaments for RGB visualization. It uses Cellpose to produce ROIs and labels, converts the ROIs to filaments, and renders them onto the label image."
+   }
+  },
+  {
+   "clusterId": "derived-wn-cluster-0004-3",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:images",
+   "name": "Cellpose 2D ROI probability visualization",
+   "description": "Takes an image, segments cells with Cellpose, and produces an RGB visualization of the resulting 2D ROIs. The ROIs are rendered as filaments and colored by Cellpose probability.",
+   "error": null,
+   "provenance": {
+    "mechanism": "what-next",
+    "derivedFrom": "cluster-0004",
+    "draftName": "Cellpose 3.x 2D ROIs to intensity-annotated filament RGB overlay",
+    "draftDescription": "Takes Cellpose 3.x segmentation 2D ROIs, converts them to 2D filaments, assigns vertex intensities from the Cellpose probability image, and renders the annotated filaments as an RGB image."
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "cellpose-segmentation-inference-3.x",
+       "name": "cellpose-segmentation-inference-3.x",
+       "description": "Runs Cellpose on the input image with the given model(s). This node supports both segmentation in 3D and executing Cellpose for each 2D image plane. This node can generate a multitude of outputs, although only ROI is activated by default. Go to the 'Outputs' parameter section to enable the other outputs.<ul><li><b>Labels:</b> A grayscale image where each connected component is assigned a unique value.</li><li><b>Flows XY:</b> An RGB image that indicates the x and y flow of each pixel</li><li><b>Flows Z:</b> Flows in Z direction (black for non-3D images)</li><li><b>Flows d:</b> Multi-channel image that contains the flows [dZ, dY, dX, cell probability] (3D images) / [dY, dX, cell probability] (2D images)</li><li><b>Probabilities:</b> An image indicating the cell probabilities for each pixel</li><li><b>ROI:</b> ROI of the segmented areas.</li></ul>Please note that you need to setup a valid Python environment with Cellpose installed."
+      },
+      {
+       "id": "filaments-convert-roi2d-to-filaments",
+       "name": "filaments-convert-roi2d-to-filaments",
+       "description": "Converts 2D ROI into equivalent filaments"
+      },
+      {
+       "id": "filaments-set-vertex-intensity-from-image",
+       "name": "filaments-set-vertex-intensity-from-image",
+       "description": "Sets the value/intensity of each vertex from the given input image. Please note that if the C/T coordinates are set to zero, the value is extracted from the 0/0 slice."
+      },
+      {
+       "id": "filaments-convert-to-rgb",
+       "name": "filaments-convert-to-rgb",
+       "description": "Visualizes filaments by rendering them onto an RGB image"
+      }
+     ],
+     "nodeSequence": " ->  ->  -> ",
+     "wiring": "n0 ROI -> n1 Input; n1 Output -> n2 Filaments; n0 Probabilities -> n2 Intensity; n2 Output -> n3 Input; n0 Labels -> n3 Reference",
+     "nodeCount": 4,
+     "edgeCount": 5,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:node-info-id": "cellpose-segmentation-inference-3.x",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        }
+       },
+       "n1": {
+        "jipipe:node-info-id": "filaments-convert-roi2d-to-filaments",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        }
+       },
+       "n2": {
+        "jipipe:node-info-id": "filaments-set-vertex-intensity-from-image",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        }
+       },
+       "n3": {
+        "jipipe:node-info-id": "filaments-convert-to-rgb",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 850,
+         "location/derived/y": 100
+        }
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "ROI",
+        "target-node": "n1",
+        "target-slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Filaments"
+       },
+       {
+        "source-node": "n0",
+        "source-slot": "Probabilities",
+        "target-node": "n2",
+        "target-slot": "Intensity"
+       },
+       {
+        "source-node": "n2",
+        "source-slot": "Output",
+        "target-node": "n3",
+        "target-slot": "Input"
+       },
+       {
+        "source-node": "n0",
+        "source-slot": "Labels",
+        "target-node": "n3",
+        "target-slot": "Reference"
+       }
+      ]
+     }
+    }
+   },
+   "verdict": {
+    "gate": "general_pattern",
+    "function": "images",
+    "name": "Cellpose 2D ROI probability visualization",
+    "description": "Takes an image, segments cells with Cellpose, and produces an RGB visualization of the resulting 2D ROIs. The ROIs are rendered as filaments and colored by Cellpose probability."
+   }
+  },
+  {
+   "clusterId": "derived-wn-cluster-0005-4",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:export",
+   "name": "Export filtered annotated data table",
+   "description": "Takes data items with text annotations, keeps only those matching a condition, and exports the selected items as a data table.",
+   "error": null,
+   "provenance": {
+    "mechanism": "what-next",
+    "derivedFrom": "cluster-0005",
+    "draftName": "Filter and export data annotated with 3D ROI statistics",
+    "draftDescription": "Takes data already annotated with 3D ROI statistics, keeps only items matching an annotation condition, and exports the filtered data table."
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "annotate-filter-by-annotation",
+       "name": "annotate-filter-by-annotation",
+       "description": "Takes data items with text annotations, keeps only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw."
+      },
+      {
+       "id": "export-data-table-by-parameter",
+       "name": "export-data-table-by-parameter",
+       "description": "Exports all incoming data as data table directory."
+      }
+     ],
+     "nodeSequence": " -> ",
+     "wiring": "n0 Output -> n1 Data",
+     "nodeCount": 2,
+     "edgeCount": 1,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:node-info-id": "annotate-filter-by-annotation",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        }
+       },
+       "n1": {
+        "jipipe:node-info-id": "export-data-table-by-parameter",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        }
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Data"
+       }
+      ]
+     }
+    }
+   },
+   "verdict": {
+    "gate": "general_pattern",
+    "function": "export",
+    "name": "Export filtered annotated data table",
+    "description": "Takes data items with text annotations, keeps only those matching a condition, and exports the selected items as a data table."
+   }
+  },
+  {
+   "clusterId": "derived-wn-cluster-0005-4",
+   "support": 0,
+   "ship": true,
+   "gate": "general_pattern",
+   "functionId": "jipipe:function:export",
+   "name": "Export data items matching an annotation condition",
+   "description": "Takes data items, adds a computed text annotation, keeps only items that satisfy an annotation-based condition, and exports the selected items as table files.",
+   "error": null,
+   "provenance": {
+    "mechanism": "what-next",
+    "derivedFrom": "cluster-0005",
+    "draftName": "Create a derived annotation, filter, and export data annotated with 3D ROI statistics",
+    "draftDescription": "Takes data already annotated with 3D ROI statistics, sets a new annotation from an expression, filters by that annotation, and exports the filtered data table."
+   },
+   "state": {
+    "pattern": {
+     "nodes": [
+      {
+       "id": "annotate-set-single",
+       "name": "annotate-set-single",
+       "description": "Sets a single annotation. The name and the value are determined by expressions"
+      },
+      {
+       "id": "annotate-filter-by-annotation",
+       "name": "annotate-filter-by-annotation",
+       "description": "Takes data items with text annotations, keeps only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw."
+      },
+      {
+       "id": "export-data-table-by-parameter",
+       "name": "export-data-table-by-parameter",
+       "description": "Exports all incoming data as data table directory."
+      }
+     ],
+     "nodeSequence": " ->  -> ",
+     "wiring": "n0 Output -> n1 Input; n1 Output -> n2 Data",
+     "nodeCount": 3,
+     "edgeCount": 2,
+     "support": 0,
+     "signal": "derived",
+     "observedTitles": [],
+     "graph": {
+      "nodes": {
+       "n0": {
+        "jipipe:node-info-id": "annotate-set-single",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 100,
+         "location/derived/y": 100
+        }
+       },
+       "n1": {
+        "jipipe:node-info-id": "annotate-filter-by-annotation",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 350,
+         "location/derived/y": 100
+        }
+       },
+       "n2": {
+        "jipipe:node-info-id": "export-data-table-by-parameter",
+        "jipipe:graph-compartment": "derived",
+        "jipipe:metadata-v1": {
+         "location/derived/x": 600,
+         "location/derived/y": 100
+        }
+       }
+      },
+      "edges": [
+       {
+        "source-node": "n0",
+        "source-slot": "Output",
+        "target-node": "n1",
+        "target-slot": "Input"
+       },
+       {
+        "source-node": "n1",
+        "source-slot": "Output",
+        "target-node": "n2",
+        "target-slot": "Data"
+       }
+      ]
+     }
+    }
+   },
+   "verdict": {
+    "gate": "general_pattern",
+    "function": "export",
+    "name": "Export data items matching an annotation condition",
+    "description": "Takes data items, adds a computed text annotation, keeps only items that satisfy an annotation-based condition, and exports the selected items as table files."
+   }
+  }
+ ]
+}
