@@ -1136,6 +1136,8 @@ def main(argv=None):
                     help="run: number of shipped patterns in this shard")
     ap.add_argument("--out", default=None,
                     help="run: output path (shard file)")
+    ap.add_argument("--cache", default=None,
+                    help="run: LLM cache path (per-shard when parallel)")
     ap.add_argument("shards", nargs="*",
                     help="merge: the shard output paths")
     args = ap.parse_args(argv)
@@ -1146,7 +1148,7 @@ def main(argv=None):
             ap.error("merge needs the shard paths")
         return cmd_merge(args.shards)
     if args.mode == "run":
-        return cmd_run(args.limit, args.start, args.count, args.out)
+        return cmd_run(args.limit, args.start, args.count, args.out, args.cache)
     ap.print_help()
     return 1
 
