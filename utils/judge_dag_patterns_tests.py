@@ -114,6 +114,33 @@ class JudgeTests(unittest.TestCase):
         self.assertIn("5", flat)  # support
         self.assertIn("Import image", flat)
 
+    def test_state_carries_node_descriptions(self):
+        # the (C) review: the LLM must see each node's real description, not
+        # just its short display name
+        c = cluster(node_names=["Import image", "Convert ROI to mask"])
+        descs = {"nid0": "Loads an image from a file.",
+                 "nid1": "Converts ROI lists to masks."}
+        state = JUDGE.build_state(c, None, node_descs=descs)
+        self.assertIn("nodes", state["pattern"])
+        by_id = {n["id"]: n for n in state["pattern"]["nodes"]}
+        self.assertEqual(by_id["nid0"]["description"],
+                         "Loads an image from a file.")
+        self.assertEqual(by_id["nid1"]["description"],
+                         "Converts ROI lists to masks.")
+
+    def test_state_marks_roi_dimension(self):
+        # the (C) review: 2D and 3D ROIs are different data types and must not
+        # be conflated — the state must say which dimension each ROI node is
+        # (detected from the node id: ij1-* = 2D, ij3d-* = 3D).
+        c = cluster(node_names=["Convert 2D ROI to RGB", "Measure 3D ROI"])
+        # node ids are n0..nK in the fixture -> nid0, nid1; override the graph
+        c["representativeCandidate"]["graph"]["nodes"]["n0"]["jipipe:node-info-id"] = "ij1-roi-to-rgb"
+        c["representativeCandidate"]["graph"]["nodes"]["n1"]["jipipe:node-info-id"] = "ij3d-measure-roi3d"
+        state = JUDGE.build_state(c, None)
+        by_id = {n["id"]: n for n in state["pattern"]["nodes"]}
+        self.assertEqual(by_id["ij1-roi-to-rgb"]["dimension"], "2D")
+        self.assertEqual(by_id["ij3d-measure-roi3d"]["dimension"], "3D")
+
     def test_prompt_names_the_13_branches(self):
         c = cluster(titles=["Load images"])
         prompt = JUDGE.build_prompt(c, JUDGE.build_state(c, None))
@@ -121,6 +148,19 @@ class JudgeTests(unittest.TestCase):
             self.assertIn(k, prompt)
         for g in ("general_pattern", "workflow_plumbing", "noise"):
             self.assertIn(g, prompt)
+
+    def test_prompt_has_the_four_naming_rules(self):
+        # the (C) review: the prompt must carry the four rules — name the
+        # outcome (no jargon), qualify ROI 2D/3D, state concrete in->out, and
+        # write for two audiences.
+        c = cluster(titles=["Load images"])
+        prompt = JUDGE.build_prompt(c, JUDGE.build_state(c, None))
+        low = prompt.lower()
+        self.assertIn("2d roi", low) or self.assertIn("2d/3d", low)
+        self.assertTrue(any(t in low for t in
+                            ("annotated path", "hyperstack", "jargon",
+                             "internal term")), "no jargon-ban rule")
+        self.assertIn("biologist", low) or self.assertIn("audience", low)
 
     # -- decision logic ---------------------------------------------------- #
 

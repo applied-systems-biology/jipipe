@@ -137,9 +137,31 @@ def node_name_of(v: dict, registry_names):
     return (v.get("jipipe:node:name") or v["jipipe:node-info-id"])
 
 
-def build_state(cluster: dict, registry_names=None) -> dict:
+def roi_dimension(node_info_id: str):
+    """The spatial dimension of an ROI node, from its id: ``ij1-roi*``/
+    ``ij1-...2d`` operate on 2D ROIs, ``ij3d-...roi3d*`` on 3D ROIs — two
+    DIFFERENT data types (the (C) review: they must not be conflated).
+    None for non-ROI nodes."""
+    i = node_info_id
+    if "roi" not in i:
+        return None
+    if i.startswith("ij3d-"):
+        return "3D"
+    if "3d" in i:
+        return "3D"
+    if i.startswith("ij1-"):
+        return "2D"
+    if "2d" in i:
+        return "2D"
+    return None
+
+
+def build_state(cluster: dict, registry_names=None, node_descs=None) -> dict:
     """The state record sent to the LLM: the cluster's canonical form (what
-    (B) merged, what (C) judges)."""
+    (B) merged, what (C) judges), now with each node's real description and
+    ROI dimension (the (C) review fix: the LLM previously saw only short
+    display names, which produced jargon names, unqualified ROI names and
+    thin descriptions)."""
     c = cluster["representativeCandidate"]
     g = c["graph"]
     order = _bfs_order(g)
@@ -154,8 +176,23 @@ def build_state(cluster: dict, registry_names=None) -> dict:
                                                    e["target-node"],
                                                    e.get("target-slot", ""))))
     titles = list(cluster.get("titleEvidence") or [])
+    nodes = []
+    for k in order:
+        v = g["nodes"][k]
+        nid = v["jipipe:node-info-id"]
+        rec = {
+            "name": node_name_of(v, registry_names),
+            "id": nid,
+        }
+        if node_descs and nid in node_descs:
+            rec["description"] = node_descs[nid]
+        dim = roi_dimension(nid)
+        if dim:
+            rec["dimension"] = dim
+        nodes.append(rec)
     state = {
         "pattern": {
+            "nodes": nodes,
             "nodeSequence": " -> ".join(names),
             "wiring": wiring,
             "nodeCount": c["nodeCount"],
@@ -180,13 +217,36 @@ For the pattern described in the JSON below, answer with ONE JSON object only:
  "name": "a short general name of what this pattern does" | "",
  "description": "1-2 sentences describing what this pattern does, in general terms" | ""}}
 
-Rules:
+The pattern's nodes list each step's real description (what that step does).
+Use it — it tells you what the pattern actually accomplishes, which short step
+names alone do not.
+
+Gating rules:
 - gate "general_pattern" only if the subgraph is a small self-contained reusable unit doing one clear GENERALIZABLE thing; high support (authored in many independent projects) and a non-generic task-describing title are strong evidence. Wiring data together is not by itself plumbing.
 - gate "workflow_plumbing" if it is a bespoke arrangement of one specific project's files/data (generic or project-specific titles like "Analysis", "File handling for X").
 - gate "noise" if scratch/ad-hoc with no clear purpose.
 - function: the primary purpose of the pattern. Options: {branches}.
-- name must be a GENERAL name usable in another project; use the observed titles as inspiration but GENERALIZE them (drop project-specific terms). Empty string if you cannot name it generally.
-- description: what it does, in general terms, for a user browsing a pattern library. Empty string when the gate is not "general_pattern".
+
+NAMING rules (these patterns are browsed by TWO audiences — bioinformaticians
+who know image-analysis tools AND biologists who do not; the name must work for
+both, and the description must let a biologist see what it does):
+- The NAME names the OUTCOME in plain terms, not the JIPipe mechanism. Never
+  use JIPipe-internal/data-model jargon in the name: no "annotated path(s)",
+  "path annotation", "hyperstack", "slot", "graph", "compartment", "wrapper",
+  or bare "raw". Say what the analyst ends up with instead (e.g. "Load images
+  and ROIs from a folder", not "List folder contents with annotated paths").
+- ROI DIMENSION: 2D ROIs and 3D ROIs are DIFFERENT data types and must not be
+  conflated. If the pattern uses ROI nodes, the name MUST say "2D ROI" or "3D
+  ROI" (the nodes list each ROI node's dimension; use the pattern's dominant
+  one, or "2D/3D" only if it genuinely spans both). Do not write a bare "ROI".
+- The DESCRIPTION states concretely what the pattern TAKES IN and what it
+  PRODUCES, using the real node functions from the nodes list (e.g. "attaches
+  each ROI's area and intensity to the image"), not vague paraphrase. Lead with
+  the outcome in plain terms for a biologist, then the technical specifics.
+- name must be GENERAL (usable in another project); use the observed titles as
+  inspiration but generalize them (drop project-specific terms). Empty string
+  if you cannot name it generally. description: empty string when the gate is
+  not "general_pattern".
 
 Pattern JSON:
 """
@@ -219,14 +279,14 @@ def parse_verdict(text: str):
         return None
 
 
-def judge_cluster(cluster: dict, llm, registry_names=None) -> dict:
+def judge_cluster(cluster: dict, llm, registry_names=None, node_descs=None) -> dict:
     """Ask the LLM about one cluster and derive the decision.
 
     ``llm``: callable(prompt) -> the parsed JSON verdict dict (tests inject a
     deterministic fake; the CLI passes the endpoint client). Returns the
     judgment record with the verdict as the audit trail.
     """
-    state = build_state(cluster, registry_names)
+    state = build_state(cluster, registry_names, node_descs=node_descs)
     prompt = build_prompt(cluster, state)
     verdict = llm(prompt + json.dumps(state, ensure_ascii=False))
     if isinstance(verdict, str):
@@ -274,11 +334,12 @@ def judge_cluster(cluster: dict, llm, registry_names=None) -> dict:
     }
 
 
-def judge_clusters(clusters, llm, registry_names=None) -> list:
+def judge_clusters(clusters, llm, registry_names=None, node_descs=None) -> list:
     """Judge every cluster, in deterministic (clusterId) order."""
     results = []
     for cluster in sorted(clusters, key=lambda c: c["clusterId"]):
-        results.append(judge_cluster(cluster, llm, registry_names))
+        results.append(judge_cluster(cluster, llm, registry_names,
+                                     node_descs=node_descs))
     return results
 
 
@@ -347,6 +408,17 @@ def load_registry_names(path=None):
     return {n["id"]: n["name"] for n in reg.get("nodes", [])}
 
 
+def load_node_descs(path=None):
+    """The node-info-id -> description map produced by
+    utils/extract-node-descriptions.py (the (C) review fix: the LLM must see
+    what each node actually does, not just its short display name)."""
+    path = path or os.path.join(RESEARCH, "node-descriptions.json")
+    if not os.path.isfile(path):
+        return None
+    with open(path, encoding="utf-8") as fh:
+        return json.load(fh)
+
+
 def load_cache(path):
     if not os.path.isfile(path):
         return {}
@@ -400,6 +472,7 @@ def main(argv=None):
     if args.limit > 0:
         clusters = clusters[:args.limit]
     registry_names = load_registry_names()
+    node_descs = load_node_descs()
     client = LLMClient.from_credentials(args.credentials, args.base_url,
                                         args.model)
     cache = load_cache(args.cache)
@@ -412,7 +485,8 @@ def main(argv=None):
         cache[digest] = text
         return parse_verdict(text)
 
-    results = judge_clusters(clusters, llm_cached, registry_names)
+    results = judge_clusters(clusters, llm_cached, registry_names,
+                             node_descs=node_descs)
     save_cache(args.cache, cache)
 
     from collections import Counter
