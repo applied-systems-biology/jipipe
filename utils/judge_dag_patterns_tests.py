@@ -262,5 +262,74 @@ class JudgeTests(unittest.TestCase):
         self.assertFalse(j["ship"], "a runaway description must reject")
 
 
+class FetchVerdictTests(unittest.TestCase):
+    """The CLI fetch path: cache lookup + one completion, with a single
+    concise retry when a reasoning model spends its whole token budget on
+    reasoning_content and emits no JSON verdict (observed live: cluster-0290)."""
+
+    def _fake_client(self, responses):
+        calls = {"n": 0}
+        def complete(prompt):
+            i = min(calls["n"], len(responses) - 1)
+            calls["n"] += 1
+            return responses[i]
+        return complete, calls
+
+    def test_returns_verdict_on_first_call(self):
+        complete, calls = self._fake_client([
+            json.dumps({"gate": "noise", "function": "images",
+                        "name": "", "description": ""})])
+        cache = {}
+        v = JUDGE.fetch_verdict(complete, cache, "prompt")
+        self.assertEqual(v["gate"], "noise")
+        self.assertEqual(calls["n"], 1)
+
+    def test_retries_concisely_when_first_call_has_no_json(self):
+        complete, calls = self._fake_client([
+            "…38k chars of reasoning, no JSON at all…",
+            json.dumps({"gate": "workflow_plumbing", "function": "images",
+                        "name": "", "description": ""})])
+        cache = {}
+        v = JUDGE.fetch_verdict(complete, cache, "prompt")
+        self.assertEqual(v["gate"], "workflow_plumbing")
+        self.assertEqual(calls["n"], 2, "must retry once when no JSON")
+
+    def test_retries_only_once(self):
+        complete, calls = self._fake_client([
+            "no json", "still no json"])
+        cache = {}
+        v = JUDGE.fetch_verdict(complete, cache, "prompt")
+        self.assertIsNone(v)
+        self.assertEqual(calls["n"], 2, "at most one retry")
+
+    def test_cached_result_not_refetched(self):
+        complete, calls = self._fake_client(["x"])
+        prompt = "prompt"
+        import hashlib
+        cache = {hashlib.sha256(prompt.encode()).hexdigest():
+                 json.dumps({"gate": "noise", "function": "images",
+                             "name": "", "description": ""})}
+        v = JUDGE.fetch_verdict(complete, cache, prompt)
+        self.assertEqual(v["gate"], "noise")
+        self.assertEqual(calls["n"], 0, "cache hit must not call the model")
+
+    def test_cached_malformed_response_triggers_retry(self):
+        # the full run cached a reasoning-bloat response (no JSON) for a
+        # cluster; a later run must NOT just return the cached None — it must
+        # do the concise retry (fresh call) and recover the verdict.
+        import hashlib
+        prompt = "prompt"
+        bad = "…38k chars of reasoning, no JSON…"
+        good = json.dumps({"gate": "workflow_plumbing", "function": "images",
+                           "name": "", "description": ""})
+        cache = {hashlib.sha256(prompt.encode()).hexdigest(): bad}
+        complete, calls = self._fake_client([good])  # only the retry is called
+        v = JUDGE.fetch_verdict(complete, cache, prompt)
+        self.assertEqual(v["gate"], "workflow_plumbing")
+        self.assertEqual(calls["n"], 1, "the cached bad text must trigger 1 retry")
+        # the recovered raw response now occupies the cache slot
+        self.assertEqual(cache[hashlib.sha256(prompt.encode()).hexdigest()], good)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

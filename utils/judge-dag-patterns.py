@@ -97,6 +97,14 @@ MAX_DESCRIPTION_LEN = 600
 MAX_TOKENS = 8000
 TEMPERATURE = 0.0
 
+# The model is a reasoning model: on a hard case it can spend the whole
+# completion budget on reasoning_content and emit no JSON verdict at all
+# (observed live: cluster-0290, 38k chars of reasoning, no content). A single
+# concise retry recovers a real (usually rejecting) verdict.
+CONCISE_RETRY_SUFFIX = (
+    "\n\nIMPORTANT: Do not deliberate or explain. "
+    "Output ONLY the single JSON object, nothing else.")
+
 
 # --------------------------------------------------------------------------- #
 # State + prompt
@@ -256,9 +264,12 @@ Pattern JSON:
 # Verdict parsing + judgment
 # --------------------------------------------------------------------------- #
 
-def parse_verdict(text: str):
+def parse_verdict(text):
     """Extract the JSON verdict object from the LLM output (tolerates code
-    fences and surrounding prose). Returns the dict or None."""
+    fences and surrounding prose). Returns the dict or None. Accepts a dict
+    already (pass-through) as well as raw text."""
+    if isinstance(text, dict):
+        return text
     if not text:
         return None
     # try direct parse first
@@ -277,6 +288,40 @@ def parse_verdict(text: str):
         return v if isinstance(v, dict) else None
     except (ValueError, TypeError):
         return None
+
+
+def fetch_verdict(complete, cache, prompt):
+    """Cache lookup + one completion, with a single concise retry.
+
+    ``complete``: callable(prompt) -> raw model text (the LLMClient method).
+    ``cache``: {prompt-sha256: raw text} — a hit returns the verdict without
+    calling the model; a new response is stored. When the model spends its
+    whole budget on reasoning_content and emits no JSON verdict, ONE retry is
+    made with an explicit "output only the JSON" suffix (see
+    CONCISE_RETRY_SUFFIX); the retried response is NOT cached (it is a
+    prompt-dependent artifact, and caching it would leak the retry prompt into
+    the normal prompt's key). Returns the parsed verdict dict or None."""
+    import hashlib
+    digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
+    if digest in cache:
+        verdict = parse_verdict(cache[digest])
+        if verdict is not None:
+            return verdict
+        # the cached response is malformed (reasoning bloat): fall through to
+        # the concise retry rather than returning None forever.
+    else:
+        text = complete(prompt)
+        verdict = parse_verdict(text)
+        if verdict is not None:
+            cache[digest] = text
+            return verdict
+    # one concise retry (fresh call; cache the recovered response so a third
+    # run does not pay for it again)
+    text = complete(prompt + CONCISE_RETRY_SUFFIX)
+    verdict = parse_verdict(text)
+    if verdict is not None:
+        cache[digest] = text
+    return verdict
 
 
 def judge_cluster(cluster: dict, llm, registry_names=None, node_descs=None) -> dict:
@@ -477,16 +522,10 @@ def main(argv=None):
                                         args.model)
     cache = load_cache(args.cache)
 
-    def llm_cached(prompt):
-        digest = hashlib.sha256(prompt.encode("utf-8")).hexdigest()
-        if digest in cache:
-            return parse_verdict(cache[digest])
-        text = client.complete(prompt)
-        cache[digest] = text
-        return parse_verdict(text)
-
-    results = judge_clusters(clusters, llm_cached, registry_names,
-                             node_descs=node_descs)
+    results = judge_clusters(clusters,
+                             lambda prompt: fetch_verdict(client.complete,
+                                                          cache, prompt),
+                             registry_names, node_descs=node_descs)
     save_cache(args.cache, cache)
 
     from collections import Counter

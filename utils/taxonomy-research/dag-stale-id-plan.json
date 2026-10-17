@@ -1,23 +1,128 @@
 {
-  "_note": "(D)-critical: 15/270 shipped patterns reference a node id not registered in the 6.0.0 launcher classpath (the corpus predates 6.0.0 renames + optional plugins). The launcher guard everyPatternGraphDeserializes asserts nodes.hasNodeInfoWithId(id), so these FAIL unless remapped or excluded. Generated 2026-10-17 from dag-judgments.json + registry.json.",
-  "renamable": [
-    {"clusterId": "cluster-0133", "name": "Import and tile images", "map": {"ij1-transform-tile": "ij1-transform-tile-2d (verify -2d vs -2d-v2 variant from the node's parameters)"}},
-    {"clusterId": "cluster-0242", "name": "Tiled ridge detection", "map": {"ij1-transform-tile": "ij1-transform-tile-2d (verify -2d vs -2d-v2 variant)"}},
-    {"clusterId": "cluster-0318", "name": "OME ZARR directory import/export", "map": {"import-ome-zarr-from-directory-as-imgplus": "import-ome-zarr-from-zip-directory-as-imgplus"}}
-  ],
-  "exclude_or_plugin_gate": [
-    {"clusterId": "cluster-0058", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0072", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0091", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0103", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges"},
-    {"clusterId": "cluster-0134", "plugin": "jipipe2ai/deep-learning", "id": "create-jipipe2ai-generation-model, jipipe2ai-predict-generation, jipipe2ai-train-generation-model"},
-    {"clusterId": "cluster-0140", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0152", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0153", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0169", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0186", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
-    {"clusterId": "cluster-0216", "plugin": "jipipe2ai/deep-learning", "id": "create-jipipe2ai-segmentation-model, jipipe2ai-predict-image, jipipe2ai-train-image-model"},
-    {"clusterId": "cluster-0254", "plugin": "jipipe2ai/deep-learning", "id": "deep-learning-train-image-model"}
-  ],
-  "shippableAfterRemapAndExclude": 258
+ "_note": "(D)-critical: shipped patterns referencing a node id not registered in the 6.0.0 launcher classpath (corpus predates 6.0.0 renames + optional plugins). The launcher guard everyPatternGraphDeserializes asserts hasNodeInfoWithId, so these FAIL unless remapped (renamable) or excluded (exclude). Regenerated from the post-rerun dag-judgments.json.",
+ "renamable": {
+  "cluster-0133": {
+   "clusterId": "cluster-0133",
+   "name": "Create tiled image previews from files",
+   "support": 3,
+   "staleIds": [
+    "ij1-transform-tile"
+   ]
+  },
+  "cluster-0242": {
+   "clusterId": "cluster-0242",
+   "name": "Detect lines in 2D images",
+   "support": 1,
+   "staleIds": [
+    "ij1-transform-tile"
+   ]
+  },
+  "cluster-0318": {
+   "clusterId": "cluster-0318",
+   "name": "Export OME-ZARR images from folders",
+   "support": 1,
+   "staleIds": [
+    "import-ome-zarr-from-directory-as-imgplus"
+   ]
+  }
+ },
+ "exclude": {
+  "cluster-0058": {
+   "clusterId": "cluster-0058",
+   "name": "Generate 2D extended-depth-of-focus projections from 3D image stacks",
+   "support": 5,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0072": {
+   "clusterId": "cluster-0072",
+   "name": "Create corrected 2D time-series projections",
+   "support": 4,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0091": {
+   "clusterId": "cluster-0091",
+   "name": "Import images and compute extended depth-of-focus projections",
+   "support": 4,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0134": {
+   "clusterId": "cluster-0134",
+   "name": "Train and predict with a generative model",
+   "support": 3,
+   "staleIds": [
+    "create-jipipe2ai-generation-model",
+    "jipipe2ai-predict-generation",
+    "jipipe2ai-train-generation-model"
+   ]
+  },
+  "cluster-0140": {
+   "clusterId": "cluster-0140",
+   "name": "Segment objects from images using markers",
+   "support": 2,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0152": {
+   "clusterId": "cluster-0152",
+   "name": "Compute extended depth-of-focus projection from selected image planes",
+   "support": 2,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0153": {
+   "clusterId": "cluster-0153",
+   "name": "Detect 2D ROIs from image stacks",
+   "support": 2,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0169": {
+   "clusterId": "cluster-0169",
+   "name": "Create filament masks from 3D image stacks",
+   "support": 2,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0186": {
+   "clusterId": "cluster-0186",
+   "name": "Create a colored depth-of-focus projection overlay",
+   "support": 2,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0216": {
+   "clusterId": "cluster-0216",
+   "name": "Train and predict image segmentation",
+   "support": 2,
+   "staleIds": [
+    "create-jipipe2ai-segmentation-model",
+    "jipipe2ai-predict-image",
+    "jipipe2ai-train-image-model"
+   ]
+  },
+  "cluster-0254": {
+   "clusterId": "cluster-0254",
+   "name": "Train image model from labeled images",
+   "support": 1,
+   "staleIds": [
+    "deep-learning-train-image-model"
+   ]
+  }
+ },
+ "shippableAfterRemapAndExclude": 256,
+ "renames": {
+  "ij1-transform-tile": "ij1-transform-tile-2d (two successors exist: -2d and -2d-v2; pick the variant from the node's parameters)",
+  "import-ome-zarr-from-directory-as-imgplus": "import-ome-zarr-from-zip-directory-as-imgplus"
+ }
 }
