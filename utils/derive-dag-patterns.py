@@ -444,15 +444,23 @@ def select_catalog(catalog: list, pattern_dts, function: str,
     return sel[:cap]
 
 
+def _slots_line(n: dict, direction: str) -> str:
+    parts = []
+    for dt, names in sorted(n.get(direction, {}).items()):
+        parts.append(dt + " (" + ", ".join(names) + ")")
+    return ", ".join(parts) if parts else "(none)"
+
+
 def build_what_next_prompt(state: dict, catalog: list) -> str:
     p = state["pattern"]
     nodes = "\n".join(
         f"- {n['name']}: {n.get('description', '')}" for n in p["nodes"])
-    cat = "\n".join(
-        f"- {n['id']} — {n['name']}\n"
-        f"    inputs:  {', '.join(f'{dt} ({', '.join(names)})' for dt, names in sorted(n.get('inputs', {}).items())) or '(none)'}\n"
-        f"    outputs: {', '.join(f'{dt} ({', '.join(names)})' for dt, names in sorted(n.get('outputs', {}).items())) or '(none)'}"
-        for n in catalog)
+    cat_lines = []
+    for n in catalog:
+        cat_lines.append(f"- {n['id']} — {n['name']}")
+        cat_lines.append("    inputs:  " + _slots_line(n, "inputs"))
+        cat_lines.append("    outputs: " + _slots_line(n, "outputs"))
+    cat = "\n".join(cat_lines)
     return f"""You are extending a library of reusable image-analysis pipeline patterns (JIPipe).
 
 The pattern below is one a user already has:
