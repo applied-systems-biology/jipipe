@@ -48,7 +48,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
 
-@SetJIPipeDocumentation(name = "Table to 2D text ROI", description = "Converts data from a table to text ROIs.")
+@SetJIPipeDocumentation(name = "Table to 2D text ROI", description = "Turns a results table of coordinates and labels into a list of 2D text ROIs, one per row, positioned by X and Y. It can also set text, name, metadata, slice, channel, and time, and an optional background, producing ROIs that can be overlaid on images.")
 @ConfigureJIPipeNode(function = { TableTransformFunction.class, RoiFiltersFunction.class }, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

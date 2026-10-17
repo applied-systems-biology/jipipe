@@ -56,7 +56,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 
-@SetJIPipeDocumentation(name = "Import image", description = "Loads an image using the best-matching method.")
+@SetJIPipeDocumentation(name = "Import image", description = "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title.")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = FileData.class, name = "Files", description = "The image file", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Image", description = "Imported image", create = true)

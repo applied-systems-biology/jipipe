@@ -43,7 +43,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Render track scheme", after = {MeasureTracksNode.class}, purpose = "Render the track scheme as an image")
-@SetJIPipeDocumentation(name = "Render track scheme", description = "Renders the track scheme as image")
+@SetJIPipeDocumentation(name = "Render track scheme", description = "Creates a visual track scheme image from a TrackMate track collection, showing each detected object and its connections over time as a diagram. The input is a TrackCollectionData and the output is an ImagePlusData containing the rendered scheme.")
 @ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Track scheme", create = true)

@@ -152,11 +152,13 @@ def extract_description(text: str):
 
 
 def extract_id_class_map(text: str) -> dict:
-    """Map node-info-id -> algorithm class name from the ``registerNodeType``
-    calls in ``text`` (both the simple and the new-task forms)."""
+    """Map node-info-id -> algorithm class name from the node-registration
+    calls in ``text``. Both registration methods (``registerNodeType`` and
+    ``registerAnnotationNodeType``, the latter for canvas-note nodes) and both
+    call forms (simple id+class, and the new-task object) are matched."""
     out = {}
     for m in re.finditer(
-            r"registerNodeType\(\s*(?:new\s+[A-Za-z0-9_]+\s*\(\s*)?"
+            r"register(?:Annotation)?NodeType\(\s*(?:new\s+[A-Za-z0-9_]+\s*\(\s*)?"
             r'"([^"]+)"\s*,\s*([A-Za-z0-9_]+)\s*\.\s*class', text):
         out.setdefault(m.group(1), m.group(2))
     return out

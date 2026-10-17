@@ -29,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 
-@SetJIPipeDocumentation(name = "Convert image to 8-bit", description = "Converts an image into 8-bit")
+@SetJIPipeDocumentation(name = "Convert image to 8-bit", description = "Produces an 8-bit grayscale ImageJ image by converting the input 2D or 3D ImageJ image to 8-bit, with intensity values from 0 to 255.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = ImageTypeConversionFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })

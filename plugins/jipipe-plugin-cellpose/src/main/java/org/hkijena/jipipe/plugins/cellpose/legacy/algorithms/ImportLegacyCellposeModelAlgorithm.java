@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.cellpose.legacy.datatypes.LegacyCellposeModelData;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 
-@SetJIPipeDocumentation(name = "Import Cellpose model", description = "Imports a Cellpose model from a file")
+@SetJIPipeDocumentation(name = "Import Cellpose model", description = "Loads a saved Cellpose model from a file so it can be used for cell segmentation. It takes one model file as input and produces a legacy Cellpose model that later steps can apply to images.")
 @ConfigureJIPipeNode(function = MachineLearningModelsFunction.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = LegacyCellposeModelData.class, name = "Output", create = true)

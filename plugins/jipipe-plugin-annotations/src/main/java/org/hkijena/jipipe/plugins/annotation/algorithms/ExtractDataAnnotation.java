@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.StringQueryExpression;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalStringParameter;
 
-@SetJIPipeDocumentation(name = "Extract data annotations", description = "Extracts a data annotation.")
+@SetJIPipeDocumentation(name = "Extract data annotations", description = "Extracts the data stored in a chosen data annotation and makes it the main output. It takes a data item with named annotations, selects the annotation matching the configured name, and outputs that annotation's data as a new data item; missing annotations can be ignored or raise an error.")
 @ConfigureJIPipeNode(function = AnnotationsConvertFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

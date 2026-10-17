@@ -1,0 +1,635 @@
+{
+ "_note": "LLM-drafted replacement descriptions for the wrong/missing/thin pattern-relevant node types (decision 3). Review, then: python3 utils/audit-node-descriptions.py apply",
+ "proposals": [
+  {
+   "nodeId": "ij1-roi-to-rgb",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/convert/RoiToRGBAlgorithm.java",
+   "class": "RoiToRGBAlgorithm",
+   "bucket": "wrong",
+   "current": "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.",
+   "proposed": "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization.",
+   "note": null
+  },
+  {
+   "nodeId": "filaments-convert-to-mask",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/convert/ConvertFilamentsToMaskAlgorithm.java",
+   "class": "ConvertFilamentsToMaskAlgorithm",
+   "bucket": "wrong",
+   "current": "Converts filaments into a 3D ROI",
+   "proposed": "Creates a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-filter-tracks",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/TrackFilterNode.java",
+   "class": "TrackFilterNode",
+   "bucket": "wrong",
+   "current": "Filter TrackMate spots via expressions",
+   "proposed": "Takes a TrackMate track collection (TrackCollectionData), keeps only the tracks that satisfy a per-track expression, and outputs a filtered TrackCollectionData with non-matching tracks hidden.",
+   "note": null
+  },
+  {
+   "nodeId": "data-flow-tunnel-1-entrance",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/tunnels/nodes/tunnel1/JIPipeDataFlowTunnel1Entrance.java",
+   "class": "JIPipeDataFlowTunnel1Entrance",
+   "bucket": "missing",
+   "current": null,
+   "proposed": "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node.",
+   "note": null
+  },
+  {
+   "nodeId": "data-flow-tunnel-1-exit",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/tunnels/nodes/tunnel1/JIPipeDataFlowTunnel1Exit.java",
+   "class": "JIPipeDataFlowTunnel1Exit",
+   "bucket": "missing",
+   "current": null,
+   "proposed": "Outputs the data sent through the matching tunnel as a collection of data items, taking no direct input and passing it unchanged.",
+   "note": null
+  },
+  {
+   "nodeId": "import-imagej-imgplus-from-file",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/ImportImagePlusAlgorithm.java",
+   "class": "ImportImagePlusAlgorithm",
+   "bucket": "thin",
+   "current": "Loads an image using the best-matching method.",
+   "proposed": "Imports each image file into ImageJ image data that can be analyzed downstream. It tries the best-matching importer (Java, ImageJ, or Bio-Formats), optionally removes LUTs and overlays, and can store the image title.",
+   "note": null
+  },
+  {
+   "nodeId": "import-file-list",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/FileListDataSource.java",
+   "class": "FileListDataSource",
+   "bucket": "thin",
+   "current": "Converts each provided path into file data.",
+   "proposed": "Creates a list of file data items from the files you specify. It takes the file names entered in the node settings and produces one FileData item for each, ready for downstream file processing.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-color-blend-images",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/color/BlendImagesAlgorithm.java",
+   "class": "BlendImagesAlgorithm",
+   "bucket": "thin",
+   "current": "Overlays greyscale or RGB images.",
+   "proposed": "Takes one or more same-size greyscale or RGB images and combines them into one RGB image by overlaying them in priority order with chosen blend modes and opacities.",
+   "note": null
+  },
+  {
+   "nodeId": "import-folder-list",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/FolderListDataSource.java",
+   "class": "FolderListDataSource",
+   "bucket": "thin",
+   "current": "Converts each provided path into folder data.",
+   "proposed": "Produces a list of folder entries from the folders you specify, so each folder can be processed separately by later nodes.",
+   "note": null
+  },
+  {
+   "nodeId": "table-remove-columns",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/RemoveColumnAlgorithm.java",
+   "class": "RemoveColumnAlgorithm",
+   "bucket": "thin",
+   "current": "Removes one or multiple columns by name",
+   "proposed": "Takes a results table and removes one or more columns whose names match the configured filter expression, producing a new results table without those columns.",
+   "note": null
+  },
+  {
+   "nodeId": "graph-wrapper:input",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/api/grouping/GraphWrapperAlgorithmInput.java",
+   "class": "GraphWrapperAlgorithmInput",
+   "bucket": "thin",
+   "current": "Acts as input of a node group.",
+   "proposed": "Marks the entry point of a grouped set of analysis steps. It takes no specific data type and produces no separate result; it simply lets the data you connect to the group enter unchanged for the steps inside to use.",
+   "note": null
+  },
+  {
+   "nodeId": "graph-wrapper:output",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/api/grouping/GraphWrapperAlgorithmOutput.java",
+   "class": "GraphWrapperAlgorithmOutput",
+   "bucket": "thin",
+   "current": "Acts as output of a node group.",
+   "proposed": "It makes the final result of a node group available to the rest of the workflow. It takes that result from the grouped steps and passes it on without changing it.",
+   "note": null
+  },
+  {
+   "nodeId": "import-imagej-bioformats",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/BioFormatsImporterAlgorithm.java",
+   "class": "BioFormatsImporterAlgorithm",
+   "bucket": "thin",
+   "current": "Imports images via the Bio-Formats plugin",
+   "proposed": "Imports microscopy image files with the Bio-Formats plugin and produces image data with OME metadata. It can set color mode, stack order, split channels, Z planes, or time points, crop, stitch tiles, autoscale, and extract 2D ROIs.",
+   "note": null
+  },
+  {
+   "nodeId": "folder-list-files",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ListFiles.java",
+   "class": "ListFiles",
+   "bucket": "thin",
+   "current": "Lists all files in the input folder",
+   "proposed": "Takes each input folder and outputs the files it contains, optionally from a named subfolder and, if enabled, from all subfolders. A filter expression can keep only matching files, and recursive search can follow symbolic links.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-filter-statistics",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/filter/FilterRoi2dByStatisticsAlgorithm.java",
+   "class": "FilterRoi2dByStatisticsAlgorithm",
+   "bucket": "thin",
+   "current": "Filters the ROI list elements via statistics.",
+   "proposed": "Keeps only 2D ROIs that match a user-defined expression based on their measured values. It takes a list of 2D ROIs and an optional reference image, calculates the selected measurements for each ROI, and outputs the remaining 2D ROIs.",
+   "note": null
+  },
+  {
+   "nodeId": "annotate-filter-by-annotation",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/FilterByAnnotation.java",
+   "class": "FilterByAnnotation",
+   "bucket": "thin",
+   "current": "Filters data based on the annotation value.",
+   "proposed": "Takes data items with text annotations, keeps only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-set-overlay",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/overlay/SetOverlayAlgorithm.java",
+   "class": "SetOverlayAlgorithm",
+   "bucket": "thin",
+   "current": "Set overlay ROIs",
+   "proposed": "Sets the overlay of an image to a supplied list of 2D ROIs, producing an image that carries those ROIs for display or further analysis. It takes an image and a 2D ROI list and outputs the same image with the overlay applied.",
+   "note": null
+  },
+  {
+   "nodeId": "annotate-remove",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/RemoveAnnotationAlgorithm.java",
+   "class": "RemoveAnnotationAlgorithm",
+   "bucket": "thin",
+   "current": "Removes annotations by name or value",
+   "proposed": "Removes selected text annotations from data items: it takes in data items with text annotations, deletes every annotation matching the configured name or value expression, and outputs the same data items without those annotations.",
+   "note": null
+  },
+  {
+   "nodeId": "table-rename-columns-2",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/RenameTableColumns2Algorithm.java",
+   "class": "RenameTableColumns2Algorithm",
+   "bucket": "thin",
+   "current": "Renames columns",
+   "proposed": "Renames one or more columns in a ResultsTableData table and outputs the same table as ResultsTableData with updated column names. Each renaming entry matches an old column name and assigns a new name, optionally using the current name in an expression.",
+   "note": null
+  },
+  {
+   "nodeId": "iji-export-table-v2",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/io/ExportTableAlgorithm2.java",
+   "class": "ExportTableAlgorithm2",
+   "bucket": "thin",
+   "current": "Exports a results table to CSV/XLSX",
+   "proposed": "Takes a results table, saves it as a CSV or XLSX file at the selected location, and provides the saved file for later steps.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-analyze-find-particles",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/generate/FindParticles3DAlgorithm.java",
+   "class": "FindParticles3DAlgorithm",
+   "bucket": "thin",
+   "current": "Finds 3D particles within a mask image",
+   "proposed": "Finds 3D particles in a binary mask image and returns them as a list of 3D ROIs. It labels connected components, applies optional size, sphericity, edge, and background settings, and uses image calibration for physical measurements when available.",
+   "note": null
+  },
+  {
+   "nodeId": "annotate-with-data",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/AnnotateWithData.java",
+   "class": "AnnotateWithData",
+   "bucket": "thin",
+   "current": "Annotates the incoming data with the other data.",
+   "proposed": "Each incoming data item is returned with a named annotation attached, using the paired item from a second data set. Text annotations from either set can also be copied into the output.",
+   "note": null
+  },
+  {
+   "nodeId": "folder-list-subfolders",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-filesystem/src/main/java/org/hkijena/jipipe/plugins/filesystem/algorithms/local/ListSubfolders.java",
+   "class": "ListSubfolders",
+   "bucket": "thin",
+   "current": "Lists all subfolders",
+   "proposed": "Takes folders and lists the subfolders inside each one, optionally starting from a named subfolder and searching recursively. It can keep only folders matching filter conditions. The result is a list of folders for downstream steps.",
+   "note": null
+  },
+  {
+   "nodeId": "ij-convert-image-to-8-bit",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ConvertImageTo8BitAlgorithm.java",
+   "class": "ConvertImageTo8BitAlgorithm",
+   "bucket": "thin",
+   "current": "Converts an image into 8-bit",
+   "proposed": "Produces an 8-bit grayscale ImageJ image by converting the input 2D or 3D ImageJ image to 8-bit, with intensity values from 0 to 255.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-roi-change-properties",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ChangeRoi3dPropertiesAlgorithm.java",
+   "class": "ChangeRoi3dPropertiesAlgorithm",
+   "bucket": "thin",
+   "current": "Sets the properties of all 3D ROI",
+   "proposed": "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-detector",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/spots/SpotDetectorNode.java",
+   "class": "SpotDetectorNode",
+   "bucket": "thin",
+   "current": "Detect spots using TrackMate",
+   "proposed": "Detects spots in a 2D or 3D image using a configured TrackMate spot detector and returns them as a spots collection. It takes an image and the detector settings, runs TrackMate detection, and produces the detected spot positions and features for downstream tracking.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-labels-to-roi",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/generate/Roi3dFromLabelsAlgorithm.java",
+   "class": "Roi3dFromLabelsAlgorithm",
+   "bucket": "thin",
+   "current": "Converts a label image into 3D ROI",
+   "proposed": "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs. It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-roi-convert-to-mask",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dToMaskAlgorithm.java",
+   "class": "Roi3dToMaskAlgorithm",
+   "bucket": "thin",
+   "current": "Converts 3D ROI lists to a mask",
+   "proposed": "Takes a list of 3D ROIs and an optional reference image, then creates a greyscale mask image marking the 3D pixels covered by the ROIs. The mask matches the reference image size when one is supplied; otherwise it is sized to the ROIs.",
+   "note": null
+  },
+  {
+   "nodeId": "io-interface",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/api/compartments/algorithms/IOInterfaceAlgorithm.java",
+   "class": "IOInterfaceAlgorithm",
+   "bucket": "thin",
+   "current": "Passes its input to its output without changes.",
+   "proposed": "Sends the connected data onward without changing it, so it can serve as a neutral connection point. It takes in any data type and produces the same data type unchanged.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-tracking",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/TrackingNode.java",
+   "class": "TrackingNode",
+   "bucket": "thin",
+   "current": "Track spots using TrackMate",
+   "proposed": "Links detected spots into tracks using TrackMate. It takes a collection of detected spots and a configured spot tracker, then produces the resulting tracks.",
+   "note": null
+  },
+  {
+   "nodeId": "ij-convert-image-to-32-bit",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ConvertImageTo32BitAlgorithm.java",
+   "class": "ConvertImageTo32BitAlgorithm",
+   "bucket": "thin",
+   "current": "Converts an image into 32-bit",
+   "proposed": "Takes a 2D or 3D ImageJ image and produces a 32-bit grayscale image, where each pixel or voxel is stored as a 32-bit floating-point value. This is useful when later analysis needs more numeric precision than standard 8-bit or 16-bit images.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-generate-zero-image",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/generate/GenerateZeroImage.java",
+   "class": "GenerateZeroImage",
+   "bucket": "thin",
+   "current": "Creates a new image that is black.",
+   "proposed": "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-render-overlay",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/overlay/RenderOverlayAlgorithm.java",
+   "class": "RenderOverlayAlgorithm",
+   "bucket": "thin",
+   "current": "Renders the overlay ROI of an image to RGB",
+   "proposed": "Creates a color image in which the 2D ROIs from the input image's overlay are drawn over the image. It takes an ImagePlusData image and produces an ImagePlusColorRGBData image, applying the selected outline, fill, label, opacity, and magnification settings.",
+   "note": null
+  },
+  {
+   "nodeId": "import-cellpose-model-v2",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/algorithms/ImportCellposeModelFromFileAlgorithm.java",
+   "class": "ImportCellposeModelFromFileAlgorithm",
+   "bucket": "thin",
+   "current": "Imports a Cellpose model from a file",
+   "proposed": "Loads a Cellpose model from a file so it can be used for image segmentation. It takes a single model file as input and produces the corresponding Cellpose model for downstream steps.",
+   "note": null
+  },
+  {
+   "nodeId": "rename-annotation",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/RenameAnnotation.java",
+   "class": "RenameAnnotation",
+   "bucket": "thin",
+   "current": "Renames one or multiple annotations.",
+   "proposed": "Renames one or more text annotations on each data item by matching old annotation names and replacing them with new names. It takes data items with text annotations and outputs the same items with the renamed annotations, leaving their values unchanged.",
+   "note": null
+  },
+  {
+   "nodeId": "table-filter-2",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/filter/FilterTablesAlgorithm.java",
+   "class": "FilterTablesAlgorithm",
+   "bucket": "thin",
+   "current": "Filters tables by their properties.",
+   "proposed": "Keeps only tables that match a condition you write, such as having at least 10 rows or containing a named column. It checks each input table's row count, column count, column names, and annotations, and passes the table through unchanged when the condition is true; otherwise it produces no table.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-filter-spots",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/spots/SpotFilterNode.java",
+   "class": "SpotFilterNode",
+   "bucket": "thin",
+   "current": "Filter TrackMate spots via expressions",
+   "proposed": "Takes a TrackMate spot collection, keeps only detected spots that satisfy a per-spot expression, such as quality > 30, and outputs a filtered collection of the remaining spots.",
+   "note": null
+  },
+  {
+   "nodeId": "export-3d-scene-to-collada",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-scene-3d/src/main/java/org/hkijena/jipipe/plugins/scene3d/nodes/ExportScene3DToColladaAlgorithm.java",
+   "class": "ExportScene3DToColladaAlgorithm",
+   "bucket": "thin",
+   "current": "Exports a 3D scene to Collada 1.4.1 (DAE)",
+   "proposed": "Takes a 3D scene and writes it to a Collada 1.4.1 .dae file, producing a file you can open in 3D viewers or use in later analysis. It can name files from metadata and optionally index meshes to reduce file size.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-labels-filter-filter-by-expression-3d",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/filter/FilterLabelsByExpression3DAlgorithm.java",
+   "class": "FilterLabelsByExpression3DAlgorithm",
+   "bucket": "thin",
+   "current": "Filters labels with a filter expression.",
+   "proposed": "Takes a 3D grayscale image of labeled objects and keeps only the labels that satisfy a user-written expression, such as id > 10 AND num_pixels > 50, then outputs the same 3D grayscale image with all other labels removed.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-labels-to-mask",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/labels/LabelsToMaskAlgorithm.java",
+   "class": "LabelsToMaskAlgorithm",
+   "bucket": "thin",
+   "current": "Converts a label image to a mask",
+   "proposed": "Converts a grayscale label image into a binary mask image: every pixel with a positive label value becomes white (255), and all other pixels become black (0), preserving the original size, channels, and scale.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-remove-lut",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/lut/RemoveLUTAlgorithm.java",
+   "class": "RemoveLUTAlgorithm",
+   "bucket": "thin",
+   "current": "Removes LUT information from the input image.",
+   "proposed": "Takes an ImageJ image (ImagePlusData) and produces an ImageJ image (ImagePlusData) with its lookup table (LUT) color mapping removed, leaving pixel values unchanged. By default it works on a duplicate, and you can restrict the removal to selected channels.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-from-table-text",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/generate/TableToTextROIAlgorithm.java",
+   "class": "TableToTextROIAlgorithm",
+   "bucket": "thin",
+   "current": "Converts data from a table to text ROIs.",
+   "proposed": "Turns a results table of coordinates and labels into a list of 2D text ROIs, one per row, positioned by X and Y. It can also set text, name, metadata, slice, channel, and time, and an optional background, producing ROIs that can be overlaid on images.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-remove-overlay",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/overlay/RemoveOverlayAlgorithm.java",
+   "class": "RemoveOverlayAlgorithm",
+   "bucket": "thin",
+   "current": "Remove overlay ROIs",
+   "proposed": "It takes an ImageJ image (ImagePlusData) and produces a copy (ImagePlusData) with the overlay removed, so any 2D ROI or 3D ROI markings are no longer displayed.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-filter-roi3d-by-statistics",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/filter/FilterRoi3dByStatisticsAlgorithm.java",
+   "class": "FilterRoi3dByStatisticsAlgorithm",
+   "bucket": "thin",
+   "current": "Filters the 3D ROI list elements via statistics.",
+   "proposed": "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-roi-color-by-statistics",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/modify/ColorRoi3dByStatisticsAlgorithm.java",
+   "class": "ColorRoi3dByStatisticsAlgorithm",
+   "bucket": "thin",
+   "current": "Sets the 3D ROI item colors by measurements.",
+   "proposed": "Colors a list of 3D ROIs by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors.",
+   "note": null
+  },
+  {
+   "nodeId": "import-folder",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/FolderDataSource.java",
+   "class": "FolderDataSource",
+   "bucket": "thin",
+   "current": "Converts the path parameter into folder data.",
+   "proposed": "Provides a chosen folder as input for file-based nodes. It takes no input data; you set the folder in the node, and it outputs folder data that downstream nodes can use to list or process files inside it.",
+   "note": null
+  },
+  {
+   "nodeId": "import-json-from-file",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/datasources/ImportJsonAlgorithm.java",
+   "class": "ImportJsonAlgorithm",
+   "bucket": "thin",
+   "current": "Imports JSON data from a file",
+   "proposed": "Reads a JSON file and produces its contents as JSON data for later steps. It can first check that the file contains valid JSON, so problems are caught before later steps.",
+   "note": null
+  },
+  {
+   "nodeId": "omero-upload-image",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/upload/UploadOMEROImageToDatasetAlgorithm.java",
+   "class": "UploadOMEROImageToDatasetAlgorithm",
+   "bucket": "thin",
+   "current": "Uploads an image into an OMERO dataset.",
+   "proposed": "Uploads each OME image to the chosen OMERO dataset and returns a reference to the uploaded OMERO image. It writes the image as an OME-TIFF, uses the configured file name and annotation key-value pairs or tags, then stores it in the dataset.",
+   "note": null
+  },
+  {
+   "nodeId": "table-sort",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/rows/SortTableRowsAlgorithm.java",
+   "class": "SortTableRowsAlgorithm",
+   "bucket": "thin",
+   "current": "Sorts the table rows by columns",
+   "proposed": "Produces a sorted results table from an input results table, reordering rows by one or more selected columns. Columns can be matched by name filters, sorted ascending or descending, and strings can use natural order; an optional reverse switch flips the final order.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-spots-to-roi",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/converters/ConvertSpotsToRoiNode.java",
+   "class": "ConvertSpotsToRoiNode",
+   "bucket": "thin",
+   "current": "Converts TrackMate spots into ROI",
+   "proposed": "Takes a collection of TrackMate spots and creates a list of 2D ROIs, one ellipse per spot, positioned at the spot's x, y, z, and time coordinates. The ROIs can be named and colored using spot features, and are output as a 2D ROI list for downstream analysis.",
+   "note": null
+  },
+  {
+   "nodeId": "extract-data-annotation",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-annotations/src/main/java/org/hkijena/jipipe/plugins/annotation/algorithms/ExtractDataAnnotation.java",
+   "class": "ExtractDataAnnotation",
+   "bucket": "thin",
+   "current": "Extracts a data annotation.",
+   "proposed": "Extracts the data stored in a chosen data annotation and makes it the main output. It takes a data item with named annotations, selects the annotation matching the configured name, and outputs that annotation's data as a new data item; missing annotations can be ignored or raise an error.",
+   "note": null
+  },
+  {
+   "nodeId": "filaments-convert-to-roi3d",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-filaments/src/main/java/org/hkijena/jipipe/plugins/ijfilaments/nodes/convert/ConvertFilamentsToRoi3dAlgorithm.java",
+   "class": "ConvertFilamentsToRoi3dAlgorithm",
+   "bucket": "thin",
+   "current": "Converts filaments into a 3D ROI",
+   "proposed": "Produces a list of 3D ROIs from 3D filament data, optionally drawing filament segments as 3D line ROIs and points as 3D point ROIs. You can override line thickness or point radius.",
+   "note": null
+  },
+  {
+   "nodeId": "graph-annotation-image",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/canvasnotes/nodes/ImageBoxGraphCanvasNote.java",
+   "class": "ImageBoxGraphCanvasNote",
+   "bucket": "thin",
+   "current": "A canvas note that displays an image",
+   "proposed": "Places a static image box on the workflow canvas; it receives no data and outputs no data. It displays a selected image with configurable fit, anchor, scale, margins, background, and border.",
+   "note": null
+  },
+  {
+   "nodeId": "ij-convert-image-to-rgb-colors",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/convert/ConvertImageToRGBAlgorithm.java",
+   "class": "ConvertImageToRGBAlgorithm",
+   "bucket": "thin",
+   "current": "Converts an image into RGB colors",
+   "proposed": "Takes a 2D or 3D image and converts it to RGB color data, producing an image whose pixels are represented as red, green, and blue channels. This makes the image suitable for steps that expect RGB color input.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-export-ome-zarr",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij/src/main/java/org/hkijena/jipipe/plugins/imagejdatatypes/algorithms/io/ExportImagePlusAsOMEZARRAlgorithm.java",
+   "class": "ExportImagePlusAsOMEZARRAlgorithm",
+   "bucket": "thin",
+   "current": "Writes an OME ZARR into a directory or ZIP file",
+   "proposed": "Takes 2D or 3D OME image data and writes each as an OME-ZARR dataset in a folder or ZIP file, then outputs a URI reference to the result. It can create a multi-resolution pyramid, select compression, and define chunk sizes.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-extract-ome-image-xml",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/ome/ExtractOMEXMLAlgorithm.java",
+   "class": "ExtractOMEXMLAlgorithm",
+   "bucket": "thin",
+   "current": "Extracts the OME metadata XML from an OME image",
+   "proposed": "Extracts the OME metadata from an OME image and outputs it as OME-XML data. It takes an OME image and produces the XML that describes its channels, sizes, and acquisition metadata.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-color-by-name",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/modify/ColorRoiByNameAlgorithm.java",
+   "class": "ColorRoiByNameAlgorithm",
+   "bucket": "thin",
+   "current": "Sets the ROI item colors by their name.",
+   "proposed": "Takes a list of 2D ROIs and returns the same list with each ROI's fill and/or line color set according to its name. Unique names are sorted naturally, and each name's position in that order is mapped through the selected color map(s).",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-draw-text",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/draw/DrawTextRoiAlgorithm.java",
+   "class": "DrawTextRoiAlgorithm",
+   "bucket": "thin",
+   "current": "Draws a text ROI",
+   "proposed": "Creates a 2D text ROI and adds it to an existing 2D ROI list, or starts a new list if none is provided. It positions the text relative to an optional reference image or the current ROI bounds, with font, angle, and optional background settings, and outputs the updated 2D ROI list.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-enlarge-shrink",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/modify/EnlargeShrinkRoiAlgorithm.java",
+   "class": "EnlargeShrinkRoiAlgorithm",
+   "bucket": "thin",
+   "current": "Enlarges or shrinks each input ROI",
+   "proposed": "Outputs a new list of 2D ROIs, each enlarged or shrunk by a user-defined number of pixels; negative values shrink. It takes a list of 2D ROIs and an optional reference image, and the value can be based on ROI measurements or metadata.",
+   "note": null
+  },
+  {
+   "nodeId": "ij1-roi-from-table-point",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-algorithms/src/main/java/org/hkijena/jipipe/plugins/imagejalgorithms/nodes/roi/generate/TableToPointROIAlgorithm.java",
+   "class": "TableToPointROIAlgorithm",
+   "bucket": "thin",
+   "current": "Converts data from a table to point ROIs.",
+   "proposed": "Creates a list of 2D point ROIs from a results table, using one row per point. It reads X and Y coordinates (and optional Z, channel, frame, name, and JSON metadata) and outputs a 2D ROI list that can be overlaid on images.",
+   "note": null
+  },
+  {
+   "nodeId": "ij3d-roi-convert-to-3d-mesh",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-3d/src/main/java/org/hkijena/jipipe/plugins/ij3d/nodes/roi3d/convert/Roi3dTo3DMeshAlgorithm.java",
+   "class": "Roi3dTo3DMeshAlgorithm",
+   "bucket": "thin",
+   "current": "Converts 3D ROI into a 3D scene.",
+   "proposed": "Takes a list of 3D ROIs and turns each into a 3D mesh, producing a 3D scene for visualization or downstream processing. It can respect physical voxel sizes, force a mesh length unit, smooth surfaces, add a name prefix, and override mesh color.",
+   "note": null
+  },
+  {
+   "nodeId": "import-cellpose-model",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-cellpose/src/main/java/org/hkijena/jipipe/plugins/cellpose/legacy/algorithms/ImportLegacyCellposeModelAlgorithm.java",
+   "class": "ImportLegacyCellposeModelAlgorithm",
+   "bucket": "thin",
+   "current": "Imports a Cellpose model from a file",
+   "proposed": "Loads a saved Cellpose model from a file so it can be used for cell segmentation. It takes one model file as input and produces a legacy Cellpose model that later steps can apply to images.",
+   "note": null
+  },
+  {
+   "nodeId": "import-file",
+   "file": "/data/src/jipipe-4/jipipe-core/src/main/java/org/hkijena/jipipe/plugins/filesystem/datasources/FileDataSource.java",
+   "class": "FileDataSource",
+   "bucket": "thin",
+   "current": "Converts the path parameter into file data.",
+   "proposed": "Loads a single file chosen in the node settings and makes it available to later steps as file data. It takes no input data and does not change the file contents; it only provides the selected file for later steps to open or process.",
+   "note": null
+  },
+  {
+   "nodeId": "omero-download-image",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/download/DownloadOMEROImageAlgorithm.java",
+   "class": "DownloadOMEROImageAlgorithm",
+   "bucket": "thin",
+   "current": "Imports an image from OMERO into ImageJ",
+   "proposed": "Downloads a selected OMERO image into the workflow as an OME image, using Bio-Formats to read its pixels and metadata. It can import OMERO tags and key-value pairs as metadata labels and, if enabled, extract 2D ROIs. The output is an OME image item ready for downstream analysis.",
+   "note": null
+  },
+  {
+   "nodeId": "omero-upload-table",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-omero/src/main/java/org/hkijena/jipipe/plugins/omero/nodes/upload/UploadOMEROTableAlgorithm.java",
+   "class": "UploadOMEROTableAlgorithm",
+   "bucket": "thin",
+   "current": "Attaches a table to an OMERO image",
+   "proposed": "Uploads a results table to an OMERO image and returns a reference to the attached table. It takes an OMERO image reference and a results table, names the table with the configured expression, and stores it on the image in OMERO.",
+   "note": null
+  },
+  {
+   "nodeId": "table-rename-columns",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-tables/src/main/java/org/hkijena/jipipe/plugins/tables/nodes/columns/RenameTableColumnsAlgorithm.java",
+   "class": "RenameTableColumnsAlgorithm",
+   "bucket": "thin",
+   "current": "Renames columns",
+   "proposed": "Renames one or more columns in a results table by matching column names with the From entries and replacing them with the To entries. It takes a ResultsTableData table and outputs the same table with updated column headers.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-visualize-spots",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/spots/SpotsToRGBNode.java",
+   "class": "SpotsToRGBNode",
+   "bucket": "thin",
+   "current": "Visualizes spots",
+   "proposed": "Renders detected spots and their tracks as a color image. It takes a spots collection and, optionally, a reference RGB image, draws the spots on each frame and Z slice, and produces a new RGB image with the same scale.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-visualize-track-scheme",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/TrackSchemeRendererNode.java",
+   "class": "TrackSchemeRendererNode",
+   "bucket": "thin",
+   "current": "Renders the track scheme as image",
+   "proposed": "Creates a visual track scheme image from a TrackMate track collection, showing each detected object and its connections over time as a diagram. The input is a TrackCollectionData and the output is an ImagePlusData containing the rendered scheme.",
+   "note": null
+  },
+  {
+   "nodeId": "trackmate-visualize-tracks",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-ij-trackmate/src/main/java/org/hkijena/jipipe/plugins/ijtrackmate/nodes/tracks/TracksToRGBNode.java",
+   "class": "TracksToRGBNode",
+   "bucket": "thin",
+   "current": "Visualizes tracks",
+   "proposed": "Renders measured tracks as a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale.",
+   "note": null
+  },
+  {
+   "nodeId": "xml-prettify",
+   "file": "/data/src/jipipe-4/plugins/jipipe-plugin-strings/src/main/java/org/hkijena/jipipe/plugins/strings/nodes/xml/PrettifyXMLAlgorithm.java",
+   "class": "PrettifyXMLAlgorithm",
+   "bucket": "thin",
+   "current": "Prettifies/formats the input XML data",
+   "proposed": "Takes in XML data and produces formatted XML data that is easier to read, using a configurable indentation level and optionally omitting the XML declaration.",
+   "note": null
+  }
+ ]
+}

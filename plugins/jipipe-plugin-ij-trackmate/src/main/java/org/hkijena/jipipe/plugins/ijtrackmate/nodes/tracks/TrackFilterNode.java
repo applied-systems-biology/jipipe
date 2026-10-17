@@ -43,7 +43,7 @@ import java.util.List;
 import java.util.Map;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter tracks", after = {TrackingNode.class}, purpose = "Remove tracks that do not match the selection criteria")
-@SetJIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
+@SetJIPipeDocumentation(name = "Filter tracks", description = "Takes a TrackMate track collection (TrackCollectionData), keeps only the tracks that satisfy a per-track expression, and outputs a filtered TrackCollectionData with non-matching tracks hidden.")
 @ConfigureJIPipeNode(function = TrackingFilteringFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = TrackCollectionData.class, name = "Output", create = true)

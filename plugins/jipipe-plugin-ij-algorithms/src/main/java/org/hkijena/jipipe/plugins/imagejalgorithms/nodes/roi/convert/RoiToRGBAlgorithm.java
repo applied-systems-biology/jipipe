@@ -53,8 +53,7 @@ import java.util.Collections;
 /**
  * Wrapper around {@link RoiDrawer}
  */
-@SetJIPipeDocumentation(name = "Convert 2D ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
-        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
+@SetJIPipeDocumentation(name = "Convert 2D ROI to RGB", description = "Creates an RGB image that draws 2D ROIs as colored outlines, fills, and optional labels. It takes a 2D ROI list and an optional reference image; without a reference, it uses a blank RGB canvas. The output is an RGB image of the ROI visualization.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "The ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where ROI are drawn on", create = true, optional = true)

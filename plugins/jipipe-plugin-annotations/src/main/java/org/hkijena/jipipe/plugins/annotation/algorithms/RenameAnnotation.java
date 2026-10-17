@@ -42,7 +42,7 @@ import java.util.List;
 /**
  * Generates annotations from filenames
  */
-@SetJIPipeDocumentation(name = "Rename annotation", description = "Renames one or multiple annotations.")
+@SetJIPipeDocumentation(name = "Rename annotation", description = "Renames one or more text annotations on each data item by matching old annotation names and replacing them with new names. It takes data items with text annotations and outputs the same items with the renamed annotations, leaving their values unchanged.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

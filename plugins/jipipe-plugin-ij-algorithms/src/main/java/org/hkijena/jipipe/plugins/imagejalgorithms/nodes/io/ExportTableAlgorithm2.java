@@ -39,7 +39,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Export table", description = "Exports a results table to CSV/XLSX")
+@SetJIPipeDocumentation(name = "Export table", description = "Takes a results table, saves it as a CSV or XLSX file at the selected location, and provides the saved file for later steps.")
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
 @ConfigureJIPipeNode(function = ExportTablesFunction.class, framework = ImageJ1Framework.class)

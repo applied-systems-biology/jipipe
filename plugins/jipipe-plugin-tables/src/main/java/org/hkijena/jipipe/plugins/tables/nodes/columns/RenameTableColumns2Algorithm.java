@@ -42,7 +42,7 @@ import java.util.Objects;
 /**
  * Algorithm that removes columns
  */
-@SetJIPipeDocumentation(name = "Rename table column", description = "Renames columns")
+@SetJIPipeDocumentation(name = "Rename table column", description = "Renames one or more columns in a ResultsTableData table and outputs the same table as ResultsTableData with updated column names. Each renaming entry matches an old column name and assigns a new name, optionally using the current name in an expression.")
 @ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.OMEXMLData;
 
-@SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata XML from an OME image")
+@SetJIPipeDocumentation(name = "Extract OME XML", description = "Extracts the OME metadata from an OME image and outputs it as OME-XML data. It takes an OME image and produces the XML that describes its channels, sizes, and acquisition metadata.")
 @ConfigureJIPipeNode(function = ResamplingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEXMLData.class, name = "Output", create = true)

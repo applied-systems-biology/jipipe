@@ -55,7 +55,7 @@ import java.util.List;
 /**
  * BioFormats importer wrapper
  */
-@SetJIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
+@SetJIPipeDocumentation(name = "Bio-Formats importer", description = "Imports microscopy image files with the Bio-Formats plugin and produces image data with OME metadata. It can set color mode, stack order, split channels, Z planes, or time points, crop, stitch tiles, autoscale, and extract 2D ROIs.")
 @AddJIPipeInputSlot(value = FileData.class, name = "Input", description = "The image file(s)", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", description = "The imported data", create = true)
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })

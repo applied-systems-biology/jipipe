@@ -55,7 +55,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 
-@SetJIPipeDocumentation(name = "Enlarge/shrink 2D ROI", description = "Enlarges or shrinks each input ROI")
+@SetJIPipeDocumentation(name = "Enlarge/shrink 2D ROI", description = "Outputs a new list of 2D ROIs, each enlarged or shrunk by a user-defined number of pixels; negative values shrink. It takes a list of 2D ROIs and an optional reference image, and the value can be based on ROI measurements or metadata.")
 @ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

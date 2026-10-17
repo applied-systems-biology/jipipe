@@ -58,7 +58,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Export OME ZARR", description = "Writes an OME ZARR into a directory or ZIP file")
+@SetJIPipeDocumentation(name = "Export OME ZARR", description = "Takes 2D or 3D OME image data and writes each as an OME-ZARR dataset in a folder or ZIP file, then outputs a URI reference to the result. It can create a multi-resolution pyramid, select compression, and define chunk sizes.")
 @ConfigureJIPipeNode(function = ExportImagesFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = OMEImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = URIData.class, name = "Output", create = true)

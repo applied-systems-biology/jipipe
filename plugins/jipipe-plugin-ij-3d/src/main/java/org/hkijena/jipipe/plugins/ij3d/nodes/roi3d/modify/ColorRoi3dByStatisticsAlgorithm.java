@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.ColorMapEnumItemInfo
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
-@SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Sets the 3D ROI item colors by measurements.")
+@SetJIPipeDocumentation(name = "Color IJ3D ROI by statistics", description = "Colors a list of 3D ROIs by a chosen measurement. It takes 3D ROIs and an optional reference image, measures the selected statistic for each ROI (in physical units when available), maps the values to a color map, and outputs the same 3D ROI list with updated fill colors.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

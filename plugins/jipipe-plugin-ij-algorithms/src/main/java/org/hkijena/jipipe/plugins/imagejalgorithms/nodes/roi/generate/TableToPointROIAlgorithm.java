@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.TableColumnData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 
-@SetJIPipeDocumentation(name = "Table to 2D point ROI", description = "Converts data from a table to point ROIs.")
+@SetJIPipeDocumentation(name = "Table to 2D point ROI", description = "Creates a list of 2D point ROIs from a results table, using one row per point. It reads X and Y coordinates (and optional Z, channel, frame, name, and JSON metadata) and outputs a 2D ROI list that can be overlaid on images.")
 @ConfigureJIPipeNode(function = { TableTransformFunction.class, RoiFiltersFunction.class }, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

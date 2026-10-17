@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 
-@SetJIPipeDocumentation(name = "Import JSON", description = "Imports JSON data from a file")
+@SetJIPipeDocumentation(name = "Import JSON", description = "Reads a JSON file and produces its contents as JSON data for later steps. It can first check that the file contains valid JSON, so problems are caught before later steps.")
 @ConfigureJIPipeNode(function = TextMarkupFunction.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true)
 @AddJIPipeOutputSlot(value = JsonData.class, name = "Json", create = true)

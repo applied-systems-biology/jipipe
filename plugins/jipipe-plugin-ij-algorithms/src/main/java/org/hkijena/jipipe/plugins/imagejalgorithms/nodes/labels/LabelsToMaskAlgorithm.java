@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 
-@SetJIPipeDocumentation(name = "Convert labels to mask", description = "Converts a label image to a mask")
+@SetJIPipeDocumentation(name = "Convert labels to mask", description = "Converts a grayscale label image into a binary mask image: every pixel with a positive label value becomes white (255), and all other pixels become black (0), preserving the original size, channels, and scale.")
 @ConfigureJIPipeNode(function = { ColorStackFunction.class, SegmentationFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

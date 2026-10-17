@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.nodes.spots.SpotDetectorNode;
 import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Track spots", after = {SpotDetectorNode.class, CreateSpotDetectorNode.class}, purpose = "Link the detected spots into tracks")
-@SetJIPipeDocumentation(name = "Track spots", description = "Track spots using TrackMate")
+@SetJIPipeDocumentation(name = "Track spots", description = "Links detected spots into tracks using TrackMate. It takes a collection of detected spots and a configured spot tracker, then produces the resulting tracks.")
 @ConfigureJIPipeNode(function = TrackingLinkingFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Spots", description = "The detected spots", create = true)
 @AddJIPipeInputSlot(value = SpotTrackerData.class, name = "Spot tracker", description = "The algorithm that tracks the spots", create = true)

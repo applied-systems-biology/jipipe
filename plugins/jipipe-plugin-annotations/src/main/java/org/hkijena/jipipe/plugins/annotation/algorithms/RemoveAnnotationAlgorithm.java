@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * Removes a specified annotation
  */
-@SetJIPipeDocumentation(name = "Remove annotation", description = "Removes annotations by name or value")
+@SetJIPipeDocumentation(name = "Remove annotation", description = "Removes selected text annotations from data items: it takes in data items with text annotations, deletes every annotation matching the configured name or value expression, and outputs the same data items without those annotations.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

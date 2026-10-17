@@ -84,6 +84,14 @@ class ExtractUnitTests(unittest.TestCase):
         self.assertIn("my-id", m)
         self.assertEqual(m["my-id"], "MyNode")
 
+    def test_annotation_node_type_registration(self):
+        # canvas-note nodes register via registerAnnotationNodeType — they
+        # carry @SetJIPipeDocumentation too and must be linked the same way
+        txt = ('registerAnnotationNodeType("graph-annotation-image", '
+               'ImageBoxGraphCanvasNote.class, ImageBoxNoteGraphNodeTool.class, icon);')
+        m = EX.extract_id_class_map(txt)
+        self.assertEqual(m["graph-annotation-image"], "ImageBoxGraphCanvasNote")
+
 
 class ExtractIntegrationTests(unittest.TestCase):
     """End-to-end against the real source tree (skipped if the repo sources

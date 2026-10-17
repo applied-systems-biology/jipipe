@@ -46,7 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert spots to ROI", after = {MeasureSpotsNode.class}, purpose = "Convert the measured spots into ROIs for downstream analysis")
-@SetJIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
+@SetJIPipeDocumentation(name = "Convert spots to ROI", description = "Takes a collection of TrackMate spots and creates a list of 2D ROIs, one ellipse per spot, positioned at the spot's x, y, z, and time coordinates. The ROIs can be named and colored using spot features, and are output as a 2D ROI list for downstream analysis.")
 @ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

@@ -34,7 +34,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 
-@SetJIPipeDocumentation(name = "IJ3D ROI to 3D scene", description = "Converts 3D ROI into a 3D scene.")
+@SetJIPipeDocumentation(name = "IJ3D ROI to 3D scene", description = "Takes a list of 3D ROIs and turns each into a 3D mesh, producing a 3D scene for visualization or downstream processing. It can respect physical voxel sizes, force a mesh length unit, smooth surfaces, add a name prefix, and override mesh color.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)

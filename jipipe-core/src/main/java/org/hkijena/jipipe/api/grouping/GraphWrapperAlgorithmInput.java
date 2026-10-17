@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 
-@SetJIPipeDocumentation(name = "Group input", description = "Acts as input of a node group.")
+@SetJIPipeDocumentation(name = "Group input", description = "Marks the entry point of a grouped set of analysis steps. It takes no specific data type and produces no separate result; it simply lets the data you connect to the group enter unchanged for the steps inside to use.")
 @ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
 public class GraphWrapperAlgorithmInput extends IOInterfaceAlgorithm {
 

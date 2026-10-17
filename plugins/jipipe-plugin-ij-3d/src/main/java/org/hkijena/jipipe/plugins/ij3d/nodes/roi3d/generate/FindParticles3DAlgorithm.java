@@ -40,7 +40,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "IJ3D Find particles 3D", description = "Finds 3D particles within a mask image")
+@SetJIPipeDocumentation(name = "IJ3D Find particles 3D", description = "Finds 3D particles in a binary mask image and returns them as a list of 3D ROIs. It labels connected components, applies optional size, sphericity, edge, and background settings, and uses image calibration for physical measurements when available.")
 @ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)

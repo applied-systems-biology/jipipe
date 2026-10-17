@@ -47,7 +47,7 @@ import java.awt.image.BufferedImage;
 import java.util.Collections;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Convert tracks to RGB", after = {MeasureTracksNode.class}, purpose = "Render the measured tracks as RGB images")
-@SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Visualizes tracks")
+@SetJIPipeDocumentation(name = "Convert tracks to RGB", description = "Renders measured tracks as a color RGB image, optionally overlaid on a supplied RGB reference image. It takes a track collection and an optional RGB image, draws the tracks on every time and z slice using the track visualization settings and magnification, and produces a new RGB image with the same dimensions and scale.")
 @ConfigureJIPipeNode(function = TrackingAnalysisFunction.class, framework = TrackMateFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = TrackCollectionData.class, name = "Tracks", create = true)
 @AddJIPipeInputSlot(value = ImagePlusColorRGBData.class, name = "Image", create = true, optional = true, description = "")

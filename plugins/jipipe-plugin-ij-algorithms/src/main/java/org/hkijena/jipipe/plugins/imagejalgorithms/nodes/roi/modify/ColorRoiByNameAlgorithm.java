@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Color 2D ROI by name", description = "Sets the ROI item colors by their name.")
+@SetJIPipeDocumentation(name = "Color 2D ROI by name", description = "Takes a list of 2D ROIs and returns the same list with each ROI's fill and/or line color set according to its name. Unique names are sorted naturally, and each name's position in that order is mapped through the selected color map(s).")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)

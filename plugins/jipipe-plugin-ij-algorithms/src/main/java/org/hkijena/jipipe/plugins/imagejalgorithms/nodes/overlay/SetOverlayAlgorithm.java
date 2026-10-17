@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.Roi2dListData;
 
-@SetJIPipeDocumentation(name = "Set 2D overlay", description = "Set overlay ROIs")
+@SetJIPipeDocumentation(name = "Set 2D overlay", description = "Sets the overlay of an image to a supplied list of 2D ROIs, producing an image that carries those ROIs for display or further analysis. It takes an image and a 2D ROI list and outputs the same image with the overlay applied.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

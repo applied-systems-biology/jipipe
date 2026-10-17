@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Provides an input file
  */
-@SetJIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
+@SetJIPipeDocumentation(name = "File", description = "Loads a single file chosen in the node settings and makes it available to later steps as file data. It takes no input data and does not change the file contents; it only provides the selected file for later steps to open or process.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filename", create = true)
 @ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
 public class FileDataSource extends AbstractPathDataSource {

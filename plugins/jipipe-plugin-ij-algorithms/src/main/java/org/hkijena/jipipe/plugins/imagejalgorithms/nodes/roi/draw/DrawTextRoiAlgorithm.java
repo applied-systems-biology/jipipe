@@ -46,7 +46,7 @@ import org.hkijena.jipipe.plugins.parameters.library.roi.InnerMargin;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 
-@SetJIPipeDocumentation(name = "Draw 2D text ROI", description = "Draws a text ROI")
+@SetJIPipeDocumentation(name = "Draw 2D text ROI", description = "Creates a 2D text ROI and adds it to an existing 2D ROI list, or starts a new list if none is provided. It positions the text relative to an optional reference image or the current ROI bounds, with font, angle, and optional background settings, and outputs the updated 2D ROI list.")
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)

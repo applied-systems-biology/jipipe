@@ -32,7 +32,7 @@ import java.util.List;
  * Algorithm that splits the input data by a specified annotation
  */
 // Algorithm metadata
-@SetJIPipeDocumentation(name = "Filter by annotation", description = "Filters data based on the annotation value.")
+@SetJIPipeDocumentation(name = "Filter by annotation", description = "Takes data items with text annotations, keeps only those that satisfy a boolean condition, and outputs the matching items with their annotations preserved. The condition can use annotation names as variables, for example checking that a dataset annotation contains Raw.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Output", create = true)

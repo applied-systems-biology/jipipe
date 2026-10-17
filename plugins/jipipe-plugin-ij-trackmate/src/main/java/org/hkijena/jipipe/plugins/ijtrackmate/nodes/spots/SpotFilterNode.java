@@ -45,7 +45,7 @@ import java.util.List;
 import java.util.Map;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Filter spots", after = {SpotDetectorNode.class}, purpose = "Remove detected spots that do not match the selection criteria")
-@SetJIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
+@SetJIPipeDocumentation(name = "Filter spots", description = "Takes a TrackMate spot collection, keeps only detected spots that satisfy a per-spot expression, such as quality > 30, and outputs a filtered collection of the remaining spots.")
 @ConfigureJIPipeNode(function = TrackingFilteringFunction.class, framework = TrackMateFramework.class)
 @AddJIPipeInputSlot(value = SpotsCollectionData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = SpotsCollectionData.class, name = "Output", create = true)

@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 /**
  * Algorithms that lists the sub folders for each input folder
  */
-@SetJIPipeDocumentation(name = "List subfolders", description = "Lists all subfolders")
+@SetJIPipeDocumentation(name = "List subfolders", description = "Takes folders and lists the subfolders inside each one, optionally starting from a named subfolder and searching recursively. It can keep only folders matching filter conditions. The result is a list of folders for downstream steps.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

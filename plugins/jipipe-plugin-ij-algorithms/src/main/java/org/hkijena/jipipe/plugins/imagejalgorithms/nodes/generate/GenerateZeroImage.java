@@ -38,7 +38,7 @@ import org.hkijena.jipipe.plugins.parameters.library.references.JIPipeDataParame
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@SetJIPipeDocumentation(name = "Create empty image", description = "Creates a new image that is black.")
+@SetJIPipeDocumentation(name = "Create empty image", description = "Creates a new blank ImageJ image filled with zero intensity, using the selected width, height, Z, C, and T sizes and pixel type (default 8-bit grayscale). It needs no input image, although optional annotations can be supplied, and outputs the generated image.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional annotations that can be referenced in the expression")
 @ConfigureJIPipeNode(function = ImageDataFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)

@@ -45,7 +45,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
-@SetJIPipeDocumentation(name = "Attach table to OMERO image", description = "Attaches a table to an OMERO image")
+@SetJIPipeDocumentation(name = "Attach table to OMERO image", description = "Uploads a results table to an OMERO image and returns a reference to the attached table. It takes an OMERO image reference and a results table, names the table with the configured expression, and stores it on the image in OMERO.")
 @ConfigureJIPipeNode(function = ExportTablesFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Tables", create = true, description = "The table to attach")
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Target", create = true, description = "The target OMERO image")

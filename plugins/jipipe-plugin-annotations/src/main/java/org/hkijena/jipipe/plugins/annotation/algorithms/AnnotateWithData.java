@@ -36,7 +36,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.StringParameterS
 import java.util.ArrayList;
 import java.util.List;
 
-@SetJIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
+@SetJIPipeDocumentation(name = "Annotate with data", description = "Each incoming data item is returned with a named annotation attached, using the paired item from a second data set. Text annotations from either set can also be copied into the output.")
 @ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotation", create = true)

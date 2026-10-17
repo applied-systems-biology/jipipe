@@ -45,7 +45,7 @@ import java.util.Comparator;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Sort table rows", description = "Sorts the table rows by columns")
+@SetJIPipeDocumentation(name = "Sort table rows", description = "Produces a sorted results table from an input results table, reordering rows by one or more selected columns. Columns can be matched by name filters, sorted ascending or descending, and strings can use natural order; an optional reverse switch flips the final order.")
 @ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

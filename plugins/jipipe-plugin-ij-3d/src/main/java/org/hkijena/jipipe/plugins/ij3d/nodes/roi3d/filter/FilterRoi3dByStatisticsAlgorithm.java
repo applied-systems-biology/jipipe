@@ -47,7 +47,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 
-@SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Filters the 3D ROI list elements via statistics.")
+@SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list.")
 @ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)

@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJIterationUtils;
 import java.util.HashSet;
 import java.util.Set;
 
-@SetJIPipeDocumentation(name = "Filter labels by expression 3D", description = "Filters labels with a filter expression. ")
+@SetJIPipeDocumentation(name = "Filter labels by expression 3D", description = "Takes a 3D grayscale image of labeled objects and keeps only the labels that satisfy a user-written expression, such as id > 10 AND num_pixels > 50, then outputs the same 3D grayscale image with all other labels removed.")
 @ConfigureJIPipeNode(function = { FilteringFunction.class, SegmentationFunction.class }, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, name = "Output", create = true)

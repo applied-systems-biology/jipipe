@@ -43,7 +43,7 @@ import org.hkijena.jipipe.plugins.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @JIPipeNodeTaxonomyFamilyStepAnnotation(family = TrackMateFamily.class, label = "Detect spots", purpose = "Detect the spots that are linked into tracks")
-@SetJIPipeDocumentation(name = "Detect spots", description = "Detect spots using TrackMate")
+@SetJIPipeDocumentation(name = "Detect spots", description = "Detects spots in a 2D or 3D image using a configured TrackMate spot detector and returns them as a spots collection. It takes an image and the detector settings, runs TrackMate detection, and produces the detected spot positions and features for downstream tracking.")
 @ConfigureJIPipeNode(function = TrackingDetectionFunction.class, framework = TrackMateFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "The image where the spots should be detected", create = true)
 @AddJIPipeInputSlot(value = SpotDetectorData.class, name = "Spot detector", description = "The algorithm that detects the spots", create = true)

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 import org.hkijena.jipipe.plugins.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalIntegerParameter;
 
-@SetJIPipeDocumentation(name = "Convert filaments to mask", description = "Converts filaments into a 3D ROI")
+@SetJIPipeDocumentation(name = "Convert filaments to mask", description = "Creates a mask image in which the filaments are drawn as solid pixels. It takes 3D filament data and an optional reference image that sets the mask size, and outputs a greyscale mask image.")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional reference image that determines the size of the mask")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Output", create = true)

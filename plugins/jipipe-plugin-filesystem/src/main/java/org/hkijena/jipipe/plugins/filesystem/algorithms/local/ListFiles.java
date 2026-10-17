@@ -43,7 +43,7 @@ import java.util.stream.Stream;
 /**
  * Algorithm that lists files in each folder
  */
-@SetJIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
+@SetJIPipeDocumentation(name = "List files", description = "Takes each input folder and outputs the files it contains, optionally from a named subfolder and, if enabled, from all subfolders. A filter expression can keep only matching files, and recursive search can follow symbolic links.")
 @ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 

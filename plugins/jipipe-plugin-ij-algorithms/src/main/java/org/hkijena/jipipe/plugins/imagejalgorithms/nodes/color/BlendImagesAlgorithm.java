@@ -49,7 +49,7 @@ import org.hkijena.jipipe.plugins.parameters.library.graph.InputSlotMapParameter
 import java.util.*;
 import java.util.stream.Collectors;
 
-@SetJIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
+@SetJIPipeDocumentation(name = "Blend images", description = "Takes one or more same-size greyscale or RGB images and combines them into one RGB image by overlaying them in priority order with chosen blend modes and opacities.")
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input")
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output")

@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * Provides an input folder
  */
-@SetJIPipeDocumentation(name = "Folder", description = "Converts the path parameter into folder data.")
+@SetJIPipeDocumentation(name = "Folder", description = "Provides a chosen folder as input for file-based nodes. It takes no input data; you set the folder in the node, and it outputs folder data that downstream nodes can use to list or process files inside it.")
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Folder path", create = true)
 @ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
 public class FolderDataSource extends AbstractPathDataSource {

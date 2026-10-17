@@ -31,7 +31,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 
-@SetJIPipeDocumentation(name = "Convert image to RGB", description = "Converts an image into RGB colors")
+@SetJIPipeDocumentation(name = "Convert image to RGB", description = "Takes a 2D or 3D image and converts it to RGB color data, producing an image whose pixels are represented as red, green, and blue channels. This makes the image suitable for steps that expect RGB color input.")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 @ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
