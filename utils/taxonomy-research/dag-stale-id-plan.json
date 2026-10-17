@@ -1,9 +1,9 @@
 {
- "_note": "(D)-critical: shipped patterns referencing a node id not registered in the 6.0.0 launcher classpath (corpus predates 6.0.0 renames + optional plugins). The launcher guard everyPatternGraphDeserializes asserts hasNodeInfoWithId, so these FAIL unless remapped (renamable) or excluded (exclude). Regenerated from the post-rerun dag-judgments.json.",
+ "_note": "(D)-critical: shipped patterns referencing a node id not registered in the 6.0.0 launcher classpath (corpus predates 6.0.0 renames + optional plugins). The launcher guard everyPatternGraphDeserializes asserts hasNodeInfoWithId, so these FAIL unless remapped (renamable) or excluded (exclude). Regenerated from the post-audit dag-judgments.json (re-run #3).",
  "renamable": {
   "cluster-0133": {
    "clusterId": "cluster-0133",
-   "name": "Create tiled image previews from files",
+   "name": "Tile multiple images into a grid",
    "support": 3,
    "staleIds": [
     "ij1-transform-tile"
@@ -19,7 +19,7 @@
   },
   "cluster-0318": {
    "clusterId": "cluster-0318",
-   "name": "Export OME-ZARR images from folders",
+   "name": "Batch export OME-ZARR images from folders",
    "support": 1,
    "staleIds": [
     "import-ome-zarr-from-directory-as-imgplus"
@@ -29,7 +29,7 @@
  "exclude": {
   "cluster-0058": {
    "clusterId": "cluster-0058",
-   "name": "Generate 2D extended-depth-of-focus projections from 3D image stacks",
+   "name": "Preprocess microscopy image stacks",
    "support": 5,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
@@ -37,7 +37,7 @@
   },
   "cluster-0072": {
    "clusterId": "cluster-0072",
-   "name": "Create corrected 2D time-series projections",
+   "name": "Project and correct a multi-dimensional image",
    "support": 4,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
@@ -45,10 +45,18 @@
   },
   "cluster-0091": {
    "clusterId": "cluster-0091",
-   "name": "Import images and compute extended depth-of-focus projections",
+   "name": "Create extended depth of focus projections from microscopy images",
    "support": 4,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
+   ]
+  },
+  "cluster-0103": {
+   "clusterId": "cluster-0103",
+   "name": "Create 2D/3D particle ROIs and label edge images",
+   "support": 4,
+   "staleIds": [
+    "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges"
    ]
   },
   "cluster-0134": {
@@ -63,7 +71,7 @@
   },
   "cluster-0140": {
    "clusterId": "cluster-0140",
-   "name": "Segment objects from images using markers",
+   "name": "Segment 2D images with edge projection and watershed",
    "support": 2,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
@@ -79,7 +87,7 @@
   },
   "cluster-0153": {
    "clusterId": "cluster-0153",
-   "name": "Detect 2D ROIs from image stacks",
+   "name": "Detect 2D particle ROIs from microscopy image stacks",
    "support": 2,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"
@@ -95,7 +103,7 @@
   },
   "cluster-0186": {
    "clusterId": "cluster-0186",
-   "name": "Create a colored depth-of-focus projection overlay",
+   "name": "Colorized extended depth-of-focus image projection",
    "support": 2,
    "staleIds": [
     "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"
@@ -113,14 +121,14 @@
   },
   "cluster-0254": {
    "clusterId": "cluster-0254",
-   "name": "Train image model from labeled images",
+   "name": "Train a deep-learning model from labeled images",
    "support": 1,
    "staleIds": [
     "deep-learning-train-image-model"
    ]
   }
  },
- "shippableAfterRemapAndExclude": 256,
+ "shippableAfterRemapAndExclude": 253,
  "renames": {
   "ij1-transform-tile": "ij1-transform-tile-2d (two successors exist: -2d and -2d-v2; pick the variant from the node's parameters)",
   "import-ome-zarr-from-directory-as-imgplus": "import-ome-zarr-from-zip-directory-as-imgplus"
