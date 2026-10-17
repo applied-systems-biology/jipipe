@@ -1,0 +1,23 @@
+{
+  "_note": "(D)-critical: 15/270 shipped patterns reference a node id not registered in the 6.0.0 launcher classpath (the corpus predates 6.0.0 renames + optional plugins). The launcher guard everyPatternGraphDeserializes asserts nodes.hasNodeInfoWithId(id), so these FAIL unless remapped or excluded. Generated 2026-10-17 from dag-judgments.json + registry.json.",
+  "renamable": [
+    {"clusterId": "cluster-0133", "name": "Import and tile images", "map": {"ij1-transform-tile": "ij1-transform-tile-2d (verify -2d vs -2d-v2 variant from the node's parameters)"}},
+    {"clusterId": "cluster-0242", "name": "Tiled ridge detection", "map": {"ij1-transform-tile": "ij1-transform-tile-2d (verify -2d vs -2d-v2 variant)"}},
+    {"clusterId": "cluster-0318", "name": "OME ZARR directory import/export", "map": {"import-ome-zarr-from-directory-as-imgplus": "import-ome-zarr-from-zip-directory-as-imgplus"}}
+  ],
+  "exclude_or_plugin_gate": [
+    {"clusterId": "cluster-0058", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0072", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0091", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0103", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges"},
+    {"clusterId": "cluster-0134", "plugin": "jipipe2ai/deep-learning", "id": "create-jipipe2ai-generation-model, jipipe2ai-predict-generation, jipipe2ai-train-generation-model"},
+    {"clusterId": "cluster-0140", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0152", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0153", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0169", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0186", "plugin": "clij", "id": "clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection"},
+    {"clusterId": "cluster-0216", "plugin": "jipipe2ai/deep-learning", "id": "create-jipipe2ai-segmentation-model, jipipe2ai-predict-image, jipipe2ai-train-image-model"},
+    {"clusterId": "cluster-0254", "plugin": "jipipe2ai/deep-learning", "id": "deep-learning-train-image-model"}
+  ],
+  "shippableAfterRemapAndExclude": 258
+}
