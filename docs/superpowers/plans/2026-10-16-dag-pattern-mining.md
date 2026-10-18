@@ -166,6 +166,18 @@ template's do. Contract for the harvest + generator:
   identical patterns with different layouts still collapse correctly. A new
   generator assertion: every shipped DAG template's nodes carry a
   `location/<their-compartment>/x|y` pair (no bunch-on-drop possible).
+- **Node display names: never serialize the override.** `jipipe:node:name` is
+  the *serialized* `customName` override (`JIPipeGraphNode.getName()` returns
+  it when set, else falls back to `getInfo().getName()` — the live registry
+  name). A baked label therefore **pins a stale display name forever** (the
+  corpus predates several node renames; 111/234 shipped linear-pattern node
+  instances were stale). The shipped graph resources MUST OMIT
+  `jipipe:node:name` so the node display tracks the current registry name and
+  survives future renames; the per-instance label stays in the research
+  artifact only (traceability). Sidecar `Sequence:`/`Wiring:` text is built
+  from the registry name, not the mined label. (Ruled 2026-10-18 after the
+  user flagged renamed nodes; applied to the linear 64 in the (93)-era
+  generator commit, to apply to all 407 DAG patterns in this step.)
 
 ## 4. First patterns to land (acceptance bar)
 

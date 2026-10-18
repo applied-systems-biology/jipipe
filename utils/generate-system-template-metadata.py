@@ -96,20 +96,26 @@ Function rule (R8c revised -- each distinct node id counts ONCE):
      real guard.)
 
 Output (all under ``jipipe-core/src/main/resources/org/hkijena/jipipe/plugins/nodetemplate/patterns/``):
-  * the curated + deduplicated graph JSON files (copied under their kept
-    filenames; currently 64 of the 185);
+  * the curated + deduplicated graph JSON files (written under their kept
+    filenames, with the ``jipipe:node:name`` label DROPPED — see below;
+    currently 64 of the 185);
   * ``system-templates.json`` -- a JSON object mapping pattern id ->
     ``{"name", "description", "functionId", "file"}``.
 
-  ``name``        = the ``.md`` frontmatter ``template.name``.
+  Node display name: the shipped graph does NOT carry ``jipipe:node:name``.
+  That field is the serialized "customName" override, and a baked label pins
+  a STALE display name forever (the corpus predates several node renames).
+  Omitted, ``JIPipeGraphNode.getName()`` falls back to
+  ``getInfo().getName()`` — the LIVE registry name, always current and
+  tracking future renames. (The label stays in the research artifact.)
+
+  ``name``        = the ``.md`` frontmatter ``template.name`` (curated).
   ``description`` = an HTMLText-encodable string built from the frontmatter
-                    ``corpus`` block:
-                      Mined from the HKI corpus -- support N across M projects.<br>
+                    ``corpus`` block, with node names taken from the
+                    REGISTRY (not the stale baked label):
                       Sequence: A -> B -> C.<br>
                       Wiring: A.slot -> B.slot; ...
-                    (the node-name sequence from ``corpus.exampleGraph.nodes``
-                    and, per R8, the edge slot wiring; one ``<br>`` per line,
-                    HTML-escaped).
+                    (one ``<br>`` per line, HTML-escaped).
   ``functionId``  = the R8c-computed top-level function id.
   ``file``        = the shipped graph JSON filename.
 
@@ -122,7 +128,6 @@ from __future__ import annotations
 import html
 import json
 import os
-import shutil
 import sys
 from collections import Counter
 from datetime import datetime, timezone
@@ -494,6 +499,13 @@ def main() -> None:
     # ---- build sidecar ----
     # Registry display names (the authoritative node names, not the
     # per-instance jipipe:node:name labels which can be stale user edits).
+    # The sidecar text is REBUILT from the registry name (not the mined
+    # label): the corpus predates several node renames, so the baked label
+    # is stale in the description text (e.g. "Add path to annotations" vs
+    # the current "Annotate with file/directory name"). All exampleGraph ids
+    # resolve in the current registry (verified 0/620 missing); a fallback
+    # to the raw label only fires for a future corpus re-run that adds an
+    # unregistered id, so it degrades gracefully.
     node_names = {nid: n["name"] for nid, n in nodes.items()}
     shipped = {}  # stem -> sidecar record (for the role-name guard below)
     renamed = 0
@@ -501,7 +513,7 @@ def main() -> None:
         g = graphs[stem]
         m = meta[stem]
         seq = m["corpus"].get("exampleGraphNodes", [])
-        seq_names = [n for _, n in seq]
+        seq_names = [node_names.get(iid, n) for iid, n in seq]
         # (The leading "Mined from the HKI corpus — support N across M
         # projects." line was internal mining statistics with no user
         # value; the description starts with the pattern's own Sequence.)
@@ -510,7 +522,9 @@ def main() -> None:
             lines.append("Sequence: " + " → ".join(unescape(n) for n in seq_names) + ".")
         # wiring from the raw graph edges, ordered source -> target
         im = {k: v["jipipe:node-info-id"] for k, v in g["nodes"].items()}
-        name_of = {v["jipipe:node-info-id"]: v.get("jipipe:node:name") or v["jipipe:node-info-id"]
+        name_of = {v["jipipe:node-info-id"]: node_names.get(v["jipipe:node-info-id"],
+                                                            v.get("jipipe:node:name")
+                                                            or v["jipipe:node-info-id"])
                    for v in g["nodes"].values()}
         edges = sorted(
             ((im[e["source-node"]], e["source-slot"], im[e["target-node"]], e["target-slot"])
@@ -574,7 +588,20 @@ def main() -> None:
     for stem in kept_stems:
         src = os.path.join(TEMPLATES_DIR, stem + ".json")
         dst = os.path.join(OUT_DIR, stem + ".json")
-        shutil.copyfile(src, dst)  # cp (verbatim); research dir untouched
+        # Drop the node display label (jipipe:node:name) when shipping: it is
+        # the serialized "customName" override, and a baked label pins a
+        # STALE display name forever (the corpus predates several node
+        # renames — 111/234 shipped instances were stale). Omitted, the
+        # node's getName() falls back to getInfo().getName(), the LIVE
+        # registry name — always current and tracking future renames.
+        # (Research dir untouched; the label stays in the mined artifact.)
+        with open(src, encoding="utf-8") as fh:
+            g = json.load(fh)
+        for v in g["nodes"].values():
+            v.pop("jipipe:node:name", None)
+        with open(dst, "w", encoding="utf-8") as fh:
+            fh.write(json.dumps(g, ensure_ascii=False,
+                                separators=(",", ":")) + "\n")
 
     with open(SIDECAR, "w", encoding="utf-8") as fh:
         json.dump(sidecar, fh, ensure_ascii=False, indent=2, sort_keys=True)
