@@ -192,3 +192,25 @@ No in-app mining (offline research pipeline, like the 185); no re-mining the
 linear 64 (additive); no new relation kinds (the index already consumes DAG
 template graphs; source nodes simply have empty `previous`); #1333 repository
 stays out (Download tab seam).
+
+## 7. Amendment — step C′: pattern derivation (2026-10-17, user review of (C))
+
+After the (C) re-run + node-description audit were reviewed, the user flagged
+a coverage gap: the mined set captures what users *did* build, not what a
+knowledgeable analyst *would* build next. Approved design (decisions in the
+ledger):
+
+- **Scope:** sweep ALL shipped patterns. **Ship as normal patterns** (no
+  user-visible derivation marker; provenance in the research artifact only).
+  **Same (D) pipeline + guards.** **Report before ship.**
+- **Generators:** (1) mechanical 2D↔3D twin swap (slot-signature-verified
+  node twins); (2) LLM "what next" sweep per shipped pattern — grounded in a
+  capability catalog (nodes consuming the pattern's outputs, exact slot names
+  from the `@AddJIPipeInputSlot`/`@AddJIPipeOutputSlot` annotations, class
+  hierarchy for assignability); fail-closed validation (id exists, slots
+  exist, types assign, no cycle, ≤10 nodes).
+- **Gate:** a (C)-style judge adapted for derived patterns (no support
+  heuristic), same four naming rules; structural-signature dedup against the
+  mined set.
+- **Artifact:** `utils/derive-dag-patterns.py` -> `dag-derived.json` (same
+  entry shape as `dag-judgments.json`); (D) merges shipped entries from both.
