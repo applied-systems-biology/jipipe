@@ -194,12 +194,21 @@ def mechanical_swap(graph: dict, catalog: list, direction: str,
         return None  # not a pattern of the source dimension
     if any(d not in (None, source_dim) for d in dims):
         return None  # mixed / foreign dimension
-    # slot name lookup per (node id, data type)
-    slot_by_dt = {}
+    # slot name lookup per (node id, data type), SEPARATE by direction — a
+    # source endpoint must resolve to the twin's OUTPUT slot for the swapped
+    # data type and a target to its INPUT slot. Merging both directions
+    # (inputs first, setdefault) made a source resolve to the twin's input
+    # name whenever the twin has an input and an output of the same dimension
+    # type with different names (the real ROI-statistics/morph/scale
+    # families: input "ROI", output "Output") — 10 broken edges in the first
+    # full run.
+    slot_by_dt_out = {}
+    slot_by_dt_in = {}
     for c in catalog:
-        for d in ("inputs", "outputs"):
-            for dt, names in c.get(d, {}).items():
-                slot_by_dt.setdefault((c["id"], dt), names)
+        for dt, names in c.get("outputs", {}).items():
+            slot_by_dt_out.setdefault((c["id"], dt), names)
+        for dt, names in c.get("inputs", {}).items():
+            slot_by_dt_in.setdefault((c["id"], dt), names)
     new = {"nodes": {}, "edges": []}
     dim_by_key = {k: d for k, d in
                   zip(graph["nodes"].keys(), dims)}
@@ -225,24 +234,53 @@ def mechanical_swap(graph: dict, catalog: list, direction: str,
         s_slot = e.get("source-slot", "")
         t_slot = e.get("target-slot", "")
         s_dt = None
-        for dt, names in by[s_id].get("outputs", {}).items():
+        for dt, names in by.get(s_id, {}).get("outputs", {}).items():
             if s_slot in names:
                 s_dt = dt
                 break
         t_dt = None
-        for dt, names in by[t_id].get("inputs", {}).items():
+        for dt, names in by.get(t_id, {}).get("inputs", {}).items():
             if t_slot in names:
                 t_dt = dt
                 break
         if s_dt:
-            names = slot_by_dt.get((s_new, swap_datatype(s_dt)), [])
+            names = slot_by_dt_out.get((s_new, swap_datatype(s_dt)), [])
             if names:
                 s_slot = names[0]
         if t_dt:
-            names = slot_by_dt.get((t_new, swap_datatype(t_dt)), [])
+            names = slot_by_dt_in.get((t_new, swap_datatype(t_dt)), [])
             if names:
                 t_slot = names[0]
-        new["edges"].append(dict(e, source_slot=s_slot, target_slot=t_slot))
+        # (A) format edge keys are KEBAB-case (source-slot/target-slot) —
+        # the mined graphs and the (D) deserialization read those. Writing
+        # the remap to the snake_case keys silently kept the stale (2D) slot
+        # names in the shipped edge (verified: import-roi-3d "Files").
+        new_edge = dict(e)
+        if "source-slot" in new_edge:
+            new_edge["source-slot"] = s_slot
+        if "target-slot" in new_edge:
+            new_edge["target-slot"] = t_slot
+        new["edges"].append(new_edge)
+    # fail-closed post-check: every slot name on a SWAPPED node endpoint must
+    # exist on the twin in the swapped graph. The remap only ever touches
+    # swapped endpoints (neutral endpoints carry dimension-agnostic data
+    # types, so the swap is the identity and the mined names are preserved
+    # verbatim — including on dynamic plot-table:* nodes whose real slot
+    # names are not source-verifiable, exactly as in the shipped source
+    # patterns). A lookup miss on a swapped endpoint would otherwise ship a
+    # stale name (verified: import-roi-3d "Files", stat nodes "ROI").
+    swapped_keys = {k for k, d in dim_by_key.items() if d is not None}
+    for e in new["edges"]:
+        for end, slotkey, dkey in (("source-node", "source-slot", "outputs"),
+                                   ("target-node", "target-slot", "inputs")):
+            if e[end] not in swapped_keys:
+                continue
+            c = by.get(new["nodes"][e[end]]["jipipe:node-info-id"])
+            if c is None:
+                return None
+            valid = {n for l in c.get(dkey, {}).values() for n in l}
+            if e.get(slotkey) not in valid:
+                return None
     return new
 
 
@@ -779,31 +817,90 @@ def judge_derived(cluster: dict, llm, node_descs=None) -> dict:
     return entry
 
 
-def merge_shards(shards: list, mined_sigs: set = None) -> list:
-    """Merge sharded what-next runs (the full sweep is split across parallel
-    background jobs to stay within a reasonable wall-clock on the shared
-    endpoint). The deterministic mechanical twins are identical across
-    shards (same inputs, no model) — taken from the first shard only; the
-    what-next entries are unioned and deduped structurally against the mined
-    set and each other. Order is deterministic (clusterId)."""
+def merge_derived_outputs(shards: list, fresh_twins: list,
+                          mined_sigs: set = None) -> list:
+    """Combine the LLM what-next entries from the shards with a FRESH
+    recomputation of the deterministic twins (the in-shard twins may have
+    been produced by an older code version — the real incident: the podman
+    run predates the kebab-case slot-remap fix, so 2 import-roi-3d twins
+    carried the stale 2D slot name). One representative per structural
+    signature: a mined match is dropped; otherwise prefer a gate-SHIPPED
+    entry over a gate-rejected one, then a twin over a what-next, then
+    clusterId. Deterministic output order (clusterId)."""
     mined_sigs = mined_sigs or set()
-    seen = set(mined_sigs)
-    out = []
-    twin_ids = set()
+    entries = list(fresh_twins)
     for shard in shards:
         for e in shard.get("entries", []):
-            mech = (e.get("provenance") or {}).get("mechanism")
-            if mech == "twin-swap":
-                # identical across shards by construction (deterministic);
-                # keep the first occurrence, drop the rest
-                if e["clusterId"] in twin_ids:
-                    continue
-                twin_ids.add(e["clusterId"])
-            sig = structural_signature(e["state"]["pattern"]["graph"])
+            if (e.get("provenance") or {}).get("mechanism") == "twin-swap":
+                continue  # superseded by the fresh recomputation
+            entries.append(e)
+    groups = {}
+    for e in entries:
+        sig = structural_signature(e["state"]["pattern"]["graph"])
+        if sig in mined_sigs:
+            continue  # already a mined pattern
+        groups.setdefault(sig, []).append(e)
+
+    def pick(g):
+        return sorted(g, key=lambda e: (
+            0 if e.get("ship") else 1,
+            0 if (e.get("provenance") or {}).get("mechanism") == "twin-swap"
+            else 1,
+            e["clusterId"]))[0]
+
+    out = [pick(v) for v in groups.values()]
+    out.sort(key=lambda e: e["clusterId"])
+    return out
+
+
+def recompute_twins(shipped: list, clusters: dict, catalog: list,
+                    node_descs: dict, twins: dict) -> list:
+    """The deterministic twin entries for all shipped patterns, both
+    directions (pure function — no LLM — so it is safe to re-run at merge
+    time with the current code)."""
+    out = []
+    seen = set()
+    for e in shipped:
+        g = clusters[e["clusterId"]]["representativeCandidate"]["graph"]
+        for direction in ("3D", "2D"):
+            entry = mechanical_twin_entry(e, g, direction, catalog,
+                                          node_descs, twins)
+            if entry is None:
+                continue
+            sig = structural_signature(entry["state"]["pattern"]["graph"])
             if sig in seen:
                 continue
             seen.add(sig)
-            out.append(e)
+            out.append(entry)
+    return out
+
+
+def merge_shards(shards: list, mined_sigs: set = None) -> list:
+    """Merge sharded what-next runs (the full sweep is split across parallel
+    jobs). Entries are grouped by structural signature: a signature matching
+    a MINED pattern is dropped entirely; otherwise one representative per
+    signature is kept, preferring (1) a gate-SHIPPED entry over a
+    gate-rejected one of the same structure (the same chain, one naming
+    passed the gate), then (2) a deterministic twin over a what-next (the
+    twin's name is the dimension-rename of an already (C)-reviewed name),
+    then clusterId. Order is deterministic (clusterId)."""
+    mined_sigs = mined_sigs or set()
+    groups = {}
+    for shard in shards:
+        for e in shard.get("entries", []):
+            sig = structural_signature(e["state"]["pattern"]["graph"])
+            if sig in mined_sigs:
+                continue  # already a mined pattern
+            groups.setdefault(sig, []).append(e)
+
+    def pick(entries):
+        return sorted(entries, key=lambda e: (
+            0 if e.get("ship") else 1,
+            0 if (e.get("provenance") or {}).get("mechanism") == "twin-swap"
+            else 1,
+            e["clusterId"]))[0]
+
+    out = [pick(v) for v in groups.values()]
     out.sort(key=lambda e: e["clusterId"])
     return out
 
@@ -1092,20 +1189,39 @@ def selftest():
 
 
 def cmd_merge(shard_paths: list) -> int:
-    """Merge sharded run outputs into dag-derived.json (mechanical twins taken
-    once, what-next unioned + deduped against the mined set)."""
+    """Merge sharded run outputs into dag-derived.json. The deterministic
+    mechanical twins are RECOMPUTED with the current code (the in-shard
+    twins may predate a fix — incident: the podman run predates the
+    kebab-case slot-remap fix, so 2 import-roi-3d twins carried the stale 2D
+    slot name "Files"); the LLM what-next entries come from the shards.
+    One representative per structural signature, shipped preferred."""
     judgments = json.load(open(os.path.join(RESEARCH, "dag-judgments.json"),
                                encoding="utf-8"))
     clusters = {c["clusterId"]: c for c in
                 json.load(open(os.path.join(RESEARCH, "dag-clusters.json"),
                                encoding="utf-8"))["clusters"]}
     mined_sigs = set()
-    for e in judgments["entries"]:
-        if e["ship"]:
-            g = clusters[e["clusterId"]]["representativeCandidate"]["graph"]
-            mined_sigs.add(structural_signature(g))
+    shipped_judg = [e for e in judgments["entries"] if e["ship"]]
+    for e in shipped_judg:
+        g = clusters[e["clusterId"]]["representativeCandidate"]["graph"]
+        mined_sigs.add(structural_signature(g))
     shards = [json.load(open(p, encoding="utf-8")) for p in shard_paths]
-    merged = merge_shards(shards, mined_sigs)
+
+    print("recomputing the deterministic twins with the current code…")
+    reg = json.load(open(os.path.join(RESEARCH, "registry.json"),
+                         encoding="utf-8"))
+    node_descs = json.load(open(os.path.join(RESEARCH,
+                                             "node-descriptions.json"),
+                                encoding="utf-8"))
+    source_slots = build_source_slots(REPO_ROOT)
+    catalog = build_catalog(reg["nodes"], source_slots,
+                            reg.get("functions", []))
+    twins = build_twin_map(catalog)
+    fresh_twins = recompute_twins(shipped_judg, clusters, catalog,
+                                  node_descs, twins)
+    print(f"  {len(fresh_twins)} twins (recomputed; in-shard twins discarded)")
+
+    merged = merge_derived_outputs(shards, fresh_twins, mined_sigs)
     rejected = []
     for s in shards:
         rejected.extend(s.get("rejected", []))

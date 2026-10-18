@@ -175,6 +175,74 @@ class MechanicalSwapTests(unittest.TestCase):
         self.assertEqual(out["edges"][0]["source-slot"], "Out")
         self.assertEqual(out["edges"][0]["target-node"], "n1")
 
+    def test_source_endpoint_uses_twin_output_not_input(self):
+        # regression: the slot lookup merged inputs+outputs (inputs first,
+        # setdefault), so a SOURCE endpoint resolved to the twin's INPUT slot
+        # name for the swapped data type instead of its OUTPUT slot name.
+        # Only bites when the twin has both an input and an output of the same
+        # dimension type with DIFFERENT names — the real ROI-statistics /
+        # morph / scale families (input "ROI", output "Output"), 10 cases.
+        catalog = self._catalog() + [
+            cat_node("stat2d", "Stats 2D",
+                     [("imagej-roi", ["ROI"])], [("imagej-roi", ["Output"])]),
+            cat_node("stat3d", "Stats 3D",
+                     [("roi-3d-list", ["ROI"])], [("roi-3d-list", ["Output"])]),
+            cat_node("consumer", "Consume a results table (neutral sink)",
+                     [("imagej-results-table", ["ROI"])],
+                     [("imagej-results-table", ["Out"])]),
+        ]
+        graph = {
+            "nodes": {
+                "n0": {"jipipe:node-info-id": "stat2d"},
+                "n1": {"jipipe:node-info-id": "consumer"},
+            },
+            "edges": [
+                {"source-node": "n0", "source-slot": "Output",
+                 "target-node": "n1", "target-slot": "ROI"},
+            ],
+        }
+        out = D.mechanical_swap(graph, catalog, direction="3D")
+        self.assertEqual(out["nodes"]["n0"]["jipipe:node-info-id"], "stat3d")
+        e = out["edges"][0]
+        # the source is stat3d's OUTPUT slot (roi-3d-list) = "Output",
+        # NOT its input slot "ROI" (the old bug produced "ROI")
+        self.assertEqual(e["source-slot"], "Output")
+        self.assertEqual(e["target-slot"], "ROI")
+
+    def test_renamed_slot_is_remapped_in_kebab_case(self):
+        # regression: the real import-imagej-roi-from-file (2D, input slot
+        # "Files", dt "file") vs import-roi-3d (3D, input slot "Input", dt
+        # "file"). The remapped name must land in the KEBAB-CASE (A) keys
+        # (source-slot/target-slot) — writing it to the snake_case keys left
+        # the stale 2D name in the shipped edge (import-roi-3d "Files" does
+        # not exist -> deserialization break at (D)).
+        catalog = self._catalog() + [
+            cat_node("path-annotation", "Path to annotation",
+                     [], [("path", ["Paths"])]),
+            cat_node("import-2d-roi", "Import 2D ROI file",
+                     [("file", ["Files"])], [("imagej-roi", ["Output"])]),
+            cat_node("import-3d-roi", "Import 3D ROI file",
+                     [("file", ["Input"])], [("roi-3d-list", ["Output"])]),
+        ]
+        graph = {
+            "nodes": {
+                "n0": {"jipipe:node-info-id": "path-annotation"},
+                "n1": {"jipipe:node-info-id": "import-2d-roi"},
+            },
+            "edges": [
+                {"source-node": "n0", "source-slot": "Paths",
+                 "target-node": "n1", "target-slot": "Files"},
+            ],
+        }
+        out = D.mechanical_swap(graph, catalog, direction="3D")
+        self.assertEqual(out["nodes"]["n1"]["jipipe:node-info-id"],
+                         "import-3d-roi")
+        e = out["edges"][0]
+        self.assertEqual(e["target-slot"], "Input")  # remapped, kebab-case
+        self.assertEqual(e["source-slot"], "Paths")  # neutral, untouched
+        self.assertNotIn("target_slot", e)  # no stray snake_case keys
+        self.assertNotIn("source_slot", e)
+
     def test_pattern_with_no_dimensioned_nodes_is_not_swapped(self):
         graph = {
             "nodes": {"n0": {"jipipe:node-info-id": "table-remove-columns"}},
@@ -533,10 +601,12 @@ class BuildCatalogTests(unittest.TestCase):
 
 
 class MergeShardsTests(unittest.TestCase):
-    """The full what-next sweep is sharded (3 parallel background runs); the
-    merge takes the deterministic mechanical twins once (identical across
-    shards by construction) and the union of the what-next entries,
-    re-deduped against the mined set and each other."""
+    """The full what-next sweep is sharded (parallel jobs); the merge keeps
+    one representative per structural signature, preferring a gate-SHIPPED
+    entry over a gate-rejected one, and a deterministic twin over a
+    what-next. Twins are deduped by clusterId (they are deterministic; a
+    twin-only regeneration supersedes stale in-shard twins even when the
+    slot remap changed the signature)."""
 
     def _entry(self, cid, mech, name="N"):
         return {"clusterId": cid, "support": 0, "ship": True, "gate": "general_pattern",
@@ -581,6 +651,26 @@ class MergeShardsTests(unittest.TestCase):
         merged = D.merge_shards([{"entries": [e1]}],
                                 mined_sigs={mined_sig})
         self.assertEqual(merged, [])
+
+    def test_shipped_variant_beats_rejected_same_structure(self):
+        # regression: the first merge kept the FIRST entry per signature, so
+        # a gate-rejected what-next (same structure as a gate-PASSED one from
+        # another source pattern) could collapse its shipped sibling — this
+        # lost 3 real patterns incl. "Annotate data with image statistics"
+        # (seed family 4). The shipped variant must win regardless of order.
+        e_rej = self._entry("derived-wn-cluster-0001-0", "what-next", "Bad Name")
+        e_rej.update({"ship": False, "gate": "noise"})
+        e_ship = self._entry("derived-wn-cluster-0002-0", "what-next", "Good Name")
+        # same graph structure as e_rej
+        e_ship["state"]["pattern"]["graph"] = json.loads(
+            json.dumps(e_rej["state"]["pattern"]["graph"]))
+        for shards in ([{"entries": [e_rej]}, {"entries": [e_ship]}],
+                       [{"entries": [e_ship]}, {"entries": [e_rej]}]):
+            merged = D.merge_shards([s.copy() for s in shards])
+            self.assertEqual(len(merged), 1)
+            self.assertTrue(merged[0]["ship"],
+                            "the gate-passed variant must survive the merge")
+            self.assertEqual(merged[0]["name"], "Good Name")
 
     def test_order_is_deterministic(self):
         shard0 = {"entries": [self._entry("derived-wn-cluster-0003-0", "what-next", "W0")]}
@@ -746,6 +836,69 @@ class DerivedJudgeTests(unittest.TestCase):
                        "signal": "derived"}}}
         j = D.judge_derived(cluster, llm)
         self.assertFalse(j["ship"])
+
+
+class MergeDerivedOutputsTests(unittest.TestCase):
+    """The merge RECOMPUTES the deterministic twins with the current code
+    (the in-shard twins may have been produced by an older version — the
+    real incident: the podman run predates the kebab-case slot-remap fix, so
+    2 import-roi-3d twins shipped the stale 2D slot name "Files"). Only the
+    LLM what-next entries come from the shards."""
+
+    def _twin(self, cid, slot="Input"):
+        return {"clusterId": cid, "support": 0, "ship": True,
+                "gate": "general_pattern", "functionId": "jipipe:function:rois",
+                "name": "Twin", "description": "D", "error": None, "verdict": None,
+                "provenance": {"mechanism": "twin-swap", "derivedFrom": "c0"},
+                "state": {"pattern": {"graph": {
+                    "nodes": {"n9": {"jipipe:node-info-id": "path-annotation"},
+                               "n0": {"jipipe:node-info-id": "import-3d-roi"}},
+                    "edges": [{"source-node": "n9", "source-slot": "Paths",
+                               "target-node": "n0", "target-slot": slot}]}}}}
+
+    def _wn(self, cid, ship=True, node="export-data", twin_like=False):
+        if twin_like:
+            # the same structure as a twin (for the cross-collision tests)
+            graph = {"nodes": {"n9": {"jipipe:node-info-id": "path-annotation"},
+                                "n0": {"jipipe:node-info-id": "import-3d-roi"}},
+                     "edges": [{"source-node": "n9", "source-slot": "Paths",
+                                "target-node": "n0", "target-slot": "Input"}]}
+        else:
+            graph = {"nodes": {"n0": {"jipipe:node-info-id": node}}, "edges": []}
+        return {"clusterId": cid, "support": 0, "ship": ship,
+                "gate": "general_pattern" if ship else "noise",
+                "functionId": "jipipe:function:export",
+                "name": "WN" if ship else "bad", "description": "D",
+                "error": None, "verdict": None,
+                "provenance": {"mechanism": "what-next", "derivedFrom": "c1"},
+                "state": {"pattern": {"graph": graph}}}
+
+    def test_stale_in_shard_twin_is_replaced_by_recomputed(self):
+        shards = [{"entries": [self._twin("derived-mech-c0-3d", slot="Files"),
+                               self._wn("derived-wn-c1-0")]}]
+        fresh = self._twin("derived-mech-c0-3d", slot="Input")
+        merged = D.merge_derived_outputs(shards, [fresh], mined_sigs=set())
+        twin = [e for e in merged if e["clusterId"] == "derived-mech-c0-3d"][0]
+        self.assertEqual(twin["state"]["pattern"]["graph"]["edges"][0]
+                         ["target-slot"], "Input",
+                         "the recomputed (fixed) twin must win over the stale shard one")
+        self.assertEqual(len(merged), 2)  # twin + what-next
+
+    def test_whatnext_matching_a_twin_signature_is_dropped(self):
+        twin = self._twin("derived-mech-c0-3d")
+        wn = self._wn("derived-wn-c1-0", twin_like=True)
+        merged = D.merge_derived_outputs([{"entries": [wn]}], [twin],
+                                         mined_sigs=set())
+        self.assertEqual([e["clusterId"] for e in merged],
+                         ["derived-mech-c0-3d"])
+
+    def test_mined_signature_still_drops_both(self):
+        twin = self._twin("derived-mech-c0-3d")
+        mined_sig = D.structural_signature(twin["state"]["pattern"]["graph"])
+        wn = self._wn("derived-wn-c1-0", twin_like=True)  # same structure
+        merged = D.merge_derived_outputs([{"entries": [wn]}], [twin],
+                                         mined_sigs={mined_sig})
+        self.assertEqual(merged, [])
 
 
 class GatePromptTests(unittest.TestCase):
