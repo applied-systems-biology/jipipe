@@ -1035,7 +1035,7 @@ def cmd_run(limit: int, start: int = 0, count: int = 0,
         if (i + 1) % 25 == 0:
             print(f"  what-next {i+1}/{len(sweep)} (candidates so far: {len(candidates)})")
 
-    J.save_cache(CACHE, cache)
+    J.save_cache(cache_path or CACHE, cache)
 
     # ---- gate the what-next survivors with the (C) rules ----
     for c in candidates:
