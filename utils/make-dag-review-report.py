@@ -100,6 +100,102 @@ def stale_ids(shipped, cluster_by_id, registry_ids):
     return out
 
 
+def derived_section(L, derived, judg_entries):
+    """The C′ section: the derived siblings the mined set under-covers
+    (2D/3D twins + the model's "what next" chains) — for the same manual
+    review the mined set gets."""
+    A = L.append
+    src_name = {e["clusterId"]: e["name"] for e in judg_entries}
+    entries = derived["entries"]
+    twins = [e for e in entries
+             if (e.get("provenance") or {}).get("mechanism") == "twin-swap"]
+    wn = [e for e in entries
+          if (e.get("provenance") or {}).get("mechanism") == "what-next"]
+    shipped_twins = [e for e in twins if e["ship"]]
+    wn_shipped = [e for e in wn if e["ship"]]
+    wn_noise = [e for e in wn if not e["ship"]]
+    rejected = derived.get("rejected", [])
+
+    A("## Derived patterns (C′) — the \"what next\" siblings, for review")
+    A("")
+    A("The (C′) derivation step fills the gap the review found in the mined")
+    A("set: what an analyst would DERIVE from a pattern, not just what the")
+    A("corpus happened to contain. Two mechanisms:")
+    A("")
+    A("- **twin-swap** (deterministic, no model): the verified 2D↔3D twin of")
+    A("  a shipped pattern — the other dimension is derivable by construction,")
+    A("  so it inherits the source's already-(C)-reviewed name with the")
+    A("  dimension token swapped.")
+    A("- **what-next** (model-proposed): a short chain of real nodes extending")
+    A("  the pattern's outputs. Every proposal is validated fail-closed against")
+    A("  the real registry (node ids, exact slot names, type assignability,")
+    A("  no cycles, ≤10 nodes) and gated with the (C) rules (no support")
+    A("  heuristic — it was never observed).")
+    A("")
+    A("Provenance lives in `dag-derived.json` only — per the review decision")
+    A("they ship as normal patterns. The (D) guards apply identically")
+    A("(§3.4 locations, deserialization, `SystemPatternTemplatesTest` re-pin).")
+    A("")
+    A("### Funnel")
+    A("")
+    A("| stage | count |")
+    A("|---|---|")
+    A("| shipped mined patterns swept | 265 (4 parallel shards) |")
+    A(f"| deterministic twin candidates | {len(twins)} (all shipped by construction) |")
+    A(f"| what-next candidates (validated + deduped) | {len(wn)} |")
+    A(f"|   → gated shipped | **{len(wn_shipped)}** |")
+    A(f"|   → gate noise | {len(wn_noise)} |")
+    A(f"| what-next proposals rejected by fail-closed validation | {len(rejected)} |")
+    A(f"| **total derived shipped** | **{len(shipped_twins) + len(wn_shipped)}** |")
+    A("")
+    A("### twin-swap (26) — the dimension siblings")
+    A("")
+    A("Source pattern → twin. The name/description are the source's,")
+    A("dimension-renamed — flag any where the rename reads oddly.")
+    A("")
+    for e in sorted(shipped_twins, key=lambda e: e["provenance"]["derivedFrom"]):
+        src = e["provenance"]["derivedFrom"]
+        target = "3D" if e["clusterId"].endswith("-3d") else "2D"
+        A(f"- **{e['name']}** ({target}) — from “{src_name.get(src, src)}” (`{src}`)")
+        A(f"  - {e['description']}")
+    A("")
+    A("### what-next (128) — grouped by function")
+    A("")
+    A("Each extends a mined pattern (its source is named); the chain is")
+    A("verified to type-check against the real node slots.")
+    A("")
+    fd = Counter(branch_of(e) for e in wn_shipped)
+    for b in BRANCH_ORDER:
+        grp = [e for e in wn_shipped if branch_of(e) == b]
+        if not grp:
+            continue
+        A(f"#### {b} ({len(grp)})")
+        A("")
+        for e in sorted(grp, key=lambda e: (e["provenance"]["derivedFrom"],
+                                            e["name"])):
+            src = e["provenance"]["derivedFrom"]
+            st = e["state"]["pattern"]
+            A(f"- **{e['name']}** — extends “{src_name.get(src, src)}” (`{src}`) · {st['nodeCount']}n/{st['edgeCount']}e")
+            A(f"  - {e['description']}")
+        A("")
+    A("### what-next rejected by the gate (false-negative check)")
+    A("")
+    for e in sorted(wn_noise, key=lambda e: e["clusterId"]):
+        st = e["state"]["pattern"]
+        src = e["provenance"]["derivedFrom"]
+        A(f"- “{(e.get('provenance') or {}).get('draftName', '?')}” — extends “{src_name.get(src, src)}” · {st['nodeCount']}n — gate={e['gate']}")
+    A("")
+    A("### what-next rejected by fail-closed validation (the grounding gate)")
+    A("")
+    A(f"{len(rejected)} model proposals that named a real slot wrong, used an")
+    A("incompatible type, or cited a node id that does not exist — dropped")
+    A("before the gate ever saw them (fail-closed by design).")
+    A("")
+    for reason, n in Counter(r["reason"] for r in rejected).most_common():
+        A(f"- {n}× {reason}")
+    A("")
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser()
     ap.add_argument("--judgments", default=os.path.join(RESEARCH, "dag-judgments.json"))
@@ -107,6 +203,7 @@ def main(argv=None):
     ap.add_argument("--candidates", default=os.path.join(RESEARCH, "dag-candidates.json"))
     ap.add_argument("--registry", default=os.path.join(RESEARCH, "registry.json"))
     ap.add_argument("--baseline", default=os.path.join(RESEARCH, "dag-judgments-v1.json"))
+    ap.add_argument("--derived", default=os.path.join(RESEARCH, "dag-derived.json"))
     ap.add_argument("--out", default=os.path.join(RESEARCH, "dag-shipping-review.md"))
     a = ap.parse_args(argv)
 
@@ -131,7 +228,7 @@ def main(argv=None):
 
     L = []
     A = L.append
-    A(f"# DAG Pattern Mining — Shipping Review (steps A–C)")
+    A(f"# DAG Pattern Mining — Shipping Review (steps A–C′)")
     A("")
     A(f"Work item 1324 · branch `1324-node-taxonomy-core` · {date.today().isoformat()}")
     A("")
@@ -246,6 +343,10 @@ def main(argv=None):
             A(f"  - {shape(e)}")
             A(f"  - {e['description']}")
         A("")
+    # derived (C') section — the "what next" siblings, same manual review
+    if os.path.isfile(a.derived):
+        derived = load(a.derived)
+        derived_section(L, derived, judg["entries"])
     # rejections
     A("## Rejected (false-negative check)")
     A("")

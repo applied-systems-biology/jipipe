@@ -1,6 +1,6 @@
-# DAG Pattern Mining — Shipping Review (steps A–C)
+# DAG Pattern Mining — Shipping Review (steps A–C′)
 
-Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-17
+Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-18
 
 This is the **manual-review gate before step (D) ships the survivors**.
 Regenerate after any re-run: `python3 utils/make-dag-review-report.py`.
@@ -944,6 +944,447 @@ into `dag-clusters.json` / the corpus.
 - **Batch export OME-ZARR images from folders** ⚠ unregistered id · support 1 · geometric-cluster · `cluster-0318`
   - 3 nodes / 2 edges — Folder list -> Import OME ZARR from directory -> Export OME ZARR
   - Takes a list of folders containing OME-ZARR image datasets, imports each dataset, and writes it out as an OME-ZARR file or ZIP, producing URI references to the exported images.
+
+## Derived patterns (C′) — the "what next" siblings, for review
+
+The (C′) derivation step fills the gap the review found in the mined
+set: what an analyst would DERIVE from a pattern, not just what the
+corpus happened to contain. Two mechanisms:
+
+- **twin-swap** (deterministic, no model): the verified 2D↔3D twin of
+  a shipped pattern — the other dimension is derivable by construction,
+  so it inherits the source's already-(C)-reviewed name with the
+  dimension token swapped.
+- **what-next** (model-proposed): a short chain of real nodes extending
+  the pattern's outputs. Every proposal is validated fail-closed against
+  the real registry (node ids, exact slot names, type assignability,
+  no cycles, ≤10 nodes) and gated with the (C) rules (no support
+  heuristic — it was never observed).
+
+Provenance lives in `dag-derived.json` only — per the review decision
+they ship as normal patterns. The (D) guards apply identically
+(§3.4 locations, deserialization, `SystemPatternTemplatesTest` re-pin).
+
+### Funnel
+
+| stage | count |
+|---|---|
+| shipped mined patterns swept | 265 (4 parallel shards) |
+| deterministic twin candidates | 26 (all shipped by construction) |
+| what-next candidates (validated + deduped) | 153 |
+|   → gated shipped | **128** |
+|   → gate noise | 25 |
+| what-next proposals rejected by fail-closed validation | 47 |
+| **total derived shipped** | **154** |
+
+### twin-swap (26) — the dimension siblings
+
+Source pattern → twin. The name/description are the source's,
+dimension-renamed — flag any where the rename reads oddly.
+
+- **Filter 3D ROIs by overlap** (3D) — from “Filter 2D ROIs by overlap” (`cluster-0003`)
+  - Takes two lists of 3D ROIs and produces filtered 3D ROI lists containing the ROIs that overlap with ROIs in the other list. Chained overlap filters can be used to include or exclude ROIs based on their spatial relationship to reference ROIs.
+- **Attach 2D ROI measurements to data** (2D) — from “Attach 3D ROI measurements to data” (`cluster-0005`)
+  - Takes 2D ROIs and optionally a reference image, and produces data annotated with 2D ROI statistics. It extracts the ROI measurements, adds a table column, and attaches the resulting table values to the incoming data.
+- **Visualize 2D ROIs as colored label images** (2D) — from “Visualize 3D ROIs as colored label images” (`cluster-0008`)
+  - Takes a list of 2D ROIs and an optional reference image, colors each ROI by a selected measurement, and converts the colored 2D ROIs into RGB label images for visualization.
+- **Color overlay of overlapping 2D ROIs** (2D) — from “Color overlay of overlapping 3D ROIs” (`cluster-0028`)
+  - Takes two lists of 2D ROIs and produces an exported RGB image showing which objects overlap. It filters each list to ROIs that overlap the other, rasterizes them onto blank images, blends the two label images in different colors, copies physical pixel sizes, and exports the result.
+- **Pairwise 2D ROI distance statistics** (2D) — from “Pairwise 3D ROI distance statistics” (`cluster-0029`)
+  - Takes 2D ROIs, extracts all pairwise ROI statistics such as distances, plots the measurements as histograms, and exports the measurement table and rendered plot images.
+- **Load and denoise images from folders** (3D) — from “Load and denoise images from folders” (`cluster-0035`)
+  - Takes a configured project folder, lists subfolders and image files, annotates and filters the paths, imports each image, and applies a 3D median filter to reduce noise in each channel or slice. It produces denoised image data with folder and file annotations.
+- **Pairwise 2D ROI statistics and histogram** (2D) — from “Pairwise 3D ROI statistics and histogram” (`cluster-0060`)
+  - Takes 2D ROIs and computes all pairwise measurements between them, producing a statistics table. It exports that table and a histogram plot image of the measurements.
+- **Import images and denoise with median filter** (3D) — from “Import images and denoise with median filter” (`cluster-0067`)
+  - Takes a list of image files, imports each as an image, and applies a 3D median filter to each channel or slice. It produces denoised images suitable for downstream analysis.
+- **Export 2D ROIs as a labeled image** (2D) — from “Export 3D ROIs as a labeled image” (`cluster-0071`)
+  - Takes a list of 2D ROIs and a blank image, updates the ROIs' properties, converts them into a labeled image, copies the physical pixel dimensions, and exports the image as a file.
+- **Render 3D ROIs as RGB images** (3D) — from “Render 2D ROIs as RGB images” (`cluster-0096`)
+  - Takes 3D ROI lists, assigns user-defined properties to the ROIs, and converts them into RGB images that draw the ROIs as colored outlines, fills, and optional labels. It can combine two ROI visualizations by using one rendered image as the reference canvas for the other.
+- **Render 3D ROIs as an RGB image** (3D) — from “Render 2D ROIs as an RGB image” (`cluster-0099`)
+  - Takes a 3D ROI list and an optional reference image, and produces an RGB image in which the ROIs are drawn as colored outlines, fills, and optional labels.
+- **Plot pixel values from a masked image** (3D) — from “Plot pixel values from a masked image” (`cluster-0107`)
+  - Takes an image, applies a 3D morphological operation to create a mask, sets the masked pixels to a color, extracts the pixel values into a table, filters and computes row expressions, and produces multiple XY scatter plots.
+- **Overlay 3D ROIs on an image** (3D) — from “Overlay 2D ROIs on an image” (`cluster-0128`)
+  - Takes an input image and a list of 3D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.
+- **Import and scale 3D images** (3D) — from “Import and scale 2D images” (`cluster-0132`)
+  - Takes a list of image file names, imports each file as an ImageJ image, and applies a 3D scaling transform to each image or 3D slice, producing rescaled 3D images.
+- **Load and filter 3D ROI files** (3D) — from “Load and filter 2D ROI files” (`cluster-0139`)
+  - Produces filtered 3D ROI data by importing ROI files from file paths, adding metadata from file/directory names and expressions, and splitting the ROIs based on an annotation value.
+- **Summarize 3D ROI measurements by label** (3D) — from “Summarize 2D ROI measurements by label” (`cluster-0141`)
+  - Takes 3D ROIs, sets ROI properties from expressions, extracts per-ROI statistics optionally from a reference image, and produces a table summarizing those statistics by label.
+- **Create colored images from 3D ROIs** (3D) — from “Create colored images from 2D ROIs” (`cluster-0145`)
+  - Takes image paths and matching 3D ROI files, imports the ROIs, and applies a specified color to the image using those ROIs, producing a colored image that visualizes manual annotations.
+- **3D ROI measurement histogram montage** (3D) — from “2D ROI measurement histogram montage” (`cluster-0154`)
+  - Produces an exported montage image of histogram plots summarizing 3D ROI measurements. It takes 3D ROI statistics measurements, creates histogram plots, converts the plots to RGB, combines them into a montage, and exports the montage as an image.
+- **Quick RGB preview of 3D ROIs on images** (3D) — from “Quick RGB preview of 2D ROIs on images” (`cluster-0173`)
+  - Takes a 3D ROI list and images, draws the 3D ROIs as colored outlines, applies color maps to the images, and blends them into one RGB image for quick visual inspection.
+- **Plot histograms of 3D ROI statistics** (3D) — from “Plot histograms of 2D ROI statistics” (`cluster-0200`)
+  - Takes 3D ROIs (with an optional reference image) and computes ROI statistics, sets/edits annotations, and creates histogram plots of the statistics, then splits/filters the plotted data by annotation value.
+- **Pairwise 3D ROI statistics histogram** (3D) — from “Pairwise 2D ROI statistics histogram” (`cluster-0202`)
+  - Takes 3D ROIs and produces histogram plots of selected pairwise ROI measurements. It extracts pairwise 3D ROI statistics, filters and transforms the resulting table, annotates the data with the computed values, and plots the selected column as histograms.
+- **Render 3D ROIs as an RGB image** (3D) — from “Render 2D ROIs as an RGB image” (`cluster-0204`)
+  - Takes a 3D ROI list and produces an RGB image that draws the ROIs as colored outlines, fills, or labels. It renders the ROIs to RGB, applies a predefined color map LUT, and renders them again using the first rendered image as the reference canvas.
+- **Import images with scale bar and 3D ROI overlay** (3D) — from “Import images with scale bar and 2D ROI overlay” (`cluster-0224`)
+  - Takes a list of image files, imports them as ImageJ images, sets their physical dimensions, draws a scale bar, and applies a 3D ROI overlay, producing calibrated images ready for display or further analysis.
+- **Smooth images with Gaussian blur** (3D) — from “Smooth images with Gaussian blur” (`cluster-0250`)
+  - Takes image data and produces smoothed images by applying a 3D Gaussian blur to each slice.
+- **Create image montage from files** (3D) — from “Create image montage from files” (`cluster-0267`)
+  - Takes a list of image files, imports each image, scales and converts it to 8-bit RGB, and combines the results into a single montage image.
+- **RGB image with 3D ROI overlays** (3D) — from “RGB image with 2D ROI overlays” (`cluster-0323`)
+  - Takes an image and a list of 3D ROIs, enhances contrast, applies a color map to create an RGB image, and draws the 3D ROIs as colored outlines, fills, or labels, producing a single RGB visualization image.
+
+### what-next (128) — grouped by function
+
+Each extends a mined pattern (its source is named); the chain is
+verified to type-check against the real node slots.
+
+#### annotations (18)
+
+- **Annotate data with XML metadata** — extends “Extract OME image metadata as annotations” (`cluster-0019`) · 2n/1e
+  - Takes XML/text data and a data stream, extracts selected XML values into a table, and attaches those values as annotations to the data. This adds file or experiment metadata to the incoming data.
+- **Filter data by OME metadata annotation** — extends “Extract OME image metadata as annotations” (`cluster-0019`) · 2n/1e
+  - Takes data items, annotates them with OME metadata, and keeps only items whose annotation satisfies a specified condition. Outputs the selected items with their annotations preserved.
+- **Annotate data with table and image metadata** — extends “Segment and measure 3D ROIs from an image” (`cluster-0027`) · 2n/1e
+  - Takes data records and enriches them with values from a table and properties derived from an image. It produces annotated data carrying both table-based and image-based metadata.
+- **Filter data by table-derived annotation** — extends “Clean and merge annotation tables” (`cluster-0030`) · 3n/2e
+  - Enriches data with values from a table, derives or adjusts an annotation, and splits the data into matching and non-matching subsets.
+- **Filter data items by table values** — extends “Clean and merge annotation tables” (`cluster-0030`) · 2n/1e
+  - Takes data items and a table, adds table values as annotations, then keeps only items whose annotation satisfies a condition, producing filtered annotated data.
+- **Data annotation table with origin labels** — extends “Filter data by label” (`cluster-0062`) · 2n/1e
+  - Takes a data set, labels each row with its origin, and converts the rows into an annotation table. It produces a table of annotations that can be used to inspect or export the data's metadata.
+- **Annotate files with name and Bio-Formats metadata** — extends “Batch export image files” (`cluster-0065`) · 2n/1e
+  - Takes input files, adds annotations derived from file names and Bio-Formats metadata, and produces annotated files for downstream analysis.
+- **Annotate data with merged table values** — extends “Merge two tables after column cleanup” (`cluster-0111`) · 2n/1e
+  - Takes a table and a data set, merges selected table columns into annotations, and applies those annotations to the data. Produces data carrying the merged table-derived annotations.
+- **Add scale bar and convert image to 8-bit grayscale** — extends “Tile multiple images into a grid” (`cluster-0133`) · 2n/1e
+  - Takes an image, draws a scale bar, and converts the image to 8-bit grayscale, producing a display-ready image with a scale bar.
+- **Annotate data with custom table values** — extends “Compute 2D ROI statistics from image stacks” (`cluster-0161`) · 2n/1e
+  - Takes data and one or more tables, uses a Python script to modify or merge the table contents, and then attaches the resulting values as annotations to the data. It produces annotated data enriched with custom table-derived fields.
+- **Annotate data with computed table values** — extends “Filter, sort, and rename a table” (`cluster-0165`) · 2n/1e
+  - Takes a table and a set of data items, computes a new value for each table row, and attaches that value to the matching data items, producing annotated data.
+- **Annotate data with image and table values** — extends “Filter 2D ROIs by local variance and extract statistics” (`cluster-0175`) · 2n/1e
+  - Takes a data set, adds annotations derived from an image and from a table, and produces the enriched data set.
+- **Filter data by image-derived annotation** — extends “Load three-channel images from folders and combine them into RGB” (`cluster-0187`) · 2n/1e
+  - Takes data items, adds annotations derived from image properties, and keeps only items that match a specified annotation condition. Produces a filtered data set with the annotations preserved.
+- **Copy matching annotations between data sets** — extends “Create 2D ROI segmentation image and measurements table” (`cluster-0198`) · 2n/1e
+  - It copies annotations from a source data set to a target data set when the annotations match. The source data is converted to an annotation table, and matching annotations are merged into the target data set.
+- **Annotate data with image statistics** — extends “Skeletonize binary image and visualize 2D ROI as RGB” (`cluster-0211`) · 2n/1e
+  - Takes images and a data collection, computes whole-image or masked intensity statistics, and attaches those statistics to the data as annotations.
+- **Add table information to data** — extends “Create a tidy filament measurement table” (`cluster-0219`) · 2n/1e
+  - Takes a table and a data set, adds table-level information to the table, then copies those values onto the data items. Produces data annotated with table-derived information.
+- **Annotate data with imported measurement table** — extends “Measure and export filament metrics” (`cluster-0285`) · 2n/1e
+  - Takes an external CSV or XLSX results table and incoming data, then attaches matching table values to the data items. It produces data enriched with imported measurements.
+- **Add scale bar and open images in ImageJ** — extends “RGB track visualization and branch statistics” (`cluster-0311`) · 2n/1e
+  - Takes images, draws a scale bar overlay onto them, and opens the annotated images in ImageJ for visual inspection.
+
+#### images (8)
+
+- **Import images with metadata from a table** — extends “Export merged summary tables as XLSX” (`cluster-0026`) · 3n/2e
+  - Takes image files and a results table, imports both, and copies the first row of the table into the image metadata. It produces image data enriched with tabular metadata.
+- **16-bit distance map from binary image** — extends “Segment objects from images by thresholding and labeling” (`cluster-0031`) · 2n/1e
+  - Takes a binary image, computes a 2D distance map for each slice, and converts the result to 16-bit. This produces a compact distance map image suitable for visualization or downstream image analysis.
+- **Color image with median smoothing and scale bar** — extends “Visualize tracked spots and trajectories” (`cluster-0056`) · 3n/2e
+  - Takes a 2D or 3D image, converts it to RGB color, applies a 3x3 median filter to reduce noise, and adds a scale bar. It produces a cleaned color image with a scale bar for display or export.
+- **Create 32-bit 2D connected component labels** — extends “Dilate, fill holes, and erode a binary mask” (`cluster-0110`) · 2n/1e
+  - Takes a 2D binary or multi-value mask, assigns a unique label to each connected component, and outputs a 32-bit grayscale label image for downstream analysis.
+- **Background-corrected smoothed 8-bit image** — extends “Compute extended depth-of-focus projection from selected image planes” (`cluster-0152`) · 3n/2e
+  - Prepares an image for display by removing background and smoothing it, then outputs an 8-bit grayscale image. Technically, it applies slice-wise rolling-ball background subtraction and Gaussian blur before converting intensities to 0–255.
+- **Denoise and invert RGB images** — extends “Quick RGB preview of 2D ROIs on images” (`cluster-0173`) · 2n/1e
+  - Takes RGB color images, applies a 3x3 median filter to reduce noise, then inverts the colors, producing denoised inverted RGB images.
+- **8-bit connected component labeling** — extends “Create binary masks from images” (`cluster-0220`) · 2n/1e
+  - Takes a binary mask and assigns each connected object a unique label value, then converts the resulting label image to 8-bit grayscale. This produces a compact label image in which every separate object in the mask is individually identified, ready for measurement, visualization, or downstream tools that expect 8-bit data.
+- **Background-subtracted 2D images with scale bar** — extends “Create Z-projections from image files” (`cluster-0252`) · 2n/1e
+  - Takes 2D images or image stacks, removes uneven background from each slice, and adds a scale bar overlay. It produces display-ready background-corrected images with a visible scale reference.
+
+#### rois (17)
+
+- **Denoised 3D cell ROIs** — extends “Import, split, and colorize microscopy images” (`cluster-0007`) · 2n/1e
+  - Takes a microscopy image, applies Cellpose restoration to reduce noise or blur, then segments cells to produce 3D ROIs.
+- **Convert 2D ROI to a labeled mask** — extends “Detect 2D particle ROIs from images” (`cluster-0024`) · 2n/1e
+  - Takes 2D ROI data, converts it to filaments, and then rasterizes it into a labels image where each ROI is assigned a label. This produces a labeled mask that can be used for downstream image analysis.
+- **Import 2D ROIs from a results table** — extends “Export merged summary tables as XLSX” (`cluster-0026`) · 3n/3e
+  - Takes a CSV or XLSX results table, creates rectangular or oval 2D ROIs from its rows, and attaches table columns as ROI metadata. It produces a set of 2D ROIs ready for downstream image analysis.
+- **Create 2D point ROIs from a table** — extends “Export cleaned annotation table” (`cluster-0047`) · 3n/3e
+  - Takes a CSV or XLSX table of point coordinates and optional fields, creates a list of 2D point ROIs, and attaches the corresponding table row as metadata to each ROI.
+- **Cleaned filament 2D ROI set from JSON** — extends “Extract and render 2D filaments from binary images” (`cluster-0055`) · 4n/3e
+  - Takes a filament JSON file, removes duplicate vertices and filters connected components by properties, then produces 2D line or point ROIs. The output is a cleaned 2D ROI set for downstream analysis.
+- **Filament 3D ROI preparation** — extends “Extract and render 2D filaments from binary images” (`cluster-0055`) · 4n/3e
+  - Takes filament data from a JSON file, removes duplicate vertices and filters connected components by properties, then outputs 3D ROIs for the remaining filaments.
+- **Create 2D ROIs from filament vertices** — extends “Subtract a filament mask from an image to highlight nodules” (`cluster-0070`) · 2n/1e
+  - Takes filament vertices, connects nearby vertices into filaments, and outputs them as 2D line ROIs. Single unconnected vertices are output as point ROIs.
+- **Count filtered 2D ROIs** — extends “Render 2D ROIs as RGB images” (`cluster-0096`) · 2n/1e
+  - It selects 2D ROIs by name or basic properties and summarizes how many remain. The output is a table of ROI counts, grouped by annotation when present.
+- **2D ROI extraction from watershed-separated mask** — extends “Dilate, fill holes, and erode a binary mask” (`cluster-0110`) · 2n/1e
+  - Takes a binary mask, separates touching objects using a distance-transform watershed, and converts the result into 2D ROIs with per-object measurements.
+- **Merged 2D ROI metadata table** — extends “Export filtered 2D ROI image” (`cluster-0123`) · 2n/1e
+  - Combines several 2D ROI lists into a single or grouped ROI list and then writes the properties of each ROI into a table. The result is a consolidated 2D ROI metadata table.
+- **Create 3D ROIs from cleaned unbranched filaments** — extends “Create filament mask from 3D time-lapse” (`cluster-0126`) · 2n/1e
+  - Takes 3D filament data, fixes merged unbranched filaments, and outputs 3D ROIs representing filament segments and points. It prepares filament structures for ROI-based visualization or downstream analysis.
+- **Denoise and segment images into 2D ROI or 3D ROI data** — extends “Train and predict with a generative model” (`cluster-0134`) · 4n/3e
+  - Takes image data, applies a pretrained Cellpose restoration model to denoise, deblur, or upsample it, then applies a pretrained Cellpose segmentation model to produce segmented 2D ROI or 3D ROI outputs.
+- **Simplified filament 2D ROIs** — extends “Extract and clean 2D filaments from binary images” (`cluster-0135`) · 2n/1e
+  - Takes filament traces, removes redundant intermediate points, and converts the simplified traces into 2D line ROIs, with isolated points becoming point ROIs.
+- **Export selected 2D ROIs to a table** — extends “Create RGB montage of 2D ROIs” (`cluster-0201`) · 2n/1e
+  - Takes a set of 2D ROIs, keeps only those matching a name or basic property, and produces a table of their coordinates and metadata. Technically, it filters an ROI list and converts the selected ROIs into tabular rows.
+- **Create 2D point ROIs from a table with metadata** — extends “Create a tidy filament measurement table” (`cluster-0219`) · 2n/1e
+  - Takes a table of point coordinates and optional metadata, creates a list of 2D point ROIs, and attaches the table's metadata to each ROI. It produces 2D point ROIs that can be overlaid on images or used in downstream ROI analysis.
+- **Color and label 2D ROIs by measurements** — extends “Create RGB image from 2D ROIs” (`cluster-0322`) · 2n/1e
+  - Takes a list of 2D ROIs with measurements, colors them by a selected measurement, and generates a name for each 2D ROI from an expression using annotations and statistics. Produces 2D ROIs with color coding and generated names.
+- **Filter 2D ROIs by computed name** — extends “Create RGB image from 2D ROIs” (`cluster-0322`) · 2n/1e
+  - Takes a list of 2D ROIs, assigns each a new name using an expression over annotations or statistics, and keeps only ROIs whose names match the filter. It outputs a filtered list of 2D ROIs.
+
+#### filaments (24)
+
+- **Merge 2D ROIs into filaments** — extends “Filter 2D ROIs by overlap” (`cluster-0003`) · 2n/1e
+  - Takes multiple 2D ROI lists, combines them into one or grouped ROI lists, and converts the merged 2D ROIs into filament objects. It is a data-preparation step for filament analysis.
+- **2D ROI filament overlay** — extends “Detect 2D particles and render 2D ROIs” (`cluster-0006`) · 4n/3e
+  - Takes a thresholded image, detects 2D particle ROIs, converts those ROIs into filaments, and overlays the filaments on the image.
+- **Cellpose 2D ROI to confidence-scored filaments** — extends “Segment cells into 2D/3D ROIs with a Cellpose model” (`cluster-0009`) · 3n/3e
+  - Takes an image, segments cells with Cellpose, converts the resulting 2D ROIs into filaments, and assigns each filament vertex the Cellpose probability as a confidence score.
+- **2D ROI filament visualization** — extends “Segment objects with Cellpose and draw 2D ROIs” (`cluster-0037`) · 2n/1e
+  - Takes 2D ROIs, converts them into filament representations, and renders them as an RGB image. It produces a visual filament view of the input 2D ROIs.
+- **2D ROI mask image** — extends “Segment objects with Cellpose and draw 2D ROIs” (`cluster-0037`) · 2n/1e
+  - Turns 2D ROI annotations into a pixel mask image. It converts the 2D ROIs to filament data and then renders the filaments as solid pixels in a greyscale mask.
+- **Convert selected 2D ROIs to filaments** — extends “2D ROI overlap counts and overlays” (`cluster-0040`) · 2n/1e
+  - It takes a set of 2D ROIs, keeps the ones matching a name or basic property, and converts them into filament data. This is useful when 2D ROIs represent filaments and need to be used in filament-based analysis.
+- **Repair non-branching filament traces** — extends “Create 3D masks from measured 3D ROIs” (`cluster-0043`) · 2n/1e
+  - Takes preliminary filament points or traces, connects nearby points into continuous filaments, and resolves overlapping non-branching filaments. It produces cleaned filament paths for downstream filament analysis.
+- **Cellpose 2D ROI filament visualization** — extends “Segment images with Cellpose and render 2D ROIs” (`cluster-0046`) · 3n/3e
+  - Segments an image with Cellpose, converts the resulting 2D ROIs into filaments, and renders those filaments onto the Cellpose flow image. It produces an RGB visualization of the segmented objects as filaments.
+- **2D filament skeleton to RGB image** — extends “Detect 3D particle ROIs and skeletonize their masks” (`cluster-0066`) · 2n/1e
+  - Takes a binary 2D skeleton image, converts each slice into filament data, and renders the filaments as an RGB image. The result is a visual RGB representation of the filament network.
+- **Labeled 2D filament image from skeleton** — extends “Detect 3D particle ROIs and skeletonize their masks” (`cluster-0066`) · 2n/1e
+  - Takes a binary skeleton image and produces a labeled filament image, processing each 2D slice independently. Each filament is assigned a distinct label for downstream analysis.
+- **2D ROI line segments to intensity-annotated filaments** — extends “Find boundary regions of selected 2D ROIs” (`cluster-0068`) · 3n/2e
+  - Detects line-like structures in an image and converts them into filaments whose vertices carry the corresponding image intensity. Technically, it applies Hough line-segment detection to 2D slices, converts the resulting 2D ROIs to filaments, and samples vertex intensities from the image.
+- **Vessel-like structure enhancement** — extends “Project and correct a multi-dimensional image” (`cluster-0072`) · 3n/2e
+  - Takes a 2D or 3D image, converts it to 32-bit, applies a 2D vesselness filter to highlight vessel- or neurite-like structures slice by slice, and converts the result to 8-bit. It produces an 8-bit image with tubular structures enhanced.
+- **Extract and track filaments from a binarized image with vertex intensities** — extends “Measure 2D ROIs in a mask” (`cluster-0094`) · 3n/3e
+  - Takes a greyscale image, converts it to a binary mask, extracts and tracks filament segments, and assigns each filament vertex an intensity from the binary mask. Produces filament tracks with vertex intensity values.
+- **Extract and overlay filament networks** — extends “Label connected components in 3D images” (`cluster-0119`) · 4n/4e
+  - Takes an image or time-lapse stack, converts it to 32-bit grayscale, enhances vessel-like structures with a 2D vesselness filter, extracts filament networks with TSOAX, and returns an image with those filaments overlaid on the original data.
+- **Labeled tracked filaments** — extends “Label connected components in 3D images” (`cluster-0119`) · 3n/3e
+  - Takes a time-lapse image and produces a labeled image of tracked filaments. It converts the image to 32-bit, runs TSOAX filament tracking, and converts the resulting filaments into a labels image.
+- **2D ROI to overlay filaments** — extends “Export 2D ROI overlay images” (`cluster-0127`) · 2n/1e
+  - Takes 2D ROIs, converts them into equivalent filaments, and sets those filaments as an overlay. It produces overlay filaments derived from the input 2D ROIs for visualization.
+- **Order and measure linear filament segments** — extends “Extract and clean 2D filaments from binary images” (`cluster-0135`) · 2n/1e
+  - Takes a filament graph, orders the vertices of linear filament segments, and measures the edges and associated vertices. It produces a table of edge measurements for each linear filament.
+- **Vesselness feature image** — extends “Background-subtracted image stack” (`cluster-0183`) · 2n/1e
+  - Takes a 2D or 3D image, converts it to 32-bit grayscale, and applies a 2D vesselness filter to each slice to produce a vesselness/neurite-like feature image.
+- **2D ROI border-filtered mask** — extends “Overlay 2D ROIs on corrected images” (`cluster-0192`) · 3n/2e
+  - Takes 2D ROIs and produces a mask image of the corresponding filaments after removing components near the image borders. Technically, it converts 2D ROIs to filaments, filters border components, and rasterizes the remaining filaments into a greyscale mask.
+- **2D ROI to filament conversion** — extends “Create RGB montage of 2D ROIs” (`cluster-0201`) · 2n/1e
+  - Takes a collection of 2D ROIs, separates them into individual ROI entries, and converts each 2D ROI into equivalent filament data. It produces a filament dataset for downstream filament analysis.
+- **Convert 2D ROIs to connected filaments** — extends “Skeletonize binary image and visualize 2D ROI as RGB” (`cluster-0211`) · 2n/1e
+  - Takes 2D ROIs and turns them into filaments, then links nearby vertices to form continuous filament paths. It produces a filament dataset where separate ROI segments are joined into connected structures.
+- **Track and visualize filaments** — extends “Best-focus projection and bleach correction” (`cluster-0249`) · 4n/5e
+  - It takes an image, extracts and tracks filaments, and produces an RGB image showing the tracked filaments with vertex intensities sampled from the original image. It first converts the input to 8-bit grayscale, runs TSOAX 2D filament tracking, assigns vertex intensities, and renders the filaments onto the reference image.
+- **Export corrected filament 3D ROIs** — extends “Fix filament overlaps and create 2D/3D ROIs” (`cluster-0259`) · 3n/2e
+  - Takes 3D filament data, corrects merged non-branching filaments, and exports the resulting 3D ROIs as files. It converts filament segments and points into 3D line/point ROIs before writing them out.
+- **2D ROI to filament label and mask images** — extends “RGB image with 2D ROI overlays” (`cluster-0323`) · 3n/2e
+  - Takes 2D ROIs, converts them into filaments, and produces a filament label image and a solid filament mask image. The mask is greyscale and can be sized to a reference image.
+
+#### machine-learning (4)
+
+- **Cell segmentation label image** — extends “Train a Cellpose model from 2D image-label pairs” (`cluster-0050`) · 2n/1e
+  - Segments cells in an image with Cellpose and outputs a cell label image (mask) converted to another image data type.
+- **Train and apply a custom cell segmentation model** — extends “Train a Cellpose model from 2D image-label pairs” (`cluster-0050`) · 2n/1e
+  - Takes annotated images, trains a Cellpose 2 segmentation model, then uses that model to segment new images into cell masks and optional probability or flow outputs.
+- **Cellpose segmentation labels as 8-bit image** — extends “Clean and enhance images” (`cluster-0129`) · 2n/1e
+  - Takes an image, runs Cellpose segmentation, and converts the resulting label image to an 8-bit grayscale image.
+- **Cellpose 2D/3D ROI segmentation** — extends “Train and predict with a generative model” (`cluster-0134`) · 2n/1e
+  - Takes input images and a pretrained Cellpose model, runs segmentation inference, and produces 2D or 3D ROIs by default, with optional labels, flows, and probabilities.
+
+#### tracking (1)
+
+- **Track filament networks as overlay** — extends “Segment and measure 3D ROIs from an image” (`cluster-0027`) · 2n/1e
+  - Takes time-lapse images of filament networks, extracts and tracks individual filaments or network segments over time, and outputs the tracked filaments as an overlay.
+
+#### tables (4)
+
+- **Project file path metadata table** — extends “Split multichannel images into separate channels” (`cluster-0013`) · 2n/1e
+  - Takes input data, adds project and file path information, and produces a flat table of all annotations for inspection or export.
+- **Filtered parameter table** — extends “Merge multiple parameter definitions” (`cluster-0020`) · 2n/1e
+  - Takes parameter values, converts them into a table, and keeps only rows that match a filter condition. Produces a filtered table.
+- **Annotate table with ImageJ results** — extends “Export cleaned annotation table” (`cluster-0047`) · 3n/2e
+  - It imports a data table from a ZIP archive and an ImageJ results table from CSV or XLSX, then adds matching values from the results table to the data table. The output is a single table enriched with ImageJ measurements.
+- **Download JSON and extract table** — extends “Load JSON files and extract selected fields” (`cluster-0217`) · 4n/3e
+  - Downloads a JSON file from a web resource, parses and enriches it, then extracts selected fields into a table.
+
+#### statistics (9)
+
+- **8-bit image intensity histogram** — extends “Color overlay of overlapping 3D ROIs” (`cluster-0028`) · 2n/1e
+  - Takes an image, converts it to 8-bit grayscale, and computes an intensity histogram. Produces a table of intensity values and their counts.
+- **Image intensity histogram** — extends “Color overlay of overlapping 3D ROIs” (`cluster-0028`) · 2n/1e
+  - Takes an image, converts it to 16-bit, and computes a pixel intensity histogram. It produces a table of intensity values and their counts.
+- **2D ROI image statistics** — extends “Find boundary regions of selected 2D ROIs” (`cluster-0068`) · 3n/2e
+  - Takes a grayscale image, converts it to a binary mask, detects connected 2D particles as 2D ROIs, and computes image statistics for each ROI. It produces a per-ROI statistics table.
+- **Hue/saturation/brightness histogram** — extends “Plot pixel values from a masked image” (`cluster-0107`) · 2n/1e
+  - Takes an image, converts it to hue/saturation/brightness color space, and computes a pixel-value histogram. It produces a table of histogram values and counts.
+- **Grayscale image statistics** — extends “Export 2D ROI overlay images” (`cluster-0127`) · 2n/1e
+  - Takes a 2D or 3D image, converts it to 8-bit grayscale, and extracts whole-image or masked intensity statistics. It produces a summary of brightness values such as mean, minimum, and maximum.
+- **Background-corrected image histogram** — extends “Tile multiple images into a grid” (`cluster-0133`) · 2n/1e
+  - Takes an image, removes a rolling-ball background estimate, and produces a histogram table of the resulting pixel intensities.
+- **Background-corrected intensity histogram** — extends “Compute extended depth-of-focus projection from selected image planes” (`cluster-0152`) · 3n/2e
+  - Takes a 2D image or image stack, removes background and smooths the image, then summarizes the resulting pixel intensity distribution. It produces a histogram table with intensity values and their counts.
+- **Cell segmentation 2D ROI intensity statistics** — extends “Composite a resliced, color-mapped image” (`cluster-0171`) · 3n/3e
+  - Takes an image, converts it to 8-bit, segments cells with Cellpose, and computes intensity statistics for each resulting 2D ROI. It produces per-cell intensity measures such as mean, min, and max, rather than reliable shape measurements.
+- **Image statistics** — extends “Overlay 2D ROIs on an image” (`cluster-0256`) · 2n/1e
+  - Takes an image, converts it to 32-bit grayscale, and computes basic intensity statistics for the whole image or a masked region.
+
+#### plotting (1)
+
+- **Parameter value histogram** — extends “Merge multiple parameter definitions” (`cluster-0020`) · 2n/1e
+  - Takes parameter data, converts it into a table, and creates a histogram of a chosen column. This shows the distribution of parameter values.
+
+#### export (41)
+
+- **Export filtered annotated data as a table** — extends “Attach 3D ROI measurements to data” (`cluster-0005`) · 2n/1e
+  - Takes data items with text annotations, keeps only the items that satisfy an annotation condition, and exports the selected items as a data table directory.
+- **Export matched and unmatched data by annotation** — extends “Attach 3D ROI measurements to data” (`cluster-0005`) · 3n/2e
+  - Takes annotated data, splits it into records that match an annotation condition and records that do not, and exports the two groups to separate files. The matched group is written as a data table and the unmatched group is written using the standard data exporter.
+- **Export data to project folders** — extends “Split multichannel images into separate channels” (`cluster-0013`) · 3n/3e
+  - Takes data and writes it to project-defined output folders. It derives the target folder from project path information and exports the data there.
+- **Export data filtered by annotation** — extends “Colocalization within segmented cell 2D ROIs” (`cluster-0014`) · 2n/1e
+  - Takes data items with text annotations, keeps only those whose annotation satisfies a condition, and exports the matching items. It produces the directory containing the exported files.
+- **Export data filtered by annotation** — extends “Import and split microscopy images with color maps and metadata” (`cluster-0023`) · 3n/2e
+  - Takes data items with annotations, sets or derives annotation values, keeps only items that satisfy an annotation condition, and exports the matching items to files.
+- **Export data to metadata-defined paths** — extends “Import and split microscopy images with color maps and metadata” (`cluster-0023`) · 3n/3e
+  - Takes data items with a metadata field containing a destination path, duplicates each item, converts the metadata value to a path, and exports the original data to that path. It produces files at the specified locations.
+- **Export 8-bit image for Ilastik** — extends “Segment objects from images by thresholding and labeling” (`cluster-0031`) · 2n/1e
+  - Takes an image, converts it to 8-bit grayscale, and exports it as an Ilastik HDF5 file. This produces an Ilastik-ready image for downstream segmentation or classification.
+- **Export annotated data** — extends “Summarize overlapping 2D ROIs into a table” (`cluster-0048`) · 2n/1e
+  - It takes data and a table, enriches each data item with matching table values, and writes the enriched data to files. The result is a directory of exported annotated data.
+- **Export origin-labeled data tables** — extends “Filter data by label” (`cluster-0062`) · 2n/1e
+  - Takes data records, adds a label identifying their origin, and exports them as data table files.
+- **Export annotated table to Excel** — extends “Summarize and plot table data as an XY line chart” (`cluster-0079`) · 2n/1e
+  - Takes a results table, adds attached column annotations as new columns, and exports the table to an Excel (.xlsx) file.
+- **Export table to Excel** — extends “Tidy a results table” (`cluster-0112`) · 2n/1e
+  - Takes a results table, adds table-level metadata, and writes it to an Excel spreadsheet.
+- **Export image-annotated data table** — extends “Create masks from 2D ROIs in images” (`cluster-0115`) · 2n/1e
+  - Takes a data table, adds annotations derived from an image, and exports the annotated table.
+- **Export table with unique row labels** — extends “Track, filter, and annotate spots” (`cluster-0116`) · 2n/1e
+  - Takes a data table, adds a unique index-based label to each row, and exports the resulting table as a data-table directory.
+- **Export 3D ROIs updated from a table** — extends “3D ROI nearest-neighbor distance histogram” (`cluster-0121`) · 2n/1e
+  - Takes a 3D ROI list and a matching table, assigns table values to ROI properties, and writes the updated 3D ROIs to ROI file(s).
+- **Export filtered 3D ROIs** — extends “3D ROI nearest-neighbor distance histogram” (`cluster-0121`) · 2n/1e
+  - Takes a 3D ROI list, keeps only the ROIs that match the filter criteria, and writes the matching 3D ROIs to one or more ROI files.
+- **Export 3D masks as a 3D mesh file** — extends “Export 3D mask as a 3D mesh” (`cluster-0136`) · 3n/2e
+  - Takes one or more 3D masks, converts them into surface meshes, combines them into a single 3D scene, and writes a Collada (.dae) file for viewing or downstream 3D analysis.
+- **Export matched and unmatched annotation subsets** — extends “Track measurement summary” (`cluster-0138`) · 3n/2e
+  - Takes annotated data, splits it into records that match an annotation condition and records that do not, and exports each subset to separate output files or folders.
+- **Export filtered data to annotation-based file paths** — extends “Load and filter 2D ROI files” (`cluster-0139`) · 4n/4e
+  - Takes annotated data, keeps only items that match a filter, and exports those items to file paths generated from an annotation. It produces exported files at the annotation-specified locations.
+- **Export matched annotation data as table** — extends “Load and filter 2D ROI files” (`cluster-0139`) · 2n/1e
+  - Takes annotated data, selects the items that match an annotation condition, and exports the selected items as a data table.
+- **Export data items matching annotation criteria** — extends “Filter and visualize 2D ROIs” (`cluster-0142`) · 3n/2e
+  - Takes data items, adds values from a table as annotations, keeps only items whose annotations satisfy a condition, and exports the matching items as data tables.
+- **Export data subsets by table values** — extends “Filter and visualize 2D ROIs” (`cluster-0142`) · 4n/3e
+  - Takes data and a table, annotates the data with table values, then separates matching and non-matching records and exports each subset to separate output files or folders.
+- **Export data split by annotation** — extends “Read text from images and attach it to data” (`cluster-0177`) · 3n/2e
+  - Takes annotated data, separates it into records that match an annotation condition and records that do not, then exports each group to separate output files or folders.
+- **Export image for Ilastik** — extends “Measure pairwise distances between 3D ROIs” (`cluster-0184`) · 2n/1e
+  - Takes an image, converts it to 32-bit grayscale, and exports it as an Ilastik HDF5 file for use in Ilastik.
+- **Export matched and unmatched annotation subsets** — extends “Plot histograms of 2D ROI statistics” (`cluster-0200`) · 3n/2e
+  - Takes annotated data, splits it by an annotation condition, and exports the matching subset as a table and the non-matching subset as raw files.
+- **Export filtered annotated data** — extends “Pairwise 2D ROI statistics histogram” (`cluster-0202`) · 3n/2e
+  - Takes annotated data items, keeps only those matching an annotation condition, and exports the selected items as a data table and as output files.
+- **Export data table with source file paths** — extends “Normalize image intensity and attach metadata” (`cluster-0206`) · 2n/1e
+  - Takes a data table, adds source file path information to each record, and exports the enriched table. The output is a data table directory that preserves the path context for downstream use.
+- **Export data and data table** — extends “Train and predict image segmentation” (`cluster-0216`) · 3n/2e
+  - Takes an input data set, branches it, and writes both a standard export and a data-table export to output directories.
+- **Export annotated OME images to OME-ZARR** — extends “Load images from folders” (`cluster-0228`) · 2n/1e
+  - Takes OME microscopy images, adds metadata annotations from their OME metadata, and exports them as OME-ZARR datasets. It produces a URI reference to the exported folder or ZIP file.
+- **Export annotated OME-TIFF images** — extends “Load images from folders” (`cluster-0228`) · 3n/2e
+  - Takes OME images, attaches metadata annotations and export settings, and writes them out as OME-TIFF files.
+- **Export table with computed columns to Excel** — extends “Plot histogram of table measurements” (`cluster-0230`) · 2n/1e
+  - Takes a results table, applies a per-row expression to create or update columns, and writes the resulting table to an Excel workbook.
+- **Export data to a file path from a metadata field** — extends “Create blank image with computed label” (`cluster-0248`) · 4n/4e
+  - Takes data, sets a single metadata field, and exports the data to a file path generated from that field. It sets an annotation, duplicates the data, converts the annotation to a path, and writes the data to that path.
+- **Export annotated data table** — extends “Create a thresholded 2D image with statistics” (`cluster-0257`) · 3n/2e
+  - Takes data records, adds or adjusts annotations derived from associated images, and exports the annotated records as a data table.
+- **Export table with calculated columns to Excel** — extends “Plot histogram from category/value images” (`cluster-0262`) · 2n/1e
+  - Takes a results table, adds or updates columns by evaluating an expression for each row, and exports the final table to an XLSX spreadsheet.
+- **Export OMERO images as OME-TIFF** — extends “Upload images and result tables to OMERO” (`cluster-0274`) · 2n/1e
+  - Retrieves selected OMERO images and saves them as OME-TIFF files, preserving pixel data and available metadata.
+- **Export OMERO table data to Excel** — extends “Upload images and result tables to OMERO” (`cluster-0274`) · 2n/1e
+  - Takes tables attached to an OMERO image and saves them as an Excel workbook. Multiple tables can be combined into a single multi-sheet file.
+- **Export data table filtered by annotation** — extends “Extract an image tile” (`cluster-0279`) · 3n/2e
+  - Takes data items, adds a single annotation, keeps only items whose annotation satisfies a condition, and exports the selected items as a data table.
+- **Export data to a metadata-defined location** — extends “Extract an image tile” (`cluster-0279`) · 4n/4e
+  - Takes data items, sets or reads a metadata field as the destination location, and writes the data there. It produces exported files whose names come from the final component of that location.
+- **Export annotated results table to Excel** — extends “Count 2D ROIs into a summary table” (`cluster-0282`) · 2n/1e
+  - Takes a results table, adds annotations from selected columns (merging values when they differ), and writes the table to an XLSX file.
+- **Export annotated data with image metadata** — extends “Export 2D ROI overlay and mask images” (`cluster-0296`) · 3n/2e
+  - Takes data, adds image-derived property and project path annotations, and exports the annotated data to files. The output is an exported dataset enriched with image metadata and project path information.
+- **Convert OME-ZARR to OME-TIFF** — extends “Batch export OME-ZARR images from folders” (`cluster-0318`) · 2n/1e
+  - Takes an OME-ZARR image URI, loads the image data, and writes it as an OME-TIFF file. This is useful for converting OME-ZARR data into a widely compatible OME-TIFF format.
+- **Export ZARR dataset inventory to Excel** — extends “Batch export OME-ZARR images from folders” (`cluster-0318`) · 2n/1e
+  - Takes a ZARR URI, lists the available datasets and groups, and exports that inventory as an XLSX spreadsheet.
+
+#### misc (1)
+
+- **Create annotation folders** — extends “List files in folders and extract name-based metadata” (`cluster-0102`) · 2n/1e
+  - Takes data with annotations that specify locations, converts each annotation into a filesystem path, and creates the corresponding directories, skipping any that already exist.
+
+### what-next rejected by the gate (false-negative check)
+
+- “Color overlapping 2D ROIs by image statistics and export table” — extends “Filter 2D ROIs by overlap” · 2n — gate=noise
+- “Segment cells/nuclei and export label image for Ilastik” — extends “Import, split, and colorize microscopy images” · 2n — gate=noise
+- “Split annotated data by rule and export a table” — extends “Add computed annotations to data” · 2n — gate=noise
+- “Count 2D ROIs and annotate data” — extends “2D ROI overlap counts and overlays” · 3n — gate=noise
+- “Cellpose 3.x 2D ROI measurements” — extends “Segment images with Cellpose and render 2D ROIs” · 2n — gate=noise
+- “Compute 2D vesselness and annotate data with image properties” — extends “Import microscopy images and convert to 32-bit grayscale” · 2n — gate=noise
+- “Filter data by 2D vesselness image properties” — extends “Import microscopy images and convert to 32-bit grayscale” · 3n — gate=noise
+- “Convert rendered track image to HSB” — extends “Visualize tracked spots and trajectories” · 2n — gate=noise
+- “Add file path tags and separate matches” — extends “Filter three inputs by annotation” · 2n — gate=noise
+- “Add unique IDs and filter by tag” — extends “Filter three inputs by annotation” · 2n — gate=noise
+- “Prepare imported 2D images for publication: subtract background, add scale bar, convert to RGB” — extends “Batch export image files” · 3n — gate=noise
+- “Segment cells with Cellpose and convert labels to 8-bit” — extends “Project and correct a multi-dimensional image” · 2n — gate=noise
+- “Annotate data with HSB pixel histogram” — extends “Plot pixel values from a masked image” · 3n — gate=noise
+- “Plot table annotations from merged columns” — extends “Merge two tables after column cleanup” · 2n — gate=noise
+- “Connect filament vertices, measure components, and annotate records” — extends “Create filament mask from 3D time-lapse” · 3n — gate=noise
+- “...” — extends “Import and scale 2D images” · 3n — gate=noise
+- “Label connected components in a 3D mask and export HDF5” — extends “Export 3D mask as a 3D mesh” · 2n — gate=noise
+- “Annotate data with pixel histogram measurements and image properties” — extends “2D ROI measurement histogram montage” · 3n — gate=noise
+- “Colorized, cleaned, and inverted RGB image” — extends “Quick RGB preview of 2D ROIs on images” · 3n — gate=noise
+- “Measure corrected image and annotate data” — extends “Background-subtracted image stack” · 2n — gate=noise
+- “Convert Cellpose 2D ROIs to filament labels” — extends “Denoise and segment cells into 2D ROIs” · 3n — gate=noise
+- “Assign unique IDs and split bead and sample data by label” — extends “Import images and attach metadata” · 2n — gate=noise
+- “Annotated JSON to text” — extends “Load JSON files and extract selected fields” · 4n — gate=noise
+- “Segment cells and measure 2D ROI statistics” — extends “Rotate an image” · 2n — gate=noise
+- “Add scale bar and export 16-bit montage” — extends “Create image montages for visualization” · 2n — gate=noise
+
+### what-next rejected by fail-closed validation (the grounding gate)
+
+47 model proposals that named a real slot wrong, used an
+incompatible type, or cited a node id that does not exist — dropped
+before the gate ever saw them (fail-closed by design).
+
+- 15× unverified slot names
+- 7× type mismatch imagej-roi !-> jipipe:data on cellpose-2 -> annotate-data-with-image-properties
+- 3× import-imagej-results-table-from-file has no output slot named imagej-results-table
+- 2× filaments-convert-to-mask has no input slot named Filaments
+- 2× filaments-skeleton-to-filaments-3d has no output slot named filaments
+- 2× type mismatch imagej-imgplus-greyscale-32f !-> jipipe:data on feature-vesselness-meijering2d -> annotate-data-with-image-properties
+- 1× type mismatch imagej-roi !-> jipipe:data on ij1-analyze-find-particles2d -> annotate-data-with-table-values
+- 1× type mismatch imagej-roi !-> jipipe:data on cellpose-segmentation-inference-3.x -> annotate-data-with-image-properties
+- 1× type mismatch imagej-results-table !-> jipipe:data on ij1-analyze-find-particles2d -> export-data-table
+- 1× type mismatch imagej-results-table !-> jipipe:data on ij1-analyze-find-particles2d -> annotate-data-with-image-properties
+- 1× annotate-data-with-image-properties has no input slot named data
+- 1× type mismatch imagej-imgplus !-> jipipe:data on clij-pull-from-gpu -> annotate-data-with-table-values
+- 1× type mismatch imagej-imgplus-2d-greyscale-32f !-> imagej-imgplus-greyscale on ij1-convert-table-column-to-image -> ij1-apply-lut
+- 1× duplicate node ids
+- 1× type mismatch imagej-imgplus !-> jipipe:data on convert-imagej-image -> annotate-data-with-image-properties
+- 1× type mismatch imagej-results-table !-> jipipe:data on ij1-analyze-image-statistics -> export-data-table
+- 1× type mismatch imagej-roi !-> jipipe:data on ij-multi-template-matching -> annotate-data-with-table-values
+- 1× unknown node id annotate-split-by-annotation-if-else
+- 1× annotate-data-with-image-properties has no input slot named jipipe:data
+- 1× import-imagej-imgplus-from-file has no output slot named imagej-imgplus
+- 1× type mismatch imagej-imgplus-greyscale-8u !-> jipipe:data on ij-convert-image-to-8-bit -> annotate-data-with-image-properties
+- 1× type mismatch imagej-imgplus-greyscale-16u !-> jipipe:data on ij-convert-image-to-16-bit -> annotate-data-with-image-properties
 
 ## Rejected (false-negative check)
 
