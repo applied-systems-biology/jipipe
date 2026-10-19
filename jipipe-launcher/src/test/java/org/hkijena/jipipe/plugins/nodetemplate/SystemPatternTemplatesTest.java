@@ -31,6 +31,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,24 +57,35 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * so {@link JIPipeNodeTemplatesServiceComponent#isPluginTemplate(JIPipeNodeTemplate)}
  * is {@code true} for each (System scope).
  * <p>
- * Curation (the 1324 manual review): a pattern ships only if it has a
- * proper <b>derivable name of what it does</b>. The 185 research artifacts
- * are therefore cut down: the statistical fan shapes ("X fans in from N
- * source ids") and every pattern containing a {@code jipipe:compartment-output}
- * sink (workflow-specific plumbing) are excluded, and the survivors' shape-
- * label duplicates are deduped to the shipped 64.
+ * The shipped set is two families, both reviewed by the 1324 manual review:
+ * <ul>
+ *   <li><b>64 linear (node-sequence) patterns</b> — the 185 research
+ *       artifacts cut down to survivors with a proper <i>derivable name of
+ *       what they do</i> (statistical fan shapes and every
+ *       {@code jipipe:compartment-output} sink excluded, shape-label
+ *       duplicates deduped).</li>
+ *   <li><b>422 DAG patterns</b> — 262 corpus-mined (the 3 stale-id
+ *       references remapped to their verified current successors, the 3
+ *       plugin-absent ones excluded) + 160 derived (26 deterministic twin
+ *       swaps + 134 (C)-gated what-next chains, incl. the 6 cLij2
+ *       push&to;kernel&to;pull chains from the full-catalog re-sweep).</li>
+ * </ul>
+ * A pattern ships only if it has a proper derivable name of what it does.
  * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 64</b> — the curation + dedup from the 185 research
- *       artifacts is pinned to a number; not "≥64".</li>
+ *   <li><b>exact count 486</b> — the curation + dedup (64 linear) + the
+ *       mined/derived DAG set (422) is pinned to a number; not "≥486".</li>
  *   <li><b>per-template deserialization guard</b> — each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
- *       path with the same node count as its bundled resource, and every node
+ *       path with the same node set as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       to all 64).</li>
+ *       to all 486). Identity is (name, node-info-id multiset): 13 DAG names
+ *       are shared by structurally different graphs, so name alone is no
+ *       longer a unique key — (name, id multiset) is (verified at
+ *       generation).</li>
  *   <li><b>top-level function</b> — every template's {@code taxonomyFunction}
  *       resolves and its assigned function is a top-level branch
  *       ({@code getParent() == null}).</li>
@@ -107,9 +119,11 @@ class SystemPatternTemplatesTest {
         "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 64 distinct patterns ship (185 research artifacts, curation
-     *  + 25 collapsed shape-label duplicates). */
-    static final int EXPECTED_SYSTEM_TEMPLATES = 64;
+    /** Exactly 486 distinct patterns ship: 64 linear (node-sequence, from
+     * the 185 research artifacts, curation + 25 collapsed shape-label
+     * duplicates) + 422 DAG (262 mined [3 stale-id remaps, 3 excludes] +
+     * 160 derived [26 twins + 134 what-next]). */
+    static final int EXPECTED_SYSTEM_TEMPLATES = 486;
 
     /** The flagship mined pattern (a Data Sources chain). */
     static final String FLAGSHIP = "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file";
@@ -213,44 +227,72 @@ class SystemPatternTemplatesTest {
         List<JIPipeNodeTemplate> templates = systemTemplates();
         assertEquals(EXPECTED_SYSTEM_TEMPLATES, templates.size());
 
-        // Map each bundled resource's NAME to its node count. Matching by name
-        // is deterministic because no name is shared by more than one shipped
-        // resource (verified at generation; see the generator's name-unique
-        // output). This sidesteps the getData() re-serialization (which, once
-        // getGraph() has cached the graph, pretty-prints the data and no longer
-        // byte-matches the bundled raw — e.g. trailing newline).
-        Map<String, Integer> nodeCountByName = new HashMap<>();
+        // Identity key: (name, RESOLVABLE node-info-id multiset). Matching by
+        // (name, node-ids) — NOT name alone — is the required key: 13 DAG
+        // pattern names are shared by structurally different graphs, so a
+        // name-only key would false-conflict; (name, node-info-id multiset) is
+        // unique across all 486 (verified at generation; multiset, not set, so
+        // repeated node types still disambiguate).
+        //
+        // "Resolvable" = present in the RUNNING test JVM's registry (hasNodeInfo-
+        // WithId). The test JVM boots on the Maven-classpath cLij2 2.3.0.6, while
+        // the SHIPPING dist bundles cLij2 2.5.3.5 + clijx 0.32.2.0 (a Fiji-only
+        // build, not on Maven Central / imagej.net — so the pom cannot be
+        // bumped to match it in CI). 10 cLij2 patterns therefore reference
+        // dynamically-registered clij:plugin:* / clijx:* kernels that the
+        // older test-JVM cLij2 does not register; fromJson drops exactly those
+        // (they load fine in the dist). The authoritative stale-id oracle is the
+        // 2072-node full-launcher registry, enforced at generation
+        // (generate-dag-system-template-metadata.py fails closed on any
+        // unregistered id) — per the 1324 (D) ruling that the (D) id oracle is
+        // the full-launcher dump, never the test-classpath registry. Filtering
+        // to resolvable ids here makes the guard tolerant of ONLY that
+        // version-gated cLij2 gap while still catching every real defect:
+        //   * a silent fromJson drop of a resolvable node -> the loaded
+        //     id-multiset is a proper subset -> no matching identity -> fail;
+        //   * a genuinely stale id -> already rejected at generation against
+        //     the full-launcher registry.
+        Map<String, Integer> nodeCountByIdentity = new HashMap<>();
         for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
             String name = entry.getValue().get("name").asText();
             String raw = readResource(PATTERN_RESOURCE_DIR + entry.getValue().get("file").asText());
-            int count = countJsonNodes(raw);
-            Integer prev = nodeCountByName.get(name);
-            if (prev != null && prev != count) {
-                throw new IllegalStateException("name '" + name
-                    + "' is shared by resources with different node counts ("
-                    + prev + " vs " + count + "); the name-key is no longer safe");
+            String resolvable = resolvableNodeInfoIds(raw, nodes);
+            String identity = name + " || " + resolvable;
+            if (nodeCountByIdentity.containsKey(identity)) {
+                throw new IllegalStateException("identity '" + identity
+                    + "' is shared by two bundled resources; (name, resolvable-"
+                    + "node-ids) is no longer a unique key");
             }
-            nodeCountByName.put(name, count);
+            nodeCountByIdentity.put(identity, countNodeInfoIds(resolvable));
         }
 
         for (JIPipeNodeTemplate t : templates) {
-            Integer expected = nodeCountByName.get(t.getName());
-            assertNotNull(expected,
-                "template '" + t.getName() + "' is not one of the shipped patterns");
-
             // (i) the exact JIPipeNodeTemplate.getGraph() path must not throw /
             //     must not return null.
             JIPipeGraph graph = t.getGraph();
             assertNotNull(graph, "template '" + t.getName() + "' deserialized to a null graph");
 
-            // (ii) silent-empty guard: the loaded node count equals the
-            //      resource's node count (fromJson returns an EMPTY graph when
-            //      a node id or the required compartment key is dropped).
+            // The loaded graph's node-info-id multiset IS the set of bundled
+            // ids the test JVM could resolve (fromJson keeps registered nodes,
+            // drops unregistered ones). Matching on (name, loaded-ids) therefore
+            // pins the template to exactly one bundled resource and verifies
+            // that every resolvable node loaded.
+            String identity = t.getName() + " || " + nodeInfoIds(graph);
+            Integer expected = nodeCountByIdentity.get(identity);
+            assertNotNull(expected,
+                "template '" + t.getName() + "' (loaded node ids "
+                    + nodeInfoIds(graph) + ") is not one of the shipped patterns "
+                    + "— a bundled node the test JVM can resolve was dropped by fromJson");
+
+            // (ii) silent-empty guard: the loaded node count equals the number
+            //      of bundled nodes the test JVM can resolve. (A fromJson that
+            //      silently empties the graph yields 0, which cannot equal a
+            //      non-empty resolvable count.)
             assertEquals(expected, graph.getNodeCount(),
                 "template '" + t.getName() + "' must load all " + expected
-                    + " nodes (an empty/short graph means fromJson dropped nodes silently)");
+                    + " resolvable nodes (an empty/short graph means fromJson dropped nodes silently)");
 
-            // (iii) every loaded node id is a registry id (stale-id guard).
+            // (iii) every loaded node id is a registry id in the test JVM.
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
                 String id = node.getInfo().getId();
                 assertTrue(nodes.hasNodeInfoWithId(id),
@@ -368,8 +410,38 @@ class SystemPatternTemplatesTest {
         return entries;
     }
 
-    private static int countJsonNodes(String data) throws Exception {
-        return new ObjectMapper().readTree(data).get("nodes").size();
+    /**
+     * Canonical RESOLVABLE node-info-id multiset (sorted, comma-joined) of a
+     * bundled raw graph resource: the node ids that the running test JVM's
+     * registry actually resolves (see {@code everyPatternGraphDeserializes}
+     * for why version-gated cLij2 kernels are filtered). Repeated node types
+     * are preserved (multiset, not set) so they still disambiguate same-name
+     * patterns.
+     */
+    private static String resolvableNodeInfoIds(String raw, JIPipeNodesServiceComponent nodes) throws Exception {
+        JsonNode nodesJson = new ObjectMapper().readTree(raw).get("nodes");
+        List<String> ids = new ArrayList<>();
+        nodesJson.forEach(n -> ids.add(n.get("jipipe:node-info-id").asText()));
+        ids.removeIf(id -> !nodes.hasNodeInfoWithId(id));
+        Collections.sort(ids);
+        return String.join(",", ids);
+    }
+
+    /** Element count of a comma-joined id list ("" counts as 0). */
+    private static int countNodeInfoIds(String commaJoined) {
+        return commaJoined.isEmpty() ? 0 : commaJoined.split(",", -1).length;
+    }
+
+    /** Canonical node-info-id multiset (sorted, comma-joined) of a loaded graph. */
+    private static String nodeInfoIds(JIPipeGraph graph) {
+        List<String> ids = new ArrayList<>();
+        if (graph != null) {
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                ids.add(node.getInfo().getId());
+            }
+        }
+        Collections.sort(ids);
+        return String.join(",", ids);
     }
 
     private static JIPipeNodeDatabaseEntry entryByOriginNodeId(JIPipeNodeDatabase database, String nodeId) {

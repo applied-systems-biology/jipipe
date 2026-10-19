@@ -213,6 +213,15 @@ template's do. Contract for the harvest + generator:
   clusters + threshold note.
 - **(C)** JEV gate/name/classify (imajev); commit survivors + Q1–Q3 answers.
 - **(D)** generator extension + sidecar + test re-pin + manual review.
+  **DONE (2026-10-19):** `utils/generate-dag-system-template-metadata.py`
+  ships the 262 mined (3 stale-id remaps to verified successors, 3 excludes)
+  + 160 derived = 422 DAG patterns as bundled `patterns/dag-*.json` resources
+  + sidecar entries (on top of the 64 linear → 486 System templates).
+  `SystemPatternTemplatesTest` re-pinned to 486; its deserialization guard
+  re-keyed to (name, resolvable-node-ids) because the Maven test classpath
+  boots cLij2 2.3.0.6 while the dist bundles 2.5.3.5 (10 cLij2 patterns load
+  short in the test JVM only; the authoritative stale-id oracle is the
+  generator's 2072 full-launcher check, per the (103) ruling).
 
 ## 6. Non-goals (unchanged)
 

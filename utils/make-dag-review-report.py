@@ -327,6 +327,40 @@ def main(argv=None):
     A("")
     A(f"Shippable after remap + exclude: **{len(shipped) - len(exclude)}**.")
     A("")
+    A("### (D) shipped — 2026-10-19 (commit after the full-catalog re-sweep)")
+    A("")
+    A(f"Shipped **{len(shipped) - len(exclude)} mined + 160 derived = 422 DAG patterns** "
+      "(`utils/generate-dag-system-template-metadata.py` → the bundled "
+      "`patterns/dag-*.json` resources + `system-templates.json` sidecar), on top "
+      "of the 64 linear patterns (486 System templates). The 3 remaps, verified "
+      "against git history + the full-launcher registry (same/successor "
+      "algorithm, identical `Input`/`Output` slot names):")
+    A("")
+    A("- `ij1-transform-tile` → `ij1-transform-tile-2d-v2` — clusters 0133 + "
+      "0242 (the `-2d` variant is `@Deprecated @LabelAsJIPipeHidden`; the `-v2` "
+      "is the current `TileImage2Dv2Algorithm`)")
+    A("- `import-ome-zarr-from-directory-as-imgplus` → "
+      "`import-ome-zarr-from-zip-directory-as-imgplus` — cluster 0318 (commit "
+      "`fa85690da6` unified OME ZARR ZIP/directory reader; a strict superset)")
+    A("")
+    A("Generator guards (fail-closed, run on every regeneration): all node ids "
+      "resolve in the 2072-node full-launcher registry (the (D) id oracle per "
+      "the (103) ruling — never the test-classpath dump), functionIds are "
+      "registered top-level branches, every node carries its §3.4 "
+      "`location/<compartment>/x|y`, `jipipe:node:name` is stripped, no "
+      "compartment sinks / fan names, and (name, node-info-id multiset) is "
+      "unique. `SystemPatternTemplatesTest` re-pins 486 and re-verifies the "
+      "bundled set end-to-end (launcher suite 16/0/0/0).")
+    A("")
+    A("Known test-classpath gap (documented, not a pattern defect): the Maven "
+      "test classpath boots cLij2 **2.3.0.6** while the shipping dist bundles "
+      "cLij2 **2.5.3.5** + clijx **0.32.2.0** (a Fiji-only build, not on Maven "
+      "Central). 10 cLij2 patterns therefore load with those version-gated "
+      "kernels dropped *in the test JVM only*; the test guard matches on "
+      "(name, resolvable-node-ids) and stays strict for everything else — the "
+      "true stale-id oracle is the generator's 2072 full-launcher check, which "
+      "all 422 pass.")
+    A("")
     # full shipped list
     A("## All shipped patterns (for review)")
     A("")
