@@ -209,9 +209,7 @@
         "Zoltan_pipelines/BacteriaOnAgarPad_Kerstin_26.jip",
         "Zoltan_pipelines/BacteriaOnMicrospheresInStaticCulture_Kerstin_16.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1066",
       "representativeCandidate": {
         "candidateId": "dag-1066",
@@ -497,22 +495,13 @@
         "table-to-roi-test.jip"
       ],
       "nameEvidence": [
-        "A",
-        "Add path to annotations",
         "Annotate with file names",
         "Annotate with folder names",
-        "Auto threshold 2D",
-        "Convert ROI to RGB",
-        "Extract ROI metadata as table",
-        "Extract ROI statistics",
         "Input folders",
         "List TIFF files",
         "List files: Only list *.png files",
         "Median blur 2D",
         "Morphological operation 2D: Dilation",
-        "Project user directory",
-        "Set ROI metadata by statistics (expression)",
-        "Set overlay",
         "Thresholded"
       ],
       "representative": "dag-1777",
@@ -711,13 +700,8 @@
         "test-load-zip-template/Confrontation Assay/ProtocolAndData/ConfrontationAssay.jip"
       ],
       "nameEvidence": [
-        "Combine ROI lists",
-        "Convert ROI to RGB",
-        "Extract ROI statistics",
-        "Filter ROI by overlap",
         "Filter ROI by overlap INVERTED",
-        "Filter ROI by statistics",
-        "Merge ROI lists"
+        "Filter ROI by statistics"
       ],
       "representative": "dag-1518",
       "representativeCandidate": {
@@ -983,21 +967,14 @@
         "Paper/JIPipeExamples/Projects and cache/Extruded Polymer/project.jip"
       ],
       "nameEvidence": [
-        "Cellpose",
-        "Cellpose (2.x)",
         "Cellpose (2.x): Blue",
         "Cellpose (2.x): Green",
-        "Convert ROI to RGB",
         "Convert ROI to RGB: Cellpose results",
         "Convert ROI to RGB: TL overlay flows",
         "Convert ROI to RGB: blue overlay",
         "Convert ROI to RGB: green overlay",
         "Diameter30_RidgedetectorPreprocessed-dilatedROIs2px_2000epochs_13Images_16072021",
-        "Extract ROI statistics",
-        "Filter 2D ROI by statistics: Filter ROI by area and circularity",
-        "Filter ROI by statistics",
-        "Histogram plot",
-        "Project user directory"
+        "Filter ROI by statistics"
       ],
       "representative": "dag-1099",
       "representativeCandidate": {
@@ -1244,19 +1221,11 @@
         "rewire-test.jip"
       ],
       "nameEvidence": [
-        "Add table column: Add missing column",
-        "Annotate with ROI properties",
-        "Annotations to table",
-        "Extract ROI 3D statistics",
-        "Extract ROI metadata as table",
-        "Extract ROI statistics",
-        "Filter ROI list",
         "Filter table",
         "Merge table columns (simple): particle stats summary",
         "Merge table rows: HADA",
         "Merge table rows: NADA",
-        "Merge table rows: RADA",
-        "Set ROI metadata by statistics (expression)"
+        "Merge table rows: RADA"
       ],
       "representative": "dag-1152",
       "representativeCandidate": {
@@ -1422,10 +1391,7 @@
         "test-kidney-project/Kidney/ProtocolAndData/kidney_example_pipeline.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Auto threshold 2D: Default",
-        "Change ROI properties",
-        "Convert ROI to RGB",
         "Find particles 2D: Circ >= 0.7, no size limits",
         "Find particles 2D: Min particle size=5000",
         "Median blur 2D",
@@ -1628,8 +1594,6 @@
         "Zoltan_pipelines/BacteriaOnMicrospheresInStaticCulture_Kerstin_16.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
-        "Project user directory",
         "Set LUT (color map): NP",
         "Set LUT (color map): TL",
         "Set LUT (color map): blue",
@@ -1638,8 +1602,7 @@
         "Set LUT (color map): label",
         "Set LUT (color map): lysosomes",
         "Set LUT (color map): nuclei",
-        "Set single annotation: choose 2D/3D",
-        "Split channels"
+        "Set single annotation: choose 2D/3D"
       ],
       "representative": "dag-1416",
       "representativeCandidate": {
@@ -1895,14 +1858,11 @@
         "Example workflows/Phagocytosis_Simran_07_MucorAsp.jip"
       ],
       "nameEvidence": [
-        "Color 3D ROI by statistics",
-        "Convert 3D ROI to RGB",
         "Convert 3D ROI to RGB: blue",
         "Convert 3D ROI to RGB: green mucus",
         "Convert 3D ROI to RGB: magenta",
         "Convert 3D ROI to RGB: mucus wall",
         "Convert 3D ROI to RGB: red",
-        "ROI properties",
         "Set LUT: grey"
       ],
       "representative": "dag-1142",
@@ -2097,11 +2057,9 @@
         "test with space/cellpose-new-test.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Cellpose",
         "Cellpose denoising (3.x)",
         "Cellpose prediction (2.x)",
-        "Convert ROI to RGB",
         "List files: Only list *.png files",
         "Pretrained Cellpose 3.x denoise model"
       ],
@@ -2255,8 +2213,6 @@
         "Example workflows/Phagocytosis_Simran_07_MucorAsp.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Filter 2D ROI by statistics: Filter ROI by area and circularity",
         "Morphological operation 2D: Erosion"
       ],
       "representative": "dag-1507",
@@ -2454,12 +2410,6 @@
         "Example workflows/Phagocytosis_Simran_07_MucorAsp.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Convert 3D ROI to RGB",
-        "Filter 3D ROI by statistics",
-        "Find particles 3D",
-        "Labels to 3D ROI",
-        "Outline 3D ROI",
         "Set 3D ROI properties"
       ],
       "representative": "dag-1143",
@@ -2748,8 +2698,6 @@
         "test-load-zip-template/Confrontation Assay/ProtocolAndData/ConfrontationAssay.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Hessian 2D",
         "Morphological operation 2D: Erosion"
       ],
       "representative": "dag-1512",
@@ -3303,28 +3251,21 @@
         "Paper/JIPipeExamples/Projects and cache/Confrontation Assay/project.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Blue overlay",
-        "Cellpose (2.x)",
         "Cellpose Blue",
         "Cellpose Green",
         "Cellpose Red",
         "Cellpose TL",
         "Cellpose prediction (2.x)",
-        "Change ROI properties",
         "Coloc 2: raw images",
         "Coloc 2: thresholded images",
-        "Convert ROI to RGB",
         "Convert ROI to mask",
         "Define multiple parameters: Cellpose models",
         "File list: trained Cellpose model",
         "Filter ROI by statistics",
         "Green overlay",
-        "Mask to ROI",
         "Red overlay",
-        "Set single annotation",
-        "TL overlay",
-        "Table from expressions"
+        "TL overlay"
       ],
       "representative": "dag-1258",
       "representativeCandidate": {
@@ -3541,13 +3482,10 @@
         "worms_broken/Nematodes.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Filter paths: HADA",
         "Filter paths: NADA",
         "Filter paths: RADA",
-        "Reduce & split stacks",
-        "Set annotations",
-        "Split channels"
+        "Set annotations"
       ],
       "representative": "dag-1124",
       "representativeCandidate": {
@@ -3804,8 +3742,7 @@
         "Example workflows/Phagocytosis_Simran_07_MucorAsp.jip"
       ],
       "nameEvidence": [
-        "Export table: per image spores",
-        "Histogram plot"
+        "Export table: per image spores"
       ],
       "representative": "dag-1503",
       "representativeCandidate": {
@@ -4002,11 +3939,9 @@
         "Paper/JIPipeExamples/Projects and cache/Extruded Polymer/project.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Convert ROI to mask",
         "List TIFF",
-        "List ZIP",
-        "ROI from file"
+        "List ZIP"
       ],
       "representative": "dag-091",
       "representativeCandidate": {
@@ -4265,14 +4200,11 @@
       "nameEvidence": [
         "Cellpose prediction (2.x): 20",
         "Cellpose prediction (2.x): 50",
-        "Convert ROI to RGB",
         "Convert ROI to RGB:  results after watershed",
         "Convert ROI to RGB:  resutls after watershed",
         "Convert ROI to mask",
         "Convert labels to RGB: resutls after seded watershed",
-        "Convert labels to RGB: resutls after seeded watershed",
-        "Extract ROI statistics",
-        "Mask to ROI"
+        "Convert labels to RGB: resutls after seeded watershed"
       ],
       "representative": "dag-093",
       "representativeCandidate": {
@@ -4502,10 +4434,7 @@
         "annotate-with-ome-test.jip",
         "xml-json-text-test.jip"
       ],
-      "nameEvidence": [
-        "Annotate with OME metadata",
-        "Extact XML values as table"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1264",
       "representativeCandidate": {
         "candidateId": "dag-1264",
@@ -4843,7 +4772,6 @@
         "Example workflows/Phagocytosis_Simran_07_MucorAsp.jip"
       ],
       "nameEvidence": [
-        "Histogram plot",
         "Morphological operation 2D: Erosion"
       ],
       "representative": "dag-1500",
@@ -5078,11 +5006,7 @@
         "test-kidney-project/Kidney/ProtocolAndData/kidney_example_pipeline.jip"
       ],
       "nameEvidence": [
-        "Change ROI properties",
         "Convert ROI to RGB: Cellpose results",
-        "Extract ROI statistics",
-        "Histogram plot",
-        "Merge ROI lists",
         "Visualize tissue and glomeruli"
       ],
       "representative": "dag-101",
@@ -5203,7 +5127,6 @@
       ],
       "nameEvidence": [
         "Blend images: Blend two images",
-        "Project user directory",
         "Set LUT (color map): blue",
         "Set LUT (color map): green",
         "Set LUT (color map): grey",
@@ -5399,19 +5322,10 @@
         "testdata/tutorial-project.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Convert only ROI to mask",
-        "Extract ROI statistics",
-        "Extract from ROI",
-        "Filter 2D ROI by statistics: Filter ROI by area and circularity",
         "Filter ROI by statistics",
-        "Mask to ROI",
         "Median blur 2D",
-        "Overlay with extracted ROI: HADA",
         "Overlay with extracted ROI: NADA",
-        "Overlay with extracted ROI: RADA",
-        "Sort and extract ROI by statistics",
-        "Split multi-component ROI"
+        "Overlay with extracted ROI: RADA"
       ],
       "representative": "dag-1100",
       "representativeCandidate": {
@@ -5578,7 +5492,6 @@
         "physical_image_dimensions_test.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Label files",
         "Set annotations"
       ],
@@ -5687,7 +5600,6 @@
         "report-test.jip"
       ],
       "nameEvidence": [
-        "Export table as XLSX",
         "Merge table rows: double membrane",
         "Merge table rows: single membrane",
         "Python script (iterating)"
@@ -5828,12 +5740,7 @@
         "Example workflows/Annamaria_16_ERphagy_withHanddrawnROIs.jip",
         "Example workflows/Mona_04.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Extract ROI 3D statistics",
-        "Filter 3D ROI by statistics",
-        "Labels to 3D ROI"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1016",
       "representativeCandidate": {
         "candidateId": "dag-1016",
@@ -5995,12 +5902,10 @@
         "Example workflows/Mona_04.jip"
       ],
       "nameEvidence": [
-        "Convert 3D ROI to RGB",
         "Export image: magenta to membrane distances",
         "Extract pairwise 3D ROI statistics: green+  red+",
         "Extract pairwise 3D ROI statistics: green+ magenta+",
         "Extract pairwise 3D ROI statistics: red to green",
-        "Filter 3D ROI by overlap",
         "Set 3D ROI properties"
       ],
       "representative": "dag-1020",
@@ -6247,7 +6152,6 @@
       "nameEvidence": [
         "Export image: green to membrane distances",
         "Export image: magenta to membrane distances",
-        "Extract pairwise 3D ROI statistics: green to membrane",
         "Extract pairwise 3D ROI statistics: magenta to membrane"
       ],
       "representative": "dag-1022",
@@ -6487,7 +6391,6 @@
         "Example workflows/FISH_19.jip"
       ],
       "nameEvidence": [
-        "Annotations to table",
         "Merge table columns (simple): particle stats summary",
         "Set/Edit annotations: RegEx matching, more general"
       ],
@@ -6624,7 +6527,6 @@
         "Example workflows/Peroxisomal import_MF_ZC_v9.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Convert ROI to mask",
         "Median filter 2D: nuclei",
         "Multiple parameters: global threshold"
@@ -6820,9 +6722,7 @@
         "Example workflows/Peroxysomes_CONF_STED_09.jip",
         "Example workflows/Peroxysomes_CONF_STED_13.jip"
       ],
-      "nameEvidence": [
-        "Set single annotation"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1304",
       "representativeCandidate": {
         "candidateId": "dag-1304",
@@ -6979,15 +6879,13 @@
         "Example workflows/Peroxysomes_CONF_STED_13.jip"
       ],
       "nameEvidence": [
-        "Coloc 2:  CONF vs. STED in Green",
         "Coloc 2:  CONF vs. STED in Magenta",
         "Coloc 2: Green  vs. Magenta  in Conf",
         "Coloc 2: Green  vs. Magenta  in STED",
         "Coloc 2: RED vs. ORANGE in STED negative ROIs",
         "Coloc 2: negative RED vs. positive ORANGE in STED",
         "Coloc 2: positive RED vs. negative ORANGE in STED",
-        "Coloc 2: positive RED vs. positive ORANGE in STED",
-        "Histogram plot"
+        "Coloc 2: positive RED vs. positive ORANGE in STED"
       ],
       "representative": "dag-1306",
       "representativeCandidate": {
@@ -7146,11 +7044,7 @@
         "Example workflows/Peroxysomes_CONF_STED_09.jip",
         "Example workflows/Peroxysomes_CONF_STED_13.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Filter filaments",
-        "Measure filaments"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1309",
       "representativeCandidate": {
         "candidateId": "dag-1309",
@@ -7386,10 +7280,7 @@
         "AIAgentTests/03-ExampleWorkflows/FindPores_DL_09.jip",
         "Example workflows/FindPores_DL_09.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations",
-        "Project user directory"
-      ],
+      "nameEvidence": [],
       "representative": "dag-030",
       "representativeCandidate": {
         "candidateId": "dag-030",
@@ -7592,11 +7483,7 @@
         "Example workflows/Florian_HolesInPolymer_CellPose_21.jip",
         "Paper/JIPipeExamples/Projects and cache/Extruded Polymer/project.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations",
-        "Image calculator 2D",
-        "Project user directory"
-      ],
+      "nameEvidence": [],
       "representative": "dag-095",
       "representativeCandidate": {
         "candidateId": "dag-095",
@@ -7789,9 +7676,6 @@
         "Paper/JIPipeExamples/Projects and cache/Extruded Polymer/project.jip"
       ],
       "nameEvidence": [
-        "Cellpose training",
-        "Convert ROI to RGB",
-        "Image calculator 2D",
         "Split data randomly"
       ],
       "representative": "dag-097",
@@ -7988,14 +7872,10 @@
         "plotly-test.jip"
       ],
       "nameEvidence": [
-        "A",
-        "Cellpose (2.x)",
         "Cellpose prediction (2.x)",
-        "Convert ROI to RGB",
         "Convert ROI to RGB: Cellpose results",
         "Convert ROI to RGB: signal ROI  with corrected signal",
         "Export image to web format",
-        "Image calculator 2D (Expression)",
         "Thresholded"
       ],
       "representative": "dag-1251",
@@ -8092,9 +7972,6 @@
         "merge-data-bug.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
-        "Auto threshold 2D",
-        "Invert colors",
         "Median blur 2D"
       ],
       "representative": "dag-035",
@@ -8223,9 +8100,7 @@
         "Convert ROI to RGB: GT found",
         "Convert ROI to RGB: false negatives",
         "Convert ROI to RGB: false positives",
-        "Convert ROI to RGB: true positives",
-        "Count ROI",
-        "Filter ROI by overlap"
+        "Convert ROI to RGB: true positives"
       ],
       "representative": "dag-092",
       "representativeCandidate": {
@@ -8554,9 +8429,7 @@
         "Example workflows/Annamaria_16_ERphagy.jip",
         "Example workflows/Annamaria_16_ERphagy_withHanddrawnROIs.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1035",
       "representativeCandidate": {
         "candidateId": "dag-1035",
@@ -8710,11 +8583,7 @@
         "Example workflows/Annamaria_16_ERphagy.jip",
         "Example workflows/Annamaria_16_ERphagy_withHanddrawnROIs.jip"
       ],
-      "nameEvidence": [
-        "3D ROI to mask",
-        "Extract ROI 3D statistics",
-        "Split into individual 3D ROI lists"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1019",
       "representativeCandidate": {
         "candidateId": "dag-1019",
@@ -8831,7 +8700,6 @@
         "Example workflows/Clara_09.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Morphological operation 2D: Erosion"
       ],
       "representative": "dag-1091",
@@ -9072,7 +8940,6 @@
         "Example workflows/Clara_09.jip"
       ],
       "nameEvidence": [
-        "Scale Bar...",
         "Set LUT (color map): grey  2D",
         "Set LUT: blue",
         "Set LUT: green",
@@ -9637,11 +9504,7 @@
         "Paper/JIPipeExamples/Projects and cache/Confrontation Assay/project.jip",
         "test-load-zip-template/Confrontation Assay/ProtocolAndData/ConfrontationAssay.jip"
       ],
-      "nameEvidence": [
-        "Annotate with ROI properties",
-        "Extract ROI statistics",
-        "Filter ROI by overlap"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1144",
       "representativeCandidate": {
         "candidateId": "dag-1144",
@@ -9835,9 +9698,6 @@
         "Example workflows/Peroxysomes_CONF_STED_13.jip"
       ],
       "nameEvidence": [
-        "Annotate with OME metadata: acquisition date",
-        "Project user directory",
-        "Set single annotation",
         "Set single annotation: acquisition date",
         "Set single annotation: color",
         "Set single annotation: color 1",
@@ -9953,11 +9813,8 @@
         "test-train-cellpose-denoise.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Annotate with file names",
         "Annotate with folder names",
-        "Auto threshold 2D",
-        "Cellpose training",
         "Clean up annotations",
         "List TIFF files",
         "Raw image input folders",
@@ -10287,8 +10144,6 @@
         "Coloc 2:  CONF vs. STED in RED",
         "Coloc 2: RED vs. ORANGE in CONF",
         "Coloc 2: RED vs. ORANGE in STED",
-        "Histogram plot",
-        "Mask to ROI",
         "ROI calculator: merged CONF ROIs"
       ],
       "representative": "dag-1465",
@@ -10431,11 +10286,8 @@
         "Example workflows/Manuel_11.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Cellpose (2.x)",
         "Cellpose prediction (2.x)",
-        "Filter ROI by statistics",
-        "Invert colors"
+        "Filter ROI by statistics"
       ],
       "representative": "dag-1345",
       "representativeCandidate": {
@@ -10547,12 +10399,9 @@
         "Example workflows/RemoveNoise_v5.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Auto threshold 2D: Z01 mask",
         "Auto threshold 2D: cadherin mask",
-        "Frangi vesselness: Z01",
         "Frangi vesselness: cadherin",
-        "Image calculator 2D",
         "Median blur 2D"
       ],
       "representative": "dag-1351",
@@ -10845,9 +10694,7 @@
         "Example workflows/Paul_Kerstin_CellTrack_13.jip",
         "Trackmate-example/trackmate-example.jip"
       ],
-      "nameEvidence": [
-        "ImageJ Macro"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1445",
       "representativeCandidate": {
         "candidateId": "dag-1445",
@@ -10933,7 +10780,6 @@
         "Paul_Kerstin_CellTrack_11.jip"
       ],
       "nameEvidence": [
-        "Cellpose (2.x)",
         "Convert ROI to mask"
       ],
       "representative": "dag-1447",
@@ -11092,9 +10938,7 @@
         "Example workflows/Paul_Kerstin_CellTrack_13.jip",
         "Paul_Kerstin_CellTrack_11.jip"
       ],
-      "nameEvidence": [
-        "Project user directory"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1444",
       "representativeCandidate": {
         "candidateId": "dag-1444",
@@ -11258,7 +11102,6 @@
         "Export image: Sat",
         "Histogram plot: Hue",
         "Histogram plot: Sat",
-        "Table column to histogram: Hue",
         "Table column to histogram: Sat"
       ],
       "representative": "dag-1069",
@@ -11600,9 +11443,7 @@
         "Example workflows/Franzi_Lara_07.jip",
         "Franzi_Lara_06.jip"
       ],
-      "nameEvidence": [
-        "Filter by annotation (If else)RAW vs. THP-1"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1261",
       "representativeCandidate": {
         "candidateId": "dag-1261",
@@ -11766,8 +11607,6 @@
       "nameEvidence": [
         "Convert ROI to mask",
         "Filter ROI by statistics",
-        "Image calculator 2D",
-        "Invert colors",
         "Math operation"
       ],
       "representative": "dag-1352",
@@ -11874,9 +11713,7 @@
         "opencv-test.jip",
         "pipe2ai-test-2.jip"
       ],
-      "nameEvidence": [
-        "Import IMP image"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1823",
       "representativeCandidate": {
         "candidateId": "dag-1823",
@@ -11965,10 +11802,7 @@
         "filaments3d-test.jip"
       ],
       "nameEvidence": [
-        "3D ROI to mask",
-        "Auto threshold 2D",
         "Extract pairwise 3D ROI statistics",
-        "Find particles 3D",
         "Median blur 2D"
       ],
       "representative": "dag-1297",
@@ -12291,8 +12125,7 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Filter ROI by statistics",
-        "Set overlay"
+        "Filter ROI by statistics"
       ],
       "representative": "dag-1013",
       "representativeCandidate": {
@@ -12396,8 +12229,7 @@
         "Example workflows/Angela_Roots_38_withHanddrawnROIs.jip"
       ],
       "nameEvidence": [
-        "Histogram plot: edge lengths",
-        "Measure filaments"
+        "Histogram plot: edge lengths"
       ],
       "representative": "dag-1000",
       "representativeCandidate": {
@@ -12503,9 +12335,7 @@
         "Example workflows/Angela_Roots_38_withHanddrawnROIs.jip"
       ],
       "nameEvidence": [
-        "Fast image arithmetics",
-        "Image calculator 2D",
-        "Invert colors"
+        "Fast image arithmetics"
       ],
       "representative": "dag-1001",
       "representativeCandidate": {
@@ -12736,7 +12566,6 @@
         "Example workflows/Lukas_CFranke_09.jip"
       ],
       "nameEvidence": [
-        "Convert 3D ROI to RGB",
         "Export image: green to membrane distances",
         "Python script (iterating): GREEN nearest neighbours distance",
         "Python script (iterating): MAGENTA nearest neighbours distance",
@@ -13026,9 +12855,7 @@
       ],
       "nameEvidence": [
         "Apply expression per row: phagocytosed vs. adherent spores",
-        "Export table: phagocytosed vs. adherent spores",
-        "Statistical bar category plot",
-        "Statistical line category plot: phagocytosed vs. adherent conidia"
+        "Export table: phagocytosed vs. adherent spores"
       ],
       "representative": "dag-1141",
       "representativeCandidate": {
@@ -13552,7 +13379,6 @@
         "Extract ROI statistics: all spores excluding edges",
         "Labels to ROI: all macrophages excluding the edges",
         "Labels to ROI: all spores excluding the edges",
-        "ROI to Labels (Expression): all macrophages as labels",
         "ROI to Labels (Expression): all spores as labels"
       ],
       "representative": "dag-1153",
@@ -13687,12 +13513,7 @@
         "Example workflows/ConfrontationAssay_Mohamed_Jaime_v17.jip",
         "Example workflows/ConfrontationAssay_Mohamed_Jaime_v17_forMohamedData_v1.jip"
       ],
-      "nameEvidence": [
-        "Annotate with ROI properties",
-        "Filter ROI by overlap",
-        "Outline ROI",
-        "Split into individual ROI lists"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1156",
       "representativeCandidate": {
         "candidateId": "dag-1156",
@@ -13917,7 +13738,6 @@
         "Example workflows/Peroxisomal import_MF_ZC_v9.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Median blur 2D",
         "Multiple parameters: global threshold"
       ],
@@ -14084,11 +13904,7 @@
         "Cellpose training example/cellpose4_training.jip",
         "Example workflows/FindPores_DL_09.jip"
       ],
-      "nameEvidence": [
-        "Cellpose (2.x)",
-        "Cellpose segmentation training (4.x)",
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1234",
       "representativeCandidate": {
         "candidateId": "dag-1234",
@@ -14324,7 +14140,6 @@
         "Example workflows/JohannesBrendel_Supramolecular_17.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Cellpose prediction (2.x)"
       ],
       "representative": "dag-1301",
@@ -14739,9 +14554,7 @@
         "AIAgentTests/03-ExampleWorkflows/JohannesBrendel_Supramolecular_17.jip",
         "Example workflows/JohannesBrendel_Supramolecular_17.jip"
       ],
-      "nameEvidence": [
-        "XY scatter plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1322",
       "representativeCandidate": {
         "candidateId": "dag-1322",
@@ -15151,7 +14964,6 @@
         "Divide by maximum: cadherin",
         "Divide by maximum: thick nuclear template",
         "Divide by maximum: thin nuclear template",
-        "Measure label overlap:  cadherin vs thin nuclear",
         "Measure label overlap: Z01 vs cadherin",
         "Measure label overlap: Z01 vs thin nuclear"
       ],
@@ -15294,10 +15106,6 @@
         "Example workflows/Michaela_Nele_Bacteria_27_mouse1.jip"
       ],
       "nameEvidence": [
-        "3D ROI to mask",
-        "Auto threshold 2D",
-        "Find particles 3D",
-        "ROI properties",
         "Set LUT (color map): Magenta",
         "Set LUT (color map): Red"
       ],
@@ -15437,8 +15245,6 @@
         "Example workflows/Michaela_Nele_Bacteria_27_mouse1.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Find particles 3D",
         "Set LUT (color map): Green"
       ],
       "representative": "dag-1375",
@@ -15575,9 +15381,6 @@
         "Example workflows/Michaela_Nele_Bacteria_27_mouse1.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Find particles 3D",
-        "ROI properties",
         "Set LUT (color map): Blue"
       ],
       "representative": "dag-1379",
@@ -15867,7 +15670,6 @@
         "Example workflows/Mona_06.jip"
       ],
       "nameEvidence": [
-        "Project user directory",
         "Set LUT (color map): blue"
       ],
       "representative": "dag-1403",
@@ -16567,9 +16369,7 @@
         "AIAgentTests/03-ExampleWorkflows/Paco_06.jip",
         "Example workflows/Paco_06.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1415",
       "representativeCandidate": {
         "candidateId": "dag-1415",
@@ -16675,10 +16475,7 @@
         "test-load-zip-template/Confrontation Assay/ProtocolAndData/ConfrontationAssay.jip",
         "worms_broken/Nematodes.jip"
       ],
-      "nameEvidence": [
-        "Change ROI properties",
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1421",
       "representativeCandidate": {
         "candidateId": "dag-1421",
@@ -16785,9 +16582,7 @@
         "Example workflows/Paul_Kerstin_CellTrackPhagocytosis_9.jip",
         "Example workflows/Phagocytosis_Simran_07_Mucor.jip"
       ],
-      "nameEvidence": [
-        "Filter 2D ROI by statistics: Filter ROI by area and circularity"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1434",
       "representativeCandidate": {
         "candidateId": "dag-1434",
@@ -16940,10 +16735,7 @@
         "Example workflows/Peroxysomes_CONF_STED_09.jip",
         "Example workflows/Peroxysomes_CONF_STED_13.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Local Bernsen"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1470",
       "representativeCandidate": {
         "candidateId": "dag-1470",
@@ -17062,7 +16854,6 @@
         "analyze-skeleton-test.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to RGB",
         "Export image to web format"
       ],
       "representative": "dag-1655",
@@ -17139,7 +16930,6 @@
         "tutorial-project-test.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Path to annotation"
       ],
       "representative": "dag-1997",
@@ -17248,7 +17038,6 @@
       "nameEvidence": [
         "Annotate with file names",
         "Annotate with folder names",
-        "Cellpose",
         "Input folders",
         "Label image input folders",
         "List TIFF files",
@@ -17378,7 +17167,6 @@
         "simplify-test.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Set/Edit annotations - medium",
         "Set/Edit annotations - protein",
         "Set/Edit annotations - replicate",
@@ -17505,9 +17293,7 @@
         "Example workflows/AdrianFeile_VibrioOnChip_04.jip",
         "Example workflows/AdrianFeile_VibrioOnChip_06.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-215",
       "representativeCandidate": {
         "candidateId": "dag-215",
@@ -17963,9 +17749,7 @@
         "Example workflows/AdrianFeile_VibrioOnChip_04.jip",
         "Example workflows/AdrianFeile_VibrioOnChip_06.jip"
       ],
-      "nameEvidence": [
-        "Python script (iterating): spherical surface heatmap of biofilm thickness"
-      ],
+      "nameEvidence": [],
       "representative": "dag-218",
       "representativeCandidate": {
         "candidateId": "dag-218",
@@ -18417,7 +18201,6 @@
         "Example workflows/Angela_Roots_38_withHanddrawnROIs.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Export image: root widths raw",
         "Export table as XLSX: root widths raw",
         "XY line plot: edge width distribution raw"
@@ -18602,8 +18385,6 @@
       ],
       "nameEvidence": [
         "Cellpose prediction (2.x): 30, small nodules",
-        "Combine ROI lists",
-        "Filter ROI by overlap",
         "Filter ROI by statistics"
       ],
       "representative": "dag-237",
@@ -19016,9 +18797,7 @@
         "AIAgentTests/01-BasicWorkshop/JSC_2025_08_ROI_Labels_Filaments/Kidney/kidney.jip",
         "AIAgentTests/01-BasicWorkshop/JSC_2025_09_Misc/Kidney/kidney.jip"
       ],
-      "nameEvidence": [
-        "Histogram plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-031",
       "representativeCandidate": {
         "candidateId": "dag-031",
@@ -19228,8 +19007,6 @@
         "loop-test-2.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Extract ROI statistics",
         "Median blur 2D"
       ],
       "representative": "dag-044",
@@ -19336,10 +19113,8 @@
         "Example workflows/FindPores_DL_09.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Convert ROI to mask",
-        "List TIFF",
-        "Project user directory"
+        "List TIFF"
       ],
       "representative": "dag-1235",
       "representativeCandidate": {
@@ -19515,9 +19290,7 @@
         "AIAgentTests/02-AdvancedPipelines/CellTracking_01_remapped.jip",
         "Paul_Kerstin_CellTrack_11.jip"
       ],
-      "nameEvidence": [
-        "Set single annotation"
-      ],
+      "nameEvidence": [],
       "representative": "dag-078",
       "representativeCandidate": {
         "candidateId": "dag-078",
@@ -19619,9 +19392,7 @@
         "Example workflows/BacteriaOnAgarPad_Kerstin_26.jip",
         "Zoltan_pipelines/BacteriaOnAgarPad_Kerstin_26.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1067",
       "representativeCandidate": {
         "candidateId": "dag-1067",
@@ -19831,7 +19602,6 @@
         "Zoltan_pipelines/BacteriaOnMicrospheresInStaticCulture_Kerstin_16.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Median filter 2D: vibrio"
       ],
       "representative": "dag-1075",
@@ -19967,7 +19737,6 @@
         "Zoltan_pipelines/BacteriaOnMicrospheresInStaticCulture_Kerstin_16.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Fast image arithmetics",
         "Median filter 2D: RL"
       ],
@@ -20282,7 +20051,6 @@
       ],
       "nameEvidence": [
         "Export image: vibrio nearest neighbour",
-        "Extract ROI 3D statistics",
         "Find particles 3D: Vibrio",
         "Python script (iterating): 5 nearest neighbor distances",
         "Python script (iterating): nearest neighbor distances",
@@ -20535,14 +20303,10 @@
         "trackmate-test.jip"
       ],
       "nameEvidence": [
-        "Change ROI properties from expressions",
-        "Convert ROI to RGB",
         "Convert ROI to RGB: HADA",
         "Convert ROI to RGB: NADA",
         "Convert ROI to RGB: RADA",
-        "Filter ROI by statistics",
-        "Merge ROI lists",
-        "Split into individual ROI lists"
+        "Filter ROI by statistics"
       ],
       "representative": "dag-1128",
       "representativeCandidate": {
@@ -20904,9 +20668,7 @@
         "Example workflows/Hessian06.jip",
         "tsoax_test.jip"
       ],
-      "nameEvidence": [
-        "Find and track filaments (TSOAX)"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1293",
       "representativeCandidate": {
         "candidateId": "dag-1293",
@@ -21185,11 +20947,7 @@
         "Example workflows/Peroxisomal import_MF_ZC_v9.jip",
         "worms_broken/Nematodes.jip"
       ],
-      "nameEvidence": [
-        "Change ROI properties",
-        "Color ROI by statistics",
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1451",
       "representativeCandidate": {
         "candidateId": "dag-1451",
@@ -21300,10 +21058,7 @@
         "Example workflows/RemoveNoise_v5.jip",
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Image calculator 2D",
-        "Median blur 3D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1652",
       "representativeCandidate": {
         "candidateId": "dag-1652",
@@ -21425,9 +21180,7 @@
         "Omnipose-example/omnipose-example.jip",
         "cellpose-cli-impl/omnipose-test.jip"
       ],
-      "nameEvidence": [
-        "Omnipose"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1697",
       "representativeCandidate": {
         "candidateId": "dag-1697",
@@ -21857,9 +21610,7 @@
         "praetorius_hyphae_analysis/filamentation.jip",
         "report-test.jip"
       ],
-      "nameEvidence": [
-        "Filter filaments"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1872",
       "representativeCandidate": {
         "candidateId": "dag-1872",
@@ -22100,9 +21851,7 @@
         "AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip",
         "AIAgentTests/02-AdvancedPipelines/CellTracking_01_remapped.jip"
       ],
-      "nameEvidence": [
-        "Histogram plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-072",
       "representativeCandidate": {
         "candidateId": "dag-072",
@@ -22208,11 +21957,7 @@
         "AIAgentTests/02-AdvancedPipelines/CellTracking_01.jip",
         "AIAgentTests/02-AdvancedPipelines/CellTracking_01_remapped.jip"
       ],
-      "nameEvidence": [
-        "Export table as XLSX",
-        "Histogram plot",
-        "XY line plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-075",
       "representativeCandidate": {
         "candidateId": "dag-075",
@@ -22421,8 +22166,6 @@
         "Example workflows/Angela_Roots_38_withHanddrawnROIs.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
-        "ROI from file",
         "Set single annotation: condition",
         "Set single annotation: replicate",
         "Set single annotation: side",
@@ -22569,7 +22312,8 @@
         "Example workflows/Anna_Slavena_11.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
+        "CLIJ2 Extended Depth Of Focus Sobel Projection: Green",
+        "CLIJ2 Extended Depth Of Focus Sobel Projection: Red",
         "Median blur 2D",
         "Seeded watershed: Green",
         "Seeded watershed: Red"
@@ -22800,9 +22544,6 @@
         "Example workflows/Anna_Slavena_11.jip"
       ],
       "nameEvidence": [
-        "Change ROI properties from expressions",
-        "Extract ROI statistics",
-        "Table to key/value histogram: green median in the center",
         "Table to key/value histogram: green median in the full ROI",
         "Table to key/value histogram: green median in the ring"
       ],
@@ -22888,9 +22629,6 @@
         "Example workflows/Anna_Slavena_11.jip"
       ],
       "nameEvidence": [
-        "Change ROI properties",
-        "Convert ROI to RGB",
-        "Convert only ROI to RGB",
         "Extract ROI statistics: Green channel in TL",
         "Extract ROI statistics: Red channel in TL",
         "Filter ROI by statistics"
@@ -23108,11 +22846,8 @@
         "Example workflows/Anna_Slavena_11.jip"
       ],
       "nameEvidence": [
-        "Extract ROI statistics",
         "Image calculator 2D: Subtract",
-        "Mask to ROI",
-        "Morphological operation 2D: erode for donut",
-        "Split multi-component ROI"
+        "Morphological operation 2D: erode for donut"
       ],
       "representative": "dag-1014",
       "representativeCandidate": {
@@ -23243,7 +22978,6 @@
         "Example workflows/Annamaria_12.jip"
       ],
       "nameEvidence": [
-        "Annotations to table",
         "Export image: green to membrane distances",
         "Python script (iterating): neighbors distances GREEN vs MAGENTA"
       ],
@@ -23376,8 +23110,6 @@
         "Example workflows/Annamaria_16_ERphagy_withHanddrawnROIs.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
-        "ROI from file",
         "Set to color (RGB): luminescence area organs"
       ],
       "representative": "dag-1054",
@@ -23463,7 +23195,6 @@
         "Example workflows/BloodVessels_04.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Blend images:  global threshold mask overlay"
       ],
       "representative": "dag-1088",
@@ -23594,8 +23325,7 @@
         "Example workflows/BloodVessels_04.jip"
       ],
       "nameEvidence": [
-        "Blend images: MFC local threshold mask overlay",
-        "Local auto threshold 2D (Phansalkar)"
+        "Blend images: MFC local threshold mask overlay"
       ],
       "representative": "dag-1089",
       "representativeCandidate": {
@@ -23787,8 +23517,7 @@
       "nameEvidence": [
         "Set single annotation: embryo",
         "Set single annotation: embryo ID",
-        "Set single annotation: sample",
-        "TurboReg registration 2D"
+        "Set single annotation: sample"
       ],
       "representative": "dag-1090",
       "representativeCandidate": {
@@ -23982,9 +23711,7 @@
         "Example workflows/Claudia_TemplateMatching_HADA_NADA_RADA_v08.jip"
       ],
       "nameEvidence": [
-        "Histogram plot",
-        "Python script (iterating): HADA",
-        "XY scatter plot"
+        "Python script (iterating): HADA"
       ],
       "representative": "dag-1137",
       "representativeCandidate": {
@@ -24549,9 +24276,7 @@
         "Example workflows/Delgir_06.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Find particles 2D: peroxysome based on red images",
-        "Project user directory",
         "Reduce & split hyperstack (Expression): red only"
       ],
       "representative": "dag-1189",
@@ -24948,7 +24673,6 @@
         "Example workflows/Dora_02_test_copy_V3_280426.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Set to color (RGB): Inside mask"
       ],
       "representative": "dag-1195",
@@ -25270,9 +24994,7 @@
         "AIAgentTests/03-ExampleWorkflows/Dora_02_test_copy_V3_280426.jip",
         "Example workflows/Dora_02_test_copy_V3_280426.jip"
       ],
-      "nameEvidence": [
-        "Annotate with ROI properties"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1200",
       "representativeCandidate": {
         "candidateId": "dag-1200",
@@ -25522,7 +25244,6 @@
       ],
       "nameEvidence": [
         "Apply expression per row: push channel number into table",
-        "Extract ROI statistics",
         "Split stack into 2D: remember the channel number",
         "Split table by columns: split by ROI name"
       ],
@@ -25640,9 +25361,7 @@
         "AIAgentTests/03-ExampleWorkflows/FISH_19.jip",
         "Example workflows/FISH_19.jip"
       ],
-      "nameEvidence": [
-        "XY line plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1206",
       "representativeCandidate": {
         "candidateId": "dag-1206",
@@ -25747,12 +25466,7 @@
       ],
       "nameEvidence": [
         "Annotate data with table values: annotate mean value and peak channel",
-        "Auto threshold 2D",
         "Change ROI properties: same ROI on all images",
-        "Extract image statistics (Expression): get Mean values inside the ROI",
-        "Math operation: divide by max channel value",
-        "Merge ROI lists",
-        "ROI calculator: OR operator on ROIs",
         "Reduce & split hyperstack (Expression): extract peak image",
         "Sort table rows: put MAX on top"
       ],
@@ -26240,7 +25954,6 @@
         "Example workflows/FISH_19.jip"
       ],
       "nameEvidence": [
-        "Image box",
         "Math operation"
       ],
       "representative": "dag-1221",
@@ -26539,10 +26252,7 @@
         "AIAgentTests/03-ExampleWorkflows/FindPores_DL_09.jip",
         "Example workflows/FindPores_DL_09.jip"
       ],
-      "nameEvidence": [
-        "3D ROI to mask",
-        "Filter 3D ROI by statistics"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1226",
       "representativeCandidate": {
         "candidateId": "dag-1226",
@@ -26707,6 +26417,7 @@
         "Example workflows/FindPores_DL_09.jip"
       ],
       "nameEvidence": [
+        "Extended DoF Sobel",
         "Morphological operation 2D: closing"
       ],
       "representative": "dag-1227",
@@ -26853,12 +26564,7 @@
         "AIAgentTests/03-ExampleWorkflows/FindPores_DL_09.jip",
         "Example workflows/FindPores_DL_09.jip"
       ],
-      "nameEvidence": [
-        "3D ROI to mask",
-        "Auto threshold 2D",
-        "Find particles 3D",
-        "Outline 3D ROI"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1228",
       "representativeCandidate": {
         "candidateId": "dag-1228",
@@ -27118,8 +26824,6 @@
         "Convert ROI to RGB: local threshold",
         "Extract ROI statistics: Model1&2",
         "Find particles 2D: local threshold",
-        "ImageJ Macro",
-        "Merge ROI lists",
         "Set annotations"
       ],
       "representative": "dag-1238",
@@ -27301,9 +27005,7 @@
         "AIAgentTests/03-ExampleWorkflows/Franzi_Lara_07.jip",
         "Example workflows/Franzi_Lara_07.jip"
       ],
-      "nameEvidence": [
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1266",
       "representativeCandidate": {
         "candidateId": "dag-1266",
@@ -27423,14 +27125,9 @@
         "Example workflows/Franzi_Lara_07.jip"
       ],
       "nameEvidence": [
-        "Cellpose (2.x)",
-        "Change ROI properties from expressions",
-        "Convert ROI to RGB",
-        "Extract ROI statistics",
         "Filter ROI by statistics",
         "Filter by annotation: temp limit on file number",
-        "Merge ROI lists: filtered for red spores",
-        "Split into individual ROI lists"
+        "Merge ROI lists: filtered for red spores"
       ],
       "representative": "dag-1268",
       "representativeCandidate": {
@@ -27652,7 +27349,6 @@
       "nameEvidence": [
         "Convert ROI to mask",
         "Filter ROI by statistics",
-        "Mask to ROI",
         "Red channels stats"
       ],
       "representative": "dag-1278",
@@ -28323,8 +28019,6 @@
         "Example workflows/Hessian06.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to RGB",
-        "FeatureJ Hessian",
         "Python script (iterating)"
       ],
       "representative": "dag-1294",
@@ -28538,7 +28232,6 @@
         "Set single annotation: LayerDown",
         "Set single annotation: LayerUp",
         "Set single annotation: center slice",
-        "Unique annotation: LayerDown",
         "Unique annotation: LayerUp"
       ],
       "representative": "dag-1295",
@@ -28737,11 +28430,7 @@
         "Example workflows/Lukas_CFranke_09.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Equalize hyperstack dimensions",
-        "Extract ROI 3D statistics",
         "Fast image arithmetics",
-        "Labels to 3D ROI",
         "Set 3D ROI properties"
       ],
       "representative": "dag-1336",
@@ -28919,9 +28608,7 @@
         "Example workflows/Lukas_CFranke_09.jip"
       ],
       "nameEvidence": [
-        "Equalize hyperstack dimensions",
-        "Fast image arithmetics",
-        "ImageJ Macro"
+        "Fast image arithmetics"
       ],
       "representative": "dag-1337",
       "representativeCandidate": {
@@ -29063,9 +28750,7 @@
         "Example workflows/Lukas_CFranke_09.jip"
       ],
       "nameEvidence": [
-        "Extract ROI 3D statistics",
         "Extract pairwise 3D ROI statistics",
-        "Labels to 3D ROI",
         "Python script (iterating): GREEN nearest neighbours distance",
         "Python script (iterating): GREEN-to-RED neighbors distances",
         "Python script (iterating): RED nearest neighbours distance"
@@ -29239,9 +28924,7 @@
         "AIAgentTests/03-ExampleWorkflows/Lukas_CFranke_09.jip",
         "Example workflows/Lukas_CFranke_09.jip"
       ],
-      "nameEvidence": [
-        "Filter 3D ROI by overlap"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1343",
       "representativeCandidate": {
         "candidateId": "dag-1343",
@@ -29806,9 +29489,7 @@
         "AIAgentTests/03-ExampleWorkflows/Mona_06.jip",
         "Example workflows/Mona_06.jip"
       ],
-      "nameEvidence": [
-        "Filter 2D ROI by statistics: Filter ROI by area and circularity"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1405",
       "representativeCandidate": {
         "candidateId": "dag-1405",
@@ -30134,12 +29815,10 @@
         "Example workflows/NPuptake_MovingCells_04.jip"
       ],
       "nameEvidence": [
-        "Change ROI properties",
         "Convert ROI to RGB: InF",
         "Convert ROI to RGB: OoF",
         "Convert ROI to RGB: combined",
-        "Convert ROI to RGB: no overlap OoF InF",
-        "Filter ROI by overlap"
+        "Convert ROI to RGB: no overlap OoF InF"
       ],
       "representative": "dag-1410",
       "representativeCandidate": {
@@ -30448,7 +30127,6 @@
         "Example workflows/Paul_Kerstin_CellTrackPhagocytosis_9.jip"
       ],
       "nameEvidence": [
-        "Filter ROI by overlap",
         "Filter ROI by overlap: non-phagocytosing",
         "Filter ROI by overlap: phagocytosing",
         "Merge 2D ROI lists: all macrophages",
@@ -30775,10 +30453,7 @@
         "AIAgentTests/03-ExampleWorkflows/Paul_Kerstin_CellTrack_13.jip",
         "Example workflows/Paul_Kerstin_CellTrack_13.jip"
       ],
-      "nameEvidence": [
-        "Data batch slicer",
-        "Histogram plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1446",
       "representativeCandidate": {
         "candidateId": "dag-1446",
@@ -30971,7 +30646,6 @@
       ],
       "nameEvidence": [
         "Extract ROI statistics: GREEN inside nuclei",
-        "Histogram plot",
         "ROI to Labels (Expression)",
         "Set Time as  Annotation",
         "Split & fiter by Time : SUMMED Green signal in nuclei",
@@ -31299,7 +30973,6 @@
       ],
       "nameEvidence": [
         "Extract ROI statistics: GREEN in peroxysomes",
-        "Histogram plot",
         "Set Time as  Annotation",
         "Split & fiter by Time: MEAN Green signal in peroxysomes",
         "Split & fiter by Time: SUMMED Green signal in peroxysomes"
@@ -31429,10 +31102,7 @@
         "AIAgentTests/03-ExampleWorkflows/Thomas_NPs_Hyphae_09.jip",
         "Example workflows/Thomas_NPs_Hyphae_09.jip"
       ],
-      "nameEvidence": [
-        "Convert ROI to RGB",
-        "Merge ROI lists"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1664",
       "representativeCandidate": {
         "candidateId": "dag-1664",
@@ -32297,10 +31967,7 @@
         "Paper/JIPipeExamples/Projects and cache/Confrontation Assay/project.jip",
         "test-load-zip-template/Confrontation Assay/ProtocolAndData/ConfrontationAssay.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1703",
       "representativeCandidate": {
         "candidateId": "dag-1703",
@@ -32483,8 +32150,6 @@
         "label-test2.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
-        "Auto threshold 2D",
         "Enhance glomeruli",
         "Remove small elements"
       ],
@@ -32615,15 +32280,12 @@
       ],
       "nameEvidence": [
         "Apply function to each cell",
-        "Auto threshold 2D",
-        "Extract ROI statistics",
         "Filter table",
         "Integrate table columns",
         "Merge tables",
         "Multiple parameters: global threshold subset",
         "Plot #Spots time series",
-        "Sort table",
-        "Split into connected components"
+        "Sort table"
       ],
       "representative": "dag-1724",
       "representativeCandidate": {
@@ -32783,9 +32445,6 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to RGB",
-        "Merge ROI lists",
-        "Set overlay",
         "after  = green",
         "skeleton = red"
       ],
@@ -32872,13 +32531,10 @@
       "nameEvidence": [
         "Calculate total area",
         "Frame area statistics",
-        "Merge data slots",
         "Merge table columns",
         "Set/replace table column",
         "Sort table",
-        "Split into connected components",
-        "Total area statistics",
-        "XY line plot"
+        "Total area statistics"
       ],
       "representative": "dag-1729",
       "representativeCandidate": {
@@ -33086,9 +32742,7 @@
         "blobs-advanced-test.jip",
         "heavy_empty_run.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1773",
       "representativeCandidate": {
         "candidateId": "dag-1773",
@@ -33191,9 +32845,7 @@
         "ilastik-test.jip",
         "ilastik/ilastik-tests.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1839",
       "representativeCandidate": {
         "candidateId": "dag-1839",
@@ -33693,9 +33345,7 @@
         "report-test.jip"
       ],
       "nameEvidence": [
-        "Export for collaborators",
-        "Histogram plot",
-        "Set overlay"
+        "Export for collaborators"
       ],
       "representative": "dag-1873",
       "representativeCandidate": {
@@ -33893,9 +33543,7 @@
         "memory-pressure/ruhland/project.jip",
         "report-test.jip"
       ],
-      "nameEvidence": [
-        "Measure filaments"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1874",
       "representativeCandidate": {
         "candidateId": "dag-1874",
@@ -33980,9 +33628,7 @@
         "report-test.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
         "Calculate corrected mask",
-        "Invert colors",
         "Median blur 2D"
       ],
       "representative": "dag-1875",
@@ -34233,9 +33879,7 @@
         "registration_stack.jip",
         "registration_tests.jip"
       ],
-      "nameEvidence": [
-        "TurboReg registration 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1943",
       "representativeCandidate": {
         "candidateId": "dag-1943",
@@ -34397,9 +34041,7 @@
         "scale-bar-test.jip",
         "trackmate-test.jip"
       ],
-      "nameEvidence": [
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1974",
       "representativeCandidate": {
         "candidateId": "dag-1974",
@@ -34511,9 +34153,7 @@
         "zoi_label_mapping.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Fast image arithmetics",
-        "Invert colors"
+        "Fast image arithmetics"
       ],
       "representative": "dag-2029",
       "representativeCandidate": {
@@ -34700,9 +34340,7 @@
         "AIAgentTests/03-ExampleWorkflows/AdrianFeile_VibrioOnChip_06.jip",
         "Example workflows/AdrianFeile_VibrioOnChip_06.jip"
       ],
-      "nameEvidence": [
-        "Extract ROI 3D statistics"
-      ],
+      "nameEvidence": [],
       "representative": "dag-220",
       "representativeCandidate": {
         "candidateId": "dag-220",
@@ -34798,10 +34436,7 @@
       "memberProjects": [
         "3d-test.jip"
       ],
-      "nameEvidence": [
-        "3D ROI to 3D scene",
-        "Color 3D ROI by statistics"
-      ],
+      "nameEvidence": [],
       "representative": "dag-005",
       "representativeCandidate": {
         "candidateId": "dag-005",
@@ -34959,11 +34594,7 @@
       "memberProjects": [
         "AIAgentTests/01-BasicWorkshop/JSC_2025_08_ROI_Labels_Filaments/Kidney/kidney.jip"
       ],
-      "nameEvidence": [
-        "Annotate with ROI properties",
-        "Annotations to table",
-        "XY line plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-040",
       "representativeCandidate": {
         "candidateId": "dag-040",
@@ -35044,7 +34675,6 @@
         "AIAgentTests/01-BasicWorkshop/JSC_2025_09_Misc/Kidney/kidney_dissolved_compartments.jip"
       ],
       "nameEvidence": [
-        "Histogram plot",
         "Tissue output"
       ],
       "representative": "dag-053",
@@ -35169,9 +34799,7 @@
       "memberProjects": [
         "AIAgentTests/01-BasicWorkshop/lecture_04.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-061",
       "representativeCandidate": {
         "candidateId": "dag-061",
@@ -35391,10 +35019,7 @@
       "memberProjects": [
         "Mounir_Large_Pipeline/Pipeline.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations",
-        "Annotations to table"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1693",
       "representativeCandidate": {
         "candidateId": "dag-1693",
@@ -35759,8 +35384,6 @@
         "NewFolder.1/test1/roi-labels-test.jip"
       ],
       "nameEvidence": [
-        "Color ROI by name",
-        "Convert ROI to RGB",
         "ROI to Labels (by name)",
         "Z-Project"
       ],
@@ -35937,9 +35560,7 @@
       "memberProjects": [
         "OCR/tesseract-test.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1699",
       "representativeCandidate": {
         "candidateId": "dag-1699",
@@ -36078,8 +35699,6 @@
         "Paper/JIPipeExamples/Projects and cache/Droplets/project.jip"
       ],
       "nameEvidence": [
-        "Auto threshold 2D",
-        "Extract ROI statistics",
         "Filter ROI by statistics",
         "Set to color (grayscale)"
       ],
@@ -36237,11 +35856,7 @@
       "memberProjects": [
         "Paper/JIPipeExamples/Projects and cache/Droplets/project.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Mask to ROI",
-        "Split multi-component ROI"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1713",
       "representativeCandidate": {
         "candidateId": "dag-1713",
@@ -36457,8 +36072,6 @@
         "Paper/JIPipeExamples/Projects and cache/Droplets/project.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to RGB",
-        "Mask to ROI",
         "Set to color (grayscale)"
       ],
       "representative": "dag-1714",
@@ -36570,9 +36183,7 @@
       "memberProjects": [
         "Paper/JIPipeExamples/Projects and cache/Extruded Polymer/project.jip"
       ],
-      "nameEvidence": [
-        "Image calculator 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1718",
       "representativeCandidate": {
         "candidateId": "dag-1718",
@@ -36996,8 +36607,7 @@
       "nameEvidence": [
         "Bioformats importer",
         "OME XML info",
-        "Path to annotation",
-        "Split channels"
+        "Path to annotation"
       ],
       "representative": "dag-1762",
       "representativeCandidate": {
@@ -37213,9 +36823,7 @@
       "memberProjects": [
         "Zoltan_testproject/28072020.json.jip"
       ],
-      "nameEvidence": [
-        "Collect data"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1763",
       "representativeCandidate": {
         "candidateId": "dag-1763",
@@ -37536,7 +37144,6 @@
         "chain-tunnel-test.jip"
       ],
       "nameEvidence": [
-        "A",
         "Thresholded"
       ],
       "representative": "dag-1800",
@@ -37634,9 +37241,7 @@
       "memberProjects": [
         "circle2macrophage_test.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1801",
       "representativeCandidate": {
         "candidateId": "dag-1801",
@@ -38006,7 +37611,6 @@
         "deep-learning-example.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Input files"
       ],
       "representative": "dag-1811",
@@ -38137,9 +37741,7 @@
       "memberProjects": [
         "draw-roi-nodes-test-2.jip"
       ],
-      "nameEvidence": [
-        "Draw/modify ROIs"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1815",
       "representativeCandidate": {
         "candidateId": "dag-1815",
@@ -38217,12 +37819,7 @@
       "memberProjects": [
         "draw-roi-nodes-test.jip"
       ],
-      "nameEvidence": [
-        "Draw oval ROI",
-        "Draw rectangular ROI",
-        "Draw text ROI",
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1816",
       "representativeCandidate": {
         "candidateId": "dag-1816",
@@ -38315,10 +37912,7 @@
       "memberProjects": [
         "examples/Tutorial_B15-1.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "Generate from math expression"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1822",
       "representativeCandidate": {
         "candidateId": "dag-1822",
@@ -38510,9 +38104,7 @@
       "memberProjects": [
         "filaments-test.jip"
       ],
-      "nameEvidence": [
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1826",
       "representativeCandidate": {
         "candidateId": "dag-1826",
@@ -38670,9 +38262,7 @@
       "memberProjects": [
         "jpeg_exif.jip"
       ],
-      "nameEvidence": [
-        "Jython script (simple iterating)"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1854",
       "representativeCandidate": {
         "candidateId": "dag-1854",
@@ -38765,10 +38355,7 @@
       "memberProjects": [
         "kv-histogram-test.jip"
       ],
-      "nameEvidence": [
-        "Count",
-        "XY line plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1858",
       "representativeCandidate": {
         "candidateId": "dag-1858",
@@ -38862,7 +38449,6 @@
         "kv-histogram-test.jip"
       ],
       "nameEvidence": [
-        "Generate from math expression",
         "Sum"
       ],
       "representative": "dag-1859",
@@ -39168,9 +38754,7 @@
       "memberProjects": [
         "line-segments-test.jip"
       ],
-      "nameEvidence": [
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1864",
       "representativeCandidate": {
         "candidateId": "dag-1864",
@@ -39285,10 +38869,7 @@
       "memberProjects": [
         "montage-v2-test.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations",
-        "Convert to RGB colors"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1883",
       "representativeCandidate": {
         "candidateId": "dag-1883",
@@ -39520,9 +39101,7 @@
       "memberProjects": [
         "multiplying-external-parameters-example.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1886",
       "representativeCandidate": {
         "candidateId": "dag-1886",
@@ -39807,9 +39386,7 @@
       "memberProjects": [
         "ocr_test.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1891",
       "representativeCandidate": {
         "candidateId": "dag-1891",
@@ -39953,10 +39530,7 @@
       "memberProjects": [
         "omero-test-2.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D",
-        "List OMERO images"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1892",
       "representativeCandidate": {
         "candidateId": "dag-1892",
@@ -40079,9 +39653,7 @@
       "memberProjects": [
         "omero-test-2.jip"
       ],
-      "nameEvidence": [
-        "Upload image to OMERO"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1893",
       "representativeCandidate": {
         "candidateId": "dag-1893",
@@ -40160,7 +39732,6 @@
         "omero_upload_test.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "Upload to OMERO"
       ],
       "representative": "dag-1894",
@@ -40271,9 +39842,7 @@
       "memberProjects": [
         "opencv-inpaint-test.jip"
       ],
-      "nameEvidence": [
-        "Invert colors"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1895",
       "representativeCandidate": {
         "candidateId": "dag-1895",
@@ -40442,10 +40011,7 @@
       "memberProjects": [
         "outline-roi-test.jip"
       ],
-      "nameEvidence": [
-        "Change ROI properties",
-        "Outline ROI"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1898",
       "representativeCandidate": {
         "candidateId": "dag-1898",
@@ -40553,9 +40119,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Convert filaments to labels"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1908",
       "representativeCandidate": {
         "candidateId": "dag-1908",
@@ -40805,8 +40369,6 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Bitwise operation AND",
-        "Circular Hough segmentation 2D (fast)",
         "Morphological operation 2D - Erosion"
       ],
       "representative": "dag-1911",
@@ -41082,9 +40644,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Count ROI"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1913",
       "representativeCandidate": {
         "candidateId": "dag-1913",
@@ -41195,7 +40755,6 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Image calculator 2D",
         "fungus  = green"
       ],
       "representative": "dag-1914",
@@ -41514,9 +41073,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Measure filaments"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1917",
       "representativeCandidate": {
         "candidateId": "dag-1917",
@@ -41855,10 +41412,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Merge ROI lists",
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1921",
       "representativeCandidate": {
         "candidateId": "dag-1921",
@@ -41954,7 +41508,6 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Filter ROI by overlap",
         "Filter ROI by statistics"
       ],
       "representative": "dag-1923",
@@ -42042,9 +41595,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Histogram plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1924",
       "representativeCandidate": {
         "candidateId": "dag-1924",
@@ -42267,9 +41818,7 @@
       ],
       "nameEvidence": [
         "Convert ROI to mask",
-        "Custom auto threshold 2D (32-bit) - IMPORTANT PARAMETER",
         "Filter ROI by statistics",
-        "Image calculator 2D",
         "yeast marker = red"
       ],
       "representative": "dag-1925",
@@ -42453,11 +42002,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Convert ROI to RGB",
-        "Convert filaments to labels",
-        "Draw text ROIs from table"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1928",
       "representativeCandidate": {
         "candidateId": "dag-1928",
@@ -42613,7 +42158,6 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Add path to annotations",
         "ImageJ Macro - Run AnaMorf - Batch Processor",
         "ImageJ Macro - Run AnaMorf - Macro Extensions"
       ],
@@ -42808,9 +42352,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1930",
       "representativeCandidate": {
         "candidateId": "dag-1930",
@@ -43006,9 +42548,7 @@
       "memberProjects": [
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
-      "nameEvidence": [
-        "Histogram plot"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1932",
       "representativeCandidate": {
         "candidateId": "dag-1932",
@@ -43119,9 +42659,7 @@
         "praetorius_hyphae_analysis/filamentation.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to mask",
-        "Merge ROI lists",
-        "Set overlay"
+        "Convert ROI to mask"
       ],
       "representative": "dag-1934",
       "representativeCandidate": {
@@ -43507,9 +43045,7 @@
       "memberProjects": [
         "report-test.jip"
       ],
-      "nameEvidence": [
-        "Add path to annotations"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1955",
       "representativeCandidate": {
         "candidateId": "dag-1955",
@@ -43635,9 +43171,7 @@
         "report-test.jip"
       ],
       "nameEvidence": [
-        "Export for collaborators",
-        "Histogram plot",
-        "Set overlay"
+        "Export for collaborators"
       ],
       "representative": "dag-1960",
       "representativeCandidate": {
@@ -44041,9 +43575,7 @@
       "memberProjects": [
         "runtime_test/output/JIPipe/JIPipeTestBench2651256393671601237/initial/project.jip"
       ],
-      "nameEvidence": [
-        "Make images equal 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1973",
       "representativeCandidate": {
         "candidateId": "dag-1973",
@@ -44170,7 +43702,6 @@
       ],
       "nameEvidence": [
         "B - A",
-        "Image calculator 2D",
         "x [Strength]"
       ],
       "representative": "dag-1977",
@@ -44294,9 +43825,7 @@
       "memberProjects": [
         "table-melt-test.jip"
       ],
-      "nameEvidence": [
-        "Generate from math expression"
-      ],
+      "nameEvidence": [],
       "representative": "dag-1978",
       "representativeCandidate": {
         "candidateId": "dag-1978",
@@ -44391,8 +43920,7 @@
       ],
       "nameEvidence": [
         "Generate branches",
-        "Generate skeleton",
-        "Merge table columns (supplement)"
+        "Generate skeleton"
       ],
       "representative": "dag-1980",
       "representativeCandidate": {
@@ -44576,9 +44104,7 @@
       "memberProjects": [
         "trackmate-test.jip"
       ],
-      "nameEvidence": [
-        "Convert ROI to RGB"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2004",
       "representativeCandidate": {
         "candidateId": "dag-2004",
@@ -44671,9 +44197,7 @@
       "memberProjects": [
         "trackmate-test.jip"
       ],
-      "nameEvidence": [
-        "Set overlay"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2005",
       "representativeCandidate": {
         "candidateId": "dag-2005",
@@ -44840,10 +44364,7 @@
       "memberProjects": [
         "trackmate-test.jip"
       ],
-      "nameEvidence": [
-        "Asphericity",
-        "Merge table columns (supplement)"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2007",
       "representativeCandidate": {
         "candidateId": "dag-2007",
@@ -44961,9 +44482,7 @@
       "memberProjects": [
         "tsoax_test.jip"
       ],
-      "nameEvidence": [
-        "Change filament vertex properties"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2011",
       "representativeCandidate": {
         "candidateId": "dag-2011",
@@ -45244,9 +44763,7 @@
       "memberProjects": [
         "worms_broken/Nematodes.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2020",
       "representativeCandidate": {
         "candidateId": "dag-2020",
@@ -45449,9 +44966,7 @@
       "memberProjects": [
         "zarr-tests.jip"
       ],
-      "nameEvidence": [
-        "Export OME ZARR (IJ1)"
-      ],
+      "nameEvidence": [],
       "representative": "dag-2028",
       "representativeCandidate": {
         "candidateId": "dag-2028",
@@ -45699,9 +45214,7 @@
       "memberProjects": [
         "AIAgentTests/05-Homework-JSC2025/Homework_JSC_2025/Alternative1/hyphae_single.jip"
       ],
-      "nameEvidence": [
-        "Auto threshold 2D"
-      ],
+      "nameEvidence": [],
       "representative": "dag-936",
       "representativeCandidate": {
         "candidateId": "dag-936",
@@ -45951,12 +45464,7 @@
       "memberProjects": [
         "AIAgentTests/05-Homework-JSC2025/Homework_JSC_2025/Alternative2/nematodes_unorganized.jip"
       ],
-      "nameEvidence": [
-        "Change ROI properties from expressions",
-        "Convert ROI to RGB",
-        "Merge ROI lists",
-        "Split into connected components"
-      ],
+      "nameEvidence": [],
       "representative": "dag-939",
       "representativeCandidate": {
         "candidateId": "dag-939",
@@ -46052,7 +45560,6 @@
         "AIAgentTests/05-Homework-JSC2025/Homework_JSC_2025/Alternative2/nematodes_unorganized.jip"
       ],
       "nameEvidence": [
-        "Convert ROI to RGB",
         "Make ROI ignore frame"
       ],
       "representative": "dag-940",
@@ -46274,7 +45781,7 @@
       "titleTransferredTo": []
     }
   ],
-  "generated": "2026-10-16T23:11:13Z",
+  "generated": "2026-10-19T07:56:12Z",
   "signatureGroups": 624,
   "threshold": 0.15,
   "version": 1

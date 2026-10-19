@@ -20,9 +20,11 @@ produces ``utils/taxonomy-research/dag-clusters.json``:
   lands in a titled cluster inherits the title (plan §3.1 signal 3b title
   transfer).
 * **name evidence (signals 4/5)**: named nodes (a node whose
-  ``jipipe:node:name`` differs from its registry display name) and comment
-  text attached inside the candidate are additional vocabulary for step
-  (C)'s namer.
+  ``jipipe:node:name`` differs from BOTH its current registry display name
+  AND its dominant corpus label — the 2026-10-19 audit: comparing only
+  against the registry name counted a dev-renamed type's stale old default
+  as "user naming", 29% of the old field) and comment text attached
+  inside the candidate are additional vocabulary for step (C)'s namer.
 
 Deterministic given the embeddings: the same vectors always produce the
 same clusters, in the same order. Embeddings are cached to
@@ -134,12 +136,51 @@ def canonical_text(candidate: dict) -> str:
 # Name evidence (signals 4/5)
 # --------------------------------------------------------------------------- #
 
-def collect_name_evidence(candidate: dict, registry_names=None) -> list:
+def build_corpus_label_census(candidates) -> dict:
+    """node-id -> {label: count} over the harvested candidates (the (A)
+    population). The 2026-10-19 audit: "label != registry name" as the
+    signal-4 test conflates USER renaming with node TYPES the developers
+    renamed — the type's old default differs from the current registry name
+    across the whole corpus (29% of the nameEvidence field was exactly that).
+    The census is the baseline for "what is this type's default label"
+    (dominant_label); it is rebuilt from dag-candidates.json on every (B)
+    run, so it needs no separate artifact."""
+    census = {}
+    for c in candidates:
+        for v in c["graph"]["nodes"].values():
+            nid = v.get("jipipe:node-info-id")
+            label = (v.get("jipipe:node:name") or "").strip()
+            if not nid or not label:
+                continue
+            census.setdefault(nid, {})
+            census[nid][label] = census[nid].get(label, 0) + 1
+    return census
+
+
+def dominant_label(census: dict, node_id: str):
+    """The type's de-facto default label = the most frequent label in the
+    census (lexicographic tie-break, deterministic). None when the type is
+    absent from the census. This is the registry name for un-renamed types
+    and the STALE old default for types the developers renamed — excluding
+    it (below) is what separates user naming from a rename."""
+    counts = census.get(node_id)
+    if not counts:
+        return None
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))[0][0]
+
+
+def collect_name_evidence(candidate: dict, registry_names=None,
+                          census=None) -> list:
     """Named-node evidence (signal 4): the ``jipipe:node:name`` labels that
-    differ from the node type's registry display name (a human named this
-    node — vocabulary for step (C)'s namer). Requires the registry names
-    (``registry.json``); without them there is no named-node evidence (an
-    empty label or one equal to the registry name is not evidence)."""
+    are a genuine USER choice — not the node type's default. A label is
+    excluded when it equals the type's CURRENT registry name OR its
+    DOMINANT corpus label (census): a node type the developers renamed
+    carries its stale old default across the corpus (measured 60–99% of
+    occurrences, e.g. "Add path to annotations" for
+    path-to-annotation-simple, now "Annotate with file/directory name") and
+    that is not naming evidence. Without ``registry_names`` there is no
+    evidence at all; the census is an optional refinement (a missing type in
+    the census is not excluded by the dominant rule)."""
     if not registry_names:
         return []
     out = []
@@ -148,8 +189,12 @@ def collect_name_evidence(candidate: dict, registry_names=None) -> list:
         if not label:
             continue
         reg = registry_names.get(v["jipipe:node-info-id"])
-        if reg and label != reg:
-            out.append(label)
+        if reg and label == reg:
+            continue  # the current registry name is not a user name
+        if census is not None and label == dominant_label(census,
+                                                          v["jipipe:node-info-id"]):
+            continue  # the type's (stale or current) default label
+        out.append(label)
     return sorted(set(out))
 
 
@@ -299,7 +344,8 @@ def _average_linkage_pure(vectors, threshold):
 # --------------------------------------------------------------------------- #
 
 def merge_candidates(candidates, embed, threshold=DEFAULT_THRESHOLD,
-                     registry_names=None, cache=None, cache_path=None):
+                     registry_names=None, cache=None, cache_path=None,
+                     census=None):
     """Pre-merge by signature, embed one text per signature group, cluster,
     and build the shipping-candidate records.
 
@@ -413,7 +459,8 @@ def merge_candidates(candidates, embed, threshold=DEFAULT_THRESHOLD,
             "nameEvidence": sorted(set(
                 ev for r in recs
                 for ev in collect_name_evidence_candidates(r, candidates,
-                                                           registry_names))),
+                                                           registry_names,
+                                                           census))),
             "text": canonical_text(rep_cand) if rep_cand else rep["text"],
         })
     out.sort(key=lambda m: (-m["support"], m["candidateIds"][0]))
@@ -422,7 +469,8 @@ def merge_candidates(candidates, embed, threshold=DEFAULT_THRESHOLD,
     return out
 
 
-def collect_name_evidence_candidates(sig_record, candidates, registry_names):
+def collect_name_evidence_candidates(sig_record, candidates, registry_names,
+                                     census=None):
     """Named-node evidence across a signature group's member candidates."""
     if not registry_names:
         return []
@@ -431,7 +479,7 @@ def collect_name_evidence_candidates(sig_record, candidates, registry_names):
     for cid in sig_record["candidates"]:
         c = by_id.get(cid)
         if c:
-            out.extend(collect_name_evidence(c, registry_names))
+            out.extend(collect_name_evidence(c, registry_names, census))
     return out
 
 
@@ -495,6 +543,7 @@ def main(argv=None):
     candidates = doc["candidates"]
     cache = load_cache(args.cache)
     registry_names = load_registry_names()
+    census = build_corpus_label_census(candidates)
     embedder = EndpointEmbedder(args.credentials)
     # wrap the endpoint with the disk cache
     def embed_with_cache(texts):
@@ -504,7 +553,7 @@ def main(argv=None):
         # the per-threshold re-clustering below is then purely local)
         merge_candidates(candidates, embed_with_cache,
                          threshold=1.0, registry_names=registry_names,
-                         cache=cache, cache_path=args.cache)
+                         cache=cache, cache_path=args.cache, census=census)
         save_cache(args.cache, cache)
         def cached_embed(texts):
             # all texts are cached now — fail loudly on a cache miss instead
@@ -520,7 +569,7 @@ def main(argv=None):
         for t in SWEEP:
             result = merge_candidates(candidates, cached_embed,
                                       threshold=t, registry_names=registry_names,
-                                      cache=cache)
+                                      cache=cache, census=census)
             multi = [m for m in result if len(m["candidateIds"]) > 1]
             largest = max((len(m["candidateIds"]) for m in result), default=0)
             print(f"{t:9.2f}  {len(result):8d}  {len(multi):14d}  {largest:7d}")
@@ -529,7 +578,7 @@ def main(argv=None):
     result = merge_candidates(candidates, embed_with_cache,
                               threshold=args.threshold,
                               registry_names=registry_names,
-                              cache=cache, cache_path=args.cache)
+                              cache=cache, cache_path=args.cache, census=census)
     save_cache(args.cache, cache)
     doc_out = {
         "version": 1,

@@ -258,6 +258,33 @@ class MergeTests(unittest.TestCase):
         self.assertNotIn("Import image", ev)  # equals the registry name
         self.assertNotIn("List files in folder", ev)  # registry name, not user name
 
+    def test_named_node_evidence_excludes_the_corpus_dominant_label(self):
+        # the 2026-10-19 audit: "label != registry name" conflates USER
+        # renaming with a node TYPE that the developers renamed — the type's
+        # old default differs from the current registry name across the whole
+        # corpus and is not a naming signal. A label that equals the type's
+        # DOMINANT corpus label (its de-facto default) is excluded, in
+        # addition to the current registry name.
+        c = cand("dag-001", title="A",
+                 node_ids=["renamed-type", "user-named"],
+                 names=["Old default name", "My special step"])
+        names = {"renamed-type": "New current name",
+                 "user-named": "Convert ROI to mask"}
+        census = {"renamed-type": {"Old default name": 990,
+                                   "New current name": 3},
+                  "user-named": {"Convert ROI to mask": 40}}
+        ev = MERGE.collect_name_evidence(c, registry_names=names,
+                                         census=census)
+        self.assertNotIn("Old default name", ev,
+                         "the stale default is not a naming signal")
+        self.assertIn("My special step", ev,
+                      "genuine user naming survives")
+
+    def test_dominant_label_deterministic_tie_break(self):
+        census = {"x": {"B label": 5, "A label": 5}}
+        self.assertEqual(MERGE.dominant_label(census, "x"), "A label")
+        self.assertIsNone(MERGE.dominant_label(census, "absent"))
+
     def test_named_node_evidence_requires_registry_names(self):
         c = cand("dag-001", title="A", names=["My step", "Import image", "To mask"])
         ev = MERGE.collect_name_evidence(c, registry_names=None)
