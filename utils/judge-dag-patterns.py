@@ -251,6 +251,9 @@ both, and the description must let a biologist see what it does):
   PRODUCES, using the real node functions from the nodes list (e.g. "attaches
   each ROI's area and intensity to the image"), not vague paraphrase. Lead with
   the outcome in plain terms for a biologist, then the technical specifics.
+- TERMINOLOGY: use the field's correct terms, not colloquial ones. Applying a
+  color map / LUT to render an image is "false coloring" (say "apply false
+  colors to …" / "false-color … image") — never "colorize"/"colorized".
 - name must be GENERAL (usable in another project); use the observed titles as
   inspiration but generalize them (drop project-specific terms). Empty string
   if you cannot name it generally. description: empty string when the gate is

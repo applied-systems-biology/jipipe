@@ -372,7 +372,7 @@
       "error": null,
       "functionId": "jipipe:function:images",
       "gate": "general_pattern",
-      "name": "Import, split, and colorize microscopy images",
+      "name": "Import, split, and apply false colors to microscopy images",
       "representative": "dag-1416",
       "ship": true,
       "state": {
@@ -442,7 +442,7 @@
         "description": "Takes microscopy image files from a project path, reorders stack dimensions, annotates image properties, filters for raw datasets, splits multichannel images into separate greyscale channels, and assigns color maps to selected channels.",
         "function": "images",
         "gate": "general_pattern",
-        "name": "Import, split, and colorize microscopy images"
+        "name": "Import, split, and apply false colors to microscopy images"
       }
     },
     {
@@ -3106,7 +3106,7 @@
       "error": null,
       "functionId": "jipipe:function:images",
       "gate": "general_pattern",
-      "name": "Export colorized multichannel images with scale bars",
+      "name": "Export false-color multichannel images with scale bars",
       "representative": "dag-1093",
       "ship": true,
       "state": {
@@ -3176,7 +3176,7 @@
         "description": "Takes a multichannel image, splits it into individual channels, applies a color map to each channel, blends the channels into one RGB image, copies physical pixel sizes, draws a scale bar, and exports the final image.",
         "function": "images",
         "gate": "general_pattern",
-        "name": "Export colorized multichannel images with scale bars"
+        "name": "Export false-color multichannel images with scale bars"
       }
     },
     {
@@ -12263,7 +12263,7 @@
       "error": null,
       "functionId": "jipipe:function:images",
       "gate": "general_pattern",
-      "name": "Colorized extended depth-of-focus image projection",
+      "name": "False-colored extended depth-of-focus image projection",
       "representative": "dag-1349",
       "ship": true,
       "state": {
@@ -12298,7 +12298,7 @@
         "description": "Takes an image stack, computes an extended depth-of-focus Sobel projection, applies a color map, and blends the result into a single RGB image.",
         "function": "images",
         "gate": "general_pattern",
-        "name": "Colorized extended depth-of-focus image projection"
+        "name": "False-colored extended depth-of-focus image projection"
       }
     },
     {
@@ -14729,11 +14729,11 @@
     },
     {
       "clusterId": "cluster-0225",
-      "description": "Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, and outputs a colorized RGB image.",
+      "description": "Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, outputs the result as a false-color RGB image.",
       "error": null,
       "functionId": "jipipe:function:images",
       "gate": "general_pattern",
-      "name": "Create a colorized distance map from 8-bit images",
+      "name": "Create a false-color distance map from 8-bit images",
       "representative": "dag-2029",
       "ship": true,
       "state": {
@@ -14801,10 +14801,10 @@
       },
       "support": 2,
       "verdict": {
-        "description": "Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, and outputs a colorized RGB image.",
+        "description": "Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, outputs the result as a false-color RGB image.",
         "function": "images",
         "gate": "general_pattern",
-        "name": "Create a colorized distance map from 8-bit images"
+        "name": "Create a false-color distance map from 8-bit images"
       }
     },
     {

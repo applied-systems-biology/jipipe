@@ -1,6 +1,6 @@
 # DAG Pattern Mining — Shipping Review (steps A–C′)
 
-Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-18
+Work item 1324 · branch `1324-node-taxonomy-core` · 2026-10-19
 
 This is the **manual-review gate before step (D) ships the survivors**.
 Regenerate after any re-run: `python3 utils/make-dag-review-report.py`.
@@ -85,9 +85,13 @@ want a tighter library:
 
 ## (D) hard blocker: patterns on unregistered node ids
 
-**15 shipped patterns reference a node id not in the 6.0.0 launcher
-classpath** (the corpus predates 6.0.0; some IDs were renamed, some live in
-optional plugins). The launcher guard `everyPatternGraphDeserializes` asserts
+**6 shipped patterns reference a node id not registered in the
+6.0.0 launcher** (the corpus predates 6.0.0; some IDs were renamed, some
+live in plugins the 6.0.0 distribution does not ship). Verified against the
+FULL-LAUNCHER registry dump (2026-10-19): the earlier code/test-classpath
+dump was blind to the dynamically-registered cLij2/clijx kernels — the
+real launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0, which resolved 9 of the
+former 15. The launcher guard `everyPatternGraphDeserializes` asserts
 every node id resolves, so these FAIL unless remapped or excluded in (D).
 See `dag-stale-id-plan.json` for the remap/exclude list.
 
@@ -96,21 +100,12 @@ See `dag-stale-id-plan.json` for the remap/exclude list.
 - `cluster-0318` support 1 'Batch export OME-ZARR images from folders' → ['import-ome-zarr-from-directory-as-imgplus']
 - `cluster-0242` support 1 'Detect lines in 2D images' → ['ij1-transform-tile']
 
-**Exclude or plugin-gate** (optional-plugin nodes absent from the default launcher): 12
-- `cluster-0058` support 5 'Preprocess microscopy image stacks' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0072` support 4 'Project and correct a multi-dimensional image' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0091` support 4 'Create extended depth of focus projections from microscopy images' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0103` support 4 'Create 2D/3D particle ROIs and label edge images' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ReduceLabelsToLabelEdges']
+**Exclude or plugin-gate** (optional-plugin nodes absent from the default launcher): 3
 - `cluster-0134` support 3 'Train and predict with a generative model' → ['create-jipipe2ai-generation-model', 'jipipe2ai-predict-generation', 'jipipe2ai-train-generation-model']
-- `cluster-0140` support 2 'Segment 2D images with edge projection and watershed' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0152` support 2 'Compute extended depth-of-focus projection from selected image planes' → ['clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0169` support 2 'Create filament masks from 3D image stacks' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
-- `cluster-0186` support 2 'Colorized extended depth-of-focus image projection' → ['clij:plugin:net.haesleinhuepf.clij2.plugins.ExtendedDepthOfFocusSobelProjection']
 - `cluster-0216` support 2 'Train and predict image segmentation' → ['create-jipipe2ai-segmentation-model', 'jipipe2ai-predict-image', 'jipipe2ai-train-image-model']
-- `cluster-0153` support 2 'Detect 2D particle ROIs from microscopy image stacks' → ['clij:plugin:net.haesleinhuepf.clijx.clij2wrappers.ExtendedDepthOfFocusSobelProjection']
 - `cluster-0254` support 1 'Train a deep-learning model from labeled images' → ['deep-learning-train-image-model']
 
-Shippable after remap + exclude: **253**.
+Shippable after remap + exclude: **262**.
 
 ## All shipped patterns (for review)
 
@@ -161,7 +156,7 @@ into `dag-clusters.json` / the corpus.
 
 ### images (91)
 
-- **Import, split, and colorize microscopy images** · support 26 · compartment · `cluster-0007`
+- **Import, split, and apply false colors to microscopy images** · support 26 · compartment · `cluster-0007`
   - 9 nodes / 7 edges — Bio-Formats importer -> Project user path -> Reorder dimensions -> Annotate with image properties -> Set/Edit annotations -> Filter by annotation -> Split ch…
   - Takes microscopy image files from a project path, reorders stack dimensions, annotates image properties, filters for raw datasets, splits multichannel images into separate greyscale channels, and assigns color maps to selected channels.
 - **Split multichannel images into separate channels** · support 15 · group-node · `cluster-0013`
@@ -197,7 +192,7 @@ into `dag-clusters.json` / the corpus.
 - **Create 3D masks from measured 3D ROIs** · support 6 · canvas-note-section · `cluster-0043`
   - 4 nodes / 3 edges — Split into individual IJ3D ROI lists -> Extract IJ3D ROI statistics -> Annotate data with table values -> IJ3D ROI to mask
   - Takes 3D ROI lists and an optional reference image, splits them into individual 3D ROIs, extracts 3D ROI statistics, and annotates each ROI with those values. It then converts the annotated 3D ROIs into a greyscale 3D mask image marking the pixels covered by the ROIs.
-- **Export colorized multichannel images with scale bars** · support 6 · canvas-note-section · `cluster-0045`
+- **Export false-color multichannel images with scale bars** · support 6 · canvas-note-section · `cluster-0045`
   - 9 nodes / 10 edges — Split channels -> Set LUT (color map) -> Set LUT (color map) -> Set LUT (color map) -> Blend images -> Copy physical dimensions -> Draw scale bar -> Export i…
   - Takes a multichannel image, splits it into individual channels, applies a color map to each channel, blends the channels into one RGB image, copies physical pixel sizes, draws a scale bar, and exports the final image.
 - **Import microscopy images and convert to 32-bit grayscale** · support 6 · geometric-cluster · `cluster-0049`
@@ -209,7 +204,7 @@ into `dag-clusters.json` / the corpus.
 - **Detect spots from cell segmentation 2D ROI masks** · support 5 · geometric-cluster · `cluster-0057`
   - 7 nodes / 7 edges — Split by dimension -> Filter by annotation -> Cellpose prediction (2.x) -> Convert 2D ROI to mask -> Merge 2D slices into hyperstack -> Detect spots -> Filte…
   - Produces a filtered set of spots from cell segmentation masks. It takes an image stack, selects matching slices by annotation, runs Cellpose to segment cells, converts the resulting 2D ROIs to masks, merges the masks into a stack, and detects and quality-filters spots with TrackMate.
-- **Preprocess microscopy image stacks** ⚠ unregistered id · support 5 · compartment · `cluster-0058`
+- **Preprocess microscopy image stacks** · support 5 · compartment · `cluster-0058`
   - 7 nodes / 5 edges — Bio-Formats importer -> Project user path -> Annotate with image properties -> Split by dimension -> CLIJ2 Extended Depth Of Focus Sobel Projection -> Illumi…
   - Takes microscopy image files and produces a corrected image stack by importing with Bio-Formats, annotating image properties, splitting a chosen dimension, applying an extended depth-of-focus Sobel projection, correcting 2D illumination, and merging the processed slices back into a stack.
 - **Import images and denoise with median filter** · support 4 · compartment · `cluster-0067`
@@ -218,13 +213,13 @@ into `dag-clusters.json` / the corpus.
 - **Subtract a filament mask from an image to highlight nodules** · support 4 · canvas-note-section · `cluster-0070`
   - 11 nodes / 13 edges — Invert pixel colors/values -> Morphological operation 2D -> Set to color (RGB) -> Set to value (grayscale) -> Euclidean distance transform 2D -> Set filament…
   - Takes an image and filament data, derives a binary mask from the inverted image, computes a distance transform to set each filament vertex radius, converts the filaments to a mask, and subtracts that mask from the inverted image to produce an image highlighting nodule-like structures.
-- **Project and correct a multi-dimensional image** ⚠ unregistered id · support 4 · group-node · `cluster-0072`
+- **Project and correct a multi-dimensional image** · support 4 · group-node · `cluster-0072`
   - 7 nodes / 6 edges — Group input -> Annotate with image properties -> Split by dimension -> CLIJ2 Extended Depth Of Focus Sobel Projection -> Illumination correction 2D -> Merge …
   - Takes a multi-dimensional image, splits it by a selected dimension, applies an extended depth-of-focus Sobel projection and 2D illumination correction to each part, and merges the results into a 2D image stack.
 - **Normalize and combine labeled images** · support 4 · geometric-cluster · `cluster-0085`
   - 9 nodes / 10 edges — Split & filter by annotation -> Filter by annotation (If else) -> Filter by annotation (If else) -> Divide by maximum -> Divide by maximum -> Divide by maxim…
   - Takes image data with categorical labels and separates it into branches by label. It normalizes each branch by its global maximum and applies 2D image arithmetic to produce combined or transformed normalized images.
-- **Create extended depth of focus projections from microscopy images** ⚠ unregistered id · support 4 · compartment · `cluster-0091`
+- **Create extended depth of focus projections from microscopy images** · support 4 · compartment · `cluster-0091`
   - 7 nodes / 4 edges — Bio-Formats importer -> Custom extended depth of focus (Z/C/T) -> Project user path -> Annotate with image properties -> Set/Edit annotations -> Set LUT (col…
   - Takes microscopy image files, imports them with OME metadata, adds image-property annotations, applies a color map, and produces an extended depth of focus projection by selecting the sharpest pixel along Z/C/T using a Sobel-based score.
 - **Add a ring around labeled objects and export RGB image** · support 4 · canvas-note-section · `cluster-0092`
@@ -266,7 +261,7 @@ into `dag-clusters.json` / the corpus.
 - **Tile multiple images into a grid** ⚠ unregistered id · support 3 · geometric-cluster · `cluster-0133`
   - 3 nodes / 2 edges — File list -> Import image -> Tile image
   - Takes a list of image file names, imports each file as an ImageJ image, and arranges the imported images into a single tiled composite image.
-- **Segment 2D images with edge projection and watershed** ⚠ unregistered id · support 2 · geometric-cluster · `cluster-0140`
+- **Segment 2D images with edge projection and watershed** · support 2 · geometric-cluster · `cluster-0140`
   - 12 nodes / 12 edges — CLIJ2 Extended Depth Of Focus Sobel Projection: Green -> Filter by annotation -> Filter by annotation -> Histogram-based contrast enhancer -> CLIJ2 Extended …
   - Takes annotated image channels, applies extended depth of focus Sobel projection, contrast enhancement, thresholding, and median filtering, and produces labeled 2D segments using seeded watershed.
 - **Create colored images from 2D ROIs** · support 2 · canvas-note-section · `cluster-0145`
@@ -281,7 +276,7 @@ into `dag-clusters.json` / the corpus.
 - **Import, denoise, and align microscopy images** · support 2 · geometric-cluster · `cluster-0148`
   - 10 nodes / 10 edges — Set annotation (expression) -> Set annotation (expression) -> Set annotation (expression) -> Filter by annotation (If else) -> Bio-Formats importer -> Annota…
   - Takes a list of files, tags them with annotations, and imports only those matching a filter via Bio-Formats; each image is then denoised with a 2D median filter, background-corrected with a rolling-ball algorithm, has its stack dimensions reordered (e.g., swapping depth and time), and is aligned to a reference image with TurboReg. The result is cleaned-up, aligned microscopy images annotated with their image properties.
-- **Compute extended depth-of-focus projection from selected image planes** ⚠ unregistered id · support 2 · canvas-note-section · `cluster-0152`
+- **Compute extended depth-of-focus projection from selected image planes** · support 2 · canvas-note-section · `cluster-0152`
   - 3 nodes / 2 edges — Reduce & split hyperstack (Expression) -> Reorder dimensions -> Cli Jx Extended Depth Of Focus Sobel Projection
   - Takes a multi-plane image, selects/splits planes using expressions and reorders dimensions, then applies an extended depth-of-focus Sobel projection to produce a projected image.
 - **Enhance and blend images** · support 2 · compartment · `cluster-0158`
@@ -290,7 +285,7 @@ into `dag-clusters.json` / the corpus.
 - **Load microscopy images from folders and convert to 32-bit** · support 2 · compartment · `cluster-0164`
   - 9 nodes / 7 edges — Folder list -> Set/Edit annotations -> Set/Edit annotations -> Set/Edit annotations -> Set/Edit annotations -> Set/Edit annotations -> Set/Edit annotations -…
   - Takes a list of folders, annotates each folder entry, imports microscopy image files with Bio-Formats, and converts each imported image to a 32-bit grayscale image.
-- **Create filament masks from 3D image stacks** ⚠ unregistered id · support 2 · canvas-note-section · `cluster-0169`
+- **Create filament masks from 3D image stacks** · support 2 · canvas-note-section · `cluster-0169`
   - 7 nodes / 6 edges — Reduce & split hyperstack (Expression) -> Extended DoF Sobel -> Set/Edit annotations -> Merge 2D slices into hyperstack -> Custom auto threshold 2D (16-bit) …
   - Takes a 3D image stack, projects it into 2D slices using an extended depth-of-focus Sobel projection, annotates and reassembles those slices, then thresholds, blurs, and applies morphology to produce a cleaned binary mask of filament-like structures.
 - **Composite a resliced, color-mapped image** · support 2 · geometric-cluster · `cluster-0171`
@@ -305,7 +300,7 @@ into `dag-clusters.json` / the corpus.
 - **Background-subtracted image stack** · support 2 · canvas-note-section · `cluster-0183`
   - 6 nodes / 7 edges — Run ImageJ Macro -> Illumination correction 2D -> Z-Project -> Equalize hyperstack dimensions (referenced) -> Fast image arithmetics 2D -> Illumination corre…
   - Produces a background-subtracted image stack from an input image stack by normalizing illumination, estimating a background from a Z-projection, matching dimensions, and applying image arithmetic. A final illumination correction normalizes the output.
-- **Colorized extended depth-of-focus image projection** ⚠ unregistered id · support 2 · geometric-cluster · `cluster-0186`
+- **False-colored extended depth-of-focus image projection** · support 2 · geometric-cluster · `cluster-0186`
   - 3 nodes / 2 edges — CLIJ2 Extended Depth Of Focus Sobel Projection -> Set LUT (color map) -> Blend images
   - Takes an image stack, computes an extended depth-of-focus Sobel projection, applies a color map, and blends the result into a single RGB image.
 - **Load three-channel images from folders and combine them into RGB** · support 2 · geometric-cluster · `cluster-0187`
@@ -350,9 +345,9 @@ into `dag-clusters.json` / the corpus.
 - **Import images with scale bar and 2D ROI overlay** · support 2 · geometric-cluster · `cluster-0224`
   - 5 nodes / 4 edges — File list -> Import image -> Set physical dimensions -> Draw scale bar -> Set 2D overlay
   - Takes a list of image files, imports them as ImageJ images, sets their physical dimensions, draws a scale bar, and applies a 2D ROI overlay, producing calibrated images ready for display or further analysis.
-- **Create a colorized distance map from 8-bit images** · support 2 · geometric-cluster · `cluster-0225`
+- **Create a false-color distance map from 8-bit images** · support 2 · geometric-cluster · `cluster-0225`
   - 10 nodes / 9 edges — File list -> Import image -> Auto threshold 2D (8-bit) -> Morphological operation 2D -> Invert pixel colors/values -> Euclidean distance transform 2D -> Fast…
-  - Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, and outputs a colorized RGB image.
+  - Takes image files, thresholds and morphologically cleans them, computes a Euclidean distance transform, remaps the result as labels, outputs the result as a false-color RGB image.
 - **Compare 2D auto-threshold methods** · support 1 · group-node · `cluster-0231`
   - 5 nodes / 5 edges — Group input -> Define multiple parameters -> Auto threshold 2D (8-bit) -> Create montage -> Group output
   - Takes 8-bit 2D images, applies multiple auto-thresholding methods, and produces thresholded images plus a montage for visual comparison.
@@ -515,7 +510,7 @@ into `dag-clusters.json` / the corpus.
 - **Render 2D ROIs as an RGB image** · support 4 · geometric-cluster · `cluster-0099`
   - 3 nodes / 0 edges — Convert 2D ROI to RGB -> Convert 2D ROI to RGB -> Convert 2D ROI to RGB
   - Takes a 2D ROI list and an optional reference image, and produces an RGB image in which the ROIs are drawn as colored outlines, fills, and optional labels.
-- **Create 2D/3D particle ROIs and label edge images** ⚠ unregistered id · support 4 · canvas-note-section · `cluster-0103`
+- **Create 2D/3D particle ROIs and label edge images** · support 4 · canvas-note-section · `cluster-0103`
   - 12 nodes / 11 edges — Gaussian blur 2D -> Divide by maximum -> Median filter 2D -> Histogram-based contrast enhancer -> Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2…
   - Takes an image and produces a 3D label-edge image of particles by first finding 2D particle ROIs, converting them to a mask, extracting orientation features, thresholding the orientation energy, and then finding 3D particle ROIs that are converted to labels and reduced to edges.
 - **Detect 2D particle ROIs in images** · support 3 · canvas-note-section · `cluster-0114`
@@ -542,7 +537,7 @@ into `dag-clusters.json` / the corpus.
 - **Filter and visualize 2D ROIs** · support 2 · geometric-cluster · `cluster-0142`
   - 11 nodes / 12 edges — Filter by annotation -> Filter 2D ROI by statistics -> Set 2D ROI properties -> Convert 2D ROI to RGB -> Convert 2D ROI to RGB -> Convert only 2D ROI to RGB …
   - Produces RGB images and a statistics table for filtered 2D ROIs by taking 2D ROI data, keeping items that match annotation and measurement conditions, setting ROI display properties, and rendering the remaining ROIs.
-- **Detect 2D particle ROIs from microscopy image stacks** ⚠ unregistered id · support 2 · compartment · `cluster-0153`
+- **Detect 2D particle ROIs from microscopy image stacks** · support 2 · compartment · `cluster-0153`
   - 11 nodes / 9 edges — Bio-Formats importer -> Project user path -> Annotate with image properties -> Median filter 2D -> Reduce & split hyperstack (Expression) -> Reorder dimensio…
   - Takes imported microscopy image stacks, applies median filtering and dimension reduction/projection to create 2D extended-depth-of-focus images, then auto-thresholds them and extracts 2D particle ROIs with measurements.
 - **Extract 2D particle ROIs from images** · support 2 · canvas-note-section · `cluster-0156`
@@ -1100,7 +1095,7 @@ verified to type-check against the real node slots.
 
 #### rois (17)
 
-- **Denoised 3D cell ROIs** — extends “Import, split, and colorize microscopy images” (`cluster-0007`) · 2n/1e
+- **Denoised 3D cell ROIs** — extends “Import, split, and apply false colors to microscopy images” (`cluster-0007`) · 2n/1e
   - Takes a microscopy image, applies Cellpose restoration to reduce noise or blur, then segments cells to produce 3D ROIs.
 - **Convert 2D ROI to a labeled mask** — extends “Detect 2D particle ROIs from images” (`cluster-0024`) · 2n/1e
   - Takes 2D ROI data, converts it to filaments, and then rasterizes it into a labels image where each ROI is assigned a label. This produces a labeled mask that can be used for downstream image analysis.
@@ -1332,7 +1327,7 @@ verified to type-check against the real node slots.
 ### what-next rejected by the gate (false-negative check)
 
 - “Color overlapping 2D ROIs by image statistics and export table” — extends “Filter 2D ROIs by overlap” · 2n — gate=noise
-- “Segment cells/nuclei and export label image for Ilastik” — extends “Import, split, and colorize microscopy images” · 2n — gate=noise
+- “Segment cells/nuclei and export label image for Ilastik” — extends “Import, split, and apply false colors to microscopy images” · 2n — gate=noise
 - “Split annotated data by rule and export a table” — extends “Add computed annotations to data” · 2n — gate=noise
 - “Count 2D ROIs and annotate data” — extends “2D ROI overlap counts and overlays” · 3n — gate=noise
 - “Cellpose 3.x 2D ROI measurements” — extends “Segment images with Cellpose and render 2D ROIs” · 2n — gate=noise
@@ -1349,7 +1344,7 @@ verified to type-check against the real node slots.
 - “...” — extends “Import and scale 2D images” · 3n — gate=noise
 - “Label connected components in a 3D mask and export HDF5” — extends “Export 3D mask as a 3D mesh” · 2n — gate=noise
 - “Annotate data with pixel histogram measurements and image properties” — extends “2D ROI measurement histogram montage” · 3n — gate=noise
-- “Colorized, cleaned, and inverted RGB image” — extends “Quick RGB preview of 2D ROIs on images” · 3n — gate=noise
+- “False-colored, cleaned, and inverted RGB image” — extends “Quick RGB preview of 2D ROIs on images” · 3n — gate=noise
 - “Measure corrected image and annotate data” — extends “Background-subtracted image stack” · 2n — gate=noise
 - “Convert Cellpose 2D ROIs to filament labels” — extends “Denoise and segment cells into 2D ROIs” · 3n — gate=noise
 - “Assign unique IDs and split bead and sample data by label” — extends “Import images and attach metadata” · 2n — gate=noise

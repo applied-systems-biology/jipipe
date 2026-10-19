@@ -12373,7 +12373,7 @@
    "provenance": {
     "mechanism": "what-next",
     "derivedFrom": "cluster-0173",
-    "draftName": "Colorized, cleaned, and inverted RGB image",
+    "draftName": "False-colored, cleaned, and inverted RGB image",
     "draftDescription": "Takes a greyscale image, converts it to RGB using a LUT, smooths it with a median filter, and inverts colors for a dark-background display."
    },
    "state": {

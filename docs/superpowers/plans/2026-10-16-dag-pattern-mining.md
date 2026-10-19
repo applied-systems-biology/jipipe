@@ -178,6 +178,22 @@ template's do. Contract for the harvest + generator:
   from the registry name, not the mined label. (Ruled 2026-10-18 after the
   user flagged renamed nodes; applied to the linear 64 in the (93)-era
   generator commit, to apply to all 407 DAG patterns in this step.)
+- **Registry oracle: the FULL booted launcher, not a code dump (ruled
+  2026-10-19).** The (D) guard `everyPatternGraphDeserializes` resolves node
+  ids against the *running* launcher's registry — and cLij2/clijx kernel
+  nodes register **dynamically** by scanning the cLij jars actually loaded
+  (`CLIJPlugin.registerAlgorithms` → `service.getPluginsOfType(CLIJMacroPlugin.class)`,
+  id = `"clij:" + pluginInfo.getIdentifier()`). A code/test-classpath dump
+  cannot see them: the repo poms pin cLij2 2.3.0.6 (363 kernels) while the
+  6.0.0 prepackaged launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0
+  (561 more kernel nodes). The first (D) blocker computed against the
+  code-dump `registry.json` (1510 nodes) wrongly listed 12 "exclude"
+  patterns; the full-launcher re-dump (2072 nodes, clean superset, 0
+  removed) resolves 9 of them, leaving **3 renamable + 3 exclude = 6**
+  (the 3 excludes are jipipe2ai/deep-learning — a plugin the 6.0.0
+  distribution does not ship at all). `registry.json` was regenerated from a
+  booted launcher (all 26 plugins + the distribution's cLij jars); the (D)
+  generator must treat it — never a fresh code dump — as the id oracle.
 
 ## 4. First patterns to land (acceptance bar)
 
