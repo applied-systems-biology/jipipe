@@ -38,9 +38,11 @@ import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -69,9 +71,32 @@ class TemplateManagementControllerTest {
     /** The plugin (System-scope) templates this test registers via addFromPlugin, removed in {@link #cleanup()}. */
     private static final List<JIPipeNodeTemplate> addedPlugin = new ArrayList<>();
 
+    /**
+     * Throwaway base for the JIPipe user dir. {@link #boot()} points the shared
+     * singleton's {@code overrideUserDirBase} here so every global-template
+     * file this test writes lands in a temp dir, NEVER the real user store
+     * (~/.local/share/JIPipe/profiles/&#60;v&#62;/node-templates/). Pre-hermetic,
+     * the stub templates leaked there: the in-memory cleanup removed them from
+     * the list, but {@code removeFromGlobal}'s value-keyed file-map lookup
+     * misses once a template's graph has been re-serialized (its {@code data}
+     * field — part of the map key's hash — changes), orphaning the on-disk
+     * file. Each orphan then made every later JVM print
+     * "Unable to find node type ... template-mgmt-ctrl-test:stub-node" at boot.
+     * {@link #cleanup()} restores the override and deletes the temp dir.
+     */
+    private static Path tempUserDirBase;
+
     @BeforeAll
-    static void boot() {
+    static void boot() throws Exception {
+        // Hermeticize the global store (see tempUserDirBase javadoc): redirect
+        // the user dir to a temp base BEFORE any template is added.
+        tempUserDirBase = Files.createTempDirectory("jipipe-tmpl-ctrl-test");
         JIPipe.ensureInstance();
+        JIPipe.getInstance().getInitializationSettings().setOverrideUserDirBase(tempUserDirBase);
+        // Re-point the in-memory store + file map at the (empty) temp dir so a
+        // real-dir template loaded by an earlier boot cannot linger in memory.
+        JIPipe.getNodeTemplates().reloadGlobalTemplates(JIPipeProgressInfo.SILENT);
+
         // A namespaced stub node so the template graphs can be built from the
         // live registry without depending on which bundled core plugins booted.
         JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
@@ -82,11 +107,9 @@ class TemplateManagementControllerTest {
 
     @AfterAll
     static void cleanup() {
-        // Remove any templates this test added to the shared global store (both
-        // user-owned and plugin/System), so the store is left as we found it,
-        // and do not leak the stub into the shared registry. (removeFromGlobal
-        // matches by value, so a plugin template and its value-equal user copy
-        // are each removed by their tracked reference.)
+        // Remove any templates this test added to the (temp) global store, so
+        // the in-memory store is left as we found it; do not leak the stub into
+        // the shared registry either.
         for (JIPipeNodeTemplate t : addedGlobal) {
             JIPipe.getNodeTemplates().removeFromGlobal(t);
         }
@@ -94,6 +117,30 @@ class TemplateManagementControllerTest {
             JIPipe.getNodeTemplates().removeFromGlobal(t);
         }
         JIPipe.getNodes().unregister(STUB_ID);
+        // Restore the shared singleton's user-dir override so no later test in
+        // this JVM is silently redirected, then drop the temp base.
+        if (JIPipe.getInstance() != null) {
+            JIPipe.getInstance().getInitializationSettings().setOverrideUserDirBase(null);
+        }
+        deleteRecursivelyQuietly(tempUserDirBase);
+    }
+
+    /** Best-effort recursive delete of the temp user-dir base. */
+    private static void deleteRecursivelyQuietly(Path root) {
+        if (root == null) {
+            return;
+        }
+        try (var stream = Files.walk(root)) {
+            stream.sorted(Comparator.reverseOrder()).forEach(p -> {
+                try {
+                    Files.deleteIfExists(p);
+                } catch (IOException ignored) {
+                    // best-effort temp cleanup
+                }
+            });
+        } catch (IOException ignored) {
+            // temp dir may already be gone
+        }
     }
 
     // ------------------------------------------------------------------

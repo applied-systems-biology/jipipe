@@ -2,9 +2,12 @@
 """Generate the DAG system-template resources + sidecar entries (step D,
 work item 1324).
 
-Companion to generate-system-template-metadata.py, which owns the 64
-LINEAR (node-sequence) patterns from the 185 research artifacts. This
-script ships the DAG patterns mined/derived by the taxonomy-research
+Companion to generate-system-template-metadata.py, which owns the
+LINEAR (node-sequence) patterns from the 185 research artifacts. Option C
+curation (ruling 2026-19) ships only the 24 genuinely-linear-only workflows
+(outcome names, no chain separator); the 32 node+edge sub-paths of already-
+shipped DAG patterns and the 8 plumbing (comment/group) patterns are dropped.
+This script ships the DAG patterns mined/derived by the taxonomy-research
 pipeline:
 
   * 262 MINED patterns  — dag-judgments.json (ship=true), minus the 3
@@ -51,7 +54,7 @@ EXPECTED_MINED_SHIPPED = 265
 EXPECTED_MINED_EXCLUDED = 3
 EXPECTED_MINED_SHIP = 262          # 265 - 3 excludes (the 3 remaps ship)
 EXPECTED_DERIVED_SHIP = 160        # 26 twins + 134 what-next
-EXPECTED_LINEAR = 64
+EXPECTED_LINEAR = 24  # Option C keep-set (was 64; 32 sub-path + 8 plumbing dropped)
 EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 422
 
 # Stale-id remaps (dag-stale-id-plan.json "renamable", successors verified

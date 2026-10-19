@@ -1134,7 +1134,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 entryActionsMap(selected, pinned));
             if (popupMenu.getComponentCount() > 0) {
                 popupMenu.revalidate();
-                popupMenu.show(tree, e.getX(), e.getY());
+                // The event coords are relative to the inner JTree (the listener
+                // is attached to tree.getTree()), so the popup invoker MUST be the
+                // JTree, not the NodeBrowserTreeController panel that wraps it.
+                // JPopupMenu.show() resolves (x,y) against the invoker's origin;
+                // using the panel offsets the menu by the tree's on-screen
+                // position inside its scrollpane (which grows with scroll), so
+                // the lower the clicked entry, the further below the cursor the
+                // menu landed.
+                popupMenu.show(tree.getTree(), e.getX(), e.getY());
             }
             return;
         }
@@ -1146,7 +1154,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         initializeAddDataSourceMenu(popupMenu);
         if (popupMenu.getComponentCount() > 0) {
             popupMenu.revalidate();
-            popupMenu.show(tree, e.getX(), e.getY());
+            // Invoker = the JTree (see the node-leaf branch above): the event
+            // coords are tree-relative, so the panel would offset the menu.
+            popupMenu.show(tree.getTree(), e.getX(), e.getY());
         }
     }
 

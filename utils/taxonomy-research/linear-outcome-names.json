@@ -1,0 +1,29 @@
+{
+  "_comment": "Option C curation (ruling 2026-19: template NAME = what the workflow does, no chain separator / no arrow of any kind; the mechanism stays in the description). Of the 64 linear (node-sequence) patterns, 32 are node+edge sub-paths of already-shipped DAG patterns (which carry the good outcome names) and 8 contain plumbing nodes (jipipe:comment / node-group) — both excluded. The 24 survivors below are the genuinely linear-only workflows, each given an outcome name in the DAG naming style. The linear generator (generate-system-template-metadata.py) reads this file: the keep-set is enforced and the name is OVERRIDDEN with the outcome name (the mined chain name is no longer shipped). Keys are the shipped graph-file stems (== sidecar keys).",
+  "names": {
+    "annotation-sandwich-import-file-list-path-to-annotation-simple-other": "Import a Cellpose model from a file list",
+    "annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other": "Import images and split data randomly",
+    "chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb": "Segment cells and render filtered 2D ROIs",
+    "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": "Load 2D ROIs from a folder",
+    "chain-3-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d": "Clean masks and detect 2D particles",
+    "chain-3-ij1-morph-operation2d-annotate-with-data-distribute-data": "Morphologically clean and randomly split data",
+    "chain-3-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": "Detect 2D particles and render them in RGB",
+    "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": "Convert 2D ROIs to cleaned masks and measure them",
+    "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": "Import 2D ROIs and convert them to masks",
+    "chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": "Load images from a filtered file list",
+    "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": "Load 2D ROIs from a folder and convert them to masks",
+    "chain-4-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": "Load images from a filtered folder",
+    "chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": "Clean masks, detect 2D particles, and render them",
+    "chain-4-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": "Convert 2D ROIs to masks, clean, measure, and split the data",
+    "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": "Import 2D ROIs, clean the masks, and measure",
+    "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": "Load 2D ROIs from a filtered file list",
+    "chain-4-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": "Import 2D ROIs and clean the resulting masks",
+    "chain-5-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": "Load 2D ROIs from a folder and clean the masks",
+    "chain-5-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files": "Recursively list and filter files from subfolders",
+    "chain-5-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": "Import 2D ROIs, clean, measure, and split the data",
+    "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": "Load 2D ROIs from a filtered folder and convert to masks",
+    "chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": "List, filter, and load images from a folder",
+    "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": "Import 2D ROIs, clean and measure the masks",
+    "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": "Load 2D ROIs from a filtered folder"
+  }
+}

@@ -3,385 +3,145 @@
     "description": "Sequence: File list → Annotate with file/directory name → Import Cellpose model from file.<br>Wiring: File list.Filenames → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import Cellpose model from file.Input.",
     "file": "annotation-sandwich-import-file-list-path-to-annotation-simple-other.json",
     "functionId": "jipipe:function:annotations",
-    "name": "File list -> Annotate with file/directory name -> Import Cellpose model from file"
-  },
-  "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-other": {
-    "description": "Sequence: Bio-Formats importer → Annotate with image properties → Split by dimension.<br>Wiring: Annotate with image properties.Annotated image → Split by dimension.Input; Bio-Formats importer.Output → Annotate with image properties.Image.",
-    "file": "annotation-sandwich-import-imagej-bioformats-image-properties-to-annotation-other.json",
-    "functionId": "jipipe:function:images",
-    "name": "Bio-Formats importer -> Annotate with image properties -> Split by dimension"
+    "name": "Import a Cellpose model from a file list"
   },
   "annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other": {
     "description": "Sequence: Import image → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Import image.Image → Annotate with data.Input.",
     "file": "annotation-sandwich-import-imagej-imgplus-from-file-annotate-with-data-other.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Import image -> Annotate with data -> Split data randomly (percentage)"
+    "name": "Import images and split data randomly"
   },
   "chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb": {
     "description": "Sequence: Cellpose segmentation (2.x) → Filter 2D ROI by statistics → Convert 2D ROI to RGB.<br>Wiring: Cellpose segmentation (2.x).ROI → Filter 2D ROI by statistics.ROI; Filter 2D ROI by statistics.Output → Convert 2D ROI to RGB.ROI.",
     "file": "chain-3-cellpose-inference-2-x-ij1-roi-filter-statistics-ij1-roi-to-rgb.json",
     "functionId": "jipipe:function:rois",
-    "name": "Cellpose segmentation (2.x) -> Filter 2D ROI by statistics -> Convert 2D ROI to RGB"
-  },
-  "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
-    "description": "Sequence: List files → Annotate with file/directory name → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import image.Files.",
-    "file": "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
-    "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Import image"
+    "name": "Segment cells and render filtered 2D ROIs"
   },
   "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
     "description": "Sequence: List files → Annotate with file/directory name → Import ROI.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Import ROI"
-  },
-  "chain-3-folder-list-files-path-to-annotation-simple-path-filter": {
-    "description": "Sequence: List files → Annotate with file/directory name → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-3-folder-list-files-path-to-annotation-simple-path-filter.json",
-    "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Filter paths"
-  },
-  "chain-3-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders.",
-    "file": "chain-3-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> List files"
-  },
-  "chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → Filter paths.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-3-folder-list-subfolders-path-to-annotation-simple-path-filter.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> Filter paths"
+    "name": "Load 2D ROIs from a folder"
   },
   "chain-3-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d": {
     "description": "Sequence: Morphological hole filling 2D → Morphological operation 2D → Find particles 2D.<br>Wiring: Morphological hole filling 2D.Output → Morphological operation 2D.Input; Morphological operation 2D.Output → Find particles 2D.Mask.",
     "file": "chain-3-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d.json",
     "functionId": "jipipe:function:images",
-    "name": "Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D"
+    "name": "Clean masks and detect 2D particles"
   },
   "chain-3-ij1-morph-operation2d-annotate-with-data-distribute-data": {
     "description": "Sequence: Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation.",
     "file": "chain-3-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
+    "name": "Morphologically clean and randomly split data"
   },
   "chain-3-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
     "description": "Sequence: Morphological operation 2D → Find particles 2D → Convert 2D ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert 2D ROI to RGB.ROI; Morphological operation 2D.Output → Find particles 2D.Mask.",
     "file": "chain-3-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
     "functionId": "jipipe:function:images",
-    "name": "Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB"
+    "name": "Detect 2D particles and render them in RGB"
   },
   "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
     "description": "Sequence: Convert 2D ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert 2D ROI to mask.Output → Morphological operation 2D.Input.",
     "file": "chain-3-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
-  },
-  "chain-3-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
-    "description": "Sequence: Auto threshold 2D (8-bit) → Find particles 2D → Convert 2D ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert 2D ROI to RGB.ROI; Auto threshold 2D (8-bit).Output → Find particles 2D.Mask.",
-    "file": "chain-3-ij1-threshold-auto2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
-    "functionId": "jipipe:function:images",
-    "name": "Auto threshold 2D (8-bit) -> Find particles 2D -> Convert 2D ROI to RGB"
-  },
-  "chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d": {
-    "description": "Sequence: Auto threshold 2D (8-bit) → Morphological operation 2D → Morphological hole filling 2D.<br>Wiring: Morphological operation 2D.Output → Morphological hole filling 2D.Input; Auto threshold 2D (8-bit).Output → Morphological operation 2D.Input.",
-    "file": "chain-3-ij1-threshold-auto2d-ij1-morph-operation2d-ij1-morph-binary-fillholes2d.json",
-    "functionId": "jipipe:function:images",
-    "name": "Auto threshold 2D (8-bit) -> Morphological operation 2D -> Morphological hole filling 2D"
-  },
-  "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions": {
-    "description": "Sequence: Set IJ3D ROI properties → Convert IJ3D ROI to RGB → Copy physical dimensions.<br>Wiring: Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Convert IJ3D ROI to RGB.Output → Copy physical dimensions.Target.",
-    "file": "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-calibration-copy-physical-dimensions.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Copy physical dimensions"
-  },
-  "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images": {
-    "description": "Sequence: Set IJ3D ROI properties → Convert IJ3D ROI to RGB → Blend images.<br>Wiring: Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Convert IJ3D ROI to RGB.Output → Blend images.Magenta.",
-    "file": "chain-3-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images"
-  },
-  "chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
-    "description": "Sequence: Convert IJ3D ROI to RGB → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Convert IJ3D ROI to RGB.Output → Blend images.Magenta.",
-    "file": "chain-3-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
-    "functionId": "jipipe:function:images",
-    "name": "Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions"
-  },
-  "chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb": {
-    "description": "Sequence: Filter IJ3D ROI by overlap (old) → Set IJ3D ROI properties → Convert IJ3D ROI to RGB.<br>Wiring: Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Filter IJ3D ROI by overlap (old).ROI 2 → Set IJ3D ROI properties.Input.",
-    "file": "chain-3-ij3d-roi-filter-by-overlap-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Filter IJ3D ROI by overlap (old) -> Set IJ3D ROI properties -> Convert IJ3D ROI to RGB"
-  },
-  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics": {
-    "description": "Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Filter 2D ROI by statistics.<br>Wiring: Cellpose segmentation (3.x).ROI → Filter 2D ROI by statistics.ROI; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
-    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-filter-statistics.json",
-    "functionId": "jipipe:function:machine-learning",
-    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Filter 2D ROI by statistics"
-  },
-  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-mask": {
-    "description": "Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Convert 2D ROI to mask.<br>Wiring: Cellpose segmentation (3.x).Probabilities → Convert 2D ROI to mask.Image; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
-    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-mask.json",
-    "functionId": "jipipe:function:machine-learning",
-    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to mask"
-  },
-  "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb": {
-    "description": "Sequence: Pretrained Cellpose 3.x segmentation model → Cellpose segmentation (3.x) → Convert 2D ROI to RGB.<br>Wiring: Cellpose segmentation (3.x).ROI → Convert 2D ROI to RGB.ROI; Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model.",
-    "file": "chain-3-import-cellpose-3-x-pretrained-segmentation-model-cellpose-segmentation-inference-3-x-ij1-roi-to-rgb.json",
-    "functionId": "jipipe:function:machine-learning",
-    "name": "Pretrained Cellpose 3.x segmentation model -> Cellpose segmentation (3.x) -> Convert 2D ROI to RGB"
-  },
-  "chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple": {
-    "description": "Sequence: Folder list → List subfolders → Annotate with file/directory name.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Folder list.Folder paths → List subfolders.Folders.",
-    "file": "chain-3-import-folder-list-folder-list-subfolders-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "Folder list -> List subfolders -> Annotate with file/directory name"
-  },
-  "chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
-    "description": "Sequence: Import ROI → Convert 2D ROI to mask → Morphological operation 2D.<br>Wiring: Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI.",
-    "file": "chain-3-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
-    "functionId": "jipipe:function:data",
-    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
-  },
-  "chain-3-jipipe-comment-node-group-import-imagej-bioformats": {
-    "description": "Sequence: Comment → Group → Bio-Formats importer.<br>Wiring: Comment.Comment → Group.Input folder; Group.Annotated paths → Bio-Formats importer.Input.",
-    "file": "chain-3-jipipe-comment-node-group-import-imagej-bioformats.json",
-    "functionId": "jipipe:function:graph",
-    "name": "Comment -> Group -> Bio-Formats importer"
-  },
-  "chain-3-jipipe-comment-path-to-annotation-simple-folder-list-subfolders": {
-    "description": "Sequence: Comment → Annotate with file/directory name → List subfolders.<br>Wiring: Comment.Comment → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-3-jipipe-comment-path-to-annotation-simple-folder-list-subfolders.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Comment -> Annotate with file/directory name -> List subfolders"
-  },
-  "chain-3-node-group-import-imagej-bioformats-image-properties-to-annotation": {
-    "description": "Sequence: Group → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Group.Annotated paths → Bio-Formats importer.Input.",
-    "file": "chain-3-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Group -> Bio-Formats importer -> Annotate with image properties"
-  },
-  "chain-3-path-filter-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: Filter paths → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders.",
-    "file": "chain-3-path-filter-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "Filter paths -> List files -> Annotate with file/directory name"
-  },
-  "chain-3-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: Annotate with file/directory name → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders.",
-    "file": "chain-3-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name"
-  },
-  "chain-3-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple": {
-    "description": "Sequence: Annotate with file/directory name → List subfolders → Annotate with file/directory name.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-3-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name"
+    "name": "Convert 2D ROIs to cleaned masks and measure them"
   },
   "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
     "description": "Sequence: Annotate with file/directory name → Import ROI → Convert 2D ROI to mask.<br>Wiring: Import ROI.Output → Convert 2D ROI to mask.ROI; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-3-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
-  },
-  "chain-3-path-to-annotation-simple-path-filter-folder-list-files": {
-    "description": "Sequence: Annotate with file/directory name → Filter paths → List files.<br>Wiring: Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-3-path-to-annotation-simple-path-filter-folder-list-files.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> Filter paths -> List files"
+    "name": "Import 2D ROIs and convert them to masks"
   },
   "chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
     "description": "Sequence: Annotate with file/directory name → Filter paths → Import image.<br>Wiring: Filter paths.Output → Import image.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
     "file": "chain-3-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> Filter paths -> Import image"
-  },
-  "chain-3-project-user-directory-node-group-import-imagej-bioformats": {
-    "description": "Sequence: Project user path → Group → Bio-Formats importer.<br>Wiring: Group.Annotated paths → Bio-Formats importer.Input; Project user path.Output → Group.Input folder.",
-    "file": "chain-3-project-user-directory-node-group-import-imagej-bioformats.json",
-    "functionId": "jipipe:function:data",
-    "name": "Project user path -> Group -> Bio-Formats importer"
+    "name": "Load images from a filtered file list"
   },
   "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
     "description": "Sequence: List files → Annotate with file/directory name → Import ROI → Convert 2D ROI to mask.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Import ROI.Output → Convert 2D ROI to mask.ROI; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-4-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
     "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
+    "name": "Load 2D ROIs from a folder and convert them to masks"
   },
   "chain-4-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
     "description": "Sequence: List files → Annotate with file/directory name → Filter paths → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → Import image.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
     "file": "chain-4-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Filter paths -> Import image"
-  },
-  "chain-4-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders.",
-    "file": "chain-4-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name"
-  },
-  "chain-4-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → Filter paths → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-4-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> Filter paths -> List files"
+    "name": "Load images from a filtered folder"
   },
   "chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb": {
     "description": "Sequence: Morphological hole filling 2D → Morphological operation 2D → Find particles 2D → Convert 2D ROI to RGB.<br>Wiring: Find particles 2D.ROI → Convert 2D ROI to RGB.ROI; Morphological hole filling 2D.Output → Morphological operation 2D.Input; Morphological operation 2D.Output → Find particles 2D.Mask.",
     "file": "chain-4-ij1-morph-binary-fillholes2d-ij1-morph-operation2d-ij1-analyze-find-particles2d-ij1-roi-to-rgb.json",
     "functionId": "jipipe:function:images",
-    "name": "Morphological hole filling 2D -> Morphological operation 2D -> Find particles 2D -> Convert 2D ROI to RGB"
+    "name": "Clean masks, detect 2D particles, and render them"
   },
   "chain-4-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": {
     "description": "Sequence: Convert 2D ROI to mask → Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation; Convert 2D ROI to mask.Output → Morphological operation 2D.Input.",
     "file": "chain-4-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
-  },
-  "chain-4-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions": {
-    "description": "Sequence: Set IJ3D ROI properties → Convert IJ3D ROI to RGB → Blend images → Copy physical dimensions.<br>Wiring: Blend images.Output → Copy physical dimensions.Target; Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Convert IJ3D ROI to RGB.Output → Blend images.Magenta.",
-    "file": "chain-4-ij3d-roi-change-properties-ij3d-roi-convert-to-rgb-ij1-color-blend-images-ij1-calibration-copy-physical-dimensions.json",
-    "functionId": "jipipe:function:images",
-    "name": "Set IJ3D ROI properties -> Convert IJ3D ROI to RGB -> Blend images -> Copy physical dimensions"
-  },
-  "chain-4-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter": {
-    "description": "Sequence: Folder list → List subfolders → Annotate with file/directory name → Filter paths.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Folder list.Folder paths → List subfolders.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-4-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter.json",
-    "functionId": "jipipe:function:data",
-    "name": "Folder list -> List subfolders -> Annotate with file/directory name -> Filter paths"
+    "name": "Convert 2D ROIs to masks, clean, measure, and split the data"
   },
   "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
     "description": "Sequence: Import ROI → Convert 2D ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI.",
     "file": "chain-4-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
-  },
-  "chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation": {
-    "description": "Sequence: Comment → Group → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Comment.Comment → Group.Input folder; Group.Annotated paths → Bio-Formats importer.Input.",
-    "file": "chain-4-jipipe-comment-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
-    "functionId": "jipipe:function:graph",
-    "name": "Comment -> Group -> Bio-Formats importer -> Annotate with image properties"
-  },
-  "chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple": {
-    "description": "Sequence: Comment → Annotate with file/directory name → List subfolders → Annotate with file/directory name.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Comment.Comment → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-4-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name"
-  },
-  "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
-    "description": "Sequence: Filter paths → List files → Annotate with file/directory name → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Import image.Files.",
-    "file": "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
-    "functionId": "jipipe:function:data",
-    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import image"
+    "name": "Import 2D ROIs, clean the masks, and measure"
   },
   "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
     "description": "Sequence: Filter paths → List files → Annotate with file/directory name → Import ROI.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-4-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import ROI"
-  },
-  "chain-4-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter": {
-    "description": "Sequence: Annotate with file/directory name → List files → Annotate with file/directory name → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-4-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths"
-  },
-  "chain-4-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
-    "description": "Sequence: Annotate with file/directory name → List subfolders → Annotate with file/directory name → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-4-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files"
+    "name": "Load 2D ROIs from a filtered file list"
   },
   "chain-4-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
     "description": "Sequence: Annotate with file/directory name → Import ROI → Convert 2D ROI to mask → Morphological operation 2D.<br>Wiring: Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-4-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
-  },
-  "chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: Annotate with file/directory name → Filter paths → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-4-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name"
-  },
-  "chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation": {
-    "description": "Sequence: Project user path → Group → Bio-Formats importer → Annotate with image properties.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Group.Annotated paths → Bio-Formats importer.Input; Project user path.Output → Group.Input folder.",
-    "file": "chain-4-project-user-directory-node-group-import-imagej-bioformats-image-properties-to-annotation.json",
-    "functionId": "jipipe:function:data",
-    "name": "Project user path -> Group -> Bio-Formats importer -> Annotate with image properties"
+    "name": "Import 2D ROIs and clean the resulting masks"
   },
   "chain-5-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d": {
     "description": "Sequence: List files → Annotate with file/directory name → Import ROI → Convert 2D ROI to mask → Morphological operation 2D.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-5-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d.json",
     "functionId": "jipipe:function:data",
-    "name": "List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D"
-  },
-  "chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → List files → Annotate with file/directory name → Filter paths.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-5-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths"
-  },
-  "chain-5-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: List subfolders → Annotate with file/directory name → Filter paths → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; List subfolders.Subfolders → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-5-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "List subfolders -> Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name"
+    "name": "Load 2D ROIs from a folder and clean the masks"
   },
   "chain-5-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files": {
     "description": "Sequence: Folder list → List subfolders → Annotate with file/directory name → Filter paths → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Folder list.Folder paths → List subfolders.Folders; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
     "file": "chain-5-import-folder-list-folder-list-subfolders-path-to-annotation-simple-path-filter-folder-list-files.json",
     "functionId": "jipipe:function:data",
-    "name": "Folder list -> List subfolders -> Annotate with file/directory name -> Filter paths -> List files"
+    "name": "Recursively list and filter files from subfolders"
   },
   "chain-5-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data": {
     "description": "Sequence: Import ROI → Convert 2D ROI to mask → Morphological operation 2D → Annotate with data → Split data randomly (percentage).<br>Wiring: Annotate with data.Output → Split data randomly (percentage).Input; Morphological operation 2D.Output → Annotate with data.Annotation; Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI.",
     "file": "chain-5-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data-distribute-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data -> Split data randomly (percentage)"
-  },
-  "chain-5-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files": {
-    "description": "Sequence: Comment → Annotate with file/directory name → List subfolders → Annotate with file/directory name → List files.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Comment.Comment → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-5-jipipe-comment-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files.json",
-    "functionId": "jipipe:function:data",
-    "name": "Comment -> Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files"
+    "name": "Import 2D ROIs, clean, measure, and split the data"
   },
   "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask": {
     "description": "Sequence: Filter paths → List files → Annotate with file/directory name → Import ROI → Convert 2D ROI to mask.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Import ROI.Output → Convert 2D ROI to mask.ROI; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-5-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask.json",
     "functionId": "jipipe:function:data",
-    "name": "Filter paths -> List files -> Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask"
+    "name": "Load 2D ROIs from a filtered folder and convert to masks"
   },
   "chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file": {
     "description": "Sequence: Annotate with file/directory name → List files → Annotate with file/directory name → Filter paths → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → Import image.Files; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
     "file": "chain-5-path-to-annotation-simple-folder-list-files-path-to-annotation-simple-path-filter-import-imagej-imgplus-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> List files -> Annotate with file/directory name -> Filter paths -> Import image"
-  },
-  "chain-5-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple": {
-    "description": "Sequence: Annotate with file/directory name → List subfolders → Annotate with file/directory name → List files → Annotate with file/directory name.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → List subfolders.Folders.",
-    "file": "chain-5-path-to-annotation-simple-folder-list-subfolders-path-to-annotation-simple-folder-list-files-path-to-annotation-simple.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> List subfolders -> Annotate with file/directory name -> List files -> Annotate with file/directory name"
+    "name": "List, filter, and load images from a folder"
   },
   "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data": {
     "description": "Sequence: Annotate with file/directory name → Import ROI → Convert 2D ROI to mask → Morphological operation 2D → Annotate with data.<br>Wiring: Morphological operation 2D.Output → Annotate with data.Annotation; Convert 2D ROI to mask.Output → Morphological operation 2D.Input; Import ROI.Output → Convert 2D ROI to mask.ROI; Annotate with file/directory name.Annotated paths → Import ROI.Files.",
     "file": "chain-5-path-to-annotation-simple-import-imagej-roi-from-file-ij1-roi-to-mask-ij1-morph-operation2d-annotate-with-data.json",
     "functionId": "jipipe:function:annotations",
-    "name": "Annotate with file/directory name -> Import ROI -> Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data"
-  },
-  "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file": {
-    "description": "Sequence: Annotate with file/directory name → Filter paths → List files → Annotate with file/directory name → Import image.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Import image.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
-    "file": "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file.json",
-    "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import image"
+    "name": "Import 2D ROIs, clean and measure the masks"
   },
   "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file": {
     "description": "Sequence: Annotate with file/directory name → Filter paths → List files → Annotate with file/directory name → Import ROI.<br>Wiring: List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → List files.Folders; Annotate with file/directory name.Annotated paths → Import ROI.Files; Annotate with file/directory name.Annotated paths → Filter paths.Input.",
     "file": "chain-5-path-to-annotation-simple-path-filter-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file.json",
     "functionId": "jipipe:function:data",
-    "name": "Annotate with file/directory name -> Filter paths -> List files -> Annotate with file/directory name -> Import ROI"
+    "name": "Load 2D ROIs from a filtered folder"
   },
   "dag-derived-derived-mech-cluster-0003-3d-ddd732f1a382": {
     "description": "Takes two lists of 3D ROIs and produces filtered 3D ROI lists containing the ROIs that overlap with ROIs in the other list. Chained overlap filters can be used to include or exclude ROIs based on their spatial relationship to reference ROIs.<br>Wiring: Filter IJ3D ROI by overlap (old).ROI 1 → Filter IJ3D ROI by overlap (old).ROI 1.",

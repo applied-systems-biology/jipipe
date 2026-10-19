@@ -59,11 +59,16 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * The shipped set is two families, both reviewed by the 1324 manual review:
  * <ul>
- *   <li><b>64 linear (node-sequence) patterns</b> — the 185 research
- *       artifacts cut down to survivors with a proper <i>derivable name of
- *       what they do</i> (statistical fan shapes and every
+ *   <li><b>24 linear (node-sequence) patterns</b> — the 185 research
+ *       artifacts cut to 64 with derivable names (fan shapes + every
  *       {@code jipipe:compartment-output} sink excluded, shape-label
- *       duplicates deduped).</li>
+ *       duplicates deduped), then Option C (ruling 2026-19) to the 24
+ *       genuinely linear-only workflows: the 32 node+edge sub-paths of
+ *       already-shipped DAG patterns and the 8 plumbing (comment/group)
+ *       patterns are dropped. Their names are OUTCOME names ("what the
+ *       workflow does") — no node chain, no chain separator of any kind —
+ *       the mechanism stays in the description ({@code Sequence:}/
+ *       {@code Wiring:}).</li>
  *   <li><b>422 DAG patterns</b> — 262 corpus-mined (the 3 stale-id
  *       references remapped to their verified current successors, the 3
  *       plugin-absent ones excluded) + 160 derived (26 deterministic twin
@@ -74,15 +79,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 486</b> — the curation + dedup (64 linear) + the
- *       mined/derived DAG set (422) is pinned to a number; not "≥486".</li>
+ *   <li><b>exact count 446</b> — the Option C linear set (24) + the
+ *       mined/derived DAG set (422) is pinned to a number; not "≥446".</li>
  *   <li><b>per-template deserialization guard</b> — each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
  *       path with the same node set as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       to all 486). Identity is (name, node-info-id multiset): 13 DAG names
+ *       to all 446). Identity is (name, node-info-id multiset): 13 DAG names
  *       are shared by structurally different graphs, so name alone is no
  *       longer a unique key — (name, id multiset) is (verified at
  *       generation).</li>
@@ -119,16 +124,21 @@ class SystemPatternTemplatesTest {
         "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 486 distinct patterns ship: 64 linear (node-sequence, from
+    /** Exactly 446 distinct patterns ship: 24 linear (node-sequence, from
      * the 185 research artifacts, curation + 25 collapsed shape-label
-     * duplicates) + 422 DAG (262 mined [3 stale-id remaps, 3 excludes] +
-     * 160 derived [26 twins + 134 what-next]). */
-    static final int EXPECTED_SYSTEM_TEMPLATES = 486;
+     * duplicates, then Option C (ruling 2026-19) drops the 32 node+edge
+     * sub-paths of already-shipped DAG patterns and the 8 plumbing
+     * (comment/group) patterns) + 422 DAG (262 mined [3 stale-id remaps, 3
+     * excludes] + 160 derived [26 twins + 134 what-next]). */
+    static final int EXPECTED_SYSTEM_TEMPLATES = 446;
 
-    /** The flagship mined pattern (a Data Sources chain). */
-    static final String FLAGSHIP = "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-imgplus-from-file";
+    /** The flagship mined pattern (a Data Sources chain): list a folder's
+     * files and import them as 2D ROIs (one of the 24 Option-C linear
+     * patterns; the old flagship "… -> Import image" is a sub-path of a
+     * shipped DAG and was dropped by Option C). */
+    static final String FLAGSHIP = "chain-3-folder-list-files-path-to-annotation-simple-import-imagej-roi-from-file";
     static final String FLAGSHIP_NODE = "path-to-annotation-simple";
-    static final String FLAGSHIP_NEXT_NAME = "Import image";
+    static final String FLAGSHIP_NEXT_NAME = "Import ROI";
 
     @BeforeAll
     static void init() {
@@ -178,7 +188,7 @@ class SystemPatternTemplatesTest {
                 // Identify the flagship by its node set (stable identity).
                 Set<String> ids = nodeIds(t.getGraph());
                 if (ids.equals(Set.of("folder-list-files", "path-to-annotation-simple",
-                    "import-imagej-imgplus-from-file"))) {
+                    "import-imagej-roi-from-file"))) {
                     flagshipPresent = true;
                     break;
                 }
@@ -189,23 +199,23 @@ class SystemPatternTemplatesTest {
 
         // --- functionId pins (sidecar-driven; end-to-end for the rule) ---
         // Flagship: complete node set is folder-list-files -> data,
-        // path-to-annotation-simple -> annotations, import-imagej-imgplus-from-file
+        // path-to-annotation-simple -> annotations, import-imagej-roi-from-file
         // -> data = {data:2, annotations:1}, so the most-common branch is DATA
-        // (NOT a 3-way tie, and no images node). This pins that the sidecar's
+        // (NOT a 3-way tie, and no rois node). This pins that the sidecar's
         // flagship functionId is data and that the rule ran over the complete node
         // set (a truncated/example-subgraph source would give a different set).
         assertEquals("jipipe:function:data",
-            templateByName("List files -> Annotate with file/directory name -> Import image")
+            templateByName("Load 2D ROIs from a folder")
                 .getTaxonomyFunction().getId(),
             "the flagship pattern's function must be jipipe:function:data "
                 + "(complete node set {data:2, annotations:1} -> most-common data)");
 
-        // Tie-break pin: this surviving 3-node pattern is a GENUINE 3-way tie
-        // (annotations/images/rois all at max count), so the winner is the
+        // Tie-break pin: this 3-node pattern is a GENUINE 3-way tie
+        // (annotations/data/rois all at max count), so the winner is the
         // lexicographically-first id = jipipe:function:annotations. This pins
         // the "ties -> lexicographically first" rule end-to-end.
         assertEquals("jipipe:function:annotations",
-            templateByName("Convert 2D ROI to mask -> Morphological operation 2D -> Annotate with data")
+            templateByName("Import 2D ROIs and convert them to masks")
                 .getTaxonomyFunction().getId(),
             "the 3-way-tie pattern must resolve to the lexicographically-first "
                 + "branch jipipe:function:annotations");
@@ -231,7 +241,7 @@ class SystemPatternTemplatesTest {
         // (name, node-ids) — NOT name alone — is the required key: 13 DAG
         // pattern names are shared by structurally different graphs, so a
         // name-only key would false-conflict; (name, node-info-id multiset) is
-        // unique across all 486 (verified at generation; multiset, not set, so
+        // unique across all 446 (verified at generation; multiset, not set, so
         // repeated node types still disambiguate).
         //
         // "Resolvable" = present in the RUNNING test JVM's registry (hasNodeInfo-

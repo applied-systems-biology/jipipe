@@ -139,6 +139,11 @@ PATTERNS_DIR = os.path.join(RESEARCH, "patterns")
 TEMPLATES_DIR = os.path.join(PATTERNS_DIR, "templates")
 PATTERNS_JSON = os.path.join(PATTERNS_DIR, "patterns.json")
 REGISTRY = os.path.join(RESEARCH, "registry.json")
+# Option C curation (ruling 2026-19): the linear keep-set + the outcome
+# names. Only the 24 genuinely-linear-only workflows ship; the 32 node+edge
+# sub-paths of already-shipped DAG patterns and the 8 plumbing (comment/group)
+# patterns are excluded. See utils/taxonomy-research/linear-naming-redesign.md.
+LINEAR_OUTCOME_NAMES = os.path.join(RESEARCH, "linear-outcome-names.json")
 OUT_DIR = os.path.join(
     REPO_ROOT,
     "jipipe-core", "src", "main", "resources",
@@ -289,38 +294,6 @@ def node_labels(g: dict):
     return frozenset(v.get("jipipe:node:name") for v in g["nodes"].values())
 
 
-def topo_sequence(g: dict):
-    """The node instance keys in topological order for a LINEAR graph (a
-    single source, a single sink, exactly one edge into/out of every
-    intermediate node), or None when the graph is not a simple chain."""
-    nodes = g["nodes"]
-    indeg = {k: 0 for k in nodes}
-    outdeg = {k: 0 for k in nodes}
-    adj = {}
-    for e in g["edges"]:
-        indeg[e["target-node"]] += 1
-        outdeg[e["source-node"]] += 1
-        adj.setdefault(e["source-node"], []).append(e["target-node"])
-    if any(d > 1 for d in indeg.values()) or any(d > 1 for d in outdeg.values()):
-        return None
-    starts = [k for k in nodes if indeg[k] == 0]
-    if len(starts) != 1:
-        return None
-    seq = [starts[0]]
-    cur = starts[0]
-    while True:
-        nxt = adj.get(cur)
-        if not nxt:
-            break
-        cur = nxt[0]
-        seq.append(cur)
-        if len(seq) > len(nodes):
-            return None  # cycle
-    if len(seq) != len(nodes):
-        return None  # disconnected
-    return seq
-
-
 # The research role vocabulary (patterns.json nodes[].role). A pattern name
 # whose segment is one of these is a mining-artifact leak, not a derivable
 # name — the curation guard below rejects any shipped name containing them.
@@ -329,22 +302,6 @@ ROLE_WORDS = {
     "plotting", "trackmate", "unknown",
 }
 
-
-def fix_role_name(stem, g, name, node_names):
-    """Re-derive the display name when its LAST segment is a raw role token
-    (a mining artifact, e.g. '... -> other'): replace it with the registry
-    display name of the topologically-last node. Returns the (possibly
-    changed) name."""
-    last = name.split("->")[-1].strip()
-    if last not in ROLE_WORDS:
-        return name
-    seq = topo_sequence(g)
-    if not seq:
-        fail(f"{stem}: name ends in a role token ({last!r}) but the graph is "
-             f"not linear — re-derive the name manually")
-    last_id = g["nodes"][seq[-1]]["jipipe:node-info-id"]
-    segs = [s.strip() for s in name.split("->")]
-    return " -> ".join(segs[:-1]) + " -> " + node_names[last_id]
 
 
 # --------------------------------------------------------------------------- #
@@ -496,6 +453,35 @@ def main() -> None:
                 kept[m] = None
     kept_stems = sorted(kept)
 
+    # ---- Option C curation: outcome naming + the linear-only keep-set ----
+    # The 64 curated (pre-Option-C) linear patterns ship as the 24 genuinely
+    # linear-only workflows. The 32 node+edge sub-paths of already-shipped DAG
+    # patterns and the 8 plumbing (jipipe:comment / node-group) patterns are
+    # dropped: their workflows are already covered (sub-paths) or carry no
+    # general information (plumbing). The shipped NAME is an OUTCOME name
+    # (ruling 2026-19: the name says what the workflow does — no node chain,
+    # no -> / → / ⇢ separator); the mined chain name was the mechanism and is
+    # no longer shipped. The mechanism (Sequence/Wiring) stays in the
+    # description. linear-outcome-names.json is the source of truth for both
+    # the keep-set (its keys) and the names (its values); fail closed if the
+    # keep-set no longer matches the curation, so a corpus re-run cannot
+    # silently ship a different (or chain-named) linear set.
+    curated_linear = len(kept_stems)  # pre-Option-C curation (64)
+    with open(LINEAR_OUTCOME_NAMES, encoding="utf-8") as fh:
+        outcome = {k: v for k, v in json.load(fh)["names"].items()}
+    matched = [k for k in outcome if k in set(kept_stems)]
+    if len(matched) != len(outcome):
+        missing = sorted(set(outcome) - set(kept_stems))
+        fail(f"linear-outcome-names.json names pattern(s) not in the curated "
+             f"linear set (the corpus changed): {missing}")
+    if len(kept_stems) - len(outcome) != 32 + 8:
+        # 32 sub-path + 8 plumbing patterns are dropped by Option C; a
+        # different count means the curation or the corpus changed.
+        fail(f"Option C drop-count mismatch: expected 40 dropped "
+             f"(32 sub-path + 8 plumbing), got {len(kept_stems) - len(outcome)} "
+             "— re-derive the keep-set")
+    kept_stems = sorted(outcome)  # Option C keep-set = the 24 outcome names
+
     # ---- build sidecar ----
     # Registry display names (the authoritative node names, not the
     # per-instance jipipe:node:name labels which can be stale user edits).
@@ -535,10 +521,12 @@ def main() -> None:
             lines.append("Wiring: " + wire + ".")
         desc = "<br>".join(html.escape(l, quote=False) for l in lines)
 
-        display_name = fix_role_name(stem, g, m["name"], node_names)
-        if display_name != m["name"]:
-            renamed += 1
-            print(f"   role-name fixed: {m['name']!r} -> {display_name!r}")
+        # Option C: the shipped name is the OUTCOME name (what the workflow
+        # does) from linear-outcome-names.json — NOT the mined node chain.
+        # Ruling 2026-19 forbids any chain separator in the name; the chain
+        # (mechanism) is carried by the description built above.
+        display_name = outcome[stem]
+        renamed += 1
 
         shipped[stem] = {
             "file": stem + ".json",
@@ -553,26 +541,39 @@ def main() -> None:
     # (a change to the corpus, the curation exclusions, or the function rule
     # all move this — fail loudly rather than ship a silently-wrong set).
     shipped_dist = Counter(shipped[s]["functionId"] for s in shipped)
+    # Option C keep-set distribution: the 24 linear-only patterns
+    # (32 sub-path + 8 plumbing patterns dropped).
     EXPECTED_SHIPPED_DIST = {
-        "jipipe:function:data": 32,
-        "jipipe:function:annotations": 15,
-        "jipipe:function:images": 8,
-        "jipipe:function:rois": 4,
-        "jipipe:function:machine-learning": 3,
-        "jipipe:function:graph": 2,
+        "jipipe:function:data": 10,
+        "jipipe:function:annotations": 10,
+        "jipipe:function:images": 3,
+        "jipipe:function:rois": 1,
     }
     if dict(shipped_dist) != EXPECTED_SHIPPED_DIST:
         fail("shipped function distribution differs from the curation target: "
              f"got {dict(shipped_dist.most_common())}; expected "
              f"{ {k.replace('jipipe:function:',''): v for k, v in EXPECTED_SHIPPED_DIST.items()} }")
 
-    # No shipped name may carry a raw role token (a mining artifact, not a
-    # derivable name) — fix_role_name repairs the linear last-segment case;
-    # anything left here is a genuine violation that needs a manual name.
+    # Ruling 2026-19: a shipped template NAME must describe what the workflow
+    # does — no node chain, no chain separator of any kind. The mechanism
+    # (Sequence:/Wiring:) is description text only. Fail closed on any
+    # separator so a regression cannot ship a chain name.
+    for stem, rec in shipped.items():
+        for sep in ("->", "\u2192", "\u21d2", "\u21e2"):
+            if sep in rec["name"]:
+                fail(f"{stem}: shipped name contains a chain separator "
+                     f"{sep!r}: {rec['name']!r} — the name must be an outcome "
+                     "name, not a node chain")
+
+    # Backstop: a shipped name must not BE a raw role token (a mining artifact
+    # like "other"/"import" used as a chain segment). Names are curated outcome
+    # strings now, so this only fires when the ENTIRE name is a bare token —
+    # word-level matching would false-positive on legitimate names that start
+    # with "Import"/"Export".
     for stem, rec in shipped.items():
         for seg in rec["name"].split("->"):
             if seg.strip() in ROLE_WORDS:
-                fail(f"{stem}: shipped name still contains a role token: {rec['name']!r}")
+                fail(f"{stem}: shipped name is a raw role token: {rec['name']!r}")
 
     # ---- write outputs ----
     os.makedirs(OUT_DIR, exist_ok=True)
@@ -582,7 +583,12 @@ def main() -> None:
     # removed; system-templates.json itself is rewritten below.
     shipped_files = {rec["file"] for rec in shipped.values()}
     for existing in sorted(os.listdir(OUT_DIR)):
+        # Preserve the dag-* patterns (owned by the DAG generator, which runs
+        # AFTER this one and re-adds them); sweep only stale LINEAR files so a
+        # curation change cannot orphan a linear resource. system-templates.json
+        # is rewritten below.
         if existing.endswith(".json") and existing != "system-templates.json" \
+                and not existing.startswith("dag-") \
                 and existing not in shipped_files:
             os.remove(os.path.join(OUT_DIR, existing))
     for stem in kept_stems:
@@ -614,8 +620,10 @@ def main() -> None:
     print(f"total patterns   : 185")
     print(f"excluded (curation): {excluded_shapes + excluded_sinks} "
           f"(fan shapes: {excluded_shapes}, compartment sinks: {excluded_sinks})")
-    print(f"shipped (kept)   : {len(kept_stems)}")
-    print(f"role names fixed : {renamed}")
+    print(f"curated linear (pre-Option-C) : {curated_linear}")
+    print(f"Option C keep-set (shipped)   : {len(kept_stems)} "
+          f"({curated_linear - len(kept_stems)} dropped: 32 sub-path + 8 plumbing)")
+    print(f"outcome names applied         : {renamed}")
     print(f"collapsed groups : {collapsed} (name + functional-content identity: PASS)")
     print(f"dropped files    : {185 - len(kept_stems)} "
           f"(excluded + deduped)")

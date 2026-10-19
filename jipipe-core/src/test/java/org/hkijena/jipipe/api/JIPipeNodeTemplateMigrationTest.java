@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseBuilderRun;
@@ -22,8 +23,14 @@ import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.plugins.parameters.library.taxonomy.JIPipeTaxonomyFunctionRef;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Comparator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,9 +44,54 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class JIPipeNodeTemplateMigrationTest {
 
+    /**
+     * Throwaway base for the JIPipe user dir. This test's database-builder probe
+     * ({@code downloadedGlobalTemplateGetsTheDownloadedScopeInTheDatabase}) adds
+     * two templates to the global store, which writes real files via
+     * {@code addToGlobal}. It cleans up with {@code removeFromGlobal} in a
+     * finally, but in the shared full-suite JVM the relation-index mining
+     * re-serializes the template's {@code data} between add and cleanup,
+     * invalidating the value-keyed file-map key, so the on-disk file can be
+     * orphaned (the "deleted" template resurrects on the next boot). Redirect
+     * the user dir to a temp base so this test NEVER writes to the real user
+     * store; {@link #cleanup()} restores the override and deletes the temp dir.
+     */
+    private static Path tempUserDirBase;
+
     @BeforeAll
-    static void ensureJIPipe() {
+    static void ensureJIPipe() throws Exception {
+        tempUserDirBase = Files.createTempDirectory("jipipe-tmpl-migration-test");
         JIPipe.ensureInstance();
+        JIPipe.getInstance().getInitializationSettings().setOverrideUserDirBase(tempUserDirBase);
+        // Re-point the in-memory store + file map at the (empty) temp dir so a
+        // real-dir template loaded by an earlier boot cannot linger in memory.
+        JIPipe.getNodeTemplates().reloadGlobalTemplates(JIPipeProgressInfo.SILENT);
+    }
+
+    @AfterAll
+    static void cleanup() {
+        if (JIPipe.getInstance() != null) {
+            JIPipe.getInstance().getInitializationSettings().setOverrideUserDirBase(null);
+        }
+        deleteRecursivelyQuietly(tempUserDirBase);
+    }
+
+    /** Best-effort recursive delete of the temp user-dir base. */
+    private static void deleteRecursivelyQuietly(Path root) {
+        if (root == null) {
+            return;
+        }
+        try (var stream = Files.walk(root)) {
+            stream.sorted(Comparator.reverseOrder()).forEach(p -> {
+                try {
+                    Files.deleteIfExists(p);
+                } catch (IOException ignored) {
+                    // best-effort temp cleanup
+                }
+            });
+        } catch (IOException ignored) {
+            // temp dir may already be gone
+        }
     }
 
     // --- the pure name→id matcher ---
