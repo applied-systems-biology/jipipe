@@ -536,11 +536,17 @@ class BuildCatalogTests(unittest.TestCase):
     @AddJIPipe(Input|Output)Slot annotations (slot names per class) — the LLM
     must see exact slot names to wire valid chains."""
 
-    def _reg_node(self, nid, name, func, ins, outs):
+    def _reg_node(self, nid, name, func, ins, outs, extra=None):
         def conv(lst):
             return [{"class": f"org.x.{c}", "dataType": dt} for c, dt in lst]
-        return {"id": nid, "name": name, "functions": [func],
+        def named(lst):
+            return [{"class": f"org.x.{c}", "dataType": dt, "name": nm}
+                    for c, dt, nm in lst]
+        node = {"id": nid, "name": name, "functions": [func],
                 "inputs": conv(ins), "outputs": conv(outs)}
+        if extra:
+            node.update(extra)
+        return node
 
     def test_join_yields_slot_names_per_datatype(self):
         reg = [self._reg_node("ij1-roi-to-rgb", "Convert 2D ROI to RGB",
@@ -566,6 +572,86 @@ class BuildCatalogTests(unittest.TestCase):
                               [("SomeData", "some-dt")], [])]
         cat = D.build_catalog(reg, {})
         self.assertEqual(cat[0]["inputs"], {"some-dt": ["SomeData"]})
+
+    def test_registry_slot_names_fallback_for_dynamic_nodes(self):
+        # 2026-10-19 re-sweep: dynamically-registered nodes (cLij2/clijx
+        # kernels) have NO source @AddJIPipe*Slot annotations, so the
+        # source-slot scan cannot verify their slots. The registry dump
+        # (inputSlots/outputSlots with the runtime slot name, 2072-node
+        # full-launcher registry) is authoritative for them — a node absent
+        # from the source scan but present with named slots in the registry
+        # gets those slot names and slots_verified=True.
+        reg = [self._reg_node("clij:plugin:net.x.Edof", "CLIJ2 Edof",
+                              "jipipe:function:misc",
+                              [("CLIJImageData", "clij2-image")],
+                              [("CLIJImageData", "clij2-image")],
+                              extra={
+                                  "inputSlots": [
+                                      {"class": "org.x.CLIJImageData",
+                                       "dataType": "clij2-image",
+                                       "name": "Source"}],
+                                  "outputSlots": [
+                                      {"class": "org.x.CLIJImageData",
+                                       "dataType": "clij2-image",
+                                       "name": "Destination"}],
+                              })]
+        cat = D.build_catalog(reg, {})
+        self.assertEqual(cat[0]["inputs"], {"clij2-image": ["Source"]})
+        self.assertEqual(cat[0]["outputs"], {"clij2-image": ["Destination"]})
+        self.assertTrue(cat[0]["slots_verified"])
+
+    def test_source_slots_still_take_precedence_over_registry_names(self):
+        # for static (source-parseable) nodes the source annotation remains
+        # the verification basis; the registry slot names are only a
+        # fallback for nodes the source scan cannot see
+        reg = [self._reg_node("ij1-roi-to-rgb", "Convert 2D ROI to RGB",
+                              "jipipe:function:roi-filters",
+                              [("Roi2dListData", "imagej-roi"),
+                               ("ImagePlusData", "imagej-imgplus")],
+                              [("ImagePlusColorRGBData",
+                                "imagej-imgplus-color-rgb")],
+                              extra={
+                                  "inputSlots": [
+                                      {"class": "org.x.Roi2dListData",
+                                       "dataType": "imagej-roi",
+                                       "name": "ROI"},
+                                      {"class": "org.x.ImagePlusData",
+                                       "dataType": "imagej-imgplus",
+                                       "name": "Image"}],
+                                  "outputSlots": [
+                                      {"class": "org.x.ImagePlusColorRGBData",
+                                       "dataType": "imagej-imgplus-color-rgb",
+                                       "name": "Output"}],
+                              })]
+        source_slots = {"ij1-roi-to-rgb": {
+            "inputs": [("ROI", "Roi2dListData"), ("Image", "ImagePlusData")],
+            "outputs": [("Output", "ImagePlusColorRGBData")]}}
+        cat = D.build_catalog(reg, source_slots)
+        self.assertEqual(cat[0]["inputs"],
+                         {"imagej-roi": ["ROI"], "imagej-imgplus": ["Image"]})
+        self.assertEqual(cat[0]["outputs"],
+                         {"imagej-imgplus-color-rgb": ["Output"]})
+        self.assertTrue(cat[0]["slots_verified"])
+
+    def test_registry_slot_names_without_any_name_stay_unverified(self):
+        # a registry slot entry with an EMPTY name carries no usable slot
+        # name — the fail-closed default (slots_verified=False) must hold
+        reg = [self._reg_node("clij:plugin:net.x.Anon", "CLIJ2 Anon",
+                              "jipipe:function:misc",
+                              [("CLIJImageData", "clij2-image")],
+                              [("CLIJImageData", "clij2-image")],
+                              extra={
+                                  "inputSlots": [
+                                      {"class": "org.x.CLIJImageData",
+                                       "dataType": "clij2-image",
+                                       "name": ""}],
+                                  "outputSlots": [
+                                      {"class": "org.x.CLIJImageData",
+                                       "dataType": "clij2-image",
+                                       "name": ""}],
+                              })]
+        cat = D.build_catalog(reg, {})
+        self.assertFalse(cat[0]["slots_verified"])
 
     def test_branch_of_function_uses_the_parent_chain(self):
         # the branch is the TOP node of the function tree, walked via the

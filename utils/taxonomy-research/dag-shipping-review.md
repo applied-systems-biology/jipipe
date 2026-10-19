@@ -966,11 +966,11 @@ they ship as normal patterns. The (D) guards apply identically
 |---|---|
 | shipped mined patterns swept | 265 (4 parallel shards) |
 | deterministic twin candidates | 26 (all shipped by construction) |
-| what-next candidates (validated + deduped) | 153 |
-|   → gated shipped | **128** |
+| what-next candidates (validated + deduped) | 159 |
+|   → gated shipped | **134** |
 |   → gate noise | 25 |
-| what-next proposals rejected by fail-closed validation | 47 |
-| **total derived shipped** | **154** |
+| what-next proposals rejected by fail-closed validation | 52 |
+| **total derived shipped** | **160** |
 
 ### twin-swap (26) — the dimension siblings
 
@@ -1035,7 +1035,7 @@ dimension-renamed — flag any where the rename reads oddly.
 Each extends a mined pattern (its source is named); the chain is
 verified to type-check against the real node slots.
 
-#### annotations (18)
+#### annotations (19)
 
 - **Annotate data with XML metadata** — extends “Extract OME image metadata as annotations” (`cluster-0019`) · 2n/1e
   - Takes XML/text data and a data stream, extracts selected XML values into a table, and attaches those values as annotations to the data. This adds file or experiment metadata to the incoming data.
@@ -1051,6 +1051,8 @@ verified to type-check against the real node slots.
   - Takes a data set, labels each row with its origin, and converts the rows into an annotation table. It produces a table of annotations that can be used to inspect or export the data's metadata.
 - **Annotate files with name and Bio-Formats metadata** — extends “Batch export image files” (`cluster-0065`) · 2n/1e
   - Takes input files, adds annotations derived from file names and Bio-Formats metadata, and produces annotated files for downstream analysis.
+- **Extract object centroids from a binary image** — extends “Create a binary mask from an image” (`cluster-0095`) · 3n/2e
+  - Takes a binary image, labels connected objects, and computes their centroids. It produces a point list of object centers, converted from GPU to a standard CPU data type.
 - **Annotate data with merged table values** — extends “Merge two tables after column cleanup” (`cluster-0111`) · 2n/1e
   - Takes a table and a data set, merges selected table columns into annotations, and applies those annotations to the data. Produces data carrying the merged table-derived annotations.
 - **Add scale bar and convert image to 8-bit grayscale** — extends “Tile multiple images into a grid” (`cluster-0133`) · 2n/1e
@@ -1074,7 +1076,7 @@ verified to type-check against the real node slots.
 - **Add scale bar and open images in ImageJ** — extends “RGB track visualization and branch statistics” (`cluster-0311`) · 2n/1e
   - Takes images, draws a scale bar overlay onto them, and opens the annotated images in ImageJ for visual inspection.
 
-#### images (8)
+#### images (11)
 
 - **Import images with metadata from a table** — extends “Export merged summary tables as XLSX” (`cluster-0026`) · 3n/2e
   - Takes image files and a results table, imports both, and copies the first row of the table into the image metadata. It produces image data enriched with tabular metadata.
@@ -1082,6 +1084,12 @@ verified to type-check against the real node slots.
   - Takes a binary image, computes a 2D distance map for each slice, and converts the result to 16-bit. This produces a compact distance map image suitable for visualization or downstream image analysis.
 - **Color image with median smoothing and scale bar** — extends “Visualize tracked spots and trajectories” (`cluster-0056`) · 3n/2e
   - Takes a 2D or 3D image, converts it to RGB color, applies a 3x3 median filter to reduce noise, and adds a scale bar. It produces a cleaned color image with a scale bar for display or export.
+- **Fill holes in Cellpose label images** — extends “Preprocess microscopy image stacks” (`cluster-0058`) · 4n/3e
+  - Takes a Cellpose label image, applies GPU-accelerated hole filling to the segmentation mask, and returns a standard image containing the filled labels.
+- **Create filled binary mask from image** — extends “Project and correct a multi-dimensional image” (`cluster-0072`) · 4n/3e
+  - Takes an image, applies automatic thresholding to create a binary mask, and fills holes in that mask. It produces a cleaned binary image suitable for downstream segmentation or measurement.
+- **Connected component labeling** — extends “Create a binary mask from an image” (`cluster-0095`) · 2n/1e
+  - Takes an image, assigns a unique label to each connected component, and outputs a regular CPU image of the labeled components.
 - **Create 32-bit 2D connected component labels** — extends “Dilate, fill holes, and erode a binary mask” (`cluster-0110`) · 2n/1e
   - Takes a 2D binary or multi-value mask, assigns a unique label to each connected component, and outputs a 32-bit grayscale label image for downstream analysis.
 - **Background-corrected smoothed 8-bit image** — extends “Compute extended depth-of-focus projection from selected image planes” (`cluster-0152`) · 3n/2e
@@ -1181,12 +1189,14 @@ verified to type-check against the real node slots.
 - **2D ROI to filament label and mask images** — extends “RGB image with 2D ROI overlays” (`cluster-0323`) · 3n/2e
   - Takes 2D ROIs, converts them into filaments, and produces a filament label image and a solid filament mask image. The mask is greyscale and can be sized to a reference image.
 
-#### machine-learning (4)
+#### machine-learning (5)
 
 - **Cell segmentation label image** — extends “Train a Cellpose model from 2D image-label pairs” (`cluster-0050`) · 2n/1e
   - Segments cells in an image with Cellpose and outputs a cell label image (mask) converted to another image data type.
 - **Train and apply a custom cell segmentation model** — extends “Train a Cellpose model from 2D image-label pairs” (`cluster-0050`) · 2n/1e
   - Takes annotated images, trains a Cellpose 2 segmentation model, then uses that model to segment new images into cell masks and optional probability or flow outputs.
+- **Cell centroids from Cellpose segmentation** — extends “Project and correct a multi-dimensional image” (`cluster-0072`) · 4n/3e
+  - Takes an image, segments cells with Cellpose, and computes the centroid of each segmented cell. It produces a point list of cell locations, using GPU processing for the centroid step.
 - **Cellpose segmentation labels as 8-bit image** — extends “Clean and enhance images” (`cluster-0129`) · 2n/1e
   - Takes an image, runs Cellpose segmentation, and converts the resulting label image to an 8-bit grayscale image.
 - **Cellpose 2D/3D ROI segmentation** — extends “Train and predict with a generative model” (`cluster-0134`) · 2n/1e
@@ -1208,7 +1218,7 @@ verified to type-check against the real node slots.
 - **Download JSON and extract table** — extends “Load JSON files and extract selected fields” (`cluster-0217`) · 4n/3e
   - Downloads a JSON file from a web resource, parses and enriches it, then extracts selected fields into a table.
 
-#### statistics (9)
+#### statistics (10)
 
 - **8-bit image intensity histogram** — extends “Color overlay of overlapping 3D ROIs” (`cluster-0028`) · 2n/1e
   - Takes an image, converts it to 8-bit grayscale, and computes an intensity histogram. Produces a table of intensity values and their counts.
@@ -1216,6 +1226,8 @@ verified to type-check against the real node slots.
   - Takes an image, converts it to 16-bit, and computes a pixel intensity histogram. It produces a table of intensity values and their counts.
 - **2D ROI image statistics** — extends “Find boundary regions of selected 2D ROIs” (`cluster-0068`) · 3n/2e
   - Takes a grayscale image, converts it to a binary mask, detects connected 2D particles as 2D ROIs, and computes image statistics for each ROI. It produces a per-ROI statistics table.
+- **Average neighbor distance map** — extends “Segment objects and create 2D ROI ring masks” (`cluster-0093`) · 3n/2e
+  - Takes an image and produces an image showing the average distance from each location to neighboring features. The calculation is run on the GPU and returned as a standard image.
 - **Hue/saturation/brightness histogram** — extends “Plot pixel values from a masked image” (`cluster-0107`) · 2n/1e
   - Takes an image, converts it to hue/saturation/brightness color space, and computes a pixel-value histogram. It produces a table of histogram values and counts.
 - **Grayscale image statistics** — extends “Export 2D ROI overlay images” (`cluster-0127`) · 2n/1e
@@ -1344,7 +1356,7 @@ verified to type-check against the real node slots.
 - “...” — extends “Import and scale 2D images” · 3n — gate=noise
 - “Label connected components in a 3D mask and export HDF5” — extends “Export 3D mask as a 3D mesh” · 2n — gate=noise
 - “Annotate data with pixel histogram measurements and image properties” — extends “2D ROI measurement histogram montage” · 3n — gate=noise
-- “False-colored, cleaned, and inverted RGB image” — extends “Quick RGB preview of 2D ROIs on images” · 3n — gate=noise
+- “Colorized, cleaned, and inverted RGB image” — extends “Quick RGB preview of 2D ROIs on images” · 3n — gate=noise
 - “Measure corrected image and annotate data” — extends “Background-subtracted image stack” · 2n — gate=noise
 - “Convert Cellpose 2D ROIs to filament labels” — extends “Denoise and segment cells into 2D ROIs” · 3n — gate=noise
 - “Assign unique IDs and split bead and sample data by label” — extends “Import images and attach metadata” · 2n — gate=noise
@@ -1354,16 +1366,17 @@ verified to type-check against the real node slots.
 
 ### what-next rejected by fail-closed validation (the grounding gate)
 
-47 model proposals that named a real slot wrong, used an
+52 model proposals that named a real slot wrong, used an
 incompatible type, or cited a node id that does not exist — dropped
 before the gate ever saw them (fail-closed by design).
 
 - 15× unverified slot names
-- 7× type mismatch imagej-roi !-> jipipe:data on cellpose-2 -> annotate-data-with-image-properties
+- 9× type mismatch imagej-roi !-> jipipe:data on cellpose-2 -> annotate-data-with-image-properties
 - 3× import-imagej-results-table-from-file has no output slot named imagej-results-table
 - 2× filaments-convert-to-mask has no input slot named Filaments
 - 2× filaments-skeleton-to-filaments-3d has no output slot named filaments
 - 2× type mismatch imagej-imgplus-greyscale-32f !-> jipipe:data on feature-vesselness-meijering2d -> annotate-data-with-image-properties
+- 2× unknown node id cli:plugin:net.haesleinhuepf.clij2.plugins.AutomaticThreshold
 - 1× type mismatch imagej-roi !-> jipipe:data on ij1-analyze-find-particles2d -> annotate-data-with-table-values
 - 1× type mismatch imagej-roi !-> jipipe:data on cellpose-segmentation-inference-3.x -> annotate-data-with-image-properties
 - 1× type mismatch imagej-results-table !-> jipipe:data on ij1-analyze-find-particles2d -> export-data-table
@@ -1380,6 +1393,7 @@ before the gate ever saw them (fail-closed by design).
 - 1× import-imagej-imgplus-from-file has no output slot named imagej-imgplus
 - 1× type mismatch imagej-imgplus-greyscale-8u !-> jipipe:data on ij-convert-image-to-8-bit -> annotate-data-with-image-properties
 - 1× type mismatch imagej-imgplus-greyscale-16u !-> jipipe:data on ij-convert-image-to-16-bit -> annotate-data-with-image-properties
+- 1× clij:plugin:net.haesleinhuepf.clij2.plugins.BinaryFillHoles has no input slot named Input
 
 ## Rejected (false-negative check)
 

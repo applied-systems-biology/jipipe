@@ -219,6 +219,17 @@ class RegistryDumperTest {
                 slotEntries(info.getInputSlots().stream().map(AddJIPipeInputSlot::value).collect(Collectors.toList())));
             nodeJson.set("outputs",
                 slotEntries(info.getOutputSlots().stream().map(AddJIPipeOutputSlot::value).collect(Collectors.toList())));
+
+            // Per-slot entries WITH names (additive, 2026-10-19): the runtime
+            // slot name is authoritative for dynamically-registered nodes
+            // (cLij2/clijx kernels — no @AddJIPipe*Slot source annotation to
+            // parse), and a code-classpath dump cannot see those nodes at all.
+            nodeJson.set("inputSlots",
+                slotNameEntries(info.getInputSlots().stream().map(AddJIPipeInputSlot::value).collect(Collectors.toList()),
+                    info.getInputSlots().stream().map(AddJIPipeInputSlot::name).collect(Collectors.toList())));
+            nodeJson.set("outputSlots",
+                slotNameEntries(info.getOutputSlots().stream().map(AddJIPipeOutputSlot::value).collect(Collectors.toList()),
+                    info.getOutputSlots().stream().map(AddJIPipeOutputSlot::name).collect(Collectors.toList())));
         }
 
         // Top-level function tree block (R6): one entry per registered
@@ -309,6 +320,43 @@ class RegistryDumperTest {
         assertNotNull(parsedNodes, "registry.json is missing the 'nodes' array");
         ArrayNode parsedFunctions = (ArrayNode) parsed.get("functions");
         assertNotNull(parsedFunctions, "registry.json is missing the 'functions' array");
+        // (i) per-slot name entries: present on every node, consistent in
+        //     size with the registered slots, and at least one node must
+        //     carry a non-empty slot name (guards the cLij2 dynamic-slot
+        //     provenance the (C') derivation sweep relies on).
+        long nodesWithNamedSlots = 0;
+        for (JsonNode n : parsedNodes) {
+            String nodeId = n.get("id").asText();
+            JIPipeNodeInfo info = nodeInfos.get(nodeId);
+            assertNotNull(info, "no registered node info for emitted id " + nodeId);
+            ArrayNode inSlots = (ArrayNode) n.get("inputSlots");
+            ArrayNode outSlots = (ArrayNode) n.get("outputSlots");
+            assertNotNull(inSlots, "node " + nodeId + " is missing 'inputSlots'");
+            assertNotNull(outSlots, "node " + nodeId + " is missing 'outputSlots'");
+            assertEquals(info.getInputSlots().size(), inSlots.size(),
+                "input slot count mismatch for " + nodeId);
+            assertEquals(info.getOutputSlots().size(), outSlots.size(),
+                "output slot count mismatch for " + nodeId);
+            boolean named = false;
+            for (JsonNode s2 : inSlots) {
+                assertNotNull(s2.get("name"), "input slot of " + nodeId + " has no name field");
+                if (!s2.get("name").asText().isEmpty()) {
+                    named = true;
+                }
+            }
+            for (JsonNode s2 : outSlots) {
+                assertNotNull(s2.get("name"), "output slot of " + nodeId + " has no name field");
+                if (!s2.get("name").asText().isEmpty()) {
+                    named = true;
+                }
+            }
+            if (named) {
+                nodesWithNamedSlots++;
+            }
+        }
+        assertTrue(nodesWithNamedSlots > 0,
+            "no node carries a named slot - the per-slot name entries are dead");
+
         Map<String, JsonNode> parsedById = new HashMap<>();
         for (JsonNode n : parsedNodes) {
             parsedById.put(n.get("id").asText(), n);
@@ -427,6 +475,30 @@ class RegistryDumperTest {
 
     private static void fail(String message) {
         throw new AssertionError(message);
+    }
+
+    /**
+     * Emits the per-slot entries WITH the runtime slot name: one
+     * {@code {"class", "dataType", "name"}} object per slot (in declaration
+     * order, no deduplication — the same data class may back several named
+     * slots). {@code name} is the slot's declared name (empty string when
+     * the annotation has none, which happens for single-slot nodes that
+     * derive the name from the class).
+     */
+    private static ArrayNode slotNameEntries(List<Class<? extends JIPipeData>> classes, List<String> names) {
+        ArrayNode array = MAPPER.createArrayNode();
+        for (int i = 0; i < classes.size(); i++) {
+            ObjectNode entry = array.addObject();
+            entry.put("class", classes.get(i).getName());
+            String dataType = JIPipe.getDataTypes().getIdOf(classes.get(i));
+            if (dataType == null) {
+                entry.putNull("dataType");
+            } else {
+                entry.put("dataType", dataType);
+            }
+            entry.put("name", names.get(i));
+        }
+        return array;
     }
 
     /**

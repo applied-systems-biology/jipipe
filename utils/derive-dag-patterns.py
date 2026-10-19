@@ -429,11 +429,16 @@ def branch_of_function(function_id: str, branch_index: dict = None) -> str:
 
 
 def build_catalog(registry: list, source_slots: dict, functions: list = None) -> list:
-    """Join registry.json nodes (slot data types) with the source slot
-    annotations (exact slot names per class) + a function branch.
-    ``source_slots``: node id -> {inputs: [(name, class)], outputs: [...]};
-    a missing entry falls back to the class simple name as slot label and
-    marks the entry slots_verified=False (the orchestrator fail-closes
+    """Join registry.json nodes (slot data types) with slot names + a
+    function branch. Slot names come from two trusted sources, in order:
+    (1) the source ``@AddJIPipe*Slot`` annotations (``source_slots``: node id
+    -> {inputs: [(name, class)], outputs: [...]}) — authoritative for
+    statically-registered nodes; (2) the registry dump's per-slot names
+    (``inputSlots``/``outputSlots`` with a ``name`` field) — authoritative
+    for DYNAMICALLY-registered nodes (cLij2/clijx kernels), which have no
+    source annotation to parse and cannot be dumped from code (the
+    2026-10-19 re-sweep). A node with neither falls back to the class simple
+    name and is marked slots_verified=False (the orchestrator fail-closes
     patterns that depend on unverified slot names)."""
     branch_index = build_branch_index(functions or [])
     cat = []
@@ -449,14 +454,44 @@ def build_catalog(registry: list, source_slots: dict, functions: list = None) ->
                 names = [nm for nm, cls in src if cls == cls_simple]
                 by_dt.setdefault(dt, names or [cls_simple])
             return by_dt
+
+        def join_registry(direction):
+            # Fallback for dynamically-registered nodes: slot names straight
+            # from the booted-launcher registry dump (inputSlots/outputSlots).
+            regkey = "inputSlots" if direction == "inputs" else "outputSlots"
+            name_by_cls = {}
+            for s in n.get(regkey, []):
+                nm = s.get("name") or ""
+                cls_simple = s["class"].rsplit(".", 1)[-1]
+                name_by_cls.setdefault(cls_simple, []).append(nm)
+            by_dt = {}
+            for s in n.get(direction, []):
+                dt = s.get("dataType")
+                if not dt:
+                    continue
+                cls_simple = s["class"].rsplit(".", 1)[-1]
+                names = [nm for nm in name_by_cls.get(cls_simple, []) if nm]
+                by_dt.setdefault(dt, names or [cls_simple])
+            return by_dt
+
+        if n["id"] in source_slots:
+            # source-verified (static node) — unchanged behavior
+            in_map, out_map = join("inputs"), join("outputs")
+            verified = True
+        else:
+            # dynamically-registered (cLij2/clijx) — registry slot names
+            in_map, out_map = join_registry("inputs"), join_registry("outputs")
+            verified = any((s.get("name") or "")
+                           for s in (n.get("inputSlots", [])
+                                     + n.get("outputSlots", [])))
         funcs = n.get("functions") or []
         cat.append({
             "id": n["id"],
             "name": n.get("name", n["id"]),
             "function": branch_of_function(funcs[0], branch_index) if funcs else "misc",
-            "inputs": join("inputs"),
-            "outputs": join("outputs"),
-            "slots_verified": bool(source_slots.get(n["id"])),
+            "inputs": in_map,
+            "outputs": out_map,
+            "slots_verified": verified,
         })
     return cat
 
