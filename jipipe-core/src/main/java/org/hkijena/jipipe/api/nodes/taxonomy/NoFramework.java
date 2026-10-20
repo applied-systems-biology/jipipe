@@ -45,6 +45,6 @@ public class NoFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "initials";
+        return null;
     }
 }

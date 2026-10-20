@@ -102,6 +102,36 @@ class NodePatternEngineTest {
         assertNull(NodePatternStyles.family("does-not-exist"));
     }
 
+    // Registry mapping: every shipped framework resolves to a shipped style; NoFramework carries none
+    @Test
+    void everyFrameworkResolvesToAShippedStyle() {
+        org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] fws = new org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] {
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework()
+        };
+        for (var fw : fws) {
+            assertNotNull(fw.getPatternStyleId(), fw.getId() + " has no style");
+            assertNotNull(NodePatternStyles.family(fw.getPatternStyleId()),
+                    fw.getId() + " -> unknown style " + fw.getPatternStyleId());
+        }
+        assertNull(NodePatternStyles.family(
+                new org.hkijena.jipipe.api.nodes.taxonomy.NoFramework().getPatternStyleId()));
+    }
+
     // Review Focus #3: tiny nodes clamp to the smallest bucket without error
     @Test
     void tinyNodeRendersWithoutError() {

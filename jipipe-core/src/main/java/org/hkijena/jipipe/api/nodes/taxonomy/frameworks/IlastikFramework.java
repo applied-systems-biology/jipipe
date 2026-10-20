@@ -38,6 +38,6 @@ public final class IlastikFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "blobs";
+        return "dots";
     }
 }

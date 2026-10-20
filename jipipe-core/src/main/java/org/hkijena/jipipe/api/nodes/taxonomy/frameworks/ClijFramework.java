@@ -37,6 +37,6 @@ public final class ClijFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "weave";
+        return "honeycomb";
     }
 }

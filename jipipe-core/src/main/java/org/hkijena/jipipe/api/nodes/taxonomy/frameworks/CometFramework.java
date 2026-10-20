@@ -37,6 +37,6 @@ public final class CometFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "constellation";
+        return "net";
     }
 }

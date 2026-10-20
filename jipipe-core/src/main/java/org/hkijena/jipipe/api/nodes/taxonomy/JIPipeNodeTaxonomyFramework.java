@@ -23,7 +23,7 @@ import java.awt.Color;
  * Frameworks are flat: unlike {@link JIPipeNodeTaxonomyFunction}s there is
  * no hierarchy. Each framework has a short {@link #getAbbreviation()
  * abbreviation} (at most 4 characters) used for compact node labels and a
- * DiceBear pattern style id for generated pattern-based icons.
+ * node pattern style id rendered on canvas nodes.
  */
 public interface JIPipeNodeTaxonomyFramework {
 
@@ -54,7 +54,8 @@ public interface JIPipeNodeTaxonomyFramework {
     String getAbbreviation();
 
     /**
-     * @return the DiceBear pattern style id used for this framework's generated icon
+     * @return the node pattern style id rendered on canvas nodes for this
+     * framework's nodes, or {@code null} if the framework carries no pattern
      */
     String getPatternStyleId();
 

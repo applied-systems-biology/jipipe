@@ -37,6 +37,6 @@ public final class RFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "initials";
+        return "landscape";
     }
 }

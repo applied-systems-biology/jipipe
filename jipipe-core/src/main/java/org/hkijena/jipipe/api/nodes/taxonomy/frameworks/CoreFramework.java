@@ -37,6 +37,6 @@ public final class CoreFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "initials";
+        return "patchwork";
     }
 }

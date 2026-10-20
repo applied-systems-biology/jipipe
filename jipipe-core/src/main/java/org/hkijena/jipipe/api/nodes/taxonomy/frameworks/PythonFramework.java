@@ -39,6 +39,6 @@ public final class PythonFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "initials";
+        return "stripes";
     }
 }

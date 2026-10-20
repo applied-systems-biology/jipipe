@@ -37,6 +37,6 @@ public final class JFreeChartFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "shape-grid";
+        return "waves";
     }
 }

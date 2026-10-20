@@ -38,6 +38,6 @@ public final class OmniposeFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "blobs";
+        return "cellular";
     }
 }

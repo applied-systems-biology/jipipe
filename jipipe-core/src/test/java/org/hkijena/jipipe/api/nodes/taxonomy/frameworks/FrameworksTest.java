@@ -26,6 +26,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -33,8 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * table in the Phase 1a plan for Task 11, plus the Python and R frameworks
  * of the scripting re-clustering audit): the exact stable literal ids,
  * display names, abbreviations (at most 4 characters, unique) and
- * DiceBear pattern style ids, a clean {@link FrameworkRegistry#validate()}
- * for the full set, and the stable default color mapping per id.
+ * the node pattern style ids rendered on canvas nodes, a clean
+ * {@link FrameworkRegistry#validate()} for the full set, and the stable
+ * default color mapping per id.
  */
 class FrameworksTest {
 
@@ -104,7 +106,7 @@ class FrameworksTest {
     @Test
     void namesAndPatternStyleIdsMatchTheSeedTable() {
         assertEquals("Core", new CoreFramework().getName());
-        assertEquals("initials", new CoreFramework().getPatternStyleId());
+        assertEquals("patchwork", new CoreFramework().getPatternStyleId());
         assertEquals("Cellpose 2", new Cellpose2Framework().getName());
         assertEquals("blobs", new Cellpose2Framework().getPatternStyleId());
         assertEquals("Cellpose 3", new Cellpose3Framework().getName());
@@ -112,21 +114,34 @@ class FrameworksTest {
         assertEquals("Cellpose 4", new Cellpose4Framework().getName());
         assertEquals("blobs", new Cellpose4Framework().getPatternStyleId());
         assertEquals("TrackMate", new TrackMateFramework().getName());
-        assertEquals("constellation", new TrackMateFramework().getPatternStyleId());
+        assertEquals("net", new TrackMateFramework().getPatternStyleId());
         assertEquals("Comet", new CometFramework().getName());
-        assertEquals("constellation", new CometFramework().getPatternStyleId());
+        assertEquals("net", new CometFramework().getPatternStyleId());
         assertEquals("JIPipeDL", new JIPipeDLFramework().getName());
-        assertEquals("shape-grid", new JIPipeDLFramework().getPatternStyleId());
+        assertEquals("carpet", new JIPipeDLFramework().getPatternStyleId());
         assertEquals("JFreeChart", new JFreeChartFramework().getName());
-        assertEquals("shape-grid", new JFreeChartFramework().getPatternStyleId());
+        assertEquals("waves", new JFreeChartFramework().getPatternStyleId());
         assertEquals("OpenCV", new OpenCVFramework().getName());
         assertEquals("weave", new OpenCVFramework().getPatternStyleId());
         assertEquals("CLIJ", new ClijFramework().getName());
-        assertEquals("weave", new ClijFramework().getPatternStyleId());
+        assertEquals("honeycomb", new ClijFramework().getPatternStyleId());
         assertEquals("ImageJ 1", new ImageJ1Framework().getName());
         assertEquals("triangles", new ImageJ1Framework().getPatternStyleId());
         assertEquals("ImageJ 2", new ImageJ2Framework().getName());
         assertEquals("triangles", new ImageJ2Framework().getPatternStyleId());
+        assertEquals("ilastik", new IlastikFramework().getName());
+        assertEquals("dots", new IlastikFramework().getPatternStyleId());
+        assertEquals("Omnipose", new OmniposeFramework().getName());
+        assertEquals("cellular", new OmniposeFramework().getPatternStyleId());
+        assertEquals("Python", new PythonFramework().getName());
+        assertEquals("stripes", new PythonFramework().getPatternStyleId());
+        assertEquals("R", new RFramework().getName());
+        assertEquals("landscape", new RFramework().getPatternStyleId());
+    }
+
+    @Test
+    void noFrameworkHasNoPatternStyle() {
+        assertNull(new NoFramework().getPatternStyleId(), "NoFramework must carry no pattern");
     }
 
     @Test

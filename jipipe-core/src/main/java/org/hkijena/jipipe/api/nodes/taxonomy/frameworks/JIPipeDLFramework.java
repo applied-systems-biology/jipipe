@@ -37,6 +37,6 @@ public final class JIPipeDLFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getPatternStyleId() {
-        return "shape-grid";
+        return "carpet";
     }
 }
