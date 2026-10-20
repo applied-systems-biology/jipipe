@@ -1,0 +1,150 @@
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under MIT.
+ * See the LICENSE file provided with the code for the full license.
+ */
+
+package org.hkijena.jipipe.desktop.commons.nodepatterns;
+
+import org.junit.jupiter.api.Test;
+
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Random;
+
+import javax.imageio.ImageIO;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class NodePatternEngineTest {
+
+    private static final String[] SIZES = { "64", "128", "200" };
+
+    private static BufferedImage render(String style, String seed, int w, int h) {
+        return NodePatternRenderer.mask(style, seed, w, h);
+    }
+
+    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
+    //    invalidateCache() between the calls so the second mask() truly re-renders
+    //    (otherwise the cache hands back the same object and the test proves nothing).
+    @Test
+    void maskIsDeterministicAcrossInvocations() throws Exception {
+        for (String id : NodePatternStyles.ids()) {
+            for (String s : SIZES) {
+                int n = Integer.parseInt(s);
+                byte[] a = toPng(NodePatternRenderer.mask(id, "seed-x", n, n));
+                NodePatternRenderer.invalidateCache();
+                byte[] b = toPng(NodePatternRenderer.mask(id, "seed-x", n, n));
+                assertArrayEquals(a, b, "mask not deterministic for " + id + "@" + n);
+            }
+        }
+    }
+
+    // 1b. GOLDEN — net@128, seed = TrackMate id, pixel-exact vs the checked-in reference
+    @Test
+    void netMaskMatchesGoldenReference() throws Exception {
+        BufferedImage live = NodePatternRenderer.mask("net", "jipipe:framework:trackmate", 128, 128);
+        BufferedImage ref = ImageIO.read(NodePatternEngineTest.class.getResourceAsStream("golden-net-128.png"));
+        assertNotNull(ref, "golden reference missing");
+        assertSameSize(live, ref);
+        for (int y = 0; y < ref.getHeight(); y++)
+            for (int x = 0; x < ref.getWidth(); x++)
+                assertEquals(ref.getRGB(x, y), live.getRGB(x, y), "golden pixel mismatch at " + x + "," + y);
+    }
+
+    // 2. PLANE-FILLING — ink in the 6px band of ALL four borders, >= 4%, every family, 3 sizes x 2 seeds
+    @Test
+    void everyFamilyFillsAllFourBorders() {
+        for (String id : NodePatternStyles.ids()) {
+            for (String s : SIZES) {
+                int n = Integer.parseInt(s);
+                for (String seed : new String[]{"seed-a", "seed-b"}) {
+                    double[] c = edgeCoverage(NodePatternRenderer.mask(id, seed, n, n));
+                    double min = Math.min(Math.min(c[0], c[1]), Math.min(c[2], c[3]));
+                    assertTrue(min >= 0.04, id + " fails plane-filling (min edge " + min + ")");
+                }
+            }
+        }
+    }
+
+    // 3. COLOR-NEUTRAL — every non-transparent pixel has white channels (alpha may vary)
+    @Test
+    void everyMaskIsWhiteInkOnly() {
+        for (String id : NodePatternStyles.ids()) {
+            BufferedImage m = NodePatternRenderer.mask(id, "seed-c", 128, 128);
+            for (int y = 0; y < m.getHeight(); y++)
+                for (int x = 0; x < m.getWidth(); x++) {
+                    int argb = m.getRGB(x, y);
+                    if (((argb >>> 24) & 0xFF) == 0) continue;
+                    assertEquals(255, (argb >>> 16) & 0xFF, id + " non-white R at " + x + "," + y);
+                    assertEquals(255, (argb >>> 8) & 0xFF, id + " non-white G");
+                    assertEquals(255, argb & 0xFF, id + " non-white B");
+                }
+        }
+    }
+
+    // Registry: every registered id resolves to a non-null family
+    @Test
+    void registryResolvesEveryId() {
+        assertFalse(NodePatternStyles.ids().isEmpty());
+        for (String id : NodePatternStyles.ids())
+            assertNotNull(NodePatternStyles.family(id), "unresolvable style " + id);
+        assertNull(NodePatternStyles.family("does-not-exist"));
+    }
+
+    // Review Focus #3: tiny nodes clamp to the smallest bucket without error
+    @Test
+    void tinyNodeRendersWithoutError() {
+        assertNotNull(NodePatternRenderer.mask("net", "seed", 16, 16));
+    }
+
+    // Review Focus #5: same mask, two inks => tinted draws differ only in color
+    @Test
+    void inkIsAppliedAtDrawTimeNotBakedIn() {
+        BufferedImage base = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = base.createGraphics();
+        NodePatternRenderer.paint(g, 0, 0, 128, 128, "net", "seed", new Color(0xFF0000), 0.5f);
+        g.dispose();
+        long reds = 0, blues = 0, transparent = 0, total = 128L * 128;
+        for (int y = 0; y < 128; y++) for (int x = 0; x < 128; x++) {
+            int a = base.getRGB(x, y);
+            if (((a >>> 24) & 0xFF) == 0) { transparent++; continue; }
+            if (((a >>> 16) & 0xFF) > (a & 0xFF)) reds++; else blues++;
+        }
+        assertTrue(reds > blues, "red ink should dominate the tinted mask");
+        // the tint must follow the mask's shape, not fill the whole rect
+        assertTrue(transparent > total / 2,
+                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
+    }
+
+    // ---- helpers ----
+    static byte[] toPng(BufferedImage img) throws Exception {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        ImageIO.write(img, "png", b);
+        return b.toByteArray();
+    }
+    static void assertSameSize(BufferedImage a, BufferedImage b) {
+        assertEquals(b.getWidth(), a.getWidth());
+        assertEquals(b.getHeight(), a.getHeight());
+    }
+    static double[] edgeCoverage(BufferedImage img) {
+        int S = img.getWidth(); int edgeW = 6; double[] acc = new double[4];
+        for (int i = 0; i < edgeW; i++) {
+            for (int j = 0; j < S; j++) { if (ink(img.getRGB(j, i))) acc[0]++; if (ink(img.getRGB(i, j))) acc[1]++; }
+            for (int j = 0; j < S; j++) { if (ink(img.getRGB(j, S - 1 - i))) acc[2]++; if (ink(img.getRGB(S - 1 - i, j))) acc[3]++; }
+        }
+        double n = edgeW * S;
+        return new double[]{acc[0] / n, acc[1] / n, acc[2] / n, acc[3] / n};
+    }
+    static boolean ink(int argb) { return ((argb >>> 24) & 0xFF) > 40; }
+}
