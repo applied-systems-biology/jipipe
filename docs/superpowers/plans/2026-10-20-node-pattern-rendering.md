@@ -52,7 +52,7 @@ Modified:
 - 16 framework classes in `…/api/nodes/taxonomy/frameworks/` + `…/api/nodes/taxonomy/NoFramework.java` (Task 4).
 - `jipipe-core/src/test/java/org/hkijena/jipipe/api/nodes/taxonomy/frameworks/FrameworksTest.java` (Task 4).
 - `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java` (Task 5).
-- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/nodeui/managers/JIPipeDesktopGraphNodeUINodeContextMenu.java` (Task 5).
+- `jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/JIPipeDesktopGraphCanvasUI.java` (Task 5 — the node context menu is assembled in `createContextMenu()`, ~line 925).
 
 ---
 
@@ -103,13 +103,16 @@ class NodePatternEngineTest {
         return NodePatternRenderer.mask(style, seed, w, h);
     }
 
-    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes
+    // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
+    //    invalidateCache() between the calls so the second mask() truly re-renders
+    //    (otherwise the cache hands back the same object and the test proves nothing).
     @Test
-    void maskIsDeterministicAcrossInvocations() {
+    void maskIsDeterministicAcrossInvocations() throws Exception {
         for (String id : NodePatternStyles.ids()) {
             for (String s : SIZES) {
                 int n = Integer.parseInt(s);
                 byte[] a = toPng(NodePatternRenderer.mask(id, "seed-x", n, n));
+                NodePatternRenderer.invalidateCache();
                 byte[] b = toPng(NodePatternRenderer.mask(id, "seed-x", n, n));
                 assertArrayEquals(a, b, "mask not deterministic for " + id + "@" + n);
             }
@@ -181,13 +184,16 @@ class NodePatternEngineTest {
         Graphics2D g = base.createGraphics();
         NodePatternRenderer.paint(g, 0, 0, 128, 128, "net", "seed", new Color(0xFF0000), 0.5f);
         g.dispose();
-        long reds = 0, blues = 0;
+        long reds = 0, blues = 0, transparent = 0, total = 128L * 128;
         for (int y = 0; y < 128; y++) for (int x = 0; x < 128; x++) {
             int a = base.getRGB(x, y);
-            if (((a >>> 24) & 0xFF) == 0) continue;
+            if (((a >>> 24) & 0xFF) == 0) { transparent++; continue; }
             if ((a & 0xFF) > ((a >>> 16) & 0xFF)) reds++; else blues++;
         }
         assertTrue(reds > blues, "red ink should dominate the tinted mask");
+        // the tint must follow the mask's shape, not fill the whole rect
+        assertTrue(transparent > total / 2,
+                "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
     }
 
     // ---- helpers ----
@@ -308,12 +314,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * Renders and caches color-neutral (white-on-transparent) pattern masks and
  * draws them tinted onto nodes.
  * <p>
- * The mask is theme-INDEPENDENT (white ink) and keyed by (style, seed, size
- * bucket) — changing ink/opacity never invalidates it. Nodes cluster into a
- * handful of sizes; larger nodes scale the nearest bucket up via drawImage.
+ * Two cache levels:
+ * <ul>
+ *   <li>the white MASK, keyed by (style, seed, size bucket) — theme-independent;
+ *       changing ink/opacity never invalidates it;</li>
+ *   <li>the TINTED copy, keyed by (mask, ink, opacity) — built once per theme
+ *       look, drawn per node with a plain alpha composite.</li>
+ * </ul>
+ * Nodes cluster into a handful of sizes; larger nodes scale the nearest
+ * bucket up via drawImage.
  */
 public final class NodePatternRenderer {
-    private static final Map<String, BufferedImage> CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, BufferedImage> MASK_CACHE = new ConcurrentHashMap<>();
+    private static final Map<String, BufferedImage> TINT_CACHE = new ConcurrentHashMap<>();
     private static final int BUCKET = 8;
     private static final int MAX = 512;
 
@@ -326,32 +339,52 @@ public final class NodePatternRenderer {
         int w = clamp(bucket(width));
         int h = clamp(bucket(height));
         String key = styleId + "\u0000" + seed + "\u0000" + w + "\u0000" + h;
-        return CACHE.computeIfAbsent(key, k -> render(fam, w, h, new Random(seed.hashCode())));
+        return MASK_CACHE.computeIfAbsent(key, k -> render(fam, w, h, new Random(seed.hashCode())));
     }
 
     /** Paints the mask into (x,y,w,h), tinted with {@code ink} at {@code opacity}. */
     public static void paint(Graphics2D g, int x, int y, int w, int h,
                              String styleId, String seed, Color ink, float opacity) {
-        BufferedImage mask = mask(styleId, seed, w, h);
-        if (mask == null) return;
+        BufferedImage m = mask(styleId, seed, w, h);
+        if (m == null) return;
+        BufferedImage tinted = tint(m, ink, opacity);
         Graphics2D gg = (Graphics2D) g.create();
         gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        gg.translate(x, y);
-        gg.setColor(ink);
-        gg.setComposite(java.awt.AlphaComposite.getInstance(
-                java.awt.AlphaComposite.SRC_IN, clampOpacity(opacity)));
-        // draw the mask as a clip, then fill => tint the existing ink only
-        gg.drawImage(mask, 0, 0, w, h, null);
-        // SRC_IN over a transparent canvas keeps only the mask's alpha, tinted
+        gg.drawImage(tinted, x, y, w, h, null);
         gg.dispose();
     }
 
-    public static void invalidateCache() { CACHE.clear(); }
+    /** Clears both caches (test hook; not needed for theme changes — the mask is theme-independent). */
+    public static void invalidateCache() {
+        MASK_CACHE.clear();
+        TINT_CACHE.clear();
+    }
 
     // ---- internal ----
+
+    /** Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}). */
+    private static BufferedImage tint(BufferedImage mask, Color ink, float opacity) {
+        int w = mask.getWidth(), h = mask.getHeight();
+        float o = Math.max(0f, Math.min(1f, opacity));
+        int inkArgb = (ink.getRed() << 16) | (ink.getGreen() << 8) | ink.getBlue();
+        String key = inkArgb + "\u0000" + Float.floatToIntBits(o) + "\u0000" + w + "\u0000" + h;
+        return TINT_CACHE.computeIfAbsent(key, k -> {
+            int[] src = mask.getRGB(0, 0, w, h, null, 0, w);
+            int[] dst = new int[src.length];
+            for (int i = 0; i < src.length; i++) {
+                int a = (src[i] >>> 24) & 0xFF;
+                if (a == 0) continue;
+                int alpha = (int) Math.round(a * o);
+                dst[i] = (alpha << 24) | inkArgb;
+            }
+            BufferedImage out = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+            out.setRGB(0, 0, w, h, dst, 0, w);
+            return out;
+        });
+    }
+
     private static int bucket(int v) { return Math.max(1, (v / BUCKET) * BUCKET); }
     private static int clamp(int v) { return Math.min(MAX, Math.max(1, v)); }
-    private static float clampOpacity(float o) { return Math.max(0f, Math.min(1f, o)); }
 
     private static BufferedImage render(NodePatternFamily fam, int w, int h, Random rng) {
         BufferedImage img = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -366,7 +399,7 @@ public final class NodePatternRenderer {
 }
 ```
 
-IMPORTANT — the `paint(...)` tinting above is the part that is genuinely non-obvious and the test `inkIsAppliedAtDrawTimeNotBakedIn` pins it. The technique: draw the white mask, then composite the ink with `SRC_IN` so only the mask's alpha region takes the ink. If the first attempt tints the whole rect (not just the ink), the correct approach is: render the mask into a temp ARGB image, multiply its alpha by the ink color (build a `BufferedImage` where each inked pixel = ink with the mask's alpha), then `drawImage` that with `opacity`. Implement whichever makes `inkIsAppliedAtDrawTimeNotBakedIn` pass with the mask's shape preserved (not a solid rect). Keep it in a private helper so the public `paint` stays one call.
+The tint technique (mask alpha × ink color, per-pixel, cached) is the non-obvious part of this task; the test `inkIsAppliedAtDrawTimeNotBakedIn` pins it, including the guard that the tint follows the mask's shape rather than filling the rectangle. Do NOT tint with `SRC_IN` on the node's graphics object — that compositing mode multiplies the ink into everything already painted (it would erase the node body).
 
 - [ ] **Step 5: Port the 6 families**
 
@@ -493,7 +526,7 @@ Engine contract tests now sweep the full catalog. (6.0.0)"
 - Produces (on `JIPipeDesktopModernThemeStyle`): `isShowNodeFrameworkPattern()`, `setShowNodeFrameworkPattern(boolean)`, `getNodePatternInk()`, `setNodePatternInk(Color)`, `getNodePatternOpacity()`, `setNodePatternOpacity(float)`, `isShowNodeFrameworkBadge()`, `setShowNodeFrameworkBadge(boolean)`.
 - Consumes: Task 1/2 (not directly — this is the settings layer).
 
-Exact names/defaults (from the spec): `showNodeFrameworkPattern` (boolean, `true`), `nodePatternInk` (Color, `Color.WHITE`), `nodePatternOpacity` (float, `0.15f`), `showNodeFrameworkBadge` (boolean, `true`). JSON keys: `node-framework-pattern-enabled`, `node-pattern-ink`, `node-pattern-opacity`, `node-framework-badge-enabled`.
+Exact names/defaults (from the spec): `showNodeFrameworkPattern` (boolean, `true`), `nodePatternInk` (Color, `Color.WHITE`), `nodePatternOpacity` (float, `0.15f`), `showNodeFrameworkBadge` (boolean, `true`). `@JsonProperty`/`@JIPipeParameter` keys (kebab-case, matching the file's existing `node-fill-saturation`-style keys): `show-node-framework-pattern`, `node-pattern-ink`, `node-pattern-opacity`, `show-node-framework-badge`.
 
 - [ ] **Step 1: Write the failing persistence test**
 
@@ -630,45 +663,65 @@ Mapping (from the spec table — this is the ship contract):
 
 - [ ] **Step 1: Write the failing mapping test**
 
-In `FrameworksTest.java`, the existing test that pins the old DiceBear ids (`assertEquals("blobs", new Cellpose2Framework().getPatternStyleId())`, etc., ~lines 107-129) now encodes the OLD mapping — replace those expectations with the table above, and add:
+Two tests live in `FrameworksTest.java` (api test — it may import api classes but NOT the desktop `NodePatternStyles`):
 
+(a) The existing `namesAndPatternStyleIdsMatchTheSeedTable` (lines ~105-129) pins the OLD ids — replace its pattern-style assertions with the new mapping (keep the name assertions):
+```java
+        assertEquals("patchwork", new CoreFramework().getPatternStyleId());
+        assertEquals("blobs", new Cellpose2Framework().getPatternStyleId());
+        assertEquals("blobs", new Cellpose3Framework().getPatternStyleId());
+        assertEquals("blobs", new Cellpose4Framework().getPatternStyleId());
+        assertEquals("net", new TrackMateFramework().getPatternStyleId());
+        assertEquals("net", new CometFramework().getPatternStyleId());
+        assertEquals("carpet", new JIPipeDLFramework().getPatternStyleId());
+        assertEquals("waves", new JFreeChartFramework().getPatternStyleId());
+        assertEquals("weave", new OpenCVFramework().getPatternStyleId());
+        assertEquals("honeycomb", new ClijFramework().getPatternStyleId());
+        assertEquals("triangles", new ImageJ1Framework().getPatternStyleId());
+        assertEquals("triangles", new ImageJ2Framework().getPatternStyleId());
+        assertEquals("dots", new IlastikFramework().getPatternStyleId());
+        assertEquals("cellular", new OmniposeFramework().getPatternStyleId());
+        assertEquals("stripes", new PythonFramework().getPatternStyleId());
+        assertEquals("landscape", new RFramework().getPatternStyleId());
+```
+(b) New:
 ```java
     @Test
     void noFrameworkHasNoPatternStyle() {
         assertNull(new NoFramework().getPatternStyleId(), "NoFramework must carry no pattern");
     }
-
-    @Test
-    void everyFrameworkResolvesToAShippedStyle() {
-        for (Class<? extends JIPipeNodeTaxonomyFramework> cls : allFrameworks()) {
-            String styleId = instantiate(cls).getPatternStyleId();
-            if (cls == NoFramework.class) { assertNull(styleId); continue; }
-            assertNotNull(styleId, cls.getSimpleName() + " has no style");
-            assertNotNull(org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternStyles.family(styleId),
-                    cls.getSimpleName() + " -> unknown style " + styleId);
-        }
-    }
 ```
+(The existing `patternStyleIdsAreNonEmpty` stays — `allFrameworks()` lists the 16 frameworks and excludes `NoFramework`, so it still passes once the mapping is in.)
 
-Add the same registry-mapping sweep to `NodePatternEngineTest` (it must not require JIPipe boot — so assert the 15 literal pairs against the framework classes directly, which are plain instantiable objects):
-
+The registry-resolution half lives in `NodePatternEngineTest` (desktop test — importing the api framework classes is fine; desktop depends on api). Add:
 ```java
     @Test
-    void frameworkMappingMatchesSpecTable() {
-        assertEquals("blobs", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework().getPatternStyleId());
-        assertEquals("net",   new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework().getPatternStyleId());
-        assertEquals("net",   new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework().getPatternStyleId());
-        assertEquals("honeycomb", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework().getPatternStyleId());
-        assertEquals("triangles", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework().getPatternStyleId());
-        assertEquals("waves", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework().getPatternStyleId());
-        assertEquals("patchwork", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework().getPatternStyleId());
-        assertEquals("weave", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework().getPatternStyleId());
-        assertEquals("stripes", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework().getPatternStyleId());
-        assertEquals("cellular", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework().getPatternStyleId());
-        assertEquals("dots", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework().getPatternStyleId());
-        assertEquals("landscape", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework().getPatternStyleId());
-        assertEquals("carpet", new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework().getPatternStyleId());
-        assertNull(new org.hkijena.jipipe.api.nodes.taxonomy.NoFramework().getPatternStyleId());
+    void everyFrameworkResolvesToAShippedStyle() {
+        org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeNodeTaxonomyFramework[] fws = new org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework[] {
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework()
+        };
+        for (var fw : fws) {
+            assertNotNull(fw.getPatternStyleId(), fw.getId() + " has no style");
+            assertNotNull(NodePatternStyles.family(fw.getPatternStyleId()),
+                    fw.getId() + " -> unknown style " + fw.getPatternStyleId());
+        }
+        assertNull(NodePatternStyles.family(
+                new org.hkijena.jipipe.api.nodes.taxonomy.NoFramework().getPatternStyleId()));
     }
 ```
 
@@ -707,7 +760,7 @@ NoFramework carries no pattern. Mapping is the ship contract (tested). (6.0.0)"
 
 **Files:**
 - Modify: `…/desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java`
-- Modify: `…/desktop/app/grapheditor/commons/nodeui/managers/JIPipeDesktopGraphNodeUINodeContextMenu.java`
+- Modify: `…/desktop/app/grapheditor/commons/JIPipeDesktopGraphCanvasUI.java`
 
 **Interfaces:**
 - Consumes: `NodePatternRenderer.paint(...)` (Task 1), the theme accessors (Task 3), `node.getInfo().getFramework()` (defaults `NoFramework`), `fw.getPatternStyleId()`, `fw.getId()`, `fw.getAbbreviation()`, `fw.getName()`, `fw.getColor()`.
@@ -744,7 +797,7 @@ In `paintMinimap` (~line 1549), after the body fill (`graphics2D.fillRect(x, y, 
 
 - [ ] **Step 4: Framework name in the node context menu**
 
-In `JIPipeDesktopGraphNodeUINodeContextMenu`, add a disabled info line for the node's framework (the canvas has no hover-tooltip, so the context menu is the discoverability surface for the full framework name — the abbreviation chip alone is not self-explanatory). If the node's framework is not `NoFramework`, add a disabled `JMenuItem` `Framework: <fw.getName()>` near the top of the node menu (after the run menu / separator). Guard on the same framework check.
+NOTE: `JIPipeDesktopGraphNodeUINodeContextMenu` is only the **run-node submenu**. The node's main context menu (Disable/Delete/Rename/…) is assembled by `JIPipeDesktopGraphCanvasUI.createContextMenu()` (~line 925), which already contains selection-based node sections (the "Node partitioning menus" block, ~line 953). There, when the selection contains exactly one node UI (`selectionManager.getSelectionByType(JIPipeDesktopGraphNodeUI.class)` of size 1) whose framework is not `NoFramework`, add at the very top of that block: `menu.add` a disabled `JMenuItem("Framework: " + fw.getName())` (a leading separator only if the menu is non-empty). The canvas has no hover-tooltip, so this line is the discoverability surface for the full framework name — the abbreviation chip alone is not self-explanatory. Guard on the same framework check.
 
 - [ ] **Step 5: Compile**
 
@@ -764,7 +817,7 @@ Regenerate a node-wall preview from the SHIPPED families (not the prototype) so 
 
 ```bash
 git add jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/nodeui/JIPipeDesktopGraphNodeUI.java \
-        jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/nodeui/managers/JIPipeDesktopGraphNodeUINodeContextMenu.java
+        jipipe-core/src/main/java/org/hkijena/jipipe/desktop/app/grapheditor/commons/JIPipeDesktopGraphCanvasUI.java
 git commit -m "feat: paint framework pattern + abbreviation badge on canvas nodes, minimap reuse, context-menu framework line
 
 Pattern over the whole body (hatch paints over it), abbreviation chip in
