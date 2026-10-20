@@ -188,7 +188,7 @@ class NodePatternEngineTest {
         for (int y = 0; y < 128; y++) for (int x = 0; x < 128; x++) {
             int a = base.getRGB(x, y);
             if (((a >>> 24) & 0xFF) == 0) { transparent++; continue; }
-            if ((a & 0xFF) > ((a >>> 16) & 0xFF)) reds++; else blues++;
+            if (((a >>> 16) & 0xFF) > (a & 0xFF)) reds++; else blues++;
         }
         assertTrue(reds > blues, "red ink should dominate the tinted mask");
         // the tint must follow the mask's shape, not fill the whole rect
