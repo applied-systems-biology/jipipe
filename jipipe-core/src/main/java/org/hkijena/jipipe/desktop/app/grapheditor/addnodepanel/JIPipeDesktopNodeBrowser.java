@@ -421,7 +421,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // "Configure templates" gear (spec §8.3): opens the TemplateManagement
         // modal on Global by default (or the selected entry's scope when a
         // template entry is selected — see openTemplateManagementFromToolbar).
-        JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
+        JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         configureTemplatesButton.setToolTipText("Configure node templates");
         UIUtils.makeButtonFlatWithSize(configureTemplatesButton, 28);
         configureTemplatesButton.addActionListener(e -> openTemplateManagementFromToolbar());
