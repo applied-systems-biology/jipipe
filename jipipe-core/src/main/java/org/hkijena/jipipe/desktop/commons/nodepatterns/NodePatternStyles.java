@@ -30,8 +30,18 @@ public final class NodePatternStyles {
         STYLES.put("carpet", new CarpetFamily());
         STYLES.put("hilbert", new HilbertFamily());
         STYLES.put("landscape", new LandscapeFamily());
-        // Task 2 adds: waves, weave, patchwork, loops, disco, triangles, blobs,
-        //              dots, honeycomb, ripple, flow
+        // Task 2 (complete the 17)
+        STYLES.put("waves", new WavesFamily());
+        STYLES.put("weave", new WeaveFamily());
+        STYLES.put("patchwork", new PatchworkFamily());
+        STYLES.put("loops", new LoopsFamily());
+        STYLES.put("disco", new DiscoFamily());
+        STYLES.put("triangles", new TrianglesFamily());
+        STYLES.put("blobs", new BlobsFamily());
+        STYLES.put("dots", new DotsFamily());
+        STYLES.put("honeycomb", new HoneycombFamily());
+        STYLES.put("ripple", new RippleFamily());
+        STYLES.put("flow", new FlowFamily());
     }
 
     private NodePatternStyles() {}
