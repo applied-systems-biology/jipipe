@@ -791,6 +791,13 @@ Add the needed imports (`NodePatternRenderer`, `JIPipeDesktopModernThemeStyle`, 
 
 In `paintNodeControls` (after the node name is drawn, ~line 1205+), when the badge is enabled and the framework is not `NoFramework`, draw a rounded chip: abbreviation text, fill = `fw.getColor()`, border = the node border color, using `zoomedTertiaryFont` (or a derived small font). Compute the chip width with the same `FontMetrics` the name uses and **add it to the title-band centering math** — extend the `centerNativeWidth` expression (the `nameWidth` sum, ~line 1215) by the chip width (a small gap + the chip) when the badge is shown, so the whole run-button/partition/icon/name/chip group stays centered.
 
+CRITICAL — the badge extra width has THREE sites, not two; all three must derive from ONE native-units helper or the chip clips (Ruling 20):
+1. `paintNodeControls` `centerNativeWidth` (~line 1219) — zoomed.
+2. `updateWholeNodeActiveAreas()` `centerNativeWidth` (~line 414, the run-button hit-area math) — zoomed.
+3. **`updateSize()` `mainWidth` (~line 574, the node's actual width, NATIVE units)** — if this is missed, on title-band-width-driven nodes the node is too narrow and the centered chip overflows the right edge (verified: "Threshold"+CPOS clips ~8px). Add the badge's NATIVE extra width here: `4 + nativeTertiaryFontMetrics.stringWidth(abbr) + 6`.
+
+Make a single native-units helper (e.g. `badgeExtraNativeWidth()`) and have the two zoomed sites return `badgeExtraNativeWidth() * zoom` (stringWidth scales linearly with the zoomed font) — so paint, hit-areas, and node-width can never drift.
+
 Guard: `style.isShowNodeFrameworkBadge() && fw != null && !NoFramework.ID.equals(fw.getId())`. Cache the framework on the node UI instance (next to `nodeFillColor`, ~line 92) so it is read once per node, not per paint.
 
 - [ ] **Step 3: Reuse the mask in the minimap**
