@@ -340,6 +340,15 @@ the legacy category-hue path is replaced, not extended.
 
 ## Node rendering (Phase 2)
 
+> **SUPERSEDED (2026-10-20):** the DiceBear port plan below was rejected
+> after evaluating the real DiceBear output (centered non-plane-filling
+> motifs, baked-in palettes, no organic style). Phase 2 now follows
+> [`2026-10-20-node-pattern-rendering-design.md`](2026-10-20-node-pattern-rendering-design.md):
+> a pure-Java2D formula engine in jipipe-core (no contrib module, no Batik,
+> no SVG), color-neutral alpha masks, plane-filling enforced by tests,
+> pattern + badge on canvas nodes. The sections below are kept as the
+> evaluation record.
+
 Framework identification on canvas nodes: **full-body procedural pattern +
 badge** (design option A, approved).
 
