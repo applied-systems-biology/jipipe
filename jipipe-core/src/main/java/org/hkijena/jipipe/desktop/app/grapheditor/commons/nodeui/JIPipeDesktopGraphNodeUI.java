@@ -380,15 +380,12 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     protected void updateWholeNodeActiveAreas() {
         final int shift = getBaseSlotXShift();
         FontMetrics mainFontMetrics;
-        FontMetrics tertiaryFontMetrics;
 
         if (getGraphics() != null) {
             mainFontMetrics = getGraphics().getFontMetrics(zoomedMainFont);
-            tertiaryFontMetrics = getGraphics().getFontMetrics(zoomedTertiaryFont);
         } else {
             Canvas c = new Canvas();
             mainFontMetrics = c.getFontMetrics(zoomedMainFont);
-            tertiaryFontMetrics = c.getFontMetrics(zoomedTertiaryFont);
         }
 
         // Whole node
@@ -420,7 +417,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
 
             double nameWidth = getNameWidth(mainFontMetrics);
-            double badgeExtraWidth = getBadgeExtraWidth(tertiaryFontMetrics);
+            double badgeExtraWidth = getBadgeExtraWidth();
             int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + nameWidth + badgeExtraWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
 
@@ -571,7 +568,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         } else {
             nameWidth = mainFontMetrics.stringWidth(getDisplayedNodeName());
         }
-        double mainWidth = (nodeIsRunnable ? 22 : 0) + getBaseSlotXShift() + (isDrawNodeIcon() ? 22 : 0) + nameWidth + 16;
+        double mainWidth = (nodeIsRunnable ? 22 : 0) + getBaseSlotXShift() + (isDrawNodeIcon() ? 22 : 0) + nameWidth + 16
+                + badgeExtraNativeWidth();
 
         // Slot widths
         double sumInputSlotWidths = 0;
@@ -1235,7 +1233,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             String nameLabel = getDisplayedNodeName();
             double nameWidth = getNameWidth(fontMetrics);
             FontMetrics tertiaryFontMetrics = g2.getFontMetrics(zoomedTertiaryFont);
-            double badgeExtraWidth = getBadgeExtraWidth(tertiaryFontMetrics);
+            double badgeExtraWidth = getBadgeExtraWidth();
 
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth + badgeExtraWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
@@ -1333,35 +1331,62 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
 
     /**
      * The width the framework abbreviation chip adds to the centered title-band
-     * group: the gap (4*zoom) plus the chip. Zero when the chip is not shown.
+     * group, in ZOOMED units. Zero when the chip is not shown.
      * <p>
-     * Added to the title-band centering math in both {@code paintNodeControls}
-     * (drawing) and {@code updateWholeNodeActiveAreas} (hit areas) so the drawn
-     * controls and the mouse targets stay aligned.
+     * Derived from {@link #badgeExtraNativeWidth()} (one native measurement
+     * × zoom) so the title-band centering (drawing), the run-button hit areas,
+     * and the node width ({@code updateSize}) can never drift apart
+     * (review ruling 20).
      */
-    private double getBadgeExtraWidth(FontMetrics tertiaryFontMetrics) {
-        if (!isFrameworkBadgeEnabled(ThemeUtils.getCurrentStyle())) {
-            return 0;
-        }
-        return 4 * zoom + getBadgeChipWidth(tertiaryFontMetrics);
+    private double getBadgeExtraWidth() {
+        return badgeExtraNativeWidth() * zoom;
     }
 
     /**
-     * The framework abbreviation chip width for the given (zoomed tertiary)
-     * font metrics: the abbreviation plus 6*zoom padding.
+     * The width the framework abbreviation chip adds to the title-band group,
+     * in NATIVE units: the gap (4) plus the chip (abbreviation width in the
+     * native tertiary font + 6 padding). Zero when the chip is not shown.
+     * <p>
+     * Measured with {@code getNativeTertiaryFont()} — the same font source
+     * {@code updateSize} uses — so all three badge-width sites
+     * ({@code updateSize}, {@code paintNodeControls},
+     * {@code updateWholeNodeActiveAreas}) share one zoom-independent
+     * measurement (review ruling 20).
      */
-    private double getBadgeChipWidth(FontMetrics tertiaryFontMetrics) {
-        return tertiaryFontMetrics.stringWidth(nodeFramework.getAbbreviation()) + 6 * zoom;
+    private double badgeExtraNativeWidth() {
+        if (!isFrameworkBadgeEnabled(ThemeUtils.getCurrentStyle())) {
+            return 0;
+        }
+        return 4 + badgeChipNativeWidth();
+    }
+
+    /**
+     * The framework abbreviation chip width in NATIVE units: the abbreviation
+     * width in the native tertiary font (the same font source {@code updateSize}
+     * uses) plus 6 padding.
+     */
+    private double badgeChipNativeWidth() {
+        FontMetrics fontMetrics;
+        if (getGraphics() != null) {
+            fontMetrics = getGraphics().getFontMetrics(getNativeTertiaryFont());
+        } else {
+            fontMetrics = new Canvas().getFontMetrics(getNativeTertiaryFont());
+        }
+        return fontMetrics.stringWidth(nodeFramework.getAbbreviation()) + 6;
     }
 
     /**
      * Draws the framework abbreviation chip at {@code chipX}, vertically
      * centered on {@code centerY}. Fill = the framework color, 1px border =
      * the node border color, abbreviation in a contrasting color.
+     * <p>
+     * The chip width is the shared native measurement × zoom (review ruling 20),
+     * so the drawn chip always fits the width reserved by
+     * {@code updateSize}/{@code getBadgeExtraWidth}.
      */
     private void paintFrameworkBadge(Graphics2D g2, double chipX, int centerY, FontMetrics tertiaryFontMetrics) {
         String abbreviation = nodeFramework.getAbbreviation();
-        double chipWidth = getBadgeChipWidth(tertiaryFontMetrics);
+        double chipWidth = badgeChipNativeWidth() * zoom;
         double chipHeight = 14 * zoom;
         double chipY = centerY - chipHeight / 2;
         double arc = 6 * zoom;
