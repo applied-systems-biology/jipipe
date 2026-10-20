@@ -225,18 +225,22 @@ opacity slider + color picker). All off ⇒ today's look, per goal 6.
 ## Testing (per the "do not test trivial things" policy — 4 contracts)
 
 All tests headless (`BufferedImage` only, no Swing interaction; no display
-needed), in `jipipe-core/src/test/.../nodepatterns/`:
+needed), in `jipipe-core/src/test/.../nodepatterns/`
+(`NodePatternEngineTest`, no JIPipe boot required):
 
 1. **Determinism** — `mask(style, seed, size)` is byte-identical across two
    independent renderer invocations (fresh `Random` from the same seed), for
    all 17 styles at 3 sizes. Plus one **golden mask** (a small PNG checked in
-   as a test resource) pinned for `net` at 128×128 — the byte-stable
-   idempotency-pin pattern the generators already use.
+   as a test resource, seed `jipipe:framework:trackmate`, style `net`,
+   128×128) pinned pixel-exactly — the byte-stable idempotency-pin pattern
+   the generators already use.
 2. **Plane-filling** — for every family, at 3 sizes × 2 seeds: ink coverage
    in the 6px band of **all four** borders ≥ 4%. This is the regression guard
    for the centered-motif defects (constellation/sierpinski/koch class).
 3. **Color-neutral** — for every family at one size: every non-transparent
-   mask pixel is pure white (`r==g==b==255`). Recolorability is structural.
+   mask pixel has white color channels (`r==g==b==255`; alpha may vary —
+   some styles use translucent fills). Recolorability is structural: the
+   mask can be drawn with any tint via `AlphaComposite`.
 4. **Registry** — every framework in `JIPipe.getNodes().getFrameworks().all()`
    except `NoFramework` resolves to a non-null style id that `NodePatternStyles`
    knows; `NoFramework` returns null; all 15 mapped framework→style pairs from
