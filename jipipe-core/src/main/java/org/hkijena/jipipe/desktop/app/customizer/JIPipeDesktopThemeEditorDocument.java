@@ -119,6 +119,10 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         categoryGraphEditor.nodeFillBrightness = style.getNodeFillBrightness();
         categoryGraphEditor.nodeBorderSaturation = style.getNodeBorderSaturation();
         categoryGraphEditor.nodeBorderBrightness = style.getNodeBorderBrightness();
+        categoryGraphEditor.showNodeFrameworkPattern = style.isShowNodeFrameworkPattern();
+        categoryGraphEditor.nodePatternInk = style.getNodePatternInk();
+        categoryGraphEditor.nodePatternOpacity = style.getNodePatternOpacity();
+        categoryGraphEditor.showNodeFrameworkBadge = style.isShowNodeFrameworkBadge();
         categoryGraphEditor.edgeBorderColorDefault = style.getEdgeBorderColorDefault();
         categoryGraphEditor.edgeBorderColorConvert = style.getEdgeBorderColorConvert();
     }
@@ -181,6 +185,10 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         result.setNodeFillBrightness(categoryGraphEditor.getNodeFillBrightness());
         result.setNodeBorderSaturation(categoryGraphEditor.getNodeBorderSaturation());
         result.setNodeBorderBrightness(categoryGraphEditor.getNodeBorderBrightness());
+        result.setShowNodeFrameworkPattern(categoryGraphEditor.isShowNodeFrameworkPattern());
+        result.setNodePatternInk(categoryGraphEditor.getNodePatternInk());
+        result.setNodePatternOpacity(categoryGraphEditor.getNodePatternOpacity());
+        result.setShowNodeFrameworkBadge(categoryGraphEditor.isShowNodeFrameworkBadge());
         result.setEdgeBorderColorDefault(categoryGraphEditor.getEdgeBorderColorDefault());
         result.setEdgeBorderColorConvert(categoryGraphEditor.getEdgeBorderColorConvert());
 
@@ -778,6 +786,10 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private float nodeFillBrightness = 0.9f;
         private float nodeBorderSaturation = 0.1f;
         private float nodeBorderBrightness = 0.5f;
+        private boolean showNodeFrameworkPattern = true;
+        private Color nodePatternInk = Color.WHITE;
+        private float nodePatternOpacity = 0.15f;
+        private boolean showNodeFrameworkBadge = true;
         private Color edgeBorderColorDefault = new Color(0x737880);
         private Color edgeBorderColorConvert = new Color(0x2957C2);
 
@@ -867,6 +879,50 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         @JIPipeParameter("node-border-brightness")
         public void setNodeBorderBrightness(float nodeBorderBrightness) {
             this.nodeBorderBrightness = nodeBorderBrightness;
+        }
+
+        @SetJIPipeDocumentation(name = "Show framework pattern", description = "Show the node framework pattern on nodes")
+        @JIPipeParameter("show-node-framework-pattern")
+        public boolean isShowNodeFrameworkPattern() {
+            return showNodeFrameworkPattern;
+        }
+
+        @JIPipeParameter("show-node-framework-pattern")
+        public void setShowNodeFrameworkPattern(boolean showNodeFrameworkPattern) {
+            this.showNodeFrameworkPattern = showNodeFrameworkPattern;
+        }
+
+        @SetJIPipeDocumentation(name = "Pattern ink", description = "The ink color of the node framework pattern")
+        @JIPipeParameter("node-pattern-ink")
+        public Color getNodePatternInk() {
+            return nodePatternInk;
+        }
+
+        @JIPipeParameter("node-pattern-ink")
+        public void setNodePatternInk(Color nodePatternInk) {
+            this.nodePatternInk = nodePatternInk;
+        }
+
+        @SetJIPipeDocumentation(name = "Pattern opacity", description = "The opacity of the node framework pattern (0.0-1.0)")
+        @JIPipeParameter("node-pattern-opacity")
+        public float getNodePatternOpacity() {
+            return nodePatternOpacity;
+        }
+
+        @JIPipeParameter("node-pattern-opacity")
+        public void setNodePatternOpacity(float nodePatternOpacity) {
+            this.nodePatternOpacity = nodePatternOpacity;
+        }
+
+        @SetJIPipeDocumentation(name = "Show framework badge", description = "Show the framework badge on nodes")
+        @JIPipeParameter("show-node-framework-badge")
+        public boolean isShowNodeFrameworkBadge() {
+            return showNodeFrameworkBadge;
+        }
+
+        @JIPipeParameter("show-node-framework-badge")
+        public void setShowNodeFrameworkBadge(boolean showNodeFrameworkBadge) {
+            this.showNodeFrameworkBadge = showNodeFrameworkBadge;
         }
     }
 }
