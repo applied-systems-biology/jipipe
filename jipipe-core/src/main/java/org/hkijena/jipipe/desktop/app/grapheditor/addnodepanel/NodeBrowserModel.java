@@ -84,6 +84,15 @@ public class NodeBrowserModel {
      */
     @Nullable
     private TemplateScope selectedScope;
+    /**
+     * The taxonomy function whose synthetic {@code <function>/Patterns} row
+     * is selected (the per-function template grouping — the row lists the
+     * template entries filed under that function). MUTUALLY EXCLUSIVE with
+     * {@link #treePath} and {@link #selectedScope} (setting one clears the
+     * other two). {@code null} = no Patterns row selected.
+     */
+    @Nullable
+    private JIPipeNodeTaxonomyFunction patternsFunction;
     private boolean pinnedOnly;
     private boolean selectionOnly;
 
@@ -300,9 +309,11 @@ public class NodeBrowserModel {
      */
     public void setTreePath(@Nullable List<JIPipeNodeTaxonomyFunction> treePath) {
         this.treePath = Collections.unmodifiableList(treePath == null ? List.of() : new ArrayList<>(treePath));
-        // A function path and a template scope are mutually exclusive
-        // selections (spec §7.2): choosing one cancels the other.
+        // A function path, a template scope, and a <function>/Patterns row are
+        // mutually exclusive selections (spec §7.2 + the Patterns grouping):
+        // choosing one cancels the others.
         this.selectedScope = null;
+        this.patternsFunction = null;
     }
 
     /**
@@ -318,30 +329,61 @@ public class NodeBrowserModel {
     /**
      * @param selectedScope the template scope to select in the synthetic
      *                      branch; {@code null} clears the scope selection.
-     *                      Mutually exclusive with {@link #setTreePath}:
-     *                      selecting a scope clears the function path.
+     *                      Mutually exclusive with {@link #setTreePath} and
+     *                      {@link #setPatternsFunction}: selecting a scope
+     *                      clears the function path and the Patterns row.
      */
     public void setSelectedScope(@Nullable TemplateScope selectedScope) {
         this.selectedScope = selectedScope;
         if (selectedScope != null) {
             this.treePath = List.of();
+            this.patternsFunction = null;
+        }
+    }
+
+    /**
+     * @return the taxonomy function whose {@code <function>/Patterns} row is
+     *         selected, or {@code null} when a function path, a template
+     *         scope, or the root is selected instead
+     */
+    @Nullable
+    public JIPipeNodeTaxonomyFunction getPatternsFunction() {
+        return patternsFunction;
+    }
+
+    /**
+     * @param patternsFunction the function whose {@code <function>/Patterns}
+     *                         row is selected (the list then shows the
+     *                         template entries filed under exactly that
+     *                         function); {@code null} clears the selection.
+     *                         Mutually exclusive with {@link #setTreePath}
+     *                         and {@link #setSelectedScope}.
+     */
+    public void setPatternsFunction(@Nullable JIPipeNodeTaxonomyFunction patternsFunction) {
+        this.patternsFunction = patternsFunction;
+        if (patternsFunction != null) {
+            this.treePath = List.of();
+            this.selectedScope = null;
         }
     }
 
     /**
      * The shared SELECTION predicate with an explicitly supplied function
      * registry (spec §7.2): whether the given entry belongs in the results
-     * list given the current tree selection — a template scope, else a
-     * function tree path, else the root (all entries).
+     * list given the current tree selection — a template scope, a
+     * {@code <function>/Patterns} row, else a function tree path, else the
+     * root (all entries).
      * <p>
      * This is the single non-Swing, {@code JIPipe}-instance-free predicate
      * both node-browser surfaces (the docked
      * {@link JIPipeDesktopNodeBrowser} and the
      * {@code JIPipeDesktopNodeFinderDialogUI}) call after their query, so
      * their list filters agree. A template scope selection lists only
-     * template entries of that scope; a function-path selection lists every
-     * entry (node or template) filed under the selected leaf's subtree; the
-     * root lists everything.
+     * template entries of that scope; a {@code <function>/Patterns}
+     * selection lists only the template entries filed under that exact
+     * function; a function-path selection lists every entry (node or
+     * template) filed under the selected leaf's subtree; the root lists
+     * everything.
      *
      * @param entry    the entry to test; must not be {@code null}
      * @param registry the function registry used to resolve the function-path
@@ -354,6 +396,12 @@ public class NodeBrowserModel {
         if (selectedScope != null) {
             return entry instanceof CreateNewNodesByTemplateDatabaseEntry template
                 && template.getScope() == selectedScope;
+        }
+        if (patternsFunction != null) {
+            // The <function>/Patterns row: only the template entries filed
+            // under that exact function (the row's own attach rule).
+            return entry instanceof CreateNewNodesByTemplateDatabaseEntry
+                && entry.getFunctionIds().contains(patternsFunction.getId());
         }
         if (!treePath.isEmpty()) {
             JIPipeNodeTaxonomyFunction leaf = treePath.get(treePath.size() - 1);

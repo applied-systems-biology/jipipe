@@ -69,25 +69,31 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       workflow does") — no node chain, no chain separator of any kind —
  *       the mechanism stays in the description ({@code Sequence:}/
  *       {@code Wiring:}).</li>
- *   <li><b>422 DAG patterns</b> — 262 corpus-mined (the 3 stale-id
- *       references remapped to their verified current successors, the 3
- *       plugin-absent ones excluded) + 160 derived (26 deterministic twin
- *       swaps + 134 (C)-gated what-next chains, incl. the 6 cLij2
- *       push&to;kernel&to;pull chains from the full-catalog re-sweep).</li>
+ *   <li><b>406 DAG patterns</b> — 422 mined/derived (262 corpus-mined [3
+ *       stale-id remaps, 3 excludes] + 160 derived [26 twins + 134
+ *       what-next, incl. the 6 cLij2 re-sweep chains]), cleaned at
+ *       generation (group I/O wrapper nodes stripped, the {Parameters}
+ *       external slot enabled where wired), then the item-3c ruling drops
+ *       16: 5 patterns involving the (to-be-redesigned) JIPipe scripting
+ *       system, 2 loop-plumbing tunnel patterns, and 9 degenerate
+ *       multi-component harvest artifacts (34 further multi-component
+ *       patterns keep their largest connected component). Decisions:
+ *       {@code utils/taxonomy-research/dag-pattern-decisions.json}.</li>
  * </ul>
  * A pattern ships only if it has a proper derivable name of what it does.
  * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 446</b> — the Option C linear set (24) + the
- *       mined/derived DAG set (422) is pinned to a number; not "≥446".</li>
+ *   <li><b>exact count 430</b> — the 24 linear keep-set + the cleaned DAG
+ *       set (422 mined/derived − 16 item-3c drops = 406) is pinned to a
+ *       number; not "≥430".</li>
  *   <li><b>per-template deserialization guard</b> — each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
  *       path with the same node set as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       to all 446). Identity is (name, node-info-id multiset): 13 DAG names
+ *       to all 430). Identity is (name, node-info-id multiset): 13 DAG names
  *       are shared by structurally different graphs, so name alone is no
  *       longer a unique key — (name, id multiset) is (verified at
  *       generation).</li>
@@ -124,13 +130,14 @@ class SystemPatternTemplatesTest {
         "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 446 distinct patterns ship: 24 linear (node-sequence, from
+    /** Exactly 430 distinct patterns ship: 24 linear (node-sequence, from
      * the 185 research artifacts, curation + 25 collapsed shape-label
      * duplicates, then Option C (ruling 2026-19) drops the 32 node+edge
      * sub-paths of already-shipped DAG patterns and the 8 plumbing
-     * (comment/group) patterns) + 422 DAG (262 mined [3 stale-id remaps, 3
-     * excludes] + 160 derived [26 twins + 134 what-next]). */
-    static final int EXPECTED_SYSTEM_TEMPLATES = 446;
+     * (comment/group) patterns) + 406 DAG (422 mined/derived minus the 16
+     * item-3c drops: 5 JIPipe-scripting patterns, 2 tunnel patterns, 9
+     * degenerate multi-component harvest artifacts). */
+    static final int EXPECTED_SYSTEM_TEMPLATES = 430;
 
     /** The flagship mined pattern (a Data Sources chain): list a folder's
      * files and import them as 2D ROIs (one of the 24 Option-C linear

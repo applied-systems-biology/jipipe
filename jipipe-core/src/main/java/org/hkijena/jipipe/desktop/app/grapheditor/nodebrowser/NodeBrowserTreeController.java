@@ -309,6 +309,11 @@ public class NodeBrowserTreeController extends JPanel {
                 if (mtn.getUserObject() instanceof TemplateScopeTreeNode && branchHasEntryChildren(mtn)) {
                     return true;
                 }
+                // A synthetic <function>/Patterns row carries the function's
+                // template leaves — recurse the same way.
+                if (mtn.getUserObject() instanceof PatternsTreeNode && branchHasEntryChildren(mtn)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -368,11 +373,17 @@ public class NodeBrowserTreeController extends JPanel {
      * exactly this missing guard).
      */
     private void attachNodeLeaves(DefaultMutableTreeNode functionNode, List<JIPipeNodeDatabaseEntry> entries) {
-        // Remove any previously attached node leaves (reverse order keeps
-        // the indices stable while removing)
+        // Remove any previously attached node leaves AND any stale
+        // <function>/Patterns row (reverse order keeps the indices stable
+        // while removing). The Patterns row is fully rebuilt below when the
+        // function carries template entries, so a rebuild WITHOUT templates
+        // must drop the old row — otherwise an empty "Patterns" entry
+        // survives (and its stale leaves would leak into the counts).
         for (int i = functionNode.getChildCount() - 1; i >= 0; i--) {
             Object child = functionNode.getChildAt(i);
-            if (child instanceof DefaultMutableTreeNode mtn && mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
+            if (child instanceof DefaultMutableTreeNode mtn
+                && (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry
+                    || mtn.getUserObject() instanceof PatternsTreeNode)) {
                 functionNode.remove(i);
             }
         }
@@ -381,12 +392,37 @@ public class NodeBrowserTreeController extends JPanel {
             // A function row: attach the entries that list this function
             // (own id — rows appear at the level the node declares). This is
             // the dual-placement "taxonomy" side; it is free for templates
-            // too (Task 4 makes their getFunctionIds() return the function id).
+            // too (their getFunctionIds() returns the function id).
+            // Templates, however, do NOT sit at the function's own level:
+            // they spill into the node lists and were the source of the
+            // "functions full of templates" clutter. They attach one level
+            // below, under a synthetic "Patterns" child (only created when
+            // the function actually carries template entries), so the
+            // function level shows only its real nodes. The top-level
+            // Templates/<scope> branch (spec §7.2) is kept as the
+            // scope-organized dual view.
             String functionId = function.getId();
+            boolean hasTemplate = false;
             for (JIPipeNodeDatabaseEntry entry : entries) {
-                if (entry.getFunctionIds().contains(functionId)) {
+                if (!entry.getFunctionIds().contains(functionId)) {
+                    continue;
+                }
+                if (entry instanceof CreateNewNodesByTemplateDatabaseEntry) {
+                    hasTemplate = true;
+                } else {
                     functionNode.add(new DefaultMutableTreeNode(entry));
                 }
+            }
+            if (hasTemplate) {
+                DefaultMutableTreeNode patternsChild =
+                    new DefaultMutableTreeNode(new PatternsTreeNode(function));
+                for (JIPipeNodeDatabaseEntry entry : entries) {
+                    if (entry instanceof CreateNewNodesByTemplateDatabaseEntry
+                        && entry.getFunctionIds().contains(functionId)) {
+                        patternsChild.add(new DefaultMutableTreeNode(entry));
+                    }
+                }
+                functionNode.add(patternsChild);
             }
         } else if (userObject instanceof TemplateScopeTreeNode scopeNode && !scopeNode.isRoot()) {
             // The "scope placement": a synthetic Templates/<scope> row lists
@@ -458,10 +494,12 @@ public class NodeBrowserTreeController extends JPanel {
                 if (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry) {
                     return path;
                 }
-                // Recurse into function branches AND the synthetic scope
-                // branches (templates attached under Templates/<scope>).
+                // Recurse into function branches, the synthetic scope
+                // branches (templates attached under Templates/<scope>) and
+                // the synthetic <function>/Patterns rows.
                 if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
-                    || mtn.getUserObject() instanceof TemplateScopeTreeNode) {
+                    || mtn.getUserObject() instanceof TemplateScopeTreeNode
+                    || mtn.getUserObject() instanceof PatternsTreeNode) {
                     TreePath found = findFirstNodeLeafPath(mtn, path);
                     if (found != null) {
                         return found;
@@ -518,6 +556,25 @@ public class NodeBrowserTreeController extends JPanel {
             && mtn.getUserObject() instanceof TemplateScopeTreeNode scopeNode
             && !scopeNode.isRoot()) {
             return scopeNode.getScope();
+        }
+        return null;
+    }
+
+    /**
+     * The taxonomy function a synthetic {@code <function>/Patterns} row
+     * groups, or {@code null} when the path is empty or does not end on such
+     * a row. The row's own {@link PatternsTreeNode#getFunction()} carries the
+     * answer directly (the row is created per function), so no ancestor walk
+     * is needed.
+     */
+    public JIPipeNodeTaxonomyFunction functionOfPatternsPath(TreePath path) {
+        if (path == null) {
+            return null;
+        }
+        Object last = path.getLastPathComponent();
+        if (last instanceof DefaultMutableTreeNode mtn
+            && mtn.getUserObject() instanceof PatternsTreeNode patterns) {
+            return patterns.getFunction();
         }
         return null;
     }
@@ -654,10 +711,12 @@ public class NodeBrowserTreeController extends JPanel {
             if (mtn.getUserObject() == entry) {
                 return path;
             }
-            // Recurse into function branches AND the synthetic scope branches
-            // (templates attached under Templates/<scope>).
+            // Recurse into function branches, the synthetic scope branches
+            // (templates attached under Templates/<scope>) and the synthetic
+            // <function>/Patterns rows.
             if (mtn.getUserObject() instanceof JIPipeNodeTaxonomyFunction
-                || mtn.getUserObject() instanceof TemplateScopeTreeNode) {
+                || mtn.getUserObject() instanceof TemplateScopeTreeNode
+                || mtn.getUserObject() instanceof PatternsTreeNode) {
                 TreePath found = findNodeLeafRow(mtn, path, entry);
                 if (found != null) {
                     return found;

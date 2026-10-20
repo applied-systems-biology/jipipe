@@ -152,6 +152,15 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             label.setToolTipText(scopeNode.isRoot()
                 ? "Node templates grouped by storage scope"
                 : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
+        } else if (userObject instanceof PatternsTreeNode patterns) {
+            // The synthetic <function>/Patterns row: the function's node
+            // templates, grouped below the function level (pure UI grouping,
+            // not a taxonomy function — the function level itself shows only
+            // real nodes).
+            label.setText("Patterns");
+            label.setIcon(JIPipe.RESOURCES.getIcon16("actions/template.png"));
+            label.setToolTipText("Node template patterns filed under "
+                + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
         } else {
             // The root node
             label.setText("All functions");

@@ -43,9 +43,12 @@ import org.junit.jupiter.api.Test;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Verifies the node-leaf contract of {@link NodeBrowserTreeController} that
@@ -170,6 +173,91 @@ class NodeBrowserTreeControllerTest {
         assertThat(leafCount()).isEqualTo(5);
     }
 
+    /**
+     * The "Patterns" grouping: a template entry must NOT hang directly under
+     * a function row (that mixed templates into the node lists — the
+     * "functions full of templates" clutter). It hangs one level below, under
+     * a synthetic "Patterns" child of the function that carries it (or the
+     * scope row on the Templates branch); the function level itself shows
+     * only real nodes. The dual placement count is unchanged (the
+     * Templates/<scope> branch still carries the leaf too).
+     */
+    @Test
+    void templatesHangUnderThePatternsChildNotTheFunctionLevel() {
+        JIPipeNodeDatabaseEntry node = nodeEntry();
+        CreateNewNodesByTemplateDatabaseEntry template =
+            templateEntry(TemplateScope.System, IMAGES_FN_ID);
+        controller.rebuildNodeLeaves(List.of(node, template));
+
+        Map<Object, List<Object>> parentsByLeaf = new HashMap<>();
+        collectLeafParents((DefaultMutableTreeNode) controller.getTreeModel().getRoot(), parentsByLeaf);
+
+        // The template leaf (dual-placed: function side + scope side) — EVERY
+        // occurrence hangs under a grouping row (Patterns or
+        // Templates/<scope>), never directly under a function row.
+        List<Object> templateParents = parentsByLeaf.get(template);
+        assertThat(templateParents)
+            .as("the dual-placed template leaf must be present, got %s", parentsByLeaf.keySet())
+            .hasSize(2);
+        boolean hasPatterns = false, hasScope = false;
+        for (Object parent : templateParents) {
+            if (parent instanceof PatternsTreeNode patterns) {
+                hasPatterns = true;
+                assertThat(patterns.getFunction().getId()).isEqualTo(IMAGES_FN_ID);
+            } else if (parent instanceof TemplateScopeTreeNode) {
+                hasScope = true;
+            } else {
+                fail("a template leaf must hang under a Patterns or scope row, got parent: " + parent);
+            }
+        }
+        assertThat(hasPatterns)
+            .as("at least one template occurrence hangs under the <function>/Patterns row")
+            .isTrue();
+        assertThat(hasScope)
+            .as("the Templates/<scope> placement is kept (dual view)")
+            .isTrue();
+
+        // The real node's leaf hangs directly under a FUNCTION row (never a
+        // Patterns row).
+        List<Object> nodeParents = parentsByLeaf.get(node);
+        assertThat(nodeParents).hasSize(1);
+        assertThat(nodeParents.get(0))
+            .as("the real node stays at the function's own level, not under Patterns")
+            .isInstanceOf(JIPipeNodeTaxonomyFunction.class);
+
+        // The dual placement count holds (node + Patterns leaf +
+        // Templates/System leaf = 3).
+        assertThat(leafCount()).isEqualTo(3);
+    }
+
+    /**
+     * Maps each entry leaf to the user objects of the rows it hangs
+     * DIRECTLY under (a template is dual-placed, so it may have two).
+     */
+    private void collectLeafParents(DefaultMutableTreeNode node, Map<Object, List<Object>> out) {
+        for (int i = 0; i < node.getChildCount(); i++) {
+            Object child = node.getChildAt(i);
+            if (!(child instanceof DefaultMutableTreeNode mtn)) {
+                continue;
+            }
+            if (mtn.getUserObject() instanceof JIPipeNodeDatabaseEntry entry) {
+                out.computeIfAbsent(entry, k -> new ArrayList<>()).add(node.getUserObject());
+            }
+            collectLeafParents(mtn, out);
+        }
+    }
+
+    @Test
+    void functionWithoutTemplatesCarriesNoPatternsChild() {
+        // A function that has real nodes but NO template entries must not
+        // gain an empty Patterns row.
+        JIPipeNodeDatabaseEntry node = nodeEntry();
+        controller.rebuildNodeLeaves(List.of(node));
+        JIPipeNodeTaxonomyFunction images = JIPipe.getNodes().getFunctions().byId(IMAGES_FN_ID);
+        assertThat(patternRow(images)).isNull();
+        assertThat(leafCount()).isEqualTo(1);
+    }
+
     /** The entry leaves that hang DIRECTLY under the given scope row. */
     private int scopeRowLeafCount(TemplateScope scope) {
         TreePath row = scopeRow(scope);
@@ -237,6 +325,18 @@ class NodeBrowserTreeControllerTest {
         collectPaths(rootPath, paths);
         for (TreePath p : paths) {
             if (scope == controller.scopeFromTreePath(p)) {
+                return p;
+            }
+        }
+        return null;
+    }
+
+    private TreePath patternRow(JIPipeNodeTaxonomyFunction function) {
+        TreePath rootPath = new TreePath(new Object[]{controller.getTreeModel().getRoot()});
+        List<TreePath> paths = new ArrayList<>();
+        collectPaths(rootPath, paths);
+        for (TreePath p : paths) {
+            if (function == controller.functionOfPatternsPath(p)) {
                 return p;
             }
         }

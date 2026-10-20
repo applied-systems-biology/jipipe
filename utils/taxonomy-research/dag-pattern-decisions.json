@@ -1,0 +1,255 @@
+{
+  "_comment": "Item 3c per-case decisions for multi-component / script / tunnel DAG patterns (rulings 2026-19/20: no JIPipe script-runner nodes, no data-flow-tunnels in shipped patterns; multi-component harvest artifacts kept only by explicit decision). The DAG generator enforces these fail-closed: a shipped graph containing a script-runner or tunnel node id, or a multi-component graph WITHOUT an entry here, fails the build. action=drop removes the whole pattern; action=keep-largest-component ships only the largest connected component (the disconnected strays are harvest noise).",
+  "decisions": {
+    "dag-derived-derived-mech-cluster-0003-3d-ddd732f1a382": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-derived-derived-mech-cluster-0005-2d-4b8f24225885": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-derived-derived-mech-cluster-0035-3d-e780848c8feb": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-derived-derived-mech-cluster-0071-2d-b20edf1c1cf9": {
+      "action": "drop",
+      "reason": "script-runner node(s) cpython-script-iterating \u2014 general rule: no patterns involving the (to-be-redesigned) JIPipe scripting system",
+      "verdict": "drop"
+    },
+    "dag-derived-derived-mech-cluster-0099-3d-6269bb9b90ae": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-derived-derived-mech-cluster-0204-3d-9598f33c2700": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-derived-derived-mech-cluster-0250-3d-1fc616164f56": {
+      "action": "drop",
+      "reason": "data-flow-tunnel node \u2014 general rule: tunnel entrances/exits are loop plumbing, not part of any pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0003": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0005": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0007": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0023": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0026": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0035": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0036": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0040": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0056": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0058": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0061": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0062": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0063": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0068": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0071": {
+      "action": "drop",
+      "reason": "script-runner node(s) cpython-script-iterating \u2014 general rule: no patterns involving the (to-be-redesigned) JIPipe scripting system",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0074": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0078": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0080": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0086": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0090": {
+      "action": "drop",
+      "reason": "script-runner node(s) cpython-script-iterating \u2014 general rule: no patterns involving the (to-be-redesigned) JIPipe scripting system",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0091": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0099": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0121": {
+      "action": "drop",
+      "reason": "script-runner node(s) cpython-script-iterating \u2014 general rule: no patterns involving the (to-be-redesigned) JIPipe scripting system",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0125": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0129": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0140": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest \u2014 user-reviewed 2026-10-20 (a dropped component is also sizeable; the kept component matches the outcome name)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0153": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0158": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0164": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0172": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0179": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0184": {
+      "action": "drop",
+      "reason": "script-runner node(s) cpython-script-iterating \u2014 general rule: no patterns involving the (to-be-redesigned) JIPipe scripting system",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0187": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0194": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0197": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0198": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest \u2014 user-reviewed 2026-10-20 (a dropped component is also sizeable; the kept component matches the outcome name)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0201": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest \u2014 user-reviewed 2026-10-20 (a dropped component is also sizeable; the kept component matches the outcome name)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0204": {
+      "action": "drop",
+      "reason": "multi-component; largest component is 2 copies of one node type \u2014 harvest artifact, not a pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0208": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0218": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest \u2014 user-reviewed 2026-10-20 (a dropped component is also sizeable; the kept component matches the outcome name)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0223": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (a genuine 2-step pipeline of distinct node types; drop the disconnected strays)",
+      "verdict": "keep"
+    },
+    "dag-mined-cluster-0250": {
+      "action": "drop",
+      "reason": "data-flow-tunnel node \u2014 general rule: tunnel entrances/exits are loop plumbing, not part of any pattern",
+      "verdict": "drop"
+    },
+    "dag-mined-cluster-0311": {
+      "action": "keep-largest-component",
+      "reason": "multi-component; keep-largest (drop disconnected strays)",
+      "verdict": "keep"
+    }
+  }
+}

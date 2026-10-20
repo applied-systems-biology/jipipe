@@ -17,17 +17,24 @@ pipeline:
     twin swaps + 134 (C)-gated what-next chains (incl. the 2026-10-19
     full-catalog re-sweep's 6 cLij2 GPU push->kernel->pull chains).
 
-Total: 422 DAG patterns, on top of the existing 64 linear ones (486
-System templates).
+Total: 422 mined/derived DAG patterns, cleaned at generation (group I/O
+wrapper nodes stripped, the {Parameters} external slot enabled where wired,
+and the 16 item-3c drops: 5 JIPipe-scripting patterns, 2 loop-plumbing
+tunnel patterns, 9 degenerate multi-component harvest artifacts; 34 further
+multi-component patterns keep their largest connected component) -> 406
+shipped, on top of the 24 linear ones (430 System templates).
 
 Outputs (all in the bundled resource dir, next to the linear patterns):
   * one <key>.json per DAG pattern — the (A)-format graph,
     jipipe:node:name STRIPPED (the node display-name policy, 2026-18:
     the shipped graph never pins a label; display falls back to the live
-    registry name), locations + compartment key kept (§3.4);
-  * system-templates.json — the 64 linear entries preserved BYTE-STABLE
-    plus 422 new "dag-..." entries (name + description + functionId +
-    file). Idempotent: re-running rebuilds exactly the dag-* entries.
+    registry name), locations + compartment key kept (§3.4), group I/O
+    wrapper nodes stripped, the item-3c drops removed and keep-largest
+    components trimmed;
+  * system-templates.json — the 24 linear entries preserved BYTE-STABLE
+    plus the 406 surviving "dag-..." entries (name + description +
+    functionId + file). Idempotent: re-running rebuilds exactly the dag-*
+    entries (the item-3c drops are keyed in dag-pattern-decisions.json).
 
 The "Wiring:" sidecar line is BFS-ordered for DAGs (plan §3.4) and uses
 LIVE registry display names (never corpus labels).
@@ -55,7 +62,7 @@ EXPECTED_MINED_EXCLUDED = 3
 EXPECTED_MINED_SHIP = 262          # 265 - 3 excludes (the 3 remaps ship)
 EXPECTED_DERIVED_SHIP = 160        # 26 twins + 134 what-next
 EXPECTED_LINEAR = 24  # Option C keep-set (was 64; 32 sub-path + 8 plumbing dropped)
-EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 422
+EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 422 (pre item-3c drops)
 
 # Stale-id remaps (dag-stale-id-plan.json "renamable", successors verified
 # 2026-10-19 against the full 2072-node registry + git history):
@@ -73,6 +80,103 @@ REMAP = {
 }
 
 DAG_KEY_PREFIX = "dag-"
+
+# Item 3c (rulings 2026-19/20): the general pattern policies + the per-case
+# decisions. No shipped pattern may involve the (to-be-redesigned) JIPipe
+# scripting system or loop-plumbing tunnels, and the multi-component harvest
+# artifacts are kept only by explicit per-key decision.
+PATTERN_DECISIONS = os.path.join(RESEARCH, "dag-pattern-decisions.json")
+# Dedicated script-RUNNER node ids (the JIPipe scripting system). Deliberately
+# NOT the "(Script)" filter variants (annotate-split-by-annotation-script,
+# ij1-roi-filter-statistics-script, ...) — those are annotation/filter nodes,
+# and external-imagej-macro is a separate integration (user: out of scope).
+SCRIPT_RUNNER_PREFIXES = ("cpython-script", "python-script", "r-script")
+SCRIPT_RUNNER_IDS = {
+    "define-python-script", "define-r-script",
+    "import-python-script", "import-r-script", "tables-from-script",
+}
+# Loop plumbing: a tunnel entrance/exit is a node-loop connector, not part of
+# any pattern (an orphaned tunnel instantiates as a floating node).
+TUNNEL_NODE_IDS = {"data-flow-tunnel-1-entrance", "data-flow-tunnel-1-exit"}
+
+
+def is_script_runner(nid):
+    return (nid or "").startswith(SCRIPT_RUNNER_PREFIXES) or nid in SCRIPT_RUNNER_IDS
+
+
+def connected_components(graph):
+    """Undirected connected components of the graph (list of node-key sets)."""
+    nodes = graph["nodes"]
+    adj = {k: set() for k in nodes}
+    for e in graph.get("edges", []):
+        s, t = e.get("source-node"), e.get("target-node")
+        if s in adj and t in adj:
+            adj[s].add(t)
+            adj[t].add(s)
+    seen = set()
+    comps = []
+    for n in nodes:
+        if n in seen:
+            continue
+        stack = [n]
+        comp = set()
+        while stack:
+            x = stack.pop()
+            if x in comp:
+                continue
+            comp.add(x)
+            seen.add(x)
+            stack.extend(adj[x] - comp)
+        comps.append(comp)
+    return comps
+
+
+def keep_largest_component(graph, name, key):
+    """Trim the graph to its largest connected component (the disconnected
+    strays are harvest noise — the mining region captured several unconnected
+    node groups). Deterministic: tie-break by the sorted node ids."""
+    comps = connected_components(graph)
+    comps.sort(key=lambda c: (len(c), tuple(sorted(
+        graph["nodes"][x]["jipipe:node-info-id"] for x in c))), reverse=True)
+    largest = comps[0]
+    graph["nodes"] = {k: v for k, v in graph["nodes"].items() if k in largest}
+    graph["edges"] = [e for e in graph.get("edges", [])
+                      if e.get("source-node") in largest and e.get("target-node") in largest]
+    if not graph["nodes"]:
+        fail(f"{name!r} ({key}): keep-largest-component left an empty graph")
+    return graph
+
+
+def apply_pattern_decisions(records, decisions):
+    """Apply the item-3c policy + per-case decisions to the (cleaned) records.
+    Fail-closed: a multi-component / script / tunnel pattern WITHOUT a
+    decision entry means the harvest-artifact set changed — re-review it.
+    Returns the surviving records (drops removed, keep-largest trimmed)."""
+    kept = []
+    dropped = 0
+    for key, name, desc, fn, g in records:
+        ids = [n["jipipe:node-info-id"] for n in g["nodes"].values()]
+        script = [i for i in ids if is_script_runner(i)]
+        tunnel = [i for i in ids if i in TUNNEL_NODE_IDS]
+        multi = len(connected_components(g)) > 1
+        if not (script or tunnel or multi):
+            kept.append((key, name, desc, fn, g))
+            continue
+        d = decisions.get(key)
+        if d is None:
+            fail(f"{name!r} ({key}): multi-component/script/tunnel pattern "
+                 f"without a decision in dag-pattern-decisions.json — the "
+                 "harvest-artifact set changed; re-review it")
+        if d["action"] == "drop":
+            dropped += 1
+            continue
+        if script or tunnel:
+            fail(f"{name!r} ({key}): decision says keep, but the pattern "
+                 f"contains a script-runner ({script}) or tunnel ({tunnel}) "
+                 "node — those are policy DROPS, not keep-largest")
+        keep_largest_component(g, name, key)
+        kept.append((key, name, desc, fn, g))
+    return kept, dropped
 
 
 def fail(msg):
@@ -100,6 +204,59 @@ def strip_name(graph):
     name instead of pinning a corpus-era label."""
     for node in graph["nodes"].values():
         node.pop("jipipe:node:name", None)
+    return graph
+
+
+# Group I/O "plug" nodes (JIPipeDesktopGroupingPlugin): they only make sense
+# INSIDE a group (they define the group's external in/out interfaces). Mined
+# out of a group they arrive as top-level nodes and instantiate as floating,
+# unusable interface nodes. Skip them (and their edges).
+WRAPPER_IO_IDS = {"graph-wrapper:input", "graph-wrapper:output"}
+# The flattened node key of the JIPipeParameterSlotAlgorithm "External
+# parameters" toggle (verified 2026-10-19: setting it to true in the node
+# JSON creates the {Parameters} input slot on the template-deserialization
+# path — see the throwaway probe).
+PARAM_SLOT_FLAG = "jipipe:parameter-slot-algorithm/has-parameter-slot"
+PARAM_SLOT = "{Parameters}"
+
+
+def clean_graph(graph):
+    """Make a mined graph ship-ready (applied at generation, research
+    artifacts untouched):
+      (3a) strip group I/O wrapper nodes (graph-wrapper:input/output) and
+           their edges — they are leftover group plumbing that instantiates
+           as floating interfaces;
+      (3b) enable the "External" parameter slot (has-parameter-slot=true) on
+           every node that an edge targets at its {Parameters} slot — the
+           corpus dumper is structure-only and dropped the per-node flag, so
+           the slot is never created and the wiring dangles (the parameters
+           never connect).
+    Fail-closed: after (3a) no wrapper id may remain, and after (3b) no edge
+    may still reference a {Parameters} slot whose target lacks the flag."""
+    nodes = graph["nodes"]
+    kept = {k: v for k, v in nodes.items()
+            if v.get("jipipe:node-info-id") not in WRAPPER_IO_IDS}
+    if len(kept) != len(nodes):
+        graph["nodes"] = kept
+        graph["edges"] = [e for e in graph["edges"]
+                          if e.get("source-node") in kept and e.get("target-node") in kept]
+    # (3b) the {Parameters} edge targets need the External slot enabled
+    for e in graph["edges"]:
+        if e.get("target-slot") == PARAM_SLOT:
+            target = graph["nodes"].get(e.get("target-node"))
+            if target is not None:
+                target[PARAM_SLOT_FLAG] = True
+    # fail-closed guards
+    for v in graph["nodes"].values():
+        if v.get("jipipe:node-info-id") in WRAPPER_IO_IDS:
+            fail(f"wrapper I/O node survived clean_graph: "
+                 f"{v.get('jipipe:node-info-id')}")
+    for e in graph["edges"]:
+        if e.get("target-slot") == PARAM_SLOT:
+            target = graph["nodes"].get(e.get("target-node"))
+            if target is None or target.get(PARAM_SLOT_FLAG) is not True:
+                fail(f"{PARAM_SLOT} edge to {e.get('target-node')} without the "
+                     f"External parameter-slot flag — the wiring would dangle")
     return graph
 
 
@@ -228,6 +385,34 @@ def main():
     if len(records) != EXPECTED_TOTAL:
         fail(f"expected {EXPECTED_TOTAL} DAG patterns, built {len(records)}")
 
+    # ---- clean every mined graph for shipping (3a + 3b) ----
+    # Applied to the in-memory records (research artifacts untouched, and
+    # idempotent across runs). MUST run before the guards below so (i)–(vii)
+    # validate the SHIPPED shape, and so the (viii)/(ix) backstops below can
+    # fail closed on a regression of clean_graph itself.
+    for i, (key, name, desc, fn, g) in enumerate(records):
+        records[i] = (key, name, desc, fn, clean_graph(g))
+
+    # ---- item 3c: the general pattern policies + per-case decisions ----
+    # Runs AFTER clean_graph (the wrapper-strip changes connectivity, so the
+    # multi-component classification is computed on the cleaned graph) and
+    # BEFORE the guards (so (i)–(vii) validate the final shipped set, and the
+    # identity check re-runs on the trimmed id-multisets). Fail-closed: a
+    # script-runner / tunnel / multi-component pattern without a decision
+    # entry means the harvest-artifact set changed — re-review it.
+    with open(PATTERN_DECISIONS, encoding="utf-8") as fh:
+        decisions = json.load(fh)["decisions"]
+    records, decisions_dropped = apply_pattern_decisions(records, decisions)
+
+    # The shipped DAG set is the 422 minus the 16 policy/artifact drops
+    # (5 cpython-script + 2 tunnel + 9 degenerate multi-component). Pin the
+    # number so a silent re-add of a dropped pattern fails the build.
+    EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16
+    if len(records) != EXPECTED_DAG_SHIP:
+        fail(f"expected {EXPECTED_DAG_SHIP} shipped DAG patterns after the "
+             f"item-3c drops ({EXPECTED_TOTAL} - 16), built {len(records)} — "
+             "the drop set changed; re-review dag-pattern-decisions.json")
+
     # ---- fail-closed guards over the 422 ----
     # (i) every node id registered (in the FULL 2072-node registry; the
     #     remaps were applied above, the 3 excludes dropped)
@@ -303,7 +488,7 @@ def main():
                     or e["target-node"] not in g["nodes"]:
                 fail(f"{name!r} ({key}): dangling edge endpoint")
 
-    # ---- write the 422 graph resources ----
+    # ---- write the DAG graph resources (422 mined, minus the item-3c drops) ----
     # Sweep stale dag-* files from a previous run (idempotent rebuild);
     # the linear *.json are untouched.
     shipped_files = {key + ".json" for key, *_ in records}

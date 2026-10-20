@@ -143,12 +143,6 @@
     "functionId": "jipipe:function:data",
     "name": "Load 2D ROIs from a filtered folder"
   },
-  "dag-derived-derived-mech-cluster-0003-3d-ddd732f1a382": {
-    "description": "Takes two lists of 3D ROIs and produces filtered 3D ROI lists containing the ROIs that overlap with ROIs in the other list. Chained overlap filters can be used to include or exclude ROIs based on their spatial relationship to reference ROIs.<br>Wiring: Filter IJ3D ROI by overlap (old).ROI 1 → Filter IJ3D ROI by overlap (old).ROI 1.",
-    "file": "dag-derived-derived-mech-cluster-0003-3d-ddd732f1a382.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Filter 3D ROIs by overlap"
-  },
   "dag-derived-derived-mech-cluster-0005-2d-4b8f24225885": {
     "description": "Takes 2D ROIs and optionally a reference image, and produces data annotated with 2D ROI statistics. It extracts the ROI measurements, adds a table column, and attaches the resulting table values to the incoming data.<br>Wiring: Extract 2D ROI statistics.Measurements → Annotate data with table values.Table.",
     "file": "dag-derived-derived-mech-cluster-0005-2d-4b8f24225885.json",
@@ -191,23 +185,11 @@
     "functionId": "jipipe:function:images",
     "name": "Import images and denoise with median filter"
   },
-  "dag-derived-derived-mech-cluster-0071-2d-b20edf1c1cf9": {
-    "description": "Takes a list of 2D ROIs and a blank image, updates the ROIs' properties, converts them into a labeled image, copies the physical pixel dimensions, and exports the image as a file.<br>Wiring: Create empty image.Output → Convert 2D ROI to RGB.Image; Set 2D ROI properties.Output → Convert 2D ROI to RGB.ROI; Convert 2D ROI to RGB.Output → Copy physical dimensions.Source; Copy physical dimensions.Output → Export image.Input.",
-    "file": "dag-derived-derived-mech-cluster-0071-2d-b20edf1c1cf9.json",
-    "functionId": "jipipe:function:export",
-    "name": "Export 2D ROIs as a labeled image"
-  },
   "dag-derived-derived-mech-cluster-0096-3d-5c38eaa0c29e": {
     "description": "Takes 3D ROI lists, assigns user-defined properties to the ROIs, and converts them into RGB images that draw the ROIs as colored outlines, fills, and optional labels. It can combine two ROI visualizations by using one rendered image as the reference canvas for the other.<br>Wiring: Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Convert IJ3D ROI to RGB.Output → Convert IJ3D ROI to RGB.Image.",
     "file": "dag-derived-derived-mech-cluster-0096-3d-5c38eaa0c29e.json",
     "functionId": "jipipe:function:rois",
     "name": "Render 3D ROIs as RGB images"
-  },
-  "dag-derived-derived-mech-cluster-0099-3d-6269bb9b90ae": {
-    "description": "Takes a 3D ROI list and an optional reference image, and produces an RGB image in which the ROIs are drawn as colored outlines, fills, and optional labels.",
-    "file": "dag-derived-derived-mech-cluster-0099-3d-6269bb9b90ae.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Render 3D ROIs as an RGB image"
   },
   "dag-derived-derived-mech-cluster-0107-3d-553106594a13": {
     "description": "Takes an image, applies a 3D morphological operation to create a mask, sets the masked pixels to a color, extracts the pixel values into a table, filters and computes row expressions, and produces multiple XY scatter plots.<br>Wiring: Morphological operation 3D.Output → Set to color (RGB).Mask; Set to color (RGB).Output → Get pixels as table.Input; Get pixels as table.Output → Filter table rows.Input; Filter table rows.Output → Apply expression per row.Input; Apply expression per row.Output → JFreeChart XY scatter plot.Input; Apply expression per row.Output → JFreeChart XY scatter plot.Input; Apply expression per row.Output → JFreeChart XY scatter plot.Input; Apply expression per row.Output → JFreeChart XY scatter plot.Input.",
@@ -216,7 +198,7 @@
     "name": "Plot pixel values from a masked image"
   },
   "dag-derived-derived-mech-cluster-0128-3d-c718518e69d5": {
-    "description": "Takes an input image and a list of 3D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.<br>Wiring: Group input.Input → Histogram-based contrast enhancer.Input; Group input.ROI → Convert IJ3D ROI to RGB.ROI; Histogram-based contrast enhancer.Output → Convert IJ3D ROI to RGB.Image; Convert IJ3D ROI to RGB.Output → Group output.Output.",
+    "description": "Takes an input image and a list of 3D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.<br>Wiring: Histogram-based contrast enhancer.Output → Convert IJ3D ROI to RGB.Image.",
     "file": "dag-derived-derived-mech-cluster-0128-3d-c718518e69d5.json",
     "functionId": "jipipe:function:images",
     "name": "Overlay 3D ROIs on an image"
@@ -269,23 +251,11 @@
     "functionId": "jipipe:function:plotting",
     "name": "Pairwise 3D ROI statistics histogram"
   },
-  "dag-derived-derived-mech-cluster-0204-3d-9598f33c2700": {
-    "description": "Takes a 3D ROI list and produces an RGB image that draws the ROIs as colored outlines, fills, or labels. It renders the ROIs to RGB, applies a predefined color map LUT, and renders them again using the first rendered image as the reference canvas.<br>Wiring: Convert IJ3D ROI to RGB.Output → Convert IJ3D ROI to RGB.Image.",
-    "file": "dag-derived-derived-mech-cluster-0204-3d-9598f33c2700.json",
-    "functionId": "jipipe:function:images",
-    "name": "Render 3D ROIs as an RGB image"
-  },
   "dag-derived-derived-mech-cluster-0224-3d-bd71b8e128ad": {
     "description": "Takes a list of image files, imports them as ImageJ images, sets their physical dimensions, draws a scale bar, and applies a 3D ROI overlay, producing calibrated images ready for display or further analysis.<br>Wiring: File list.Filenames → Import image.Files; Import image.Image → Set physical dimensions.Input; Set physical dimensions.Output → Draw scale bar.Input; Set physical dimensions.Output → IJ3D Set 3D overlay.Input.",
     "file": "dag-derived-derived-mech-cluster-0224-3d-bd71b8e128ad.json",
     "functionId": "jipipe:function:images",
     "name": "Import images with scale bar and 3D ROI overlay"
-  },
-  "dag-derived-derived-mech-cluster-0250-3d-1fc616164f56": {
-    "description": "Takes image data and produces smoothed images by applying a 3D Gaussian blur to each slice.<br>Wiring: Tunnel exit.T1 → Tunnel entrance.T1; Tunnel exit.T1 → Gaussian blur 3D.Input.",
-    "file": "dag-derived-derived-mech-cluster-0250-3d-1fc616164f56.json",
-    "functionId": "jipipe:function:images",
-    "name": "Smooth images with Gaussian blur"
   },
   "dag-derived-derived-mech-cluster-0267-3d-d73a23d80312": {
     "description": "Takes a list of image files, imports each image, scales and converts it to 8-bit RGB, and combines the results into a single montage image.<br>Wiring: File list.Filenames → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import image.Files; Import image.Image → Scale 3D image.Input; Scale 3D image.Output → Convert image to 8-bit.Input; Convert image to 8-bit.Output → Render to RGB.Input; Render to RGB.Output → Create montage.Input.",
@@ -1104,7 +1074,7 @@
     "name": "2D ROI to filament label and mask images"
   },
   "dag-mined-cluster-0001": {
-    "description": "Takes input folders, lists their subfolders and contained files, annotates each path with its name, and filters the resulting paths. It produces annotated file paths and subfolder paths for downstream steps.<br>Wiring: Group input.Input folder → Annotate with file/directory name.Paths; List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List subfolders.Folders; Annotate with file/directory name.Annotated paths → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input; Annotate with file/directory name.Annotated paths → Group output.Subfolder; List files.Files → Annotate with file/directory name.Paths; Filter paths.Output → Group output.Annotated paths.",
+    "description": "Takes input folders, lists their subfolders and contained files, annotates each path with its name, and filters the resulting paths. It produces annotated file paths and subfolder paths for downstream steps.<br>Wiring: List subfolders.Subfolders → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List subfolders.Folders; Annotate with file/directory name.Annotated paths → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; Annotate with file/directory name.Annotated paths → Filter paths.Input; List files.Files → Annotate with file/directory name.Paths.",
     "file": "dag-mined-cluster-0001.json",
     "functionId": "jipipe:function:data",
     "name": "List subfolders and files from input folders"
@@ -1114,12 +1084,6 @@
     "file": "dag-mined-cluster-0002.json",
     "functionId": "jipipe:function:rois",
     "name": "Detect 2D particle ROIs in images"
-  },
-  "dag-mined-cluster-0003": {
-    "description": "Takes two lists of 2D ROIs and produces filtered 2D ROI lists containing the ROIs that overlap with ROIs in the other list. Chained overlap filters can be used to include or exclude ROIs based on their spatial relationship to reference ROIs.<br>Wiring: Filter 2D ROI by overlap (old).ROI 1 → Filter 2D ROI by overlap (old).ROI 2.",
-    "file": "dag-mined-cluster-0003.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Filter 2D ROIs by overlap"
   },
   "dag-mined-cluster-0004": {
     "description": "Takes an image and a pretrained Cellpose model, runs Cellpose segmentation to produce 2D ROIs, keeps only 2D ROIs matching a statistical filter, and outputs an RGB image showing the remaining 2D ROIs as colored outlines or fills.<br>Wiring: Pretrained Cellpose 3.x segmentation model.Output → Cellpose segmentation (3.x).Model; Cellpose segmentation (3.x).ROI → Filter 2D ROI by statistics.ROI; Filter 2D ROI by statistics.Output → Convert 2D ROI to RGB.ROI.",
@@ -1176,7 +1140,7 @@
     "name": "Segment 2D images into 2D ROIs with RGB visualization"
   },
   "dag-mined-cluster-0013": {
-    "description": "Takes multichannel images and produces separate single-channel images, using image properties to route 2-, 3-, 4-, or 5-channel images to the appropriate channel-splitting step. The result is up to five individual channel images for downstream analysis.<br>Wiring: Group input.Image → Annotate with image properties.Image; Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel3; Split channels.Channel3 → IO Interface.Channel3; Split channels.Channel3 → IO Interface.Channel4; Split channels.Channel4 → IO Interface.Channel4; IO Interface.Channel0 → Group output.Channel0; IO Interface.Channel1 → Group output.Channel1; IO Interface.Channel2 → Group output.Channel3; IO Interface.Channel3 → Group output.Channel2; IO Interface.Channel4 → Group output.Channel4.",
+    "description": "Takes multichannel images and produces separate single-channel images, using image properties to route 2-, 3-, 4-, or 5-channel images to the appropriate channel-splitting step. The result is up to five individual channel images for downstream analysis.<br>Wiring: Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Annotate with image properties.Annotated image → Filter by annotation.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Filter by annotation.Output → Split channels.Input; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel0; Split channels.Channel0 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel1; Split channels.Channel1 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel2; Split channels.Channel2 → IO Interface.Channel3; Split channels.Channel3 → IO Interface.Channel3; Split channels.Channel3 → IO Interface.Channel4; Split channels.Channel4 → IO Interface.Channel4.",
     "file": "dag-mined-cluster-0013.json",
     "functionId": "jipipe:function:images",
     "name": "Split multichannel images into separate channels"
@@ -1212,13 +1176,13 @@
     "name": "Split merged 2D ROIs with watershed"
   },
   "dag-mined-cluster-0019": {
-    "description": "Takes an OME image and produces its OME-XML metadata as formatted XML data annotated with selected XPath values. It extracts the OME-XML, prettifies it, and attaches chosen metadata values as annotations.<br>Wiring: Group input.Input → Extract OME XML.Input; Extract OME XML.Output → Prettify XML.Input; Prettify XML.Output → Annotate with XML values.Input; Annotate with XML values.Output → Group output.Output.",
+    "description": "Takes an OME image and produces its OME-XML metadata as formatted XML data annotated with selected XPath values. It extracts the OME-XML, prettifies it, and attaches chosen metadata values as annotations.<br>Wiring: Extract OME XML.Output → Prettify XML.Input; Prettify XML.Output → Annotate with XML values.Input.",
     "file": "dag-mined-cluster-0019.json",
     "functionId": "jipipe:function:annotations",
     "name": "Extract OME image metadata as annotations"
   },
   "dag-mined-cluster-0020": {
-    "description": "Takes several parameter definitions and merges them into a single parameter set for downstream multi-parameter algorithms. It is wrapped as a reusable group that outputs the merged parameters.<br>Wiring: Define multiple parameters.Parameters → Merge parameters.Radius 1; Define multiple parameters.Parameters → Merge parameters.Radius 2; Define multiple parameters.Parameters → Merge parameters.Structure; Merge parameters.Output → Group output.Output.",
+    "description": "Takes several parameter definitions and merges them into a single parameter set for downstream multi-parameter algorithms. It is wrapped as a reusable group that outputs the merged parameters.<br>Wiring: Define multiple parameters.Parameters → Merge parameters.Radius 1; Define multiple parameters.Parameters → Merge parameters.Radius 2; Define multiple parameters.Parameters → Merge parameters.Structure.",
     "file": "dag-mined-cluster-0020.json",
     "functionId": "jipipe:function:tables",
     "name": "Merge multiple parameter definitions"
@@ -1236,7 +1200,7 @@
     "name": "Merge 2D ROIs and create an RGB overlay and statistics table"
   },
   "dag-mined-cluster-0023": {
-    "description": "Takes microscopy image files and produces separate image stacks for selected channels or time points, each with a predefined color map and annotations containing image properties. It imports files with Bio-Formats, applies color maps, splits dimensions by expression, and adds or edits annotations.<br>Wiring: Set LUT (color map).Output → Reduce &amp; split hyperstack (Expression).Input; Set LUT (color map).Output → Reduce &amp; split hyperstack (Expression).Input; Set LUT (color map).Output → Reduce &amp; split hyperstack (Expression).Input; Bio-Formats importer.Output → Annotate with image properties.Image; Annotate with image properties.Annotated image → Set/Edit annotations.Input.",
+    "description": "Takes microscopy image files and produces separate image stacks for selected channels or time points, each with a predefined color map and annotations containing image properties. It imports files with Bio-Formats, applies color maps, splits dimensions by expression, and adds or edits annotations.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Annotate with image properties.Annotated image → Set/Edit annotations.Input.",
     "file": "dag-mined-cluster-0023.json",
     "functionId": "jipipe:function:images",
     "name": "Import and split microscopy images with color maps and metadata"
@@ -1338,7 +1302,7 @@
     "name": "Import, denoise, and threshold 8-bit images"
   },
   "dag-mined-cluster-0040": {
-    "description": "Takes two 2D ROI lists and produces a table of overlap-based counts (true positives, false positives, false negatives, and ground-truth found) along with RGB images showing the corresponding ROIs. It filters each ROI list by mutual overlap, converts the filtered ROI sets to RGB, and applies a per-row expression to the counts.<br>Wiring: Filter 2D ROI by overlap (old).ROI 1 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 1 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 2 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 2 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 1 → Count 2D ROI.False negatives; Filter 2D ROI by overlap (old).ROI 1 → Count 2D ROI.GT found; Filter 2D ROI by overlap (old).ROI 2 → Count 2D ROI.False positives; Filter 2D ROI by overlap (old).ROI 2 → Count 2D ROI.True positives; Count 2D ROI.Counts → Apply expression per row.Input.",
+    "description": "Takes two 2D ROI lists and produces a table of overlap-based counts (true positives, false positives, false negatives, and ground-truth found) along with RGB images showing the corresponding ROIs. It filters each ROI list by mutual overlap, converts the filtered ROI sets to RGB, and applies a per-row expression to the counts.<br>Wiring: Filter 2D ROI by overlap (old).ROI 1 → Count 2D ROI.False negatives; Filter 2D ROI by overlap (old).ROI 1 → Count 2D ROI.GT found; Filter 2D ROI by overlap (old).ROI 2 → Count 2D ROI.False positives; Filter 2D ROI by overlap (old).ROI 2 → Count 2D ROI.True positives; Filter 2D ROI by overlap (old).ROI 1 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 1 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 2 → Convert 2D ROI to RGB.ROI; Filter 2D ROI by overlap (old).ROI 2 → Convert 2D ROI to RGB.ROI; Count 2D ROI.Counts → Apply expression per row.Input.",
     "file": "dag-mined-cluster-0040.json",
     "functionId": "jipipe:function:rois",
     "name": "2D ROI overlap counts and overlays"
@@ -1457,18 +1421,6 @@
     "functionId": "jipipe:function:statistics",
     "name": "Pairwise 3D ROI statistics and histogram"
   },
-  "dag-mined-cluster-0061": {
-    "description": "Takes three separate data inputs and applies a split/filter-by-annotation step to each, producing three corresponding outputs that have been selected or split according to the chosen annotation values.<br>Wiring: Group input.Input → Split &amp; filter by annotation.Input; Group input.Input 1 → Split &amp; filter by annotation.Input; Group input.Input 2 → Split &amp; filter by annotation.Input; Split &amp; filter by annotation.Output → Group output.Output; Split &amp; filter by annotation.Output → Group output.Output 1; Split &amp; filter by annotation.Output → Group output.Output 2.",
-    "file": "dag-mined-cluster-0061.json",
-    "functionId": "jipipe:function:annotations",
-    "name": "Filter three inputs by annotation"
-  },
-  "dag-mined-cluster-0062": {
-    "description": "Splits a data set into subsets based on annotation values. Each of the three filters outputs the data that matches the annotation condition and the data that does not.",
-    "file": "dag-mined-cluster-0062.json",
-    "functionId": "jipipe:function:tables",
-    "name": "Filter data by label"
-  },
   "dag-mined-cluster-0063": {
     "description": "Takes 3D filament data, splits it into connected components, and converts each component into a greyscale mask image, optionally using a reference image to set mask dimensions.<br>Wiring: Split filaments into connected components.Output → Convert filaments to mask.Input.",
     "file": "dag-mined-cluster-0063.json",
@@ -1517,14 +1469,8 @@
     "functionId": "jipipe:function:images",
     "name": "Subtract a filament mask from an image to highlight nodules"
   },
-  "dag-mined-cluster-0071": {
-    "description": "Takes a list of 3D ROIs and a blank image, updates the ROIs' properties, converts them into a labeled image, copies the physical pixel dimensions, and exports the image as a file.<br>Wiring: Create empty image.Output → Convert IJ3D ROI to RGB.Image; Set IJ3D ROI properties.Output → Convert IJ3D ROI to RGB.ROI; Convert IJ3D ROI to RGB.Output → Copy physical dimensions.Target; Copy physical dimensions.Output → Export image.Input.",
-    "file": "dag-mined-cluster-0071.json",
-    "functionId": "jipipe:function:export",
-    "name": "Export 3D ROIs as a labeled image"
-  },
   "dag-mined-cluster-0072": {
-    "description": "Takes a multi-dimensional image, splits it by a selected dimension, applies an extended depth-of-focus Sobel projection and 2D illumination correction to each part, and merges the results into a 2D image stack.<br>Wiring: Group input.Image → Annotate with image properties.Image; Annotate with image properties.Annotated image → Split by dimension.Input; Split by dimension.Output → CLIJ2 Extended Depth Of Focus Sobel Projection.Source; CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Illumination correction 2D.Input; Illumination correction 2D.Output → Merge 2D slices into hyperstack.Slices; Merge 2D slices into hyperstack.Hyperstack → Group output.Hyperstack.",
+    "description": "Takes a multi-dimensional image, splits it by a selected dimension, applies an extended depth-of-focus Sobel projection and 2D illumination correction to each part, and merges the results into a 2D image stack.<br>Wiring: Annotate with image properties.Annotated image → Split by dimension.Input; Split by dimension.Output → CLIJ2 Extended Depth Of Focus Sobel Projection.Source; CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Illumination correction 2D.Input; Illumination correction 2D.Output → Merge 2D slices into hyperstack.Slices.",
     "file": "dag-mined-cluster-0072.json",
     "functionId": "jipipe:function:images",
     "name": "Project and correct a multi-dimensional image"
@@ -1534,12 +1480,6 @@
     "file": "dag-mined-cluster-0073.json",
     "functionId": "jipipe:function:plotting",
     "name": "Create and export summary plots and table"
-  },
-  "dag-mined-cluster-0074": {
-    "description": "Takes tabular data and produces an XY scatter plot, a box-and-whisker plot, and an XY line plot for visualizing numeric variables.",
-    "file": "dag-mined-cluster-0074.json",
-    "functionId": "jipipe:function:plotting",
-    "name": "Plot tabular data with scatter, box, and line charts"
   },
   "dag-mined-cluster-0076": {
     "description": "Takes several image inputs, labels each with its source input name, and writes each out as a separate image file in a standard format.<br>Wiring: IO Interface.Blue → Annotate with source slot.Data; IO Interface.Green → Annotate with source slot.Data; IO Interface.TL → Annotate with source slot.Data; Annotate with source slot.Annotated data → Export image.Input; Annotate with source slot.Annotated data → Export image.Input; Annotate with source slot.Annotated data → Export image.Input.",
@@ -1554,7 +1494,7 @@
     "name": "Measure 2D ROIs after excluding edge-touching objects"
   },
   "dag-mined-cluster-0078": {
-    "description": "Takes 2D ROI lists and produces individual 2D ROIs that have been filtered by overlap, annotated with geometric properties, and given hull outlines. It renames annotations, filters mutually overlapping 2D ROIs, splits ROI lists into individual 2D ROIs, extracts ROI properties into annotations, computes hull outlines, and sets expression-based annotations.<br>Wiring: Split into individual 2D ROI lists.Output → Annotate with 2D ROI properties.Input; Rename annotation.Output → Outline 2D ROI (Hull).Input; Annotate with 2D ROI properties.Output → Set annotation (expression).Input.",
+    "description": "Takes 2D ROI lists and produces individual 2D ROIs that have been filtered by overlap, annotated with geometric properties, and given hull outlines. It renames annotations, filters mutually overlapping 2D ROIs, splits ROI lists into individual 2D ROIs, extracts ROI properties into annotations, computes hull outlines, and sets expression-based annotations.<br>Wiring: Split into individual 2D ROI lists.Output → Annotate with 2D ROI properties.Input; Annotate with 2D ROI properties.Output → Set annotation (expression).Input.",
     "file": "dag-mined-cluster-0078.json",
     "functionId": "jipipe:function:rois",
     "name": "Filter and summarize 2D ROI lists"
@@ -1625,12 +1565,6 @@
     "functionId": "jipipe:function:rois",
     "name": "Extract 3D ROIs from segmented objects"
   },
-  "dag-mined-cluster-0090": {
-    "description": "Exports the output of an iterating Python script as a data file and a histogram image. The script's table is plotted as a histogram, rendered to RGB, and saved, while the table is also exported directly.<br>Wiring: Run Python script (iterating).Output → Export data.Data; Run Python script (iterating).Output → JFreeChart Histogram plot.Input; JFreeChart Histogram plot.Output → Render to RGB.Input; Render to RGB.Output → Export image.Input.",
-    "file": "dag-mined-cluster-0090.json",
-    "functionId": "jipipe:function:export",
-    "name": "Export computed results and histogram image"
-  },
   "dag-mined-cluster-0091": {
     "description": "Takes microscopy image files, imports them with OME metadata, adds image-property annotations, applies a color map, and produces an extended depth of focus projection by selecting the sharpest pixel along Z/C/T using a Sobel-based score.<br>Wiring: Bio-Formats importer.Output → Annotate with image properties.Image; Annotate with image properties.Annotated image → Set/Edit annotations.Input; Set/Edit annotations.Output → Set LUT (color map).Input; Set LUT (color map).Output → CLIJ2 Extended Depth Of Focus Sobel Projection.Source.",
     "file": "dag-mined-cluster-0091.json",
@@ -1678,12 +1612,6 @@
     "file": "dag-mined-cluster-0098.json",
     "functionId": "jipipe:function:images",
     "name": "Create binary masks from 8-bit images"
-  },
-  "dag-mined-cluster-0099": {
-    "description": "Takes a 2D ROI list and an optional reference image, and produces an RGB image in which the ROIs are drawn as colored outlines, fills, and optional labels.",
-    "file": "dag-mined-cluster-0099.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Render 2D ROIs as an RGB image"
   },
   "dag-mined-cluster-0100": {
     "description": "Takes a set of folders and produces imported image data for each image file found in them, with the folder/file name attached as an annotation. It lists the folders, annotates each path by name, lists matching files, and imports them as ImageJ images.<br>Wiring: Folder list.Folder paths → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → List files.Folders; List files.Files → Import image.Files.",
@@ -1734,7 +1662,7 @@
     "name": "Edge width histogram from images"
   },
   "dag-mined-cluster-0110": {
-    "description": "Takes a 2D binary mask and produces a cleaned mask by applying a 2D morphological operation, filling holes in the binary image, and applying a second 2D morphological operation, typically dilation followed by erosion.<br>Wiring: Group input.Mask → Morphological operation 2D.Input; Morphological hole filling 2D.Output → Morphological operation 2D.Input; Morphological operation 2D.Output → Morphological hole filling 2D.Input; Morphological operation 2D.Output → Group output.Mask.",
+    "description": "Takes a 2D binary mask and produces a cleaned mask by applying a 2D morphological operation, filling holes in the binary image, and applying a second 2D morphological operation, typically dilation followed by erosion.<br>Wiring: Morphological hole filling 2D.Output → Morphological operation 2D.Input; Morphological operation 2D.Output → Morphological hole filling 2D.Input.",
     "file": "dag-mined-cluster-0110.json",
     "functionId": "jipipe:function:images",
     "name": "Dilate, fill holes, and erode a binary mask"
@@ -1793,12 +1721,6 @@
     "functionId": "jipipe:function:rois",
     "name": "Detect and measure 3D particle ROIs"
   },
-  "dag-mined-cluster-0121": {
-    "description": "Takes a binary mask image, finds 3D particles as 3D ROIs, extracts their 3D ROI measurements, and computes nearest-neighbor distances with a Python script to produce a histogram and exported data/plot files.<br>Wiring: IJ3D Find particles 3D.ROI → Extract IJ3D ROI statistics.ROI; Extract IJ3D ROI statistics.Measurements → Run Python script (iterating).Input; Extract IJ3D ROI statistics.Measurements → Export data.Data; Run Python script (iterating).Output → Export data.Data; Run Python script (iterating).Output → JFreeChart Histogram plot.Input; JFreeChart Histogram plot.Output → Export image.Input.",
-    "file": "dag-mined-cluster-0121.json",
-    "functionId": "jipipe:function:statistics",
-    "name": "3D ROI nearest-neighbor distance histogram"
-  },
   "dag-mined-cluster-0122": {
     "description": "Takes input images, copies their physical pixel sizes, applies histogram-based contrast enhancement, and writes them out as standard image files such as PNG, JPEG, BMP, AVI, or TIFF.<br>Wiring: Copy physical dimensions.Output → Histogram-based contrast enhancer.Input; Histogram-based contrast enhancer.Output → Export image.Input.",
     "file": "dag-mined-cluster-0122.json",
@@ -1818,7 +1740,7 @@
     "name": "Grouped histograms from multiple tables"
   },
   "dag-mined-cluster-0125": {
-    "description": "Takes folders of microscopy image files, imports them with Bio-Formats, sets annotations, converts them to 32-bit grayscale, applies histogram-based contrast enhancement, and assigns a color map. It produces 32-bit contrast-adjusted images with annotations and a display color map for downstream analysis.<br>Wiring: Set/Edit annotations.Output → Bio-Formats importer.Input; Set LUT (color map).Output → Histogram-based contrast enhancer.Input; Bio-Formats importer.Output → Convert image to 32-bit.Input.",
+    "description": "Takes folders of microscopy image files, imports them with Bio-Formats, sets annotations, converts them to 32-bit grayscale, applies histogram-based contrast enhancement, and assigns a color map. It produces 32-bit contrast-adjusted images with annotations and a display color map for downstream analysis.<br>Wiring: Set/Edit annotations.Output → Bio-Formats importer.Input; Bio-Formats importer.Output → Convert image to 32-bit.Input.",
     "file": "dag-mined-cluster-0125.json",
     "functionId": "jipipe:function:images",
     "name": "Prepare 32-bit contrast-adjusted microscopy images from folders"
@@ -1836,13 +1758,13 @@
     "name": "Export 2D ROI overlay images"
   },
   "dag-mined-cluster-0128": {
-    "description": "Takes an input image and a list of 2D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.<br>Wiring: Group input.Input → Histogram-based contrast enhancer.Input; Group input.ROI → Convert 2D ROI to RGB.ROI; Histogram-based contrast enhancer.Output → Convert 2D ROI to RGB.Image; Convert 2D ROI to RGB.Output → Group output.Output.",
+    "description": "Takes an input image and a list of 2D ROIs, applies histogram-based contrast enhancement to the image, and draws the ROIs as colored outlines, fills, and optional labels. It produces an RGB image showing the ROIs overlaid on the enhanced image.<br>Wiring: Histogram-based contrast enhancer.Output → Convert 2D ROI to RGB.Image.",
     "file": "dag-mined-cluster-0128.json",
     "functionId": "jipipe:function:images",
     "name": "Overlay 2D ROIs on an image"
   },
   "dag-mined-cluster-0129": {
-    "description": "Takes image data, removes outliers and background, smooths with a 3D median filter, and enhances contrast, producing cleaned and contrast-adjusted images.<br>Wiring: Find or subtract background 2D.Output → Median filter 3D.Input; Legacy image calculator 2D.Output → Find or subtract background 2D.Input; Median filter 3D.Output → Histogram-based contrast enhancer.Input.",
+    "description": "Takes image data, removes outliers and background, smooths with a 3D median filter, and enhances contrast, producing cleaned and contrast-adjusted images.<br>Wiring: Legacy image calculator 2D.Output → Find or subtract background 2D.Input; Find or subtract background 2D.Output → Median filter 3D.Input; Median filter 3D.Output → Histogram-based contrast enhancer.Input.",
     "file": "dag-mined-cluster-0129.json",
     "functionId": "jipipe:function:images",
     "name": "Clean and enhance images"
@@ -1902,7 +1824,7 @@
     "name": "Load and filter 2D ROI files"
   },
   "dag-mined-cluster-0140": {
-    "description": "Takes annotated image channels, applies extended depth of focus Sobel projection, contrast enhancement, thresholding, and median filtering, and produces labeled 2D segments using seeded watershed.<br>Wiring: Filter by annotation.Output → CLIJ2 Extended Depth Of Focus Sobel Projection.Source; Filter by annotation.Output → Seeded watershed.Markers; CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Histogram-based contrast enhancer.Input; CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Histogram-based contrast enhancer.Input; Histogram-based contrast enhancer.Output → Auto threshold 2D (8-bit).Input; Histogram-based contrast enhancer.Output → Auto threshold 2D (8-bit).Input; Auto threshold 2D (8-bit).Output → Median filter 2D.Input; Auto threshold 2D (8-bit).Output → Median filter 2D.Input; Median filter 2D.Output → Seeded watershed.Image; Median filter 2D.Output → Seeded watershed.Image; Median filter 2D.Output → Seeded watershed.Mask; Median filter 2D.Output → Seeded watershed.Mask.",
+    "description": "Takes annotated image channels, applies extended depth of focus Sobel projection, contrast enhancement, thresholding, and median filtering, and produces labeled 2D segments using seeded watershed.<br>Wiring: Filter by annotation.Output → CLIJ2 Extended Depth Of Focus Sobel Projection.Source; Filter by annotation.Output → Seeded watershed.Markers; CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Histogram-based contrast enhancer.Input; Histogram-based contrast enhancer.Output → Auto threshold 2D (8-bit).Input; Auto threshold 2D (8-bit).Output → Median filter 2D.Input; Median filter 2D.Output → Seeded watershed.Image; Median filter 2D.Output → Seeded watershed.Mask.",
     "file": "dag-mined-cluster-0140.json",
     "functionId": "jipipe:function:images",
     "name": "Segment 2D images with edge projection and watershed"
@@ -2070,7 +1992,7 @@
     "name": "Detect line-like structures in microscopy images"
   },
   "dag-mined-cluster-0181": {
-    "description": "Takes a multi-Z image and produces a central Z substack plus a Z projection of that substack. It adds image-property and unique annotations, selects the central Z range with an expression slicer, and projects the selected slices.<br>Wiring: Group input.Image → Annotate with image properties.Image; Annotate with image properties.Annotated image → Set annotation (expression).Input; Unique annotation.Annotated data → Set annotation (expression).Input; Unique annotation.Annotated data → Set annotation (expression).Input; Set annotation (expression).Output → Unique annotation.Data; Set annotation (expression).Output → Unique annotation.Data; Set annotation (expression).Output → Reduce &amp; split hyperstack (Expression).Input; Reduce &amp; split hyperstack (Expression).Output → Z-Project.Input; Reduce &amp; split hyperstack (Expression).Output → Group output.Substack; Z-Project.Output → Group output.Z project.",
+    "description": "Takes a multi-Z image and produces a central Z substack plus a Z projection of that substack. It adds image-property and unique annotations, selects the central Z range with an expression slicer, and projects the selected slices.<br>Wiring: Annotate with image properties.Annotated image → Set annotation (expression).Input; Unique annotation.Annotated data → Set annotation (expression).Input; Unique annotation.Annotated data → Set annotation (expression).Input; Set annotation (expression).Output → Unique annotation.Data; Set annotation (expression).Output → Unique annotation.Data; Set annotation (expression).Output → Reduce &amp; split hyperstack (Expression).Input; Reduce &amp; split hyperstack (Expression).Output → Z-Project.Input.",
     "file": "dag-mined-cluster-0181.json",
     "functionId": "jipipe:function:images",
     "name": "Extract central Z substack and projection"
@@ -2086,12 +2008,6 @@
     "file": "dag-mined-cluster-0183.json",
     "functionId": "jipipe:function:images",
     "name": "Background-subtracted image stack"
-  },
-  "dag-mined-cluster-0184": {
-    "description": "Takes a 3D mask, labels connected components, converts the labels to 3D ROIs, and extracts individual and pairwise 3D ROI statistics such as distances into a results table, with Python scripts used to post-process the measurements.<br>Wiring: Connected components labeling 3D.Output → Copy physical dimensions.Target; Extract IJ3D ROI statistics.Measurements → Run Python script (iterating).Input; Extract IJ3D ROI statistics.Measurements → Run Python script (iterating).Input; Extract IJ3D ROI statistics.Measurements → Run Python script (iterating).Input; Extract IJ3D ROI statistics.Measurements → Run Python script (iterating).Input 1; Copy physical dimensions.Output → IJ3D Labels to 3D ROI.Labels.",
-    "file": "dag-mined-cluster-0184.json",
-    "functionId": "jipipe:function:statistics",
-    "name": "Measure pairwise distances between 3D ROIs"
   },
   "dag-mined-cluster-0186": {
     "description": "Takes an image stack, computes an extended depth-of-focus Sobel projection, applies a color map, and blends the result into a single RGB image.<br>Wiring: CLIJ2 Extended Depth Of Focus Sobel Projection.Destination → Set LUT (color map).Input; Set LUT (color map).Output → Blend images.Z01.",
@@ -2154,7 +2070,7 @@
     "name": "Measure tracked objects and export histograms"
   },
   "dag-mined-cluster-0198": {
-    "description": "Takes 2D ROIs and converts them into a 2D label image (with morphological cleanup and border) while extracting a table of ROI statistics; the table is filtered, annotated, histogrammed, and split by annotation.<br>Wiring: Extract 2D ROI statistics.Measurements → Filter tables.Input; 2D ROI to Labels (Expression).Labels → Morphological operation 2D.Input; Morphological operation 2D.Output → Add border 2D.Input; Filter tables.Output → Set/Edit annotations.Input; Set/Edit annotations.Output → JFreeChart Histogram plot.Input; Set/Edit annotations.Output → JFreeChart Histogram plot.Input; JFreeChart Histogram plot.Output → Split &amp; filter by annotation.Input; JFreeChart Histogram plot.Output → Split &amp; filter by annotation.Input.",
+    "description": "Takes 2D ROIs and converts them into a 2D label image (with morphological cleanup and border) while extracting a table of ROI statistics; the table is filtered, annotated, histogrammed, and split by annotation.<br>Wiring: Extract 2D ROI statistics.Measurements → Filter tables.Input; Filter tables.Output → Set/Edit annotations.Input; Set/Edit annotations.Output → JFreeChart Histogram plot.Input; Set/Edit annotations.Output → JFreeChart Histogram plot.Input; JFreeChart Histogram plot.Output → Split &amp; filter by annotation.Input; JFreeChart Histogram plot.Output → Split &amp; filter by annotation.Input.",
     "file": "dag-mined-cluster-0198.json",
     "functionId": "jipipe:function:rois",
     "name": "Create 2D ROI segmentation image and measurements table"
@@ -2166,7 +2082,7 @@
     "name": "Plot histograms of 2D ROI statistics"
   },
   "dag-mined-cluster-0201": {
-    "description": "Takes multiple 2D ROI lists, converts them into RGB images with colored outlines, fills, and optional labels, merges ROI lists, and combines the resulting images into a montage.<br>Wiring: Merge 2D ROI lists.Output → Convert 2D ROI to RGB.ROI; Merge 2D ROI lists.Output → Convert 2D ROI to RGB.ROI; Convert 2D ROI to RGB.Output → Montage of input images.Input; Convert 2D ROI to RGB.Output → Montage of input images.Input; Convert 2D ROI to RGB.Output → Montage of input images.Input.",
+    "description": "Takes multiple 2D ROI lists, converts them into RGB images with colored outlines, fills, and optional labels, merges ROI lists, and combines the resulting images into a montage.<br>Wiring: Convert 2D ROI to RGB.Output → Montage of input images.Input; Convert 2D ROI to RGB.Output → Montage of input images.Input; Convert 2D ROI to RGB.Output → Montage of input images.Input.",
     "file": "dag-mined-cluster-0201.json",
     "functionId": "jipipe:function:images",
     "name": "Create RGB montage of 2D ROIs"
@@ -2176,12 +2092,6 @@
     "file": "dag-mined-cluster-0202.json",
     "functionId": "jipipe:function:plotting",
     "name": "Pairwise 2D ROI statistics histogram"
-  },
-  "dag-mined-cluster-0204": {
-    "description": "Takes a 2D ROI list and produces an RGB image that draws the ROIs as colored outlines, fills, or labels. It renders the ROIs to RGB, applies a predefined color map LUT, and renders them again using the first rendered image as the reference canvas.<br>Wiring: Convert 2D ROI to RGB.Output → Convert 2D ROI to RGB.Image.",
-    "file": "dag-mined-cluster-0204.json",
-    "functionId": "jipipe:function:images",
-    "name": "Render 2D ROIs as an RGB image"
   },
   "dag-mined-cluster-0206": {
     "description": "Takes an image, adds a single expression-defined annotation and image-property annotations, then divides greyscale pixel values by the global maximum across all slices. Produces an annotated image with intensity normalized relative to the maximum.<br>Wiring: Set annotation (expression).Output → Annotate with image properties.Image; Annotate with image properties.Annotated image → Divide by maximum.Input.",
@@ -2226,7 +2136,7 @@
     "name": "Measure 2D ROI components and combined regions"
   },
   "dag-mined-cluster-0213": {
-    "description": "Takes 8-bit 2D images, applies auto-thresholding, and converts the thresholded regions into 2D particle ROIs with measurements.<br>Wiring: Group input.Input → Auto threshold 2D (8-bit).Input; Auto threshold 2D (8-bit).Output → Find particles 2D.Mask; Find particles 2D.Measurements → Group output.Measurements; Find particles 2D.ROI → Group output.ROI.",
+    "description": "Takes 8-bit 2D images, applies auto-thresholding, and converts the thresholded regions into 2D particle ROIs with measurements.<br>Wiring: Auto threshold 2D (8-bit).Output → Find particles 2D.Mask.",
     "file": "dag-mined-cluster-0213.json",
     "functionId": "jipipe:function:rois",
     "name": "Detect 2D particle ROIs"
@@ -2250,7 +2160,7 @@
     "name": "Load JSON files and extract selected fields"
   },
   "dag-mined-cluster-0218": {
-    "description": "Takes an image, a list of 2D ROIs, and a mask, and produces exported visualization images: a montage combining a rendered 2D ROI overlay with a histogram plot, and a blended image of colored connected-component labels and the mask.<br>Wiring: Connected components labeling 2D.Output → Convert labels to RGB.Labels; Morphological operation 2D.Output → Set to color (RGB).Mask; Set 2D overlay.Output → Render overlay.Input; JFreeChart Histogram plot.Output → Montage of input images.Input; Convert labels to RGB.Output → Set to color (RGB).Input; Render overlay.Output → Montage of input images.Input; Set to color (RGB).Output → Blend images.Top; Montage of input images.Output → Export image.Input; Blend images.Output → Export image.Input.",
+    "description": "Takes an image, a list of 2D ROIs, and a mask, and produces exported visualization images: a montage combining a rendered 2D ROI overlay with a histogram plot, and a blended image of colored connected-component labels and the mask.<br>Wiring: Connected components labeling 2D.Output → Convert labels to RGB.Labels; Morphological operation 2D.Output → Set to color (RGB).Mask; Convert labels to RGB.Output → Set to color (RGB).Input; Set to color (RGB).Output → Blend images.Top; Blend images.Output → Export image.Input.",
     "file": "dag-mined-cluster-0218.json",
     "functionId": "jipipe:function:export",
     "name": "Export 2D ROI visualization images"
@@ -2322,7 +2232,7 @@
     "name": "Plot histogram of table measurements"
   },
   "dag-mined-cluster-0231": {
-    "description": "Takes 8-bit 2D images, applies multiple auto-thresholding methods, and produces thresholded images plus a montage for visual comparison.<br>Wiring: Group input.Input → Auto threshold 2D (8-bit).Input; Define multiple parameters.Parameters → Auto threshold 2D (8-bit).{Parameters}; Auto threshold 2D (8-bit).Output → Create montage.Input; Auto threshold 2D (8-bit).Output → Group output.Thresholded; Create montage.Output → Group output.Montage.",
+    "description": "Takes 8-bit 2D images, applies multiple auto-thresholding methods, and produces thresholded images plus a montage for visual comparison.<br>Wiring: Define multiple parameters.Parameters → Auto threshold 2D (8-bit).{Parameters}; Auto threshold 2D (8-bit).Output → Create montage.Input.",
     "file": "dag-mined-cluster-0231.json",
     "functionId": "jipipe:function:images",
     "name": "Compare 2D auto-threshold methods"
@@ -2380,12 +2290,6 @@
     "file": "dag-mined-cluster-0249.json",
     "functionId": "jipipe:function:images",
     "name": "Best-focus projection and bleach correction"
-  },
-  "dag-mined-cluster-0250": {
-    "description": "Takes image data and produces smoothed images by applying a 2D Gaussian blur to each slice.<br>Wiring: Tunnel exit.T1 → Tunnel entrance.T1; Tunnel exit.T1 → Gaussian blur 2D.Input.",
-    "file": "dag-mined-cluster-0250.json",
-    "functionId": "jipipe:function:images",
-    "name": "Smooth images with Gaussian blur"
   },
   "dag-mined-cluster-0252": {
     "description": "Takes a list of image files, imports each as an ImageJ image, and produces a Z-projection for each image stack. It can also be used for other axis projections such as channel or time projections.<br>Wiring: File list.Filenames → Import image.Files; Import image.Image → Z-Project.Input.",
@@ -2496,13 +2400,13 @@
     "name": "Fill masked areas in an image"
   },
   "dag-mined-cluster-0279": {
-    "description": "Takes an image, splits it into fixed-size tiles, selects the tile matching a configured annotation (for example, the top-left tile), removes tile annotations, and outputs the selected tile.<br>Wiring: Group input.Input → Tile image.Input; Tile image.Output → Split &amp; filter by annotation.Input; Split &amp; filter by annotation.Output → Remove annotation.Input; Split &amp; filter by annotation.Output 1 → Group output.Output 1; Remove annotation.Output → Remove annotation.Input; Remove annotation.Output → Remove annotation.Input; Remove annotation.Output → Remove annotation.Input; Remove annotation.Output → Group output.Output.",
+    "description": "Takes an image, splits it into fixed-size tiles, selects the tile matching a configured annotation (for example, the top-left tile), removes tile annotations, and outputs the selected tile.<br>Wiring: Tile image.Output → Split &amp; filter by annotation.Input; Split &amp; filter by annotation.Output → Remove annotation.Input; Remove annotation.Output → Remove annotation.Input; Remove annotation.Output → Remove annotation.Input; Remove annotation.Output → Remove annotation.Input.",
     "file": "dag-mined-cluster-0279.json",
     "functionId": "jipipe:function:images",
     "name": "Extract an image tile"
   },
   "dag-mined-cluster-0280": {
-    "description": "Takes a 2D image and a second mask, detects circular markers by Hough transform, combines the detected mask with the second mask, and refines the result with morphology, distance-transform watershed, and connected-component labeling. It produces a labeled marker image, a combined mask, the Hough accumulator, and a table of circle positions, diameters, and scores.<br>Wiring: Group input.Input → Detect circles 2D (Hough, fast).Input; Group input.Input 1 → Bitwise operation.Input 1; Detect circles 2D (Hough, fast).Mask → Bitwise operation.Input 2; Detect circles 2D (Hough, fast).Mask → Morphological operation 2D.Input; Detect circles 2D (Hough, fast).Accumulator → Group output.Accumulator; Detect circles 2D (Hough, fast).Measurements → Group output.Measurements; Bitwise operation.Output → Group output.Output; Morphological operation 2D.Output → Distance transform watershed 2D.Input; Morphological operation 2D.Output → Connected components labeling 2D.Input; Distance transform watershed 2D.Output → Morphological operation 2D.Input; Connected components labeling 2D.Output → Group output.Output 1.",
+    "description": "Takes a 2D image and a second mask, detects circular markers by Hough transform, combines the detected mask with the second mask, and refines the result with morphology, distance-transform watershed, and connected-component labeling. It produces a labeled marker image, a combined mask, the Hough accumulator, and a table of circle positions, diameters, and scores.<br>Wiring: Detect circles 2D (Hough, fast).Mask → Bitwise operation.Input 2; Detect circles 2D (Hough, fast).Mask → Morphological operation 2D.Input; Morphological operation 2D.Output → Distance transform watershed 2D.Input; Morphological operation 2D.Output → Connected components labeling 2D.Input; Distance transform watershed 2D.Output → Morphological operation 2D.Input.",
     "file": "dag-mined-cluster-0280.json",
     "functionId": "jipipe:function:images",
     "name": "Detect circular markers in 2D images"
@@ -2610,13 +2514,13 @@
     "name": "Rotate an image"
   },
   "dag-mined-cluster-0304": {
-    "description": "Takes image stacks or 2D image planes, pads them to a common size, merges them into a 3D stack, and produces montage images for visual inspection.<br>Wiring: Group input.Input → Stack to montage.Input; Make images equal 2D (single input).Output → Create 3D stack.Input; Create 3D stack.Output → Stack to montage.Input; Stack to montage.Output → Make images equal 2D (single input).Input; Stack to montage.Output → Group output.Output.",
+    "description": "Takes image stacks or 2D image planes, pads them to a common size, merges them into a 3D stack, and produces montage images for visual inspection.<br>Wiring: Make images equal 2D (single input).Output → Create 3D stack.Input; Create 3D stack.Output → Stack to montage.Input; Stack to montage.Output → Make images equal 2D (single input).Input.",
     "file": "dag-mined-cluster-0304.json",
     "functionId": "jipipe:function:images",
     "name": "Create image montages for visualization"
   },
   "dag-mined-cluster-0305": {
-    "description": "Takes two input images and produces a single interpolated image. It applies pixel-wise image arithmetic to the first image, a scalar pixel operation, and then combines the result with the second image.<br>Wiring: Group input.A → Legacy image calculator 2D.Input 1; Group input.A → Legacy image calculator 2D.Input 2; Group input.B → Legacy image calculator 2D.Input 1; Legacy image calculator 2D.Output → Legacy image math operation (scalar).Input; Legacy image calculator 2D.Output → Group output.Output; Legacy image math operation (scalar).Output → Legacy image calculator 2D.Input 2.",
+    "description": "Takes two input images and produces a single interpolated image. It applies pixel-wise image arithmetic to the first image, a scalar pixel operation, and then combines the result with the second image.<br>Wiring: Legacy image calculator 2D.Output → Legacy image math operation (scalar).Input; Legacy image math operation (scalar).Output → Legacy image calculator 2D.Input 2.",
     "file": "dag-mined-cluster-0305.json",
     "functionId": "jipipe:function:images",
     "name": "Interpolate two images"

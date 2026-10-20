@@ -730,6 +730,18 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             reloadList();
             return;
         }
+        // A synthetic <function>/Patterns row selects the templates filed
+        // under exactly that function (mutually exclusive with the function
+        // path and the scope — the model setters cancel the others). Must be
+        // checked BEFORE the function-path fallback: the row's path contains
+        // its ancestor function, which the fallback would misread as a
+        // branch filter (listing real nodes too).
+        JIPipeNodeTaxonomyFunction patternsFunction = tree.functionOfPatternsPath(path);
+        if (patternsFunction != null) {
+            model.setPatternsFunction(patternsFunction);
+            reloadList();
+            return;
+        }
         // Function rows filter by their path; the root row ("All
         // functions") and an empty selection both clear the branch filter
         // (the root IS "all nodes", so selecting it must not be a no-op).
@@ -1127,6 +1139,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // identical menu (spec §7.3).
         JIPipeNodeDatabaseEntry entry = tree.entryFromPath(path);
         if (entry != null) {
+            // Select the right-clicked row so the menu can be related to its
+            // entry by eye (a right-click on a JTree row does not select it
+            // the way a left-click does). Safe: the selection listener treats
+            // node-leaf rows as insert/drag targets only (no list re-query).
+            tree.getTree().setSelectionPath(path);
             Set<String> pinned = getPinnedNodeDatabaseEntries();
             List<JIPipeNodeDatabaseEntry> selected = List.of(entry);
             JPopupMenu popupMenu = NodeEntryContextMenu.buildJPopupMenu(

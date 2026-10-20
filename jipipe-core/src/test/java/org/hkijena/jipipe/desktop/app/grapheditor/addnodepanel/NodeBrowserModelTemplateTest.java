@@ -161,6 +161,48 @@ class NodeBrowserModelTemplateTest {
     }
 
     @Test
+    void patternsFunctionSelectionFiltersToTemplatesOfThatFunction() {
+        NodeBrowserModel model = new NodeBrowserModel();
+        JIPipeNodeTaxonomyFunction images = JIPipe.getNodes().getFunctions().byId(IMAGES_FN_ID);
+        assertThat(images).isNotNull();
+        JIPipeNodeTaxonomyFunction tables = JIPipe.getNodes().getFunctions().byId("jipipe:function:tables");
+        assertThat(tables).isNotNull();
+
+        CreateNewNodesByTemplateDatabaseEntry underImages = entry(1, IMAGES_FN_ID, TemplateScope.System);
+        CreateNewNodesByTemplateDatabaseEntry underTables = entry(2, "jipipe:function:tables", TemplateScope.System);
+
+        model.setPatternsFunction(images);
+        assertThat(model.getPatternsFunction()).isEqualTo(images);
+        // The <function>/Patterns row lists the template entries filed under
+        // exactly that function ...
+        assertThat(model.matchesSelection(underImages, null)).isTrue();
+        // ... and not templates of a different function.
+        assertThat(model.matchesSelection(underTables, null)).isFalse();
+    }
+
+    @Test
+    void patternsFunctionIsMutuallyExclusiveWithScopeAndPath() {
+        NodeBrowserModel model = new NodeBrowserModel();
+        JIPipeNodeTaxonomyFunction images = JIPipe.getNodes().getFunctions().byId(IMAGES_FN_ID);
+        assertThat(images).isNotNull();
+
+        model.setPatternsFunction(images);
+        model.setSelectedScope(TemplateScope.System);
+        assertThat(model.getPatternsFunction()).isNull();
+        assertThat(model.getSelectedScope()).isEqualTo(TemplateScope.System);
+
+        model.setPatternsFunction(images);
+        model.setTreePath(java.util.List.of(images));
+        assertThat(model.getPatternsFunction()).isNull();
+        assertThat(model.getTreePath()).hasSize(1);
+
+        model.setPatternsFunction(images);
+        assertThat(model.getPatternsFunction()).isEqualTo(images);
+        assertThat(model.getTreePath()).isEmpty();
+        assertThat(model.getSelectedScope()).isNull();
+    }
+
+    @Test
     void badgeReflectsNodeCount() {
         // Task 4 behavior, smoke-checked here: 1 node → Custom, ≥2 → Pattern.
         assertThat(entry(1, IMAGES_FN_ID, TemplateScope.Project).getBadge()).isEqualTo("Custom");
