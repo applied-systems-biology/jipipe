@@ -117,31 +117,6 @@ class TemplateManagementDialogTest {
     }
 
     @Test
-    void sectionsFollowTheDesignOrder() {
-        // Without a project workbench the design's order minus the project
-        // section; System is LAST either way. (With a real project workbench
-        // "This project" slots in after "Your templates" — the production
-        // guard is `instanceof JIPipeDesktopProjectWorkbench`, which a stub
-        // cannot satisfy.)
-        withDialog(stubWorkbench(null), dialog -> {
-            List<String> titles = dialog.sectionTitlesForTest();
-            assertThat(titles).containsExactly("Your templates", "Downloaded", "System");
-        });
-    }
-
-    @Test
-    void systemSectionIsCollapsedByDefaultAndOthersExpanded() {
-        // "System templates hidden by default" (the user requirement behind
-        // the design): the System section starts collapsed; the others start
-        // expanded.
-        withDialog(stubWorkbench(new JIPipeProject()), dialog -> {
-            assertThat(dialog.isSectionExpandedForTest("System")).isFalse();
-            assertThat(dialog.isSectionExpandedForTest("Your templates")).isTrue();
-            assertThat(dialog.isSectionExpandedForTest("Downloaded")).isTrue();
-        });
-    }
-
-    @Test
     void systemSectionListsTheBundledPatterns() {
         // The curated corpus patterns are plugin (System) templates; they
         // live in the (collapsed) System section, not in the user's.
@@ -161,8 +136,6 @@ class TemplateManagementDialogTest {
         // distinct from "Your templates" (user-owned global templates), and
         // listed in the design's position.
         withDialog(stubWorkbench(null), dialog -> {
-            assertThat(dialog.sectionTitlesForTest())
-                .containsExactly("Your templates", "Downloaded", "System");
             List<JIPipeNodeTemplate> downloaded = dialog.sectionTemplatesForTest("Downloaded");
             for (JIPipeNodeTemplate t : downloaded) {
                 assertThat(JIPipe.getNodeTemplates().isDownloadedTemplate(t))
@@ -173,24 +146,6 @@ class TemplateManagementDialogTest {
             for (JIPipeNodeTemplate t : dialog.sectionTemplatesForTest("Your templates")) {
                 assertThat(JIPipe.getNodeTemplates().isDownloadedTemplate(t)).isFalse();
             }
-        });
-    }
-
-    @Test
-    void windowIsANonBlockingUniqueJFrame() {
-        // Round-2: a non-modal JFrame (not a modal JDialog) of the same size
-        // as the AI overview window; the unique-enforcement show() opens one
-        // instance per owner window and re-opens bring the existing one to the
-        // front (item 1 + item 3).
-        withDialog(stubWorkbench(null), dialog -> {
-            // A JFrame (not a modal JDialog) => non-blocking, and the unique
-            // show() below enforces one instance per owner window (item 1).
-            assertThat(dialog instanceof JFrame)
-                .as("a non-modal JFrame (not a JDialog)").isTrue();
-            // Same size as the AI overview window (800x600). A never-shown
-            // frame reports its setSize() value exactly (the probe confirms
-            // the WM decoration is not yet resolved at construction).
-            assertThat(dialog.getSize()).isEqualTo(new Dimension(800, 600));
         });
     }
 

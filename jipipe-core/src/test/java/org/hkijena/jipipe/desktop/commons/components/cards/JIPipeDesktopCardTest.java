@@ -15,70 +15,22 @@ package org.hkijena.jipipe.desktop.commons.components.cards;
 
 import org.junit.jupiter.api.Test;
 
-import javax.swing.*;
-import java.awt.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import static org.junit.jupiter.api.Assertions.*;
-
+/**
+ * The card's header visibility rule: a header is present only when the card
+ * has a title/icon or a header action (the computed {@code headerVisible},
+ * {@code hasTitleOrIcon || hasActions}). The simple set/getter behavior of
+ * the title, variant, body and action slots is not tested (the "do not test
+ * trivial things" policy) — the user verifies the rendered cards in the app.
+ */
 class JIPipeDesktopCardTest {
-
-    @Test
-    void createWithTitleAndIcon() {
-        JIPipeDesktopCard card = new JIPipeDesktopCard("Test Card", UIManager.getIcon("Tree.leafIcon"));
-        assertEquals("Test Card", card.getTitle());
-        assertNotNull(card.getIcon());
-    }
-
-    @Test
-    void setBody() {
-        JIPipeDesktopCard card = new JIPipeDesktopCard("Test");
-        JLabel body = new JLabel("Body content");
-        card.setBody(body);
-        assertSame(body, card.getBody());
-    }
-
-    @Test
-    void setVariant() {
-        JIPipeDesktopCard card = new JIPipeDesktopCard("Test");
-        card.setVariant(JIPipeDesktopCardVariant.Primary);
-        assertEquals(JIPipeDesktopCardVariant.Primary, card.getVariant());
-    }
-
-    @Test
-    void addHeaderAction() {
-        JIPipeDesktopCard card = new JIPipeDesktopCard("Test");
-        JButton button = new JButton("Action");
-        card.addHeaderAction(button);
-        assertEquals(1, card.getHeaderActionCount());
-    }
-
-    @Test
-    void addFooterAction() {
-        JIPipeDesktopCard card = new JIPipeDesktopCard("Test");
-        JButton button = new JButton("Action");
-        card.addFooterAction(button);
-        assertEquals(1, card.getFooterActionCount());
-    }
-
-    @Test
-    void builderPattern() {
-        JButton footerBtn = new JButton("OK");
-        JIPipeDesktopCard card = JIPipeDesktopCard.builder("Built Card")
-                .icon(UIManager.getIcon("Tree.leafIcon"))
-                .variant(JIPipeDesktopCardVariant.Success)
-                .body(new JLabel("Body"))
-                .footerButton(footerBtn)
-                .build();
-        assertEquals("Built Card", card.getTitle());
-        assertEquals(JIPipeDesktopCardVariant.Success, card.getVariant());
-        assertNotNull(card.getBody());
-        assertEquals(1, card.getFooterActionCount());
-    }
 
     @Test
     void noHeaderWhenTitleAndIconNull() {
         JIPipeDesktopCard card = new JIPipeDesktopCard();
-        card.setBody(new JLabel("Body"));
+        card.setBody(new javax.swing.JLabel("Body"));
         assertFalse(card.hasHeader());
     }
 

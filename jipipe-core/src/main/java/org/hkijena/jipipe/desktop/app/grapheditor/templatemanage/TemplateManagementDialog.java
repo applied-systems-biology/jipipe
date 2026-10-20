@@ -705,23 +705,6 @@ public class TemplateManagementDialog extends JFrame implements NodeTemplatesRef
     // Test accessors (headless UI tests; no production callers)
     // ------------------------------------------------------------------
 
-    List<String> sectionTitlesForTest() {
-        List<String> titles = new ArrayList<>();
-        for (TemplateSection section : sections) {
-            titles.add(section.title);
-        }
-        return titles;
-    }
-
-    boolean isSectionExpandedForTest(String title) {
-        for (TemplateSection section : sections) {
-            if (section.title.equals(title)) {
-                return section.expanded;
-            }
-        }
-        throw new IllegalArgumentException("no section: " + title);
-    }
-
     List<JIPipeNodeTemplate> sectionTemplatesForTest(String title) {
         for (TemplateSection section : sections) {
             if (section.title.equals(title)) {

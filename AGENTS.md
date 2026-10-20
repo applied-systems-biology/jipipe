@@ -132,6 +132,31 @@ mvn test -Dtest=MyTestClass
 ### Adding Tests
 For new modules, add JUnit 5 dependencies and create `src/test/java` structure following the contrib module pattern.
 
+### Test Policy: Do Not Test Trivial Things (IMPORTANT)
+
+**Tests cover non-trivial behavior and contracts — not the re-verification of
+obvious code or UI structure** (ruling 2026-10-20; extends the "no Swing
+interaction tests" rule — the user verifies the Swing UI by eye in the app:
+"I test it myself", interaction tests were removed as "just messy").
+
+- **Swing UI structure: no tests.** Do NOT assert low-level component
+  structure — tab titles/order, component visibility or enabled toggles,
+  border/padding/insets, section collapse state, cell-renderer details,
+  dialog layout. If a UI change looks right in the code, it is done; the
+  user checks the running app and reports what is wrong.
+- **Trivial code: no tests.** No tests for getters/setters, pure
+  delegation, simple if/else, or constants — and no test whose assertion
+  just restates the implementation ("set X, assert X == X").
+- **What DOES warrant a test:** non-trivial logic — algorithms, data
+  transformations, serialization round-trips, ID stability, ordering/
+  concurrency contracts, idempotency (generators are byte-stable),
+  fail-closed guards, registry/ship-set contracts (e.g.
+  `SystemPatternTemplatesTest` count + deserialization pins, taxonomy
+  validation gates).
+- **Heuristic:** if deleting the test would not make it harder to catch a
+  regression the user actually cares about, do not write it. When in doubt,
+  skip the test.
+
 ### ImageJ Legacy Patcher Constraint (IMPORTANT)
 The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2 cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**
 
