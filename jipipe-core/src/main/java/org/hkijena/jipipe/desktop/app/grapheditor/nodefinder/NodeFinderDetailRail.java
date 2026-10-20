@@ -23,22 +23,24 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.desktop.app.documentation.JIPipeDesktopAlgorithmCompendiumUI;
 import org.hkijena.jipipe.desktop.commons.components.markup.JIPipeDesktopMarkdownReader;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.IdentityHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**
@@ -60,20 +62,23 @@ import java.util.Set;
  * node documentation: the same markdown the algorithm compendium and
  * the graph editor's node settings show (title, description,
  * input/output slot table, per-parameter documentation);</li>
- * <li><b>Similar</b> — the {@code database.relations(entry, 6)}
- * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#similar() similar}
- * list (same function → framework → tags, workflow neighbors excluded);</li>
- * <li><b>Previous steps</b> (diagram-predecessor icon) — the
- * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#previous() previous}
- * list (nodes that run before this one);</li>
- * <li><b>Next steps</b> (diagram-successor icon, matching the node browser's
- * relation strip) — the
- * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#next() next}
- * list (nodes that run after this one).</li>
+ * <li><b>Related</b> (link icon) — the
+ * {@code database.relations(entry, 6)} lists as three collapsible
+ * sections in one scrollable page:
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#similar() Similar}
+ * (same function → framework → tags, workflow neighbors excluded),
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#previous() Previous steps}
+ * (nodes that run before this one) and
+ * {@link org.hkijena.jipipe.api.nodes.database.relations.NodeRelations#next() Next steps}
+ * (nodes that run after this one). The sections reuse the
+ * {@code GroupHeaderPanel} headers of the "Configure node templates"
+ * manager, and each section's rows are that manager's rounded cards —
+ * adapted from its wrapping grid to a single-column list (icon + bold
+ * name + one-line description). Non-empty sections are expanded, empty
+ * ones collapse to their header. Clicking a card tells the dialog (via
+ * the {@link EntrySelector} callback) to select that entry in the
+ * center list, so the rail cannot recurse into itself.</li>
  * </ul>
- * Clicking a similar/previous/next item tells the dialog (via the
- * {@link EntrySelector} callback) to select that entry in the center list,
- * so the rail cannot recurse into itself.
  * <p>
  * <b>Follow-up (deferred, see work item comment):</b> the rail previously
  * offered "▶ Insert setup" and "Open example" actions that inserted nodes
@@ -143,15 +148,19 @@ public class NodeFinderDetailRail extends JPanel {
     // AI monitor's tabs — see JIPipeDesktopAIMonitorWindow) ---
     private final JIPipeDesktopTabPane tabPane = new JIPipeDesktopTabPane(true, JIPipeDesktopTabPane.Style.TopPill);
     private final JIPipeDesktopMarkdownReader documentationReader = new JIPipeDesktopMarkdownReader(false);
-    private final JList<JIPipeNodeDatabaseEntry> similarList = new JList<>();
-    private final JList<JIPipeNodeDatabaseEntry> previousList = new JList<>();
-    private final JList<JIPipeNodeDatabaseEntry> nextList = new JList<>();
-    private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listPanels = new IdentityHashMap<>();
-    private final Map<JList<JIPipeNodeDatabaseEntry>, CardLayout> listCards = new IdentityHashMap<>();
-    private final Map<JList<JIPipeNodeDatabaseEntry>, JPanel> listBodies = new IdentityHashMap<>();
-    private final JLabel similarEmpty = new JLabel("No similar nodes", SwingConstants.CENTER);
-    private final JLabel previousEmpty = new JLabel("No previous steps", SwingConstants.CENTER);
-    private final JLabel nextEmpty = new JLabel("No next steps", SwingConstants.CENTER);
+    // --- Related page: one scrollable form with the three relation lists as
+    // collapsible sections (the "Configure node templates" manager's
+    // GroupHeaderPanel + card rows, adapted from a wrapping grid to a
+    // single-column list) ---
+    private JList<JIPipeNodeDatabaseEntry> similarList;
+    private JList<JIPipeNodeDatabaseEntry> previousList;
+    private JList<JIPipeNodeDatabaseEntry> nextList;
+    private final RelatedSection similarSection =
+        new RelatedSection("Similar", JIPipe.RESOURCES.getIcon16("actions/tag.png"));
+    private final RelatedSection previousSection =
+        new RelatedSection("Previous steps", JIPipe.RESOURCES.getIcon16("actions/diagram-predecessor.png"));
+    private final RelatedSection nextSection =
+        new RelatedSection("Next steps", JIPipe.RESOURCES.getIcon16("actions/diagram-successor.png"));
 
     private JIPipeNodeDatabaseEntry currentEntry;
     /**
@@ -184,22 +193,27 @@ public class NodeFinderDetailRail extends JPanel {
         emptyPanel.add(emptyLabel, new GridBagConstraints(0, 0, 1, 1, 1, 1, GridBagConstraints.CENTER,
             GridBagConstraints.BOTH, new Insets(40, 20, 40, 20), 0, 0));
 
-        // Content state
-        contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+        // Content state: the header block (name + chips + tags + profile)
+        // stays fixed above the tab bar; the tab pages scroll internally.
+        contentPanel.setLayout(new BorderLayout(0, 8));
         contentPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         initializeTitleBlock();
-        initializeEntryList(similarList, similarEmpty);
-        initializeEntryList(previousList, previousEmpty);
-        initializeEntryList(nextList, nextEmpty);
+        similarList = similarSection.initializeList(this::selectListEntry);
+        previousList = previousSection.initializeList(this::selectListEntry);
+        nextList = nextSection.initializeList(this::selectListEntry);
+        // Set the pill border BEFORE the tabs are added: each tab component
+        // captures the pane's border at construction (the AI monitor — the
+        // design reference — does the same order). Setting it after
+        // initializeTabs() left the pills with the thin default border
+        // (4,0,4,0 — no horizontal padding, pills touching: the
+        // "no padding and margin" report).
+        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         initializeTabs();
-        contentPanel.add(titleBlock());
-        contentPanel.add(Box.createVerticalStrut(8));
+        contentPanel.add(titleBlock(), BorderLayout.NORTH);
         // Minimum footprint 160 px, grows with the dialog (the tab content
         // is internally scrollable)
-        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         tabPane.setPreferredSize(new Dimension(0, 160));
-        tabPane.setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        contentPanel.add(tabPane);
+        contentPanel.add(tabPane, BorderLayout.CENTER);
 
         this.cards = new JPanel(cardLayout);
         cards.add(emptyPanel, CARD_EMPTY);
@@ -230,6 +244,29 @@ public class NodeFinderDetailRail extends JPanel {
      */
     public JIPipeNodeDatabaseEntry getCurrentEntry() {
         return currentEntry;
+    }
+
+    // ------------------------------------------------------------------
+    // Test accessors (headless UI tests; no production callers)
+    // ------------------------------------------------------------------
+
+    JIPipeDesktopTabPane tabPaneForTest() {
+        return tabPane;
+    }
+
+    /** The Similar section's card list (the rail's relation lists). */
+    JList<JIPipeNodeDatabaseEntry> similarListForTest() {
+        return similarList;
+    }
+
+    /** The Previous steps section's card list. */
+    JList<JIPipeNodeDatabaseEntry> previousListForTest() {
+        return previousList;
+    }
+
+    /** The Next steps section's card list. */
+    JList<JIPipeNodeDatabaseEntry> nextListForTest() {
+        return nextList;
     }
 
     // ------------------------------------------------------------------
@@ -271,7 +308,12 @@ public class NodeFinderDetailRail extends JPanel {
         } finally {
             updatingLists = false;
         }
-        updateListEmptyStates();
+        // Section expand/collapse follows the content on every entry change
+        // (non-empty sections expanded, empty ones collapsed to their
+        // header) — a manual toggle stays valid until the next entry.
+        similarSection.applyContentState(similarList.getModel().getSize() > 0);
+        previousSection.applyContentState(previousList.getModel().getSize() > 0);
+        nextSection.applyContentState(nextList.getModel().getSize() > 0);
 
         // Back to the documentation tab (the default) on every entry change
         tabPane.switchToContent(documentationReader);
@@ -308,18 +350,56 @@ public class NodeFinderDetailRail extends JPanel {
         return builder.toString();
     }
 
+    // ------------------------------------------------------------------
+    // Related page (the merged Similar / Previous steps / Next steps)
+    // ------------------------------------------------------------------
+
     /**
-     * Shows the empty-state label (instead of the list box) when a
-     * similar/previous/next list has no entries.
+     * Builds the "Related" tab page: one scrollable form panel (the same
+     * {@code WITH_SCROLLING} form machinery the "Configure node templates"
+     * manager uses) holding the three relation sections — {@code Similar},
+     * {@code Previous steps}, {@code Next steps} — each a collapsible
+     * {@code GroupHeaderPanel} over a single-column list of the manager's
+     * rounded card rows (grid → list).
+     * <p>
+     * The form is NOT wrapped in an island: the tab content sits inside the
+     * dialog's split pane, and the form's opaque panel background already
+     * provides the surface (the template manager wraps in an island only
+     * because it floats on a window background).
      */
-    private void updateListEmptyStates() {
-        for (JList<JIPipeNodeDatabaseEntry> list : new JList[]{similarList, previousList, nextList}) {
-            // The list body is a CardLayout: the empty-state card shows only
-            // when the list has no entries (two components cannot share a
-            // BorderLayout CENTER — only the last-added one would lay out)
-            listCards.get(list).show(listBodies.get(list),
-                list.getModel().getSize() == 0 ? "empty" : "list");
+    private JComponent buildRelatedPage() {
+        JIPipeDesktopFormPanel formPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
+        similarSection.buildSectionOn(formPanel);
+        previousSection.buildSectionOn(formPanel);
+        nextSection.buildSectionOn(formPanel);
+        formPanel.addVerticalGlue();
+        return formPanel;
+    }
+
+    /**
+     * Selects the clicked list entry in the center list — guarded so the
+     * rail's own programmatic list swaps cannot recurse.
+     */
+    private void selectListEntry(JIPipeNodeDatabaseEntry entry) {
+        if (updatingLists) {
+            return;
         }
+        entrySelector.select(entry);
+    }
+
+    // ------------------------------------------------------------------
+    // Tabs (the shared tab pane, same component as the AI monitor)
+    // ------------------------------------------------------------------
+
+    private void initializeTabs() {
+        tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
+            documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
+        // The Similar / Previous steps / Next steps lists are merged into one
+        // "Related" page (three collapsible sections) — the three separate
+        // tabs cluttered the narrow rail's pill row and hid the groups from
+        // each other.
+        tabPane.addTab("Related", JIPipe.RESOURCES.getIcon16("actions/link.png"),
+            buildRelatedPage(), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
     }
 
     // ------------------------------------------------------------------
@@ -362,17 +442,6 @@ public class NodeFinderDetailRail extends JPanel {
     // Tabs (the shared tab pane, same component as the AI monitor)
     // ------------------------------------------------------------------
 
-    private void initializeTabs() {
-        tabPane.addTab("Documentation", JIPipe.RESOURCES.getIcon16("actions/help-info.png"),
-            documentationReader, JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        tabPane.addTab("Similar", JIPipe.RESOURCES.getIcon16("actions/tag.png"),
-            listPanels.get(similarList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        tabPane.addTab("Previous steps", JIPipe.RESOURCES.getIcon16("actions/diagram-predecessor.png"),
-            listPanels.get(previousList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-        tabPane.addTab("Next steps", JIPipe.RESOURCES.getIcon16("actions/diagram-successor.png"),
-            listPanels.get(nextList), JIPipeDesktopTabPane.CloseMode.withoutCloseButton);
-    }
-
     /**
      * The Documentation tab content. For node entries this is the canonical
      * node documentation — the same markdown the algorithm compendium and
@@ -395,57 +464,248 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     // ------------------------------------------------------------------
-    // Similar / previous / next lists
+    // One collapsible Related section (GroupHeaderPanel + card list)
     // ------------------------------------------------------------------
 
-    private void initializeEntryList(JList<JIPipeNodeDatabaseEntry> list, JLabel emptyState) {
-        list.setOpaque(false);
-        listCards.put(list, new CardLayout());
-        list.setCellRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> view, Object value, int index,
-                                                          boolean isSelected, boolean cellHasFocus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(view, value, index, isSelected, cellHasFocus);
-                if (value instanceof JIPipeNodeDatabaseEntry entry) {
-                    label.setIcon(entry.getIcon());
-                    label.setText(entry.getName());
-                    label.setToolTipText(entry.getDescription().toPlainText());
-                }
-                return label;
-            }
-        });
-        list.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (updatingLists || !SwingUtilities.isLeftMouseButton(e)) {
-                    return;
-                }
-                int index = list.locationToIndex(e.getPoint());
-                if (index >= 0 && index < list.getModel().getSize()) {
-                    JIPipeNodeDatabaseEntry clicked = list.getModel().getElementAt(index);
-                    if (clicked != null) {
-                        entrySelector.select(clicked);
+    /**
+     * A section of the "Related" page: the shared {@code GroupHeaderPanel}
+     * header (title + icon, the flat collapse caret of the parameter forms
+     * at the start, the live entry count at the end — the "Configure node
+     * templates" manager's section look) over a single-column list of that
+     * manager's rounded card rows.
+     * <p>
+     * Unlike the manager's wrapping card GRID ({@code HORIZONTAL_WRAP} +
+     * fixed cells), this list is a plain vertical list: full section width,
+     * one card per row (the "list, not grid" adaptation of the manager's
+     * layout).
+     */
+    private class RelatedSection {
+        /** The relation list's row height (the manager's grid cards are 66 px). */
+        private static final int CARD_ROW_HEIGHT = 46;
+
+        private final String title;
+        private final Icon icon;
+        private JList<JIPipeNodeDatabaseEntry> list;
+        private JPanel listHost;
+        private JIPipeDesktopFormPanel.GroupHeaderPanel header;
+        private CustomStateLessToggleButton collapseButton;
+        private JLabel countLabel;
+
+        RelatedSection(String title, Icon icon) {
+            this.title = title;
+            this.icon = icon;
+        }
+
+        /**
+         * Creates and configures this section's list (card renderer + click
+         * handler) — called before {@link #buildSectionOn} so the section
+         * can be added to the form afterwards.
+         */
+        JList<JIPipeNodeDatabaseEntry> initializeList(java.util.function.Consumer<JIPipeNodeDatabaseEntry> onEntryClick) {
+            this.list = new JList<>(new DefaultListModel<>());
+            this.list.setOpaque(false);
+            this.list.setFixedCellHeight(CARD_ROW_HEIGHT);
+            this.list.setCellRenderer(new CardRowRenderer());
+            this.list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            // The card renderer paints its OWN rounded selection; suppress
+            // the list's default rectangular selection fill (the manager's
+            // cards do the same).
+            this.list.setSelectionBackground(ThemeUtils.getCurrentStyle().getPanelBackground());
+            this.list.setBorder(BorderFactory.createEmptyBorder(2, 4, 6, 4));
+            this.list.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    if (!SwingUtilities.isLeftMouseButton(e)) {
+                        return;
+                    }
+                    int index = list.locationToIndex(e.getPoint());
+                    if (index >= 0 && index < list.getModel().getSize()) {
+                        JIPipeNodeDatabaseEntry clicked = list.getModel().getElementAt(index);
+                        if (clicked != null) {
+                            onEntryClick.accept(clicked);
+                        }
                     }
                 }
+            });
+            return this.list;
+        }
+
+        /**
+         * Adds this section to the form panel: a full-width group header and
+         * the full-width card list right below it — the same
+         * {@code addGroupHeader} + {@code addWideToForm} pattern and the
+         * same collapse mechanism (the form's GridBag skips invisible
+         * components) the "Configure node templates" manager uses.
+         */
+        void buildSectionOn(JIPipeDesktopFormPanel formPanel) {
+            this.header = formPanel.addGroupHeader(title, icon);
+
+            // A plain width-forcing host, NOT a scroll pane: the form's
+            // single outer scroll (WITH_SCROLLING) scrolls the whole page;
+            // an inner scroll pane would swallow the mouse wheel (the
+            // manager's documented wheel re-targeting fix).
+            this.listHost = new JPanel(new BorderLayout());
+            this.listHost.setOpaque(false);
+            this.listHost.add(this.list, BorderLayout.CENTER);
+            formPanel.addWideToForm(this.listHost);
+
+            this.collapseButton = new CustomStateLessToggleButton("",
+                JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
+                "",
+                JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
+                true);
+            UIUtils.makeButtonFlat25x25(collapseButton);
+            collapseButton.setOpaque(false); // no toggled/pressed background
+            collapseButton.setFocusPainted(false);
+            collapseButton.setToolTipText("Collapse");
+            header.addToStartOfTitlePanel(collapseButton);
+
+            this.countLabel = new JLabel();
+            countLabel.setOpaque(false);
+            countLabel.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+            countLabel.setFont(countLabel.getFont().deriveFont(Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
+            header.addToEndOfTitlePanel(countLabel);
+
+            header.setCollapsed(false);
+            collapseButton.getToggledEventEmitter().subscribeLambda((e, listener) -> {
+                boolean nowExpanded = collapseButton.getState();
+                header.setCollapsed(!nowExpanded);
+                listHost.setVisible(nowExpanded);
+                collapseButton.setToolTipText(nowExpanded ? "Collapse" : "Expand");
+                formPanel.revalidate();
+            });
+            updateCount();
+        }
+
+        /**
+         * Expands/collapses this section to match its content and refreshes
+         * the header count — called on every entry change, so the expand
+         * state is always "non-empty = expanded" for the new entry (a
+         * manual toggle stays valid until the next entry is selected).
+         */
+        void applyContentState(boolean hasContent) {
+            if (listHost == null) {
+                return;
             }
-        });
-        emptyState.setForeground(Color.GRAY);
+            collapseButton.setState(hasContent);
+            header.setCollapsed(!hasContent);
+            listHost.setVisible(hasContent);
+            collapseButton.setToolTipText(hasContent ? "Collapse" : "Expand");
+            updateCount();
+        }
 
-        JPanel body = new JPanel(listCards.get(list));
-        listBodies.put(list, body);
-        JScrollPane scroll = new JScrollPane(list);
-        scroll.setBorder(null);
-        scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        scroll.getVerticalScrollBar().setUnitIncrement(16);
-        body.add(scroll, "list");
-        emptyState.setOpaque(false);
-        body.add(emptyState, "empty");
-        listCards.get(list).show(body, "empty");
+        private void updateCount() {
+            if (countLabel == null) {
+                return;
+            }
+            int n = list.getModel().getSize();
+            countLabel.setText(n == 0 ? "" : "(" + n + ")");
+        }
+    }
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(4, 0, 0, 0));
-        panel.add(body, BorderLayout.CENTER);
-        listPanels.put(list, panel);
+    // ------------------------------------------------------------------
+    // The card row renderer (the manager's rounded card, single-column)
+    // ------------------------------------------------------------------
+
+    /**
+     * A rounded card row — the "Configure node templates" manager's card
+     * ({@code CardRenderer}) adapted to a single-column list: the card is
+     * painted inset by a GUTTER within its full-width row, with the entry
+     * icon, the bold name and a one-line muted description. The row is
+     * transparent; the card is painted in {@link #paintComponent} so the
+     * corners are rounded and the inter-row spacing is a real gap.
+     */
+    private class CardRowRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
+        private static final int CARD_INSET = 4;
+        private static final int CARD_ARC = 10;
+
+        private final JLabel icon = new JLabel();
+        private final JLabel name = new JLabel();
+        private final JLabel desc = new JLabel();
+        private boolean cardSelected = false;
+
+        CardRowRenderer() {
+            setLayout(new BorderLayout(8, 1));
+            setOpaque(false);
+            // The CONTENT sits inside the painted card: gutter + inner pad.
+            setBorder(BorderFactory.createEmptyBorder(CARD_INSET + 4, CARD_INSET + 8, CARD_INSET + 4, CARD_INSET + 8));
+
+            icon.setVerticalAlignment(SwingConstants.CENTER);
+            name.setOpaque(false);
+            name.setFont(name.getFont().deriveFont(Font.BOLD));
+            desc.setOpaque(false);
+            desc.setForeground(ThemeUtils.getCurrentStyle().getTextMuted());
+
+            JPanel text = new JPanel();
+            text.setOpaque(false);
+            text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
+            name.setAlignmentX(LEFT_ALIGNMENT);
+            desc.setAlignmentX(LEFT_ALIGNMENT);
+            text.add(name);
+            text.add(desc);
+            add(icon, BorderLayout.WEST);
+            add(text, BorderLayout.CENTER);
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            int x = CARD_INSET;
+            int y = CARD_INSET;
+            int w = getWidth() - 2 * CARD_INSET - 1;
+            int h = getHeight() - 2 * CARD_INSET - 1;
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+            g2.setColor(cardSelected ? style.getSelectionBackground() : style.getPanelBackground());
+            g2.fillRoundRect(x, y, w, h, CARD_ARC, CARD_ARC);
+            g2.setColor(cardSelected ? style.getSelectionHighlight() : style.getBorderColor());
+            g2.drawRoundRect(x, y, w, h, CARD_ARC, CARD_ARC);
+            g2.dispose();
+        }
+
+        @Override
+        public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> view, JIPipeNodeDatabaseEntry value,
+                                                      int index, boolean isSelected, boolean cellHasFocus) {
+            // Full-width row: the list stretches the cell, so only the
+            // HEIGHT is pinned (width from the view).
+            setPreferredSize(new Dimension(Math.max(view.getWidth(), 1), RelatedSection.CARD_ROW_HEIGHT));
+            cardSelected = isSelected;
+            if (value != null) {
+                icon.setIcon(value.getIcon());
+                name.setText(value.getName());
+                name.setToolTipText(value.getName());
+                String d = shortDescription(value);
+                desc.setText(d);
+                desc.setToolTipText(value.getDescription() != null ? value.getDescription().getBody() : "");
+            } else {
+                name.setText("<null>");
+                desc.setText("");
+            }
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+            if (isSelected) {
+                Color fg = style.getSelectionForeground();
+                setForeground(fg);
+                name.setForeground(fg);
+                desc.setForeground(fg);
+            } else {
+                setForeground(style.getTextForeground());
+                name.setForeground(style.getTextForeground());
+                desc.setForeground(style.getTextMuted());
+            }
+            return this;
+        }
+
+        private String shortDescription(JIPipeNodeDatabaseEntry entry) {
+            HTMLText description = entry.getDescription();
+            if (description != null) {
+                String body = description.getBody().replace('\n', ' ').trim();
+                if (!body.isEmpty()) {
+                    return body.length() > 120 ? body.substring(0, 119) + "…" : body;
+                }
+            }
+            return "";
+        }
     }
 
     // ------------------------------------------------------------------

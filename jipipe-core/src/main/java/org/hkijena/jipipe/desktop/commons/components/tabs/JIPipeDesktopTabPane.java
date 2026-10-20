@@ -248,8 +248,24 @@ public class JIPipeDesktopTabPane extends JPanel implements Disposable {
         return tabPanelBorder;
     }
 
+    /**
+     * Sets the border each tab component (pill) is laid out with.
+     * <p>
+     * The border is propagated to ALREADY-CREATED tab components, not just
+     * captured by components created later: {@link DocumentTabComponent}
+     * copies the pane's border into its own Swing border at construction, so
+     * without this propagation a caller that adds tabs before setting the
+     * border (a historical {@code NodeFinderDetailRail} bug) would silently
+     * render the tabs with the thin default padding instead of the intended
+     * one — order-independent behavior, like any Swing {@code setBorder}.
+     *
+     * @param tabPanelBorder the border to lay the tab components out with
+     */
     public void setTabPanelBorder(Border tabPanelBorder) {
         this.tabPanelBorder = tabPanelBorder;
+        for (DocumentTab tab : tabs) {
+            tab.getTabComponent().setBorder(tabPanelBorder);
+        }
     }
 
     /**
