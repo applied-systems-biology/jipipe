@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -954,6 +956,23 @@ public class JIPipeDesktopGraphCanvasUI extends JLayeredPane implements JIPipeDe
 
         if (graphEditorUI != null) {
             graphEditorUI.beforeOpenContextMenu(menu);
+        }
+
+        // Framework of the selected node (the canvas has no hover tooltip,
+        // so this line is the discoverability surface for the full name)
+        {
+            Set<JIPipeDesktopGraphNodeUI> selectedNodeUIs = selectionManager.getSelectionByType(JIPipeDesktopGraphNodeUI.class);
+            if (selectedNodeUIs.size() == 1) {
+                JIPipeNodeTaxonomyFramework framework = selectedNodeUIs.iterator().next().getNode().getInfo().getFramework();
+                if (framework != null && !NoFramework.ID.equals(framework.getId())) {
+                    if (menu.getComponentCount() > 0) {
+                        menu.addSeparator();
+                    }
+                    JMenuItem frameworkItem = new JMenuItem("Framework: " + framework.getName());
+                    frameworkItem.setEnabled(false);
+                    menu.add(frameworkItem);
+                }
+            }
         }
 
         // Node partitioning menus

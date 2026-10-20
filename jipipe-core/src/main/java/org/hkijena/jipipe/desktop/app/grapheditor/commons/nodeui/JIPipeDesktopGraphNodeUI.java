@@ -30,6 +30,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationStepGenerationSettingsVisualization;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -49,6 +51,8 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.contextmenu.running.Up
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIActionRequestedEventEmitter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
+import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.statistics.items.LongestNodeWidthStatisticsItem;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
@@ -89,6 +93,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     private final JIPipeDesktopGraphNodeUIConnectSlotContextMenu connectSlotContextMenu = new JIPipeDesktopGraphNodeUIConnectSlotContextMenu(this);
     private final JIPipeDesktopGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
+    private final JIPipeNodeTaxonomyFramework nodeFramework;
     private final Color nodeFillColor;
     private final Color highlightedNodeBorderColor;
     private final LinearGradientPaint nodeDisabledPaint;
@@ -139,6 +144,7 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         super(workbench);
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
+        this.nodeFramework = node.getInfo().getFramework();
         this.zoom = graphCanvasUI.getZoom();
         this.nodeGeneratesIterationSteps = node instanceof JIPipeIterationStepAlgorithm;
         this.updateViewOnCacheUpdatedDebouncer = new StaticDebouncer(500, () -> updateView(false, true, false));
@@ -374,12 +380,15 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
     protected void updateWholeNodeActiveAreas() {
         final int shift = getBaseSlotXShift();
         FontMetrics mainFontMetrics;
+        FontMetrics tertiaryFontMetrics;
 
         if (getGraphics() != null) {
             mainFontMetrics = getGraphics().getFontMetrics(zoomedMainFont);
+            tertiaryFontMetrics = getGraphics().getFontMetrics(zoomedTertiaryFont);
         } else {
             Canvas c = new Canvas();
             mainFontMetrics = c.getFontMetrics(zoomedMainFont);
+            tertiaryFontMetrics = c.getFontMetrics(zoomedTertiaryFont);
         }
 
         // Whole node
@@ -411,7 +420,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             }
 
             double nameWidth = getNameWidth(mainFontMetrics);
-            int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + nameWidth);
+            double badgeExtraWidth = getBadgeExtraWidth(tertiaryFontMetrics);
+            int centerNativeWidth = (int) Math.round(22 * zoom + 22 * zoom + nameWidth + badgeExtraWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
 
             JIPipeDesktopGraphNodeUIRunNodeActiveArea activeArea = new JIPipeDesktopGraphNodeUIRunNodeActiveArea(this);
@@ -848,6 +858,15 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         g2.setPaint(getNodeFillColor());
         g2.fillRect(0, 0, getWidth(), getHeight());
 
+        // Framework signature pattern over the whole body (spec: hatch
+        // paints over it, so disabled/pass-through nodes read as disabled).
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+        if (isFrameworkPatternEnabled(style)) {
+            NodePatternRenderer.paint(g2, 0, 0, getWidth(), getHeight(),
+                    nodeFramework.getPatternStyleId(), nodeFramework.getId(),
+                    style.getNodePatternInk(), style.getNodePatternOpacity());
+        }
+
         // Paint disabled/pass-through
         if (getNode() instanceof JIPipeAlgorithm algorithm) {
             if (!algorithm.isEnabled()) {
@@ -1215,8 +1234,10 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         {
             String nameLabel = getDisplayedNodeName();
             double nameWidth = getNameWidth(fontMetrics);
+            FontMetrics tertiaryFontMetrics = g2.getFontMetrics(zoomedTertiaryFont);
+            double badgeExtraWidth = getBadgeExtraWidth(tertiaryFontMetrics);
 
-            int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth);
+            int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + nameWidth + badgeExtraWidth);
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0 + shift;
 
             if (nodeIsRunnable) {
@@ -1265,6 +1286,11 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             } else {
                 UIUtils.drawStringVerticallyCentered(g2, nameLabel, (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
             }
+
+            // Draw framework abbreviation chip (after the name, same centered group)
+            if (badgeExtraWidth > 0) {
+                paintFrameworkBadge(g2, startX + 3 * zoom + nameWidth + 4 * zoom, centerY, tertiaryFontMetrics);
+            }
         }
     }
 
@@ -1285,6 +1311,84 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
             nameWidth = fontMetrics.stringWidth(nameLabel);
         }
         return nameWidth;
+    }
+
+    /**
+     * Whether the framework signature pattern is painted for this node
+     * (the theme setting is on and the node declares a real framework).
+     */
+    private boolean isFrameworkPatternEnabled(JIPipeDesktopModernThemeStyle style) {
+        return style != null && style.isShowNodeFrameworkPattern()
+                && nodeFramework != null && !NoFramework.ID.equals(nodeFramework.getId());
+    }
+
+    /**
+     * Whether the framework abbreviation chip is painted for this node
+     * (the theme setting is on and the node declares a real framework).
+     */
+    private boolean isFrameworkBadgeEnabled(JIPipeDesktopModernThemeStyle style) {
+        return style != null && style.isShowNodeFrameworkBadge()
+                && nodeFramework != null && !NoFramework.ID.equals(nodeFramework.getId());
+    }
+
+    /**
+     * The width the framework abbreviation chip adds to the centered title-band
+     * group: the gap (4*zoom) plus the chip. Zero when the chip is not shown.
+     * <p>
+     * Added to the title-band centering math in both {@code paintNodeControls}
+     * (drawing) and {@code updateWholeNodeActiveAreas} (hit areas) so the drawn
+     * controls and the mouse targets stay aligned.
+     */
+    private double getBadgeExtraWidth(FontMetrics tertiaryFontMetrics) {
+        if (!isFrameworkBadgeEnabled(ThemeUtils.getCurrentStyle())) {
+            return 0;
+        }
+        return 4 * zoom + getBadgeChipWidth(tertiaryFontMetrics);
+    }
+
+    /**
+     * The framework abbreviation chip width for the given (zoomed tertiary)
+     * font metrics: the abbreviation plus 6*zoom padding.
+     */
+    private double getBadgeChipWidth(FontMetrics tertiaryFontMetrics) {
+        return tertiaryFontMetrics.stringWidth(nodeFramework.getAbbreviation()) + 6 * zoom;
+    }
+
+    /**
+     * Draws the framework abbreviation chip at {@code chipX}, vertically
+     * centered on {@code centerY}. Fill = the framework color, 1px border =
+     * the node border color, abbreviation in a contrasting color.
+     */
+    private void paintFrameworkBadge(Graphics2D g2, double chipX, int centerY, FontMetrics tertiaryFontMetrics) {
+        String abbreviation = nodeFramework.getAbbreviation();
+        double chipWidth = getBadgeChipWidth(tertiaryFontMetrics);
+        double chipHeight = 14 * zoom;
+        double chipY = centerY - chipHeight / 2;
+        double arc = 6 * zoom;
+        int x = (int) Math.round(chipX);
+        int y = (int) Math.round(chipY);
+        int w = (int) Math.round(chipWidth);
+        int h = (int) Math.round(chipHeight);
+        int a = (int) Math.round(arc);
+
+        g2.setPaint(nodeFramework.getColor());
+        g2.fillRoundRect(x, y, w, h, a, a);
+
+        g2.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
+        g2.setPaint(getNodeBorderColor());
+        g2.drawRoundRect(x, y, w, h, a, a);
+
+        // Contrasting text: white on dark/mid chips, black on light ones
+        // (simple luminance heuristic; the 12-color palette is mid-tone)
+        Color chipColor = nodeFramework.getColor();
+        float luminance = (0.2126f * chipColor.getRed() + 0.7152f * chipColor.getGreen() + 0.0722f * chipColor.getBlue()) / 255f;
+        g2.setPaint(luminance < 0.6f ? Color.WHITE : Color.BLACK);
+        Font originalFont = g2.getFont();
+        g2.setFont(zoomedTertiaryFont);
+        UIUtils.drawStringVerticallyCentered(g2, abbreviation,
+                (int) Math.round(chipX + (chipWidth - tertiaryFontMetrics.stringWidth(abbreviation)) / 2.0),
+                centerY, tertiaryFontMetrics);
+        g2.setFont(originalFont);
     }
 
     /**
@@ -1550,6 +1654,14 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
         // Fill
         graphics2D.setColor(getNodeFillColor());
         graphics2D.fillRect(x, y, width, height);
+
+        // Framework signature pattern (under the runtime-partition triangle)
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+        if (isFrameworkPatternEnabled(style)) {
+            NodePatternRenderer.paint(graphics2D, x, y, width, height,
+                    nodeFramework.getPatternStyleId(), nodeFramework.getId(),
+                    style.getNodePatternInk(), style.getNodePatternOpacity());
+        }
 
         // Runtime partition color
         if (getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench) {
