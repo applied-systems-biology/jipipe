@@ -22,8 +22,9 @@ import java.util.Random;
  * <p>
  * Contract (enforced by NodePatternEngineTest):
  * <ul>
- *   <li>draws only with the current paint (white) — no color, no alpha channel
- *       selection of its own; the renderer supplies a white pen/brush;</li>
+ *   <li>never selects its own COLOR — the white RGB channels are mandatory so
+ *       the mask can be tinted at draw time; per-shape alpha is allowed;
+ *       the renderer supplies a white pen/brush;</li>
  *   <li>reaches all four borders (overshoot the frame on grid-based geometry
  *       so the motif is clipped by the node body like an infinite texture);</li>
  *   <li>is a pure function of {@code (w, h, rng)} — no Math.random, no clock.</li>

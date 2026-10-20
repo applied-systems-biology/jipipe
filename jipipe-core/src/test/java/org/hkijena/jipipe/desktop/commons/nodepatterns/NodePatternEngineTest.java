@@ -18,9 +18,7 @@ import org.junit.jupiter.api.Test;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.Random;
 
 import javax.imageio.ImageIO;
 
@@ -29,10 +27,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class NodePatternEngineTest {
 
     private static final String[] SIZES = { "64", "128", "200" };
-
-    private static BufferedImage render(String style, String seed, int w, int h) {
-        return NodePatternRenderer.mask(style, seed, w, h);
-    }
 
     // 1. DETERMINISM — same (style, seed, size) ⇒ byte-identical mask, all styles, 3 sizes.
     //    invalidateCache() between the calls so the second mask() truly re-renders

@@ -52,6 +52,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.events.NodeUIAc
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.managers.*;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.triggers.*;
 import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
+import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternStyles;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.plugins.statistics.items.LongestNodeWidthStatisticsItem;
 import org.hkijena.jipipe.utils.*;
@@ -1326,7 +1327,8 @@ public class JIPipeDesktopGraphNodeUI extends JIPipeDesktopWorkbenchPanel implem
      */
     private boolean isFrameworkBadgeEnabled(JIPipeDesktopModernThemeStyle style) {
         return style != null && style.isShowNodeFrameworkBadge()
-                && nodeFramework != null && !NoFramework.ID.equals(nodeFramework.getId());
+                && nodeFramework != null && !NoFramework.ID.equals(nodeFramework.getId())
+                && NodePatternStyles.family(nodeFramework.getPatternStyleId()) != null;
     }
 
     /**

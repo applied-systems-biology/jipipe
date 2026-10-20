@@ -40,10 +40,14 @@ class NodePatternThemeSettingsTest {
         JIPipeDesktopModernThemeStyle s = new JIPipeDesktopModernThemeStyle();
         s.setNodePatternOpacity(0.22f);
         s.setNodePatternInk(new Color(0xFF8800));
+        s.setShowNodeFrameworkPattern(false);
+        s.setShowNodeFrameworkBadge(false);
         byte[] bytes = JsonUtils.getObjectMapper().writeValueAsBytes(s);
         JIPipeDesktopModernThemeStyle back = JsonUtils.getObjectMapper().readValue(bytes, JIPipeDesktopModernThemeStyle.class);
         assertEquals(0.22f, back.getNodePatternOpacity(), 1e-6);
         assertEquals(new Color(0xFF8800), back.getNodePatternInk());
+        assertFalse(back.isShowNodeFrameworkPattern());
+        assertFalse(back.isShowNodeFrameworkBadge());
     }
 
     // Back-compat: a theme JSON without the new keys deserializes to the defaults
