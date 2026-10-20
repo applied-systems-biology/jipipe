@@ -58,7 +58,7 @@ public final class NodePatternRenderer {
                              String styleId, String seed, Color ink, float opacity) {
         BufferedImage m = mask(styleId, seed, w, h);
         if (m == null) return;
-        BufferedImage tinted = tint(m, ink, opacity);
+        BufferedImage tinted = tint(styleId + "\u0000" + seed, m, ink, opacity);
         Graphics2D gg = (Graphics2D) g.create();
         gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         gg.drawImage(tinted, x, y, w, h, null);
@@ -74,11 +74,13 @@ public final class NodePatternRenderer {
     // ---- internal ----
 
     /** Reuses or builds the tinted copy of the white mask (ink + its alpha, at {@code opacity}). */
-    private static BufferedImage tint(BufferedImage mask, Color ink, float opacity) {
+    private static BufferedImage tint(String maskId, BufferedImage mask, Color ink, float opacity) {
         int w = mask.getWidth(), h = mask.getHeight();
         float o = Math.max(0f, Math.min(1f, opacity));
         int inkArgb = (ink.getRed() << 16) | (ink.getGreen() << 8) | ink.getBlue();
-        String key = inkArgb + "\u0000" + Float.floatToIntBits(o) + "\u0000" + w + "\u0000" + h;
+        // maskId (style + seed) identifies WHICH white mask this tint belongs to —
+        // two styles at the same size/ink/opacity must never share a tinted copy
+        String key = maskId + "\u0000" + inkArgb + "\u0000" + Float.floatToIntBits(o) + "\u0000" + w + "\u0000" + h;
         return TINT_CACHE.computeIfAbsent(key, k -> {
             int[] src = mask.getRGB(0, 0, w, h, null, 0, w);
             int[] dst = new int[src.length];

@@ -127,6 +127,29 @@ class NodePatternEngineTest {
                 "tinted draw is a solid rectangle (" + transparent + "/" + total + " transparent) — tinting ignores the mask alpha");
     }
 
+    // Review round 2 (ruling 2026-18): the tint cache must be keyed by mask identity —
+    // two DIFFERENT styles at the same size + ink + opacity must not share a tinted copy.
+    // Fails against a tint cache keyed by (ink, opacity, w, h) only.
+    @Test
+    void differentStylesAtSameSizeDoNotShareTint() {
+        BufferedImage a = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D ga = a.createGraphics();
+        NodePatternRenderer.paint(ga, 0, 0, 128, 128, "stripes", "seed", new Color(0x3366CC), 0.5f);
+        ga.dispose();
+        BufferedImage b = new BufferedImage(128, 128, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D gb = b.createGraphics();
+        NodePatternRenderer.paint(gb, 0, 0, 128, 128, "net", "seed", new Color(0x3366CC), 0.5f);
+        gb.dispose();
+        long differing = 0;
+        for (int y = 0; y < 128; y++)
+            for (int x = 0; x < 128; x++) {
+                int pa = a.getRGB(x, y), pb = b.getRGB(x, y);
+                if (pa != pb && ((((pa >>> 24) | (pb >>> 24)) & 0xFF) > 0)) differing++;
+            }
+        assertTrue(differing > 0,
+                "two different styles at the same size/ink/opacity drew pixel-identical images — tint cache key omits mask identity");
+    }
+
     // ---- helpers ----
     static byte[] toPng(BufferedImage img) throws Exception {
         ByteArrayOutputStream b = new ByteArrayOutputStream();
