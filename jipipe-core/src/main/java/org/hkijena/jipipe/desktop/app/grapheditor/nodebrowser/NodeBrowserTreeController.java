@@ -63,6 +63,14 @@ public class NodeBrowserTreeController extends JPanel {
     private final DefaultTreeModel treeModel = (DefaultTreeModel) tree.getModel();
 
     /**
+     * The "select the reference node in the tree" crosshairs button of the
+     * slim control bar (visible by default — the node browser uses it; the
+     * modal find-node dialog hides it via
+     * {@link #setCrosshairsButtonVisible}).
+     */
+    private JButton crosshairsButton;
+
+    /**
      * Function-leaf tree rows to highlight because a search matched a node
      * under them (bold in the cell renderer); empty when no search is
      * active.
@@ -86,7 +94,8 @@ public class NodeBrowserTreeController extends JPanel {
 
         // Slim control bar under the tree (no border, minimal height): a
         // collapse-all reset and a "select the reference node in the tree"
-        // crosshairs button.
+        // crosshairs button (hideable via setCrosshairsButtonVisible — the
+        // modal find-node dialog hides it, see its javadoc).
         JPanel treeToolbar = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         treeToolbar.setBorder(null);
         JButton collapseAllButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/collapse-all.png"));
@@ -94,11 +103,11 @@ public class NodeBrowserTreeController extends JPanel {
         collapseAllButton.setToolTipText("Collapse the function tree");
         collapseAllButton.addActionListener(e -> collapseToRoot());
         treeToolbar.add(collapseAllButton);
-        JButton selectFirstButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/crosshairs.png"));
-        UIUtils.makeButtonFlatWithSize(selectFirstButton, 26);
-        selectFirstButton.setToolTipText("Select the reference node in the tree");
-        selectFirstButton.addActionListener(e -> selectReferenceNodeInTree());
-        treeToolbar.add(selectFirstButton);
+        crosshairsButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/crosshairs.png"));
+        UIUtils.makeButtonFlatWithSize(crosshairsButton, 26);
+        crosshairsButton.setToolTipText("Select the reference node in the tree");
+        crosshairsButton.addActionListener(e -> selectReferenceNodeInTree());
+        treeToolbar.add(crosshairsButton);
 
         add(treeScroll, BorderLayout.CENTER);
         add(treeToolbar, BorderLayout.SOUTH);
@@ -126,6 +135,20 @@ public class NodeBrowserTreeController extends JPanel {
      */
     public void setReferenceEntrySupplier(Supplier<JIPipeNodeDatabaseEntry> referenceEntrySupplier) {
         this.referenceEntrySupplier = referenceEntrySupplier;
+    }
+
+    /**
+     * Shows or hides the "select the reference node in the tree" crosshairs
+     * button of the slim control bar (visible by default — the node browser
+     * uses it). The modal find-node dialog hides it: a canvas node
+     * selection the button would reveal is unlikely behind a modal, so the
+     * button was a frequent no-op there. (The reveal ACTION itself,
+     * {@link #selectReferenceNodeInTree}, stays available programmatically.)
+     *
+     * @param visible {@code true} to show the button (default)
+     */
+    public void setCrosshairsButtonVisible(boolean visible) {
+        crosshairsButton.setVisible(visible);
     }
 
     /**

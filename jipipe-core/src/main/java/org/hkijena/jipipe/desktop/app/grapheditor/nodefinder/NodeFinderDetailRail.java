@@ -247,29 +247,6 @@ public class NodeFinderDetailRail extends JPanel {
     }
 
     // ------------------------------------------------------------------
-    // Test accessors (headless UI tests; no production callers)
-    // ------------------------------------------------------------------
-
-    JIPipeDesktopTabPane tabPaneForTest() {
-        return tabPane;
-    }
-
-    /** The Similar section's card list (the rail's relation lists). */
-    JList<JIPipeNodeDatabaseEntry> similarListForTest() {
-        return similarList;
-    }
-
-    /** The Previous steps section's card list. */
-    JList<JIPipeNodeDatabaseEntry> previousListForTest() {
-        return previousList;
-    }
-
-    /** The Next steps section's card list. */
-    JList<JIPipeNodeDatabaseEntry> nextListForTest() {
-        return nextList;
-    }
-
-    // ------------------------------------------------------------------
     // Content
     // ------------------------------------------------------------------
 

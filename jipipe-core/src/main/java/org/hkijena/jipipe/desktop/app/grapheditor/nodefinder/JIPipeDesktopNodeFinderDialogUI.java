@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
-import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
@@ -34,9 +33,7 @@ import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.addnodepanel.NodeBrowserModel;
 import org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser.NodeBrowserTreeController;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphInteractiveObjectUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
-import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
@@ -176,6 +173,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         // collapse-all and crosshairs actions)
         this.tree = new NodeBrowserTreeController();
         tree.setPreferredSize(new Dimension(240, 400));
+        // The "select the reference node in the tree" crosshairs button is
+        // hidden here: the dialog is modal, so a canvas node selection to
+        // reveal is unlikely (the user is inside the dialog), and the button
+        // was a frequent no-op. The node browser keeps it.
+        tree.setCrosshairsButtonVisible(false);
         tree.getTree().addTreeSelectionListener(e -> {
             if (programmaticUpdate) {
                 return;
@@ -183,7 +185,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             updateModelTreePathFromSelection();
             reloadList();
         });
-        tree.setReferenceEntrySupplier(this::referenceEntry);
 
         // Detail rail (right zone)
         this.detailRail = new NodeFinderDetailRail(resolveDatabase(), this::selectEntryFromRail);
@@ -209,28 +210,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             JIPipeNodeDatabasePipelineVisibility.Compartments :
             JIPipeNodeDatabasePipelineVisibility.Pipeline);
         reloadList();
-    }
-
-    /**
-     * The reference entry the tree's crosshairs action reveals: the first
-     * node selected in the graph, when there is one (the first element of
-     * the canvas selection), otherwise the first center-list row.
-     */
-    private JIPipeNodeDatabaseEntry referenceEntry() {
-        // The canvas selection is a LinkedHashSet, so the first element is
-        // the first selected node
-        Set<? extends JIPipeDesktopGraphInteractiveObjectUI> selection = canvasUI.getSelectionManager().getSelection();
-        if (!selection.isEmpty()
-            && selection.iterator().next() instanceof JIPipeDesktopGraphNodeUI nodeUI) {
-            String nodeId = nodeUI.getNode().getInfo().getId();
-            for (JIPipeNodeDatabaseEntry entry : resolveDatabase().getEntries()) {
-                if (nodeId.equals(entry.getOriginNodeId())) {
-                    return entry;
-                }
-            }
-        }
-        int size = nodeList.getModel().getSize();
-        return size > 0 ? nodeList.getModel().getElementAt(0) : null;
     }
 
     private void initialize() {
@@ -480,15 +459,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             mainToolBar.add(aiSearchButton);
         }
 
-        // "Configure templates" gear (spec §8.3): opens the TemplateManagement
-        // modal on Global by default (or the selected entry's scope when a
-        // template entry is selected).
-        JButton configureTemplatesButton = new JButton(JIPipe.RESOURCES.getIcon16("actions/hamburger-menu.png"));
-        configureTemplatesButton.setToolTipText("Configure node templates");
-        UIUtils.makeButtonFlatWithSize(configureTemplatesButton, 28);
-        configureTemplatesButton.addActionListener(e -> openTemplateManagementFromToolbar());
-        mainToolBar.add(configureTemplatesButton);
-
         if (querySlot != null) {
             findExistingNodesToggle.setText("Find existing");
             findExistingNodesToggle.setSelected(JIPipeGraphEditorUIApplicationSettings.getInstance().getNodeSearchSettings().isSearchFindExistingNodes());
@@ -512,20 +482,6 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         toolbarPanel.add(mainToolBar);
 
         getContentPane().add(toolbarPanel, BorderLayout.NORTH);
-    }
-
-    /**
-     * The gear's entry point (spec §8.3): opens the "Configure templates" modal
-     * on the scope tab of the currently selected template entry, falling back
-     * to Global when the selection is empty or a node entry.
-     */
-    private void openTemplateManagementFromToolbar() {
-        TemplateScope scope = null;
-        JIPipeNodeDatabaseEntry selected = nodeList.getSelectedValue();
-        if (selected instanceof CreateNewNodesByTemplateDatabaseEntry templateEntry) {
-            scope = templateEntry.getScope();
-        }
-        TemplateManagementDialog.show(canvasUI.getDesktopWorkbench(), scope == null ? TemplateScope.Global : scope);
     }
 
     private void openFirstEntryMenu() {
@@ -605,17 +561,40 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     /**
      * Called by the detail rail when the user clicks a related / follow-up
      * entry. If the entry is already visible in the center list (matched by
-     * id — see {@link #indexOfEntry}) it is selected directly (which, via
-     * the list's selection listener, updates the rail — one hop, and the
-     * rail's {@code setEntry} does not call the selector again, so there is
-     * no loop). Otherwise the view is broadened (search cleared, tree reset
-     * to the entry's function branch) and the entry is selected once the
-     * reloaded list is applied by {@link #applyResult(List)}.
+     * id — see {@link #indexOfEntry}) it is selected and scrolled into view
+     * (which, via the list's selection listener, updates the rail — one hop,
+     * and the rail's {@code setEntry} does not call the selector again, so
+     * there is no loop). Otherwise the view is broadened (search cleared,
+     * tree revealed + selected on the entry's function branch, the list
+     * scrolled to the entry) and the entry is selected once the reloaded
+     * list is applied by {@link #applyResult(List)}.
      */
     private void selectEntryFromRail(JIPipeNodeDatabaseEntry entry) {
         int index = indexOfEntry(nodeList.getModel(), entry);
         if (index >= 0) {
+            // The entry is already in the current list view.
+            //
+            // (a) Picked out in the TREE: the entry's function branch row is
+            // selected and scrolled into view (the locator — selectRow =
+            // expand + makeVisible). The tree selection listener is
+            // suppressed so this does NOT re-filter or reload the list (the
+            // entry is already in it); only the tree's pickout happens.
+            JIPipeNodeTaxonomyFunction primaryFunction = NodeBrowserTreeController.primaryFunctionOf(entry);
+            TreePath functionRow = primaryFunction != null ? tree.functionRow(primaryFunction) : null;
+            if (functionRow != null) {
+                programmaticUpdate = true;
+                try {
+                    tree.selectRow(functionRow);
+                } finally {
+                    programmaticUpdate = false;
+                }
+            }
+            // (b) Picked out in the LIST: select the row AND scroll it into
+            // view — setSelectedIndex alone does not move the viewport when
+            // the row is below the fold (the rail click must make the entry
+            // visible, not just selected).
             nodeList.setSelectedIndex(index);
+            nodeList.ensureIndexIsVisible(index);
             return;
         }
         // The entry is not in the current filtered view. Broaden the view so
@@ -631,10 +610,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             }
             searchField.setText("");
             // Reveal the entry's function branch in the tree (instead of
-            // resetting to "All functions"): expand it and select its row,
-            // so the broadened view is visibly scoped to the clicked entry.
-            // The tree filter is NOT applied (the list keeps the full,
-            // broadened result — the entry must be in it).
+            // resetting to "All functions"): expand it, select its row AND
+            // scroll it into view (selectRow's locator), so the broadened
+            // view is visibly scoped to the clicked entry. The tree filter
+            // is NOT applied (the list keeps the full, broadened result —
+            // the entry must be in it).
             JIPipeNodeTaxonomyFunction primaryFunction = NodeBrowserTreeController.primaryFunctionOf(entry);
             TreePath functionRow = primaryFunction != null ? tree.functionRow(primaryFunction) : null;
             if (functionRow != null) {
