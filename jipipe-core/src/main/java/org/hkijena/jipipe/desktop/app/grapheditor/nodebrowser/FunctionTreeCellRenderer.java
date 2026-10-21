@@ -15,11 +15,15 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodebrowser;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
 import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
+import org.hkijena.jipipe.desktop.commons.components.icons.ColoredCircleIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
+import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
+import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,11 +44,24 @@ import java.util.Set;
 public class FunctionTreeCellRenderer implements TreeCellRenderer {
 
     private static final Icon GENERIC_NODE_ICON = JIPipe.RESOURCES.getIcon16("actions/tag.png");
+    private static final Icon TEMPLATE_ICON = JIPipe.RESOURCES.getIcon16("actions/template.png");
     private static final int CHIP_ARC = 6;
     private final NodeBrowserTreeController controller;
 
     public FunctionTreeCellRenderer(NodeBrowserTreeController controller) {
         this.controller = controller;
+    }
+
+    /**
+     * The 24×24 wrapper for template rows: the template icon centered on a circle
+     * with NEUTRAL theme colors (panel-background fill, highlight-border ring) —
+     * the look of a "node of no function family," so templates read as distinct
+     * from the function rows' colored circles.
+     */
+    private Icon templateCircleIcon() {
+        JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+        return new ColoredCircleIcon(TEMPLATE_ICON,
+                style.getPanelBackground(), style.getNodeHighlightBorder());
     }
 
     @Override
@@ -134,7 +151,14 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
         if (userObject instanceof JIPipeNodeTaxonomyFunction function) {
             label.setText(function.getName());
             Icon icon = function.getIcon();
-            label.setIcon(icon != null ? icon : GENERIC_NODE_ICON);
+            // The function icon wrapped in a circle painted with the function's
+            // node fill/border color (the exact color of its canvas nodes) —
+            // the tree doubles as a legend for what node colors mean.
+            JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
+            FunctionRegistry registry = JIPipe.getNodes().getFunctions();
+            label.setIcon(new ColoredCircleIcon(icon != null ? icon : GENERIC_NODE_ICON,
+                    ThemeUtils.functionNodeFillColor(function, style, registry),
+                    ThemeUtils.functionNodeBorderColor(function, style, registry)));
             label.setToolTipText(function.getDescription());
             // Search highlight: the search matched a node filed under this
             // leaf (or one of its descendant leaves)
@@ -148,7 +172,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             label.setText(scopeNode.isRoot()
                 ? "Templates"
                 : scopeNode.getScope().name());
-            label.setIcon(JIPipe.RESOURCES.getIcon16("actions/template.png"));
+            label.setIcon(templateCircleIcon());
             label.setToolTipText(scopeNode.isRoot()
                 ? "Node templates grouped by storage scope"
                 : "Node templates stored in the " + scopeNode.getScope().name().toLowerCase() + " scope");
@@ -158,7 +182,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             // not a taxonomy function — the function level itself shows only
             // real nodes).
             label.setText("Patterns");
-            label.setIcon(JIPipe.RESOURCES.getIcon16("actions/template.png"));
+            label.setIcon(templateCircleIcon());
             label.setToolTipText("Node template patterns filed under "
                 + (patterns.getFunction() != null ? patterns.getFunction().getName() : "this function"));
         } else {

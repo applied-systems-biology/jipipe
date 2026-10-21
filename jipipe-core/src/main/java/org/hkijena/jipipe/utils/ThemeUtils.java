@@ -344,11 +344,12 @@ public class ThemeUtils {
     // ------------------------------------------------------------------
     // Function-hue dual-read (taxonomy conversion, Phase 1b)
     //
-    // The pure color math lives here (package-private) so it can be unit
-    // tested without a JIPipe instance: it only reads the function's own
-    // parent chain via the registry (baseHue/shadeDepth are stateless) and
-    // the supplied style's saturation/brightness. The public facades above
-    // delegate here with the live style + registry.
+    // The pure color math lives here so it can be unit tested without a JIPipe
+    // instance: it only reads the function's own parent chain via the registry
+    // (baseHue/shadeDepth are stateless) and the supplied style's
+    // saturation/brightness. The public facades above delegate here with the
+    // live style + registry; the node browser's function tree also calls these
+    // directly to give each function row the exact fill/border of its canvas nodes.
     // ------------------------------------------------------------------
 
     /**
@@ -361,9 +362,9 @@ public class ThemeUtils {
      * @param registry the function registry for hue/depth resolution
      * @return the fill color
      */
-    static Color functionNodeFillColor(JIPipeNodeTaxonomyFunction fn,
-                                       JIPipeDesktopModernThemeStyle style,
-                                       FunctionRegistry registry) {
+    public static Color functionNodeFillColor(JIPipeNodeTaxonomyFunction fn,
+                                              JIPipeDesktopModernThemeStyle style,
+                                              FunctionRegistry registry) {
         FunctionHue hue = resolveFunctionHue(fn, registry);
         if (hue.mode == HueMode.Transparent) {
             // Transparent branch: exactly the legacy negative-hue fill channel.
@@ -384,9 +385,9 @@ public class ThemeUtils {
      * @param registry the function registry for hue/depth resolution
      * @return the border color
      */
-    static Color functionNodeBorderColor(JIPipeNodeTaxonomyFunction fn,
-                                         JIPipeDesktopModernThemeStyle style,
-                                         FunctionRegistry registry) {
+    public static Color functionNodeBorderColor(JIPipeNodeTaxonomyFunction fn,
+                                                JIPipeDesktopModernThemeStyle style,
+                                                FunctionRegistry registry) {
         FunctionHue hue = resolveFunctionHue(fn, registry);
         if (hue.mode == HueMode.Transparent) {
             // Transparent branch: exactly the legacy negative-hue border channel.
