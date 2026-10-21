@@ -210,14 +210,16 @@ public class NodeFinderDetailRail extends JPanel {
         tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(12, 4, 12, 4));
         initializeTabs();
         contentPanel.add(titleBlock(), BorderLayout.NORTH);
-        // Minimum footprint 160 px, grows with the dialog (the tab content
-        // is internally scrollable)
-        tabPane.setPreferredSize(new Dimension(0, 160));
+        // Minimum footprint 160 px, grows with the dialog (the tab PAGES
+        // scroll internally — the Documentation reader and the Related form
+        // panel each own their JScrollPane). The header stays fixed above the
+        // tab bar; there is deliberately NO outer scroll pane around the card.
+        tabPane.setMinimumSize(new Dimension(0, 160));
         contentPanel.add(tabPane, BorderLayout.CENTER);
 
         this.cards = new JPanel(cardLayout);
         cards.add(emptyPanel, CARD_EMPTY);
-        cards.add(new JScrollPane(contentPanel), CARD_CONTENT);
+        cards.add(contentPanel, CARD_CONTENT);
         add(cards, BorderLayout.CENTER);
         cardLayout.show(cards, CARD_EMPTY);
     }
