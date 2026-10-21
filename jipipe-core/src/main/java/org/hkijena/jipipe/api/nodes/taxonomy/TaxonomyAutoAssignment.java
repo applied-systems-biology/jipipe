@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunct
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -383,6 +384,7 @@ public final class TaxonomyAutoAssignment {
             case MergingSplittingFunction.ID -> { return new MergingSplittingFunction(); }
             case ColorStackFunction.ID -> { return new ColorStackFunction(); }
             case PreprocessingFunction.ID -> { return new PreprocessingFunction(); }
+            case MiscellaneousUnassignedFunction.ID ->  { return new MiscellaneousUnassignedFunction(); }
             case "jipipe:function:misc" -> { return new MiscellaneousFunction(); }
             default -> { return null; }
         }

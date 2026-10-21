@@ -68,6 +68,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationCellBasedFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotBarFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotHeatmapFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotLineFunction;
@@ -168,8 +169,8 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * Dependency instance to be used for creating the set of dependencies
      */
     public static final JIPipeDependency AS_DEPENDENCY =
-        new JIPipeMutableDependency("org.hkijena.jipipe:taxonomy",
-            JIPipe.getJIPipeVersion(), "Node taxonomy");
+            new JIPipeMutableDependency("org.hkijena.jipipe:taxonomy",
+                    JIPipe.getJIPipeVersion(), "Node taxonomy");
 
     @Override
     public String getName() {
@@ -210,19 +211,19 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         // is validated later (registration is idempotent and order-independent,
         // but this is cleaner).
         JIPipeNodeTaxonomyFunction[] topLevels = {
-            new DataSourcesFunction(),
-            new ImagesFunction(),
-            new RoisFunction(),
-            new FilamentsFunction(),
-            new TablesFunction(),
-            new StatisticsFunction(),
-            new TrackingFunction(),
-            new AnnotationsFunction(),
-            new MachineLearningFunction(),
-            new PlottingFunction(),
-            new ExportFunction(),
-            new GraphFunction(),
-            new MiscellaneousFunction()
+                new DataSourcesFunction(),
+                new ImagesFunction(),
+                new RoisFunction(),
+                new FilamentsFunction(),
+                new TablesFunction(),
+                new StatisticsFunction(),
+                new TrackingFunction(),
+                new AnnotationsFunction(),
+                new MachineLearningFunction(),
+                new PlottingFunction(),
+                new ExportFunction(),
+                new GraphFunction(),
+                new MiscellaneousFunction()
         };
         for (JIPipeNodeTaxonomyFunction function : topLevels) {
             functions.register(function);
@@ -230,104 +231,105 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // 48 seed leaves, grouped by sub-branch (order is irrelevant).
         JIPipeNodeTaxonomyFunction[] leaves = {
-            // data
-            new ImageDataFunction(),
-            new TableDataFunction(),
-            new RoiDataFunction(),
-            new FilamentDataFunction(),
-            new MiscDataFunction(),
-            // data — full-registry audit leaves (curated nodes previously in
-            // the "Misc. data" catch-all)
-            new FileSystemFunction(),
-            new OmeroFunction(),
-            new FormsFunction(),
-            new Scene3DDataFunction(),
-            // images
-            new PreprocessingFunction(),
-            new FilteringFunction(),
-            new ThresholdingFunction(),
-            new SegmentationFunction(),
-            new SegmentationCellBasedFunction(),
-            new MeasurementsFunction(),
-            new ResamplingFunction(),
-            new MergingSplittingFunction(),
-            new ColorStackFunction(),
-            // images — full-registry audit leaves (auto-discovered IJ2/CLIJ2
-            // nodes + curated strays that previously fell to Miscellaneous)
-            new ImageArithmeticFunction(),
-            new ImageComparisonFunction(),
-            new ImageProjectionsFunction(),
-            new ImageTypeConversionFunction(),
-            new ImageLabelingFunction(),
-            new ImageStatisticsFunction(),
-            new ImageMomentsFunction(),
-            new ImageTransformationsFunction(),
-            new ImagePixelManipulationFunction(),
-            new ImageNeighborMeasurementsFunction(),
-            new ImagePropertiesFunction(),
-            // rois
-            new RoiFiltersFunction(),
-            new RoiPropertiesFunction(),
-            new RoiMeasurementsFunction(),
-            new RoiMorphologyFunction(),
-            new RoiIntersectionsFunction(),
-            // filaments
-            new FilamentSmoothingFunction(),
-            new FilamentFilteringFunction(),
-            new FilamentQuantificationFunction(),
-            // tables
-            new TableFilterModifyFunction(),
-            new TableJoinSplitFunction(),
-            new TableAggregateFunction(),
-            new TableTransformFunction(),
-            new TableExportFileFunction(),
-            // statistics
-            new StatisticsDescriptiveFunction(),
-            new StatisticsTestingFunction(),
-            new StatisticsEstimationFunction(),
-            // tracking
-            new TrackingDetectionFunction(),
-            new TrackingLinkingFunction(),
-            new TrackingFilteringFunction(),
-            new TrackingAnalysisFunction(),
-            // annotations
-            new AnnotationsEditFunction(),
-            new AnnotationsConvertFunction(),
-            new GraphAnnotationsFunction(),
-            // deeplearning
-            new MachineLearningInferenceFunction(),
-            new MachineLearningTrainingFunction(),
-            new MachineLearningModelsFunction(),
-            // plotting
-            new PlotScatterFunction(),
-            new PlotLineFunction(),
-            new PlotBarFunction(),
-            new PlotHeatmapFunction(),
-            new PlotMiscFunction(),
-            // export — organized by WHAT is exported
-            new ExportImagesFunction(),
-            new ExportTablesFunction(),
-            new ExportRoiFunction(),
-            new ExportScenesFunction(),
-            new ExportDataFunction(),
-            // graph
-            new GraphCompartmentOutputsFunction(),
-            new GraphWrappersFunction(),
-            new GraphDebugFunction(),
-            // misc — full-registry audit leaves (curated nodes previously in
-            // the "Miscellaneous" catch-all)
-            new DataUtilitiesFunction(),
-            new TextMarkupFunction(),
-            new ScriptingFunction(),
-            // misc — templates catch-all (template-taxonomy integration)
-            new TemplatesFunction(),
-            // scripting — language sub-leaves (re-clustering audit: users
-            // interested in one language get a dedicated branch; the
-            // matching framework facet is the orthogonal filter)
-            new ScriptingPythonFunction(),
-            new ScriptingRFunction(),
-            new ScriptingImageJMacroFunction(),
-            new ScriptingExpressionFunction()
+                // data
+                new ImageDataFunction(),
+                new TableDataFunction(),
+                new RoiDataFunction(),
+                new FilamentDataFunction(),
+                new MiscDataFunction(),
+                // data — full-registry audit leaves (curated nodes previously in
+                // the "Misc. data" catch-all)
+                new FileSystemFunction(),
+                new OmeroFunction(),
+                new FormsFunction(),
+                new Scene3DDataFunction(),
+                // images
+                new PreprocessingFunction(),
+                new FilteringFunction(),
+                new ThresholdingFunction(),
+                new SegmentationFunction(),
+                new SegmentationCellBasedFunction(),
+                new MeasurementsFunction(),
+                new ResamplingFunction(),
+                new MergingSplittingFunction(),
+                new ColorStackFunction(),
+                // images — full-registry audit leaves (auto-discovered IJ2/CLIJ2
+                // nodes + curated strays that previously fell to Miscellaneous)
+                new ImageArithmeticFunction(),
+                new ImageComparisonFunction(),
+                new ImageProjectionsFunction(),
+                new ImageTypeConversionFunction(),
+                new ImageLabelingFunction(),
+                new ImageStatisticsFunction(),
+                new ImageMomentsFunction(),
+                new ImageTransformationsFunction(),
+                new ImagePixelManipulationFunction(),
+                new ImageNeighborMeasurementsFunction(),
+                new ImagePropertiesFunction(),
+                // rois
+                new RoiFiltersFunction(),
+                new RoiPropertiesFunction(),
+                new RoiMeasurementsFunction(),
+                new RoiMorphologyFunction(),
+                new RoiIntersectionsFunction(),
+                // filaments
+                new FilamentSmoothingFunction(),
+                new FilamentFilteringFunction(),
+                new FilamentQuantificationFunction(),
+                // tables
+                new TableFilterModifyFunction(),
+                new TableJoinSplitFunction(),
+                new TableAggregateFunction(),
+                new TableTransformFunction(),
+                new TableExportFileFunction(),
+                // statistics
+                new StatisticsDescriptiveFunction(),
+                new StatisticsTestingFunction(),
+                new StatisticsEstimationFunction(),
+                // tracking
+                new TrackingDetectionFunction(),
+                new TrackingLinkingFunction(),
+                new TrackingFilteringFunction(),
+                new TrackingAnalysisFunction(),
+                // annotations
+                new AnnotationsEditFunction(),
+                new AnnotationsConvertFunction(),
+                new GraphAnnotationsFunction(),
+                // deeplearning
+                new MachineLearningInferenceFunction(),
+                new MachineLearningTrainingFunction(),
+                new MachineLearningModelsFunction(),
+                // plotting
+                new PlotScatterFunction(),
+                new PlotLineFunction(),
+                new PlotBarFunction(),
+                new PlotHeatmapFunction(),
+                new PlotMiscFunction(),
+                // export — organized by WHAT is exported
+                new ExportImagesFunction(),
+                new ExportTablesFunction(),
+                new ExportRoiFunction(),
+                new ExportScenesFunction(),
+                new ExportDataFunction(),
+                // graph
+                new GraphCompartmentOutputsFunction(),
+                new GraphWrappersFunction(),
+                new GraphDebugFunction(),
+                // misc — full-registry audit leaves (curated nodes previously in
+                // the "Miscellaneous" catch-all)
+                new DataUtilitiesFunction(),
+                new TextMarkupFunction(),
+                new ScriptingFunction(),
+                new MiscellaneousUnassignedFunction(),
+                // misc — templates catch-all (template-taxonomy integration)
+                new TemplatesFunction(),
+                // scripting — language sub-leaves (re-clustering audit: users
+                // interested in one language get a dedicated branch; the
+                // matching framework facet is the orthogonal filter)
+                new ScriptingPythonFunction(),
+                new ScriptingRFunction(),
+                new ScriptingImageJMacroFunction(),
+                new ScriptingExpressionFunction()
         };
         for (JIPipeNodeTaxonomyFunction function : leaves) {
             functions.register(function);
@@ -408,13 +410,13 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             String data = readPatternGraphResource(file);
             if (data == null) {
                 JIPipe.getInstance().getProgressInfo().log(
-                    "ERROR: missing bundled system template graph resource " + file + " (pattern " + id + ")");
+                        "ERROR: missing bundled system template graph resource " + file + " (pattern " + id + ")");
                 continue;
             }
             String functionId = entry.path("functionId").asText(null);
             if (StringUtils.isNullOrEmpty(functionId)) {
                 JIPipe.getInstance().getProgressInfo().log(
-                    "ERROR: bundled system template " + id + " has no functionId in its sidecar entry");
+                        "ERROR: bundled system template " + id + " has no functionId in its sidecar entry");
                 continue;
             }
             JIPipeNodeTemplate template = new JIPipeNodeTemplate();
@@ -446,7 +448,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             registered++;
         }
         JIPipe.getInstance().getProgressInfo().log(
-            "Registered " + registered + " corpus-mined System node templates (bundled patterns)");
+                "Registered " + registered + " corpus-mined System node templates (bundled patterns)");
     }
 
     /**
@@ -454,7 +456,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * the bundled classpath resources.
      *
      * @return the sidecar object, or {@code null} if the resource is absent
-     *         (the caller then registers nothing)
+     * (the caller then registers nothing)
      */
     private static JsonNode readPatternsSidecar() {
         try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(SYSTEM_TEMPLATE_SIDECAR)) {
@@ -464,12 +466,14 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             return JsonUtils.getObjectMapper().readTree(in);
         } catch (Exception e) {
             JIPipe.getInstance().getProgressInfo().log(
-                "ERROR: could not read the bundled system-template sidecar: " + e);
+                    "ERROR: could not read the bundled system-template sidecar: " + e);
             return null;
         }
     }
 
-    /** Reads a bundled raw graph JSON resource (absolute classpath path). */
+    /**
+     * Reads a bundled raw graph JSON resource (absolute classpath path).
+     */
     private static String readPatternGraphResource(String file) {
         String path = SYSTEM_TEMPLATE_RESOURCE_DIR + file;
         try (InputStream in = TaxonomyPlugin.class.getResourceAsStream(path)) {
@@ -488,8 +492,10 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
      * (absolute, as required by {@link Class#getResourceAsStream}).
      */
     static final String SYSTEM_TEMPLATE_RESOURCE_DIR =
-        "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
-    /** The committed metadata sidecar (pattern id → name/description/functionId/file). */
+            "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
+    /**
+     * The committed metadata sidecar (pattern id → name/description/functionId/file).
+     */
     static final String SYSTEM_TEMPLATE_SIDECAR = SYSTEM_TEMPLATE_RESOURCE_DIR + "system-templates.json";
 
     /**
@@ -526,7 +532,9 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         return null;
     }
 
-    /** Sorted property-name list of a JSON object (deterministic iteration). */
+    /**
+     * Sorted property-name list of a JSON object (deterministic iteration).
+     */
     private static List<String> sortedKeys(JsonNode object) {
         List<String> keys = new ArrayList<>();
         object.fieldNames().forEachRemaining(keys::add);
