@@ -58,6 +58,7 @@ import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.Graph;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -1174,10 +1175,21 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
                     nodeAliasIds.put(nodeUUID, aliasId);
                 }
 
-                // Move DEFAULT location to empty string (UUID-based)
+                // Move DEFAULT / legacy-compartment locations to empty string (UUID-based)
+                // so they resolve under the node's resolved (default) compartment.
+                // "DEFAULT" stays a special case: it is not stored in the legacy map,
+                // so the fallback preserves the previous behavior exactly. A node in the
+                // main canvas serializes its compartment as "" (the default-location key
+                // itself), which is stored in the legacy map but needs no migration — skip
+                // it, or clearEntriesWithPathPrefix(location, "") would collapse to
+                // "location" and wipe the node's already-correct stored location.
+                String legacyCompartmentId = nodeLegacyCompartmentIDs.get(nodeUUID);
+                String migrationKey = legacyCompartmentId != null ? legacyCompartmentId : "DEFAULT";
                 Map<String, Point> allNodeUILocations = node.getAllNodeUILocations();
-                if (allNodeUILocations.containsKey("DEFAULT")) {
-                    node.setNodeUILocationWithin("", allNodeUILocations.get("DEFAULT"));
+                if (!migrationKey.isEmpty() && allNodeUILocations.containsKey(migrationKey)) {
+                    node.setNodeUILocationWithin("", allNodeUILocations.get(migrationKey));
+                    node.getNodeMetadata().clearEntriesWithPathPrefix(
+                        JIPipePathMetadataStore.key("location", migrationKey));
                 }
             }
         }
