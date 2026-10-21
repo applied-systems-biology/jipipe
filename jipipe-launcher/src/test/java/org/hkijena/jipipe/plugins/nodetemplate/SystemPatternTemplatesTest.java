@@ -437,12 +437,13 @@ class SystemPatternTemplatesTest {
 
     @Test
     void everyBundledPatternEdgeSurvivesDeserialization() throws Exception {
+        JIPipeNodesServiceComponent nodes = JIPipe.getNodes();
         // Contract pin (task 1, RED until the data fix ships): the number of
         // cross-node edges the deserialized graph holds must equal the number
         // of edges the bundled resource declares. A mismatch means at least
-        // one edge was dropped on load because its endpoint slot/node did not
-        // resolve — the slot configurations + slot-driving parameters
-        // stripped from the minimal format (the B1 dynamic-slot rule, and the
+        // one edge was dropped on load because its endpoint slot did not
+        // exist — the slot configurations + slot-driving parameters stripped
+        // from the minimal format (the B1 dynamic-slot rule, and the
         // parameter-driven named slots such as ij1-color-split-channels-2's
         // Blue/Green/… outputs) — leaving nodes floating.
         // <p>
@@ -453,15 +454,52 @@ class SystemPatternTemplatesTest {
         // cross + internal and can never equal the raw cross-edge count.
         // getSlotEdges() skips same-node edges and is the metric the graph's
         // own serializer uses.
+        // <p>
+        // "Resolvable" = the endpoint node-info-id is present in the RUNNING
+        // test JVM's registry (hasNodeInfoWithId). The test JVM boots on the
+        // Maven-classpath cLij2 2.3.0.6, while the SHIPPING dist bundles
+        // cLij2 2.5.3.5 + clijx 0.32.2.0 (a Fiji-only build, not on Maven
+        // Central / imagej.net — so the pom cannot be bumped to match it in
+        // CI). Several patterns therefore reference dynamically-registered
+        // clij:plugin:* / clijx:* kernels that the older test-JVM cLij2 does
+        // not register; fromJson drops exactly those nodes (they load fine
+        // in the dist), and so do the edges touching them. The authoritative
+        // stale-id oracle is the full-launcher registry dump, enforced at
+        // generation (the generator fails closed on any unregistered id) —
+        // per the 1324 (D) ruling that the id oracle is the full-launcher
+        // dump, never the test-classpath registry. Filtering the raw edges
+        // to resolvable endpoints here makes the guard tolerant of ONLY that
+        // version-gated cLij2 kernel gap while still catching every real
+        // defect: a dropped edge on a resolvable node (missing slot) still
+        // fails this test.
         for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
             String f = entry.getValue().get("file").asText();
             String raw = readResource(PATTERN_RESOURCE_DIR + f);
             JsonNode tree = JsonUtils.getObjectMapper().readTree(raw);
             JIPipeGraph graph = JsonUtils.readFromString(raw, JIPipeGraph.class);
-            int rawEdges = tree.get("edges").size();
+
+            // Node alias-id -> node-info-id (from the bundled resource).
+            Map<String, String> infoIdOfNode = new HashMap<>();
+            for (Map.Entry<String, JsonNode> node : tree.get("nodes").properties()) {
+                infoIdOfNode.put(node.getKey(), node.getValue().get("jipipe:node-info-id").asText());
+            }
+
+            // Only the raw edges whose endpoints both resolve in the test
+            // JVM's registry are expected to load — the loaded graph can
+            // only hold cross-edges between loaded (i.e. resolvable) nodes.
+            int resolvableRawEdges = 0;
+            for (JsonNode edge : tree.get("edges")) {
+                String sourceId = infoIdOfNode.get(edge.get("source-node").asText());
+                String targetId = infoIdOfNode.get(edge.get("target-node").asText());
+                if (sourceId != null && nodes.hasNodeInfoWithId(sourceId)
+                    && targetId != null && nodes.hasNodeInfoWithId(targetId)) {
+                    resolvableRawEdges++;
+                }
+            }
+
             int loadedEdges = graph.getSlotEdges().size();
-            assertEquals(rawEdges, loadedEdges,
-                f + ": " + (rawEdges - loadedEdges) + " edge(s) dropped on load (missing slot / missing node)");
+            assertEquals(resolvableRawEdges, loadedEdges,
+                f + ": " + (resolvableRawEdges - loadedEdges) + " edge(s) dropped on load (missing slot / missing node)");
         }
     }
 
