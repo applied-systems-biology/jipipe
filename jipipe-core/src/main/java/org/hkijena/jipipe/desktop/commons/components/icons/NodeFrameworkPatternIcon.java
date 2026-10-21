@@ -143,9 +143,12 @@ public class NodeFrameworkPatternIcon implements JIPipeDesktopColorIcon {
         g.fillRect(fx, fy, fw, fh);
 
         // Framework signature pattern over the fill (same gating as the canvas node).
+        // paintAspectCropped: the fill is a tall 14×47 sliver, so stretching the
+        // mask to its aspect would distort the pattern's cells; render it
+        // isotropic and center-crop instead.
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
         if (isPatternEnabled(style) && fw > 0 && fh > 0) {
-            NodePatternRenderer.paint((Graphics2D) g, fx, fy, fw, fh,
+            NodePatternRenderer.paintAspectCropped((Graphics2D) g, fx, fy, fw, fh,
                     framework.getPatternStyleId(), framework.getId(),
                     style.getNodePatternInk(), style.getNodePatternOpacity());
         }

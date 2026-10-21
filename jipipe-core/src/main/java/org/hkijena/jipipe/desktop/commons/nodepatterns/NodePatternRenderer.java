@@ -65,6 +65,32 @@ public final class NodePatternRenderer {
         gg.dispose();
     }
 
+    /**
+     * Paints the pattern into (x,y,w,h) WITHOUT aspect distortion: the pattern is
+     * rendered as a square of the target's longer side (so its cells are
+     * isotropic), scaled isotropically to that side, and center-cropped to the
+     * target. The plain {@link #paint} stretches the mask to the target's
+     * aspect, which distorts cells in elongated regions (e.g. the 14×47 fill of
+     * the node list's pattern icon).
+     */
+    public static void paintAspectCropped(Graphics2D g, int x, int y, int w, int h,
+                                          String styleId, String seed, Color ink, float opacity) {
+        int side = Math.max(w, h);
+        BufferedImage m = mask(styleId, seed, side, side);
+        if (m == null) return;
+        BufferedImage tinted = tint(styleId + "\u0000" + seed, m, ink, opacity);
+        Graphics2D gg = (Graphics2D) g.create();
+        try {
+            gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            gg.setClip(x, y, w, h);
+            int ox = x - (m.getWidth() - w) / 2;
+            int oy = y - (m.getHeight() - h) / 2;
+            gg.drawImage(tinted, ox, oy, side, side, null);
+        } finally {
+            gg.dispose();
+        }
+    }
+
     /** Clears both caches (test hook; not needed for theme changes — the mask is theme-independent). */
     public static void invalidateCache() {
         MASK_CACHE.clear();
