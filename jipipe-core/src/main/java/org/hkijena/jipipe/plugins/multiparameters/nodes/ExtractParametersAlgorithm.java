@@ -38,7 +38,7 @@ import java.util.*;
 @SetJIPipeDocumentation(name = "Extract parameters from node", description = "Extracts parameters from the incoming node(s)")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Node", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
-@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
     private OptionalTextAnnotationNameParameter nodeUUIDAnnotation = new OptionalTextAnnotationNameParameter("Node UUID", true);

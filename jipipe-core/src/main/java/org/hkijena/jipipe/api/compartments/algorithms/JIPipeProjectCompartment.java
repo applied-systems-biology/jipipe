@@ -43,7 +43,7 @@ import java.util.List;
  * Its node functionality is structural.
  */
 @SetJIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 @AddJIPipeInputSlot(value = JIPipeCompartmentOutputData.class, name = "Input", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeCompartmentOutputData.class)
 public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {

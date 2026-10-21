@@ -46,7 +46,7 @@
   "node-fill-brightness" : 0.902,
   "node-border-saturation" : 0.1,
   "node-border-brightness" : 0.502,
-  "node-pattern-opacity" : 0.4,
+  "node-pattern-opacity" : 0.3,
   "corner-radius" : 3,
   "draw-island-border" : true,
   "islands-border-color" : "#DEDEE2"

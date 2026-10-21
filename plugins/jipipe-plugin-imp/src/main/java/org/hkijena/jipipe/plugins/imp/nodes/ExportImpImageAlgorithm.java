@@ -46,7 +46,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Export IMP image", description = "Exports IMP images into a non-JIPipe format (PNG, JPEG, BMP, GIF).")
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportImagesFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ExportImagesFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 public class ExportImpImageAlgorithm extends JIPipeIteratingAlgorithm {
     private ImpImageOutputFormat fileFormat = ImpImageOutputFormat.PNG;
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();

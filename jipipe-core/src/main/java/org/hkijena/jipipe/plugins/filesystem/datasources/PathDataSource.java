@@ -35,7 +35,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Path", description = "Converts the path parameter into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, name = "Path", create = true)
-@ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class PathDataSource extends AbstractPathDataSource {
 
     private Path path;

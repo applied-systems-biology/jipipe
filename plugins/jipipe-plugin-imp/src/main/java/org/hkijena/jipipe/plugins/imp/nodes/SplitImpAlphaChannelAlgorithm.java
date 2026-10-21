@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.imp.utils.ImpImageUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 @SetJIPipeDocumentation(name = "Split alpha channel", description = "Splits the alpha channel of IMP images into a dedicated image")
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "RGB", create = true)
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Alpha", create = true)

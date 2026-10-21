@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.scene3d.model.geometries.Scene3DSphereGeometry
 
 @SetJIPipeDocumentation(name = "Create 3D sphere mesh", description = "Generates a 3D scene containing a sphere mesh at the specified location.")
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = Scene3DDataFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = Scene3DDataFunction.class)
 public class CreateSphereMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final Scene3DSphereGeometry geometry;

@@ -37,7 +37,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Folder list", description = "Produces a list of folder entries from the folders you specify, so each folder can be processed separately by later nodes.")
 @AddJIPipeOutputSlot(value = FolderData.class, name = "Folder paths", create = true)
-@ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class FolderListDataSource extends AbstractPathDataSource {
 
     private PathList folderPaths = new PathList();

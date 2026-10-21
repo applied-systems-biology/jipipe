@@ -170,13 +170,13 @@ public class JIPipeDesktopModernThemeStyle {
     private Color nodeSlotBackground = new Color(0xFAFAFA);
 
     @JsonProperty("node-fill-saturation")
-    private float nodeFillSaturation = 0.1f;
+    private float nodeFillSaturation = 0.15f;
 
     @JsonProperty("node-fill-brightness")
-    private float nodeFillBrightness = 0.9f;
+    private float nodeFillBrightness = 0.8f;
 
     @JsonProperty("node-border-saturation")
-    private float nodeBorderSaturation = 0.1f;
+    private float nodeBorderSaturation = 0.2f;
 
     @JsonProperty("node-border-brightness")
     private float nodeBorderBrightness = 0.5f;
@@ -191,7 +191,7 @@ public class JIPipeDesktopModernThemeStyle {
     private Color nodePatternInk = Color.WHITE;
 
     @JsonProperty("node-pattern-opacity")
-    private float nodePatternOpacity = 0.4f;
+    private float nodePatternOpacity = 0.3f;
 
     @JsonProperty("show-node-framework-badge")
     private boolean showNodeFrameworkBadge = true;

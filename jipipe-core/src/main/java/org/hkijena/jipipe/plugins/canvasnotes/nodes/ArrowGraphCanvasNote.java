@@ -27,7 +27,7 @@ import java.awt.*;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Arrow canvas note", description = "A canvas note that displays an arrow")
-@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class)
 public class ArrowGraphCanvasNote extends JIPipeGraphCanvasNote {
 
     private int angle = 0;

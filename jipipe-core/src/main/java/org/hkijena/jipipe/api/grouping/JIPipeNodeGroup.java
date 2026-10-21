@@ -53,7 +53,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Group", description = "A node that contains a sub-pipeline. Double-click the node to open the contained workflow and add inputs/outputs to the 'Group input'/'Group output' nodes. " +
         "To expose parameters from within the group to the surrounding group node, go to the 'Parameters' tab and add references via 'Edit parameter references'.")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 public class JIPipeNodeGroup extends JIPipeGraphWrapperAlgorithm implements JIPipeCustomParameterCollection, ParameterReferencesChangedEventListener {
 
     private NodeGroupContents contents;

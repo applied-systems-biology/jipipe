@@ -782,13 +782,13 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
     public static class CategoryGraphEditor extends AbstractJIPipeParameterCollection {
         private Color nodeHighlightBorder = new Color(0x737880);
         private Color nodeSlotBackground = new Color(0xFAFAFA);
-        private float nodeFillSaturation = 0.1f;
-        private float nodeFillBrightness = 0.9f;
-        private float nodeBorderSaturation = 0.1f;
+        private float nodeFillSaturation = 0.15f;
+        private float nodeFillBrightness = 0.8f;
+        private float nodeBorderSaturation = 0.2f;
         private float nodeBorderBrightness = 0.5f;
         private boolean showNodeFrameworkPattern = true;
         private Color nodePatternInk = Color.WHITE;
-        private float nodePatternOpacity = 0.4f;
+        private float nodePatternOpacity = 0.3f;
         private boolean showNodeFrameworkBadge = true;
         private Color edgeBorderColorDefault = new Color(0x737880);
         private Color edgeBorderColorConvert = new Color(0x2957C2);

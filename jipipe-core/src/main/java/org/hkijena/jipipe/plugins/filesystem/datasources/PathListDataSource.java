@@ -37,7 +37,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "Path list", description = "Converts each provided path into path data.")
 @AddJIPipeOutputSlot(value = PathData.class, name = "Paths", create = true)
-@ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class PathListDataSource extends AbstractPathDataSource {
 
     private PathList paths = new PathList();

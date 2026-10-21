@@ -333,7 +333,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         });
         initializeResultListContextMenu();
         resultScroll = new JScrollPane(resultList);
-        resultScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        resultScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         // Follow-up strip
         followUpStrip.setLayout(new BorderLayout());

@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import java.awt.image.BufferedImage;
 
 @SetJIPipeDocumentation(name = "Set alpha channel from mask", description = "Sets the alpha channel of an IMP image from a mask")
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Image", create = true)
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Alpha", create = true)
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Output", create = true)

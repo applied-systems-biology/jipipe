@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFuncti
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
 
 @SetJIPipeDocumentation(name = "Tunnel entrance", description = "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node.")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 @AddJIPipeInputSlot(name = "T1", value = JIPipeData.class, create = true, optional = true)
 public class JIPipeDataFlowTunnel1Entrance extends JIPipeDataFlowTunnelEntrance {
 

@@ -30,7 +30,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 @SetJIPipeDocumentation(name = "Image box canvas note", description = "Places a static image box on the workflow canvas; it receives no data and outputs no data. It displays a selected image with configurable fit, anchor, scale, margins, background, and border.")
-@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class)
 public class ImageBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ImageParameters imageParameters;
 

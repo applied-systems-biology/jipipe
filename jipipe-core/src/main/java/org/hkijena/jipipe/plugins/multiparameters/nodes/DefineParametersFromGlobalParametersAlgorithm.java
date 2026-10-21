@@ -44,7 +44,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Project-wide parameter", description = "Extracts a parameter set from global (project-wide) parameters.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
-@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 public class DefineParametersFromGlobalParametersAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeExpressionParameter filter = new JIPipeExpressionParameter("");

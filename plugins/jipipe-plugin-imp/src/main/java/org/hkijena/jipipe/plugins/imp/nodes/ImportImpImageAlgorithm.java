@@ -33,7 +33,7 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 
 @SetJIPipeDocumentation(name = "Import image (with transparency)", description = "Imports an image via the Image Manipulation Pipeline.")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ImageDataFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = FileData.class, name = "File", create = true, description = "The file to be imported")
 @AddJIPipeOutputSlot(value = ImpImageData.class, name = "Image", create = true, description = "The image")
 public class ImportImpImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

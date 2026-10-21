@@ -32,7 +32,7 @@ import java.awt.*;
         "This nodes has no workload attached to it and will connect to any data type. It requires no input and produces no output.")
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Comment", create = true, optional = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Comment", create = true)
-@ConfigureJIPipeNode(function = GraphDebugFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphDebugFunction.class)
 public class JIPipeCommentNode extends JIPipeGraphNode {
 
     private Color backgroundColor = new Color(255, 255, 204);

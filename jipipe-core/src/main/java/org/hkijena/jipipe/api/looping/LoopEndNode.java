@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphDebugFunction;
 
 @SetJIPipeDocumentation(name = "Loop end", description = "Deprecated. Use graph partitions instead. " + "Indicates the end of a loop. All nodes following a loop start are " +
         "executed per iteration step of this loop start node")
-@ConfigureJIPipeNode(function = GraphDebugFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphDebugFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Data")
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data")
 @LabelAsJIPipeHidden

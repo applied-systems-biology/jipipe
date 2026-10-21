@@ -31,7 +31,7 @@ import java.util.*;
  * Algorithm that passes the input to the output
  */
 @SetJIPipeDocumentation(name = "IO Interface", description = "Sends the connected data onward without changing it, so it can serve as a neutral connection point. It takes in any data type and produces the same data type unchanged.")
-@ConfigureJIPipeNode(function = GraphDebugFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphDebugFunction.class)
 public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
 
     public IOInterfaceAlgorithm(JIPipeNodeInfo info) {

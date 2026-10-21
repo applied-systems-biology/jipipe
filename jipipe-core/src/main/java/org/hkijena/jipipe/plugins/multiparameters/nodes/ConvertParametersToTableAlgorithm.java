@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Convert parameters to table", description = "Converts parameter data into da table")
 @AddJIPipeInputSlot(name = "Input", value = ParametersData.class, create = true)
 @AddJIPipeOutputSlot(name = "Output", value = ResultsTableData.class, create = true)
-@ConfigureJIPipeNode(function = TableTransformFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 public class ConvertParametersToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConvertParametersToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);

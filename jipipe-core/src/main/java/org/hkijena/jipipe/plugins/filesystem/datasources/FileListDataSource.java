@@ -37,7 +37,7 @@ import java.util.List;
  */
 @SetJIPipeDocumentation(name = "File list", description = "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filenames", create = true)
-@ConfigureJIPipeNode(function = FileSystemFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class FileListDataSource extends AbstractPathDataSource {
 
     private PathList files = new PathList();

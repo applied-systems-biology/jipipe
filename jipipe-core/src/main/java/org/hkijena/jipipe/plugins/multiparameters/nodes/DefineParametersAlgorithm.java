@@ -40,7 +40,7 @@ import java.util.Map;
  */
 @SetJIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Parameters", create = true)
-@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class)
 public class DefineParametersAlgorithm extends JIPipeAlgorithm {
 
     private final GeneratedParameters parameters;

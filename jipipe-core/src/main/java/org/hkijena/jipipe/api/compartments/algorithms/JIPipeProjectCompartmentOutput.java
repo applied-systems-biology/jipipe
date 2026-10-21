@@ -29,7 +29,7 @@ import java.awt.*;
  * Transfers data 1:1 from input to output
  */
 @SetJIPipeDocumentation(name = "Compartment output", description = "Output of a compartment")
-@ConfigureJIPipeNode(function = GraphWrappersFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 public class JIPipeProjectCompartmentOutput extends IOInterfaceAlgorithm {
 
     private String outputSlotName;

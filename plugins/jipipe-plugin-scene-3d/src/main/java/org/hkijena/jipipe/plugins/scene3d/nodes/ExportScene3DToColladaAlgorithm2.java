@@ -47,7 +47,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Export 3D scene", description = "Exports a 3D scene to Collada 1.4.1 (DAE)")
 @AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportScenesFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = ExportScenesFunction.class)
 public class ExportScene3DToColladaAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();

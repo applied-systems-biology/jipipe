@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.multiparameters.datatypes.ParametersData;
 
 @SetJIPipeDocumentation(name = "Merge parameters", description = "Merges multiple parameter sets. To always multiply all incoming parameters, set the iteration step grouping method to 'Multiply'. " +
         "Parameters with the same unique key are overwritten according to the input slot order.")
-@ConfigureJIPipeNode(function = TableJoinSplitFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 1", create = true)
 @AddJIPipeInputSlot(value = ParametersData.class, name = "Input 2", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)

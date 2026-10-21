@@ -39,7 +39,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Annotations to parameters", description = "Converts annotations into parameter data.")
-@ConfigureJIPipeNode(function = AnnotationsConvertFunction.class, framework = CoreFramework.class)
+@ConfigureJIPipeNode(function = AnnotationsConvertFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)
 public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleIteratingAlgorithm {

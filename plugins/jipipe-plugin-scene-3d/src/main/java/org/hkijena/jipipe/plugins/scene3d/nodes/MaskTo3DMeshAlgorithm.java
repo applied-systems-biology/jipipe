@@ -39,7 +39,7 @@ import org.hkijena.jipipe.plugins.scene3d.utils.Scene3DUtils;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Mask to 3D scene", description = "Applies the 'Marching cubes' algorithm to convert a 3D mask into a 3D mesh.")
-@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = DataUtilitiesFunction.class, spatialDimensions = { SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class MaskTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {

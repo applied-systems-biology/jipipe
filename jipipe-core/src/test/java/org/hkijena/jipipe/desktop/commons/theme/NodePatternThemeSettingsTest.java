@@ -16,7 +16,7 @@ class NodePatternThemeSettingsTest {
         JIPipeDesktopModernThemeStyle s = new JIPipeDesktopModernThemeStyle();
         assertTrue(s.isShowNodeFrameworkPattern());
         assertEquals(Color.WHITE, s.getNodePatternInk());
-        assertEquals(0.4f, s.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.3f, s.getNodePatternOpacity(), 1e-6);
         assertTrue(s.isShowNodeFrameworkBadge());
     }
 
@@ -26,12 +26,12 @@ class NodePatternThemeSettingsTest {
         JIPipeDesktopModernThemeStyle s = new JIPipeDesktopModernThemeStyle();
         s.setShowNodeFrameworkPattern(false);
         s.setNodePatternInk(new Color(0x123456));
-        s.setNodePatternOpacity(0.4f);
+        s.setNodePatternOpacity(0.3f);
         s.setShowNodeFrameworkBadge(false);
         JIPipeDesktopModernThemeStyle c = new JIPipeDesktopModernThemeStyle(s);
         assertFalse(c.isShowNodeFrameworkPattern());
         assertEquals(new Color(0x123456), c.getNodePatternInk());
-        assertEquals(0.4f, c.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.3f, c.getNodePatternOpacity(), 1e-6);
         assertFalse(c.isShowNodeFrameworkBadge());
     }
 
@@ -52,23 +52,23 @@ class NodePatternThemeSettingsTest {
     }
 
     // Back-compat: a theme JSON without the new keys deserializes to the defaults
-    // (the light-theme 0.4 — which is why the dark themes pin 0.15 explicitly)
+    // (the light-theme 0.3 — which is why the dark themes pin 0.15 explicitly)
     @Test
     void missingKeysFallBackToDefaults() throws Exception {
         // "brightness" is the JIPipeDesktopUIThemeBrightness enum (values: Light, Dark)
         byte[] bytes = "{\"name\":\"test\",\"brightness\":\"Light\"}".getBytes();
         JIPipeDesktopModernThemeStyle back = JsonUtils.getObjectMapper().readValue(bytes, JIPipeDesktopModernThemeStyle.class);
         assertTrue(back.isShowNodeFrameworkPattern());
-        assertEquals(0.4f, back.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.3f, back.getNodePatternOpacity(), 1e-6);
     }
 
     // Ship-set pin: the bundled theme files carry the tuned per-theme opacity.
-    // Guard against "cleanup" of the dark themes' explicit 0.15 — it equals the
-    // *old* default and looks redundant, but deleting it would silently switch
-    // them to the 0.4 fallback.
+    // Guard against "cleanup" of the dark themes' explicit 0.15 — it looks
+    // redundant, but deleting it would silently switch them to the light
+    // default (0.3), which is far too visible on dark backgrounds.
     @Test
     void shippedThemesPinPatternOpacity() throws Exception {
-        assertEquals(0.4f, shippedThemeOpacity("JIPipe Classic Light"), 1e-6);
+        assertEquals(0.3f, shippedThemeOpacity("JIPipe Classic Light"), 1e-6);
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark"), 1e-6);
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark Neon"), 1e-6);
         assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark High Contrast"), 1e-6);

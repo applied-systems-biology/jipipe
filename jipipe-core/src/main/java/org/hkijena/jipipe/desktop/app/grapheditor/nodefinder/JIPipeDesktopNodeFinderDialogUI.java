@@ -236,7 +236,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         nodeList.setOpaque(false);
         nodeList.setCellRenderer(new JIPipeDesktopNodeFinderDatasetListCellRenderer(this));
         nodeList.setFixedCellHeight(JIPipeDesktopNodeFinderDatasetListCellRenderer.CELL_HEIGHT);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
         // Keep the detail rail in sync with the selected list entry
         nodeList.addListSelectionListener(e -> detailRail.setEntry(nodeList.getSelectedValue()));

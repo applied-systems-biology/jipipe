@@ -42,7 +42,7 @@ import java.awt.image.BufferedImage;
 
 @SetJIPipeDocumentation(name = "Convert IMP to ImageJ", description = "Converts an IMP image (which supports transparency) to " +
         "an ImageJ1 image")
-@ConfigureJIPipeNode(function = ResamplingFunction.class, framework = CoreFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ResamplingFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImpImageData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
 public class ConvertImpImageToImagePlusAlgorithm extends JIPipeSimpleIteratingAlgorithm {
