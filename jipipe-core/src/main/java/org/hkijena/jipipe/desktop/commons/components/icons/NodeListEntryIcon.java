@@ -111,18 +111,34 @@ public class NodeListEntryIcon implements Icon {
         if (background == null) {
             background = Color.GRAY;
         }
-        // Standard Icon contract: paint at the given (x,y) at the icon's
-        // natural size. The host component (JLabel / the list cell) decides
-        // where (x,y) is and how much room to give — it centers a stretched
-        // label itself. The icon must NOT re-center from c.getSize() (that
-        // would double-center and shift the icon).
+        // Fill the space the host component actually gives us (its content
+        // area), so the rounded corners land on the true top/bottom edges.
+        // The host (a JLabel sized by GridBag to the row/card height) can be
+        // TALLER or SHORTER than this icon's preferred height. If we drew a
+        // fixed-height bar, a shorter label would center-crop it — slicing off
+        // the rounded corners and leaving square edges — so we adapt to the
+        // real size instead.
+        int ox = x;
+        int oy = y;
+        int barW = WIDTH;
+        int barH = height;
+        if (c != null && c.getWidth() > 0 && c.getHeight() > 0) {
+            Insets ins = (c instanceof JComponent jc) ? jc.getInsets() : new Insets(0, 0, 0, 0);
+            int contentW = c.getWidth() - ins.left - ins.right;
+            int contentH = c.getHeight() - ins.top - ins.bottom;
+            if (contentW > 0 && contentH > 0) {
+                ox = ins.left + Math.max(0, (contentW - WIDTH) / 2);
+                oy = ins.top;
+                barH = contentH;
+            }
+        }
         Graphics2D g2d = (Graphics2D) g.create();
         try {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
             // Function-colored rounded bar (the node fill color).
-            Shape bar = new RoundRectangle2D.Float(x, y, WIDTH, height, ARC, ARC);
+            Shape bar = new RoundRectangle2D.Float(ox, oy, barW, barH, ARC, ARC);
             g2d.setColor(background);
             g2d.fill(bar);
 
@@ -131,7 +147,7 @@ public class NodeListEntryIcon implements Icon {
             JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
             if (isPatternEnabled(style)) {
                 g2d.clip(bar);
-                NodePatternRenderer.paintNodeScaleCropped(g2d, x, y, WIDTH, height,
+                NodePatternRenderer.paintNodeScaleCropped(g2d, ox, oy, barW, barH,
                         framework.getPatternStyleId(), framework.getId(),
                         style.getNodePatternInk(), style.getNodePatternOpacity());
                 g2d.setClip(null);
@@ -145,8 +161,8 @@ public class NodeListEntryIcon implements Icon {
                 float scale = Math.min(1f, Math.min((float) ICON_REGION / iw, (float) ICON_REGION / ih));
                 int sw = Math.max(1, Math.round(iw * scale));
                 int sh = Math.max(1, Math.round(ih * scale));
-                int ix = x + (WIDTH - sw) / 2;
-                int iy = y + TOP_MARGIN + (ICON_REGION - sh) / 2;
+                int ix = ox + (barW - sw) / 2;
+                int iy = oy + TOP_MARGIN + (ICON_REGION - sh) / 2;
                 BufferedImage buf = new BufferedImage(iw, ih, BufferedImage.TYPE_INT_ARGB);
                 Graphics2D bg = buf.createGraphics();
                 nodeIcon.paintIcon(c, bg, 0, 0);
