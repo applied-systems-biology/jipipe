@@ -111,6 +111,11 @@ public class NodeListEntryIcon implements Icon {
         if (background == null) {
             background = Color.GRAY;
         }
+        // Standard Icon contract: paint at the given (x,y) at the icon's
+        // natural size. The host component (JLabel / the list cell) decides
+        // where (x,y) is and how much room to give — it centers a stretched
+        // label itself. The icon must NOT re-center from c.getSize() (that
+        // would double-center and shift the icon).
         Graphics2D g2d = (Graphics2D) g.create();
         try {
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

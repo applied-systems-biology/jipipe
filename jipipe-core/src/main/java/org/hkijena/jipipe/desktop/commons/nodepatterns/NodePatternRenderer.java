@@ -16,6 +16,7 @@ package org.hkijena.jipipe.desktop.commons.nodepatterns;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.Shape;
 import java.awt.image.BufferedImage;
 import java.util.Map;
 import java.util.Random;
@@ -92,7 +93,16 @@ public final class NodePatternRenderer {
         }
         Graphics2D gg = (Graphics2D) g.create();
         try {
+            // Capture the caller's clip BEFORE replacing it. gg inherits g's
+            // clip at creation; setClip would discard it. Intersect (not
+            // replace) so callers that rely on their clip surviving — e.g. the
+            // round-cornered list icon that clips to a rounded rect — are not
+            // overdrawn by the square crop window.
+            Shape callerClip = gg.getClip();
             gg.setClip(x, y, w, h);
+            if (callerClip != null) {
+                gg.clip(callerClip);
+            }
             gg.drawImage(nodeBackground, x - (NODE_WIDTH - w) / 2, y - (NODE_HEIGHT - h) / 2, null);
         } finally {
             gg.dispose();
