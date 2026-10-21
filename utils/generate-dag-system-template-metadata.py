@@ -26,12 +26,12 @@ patterns, 9 degenerate multi-component harvest artifacts; 34 further
 multi-component patterns keep their largest connected component) -> 396
 shipped, on top of the 24 linear ones (420 System templates).
 
-The 155 derived patterns ship with INVALID locations (compartment = the
+The 154 derived patterns ship with INVALID locations (compartment = the
 legacy name "derived" + pixel-era coords) and the 24 linear patterns have NO
 locations; both are re-laid out at generation with the project's own
 Sugiyama grid-cell convention (utils/sugiyama_layout.py, a pure port of
 SugiyamaGraphAutoLayoutImplementation.rearrangeSugiyamaVertical), the derived
-compartment rekeyed to "DEFAULT". The 251 mined patterns carry valid UUID
+compartment rekeyed to "DEFAULT". The 242 mined patterns carry valid UUID
 locations and are kept VERBATIM (the B1 slot-configuration restore,
 utils/restore_pattern_slot_configs.py, may later add slot configs + driving
 parameters to mined files — never locations/compartments).

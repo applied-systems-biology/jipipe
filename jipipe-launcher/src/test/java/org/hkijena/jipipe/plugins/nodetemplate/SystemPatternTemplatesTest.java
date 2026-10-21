@@ -101,7 +101,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       to all 424). Identity is (name, node-info-id multiset): 13 DAG names
+ *       to all 420). Identity is (name, node-info-id multiset): 13 DAG names
  *       are shared by structurally different graphs, so name alone is no
  *       longer a unique key — (name, id multiset) is (verified at
  *       generation).</li>
