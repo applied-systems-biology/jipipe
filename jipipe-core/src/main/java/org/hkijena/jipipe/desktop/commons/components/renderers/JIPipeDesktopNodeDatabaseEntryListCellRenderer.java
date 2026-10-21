@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatab
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
 import org.hkijena.jipipe.desktop.commons.components.icons.NodeListEntryIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -46,6 +47,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
     }
 
     private void initialize() {
+        setBorder(UIUtils.createEmptyBorder(2));
         setLayout(new GridBagLayout());
         // The unified list icon: a function-colored bar with the framework
         // pattern and the node icon in the upper region (one column, covering
@@ -89,6 +91,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 gridy = 1;
                 fill = HORIZONTAL;
                 weightx = 1;
+                insets = new Insets(0, 4, 0, 0);
             }
         });
         add(alternativeLabel, new GridBagConstraints() {
@@ -97,6 +100,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 gridy = 2;
                 fill = HORIZONTAL;
                 weightx = 1;
+                insets = new Insets(0, 4, 0, 0);
             }
         });
     }
