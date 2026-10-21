@@ -19,7 +19,7 @@
 - Every family draws **only** with the current paint (white) onto a transparent canvas; no color, no `Math.random`, no wall clock — a pure function of `(w, h, rng)`.
 - Antialiasing ON + `STROKE_CONTROL_PURE` (set by the renderer before a family paints).
 - Seeded by **framework id**: `new Random(seed.hashCode())`. Same framework ⇒ identical pattern on every node, every run.
-- Theme defaults: `showNodeFrameworkPattern=true`, `nodePatternInk=white`, `nodePatternOpacity=0.15f`, `showNodeFrameworkBadge=true`. All-off ⇒ today's look.
+- Theme defaults: `showNodeFrameworkPattern=true`, `nodePatternInk=white`, `nodePatternOpacity=0.4f`, `showNodeFrameworkBadge=true`. All-off ⇒ today's look.
 - `NoFramework` ⇒ **null** style id ⇒ no pattern, no badge (deliberate).
 - Tests are headless (`BufferedImage` only). **No Swing interaction/UI tests** (the "do not test trivial things" policy) — appearance is verified by the user in the app.
 - Java 21. Build offline: `mvn -o -pl jipipe-core …`.
@@ -528,7 +528,7 @@ Engine contract tests now sweep the full catalog. (6.0.0)"
 - Produces (on `JIPipeDesktopModernThemeStyle`): `isShowNodeFrameworkPattern()`, `setShowNodeFrameworkPattern(boolean)`, `getNodePatternInk()`, `setNodePatternInk(Color)`, `getNodePatternOpacity()`, `setNodePatternOpacity(float)`, `isShowNodeFrameworkBadge()`, `setShowNodeFrameworkBadge(boolean)`.
 - Consumes: Task 1/2 (not directly — this is the settings layer).
 
-Exact names/defaults (from the spec): `showNodeFrameworkPattern` (boolean, `true`), `nodePatternInk` (Color, `Color.WHITE`), `nodePatternOpacity` (float, `0.15f`), `showNodeFrameworkBadge` (boolean, `true`). `@JsonProperty`/`@JIPipeParameter` keys (kebab-case, matching the file's existing `node-fill-saturation`-style keys): `show-node-framework-pattern`, `node-pattern-ink`, `node-pattern-opacity`, `show-node-framework-badge`.
+Exact names/defaults (from the spec): `showNodeFrameworkPattern` (boolean, `true`), `nodePatternInk` (Color, `Color.WHITE`), `nodePatternOpacity` (float, `0.4f` — live-tuned for the light base theme; the dark bundled themes pin `0.15` explicitly, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`), `showNodeFrameworkBadge` (boolean, `true`). `@JsonProperty`/`@JIPipeParameter` keys (kebab-case, matching the file's existing `node-fill-saturation`-style keys): `show-node-framework-pattern`, `node-pattern-ink`, `node-pattern-opacity`, `show-node-framework-badge`.
 
 - [ ] **Step 1: Write the failing persistence test**
 
@@ -550,7 +550,7 @@ class NodePatternThemeSettingsTest {
         JIPipeDesktopModernThemeStyle s = new JIPipeDesktopModernThemeStyle();
         assertTrue(s.isShowNodeFrameworkPattern());
         assertEquals(Color.WHITE, s.getNodePatternInk());
-        assertEquals(0.15f, s.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.4f, s.getNodePatternOpacity(), 1e-6);
         assertTrue(s.isShowNodeFrameworkBadge());
     }
 
@@ -588,7 +588,7 @@ class NodePatternThemeSettingsTest {
         byte[] bytes = "{\"name\":\"test\",\"brightness\":\"Light\"}".getBytes();
         JIPipeDesktopModernThemeStyle back = JsonUtils.getObjectMapper().readValue(bytes, JIPipeDesktopModernThemeStyle.class);
         assertTrue(back.isShowNodeFrameworkPattern());
-        assertEquals(0.15f, back.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.4f, back.getNodePatternOpacity(), 1e-6);
     }
 }
 ```
@@ -626,7 +626,7 @@ git add jipipe-core/src/main/java/org/hkijena/jipipe/desktop/commons/theme/JIPip
         jipipe-core/src/test/java/org/hkijena/jipipe/desktop/commons/theme/NodePatternThemeSettingsTest.java
 git commit -m "feat: theme settings for node framework pattern (show/ink/opacity/badge)
 
-4 fields on JIPipeDesktopModernThemeStyle (defaults: on, white, 0.15, on)
+4 fields on JIPipeDesktopModernThemeStyle (defaults: on, white, 0.4, on)
 wired into the annotation-driven theme editor's Graph Editor category.
 Persistence tests: defaults, copy-ctor, Jackson round-trip, missing-key
 fallback. (6.0.0)"

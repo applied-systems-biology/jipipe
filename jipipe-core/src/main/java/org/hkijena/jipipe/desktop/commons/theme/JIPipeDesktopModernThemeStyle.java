@@ -191,7 +191,7 @@ public class JIPipeDesktopModernThemeStyle {
     private Color nodePatternInk = Color.WHITE;
 
     @JsonProperty("node-pattern-opacity")
-    private float nodePatternOpacity = 0.15f;
+    private float nodePatternOpacity = 0.4f;
 
     @JsonProperty("show-node-framework-badge")
     private boolean showNodeFrameworkBadge = true;

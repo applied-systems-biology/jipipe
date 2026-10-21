@@ -788,7 +788,7 @@ public class JIPipeDesktopThemeEditorDocument extends AbstractJIPipeParameterCol
         private float nodeBorderBrightness = 0.5f;
         private boolean showNodeFrameworkPattern = true;
         private Color nodePatternInk = Color.WHITE;
-        private float nodePatternOpacity = 0.15f;
+        private float nodePatternOpacity = 0.4f;
         private boolean showNodeFrameworkBadge = true;
         private Color edgeBorderColorDefault = new Color(0x737880);
         private Color edgeBorderColorConvert = new Color(0x2957C2);

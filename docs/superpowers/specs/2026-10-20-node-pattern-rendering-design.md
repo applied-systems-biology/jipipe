@@ -206,7 +206,7 @@ fields deserialize with defaults, old theme files unaffected):
 |---|---|
 | `showNodeFrameworkPattern` | `true` |
 | `nodePatternInk` | white |
-| `nodePatternOpacity` | `0.15f` |
+| `nodePatternOpacity` | `0.4f` (live-tuned for the light base theme; the dark bundled themes pin `0.15` explicitly) |
 | `showNodeFrameworkBadge` | `true` |
 
 Theme editor: a "Node patterns" group in the node section (checkboxes +
@@ -275,7 +275,7 @@ Suggested commit shape:
 |---|---|
 | A family looks bad at some node size/zoom | Mask buckets + `drawImage` scaling; the family formulas are size-parametric (grid counts derive from `w`/`h`), re-tune parameters in one class |
 | `String.hashCode()` seed distribution gives an unlucky realization for one framework | Per-framework seed salt (one-line constant) — deterministic, still stable |
-| Pattern hurts node text legibility | Default opacity 0.15 (validated in the node-wall preview); theme slider; the title band paints over the pattern |
+| Pattern hurts node text legibility | Default opacity 0.4 on light / 0.15 on dark (live-tuned via the theme editor preview; pinned per theme, see `NodePatternThemeSettingsTest.shippedThemesPinPatternOpacity`); theme slider; the title band paints over the pattern |
 | 17 families is too much code to maintain | ~40–80 lines each, pure Java2D, no shared mutable state; the 4 contract tests keep them honest without per-pixel test bloat |
 
 ## Decisions log (this design round, 2026-10-20)

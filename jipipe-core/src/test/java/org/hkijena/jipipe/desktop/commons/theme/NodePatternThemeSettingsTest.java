@@ -9,13 +9,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class NodePatternThemeSettingsTest {
 
-    // Defaults on a fresh style (old theme files must load with these)
+    // Defaults on a fresh style — the base "JIPipe Light" theme is built from
+    // exactly this, so these defaults ARE the light theme's values
     @Test
     void defaultsMatchSpec() {
         JIPipeDesktopModernThemeStyle s = new JIPipeDesktopModernThemeStyle();
         assertTrue(s.isShowNodeFrameworkPattern());
         assertEquals(Color.WHITE, s.getNodePatternInk());
-        assertEquals(0.15f, s.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.4f, s.getNodePatternOpacity(), 1e-6);
         assertTrue(s.isShowNodeFrameworkBadge());
     }
 
@@ -51,12 +52,35 @@ class NodePatternThemeSettingsTest {
     }
 
     // Back-compat: a theme JSON without the new keys deserializes to the defaults
+    // (the light-theme 0.4 — which is why the dark themes pin 0.15 explicitly)
     @Test
     void missingKeysFallBackToDefaults() throws Exception {
         // "brightness" is the JIPipeDesktopUIThemeBrightness enum (values: Light, Dark)
         byte[] bytes = "{\"name\":\"test\",\"brightness\":\"Light\"}".getBytes();
         JIPipeDesktopModernThemeStyle back = JsonUtils.getObjectMapper().readValue(bytes, JIPipeDesktopModernThemeStyle.class);
         assertTrue(back.isShowNodeFrameworkPattern());
-        assertEquals(0.15f, back.getNodePatternOpacity(), 1e-6);
+        assertEquals(0.4f, back.getNodePatternOpacity(), 1e-6);
+    }
+
+    // Ship-set pin: the bundled theme files carry the tuned per-theme opacity.
+    // Guard against "cleanup" of the dark themes' explicit 0.15 — it equals the
+    // *old* default and looks redundant, but deleting it would silently switch
+    // them to the 0.4 fallback.
+    @Test
+    void shippedThemesPinPatternOpacity() throws Exception {
+        assertEquals(0.4f, shippedThemeOpacity("JIPipe Classic Light"), 1e-6);
+        assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark"), 1e-6);
+        assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark Neon"), 1e-6);
+        assertEquals(0.15f, shippedThemeOpacity("JIPipe Dark High Contrast"), 1e-6);
+    }
+
+    private static float shippedThemeOpacity(String themeId) throws Exception {
+        try (java.io.InputStream in = NodePatternThemeSettingsTest.class
+                .getResourceAsStream("/org/hkijena/jipipe/styles/" + themeId + ".json")) {
+            assertNotNull(in, "bundled theme file not found: " + themeId);
+            JIPipeDesktopModernThemeStyle style = JsonUtils.getObjectMapper()
+                    .readValue(in, JIPipeDesktopModernThemeStyle.class);
+            return style.getNodePatternOpacity();
+        }
     }
 }
