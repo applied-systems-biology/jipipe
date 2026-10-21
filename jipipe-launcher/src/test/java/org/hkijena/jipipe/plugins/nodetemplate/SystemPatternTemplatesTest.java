@@ -26,6 +26,8 @@ import org.hkijena.jipipe.api.nodes.database.relations.NodeRelations;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
 import org.hkijena.jipipe.api.service.components.JIPipeNodeTemplatesServiceComponent;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -69,7 +71,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       workflow does") — no node chain, no chain separator of any kind —
  *       the mechanism stays in the description ({@code Sequence:}/
  *       {@code Wiring:}).</li>
- *   <li><b>406 DAG patterns</b> — 422 mined/derived (262 corpus-mined [3
+ *   <li><b>400 DAG patterns</b> — 422 mined/derived (262 corpus-mined [3
  *       stale-id remaps, 3 excludes] + 160 derived [26 twins + 134
  *       what-next, incl. the 6 cLij2 re-sweep chains]), cleaned at
  *       generation (group I/O wrapper nodes stripped, the {Parameters}
@@ -77,23 +79,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  *       16: 5 patterns involving the (to-be-redesigned) JIPipe scripting
  *       system, 2 loop-plumbing tunnel patterns, and 9 degenerate
  *       multi-component harvest artifacts (34 further multi-component
- *       patterns keep their largest connected component). Decisions:
+ *       patterns keep their largest connected component), then the B2
+ *       ruling drops 6 patterns containing an io-interface node (5 mined
+ *       + 1 derived). Decisions:
  *       {@code utils/taxonomy-research/dag-pattern-decisions.json}.</li>
  * </ul>
  * A pattern ships only if it has a proper derivable name of what it does.
  * <p>
  * Pins:
  * <ol>
- *   <li><b>exact count 430</b> — the 24 linear keep-set + the cleaned DAG
- *       set (422 mined/derived − 16 item-3c drops = 406) is pinned to a
- *       number; not "≥430".</li>
+ *   <li><b>exact count 424</b> — the 24 linear keep-set + the cleaned DAG
+ *       set (422 mined/derived − 16 item-3c drops − 6 io-interface drops
+ *       = 400) is pinned to a number; not "≥424".</li>
  *   <li><b>per-template deserialization guard</b> — each shipped graph must
  *       deserialize through the exact {@code JIPipeNodeTemplate.getGraph()}
  *       path with the same node set as its bundled resource, and every node
  *       id must resolve in the registry (the silent-empty / stale-id guard,
  *       generalized from {@link
  *       org.hkijena.jipipe.api.nodes.taxonomy.TemplateDataDeserializationTest}
- *       to all 430). Identity is (name, node-info-id multiset): 13 DAG names
+ *       to all 424). Identity is (name, node-info-id multiset): 13 DAG names
  *       are shared by structurally different graphs, so name alone is no
  *       longer a unique key — (name, id multiset) is (verified at
  *       generation).</li>
@@ -130,14 +134,15 @@ class SystemPatternTemplatesTest {
         "/org/hkijena/jipipe/plugins/nodetemplate/patterns/";
     static final String SIDECAR_RESOURCE = PATTERN_RESOURCE_DIR + "system-templates.json";
 
-    /** Exactly 430 distinct patterns ship: 24 linear (node-sequence, from
+    /** Exactly 424 distinct patterns ship: 24 linear (node-sequence, from
      * the 185 research artifacts, curation + 25 collapsed shape-label
      * duplicates, then Option C (ruling 2026-19) drops the 32 node+edge
      * sub-paths of already-shipped DAG patterns and the 8 plumbing
-     * (comment/group) patterns) + 406 DAG (422 mined/derived minus the 16
-     * item-3c drops: 5 JIPipe-scripting patterns, 2 tunnel patterns, 9
-     * degenerate multi-component harvest artifacts). */
-    static final int EXPECTED_SYSTEM_TEMPLATES = 430;
+     * (comment/group) patterns) + 400 DAG (422 mined/derived minus the 16
+     * item-3c drops — 5 JIPipe-scripting patterns, 2 tunnel patterns, 9
+     * degenerate multi-component harvest artifacts — and the 6 io-interface
+     * drops from the B2 ruling: 5 mined + 1 derived). */
+    static final int EXPECTED_SYSTEM_TEMPLATES = 424;
 
     /** The flagship mined pattern (a Data Sources chain): list a folder's
      * files and import them as 2D ROIs (one of the 24 Option-C linear
@@ -400,6 +405,63 @@ class SystemPatternTemplatesTest {
                 "shipped pattern '" + t.getName() + "' contains a compartment-output sink");
             assertFalse(t.getName().matches(".*fans (in from|out to) \\d+.*"),
                 "shipped pattern name is a statistical fan name: " + t.getName());
+        }
+    }
+
+    @Test
+    void everyBundledPatternNodeHasAResolvableLocation() throws Exception {
+        // Contract pin (task 1, RED until the data fix ships): every node in
+        // every bundled pattern must have a UI location resolvable in its own
+        // compartment — the exact key the editor looks up. This is a true
+        // load-path contract: we deserialize through
+        // {@code JsonUtils.readFromString(json, JIPipeGraph.class)}, the very
+        // call {@code JIPipeNodeTemplate.getGraph()} makes, so a location
+        // resolvable here is one resolvable in the app.
+        // <p>
+        // Resolvability ONLY, NOT spacing/overlap: 36 of the 251 mined files
+        // carry user layouts with nodes closer than any fixed footprint, so a
+        // spacing assertion would false-fail. Spacing of the *generated* files
+        // is guaranteed by construction — the same longest-path layering the
+        // app's own Sugiyama impl uses — and is eyeballed in-app.
+        for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
+            String f = entry.getValue().get("file").asText();
+            String raw = readResource(PATTERN_RESOURCE_DIR + f);
+            JIPipeGraph graph = JsonUtils.readFromString(raw, JIPipeGraph.class);
+            for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                String key = StringUtils.nullToEmpty(graph.getCompartmentUUIDOf(node));
+                assertNotNull(node.getNodeUILocationWithin(key),
+                    f + ": node " + node.getName() + " has no resolvable location (compartment key " + key + ")");
+            }
+        }
+    }
+
+    @Test
+    void everyBundledPatternEdgeSurvivesDeserialization() throws Exception {
+        // Contract pin (task 1, RED until the data fix ships): the number of
+        // cross-node edges the deserialized graph holds must equal the number
+        // of edges the bundled resource declares. A mismatch means at least
+        // one edge was dropped on load because its endpoint slot/node did not
+        // resolve — the slot configurations + slot-driving parameters
+        // stripped from the minimal format (the B1 dynamic-slot rule, and the
+        // parameter-driven named slots such as ij1-color-split-channels-2's
+        // Blue/Green/… outputs) — leaving nodes floating.
+        // <p>
+        // The metric is {@code getSlotEdges()} (cross-node edges only) — NOT
+        // {@code getGraph().edgeSet().size()}: repairGraph() (run on every
+        // node insert during deserialization) adds per-node internal
+        // input→output edges to the JGraphT graph, so edgeSet().size() =
+        // cross + internal and can never equal the raw cross-edge count.
+        // getSlotEdges() skips same-node edges and is the metric the graph's
+        // own serializer uses.
+        for (Map.Entry<String, JsonNode> entry : sidecarEntries()) {
+            String f = entry.getValue().get("file").asText();
+            String raw = readResource(PATTERN_RESOURCE_DIR + f);
+            JsonNode tree = JsonUtils.getObjectMapper().readTree(raw);
+            JIPipeGraph graph = JsonUtils.readFromString(raw, JIPipeGraph.class);
+            int rawEdges = tree.get("edges").size();
+            int loadedEdges = graph.getSlotEdges().size();
+            assertEquals(rawEdges, loadedEdges,
+                f + ": " + (rawEdges - loadedEdges) + " edge(s) dropped on load (missing slot / missing node)");
         }
     }
 
