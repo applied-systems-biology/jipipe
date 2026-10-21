@@ -2093,23 +2093,11 @@
     "functionId": "jipipe:function:images",
     "name": "Create binary masks from a folder of 2D images"
   },
-  "dag-mined-cluster-0210": {
-    "description": "Takes thresholded mask images and produces a summarized table of 2D ROI particle measurements plus a plot. It finds 2D particles, splits each 2D ROI into connected components, extracts 2D ROI statistics, then summarizes, annotates, merges, filters, and plots the table.<br>Wiring: Find particles 2D.ROI → Split 2D ROI into connected components.ROI; Split 2D ROI into connected components.Components → Extract 2D ROI statistics.ROI; Extract 2D ROI statistics.Measurements → Summarize table.Input; Summarize table.Output → Add annotations as columns.Input; Add annotations as columns.Output → Merge table rows.Input; Merge table rows.Output → Filter table rows.Input; Filter table rows.Output → Plot tables.Input.",
-    "file": "dag-mined-cluster-0210.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Measure 2D ROI particles in mask images"
-  },
   "dag-mined-cluster-0211": {
     "description": "Takes a binary image, applies 2D morphological skeletonization, extracts particle 2D ROIs from the skeletonized mask, and produces an RGB image that draws the 2D ROIs as colored outlines, fills, or labels.<br>Wiring: Morphological skeletonize 2D.Output → Find particles 2D.Mask; Find particles 2D.ROI → Convert 2D ROI to RGB.ROI.",
     "file": "dag-mined-cluster-0211.json",
     "functionId": "jipipe:function:images",
     "name": "Skeletonize binary image and visualize 2D ROI as RGB"
-  },
-  "dag-mined-cluster-0212": {
-    "description": "Takes a list of 2D ROIs and produces a sorted table of measurements for each connected component and for a logical combination of the ROIs, along with a plot and a montage. It splits the 2D ROIs into connected components, applies an AND/OR/XOR ROI calculator, extracts 2D ROI statistics, merges/renames/sorts the resulting tables, and plots the table before creating a montage.<br>Wiring: Split 2D ROI into connected components.Components → 2D ROI calculator (AND/OR/XOR).Input; Split 2D ROI into connected components.Components → Extract 2D ROI statistics.ROI; 2D ROI calculator (AND/OR/XOR).Output → Extract 2D ROI statistics.ROI; Extract 2D ROI statistics.Measurements → Rename &amp; modify columns (expression).Input; Extract 2D ROI statistics.Measurements → Merge inputs.I1; Rename &amp; modify columns (expression).Input → Merge inputs.I2; Merge inputs.O1 → Merge table columns (simple).Input; Merge table columns (simple).Output → Add table column.Input; Add table column.Output → Sort table rows.Input; Sort table rows.Output → Plot tables.Input; Plot tables.Output → Montage of input images.Input.",
-    "file": "dag-mined-cluster-0212.json",
-    "functionId": "jipipe:function:rois",
-    "name": "Measure 2D ROI components and combined regions"
   },
   "dag-mined-cluster-0213": {
     "description": "Takes 8-bit 2D images, applies auto-thresholding, and converts the thresholded regions into 2D particle ROIs with measurements.<br>Wiring: Auto threshold 2D (8-bit).Output → Find particles 2D.Mask.",
@@ -2237,12 +2225,6 @@
     "functionId": "jipipe:function:tracking",
     "name": "Track objects in image sequences"
   },
-  "dag-mined-cluster-0246": {
-    "description": "Takes a folder of microscopy image files, imports them, splits channels, and applies contrast enhancement, illumination correction, background subtraction, and sharpening to produce enhanced 2D image slices.<br>Wiring: Folder.Folder path → List files.Folders; List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Bio-Formats importer.Input; Bio-Formats importer.Output → Convert.Input data; Bio-Formats importer.Output → Split channels (deprecated).Input; Split channels (deprecated).Output data → Enhance local contrast (CLAHE).Input; Split channels (deprecated).Output data 1 → Enhance local contrast (CLAHE).Input; Split channels (deprecated).Output data 2 → Illumination correction 2D.Input; Enhance local contrast (CLAHE).Output → Find or subtract background 2D.Input; Enhance local contrast (CLAHE).Output → Find or subtract background 2D.Input; Illumination correction 2D.Output → Laplacian sharpening 2D (3x3).Input.",
-    "file": "dag-mined-cluster-0246.json",
-    "functionId": "jipipe:function:images",
-    "name": "Preprocess microscopy images"
-  },
   "dag-mined-cluster-0248": {
     "description": "Takes no input image and produces an empty image of specified size and pixel type, then attaches one expression-defined metadata label and merges it into the output image.<br>Wiring: Create empty image.Output → Set annotation (expression).Input; Set annotation (expression).Output → Merge annotations.Data 1.",
     "file": "dag-mined-cluster-0248.json",
@@ -2350,12 +2332,6 @@
     "file": "dag-mined-cluster-0274.json",
     "functionId": "jipipe:function:export",
     "name": "Upload images and result tables to OMERO"
-  },
-  "dag-mined-cluster-0275": {
-    "description": "Takes a list of folders, lists the image files in them, adds a name label to each file, imports each image, and uploads it as an OME-TIFF to a chosen OMERO dataset, producing references to the uploaded OMERO images.<br>Wiring: Folder list.Folder paths → List files.Folders; List files.Files → Annotate with file/directory name.Paths; Annotate with file/directory name.Annotated paths → Import image.Files; Import image.Image → Upload image to OMERO dataset.Image.",
-    "file": "dag-mined-cluster-0275.json",
-    "functionId": "jipipe:function:export",
-    "name": "Upload images from folders to OMERO"
   },
   "dag-mined-cluster-0276": {
     "description": "Imports an image and a mask, converts them to 8-bit, applies OpenCV inpainting to fill the masked regions, and outputs the filled image with converted depth.<br>Wiring: File list.Filenames → Import image.Files; File list.Filenames → Import image.Files; Import image.Image → Convert.Input; Import image.Image → Convert image to 8-bit.Input; Import image.Image → Convert image to 8-bit.Input; Convert.Output → OpenCV Convert Depth.Input; Convert image to 8-bit.Output → Image inpainting.Input; Convert image to 8-bit.Output → Image inpainting.Mask.",

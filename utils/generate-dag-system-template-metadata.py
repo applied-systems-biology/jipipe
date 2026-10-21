@@ -20,11 +20,11 @@ pipeline:
 Total: 422 mined/derived DAG patterns, cleaned at generation (group I/O
 wrapper nodes stripped, the {Parameters} external slot enabled where wired,
 the 6 io-interface patterns dropped by the B2 ruling — 5 mined + 1
-derived — and the 16 item-3c drops: 5 JIPipe-scripting patterns, 2
-loop-plumbing tunnel patterns, 9 degenerate multi-component harvest
-artifacts; 34 further multi-component patterns keep their largest connected
-component) -> 400 shipped, on top of the 24 linear ones (424 System
-templates).
+derived — the 4 sealed-slot patterns dropped by Ruling 13, and the 16
+item-3c drops: 5 JIPipe-scripting patterns, 2 loop-plumbing tunnel
+patterns, 9 degenerate multi-component harvest artifacts; 34 further
+multi-component patterns keep their largest connected component) -> 396
+shipped, on top of the 24 linear ones (420 System templates).
 
 The 155 derived patterns ship with INVALID locations (compartment = the
 legacy name "derived" + pixel-era coords) and the 24 linear patterns have NO
@@ -44,7 +44,7 @@ Outputs (all in the bundled resource dir, next to the linear patterns):
     wrapper nodes stripped, the item-3c drops removed and keep-largest
     components trimmed;
   * system-templates.json — the 24 linear entries preserved BYTE-STABLE
-    plus the 400 surviving "dag-..." entries (name + description +
+    plus the 396 surviving "dag-..." entries (name + description +
     functionId + file). Idempotent: re-running rebuilds exactly the dag-*
     entries (the item-3c drops are keyed in dag-pattern-decisions.json).
 
@@ -87,26 +87,34 @@ EXPECTED_MINED_EXCLUDED = 3
 #: the 422 are collected. The per-family drop counts: 5 mined (cluster-
 #: 0013/0029/0076/0215/0230; 0013 also has 4 unmatched split-2 nodes, dropped
 #: by B2 before the B1 hard-fail can fire) + 1 derived (derived-mech-cluster-
-#: 0029-2d). They are single-component, so item 3c (which runs on the 416)
-#: would pass them through — verified.
+#: 0029-2d). They are single-component, so the Ruling-13 drop + item 3c
+#: (which run on the 412) would pass them through — verified.
 EXPECTED_IOINTERFACE_MINED_DROP = 5
 EXPECTED_IOINTERFACE_DERIVED_DROP = 1
 EXPECTED_IOINTERFACE_DROP = (EXPECTED_IOINTERFACE_MINED_DROP
                              + EXPECTED_IOINTERFACE_DERIVED_DROP)  # 6
-#: The 422 collected mined/derived patterns (before item-3c and the B2 drop):
-#: 262 mined (265 shipped - 3 excludes; the 3 remaps ship) + 160 derived
-#: (26 twins + 134 what-next).
+#: The 422 collected mined/derived patterns (before the B2 drop, the
+#: Ruling-13 drop, and item 3c): 262 mined (265 shipped - 3 excludes; the 3
+#: remaps ship) + 160 derived (26 twins + 134 what-next).
 EXPECTED_MINED_COLLECTED = 262
 EXPECTED_DERIVED_COLLECTED = 160
-#: The per-family SHIPPED survivors after the B2 drop: mined 262-5=257,
-#: derived 160-1=159. Their sum, 416, is the staged total that flows into
-#: clean_graph + item 3c.
-EXPECTED_MINED_SHIP = 257
+#: The per-family survivors right after the B2 drop (pre Ruling 13):
+#: mined 262-5=257, derived 160-1=159.
+EXPECTED_MINED_AFTER_B2 = 257
+EXPECTED_DERIVED_AFTER_B2 = 159
+#: Ruling 13: the 4 sealed-slot patterns (all mined) that cannot load with
+#: their restored slot configurations, dropped by exact key — see
+#: SEALED_CONFIG_DROP_KEYS below for the set and the per-key reasons.
+EXPECTED_SEALED_DROP = 4
+#: The per-family SHIPPED survivors after B2 + the Ruling-13 drop:
+#: mined 257-4=253, derived 159-0=159. Their sum, 412, is the staged total
+#: that flows into clean_graph + item 3c.
+EXPECTED_MINED_SHIP = 253
 EXPECTED_DERIVED_SHIP = 159
-EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 416 (post B2)
-#: item 3c drops 16 of the 416 (5 cpython-script + 2 tunnel + 9 degenerate
-#: multi-component) -> 400 shipped DAG patterns.
-EXPECTED_TOTAL_SHIPPED_DAG = EXPECTED_TOTAL - 16  # 400
+EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 412
+#: item 3c drops 16 of the 412 (5 cpython-script + 2 tunnel + 9 degenerate
+#: multi-component) -> 396 shipped DAG patterns (420 with the 24 linear).
+EXPECTED_TOTAL_SHIPPED_DAG = EXPECTED_TOTAL - 16  # 396
 EXPECTED_LINEAR = 24  # Option C keep-set (was 64; 32 sub-path + 8 plumbing dropped)
 
 # Stale-id remaps (dag-stale-id-plan.json "renamable", successors verified
@@ -125,6 +133,25 @@ REMAP = {
 }
 
 DAG_KEY_PREFIX = "dag-"
+
+#: Ruling 13: the 4 patterns whose nodes carry SEALED slot configurations.
+#: JIPipeGraphNode's (info) constructor seals the annotation-derived slot
+#: configuration (JIPipeGraphNode.java:115-119; converter additionally
+#: sealInput()s), so the B1 restore's corpus-faithful slot configs are
+#: silently dropped on load (fromJson on a sealed config) — these patterns
+#: cannot load with restored configs: 0210's corpus input "ROI" vs the fresh
+#: "Input", 0212's I1/I2/O1 fan-in on a single-Input node (execution-
+#: invalid), 0246's "Input data"/"Output data" name drift, 0275's
+#: "Image"(ImagePlusData) vs "Images"(OMEImageData) generation drift.
+#: Consistent with the io-interface curation ruling, they are EXCLUDED from
+#: the shipped set rather than shipped broken. Keyed to EXACT pattern keys —
+#: other patterns containing these node types may load fine and stay.
+SEALED_CONFIG_DROP_KEYS = frozenset({
+    "dag-mined-cluster-0210",  # ij1-roi-split-into-connected-components
+    "dag-mined-cluster-0212",  # merge-slots (I1/I2/O1 fan-in, execution-invalid)
+    "dag-mined-cluster-0246",  # converter (Input data/Output data drift)
+    "dag-mined-cluster-0275",  # omero-upload-image (Image vs Images drift)
+})
 
 # Item 3c (rulings 2026-19/20): the general pattern policies + the per-case
 # decisions. No shipped pattern may involve the (to-be-redesigned) JIPipe
@@ -251,6 +278,33 @@ def drop_io_interface(records):
              f"io-interface patterns to drop (the B2 ruling), dropped "
              f"{derived_dropped} — the set changed; re-review")
     return kept, mined_dropped + derived_dropped
+
+
+def drop_sealed_config_patterns(records):
+    """Ruling 13: remove the 4 sealed-slot patterns by EXACT key (see
+    :data:`SEALED_CONFIG_DROP_KEYS`). Fail-closed: every expected key must
+    be present in the collected set AND the drop count must equal
+    :data:`EXPECTED_SEALED_DROP` — a corpus re-mine that renames/removes one
+    of the four fails loudly in either direction. Returns (surviving
+    records, dropped)."""
+    kept = []
+    dropped = 0
+    dropped_keys = set()
+    for key, name, desc, fn, g in records:
+        if key in SEALED_CONFIG_DROP_KEYS:
+            dropped += 1
+            dropped_keys.add(key)
+            continue
+        kept.append((key, name, desc, fn, g))
+    missing = SEALED_CONFIG_DROP_KEYS - dropped_keys
+    if missing:
+        fail(f"Ruling 13 sealed drop: expected pattern key(s) "
+             f"{sorted(missing)} no longer in the collected set — the "
+             "corpus changed; re-review")
+    if dropped != EXPECTED_SEALED_DROP:
+        fail(f"expected {EXPECTED_SEALED_DROP} sealed-slot patterns to drop "
+             f"(Ruling 13), dropped {dropped} — the set changed; re-review")
+    return kept, dropped
 
 
 def fail(msg):
@@ -461,18 +515,55 @@ def main():
              f"DAG patterns collected, built {len(records)}")
 
     # ---- B2 ruling: drop the 6 io-interface patterns, per family ----
-    # Runs BEFORE item 3c: the per-family SHIPPED pins
-    # (EXPECTED_MINED_SHIP=257, EXPECTED_DERIVED_SHIP=159) are the counts
-    # AFTER this drop (262-5, 160-1 = 416), so the drop must precede them,
-    # and item 3c then removes 16 of the 416 -> 400. The 6 are single-
-    # component (verified) and carry no script/tunnel/multi-component
-    # trigger, so ordering them before or after item 3c is equivalent —
-    # before is what the pins require. Fail-closed: the per-family drop
-    # counts are pinned (a corpus re-mine that changes them fails loudly).
+    # Runs BEFORE the Ruling-13 drop and item 3c: the per-family
+    # post-B2 pins (EXPECTED_MINED_AFTER_B2=257, EXPECTED_DERIVED_AFTER_B2
+    # =159) are the counts AFTER this drop (262-5, 160-1 = 416). The 6 are
+    # single-component (verified) and carry no script/tunnel/multi-component
+    # trigger, so ordering them before or after the later drops is
+    # equivalent — before is what the pins require. Fail-closed: the
+    # per-family drop counts are pinned (a corpus re-mine that changes them
+    # fails loudly).
     records, ioface_dropped = drop_io_interface(records)
-    if len(records) != EXPECTED_TOTAL:  # 257 + 159 = 416
-        fail(f"expected {EXPECTED_TOTAL} DAG patterns after the B2 "
-             f"io-interface drop, built {len(records)} — the drop set "
+    mined_after = sum(1 for r in records if r[0].startswith("dag-mined-"))
+    derived_after = sum(1 for r in records if r[0].startswith("dag-derived-"))
+    if mined_after != EXPECTED_MINED_AFTER_B2:
+        fail(f"expected {EXPECTED_MINED_AFTER_B2} mined patterns after the "
+             f"B2 io-interface drop, built {mined_after} — the drop set "
+             "changed; re-review")
+    if derived_after != EXPECTED_DERIVED_AFTER_B2:
+        fail(f"expected {EXPECTED_DERIVED_AFTER_B2} derived patterns after "
+             f"the B2 io-interface drop, built {derived_after} — the drop "
+             "set changed; re-review")
+    if len(records) != EXPECTED_MINED_AFTER_B2 + EXPECTED_DERIVED_AFTER_B2:
+        fail(f"expected {EXPECTED_MINED_AFTER_B2 + EXPECTED_DERIVED_AFTER_B2} "
+             f"DAG patterns after the B2 io-interface drop, built "
+             f"{len(records)} — the drop set changed; re-review")
+
+    # ---- Ruling 13: drop the 4 sealed-slot patterns, by exact key ----
+    # Runs AFTER B2 (on the 416), BEFORE clean_graph + item 3c: the per-
+    # family SHIPPED pins (EXPECTED_MINED_SHIP=253, EXPECTED_DERIVED_SHIP
+    # =159) are the counts AFTER this drop (257-4, 159-0 = 412), and item
+    # 3c then removes 16 of the 412 -> 396. The 4 are single-component and
+    # carry no script/tunnel/multi-component trigger (none appears in
+    # dag-pattern-decisions.json — verified), so ordering them before item
+    # 3c is equivalent — before is what the pins require. Fail-closed: the
+    # drop is keyed to the 4 exact pattern keys (NOT node type — other
+    # patterns containing these node types may load fine and stay) and the
+    # count is pinned.
+    records, sealed_dropped = drop_sealed_config_patterns(records)
+    mined_after = sum(1 for r in records if r[0].startswith("dag-mined-"))
+    derived_after = sum(1 for r in records if r[0].startswith("dag-derived-"))
+    if mined_after != EXPECTED_MINED_SHIP:
+        fail(f"expected {EXPECTED_MINED_SHIP} mined patterns after the "
+             f"B2 + Ruling-13 drops, built {mined_after} — the drop set "
+             "changed; re-review")
+    if derived_after != EXPECTED_DERIVED_SHIP:
+        fail(f"expected {EXPECTED_DERIVED_SHIP} derived patterns after the "
+             f"B2 + Ruling-13 drops, built {derived_after} — the drop set "
+             "changed; re-review")
+    if len(records) != EXPECTED_TOTAL:  # 253 + 159 = 412
+        fail(f"expected {EXPECTED_TOTAL} DAG patterns after the B2 + "
+             f"Ruling-13 drops, built {len(records)} — the drop set "
              "changed; re-review")
 
     # ---- clean every mined graph for shipping (3a + 3b) ----
@@ -486,17 +577,17 @@ def main():
     # ---- item 3c: the general pattern policies + per-case decisions ----
     # Runs AFTER clean_graph (the wrapper-strip changes connectivity, so the
     # multi-component classification is computed on the cleaned graph) and
-    # AFTER the B2 drop (the 416 staged total) and BEFORE the fail-closed
-    # guards (so (i)–(vii) validate the final 400). Fail-closed: a
-    # script-runner / tunnel / multi-component pattern without a decision
+    # AFTER the B2 + Ruling-13 drops (the 412 staged total) and BEFORE the
+    # fail-closed guards (so (i)–(vii) validate the final 396). Fail-closed:
+    # a script-runner / tunnel / multi-component pattern without a decision
     # entry means the harvest-artifact set changed — re-review it.
-    # The item-3c policy/artifact drops remove 16 of the 416 —
+    # The item-3c policy/artifact drops remove 16 of the 412 —
     # 5 cpython-script + 2 tunnel + 9 degenerate multi-component — leaving
-    # the 400 shipped DAG patterns.
+    # the 396 shipped DAG patterns.
     with open(PATTERN_DECISIONS, encoding="utf-8") as fh:
         decisions = json.load(fh)["decisions"]
     records, decisions_dropped = apply_pattern_decisions(records, decisions)
-    EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16  # 416 - 16 = 400
+    EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16  # 412 - 16 = 396
     if len(records) != EXPECTED_DAG_SHIP:
         fail(f"expected {EXPECTED_DAG_SHIP} shipped DAG patterns after the "
              f"item-3c drops ({EXPECTED_TOTAL} - 16), built {len(records)} — "
@@ -540,7 +631,7 @@ def main():
              "are valid and must be kept verbatim) — the mined/derived "
              "location split changed; re-review")
 
-    # ---- fail-closed guards over the 422 ----
+    # ---- fail-closed guards over the 396 shipped records ----
     # (i) every node id registered (in the FULL 2072-node registry; the
     #     remaps were applied above, the 3 excludes dropped)
     for key, name, _desc, _fn, g in records:
@@ -649,9 +740,9 @@ def main():
             fh.write(json.dumps(g, ensure_ascii=False,
                                 separators=(",", ":")) + "\n")
 
-    # ---- merge the sidecar (linear 64 byte-stable + 422 dag-*) ----
+    # ---- merge the sidecar (linear 24 byte-stable + 396 dag-*) ----
     # Reset to the linear entries only (any prior dag-* run is dropped), then
-    # add the fresh 422. Idempotent: the linear subset is never touched.
+    # add the fresh 396. Idempotent: the linear subset is never touched.
     sidecar = dict(linear)
     for key, name, desc, fn, g in records:
         lines = []
@@ -677,10 +768,13 @@ def main():
     dist = Counter(r[3] for r in records)
     print("=== DAG system template generation (step D) ===")
     print(f"mined shipped    : {EXPECTED_MINED_SHIP} "
-          f"({EXPECTED_MINED_SHIPPED} - {EXPECTED_MINED_EXCLUDED} excluded; "
+          f"({EXPECTED_MINED_SHIPPED} - {EXPECTED_MINED_EXCLUDED} excluded "
+          f"- {EXPECTED_IOINTERFACE_MINED_DROP} io-interface (B2) "
+          f"- {EXPECTED_SEALED_DROP} sealed-slot (Ruling 13); "
           f"3 stale-id remaps applied)")
     print(f"derived shipped  : {EXPECTED_DERIVED_SHIP} "
-          f"(26 twins + 134 what-next, incl. 6 cLij2 re-sweep chains)")
+          f"(26 twins + 134 what-next, incl. 6 cLij2 re-sweep chains, "
+          f"minus {EXPECTED_IOINTERFACE_DERIVED_DROP} io-interface (B2))")
     print(f"DAG patterns     : {len(records)}  ->  {OUT_DIR}")
     print(f"sidecar entries  : {len(sidecar)} "
           f"({EXPECTED_LINEAR} linear + {len(records)} dag-*)  ->  {SIDECAR}")
