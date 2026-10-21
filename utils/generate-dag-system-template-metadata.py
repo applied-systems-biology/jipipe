@@ -19,10 +19,22 @@ pipeline:
 
 Total: 422 mined/derived DAG patterns, cleaned at generation (group I/O
 wrapper nodes stripped, the {Parameters} external slot enabled where wired,
-and the 16 item-3c drops: 5 JIPipe-scripting patterns, 2 loop-plumbing
-tunnel patterns, 9 degenerate multi-component harvest artifacts; 34 further
-multi-component patterns keep their largest connected component) -> 406
-shipped, on top of the 24 linear ones (430 System templates).
+the 6 io-interface patterns dropped by the B2 ruling — 5 mined + 1
+derived — and the 16 item-3c drops: 5 JIPipe-scripting patterns, 2
+loop-plumbing tunnel patterns, 9 degenerate multi-component harvest
+artifacts; 34 further multi-component patterns keep their largest connected
+component) -> 400 shipped, on top of the 24 linear ones (424 System
+templates).
+
+The 155 derived patterns ship with INVALID locations (compartment = the
+legacy name "derived" + pixel-era coords) and the 24 linear patterns have NO
+locations; both are re-laid out at generation with the project's own
+Sugiyama grid-cell convention (utils/sugiyama_layout.py, a pure port of
+SugiyamaGraphAutoLayoutImplementation.rearrangeSugiyamaVertical), the derived
+compartment rekeyed to "DEFAULT". The 251 mined patterns carry valid UUID
+locations and are kept VERBATIM (the B1 slot-configuration restore,
+utils/restore_pattern_slot_configs.py, may later add slot configs + driving
+parameters to mined files — never locations/compartments).
 
 Outputs (all in the bundled resource dir, next to the linear patterns):
   * one <key>.json per DAG pattern — the (A)-format graph,
@@ -32,7 +44,7 @@ Outputs (all in the bundled resource dir, next to the linear patterns):
     wrapper nodes stripped, the item-3c drops removed and keep-largest
     components trimmed;
   * system-templates.json — the 24 linear entries preserved BYTE-STABLE
-    plus the 406 surviving "dag-..." entries (name + description +
+    plus the 400 surviving "dag-..." entries (name + description +
     functionId + file). Idempotent: re-running rebuilds exactly the dag-*
     entries (the item-3c drops are keyed in dag-pattern-decisions.json).
 
@@ -50,19 +62,52 @@ import json
 import os
 import sys
 
+import restore_pattern_slot_configs as restore_mod
+from sugiyama_layout import (is_uuid, node_location_valid, relocate_graph)
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESEARCH = os.path.join(REPO_ROOT, "utils", "taxonomy-research")
-OUT_DIR = os.path.join(REPO_ROOT,
+CANDIDATES = os.path.join(RESEARCH, "dag-candidates.json")
+DEFAULT_OUT_DIR = os.path.join(REPO_ROOT,
     "jipipe-core", "src", "main", "resources",
     "org", "hkijena", "jipipe", "plugins", "nodetemplate", "patterns")
+#: Overridable for the Ruling 12 scratch pass (the generators build the width
+#: map by analyze()-ing a scratch copy of the shipped files, then run the real
+#: location pass with it).
+OUT_DIR = os.environ.get("OUT_DIR", DEFAULT_OUT_DIR)
 SIDECAR = os.path.join(OUT_DIR, "system-templates.json")
+
+#: Cell-plausibility bounds for the §3.4 location guard (a pixel-era 1250
+#: fails; valid mined coords observed x∈[0,62], y∈[0,66]).
+MAX_COORD = 400
 
 EXPECTED_MINED_SHIPPED = 265
 EXPECTED_MINED_EXCLUDED = 3
-EXPECTED_MINED_SHIP = 262          # 265 - 3 excludes (the 3 remaps ship)
-EXPECTED_DERIVED_SHIP = 160        # 26 twins + 134 what-next
+#: B2 ruling: the 6 io-interface patterns are dropped per-family right after
+#: the 422 are collected. The per-family drop counts: 5 mined (cluster-
+#: 0013/0029/0076/0215/0230; 0013 also has 4 unmatched split-2 nodes, dropped
+#: by B2 before the B1 hard-fail can fire) + 1 derived (derived-mech-cluster-
+#: 0029-2d). They are single-component, so item 3c (which runs on the 416)
+#: would pass them through — verified.
+EXPECTED_IOINTERFACE_MINED_DROP = 5
+EXPECTED_IOINTERFACE_DERIVED_DROP = 1
+EXPECTED_IOINTERFACE_DROP = (EXPECTED_IOINTERFACE_MINED_DROP
+                             + EXPECTED_IOINTERFACE_DERIVED_DROP)  # 6
+#: The 422 collected mined/derived patterns (before item-3c and the B2 drop):
+#: 262 mined (265 shipped - 3 excludes; the 3 remaps ship) + 160 derived
+#: (26 twins + 134 what-next).
+EXPECTED_MINED_COLLECTED = 262
+EXPECTED_DERIVED_COLLECTED = 160
+#: The per-family SHIPPED survivors after the B2 drop: mined 262-5=257,
+#: derived 160-1=159. Their sum, 416, is the staged total that flows into
+#: clean_graph + item 3c.
+EXPECTED_MINED_SHIP = 257
+EXPECTED_DERIVED_SHIP = 159
+EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 416 (post B2)
+#: item 3c drops 16 of the 416 (5 cpython-script + 2 tunnel + 9 degenerate
+#: multi-component) -> 400 shipped DAG patterns.
+EXPECTED_TOTAL_SHIPPED_DAG = EXPECTED_TOTAL - 16  # 400
 EXPECTED_LINEAR = 24  # Option C keep-set (was 64; 32 sub-path + 8 plumbing dropped)
-EXPECTED_TOTAL = EXPECTED_MINED_SHIP + EXPECTED_DERIVED_SHIP  # 422 (pre item-3c drops)
 
 # Stale-id remaps (dag-stale-id-plan.json "renamable", successors verified
 # 2026-10-19 against the full 2072-node registry + git history):
@@ -177,6 +222,35 @@ def apply_pattern_decisions(records, decisions):
         keep_largest_component(g, name, key)
         kept.append((key, name, desc, fn, g))
     return kept, dropped
+
+
+def drop_io_interface(records):
+    """B2 ruling: remove any record whose graph contains a node with
+    ``jipipe:node-info-id == "io-interface"`` (the 6 patterns). Fail-closed:
+    the per-family drop counts must equal :data:`EXPECTED_IOINTERFACE_MINED_DROP`
+    (5) and :data:`EXPECTED_IOINTERFACE_DERIVED_DROP` (1) — a corpus re-mine
+    that changes either fails loudly. Returns (surviving records, dropped)."""
+    kept = []
+    mined_dropped = 0
+    derived_dropped = 0
+    for key, name, desc, fn, g in records:
+        if any(n["jipipe:node-info-id"] == "io-interface"
+               for n in g["nodes"].values()):
+            if key.startswith("dag-mined-"):
+                mined_dropped += 1
+            else:
+                derived_dropped += 1
+            continue
+        kept.append((key, name, desc, fn, g))
+    if mined_dropped != EXPECTED_IOINTERFACE_MINED_DROP:
+        fail(f"expected {EXPECTED_IOINTERFACE_MINED_DROP} mined io-interface "
+             f"patterns to drop (the B2 ruling), dropped {mined_dropped} — "
+             "the set changed; re-review")
+    if derived_dropped != EXPECTED_IOINTERFACE_DERIVED_DROP:
+        fail(f"expected {EXPECTED_IOINTERFACE_DERIVED_DROP} derived "
+             f"io-interface patterns to drop (the B2 ruling), dropped "
+             f"{derived_dropped} — the set changed; re-review")
+    return kept, mined_dropped + derived_dropped
 
 
 def fail(msg):
@@ -361,15 +435,15 @@ def main():
         seen_keys[key] = cid
         records.append((key, e["name"], e["description"], e["functionId"],
                         graph))
-    if len(records) != EXPECTED_MINED_SHIP:
+    if len(records) != EXPECTED_MINED_COLLECTED:
         fail(f"mined shippable count mismatch: {len(records)} (expected "
-             f"{EXPECTED_MINED_SHIP} = {EXPECTED_MINED_SHIPPED} shipped - "
-             f"{EXPECTED_MINED_EXCLUDED} excluded)")
+             f"{EXPECTED_MINED_COLLECTED} = {EXPECTED_MINED_SHIPPED} shipped "
+             f"- {EXPECTED_MINED_EXCLUDED} excluded)")
 
     dship = [e for e in derived["entries"] if e.get("ship")]
-    if len(dship) != EXPECTED_DERIVED_SHIP:
-        fail(f"expected {EXPECTED_DERIVED_SHIP} shipped derived patterns, "
-             f"got {len(dship)}")
+    if len(dship) != EXPECTED_DERIVED_COLLECTED:
+        fail(f"expected {EXPECTED_DERIVED_COLLECTED} shipped derived "
+             f"patterns, got {len(dship)}")
     for e in dship:
         dcid = e.get("clusterId")
         if not dcid:
@@ -382,8 +456,24 @@ def main():
         seen_keys[key] = dcid
         records.append((key, e["name"], e["description"], e["functionId"],
                         e["state"]["pattern"]["graph"]))
-    if len(records) != EXPECTED_TOTAL:
-        fail(f"expected {EXPECTED_TOTAL} DAG patterns, built {len(records)}")
+    if len(records) != (EXPECTED_MINED_COLLECTED + EXPECTED_DERIVED_COLLECTED):
+        fail(f"expected {EXPECTED_MINED_COLLECTED + EXPECTED_DERIVED_COLLECTED} "
+             f"DAG patterns collected, built {len(records)}")
+
+    # ---- B2 ruling: drop the 6 io-interface patterns, per family ----
+    # Runs BEFORE item 3c: the per-family SHIPPED pins
+    # (EXPECTED_MINED_SHIP=257, EXPECTED_DERIVED_SHIP=159) are the counts
+    # AFTER this drop (262-5, 160-1 = 416), so the drop must precede them,
+    # and item 3c then removes 16 of the 416 -> 400. The 6 are single-
+    # component (verified) and carry no script/tunnel/multi-component
+    # trigger, so ordering them before or after item 3c is equivalent —
+    # before is what the pins require. Fail-closed: the per-family drop
+    # counts are pinned (a corpus re-mine that changes them fails loudly).
+    records, ioface_dropped = drop_io_interface(records)
+    if len(records) != EXPECTED_TOTAL:  # 257 + 159 = 416
+        fail(f"expected {EXPECTED_TOTAL} DAG patterns after the B2 "
+             f"io-interface drop, built {len(records)} — the drop set "
+             "changed; re-review")
 
     # ---- clean every mined graph for shipping (3a + 3b) ----
     # Applied to the in-memory records (research artifacts untouched, and
@@ -396,22 +486,59 @@ def main():
     # ---- item 3c: the general pattern policies + per-case decisions ----
     # Runs AFTER clean_graph (the wrapper-strip changes connectivity, so the
     # multi-component classification is computed on the cleaned graph) and
-    # BEFORE the guards (so (i)–(vii) validate the final shipped set, and the
-    # identity check re-runs on the trimmed id-multisets). Fail-closed: a
+    # AFTER the B2 drop (the 416 staged total) and BEFORE the fail-closed
+    # guards (so (i)–(vii) validate the final 400). Fail-closed: a
     # script-runner / tunnel / multi-component pattern without a decision
     # entry means the harvest-artifact set changed — re-review it.
+    # The item-3c policy/artifact drops remove 16 of the 416 —
+    # 5 cpython-script + 2 tunnel + 9 degenerate multi-component — leaving
+    # the 400 shipped DAG patterns.
     with open(PATTERN_DECISIONS, encoding="utf-8") as fh:
         decisions = json.load(fh)["decisions"]
     records, decisions_dropped = apply_pattern_decisions(records, decisions)
-
-    # The shipped DAG set is the 422 minus the 16 policy/artifact drops
-    # (5 cpython-script + 2 tunnel + 9 degenerate multi-component). Pin the
-    # number so a silent re-add of a dropped pattern fails the build.
-    EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16
+    EXPECTED_DAG_SHIP = EXPECTED_TOTAL - 16  # 416 - 16 = 400
     if len(records) != EXPECTED_DAG_SHIP:
         fail(f"expected {EXPECTED_DAG_SHIP} shipped DAG patterns after the "
              f"item-3c drops ({EXPECTED_TOTAL} - 16), built {len(records)} — "
              "the drop set changed; re-review dag-pattern-decisions.json")
+    if len(records) != EXPECTED_TOTAL_SHIPPED_DAG:
+        fail(f"expected {EXPECTED_TOTAL_SHIPPED_DAG} shipped DAG patterns "
+             f"after the B2 + item-3c drops, built {len(records)} — the drop "
+             "set changed; re-review")
+
+    # ---- location pass (the §3.4 fix): re-lay out the invalid patterns ----
+    # A node's location is VALID iff its compartment is a UUID/""/DEFAULT AND
+    # it carries location/<that key>/x|y. MINED records are valid (verified
+    # 0 invalid) -> kept VERBATIM (mined invariance: only the later restore
+    # pass may add slot-config/params; no location/compartment/node-id change).
+    # DERIVED records are invalid twice over (compartment = the legacy name
+    # "derived", which never resolves at load, + pixel-era coords) -> re-layout
+    # the WHOLE pattern with sugiyama_layout and rekey the compartment to
+    # "DEFAULT" (the resolvable default-compartment marker; the existing
+    # "DEFAULT" location migration, JIPipeGraph.nodesFromJson, promotes the
+    # key). The width map accounts for the FINAL (post-restore) slot counts
+    # (Ruling 12 / Global-Constraints rule 5): static registry slots + the
+    # restore extras (file-local via extras_for_graph — deterministically
+    # identical to the Ruling 12 scratch+analyze, since the shipped set is
+    # stable and no slot-config exists in the records at generation time).
+    # (No edge-dedupe pass — Ruling 11: it is verified harmful.)
+    laid_out = 0
+    for i, (key, name, _d, _f, g) in enumerate(records):
+        if not all(node_location_valid(n) for n in g["nodes"].values()):
+            extras = restore_mod.extras_for_graph(g, registry)
+            widths = restore_mod.width_map_for_graph(g, extras, registry)
+            relocate_graph(g, widths, rekey_legacy="derived")
+            laid_out += 1
+    # Fail-closed: the pass must have re-laid out EXACTLY the derived records
+    # (159 shipped derived patterns, all invalid). Mined records are valid and
+    # must NOT be touched (mined invariance).
+    expected_derived_laid = sum(
+        1 for k, *_ in records if k.startswith("dag-derived-"))
+    if laid_out != expected_derived_laid:
+        fail(f"location pass re-laid out {laid_out} patterns, expected "
+             f"{expected_derived_laid} (every shipped derived pattern; mined "
+             "are valid and must be kept verbatim) — the mined/derived "
+             "location split changed; re-review")
 
     # ---- fail-closed guards over the 422 ----
     # (i) every node id registered (in the FULL 2072-node registry; the
@@ -437,16 +564,32 @@ def main():
         if fn not in top_functions:
             fail(f"{name!r} ({key}): functionId {fn!r} is not a "
                  f"registered top-level branch")
-    # (iv) §3.4 locations: every node carries location/<its own
-    #     compartment>/x AND /y
+    # (iv) §3.4 locations: every node's compartment key is resolvable
+    #     (a UUID, "DEFAULT", or empty — the legacy names like "derived"
+    #     NEVER resolve at load and fail) AND it carries
+    #     location/<that key>/x AND /y, cell-plausible (0 <= x,y <= MAX_COORD;
+    #     the pixel-era 1250 coords fail). The location PASS above (write
+    #     loop) re-lays out every invalid pattern, so a surviving violation
+    #     here means the pass failed to produce valid coordinates — a
+    #     fail-closed stop, not a silent ship.
     for key, name, _d, _f, g in records:
         for k, n in g["nodes"].items():
-            comp = n.get("jipipe:graph-compartment")
+            comp = n.get("jipipe:graph-compartment", "")
             md = n.get("jipipe:metadata-v1") or {}
-            if not comp or f"location/{comp}/x" not in md \
-                    or f"location/{comp}/y" not in md:
+            if not (is_uuid(comp) or comp in ("DEFAULT", "")):
+                fail(f"{name!r} ({key}): node {k} has an unresolvable "
+                     f"compartment key {comp!r} (must be a UUID, \"DEFAULT\" "
+                     "or empty — legacy names fail at load)")
+            if not (f"location/{comp}/x" in md
+                    and f"location/{comp}/y" in md):
                 fail(f"{name!r} ({key}): node {k} lacks its §3.4 location "
                      f"(compartment {comp!r}, metadata keys {sorted(md)})")
+            x = md[f"location/{comp}/x"]
+            y = md[f"location/{comp}/y"]
+            if not (0 <= x <= MAX_COORD and 0 <= y <= MAX_COORD):
+                fail(f"{name!r} ({key}): node {k} has non-cell-plausible "
+                     f"location ({x},{y}) — must be 0..{MAX_COORD} (the "
+                     "pixel-era 1250 coords are invalid)")
     # (v) names: non-empty; no collision with the 64 linear patterns;
     #     (name, node-info-id multiset) unique across the 422 (the test's
     #     identity key — 13 DAG names are shared by DIFFERENT graphs).
@@ -488,7 +631,7 @@ def main():
                     or e["target-node"] not in g["nodes"]:
                 fail(f"{name!r} ({key}): dangling edge endpoint")
 
-    # ---- write the DAG graph resources (422 mined, minus the item-3c drops) ----
+    # ---- location pass (per record) + write the DAG graph resources ----
     # Sweep stale dag-* files from a previous run (idempotent rebuild);
     # the linear *.json are untouched.
     shipped_files = {key + ".json" for key, *_ in records}

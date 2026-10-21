@@ -133,6 +133,9 @@ from collections import Counter
 from datetime import datetime, timezone
 from html import unescape
 
+import restore_pattern_slot_configs as restore_mod
+from sugiyama_layout import node_location_valid, relocate_graph
+
 REPO_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 RESEARCH = os.path.join(REPO_ROOT, "utils", "taxonomy-research")
 PATTERNS_DIR = os.path.join(RESEARCH, "patterns")
@@ -144,11 +147,15 @@ REGISTRY = os.path.join(RESEARCH, "registry.json")
 # sub-paths of already-shipped DAG patterns and the 8 plumbing (comment/group)
 # patterns are excluded. See utils/taxonomy-research/linear-naming-redesign.md.
 LINEAR_OUTCOME_NAMES = os.path.join(RESEARCH, "linear-outcome-names.json")
-OUT_DIR = os.path.join(
+DEFAULT_OUT_DIR = os.path.join(
     REPO_ROOT,
     "jipipe-core", "src", "main", "resources",
     "org", "hkijena", "jipipe", "plugins", "nodetemplate", "patterns",
 )
+#: Overridable for the Ruling 12 scratch pass (the generators build the width
+#: map by analyze()-ing a scratch copy of the shipped files, then run the real
+#: location pass with it).
+OUT_DIR = os.environ.get("OUT_DIR", DEFAULT_OUT_DIR)
 SIDECAR = os.path.join(OUT_DIR, "system-templates.json")
 
 
@@ -605,6 +612,26 @@ def main() -> None:
             g = json.load(fh)
         for v in g["nodes"].values():
             v.pop("jipipe:node:name", None)
+        # B2 drop guard (fail-closed): no linear pattern may contain an
+        # io-interface node. (Verified 0 today; the guard ships live so a
+        # corpus re-mine that adds one fails the build rather than shipping
+        # a floating interface node.)
+        if any(n["jipipe:node-info-id"] == "io-interface"
+               for n in g["nodes"].values()):
+            fail(f"{stem}: contains an io-interface node — the B2 ruling "
+                 "drops such patterns; re-review the linear keep-set")
+        # Location pass (the §3.4 fix): all 24 linear files are INVALID
+        # (no locations at all) -> re-layout the WHOLE pattern with
+        # sugiyama_layout. Their compartments are UUIDs (kept as-is, no
+        # rekey). Width map accounts for the FINAL (post-restore) slot counts
+        # (Ruling 12 / Global-Constraints rule 5): static registry slots +
+        # the restore extras (file-local via extras_for_graph — deterministically
+        # identical to the Ruling 12 scratch+analyze, since the shipped set is
+        # stable and no slot-config exists at generation time).
+        if not all(node_location_valid(n) for n in g["nodes"].values()):
+            extras = restore_mod.extras_for_graph(g, nodes)
+            widths = restore_mod.width_map_for_graph(g, extras, nodes)
+            relocate_graph(g, widths, rekey_legacy=None)
         with open(dst, "w", encoding="utf-8") as fh:
             fh.write(json.dumps(g, ensure_ascii=False,
                                 separators=(",", ":")) + "\n")
