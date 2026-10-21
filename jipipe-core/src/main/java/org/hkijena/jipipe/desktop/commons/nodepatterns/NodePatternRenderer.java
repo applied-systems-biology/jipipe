@@ -40,6 +40,9 @@ public final class NodePatternRenderer {
     private static final Map<String, BufferedImage> TINT_CACHE = new ConcurrentHashMap<>();
     private static final int BUCKET = 8;
     private static final int MAX = 512;
+    /** The canonical node body size the pattern is rendered at (the theme preview's node). */
+    public static final int NODE_WIDTH = 150;
+    public static final int NODE_HEIGHT = 75;
 
     private NodePatternRenderer() {}
 
@@ -66,26 +69,31 @@ public final class NodePatternRenderer {
     }
 
     /**
-     * Paints the pattern into (x,y,w,h) WITHOUT aspect distortion: the pattern is
-     * rendered as a square of the target's longer side (so its cells are
-     * isotropic), scaled isotropically to that side, and center-cropped to the
-     * target. The plain {@link #paint} stretches the mask to the target's
-     * aspect, which distorts cells in elongated regions (e.g. the 14×47 fill of
-     * the node list's pattern icon).
+     * Paints the pattern into (x,y,w,h) as a CROP of a node's background: a
+     * canonical node body ({@value #NODE_WIDTH}×{@value #NODE_HEIGHT} — the size
+     * the theme preview draws nodes at) is rendered exactly as a canvas node
+     * renders its pattern (via {@link #paint}), and a centered (w×h) window of
+     * it is copied into the target. The icon therefore shows the pattern at
+     * exactly the same cell scale a canvas node does, pixel-for-pixel.
+     * <p>
+     * Use this for small regions (e.g. the 14×47 fill of the node list's
+     * pattern icon): the plain {@link #paint} would stretch the mask to the
+     * target's aspect (distorting cells), and rendering at the target's own
+     * size would give cells several times denser than on a real node.
      */
-    public static void paintAspectCropped(Graphics2D g, int x, int y, int w, int h,
-                                          String styleId, String seed, Color ink, float opacity) {
-        int side = Math.max(w, h);
-        BufferedImage m = mask(styleId, seed, side, side);
-        if (m == null) return;
-        BufferedImage tinted = tint(styleId + "\u0000" + seed, m, ink, opacity);
+    public static void paintNodeScaleCropped(Graphics2D g, int x, int y, int w, int h,
+                                             String styleId, String seed, Color ink, float opacity) {
+        BufferedImage nodeBackground = new BufferedImage(NODE_WIDTH, NODE_HEIGHT, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D ng = nodeBackground.createGraphics();
+        try {
+            paint(ng, 0, 0, NODE_WIDTH, NODE_HEIGHT, styleId, seed, ink, opacity);
+        } finally {
+            ng.dispose();
+        }
         Graphics2D gg = (Graphics2D) g.create();
         try {
-            gg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             gg.setClip(x, y, w, h);
-            int ox = x - (m.getWidth() - w) / 2;
-            int oy = y - (m.getHeight() - h) / 2;
-            gg.drawImage(tinted, ox, oy, side, side, null);
+            gg.drawImage(nodeBackground, x - (NODE_WIDTH - w) / 2, y - (NODE_HEIGHT - h) / 2, null);
         } finally {
             gg.dispose();
         }
