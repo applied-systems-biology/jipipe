@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -29,7 +29,7 @@ import java.awt.*;
  */
 public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
 
-    private SolidColorIcon nodeColor;
+    private NodeFrameworkPatternIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JPanel stateChips;
@@ -48,7 +48,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 50);
+        nodeColor = new NodeFrameworkPatternIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
@@ -114,6 +114,8 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         if (obj != null) {
             nameLabel.setText(obj.getName());
             nodeColor.setFillColor(obj.getFillColor());
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(obj.getFramework());
             pathLabel.setText(locationOf(obj));
             nodeIcon.setIcon(obj.getIcon());
             // The node's state (imported / unstable / deprecated), per the

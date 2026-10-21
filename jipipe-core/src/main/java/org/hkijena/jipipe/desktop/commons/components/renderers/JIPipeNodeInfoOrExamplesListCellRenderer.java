@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -28,7 +28,7 @@ import java.awt.*;
  */
 public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements ListCellRenderer<Object> {
 
-    private SolidColorIcon nodeColor;
+    private NodeFrameworkPatternIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
@@ -46,7 +46,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 50);
+        nodeColor = new NodeFrameworkPatternIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         pathLabel = new JLabel();
@@ -103,6 +103,8 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
         if (obj instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(info.getFramework());
             // Location (Task 21b): converted ⇒ "function chain > node", unconverted
             // ⇒ legacy "category [> menuPath] > node".
             pathLabel.setText(TaxonomyView.locationPath(info));
@@ -116,6 +118,8 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
             JIPipeNodeExample example = (JIPipeNodeExample) obj;
             JIPipeNodeInfo info = example.getNodeInfo();
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(info.getFramework());
             // Location (Task 21b): converted ⇒ "function chain > node", unconverted
             // ⇒ legacy "category [> menuPath] > node".
             pathLabel.setText(TaxonomyView.locationPath(info));

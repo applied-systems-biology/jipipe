@@ -16,7 +16,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -27,7 +27,7 @@ import java.awt.*;
  */
 public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeInfo> {
 
-    private SolidColorIcon nodeColor;
+    private NodeFrameworkPatternIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
@@ -44,7 +44,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 50);
+        nodeColor = new NodeFrameworkPatternIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         pathLabel = new JLabel();
@@ -100,6 +100,8 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
         if (info != null) {
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(info.getFramework());
             // Location (Task 21b): converted ⇒ "function chain > node", unconverted
             // ⇒ legacy "category [> menuPath] > node". The label keeps its position;
             // only the value source changes from category/menuPath to the taxonomy.
