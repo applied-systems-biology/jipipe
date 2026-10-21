@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -131,5 +132,45 @@ public final class JIPipeNodeStateChips {
         // label visual language.
         Color color = "Pattern".equals(badge) ? style.getInfoColor() : style.getPrimaryColor();
         return chip(badge, color);
+    }
+
+    /**
+     * The entry-kind text shown in a list row's kind slot: {@code Example} for
+     * example entries, the entry's badge ({@code Pattern} / {@code Custom}) for
+     * template entries, {@code ""} for plain node entries. The single place the
+     * list renderers read the "what kind of entry is this" label from, so the
+     * node browser and the find-node dialog agree.
+     *
+     * @param entry the entry to classify
+     * @return the kind text, or the empty string for plain nodes
+     */
+    public static String entryKind(JIPipeNodeDatabaseEntry entry) {
+        if (entry instanceof CreateNewNodeByExampleDatabaseEntry) {
+            return "Example";
+        }
+        if (entry instanceof CreateNewNodesByTemplateDatabaseEntry template) {
+            return template.getBadge();
+        }
+        return "";
+    }
+
+    /**
+     * The text color for {@link #entryKind} labels: {@code Pattern} uses the
+     * info tone (curated/reusable), {@code Example} and {@code Custom} use the
+     * primary accent, and plain nodes (empty kind) the secondary color (the
+     * label is empty for them, so it is a fallback only).
+     *
+     * @param kind the {@link #entryKind} text
+     * @return the label color
+     */
+    public static Color entryKindColor(String kind) {
+        var style = ThemeUtils.getCurrentStyle();
+        if ("Pattern".equals(kind)) {
+            return style.getInfoColor();
+        }
+        if (kind.isEmpty()) {
+            return style.getSecondaryColor();
+        }
+        return style.getPrimaryColor();
     }
 }

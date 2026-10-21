@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByExampleDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodeByInfoDatabaseEntry;
-import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeListEntryIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
@@ -29,8 +29,7 @@ import java.awt.*;
  */
 public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
 
-    private NodeFrameworkPatternIcon nodeColor;
-    private JLabel nodeIcon;
+    private NodeListEntryIcon nodeColor;
     private JLabel nameLabel;
     private JPanel stateChips;
     private JLabel pathLabel;
@@ -48,8 +47,10 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new NodeFrameworkPatternIcon(16, 50);
-        nodeIcon = new JLabel();
+        // The unified list icon: a function-colored bar with the framework
+        // pattern and the node icon in the upper region (one column, covering
+        // all three text rows).
+        nodeColor = new NodeListEntryIcon(50);
         nameLabel = new JLabel();
         stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         stateChips.setOpaque(false);
@@ -66,31 +67,25 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
                 gridheight = 3;
             }
         });
-        add(nodeIcon, new GridBagConstraints() {
+        add(nameLabel, new GridBagConstraints() {
             {
                 gridx = 1;
                 gridy = 0;
-                insets = new Insets(0, 4, 0, 4);
-            }
-        });
-        add(nameLabel, new GridBagConstraints() {
-            {
-                gridx = 2;
-                gridy = 0;
                 fill = HORIZONTAL;
                 weightx = 1;
+                insets = new Insets(0, 4, 0, 0);
             }
         });
         add(stateChips, new GridBagConstraints() {
             {
-                gridx = 3;
+                gridx = 2;
                 gridy = 0;
                 anchor = WEST;
             }
         });
         add(pathLabel, new GridBagConstraints() {
             {
-                gridx = 2;
+                gridx = 1;
                 gridy = 1;
                 fill = HORIZONTAL;
                 weightx = 1;
@@ -98,7 +93,7 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
         });
         add(alternativeLabel, new GridBagConstraints() {
             {
-                gridx = 2;
+                gridx = 1;
                 gridy = 2;
                 fill = HORIZONTAL;
                 weightx = 1;
@@ -113,32 +108,24 @@ public class JIPipeDesktopNodeDatabaseEntryListCellRenderer extends JPanel imple
 
         if (obj != null) {
             nameLabel.setText(obj.getName());
+            // Unified list icon: fill + framework pattern + node icon on top.
             nodeColor.setFillColor(obj.getFillColor());
-            // Framework signature pattern over the swatch (the node's framework).
             nodeColor.setFramework(obj.getFramework());
+            nodeColor.setNodeIcon(obj.getIcon());
             pathLabel.setText(locationOf(obj));
-            nodeIcon.setIcon(obj.getIcon());
             // The node's state (imported / unstable / deprecated), per the
             // state label system
             stateChips.removeAll();
             stateChips.add(JIPipeNodeStateChips.panel(obj));
-            // The template badge (Pattern / Custom), read from the entry —
-            // spec §7.2. Non-templates get no badge.
-            JComponent badge = JIPipeNodeStateChips.templateBadge(obj);
-            if (badge != null) {
-                stateChips.add(badge);
-            }
             stateChips.revalidate();
         }
 
-        if (obj instanceof CreateNewNodeByInfoDatabaseEntry) {
-            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
-            // Task 26a: alias rows removed (converted nodes have no aliases).
-            alternativeLabel.setText("");
-        } else if (obj instanceof CreateNewNodeByExampleDatabaseEntry) {
-            alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getPrimaryColor());
-            alternativeLabel.setText("Example");
-        }
+        // The entry kind in the bottom-row slot: Example / Pattern / Custom
+        // (plain nodes get no label). Same text + colors as the find-node
+        // dialog's bottom row.
+        String kind = JIPipeNodeStateChips.entryKind(obj);
+        alternativeLabel.setForeground(JIPipeNodeStateChips.entryKindColor(kind));
+        alternativeLabel.setText(kind);
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));

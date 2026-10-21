@@ -15,6 +15,7 @@ package org.hkijena.jipipe.desktop.app.grapheditor.nodefinder;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeListEntryIcon;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.theme.ui.JIPipeDesktopRoundedButtonUI;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -27,12 +28,19 @@ import java.awt.*;
 
 public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeDatabaseEntry> {
     public static final int CELL_HEIGHT = 100;
+    /**
+     * The unified icon's height: the full card height minus the compound
+     * border insets (4+1+1 top and bottom) and a 2px breathing room, so the
+     * colored bar covers all three text rows.
+     */
+    private static final int ICON_HEIGHT = 84;
     private final JIPipeDesktopNodeFinderDialogUI parent;
     private final JLabel iconLabel = new JLabel();
+    private final NodeListEntryIcon entryIcon = new NodeListEntryIcon(ICON_HEIGHT);
     private final JLabel nameLabel = new JLabel();
     private final JLabel categoryLabel = new JLabel();
     private final JPanel stateChips = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
-    private final JLabel descriptionLabel = new JLabel();
+    private final JLabel kindLabel = new JLabel();
     private final JButton addButton = new JButton();
     private final Border defaultBorder;
     private final Border selectedBorder;
@@ -51,20 +59,25 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
 
         nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeNormal()));
 
-        descriptionLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
-        descriptionLabel.setForeground(Color.GRAY);
+        kindLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
 
         categoryLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, ThemeUtils.getCurrentStyle().getFontSizeTiny()));
         categoryLabel.setForeground(Color.GRAY);
         stateChips.setOpaque(false);
 
+        iconLabel.setIcon(entryIcon);
+
         Insets insets = new Insets(2, 2, 2, 2);
-//        add(indicator, new GridBagConstraints(0, 0, 1, 4, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, insets, 0, 0));
-        add(iconLabel, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
+        // The unified entry icon spans ALL text rows (gridheight 3, centered) —
+        // the function-colored bar covers every line of the card.
+        add(iconLabel, new GridBagConstraints(1, 0, 1, 3, 0, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, insets, 0, 0));
         add(nameLabel, new GridBagConstraints(2, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
         add(stateChips, new GridBagConstraints(3, 1, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, insets, 0, 0));
         add(categoryLabel, new GridBagConstraints(2, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
-        add(descriptionLabel, new GridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
+        // Bottom row: the entry kind (Example / Pattern / Custom) instead of
+        // the node description (the full description stays in the detail rail's
+        // Documentation tab).
+        add(kindLabel, new GridBagConstraints(2, 2, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, insets, 0, 0));
 
         addButton.setOpaque(false);
         addButton.setUI(new JIPipeDesktopRoundedButtonUI(3, ThemeUtils.getCurrentStyle().getSuccessColor(), ThemeUtils.getCurrentStyle().getSuccessColor().darker()));
@@ -80,7 +93,11 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeNodeDatabaseEntry> list, JIPipeNodeDatabaseEntry value, int index, boolean isSelected, boolean cellHasFocus) {
         setPreferredSize(new Dimension(list.getWidth() - 16, CELL_HEIGHT));
-        iconLabel.setIcon(value.getIcon());
+        // Unified entry icon: fill + framework pattern + node icon on top,
+        // covering all card rows.
+        entryIcon.setFillColor(value.getFillColor());
+        entryIcon.setFramework(value.getFramework());
+        entryIcon.setNodeIcon(value.getIcon());
         nameLabel.setText(value.getName());
         // The node's state (imported / unstable / deprecated), per the
         // state label system
@@ -88,11 +105,11 @@ public class JIPipeDesktopNodeFinderDatasetListCellRenderer extends JPanel imple
         stateChips.add(JIPipeNodeStateChips.panel(value));
         stateChips.revalidate();
         categoryLabel.setText(value.getLocationInfos().get(0).trim().replace("\n", " > "));
-        String descriptionText = value.getDescription().toPlainText();
-        if (descriptionText.length() > 200) {
-            descriptionText = descriptionText.substring(0, 200) + " ...";
-        }
-        descriptionLabel.setText(descriptionText);
+        // Bottom row: the entry kind (Example / Pattern / Custom) — same text +
+        // colors as the node browser's kind slot.
+        String kind = JIPipeNodeStateChips.entryKind(value);
+        kindLabel.setForeground(JIPipeNodeStateChips.entryKindColor(kind));
+        kindLabel.setText(kind);
 
         if (parent.getQuerySlot() != null) {
             if (value.exists()) {
