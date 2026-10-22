@@ -61,7 +61,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
     private Icon templateCircleIcon() {
         JIPipeDesktopModernThemeStyle style = ThemeUtils.getCurrentStyle();
         return new ColoredCircleIcon(TEMPLATE_ICON,
-                style.getPanelBackground(), style.getNodeHighlightBorder());
+                style.getPanelBackground(), style.getBorderColor());
     }
 
     @Override
@@ -158,7 +158,7 @@ public class FunctionTreeCellRenderer implements TreeCellRenderer {
             FunctionRegistry registry = JIPipe.getNodes().getFunctions();
             label.setIcon(new ColoredCircleIcon(icon != null ? icon : GENERIC_NODE_ICON,
                     ThemeUtils.functionNodeFillColor(function, style, registry),
-                    ThemeUtils.functionNodeBorderColor(function, style, registry)));
+                    null));
             label.setToolTipText(function.getDescription());
             // Search highlight: the search matched a node filed under this
             // leaf (or one of its descendant leaves)

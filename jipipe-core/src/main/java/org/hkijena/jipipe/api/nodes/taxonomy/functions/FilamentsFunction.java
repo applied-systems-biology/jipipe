@@ -58,7 +58,7 @@ public final class FilamentsFunction implements JIPipeNodeTaxonomyFunction {
     @Override
     @Nullable
     public Icon getIcon() {
-        return JIPipe.RESOURCES.getIcon16("actions/bezier-curve.png");
+        return JIPipe.RESOURCES.getIcon16("actions/filaments.png");
     }
 
     @Override

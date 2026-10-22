@@ -79,11 +79,19 @@ public class ColoredCircleIcon implements Icon {
             // Circular background (node fill color) + circular border (node border color).
             // Round-to-nearest-px keeps the 1px ring crisp.
             int d = SIZE - 2;
-            g2d.setColor(background);
-            g2d.fillOval(x + 1, y + 1, d, d);
-            g2d.setColor(borderColor);
-            g2d.setStroke(new BasicStroke(1f));
-            g2d.drawOval(x + 1, y + 1, d, d);
+            if(background != null && borderColor != null) {
+                g2d.setColor(background);
+                g2d.fillOval(x + 1, y + 1, d, d);
+            }
+            else if(background != null) {
+                g2d.setColor(background);
+                g2d.fillOval(x, y, d + 2, d + 2);
+            }
+            if(borderColor != null) {
+                g2d.setColor(borderColor);
+                g2d.setStroke(new BasicStroke(1f));
+                g2d.drawOval(x, y, d+2, d+2);
+            }
 
             // The wrapped icon, centered (a 16×16 icon lands at the 4,4 offset).
             if (inner != null) {
