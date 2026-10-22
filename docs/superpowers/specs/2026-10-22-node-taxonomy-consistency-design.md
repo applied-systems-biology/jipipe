@@ -117,57 +117,59 @@ it would churn the id set again). `CometFramework` is **deleted** (A.4).
 
 ### B.1 Principles
 
-1. **Determinism is the contract.** The hue is a pure function of
-   `(HueCategory, stable id)` — same input → same hue on every install, in
-   every plugin configuration, in any registration order. No
-   registry-state-dependent "first free slot" logic: that would make hues
-   order- and install-dependent (a plugin added in another session silently
-   shifts every later hue) and untestable against the ship set.
-2. **Hue is never persisted** (verified: not in settings, node database, or
-   project JSON) — it is computed live from the function tree. Safe to
-   change; no migration.
-3. **Hue is defined by top-level branches only** (existing contract): leaves
-   return `null` and inherit + depth-shade via
+1. **Research-anchored categories, not mirrored branches.** The number and
+   hue of the categories come from human color categorization research
+   (Berlin & Kay basic color terms; Sturges & Whitfield 1995, "Locating
+   basic colours in the Munsell space"): humans reliably distinguish
+   **6 hue-only families** at the focal hues **red 0°, orange 30°,
+   yellow 60°, green 120°, blue 240°, purple 300°**. (The 8 basic
+   chromatic categories include pink and brown, which are distinguished by
+   *lightness*, not hue — unusable as hue anchors because the taxonomy
+   already encodes lightness as tree-depth shading.) Data-viz guidance
+   (Munzner; Berkeley data-viz guide) independently caps categorical hue
+   palettes at ~6. Hue acuity is non-uniform (weak green/blue, acute
+   red-orange-yellow), so the families' Voronoi cells are intentionally
+   uneven: wide cells (green, blue) where humans are weak, narrow cells
+   (red, orange, yellow) where humans are acute.
+2. **Determinism is the contract.** The auto-picked hue is a pure function
+   of `(HueCategory, stable id)` — same input → same hue on every install,
+   in every plugin configuration, in any registration order. No
+   registry-state-dependent "first free slot" logic (order/install-
+   dependent hues, untestable).
+3. **Hue is never persisted** (verified: not in settings, node database, or
+   project JSON) — computed live from the function tree. Safe to change;
+   no migration.
+4. **Hue is defined by top-level branches only** (existing contract):
+   leaves return `null` and inherit + depth-shade via
    `FunctionRegistry.baseHue()`/`shadeDepth()`. A top-level `null` means
-   *transparent* (rendered with the theme panel background — `Graph`
-   today). The auto-picker only ever produces top-level hues.
-4. **The designed hue wins.** The 12 existing colored top-level branches
-   keep their explicit `getColorHue()` — they are the anchors that define
-   the category layout. Auto-picking is the path for **new** top-level
-   branches (plugin authors override `getHueCategory()` instead of hand-
-   picking a hue; explicit `getColorHue()` override remains the escape
-   hatch if auto-pick collides or looks bad).
-5. **Categories = the designed hue families.** `HueCategory` is a closed
-   enum of conceptual families, each anchored at the hue its core branch
-   uses today. A new top-level in category `ROI` lands *near* ROIs by
-   construction.
+   *transparent* (theme panel background — `Graph` today). The
+   auto-picker only ever produces top-level hues.
+5. **Explicit hue wins; category is the default path.** A root that keeps
+   an explicit `getColorHue()` keeps it. A root with only a category gets
+   a deterministic in-cell hue. Plugin authors override `getHueCategory()`
+   (one line) and get a family-coherent hue; explicit `getColorHue()`
+   remains the escape hatch.
 
-### B.2 `HueCategory` enum
+### B.2 `HueCategory` enum — 6 research-anchored categories
 
-`org.hkijena.jipipe.api.nodes.taxonomy.HueCategory` — closed enum, one
-constant per conceptual family, fields `(String label, float anchorDeg)`:
+`org.hkijena.jipipe.api.nodes.taxonomy.HueCategory`, closed enum,
+fields `(String label, float anchorDeg)`; the Voronoi cell of each
+category spans from the midpoint to the previous anchor to the midpoint
+to the next (wrapping):
 
-| Constant | Label | Anchor (deg) | Core branch it anchors |
-|---|---|---|---|
-| `ROI` | `ROI` | 0 | `RoisFunction` |
-| `EXPORT` | `Export` | 22 | `ExportFunction` |
-| `MISC` | `Miscellaneous` | 50 | `MiscellaneousFunction` |
-| `STATISTICS` | `Statistics` | 60 | `StatisticsFunction` |
-| `INPUT` | `Input` | 136 | `DataSourcesFunction` |
-| `PLOT` | `Plot` | 155 | `PlottingFunction` |
-| `TRACKING` | `Tracking` | 165 | `TrackingFunction` |
-| `IMAGE` | `Image` | 186 | `ImagesFunction` |
-| `MACHINE_LEARNING` | `Machine learning` | 200 | `MachineLearningFunction` |
-| `TABLE` | `Table` | 216 | `TablesFunction` |
-| `ANNOTATION` | `Annotation` | 264 | `AnnotationsFunction` |
-| `FILAMENTS` | `Filaments` | 15 | `FilamentsFunction` (moved 40° → 15°, sits next to ROI) |
+| Constant | Label | Anchor | Cell (deg) | Covers |
+|---|---|---|---|---|
+| `GEOMETRY` | `Geometry` | red **0°** | [330, 15) | regions, shapes, ROIs, filaments, skeletons, surfaces |
+| `ANALYSIS` | `Analysis` | orange **30°** | [15, 45) | statistics, measurement, quantification, tracking/motion analysis |
+| `VISUALIZATION` | `Visualization` | yellow **60°** | [45, 90) | plotting, charts, figures |
+| `EXCHANGE` | `Exchange` | green **120°** | [90, 180) | input, sources, export, data platforms, metadata transport |
+| `DATA` | `Data` | blue **240°** | [180, 270) | **pixel data and tabular data** — the concept-wise smallest category, generalized from "Images" so tables fall in (user ruling) |
+| `INTELLIGENCE` | `Intelligence` | purple **300°** | [270, 330) | machine learning, annotations, scripting, expressions, automation |
 
-Anchor layout note: anchors are the current core hues, re-used as category
-centers. The Voronoi cell of a category spans from the midpoint to the
-previous anchor to the midpoint to the next (wrapping). With FILAMENTS at
-15°, cells are: ROI [−11, 3.5), FILAMENTS [3.5, 18.5), EXPORT [18.5, 29.5),
-MISC [29.5, 43), … (deg). All 12 cells are ≥ 12° wide — comfortable for
-±6° of auto-pick spread around each anchor.
+Historic color pins land as: ROI/Geometry = red (0°, exact), Inputs/Exchange
+= green (Data sources 136° in-cell, Export moves in-cell), Images+Tables =
+blue (186°, 216° in-cell), Annotations = purple (explicit 264° kept,
+in-cell), ML/Tracking/Plotting move to their families' cells.
 
 ### B.3 `TaxonomyHue` utility
 
@@ -175,8 +177,8 @@ MISC [29.5, 43), … (deg). All 12 cells are ≥ 12° wide — comfortable for
 ctor):
 
 ```java
-/** Deterministically picks an unused-looking hue inside {@code category}'s
- *  window for the function with the given stable id. */
+/** Deterministically picks a hue inside {@code category}'s Voronoi cell
+ *  for the function with the given stable id. */
 public static Float autoHue(HueCategory category, String stableId)
 ```
 
@@ -185,26 +187,26 @@ public static Float autoHue(HueCategory category, String stableId)
   1. `long h = fnv1a64(category.name() + "\u0000" + stableId)` — FNV-1a
      64-bit (offset basis `0xcbf29ce484222325L`, prime `0x100000001b3L`).
   2. `int slot = (int) Math.floorMod(h, SLOTS)` with `SLOTS = 24`.
-  3. `float spread = (slot * 0.381966011250105f) % 1f` — the golden-angle
-     fraction (137.508°/360°): consecutive slots land maximally far apart
-     inside the cell, so nearby ids spread across the whole window.
-  4. `hue = (cellStartDeg + spread * cellWidthDeg) / 360f` where the cell
-     is the category's Voronoi window (B.2), normalized to `0..1` (wrap
-     `((x % 360) + 360) % 360` before dividing).
-  Every id maps into its category's Voronoi cell — conceptually similar
-  functions stay visually adjacent.
-- Pure static: no registry access, no state — a plugin's hue is stable
-  regardless of what else is installed.
+  3. `float spread = (slot * 0.381966011250105f) % 1f` — golden-angle
+     fraction (137.508°/360°): consecutive slots maximally spread inside
+     the cell.
+  4. `hue = (cellStartDeg + spread * cellWidthDeg) / 360f`, normalized to
+     `0..1` (wrap `((x % 360) + 360) % 360` before dividing).
+  Every id maps into its category's cell — conceptually similar functions
+  are visually adjacent by construction.
+- Pure static: no registry access, no state.
 
-### B.4 Interface default method
+### B.4 Interface default methods
 
 On `JIPipeNodeTaxonomyFunction`:
 
 ```java
 /** Conceptual hue family used by the deterministic auto-picker when this
- *  function is top-level and does not override {@link #getColorHue()}. */
+ *  function is top-level and does not override {@link #getColorHue()}.
+ *  Null category = transparent (no auto hue). */
+@Nullable
 default HueCategory getHueCategory() {
-    return HueCategory.MISC;
+    return null;
 }
 
 /** Top-level branches default to the deterministic category hue; leaves
@@ -212,76 +214,93 @@ default HueCategory getHueCategory() {
  *  designed hue; return null explicitly for a transparent branch. */
 @Nullable
 default Float getColorHue() {
-    if (getParent() != null) return null;
+    if (getParent() != null || getHueCategory() == null) return null;
     return TaxonomyHue.autoHue(getHueCategory(), getId());
 }
 ```
 
-- Leaves: default returns `null` — identical to today. The 77 leaf
-  overrides (`return null;`) are **deleted** (the default replaces them).
-- The 12 colored roots keep explicit `getColorHue()` (designed anchors)
-  **and** each declares its `getHueCategory()` (self-documenting + keeps
-  the anchor self-consistent). `Graph` keeps its explicit `return null;`
-  (transparent is a deliberate choice, not auto-pickable). `Filaments`
-  changes its explicit hue 40° → 15°.
-- Interface javadoc updated: `getColorHue()` is now a default with the
-  auto-pick path; the "hue is defined by top-level functions only"
-  contract unchanged.
+Default category is **null → transparent** (a plugin author who sets
+nothing gets no hue, like `Graph` — not a forced family). Setting a
+category is the one-line opt-in.
 
-### B.5 Consumer impact (verified — none beyond defaults)
+### B.5 Function-class migration (90 classes)
 
-- `FunctionRegistry.baseHue()`/`shadeDepth()`/`validate()` — unchanged
-  logic; `validate()`'s distinct-top-level-hue rule keeps guarding
-  auto-picked hues (two ids hashing to the same slot → boot-time error →
-  explicit override is the fix; expected frequency low, ~24 slots/cell).
-- `ThemeUtils.resolveFunctionHue` — unchanged; transparent/broken fallback
-  paths still correct.
-- `JIPipeNodeTemplate.colorHue` — a **template-level** baked hue, not the
-  taxonomy path; untouched.
+| Root | Before | After |
+|---|---|---|
+| `RoisFunction` | explicit 0° | keeps explicit **0°** + `GEOMETRY` (on-anchor) |
+| `FilamentsFunction` | explicit 40° | **drops explicit hue**, `GEOMETRY` → auto-pick lands in red cell, next to ROIs (user ask) |
+| `StatisticsFunction` | explicit 60° | **drops explicit hue**, `ANALYSIS` (orange cell) |
+| `TrackingFunction` | explicit 165° | **drops explicit hue**, `ANALYSIS` (orange cell — big move, approved: "for ML and tracking and plotting it's fine") |
+| `PlottingFunction` | explicit 155° | **drops explicit hue**, `VISUALIZATION` (yellow cell) |
+| `DataSourcesFunction` | explicit 136° | keeps explicit **136°** (historic green pin) + `EXCHANGE` |
+| `ExportFunction` | explicit 22° | **drops explicit hue**, `EXCHANGE` (green cell) |
+| `ImagesFunction` | explicit 186° | keeps explicit **186°** (historic blue pin) + `DATA` |
+| `TablesFunction` | explicit 216° | keeps explicit **216°** (historic) + `DATA` (tables fall in — user ruling) |
+| `MachineLearningFunction` | explicit 200° | **drops explicit hue**, `INTELLIGENCE` (purple cell — approved) |
+| `AnnotationsFunction` | explicit 264° | keeps explicit **264°** (historic purple pin) + `INTELLIGENCE` (fits with intelligence — user ruling) |
+| `MiscellaneousFunction` | explicit 50° | keeps explicit **50°** hard-coded, **no category** (user ruling: hard-code to historic value) |
+| `GraphFunction` | explicit null | keeps explicit null (transparent) — no category |
 
-### B.6 Tests (`TaxonomyHueTest`, new)
+New/changed structure: **`ScriptingFunction` is promoted to top-level**
+(currently a child of Miscellaneous) with `INTELLIGENCE` category and
+auto-picked hue — the first in-tree user of the auto-picker. Its four
+leaves (`scripting-python`, `scripting-r`, `scripting-expression`,
+`scripting-imagej-macro`) re-parent from Miscellaneous to Scripting and
+inherit its hue. "Scripting is turned into a proper function" (user
+ruling).
 
-Non-trivial logic only (AGENTS.md test policy):
+The **77 leaf overrides** (`return null;`) are **deleted** — the interface
+default produces exactly that.
 
-1. Determinism: same `(category, id)` → identical hue across calls; equal
-   ids in different categories → different hues.
-2. Window containment: for every category and a spread of ids, the result
-   lies in the category's Voronoi cell (structural invariant computed from
-   the enum, not hardcoded angles).
-3. Cell structure: the 12 cells are pairwise disjoint and their union
-   covers the circle (computed from the closed enum set).
-4. Golden-spread sanity: for a fixed corpus of ids in one category, the
-   produced hues are pairwise distinct (collisions allowed in theory,
-   disallowed for this corpus) and spread across the cell (min pairwise
-   distance > 0).
-5. Interface-default integration: a leaf of any category defaults to
-   `null` (inherit); a top-level with no explicit hue returns its
-   category's window hue; `Graph`-style explicit `null` wins over
-   auto-pick.
+### B.6 Consumer impact (verified — none beyond defaults)
+
+- `FunctionRegistry.baseHue()`/`shadeDepth()`/`validate()` — unchanged;
+  `validate()`'s distinct-top-level-hue rule still guards auto-picked hues
+  (two ids colliding on one slot → boot error → explicit-override escape
+  hatch; ~24 slots per cell makes this rare).
+- `ThemeUtils.resolveFunctionHue` — unchanged; transparent/broken
+  fallbacks still correct.
+- `JIPipeNodeTemplate.colorHue` — template-level baked hue, untouched.
+
+### B.7 Tests (`TaxonomyHueTest`, new)
+
+Non-trivial logic only:
+
+1. Determinism: same `(category, id)` → identical hue; different ids in
+   one category → (for a fixed corpus) distinct hues.
+2. Cell containment: every produced hue lies in its category's Voronoi
+   cell (cells computed from the enum anchors, not hardcoded).
+3. Cell structure: the 6 cells are pairwise disjoint and tile the circle.
+4. Interface-default integration: leaf → null; top-level with category →
+   in-cell hue; top-level without category → null (transparent);
+   explicit hue/category declarations win.
+5. Ship-set guard: no two **auto-picked** top-level hues collide
+   (boot-time `validate()` twin, cheap because the ship set is closed).
 
 No rendering/Swing tests.
 
-### B.7 Out of scope
+### B.8 Out of scope
 
-- Re-tuning the 12 designed anchors beyond the Filaments move (a wider
-  coherence pass is a follow-up if the user asks).
-- Auto-picking hues for **frameworks** (framework colors use the
-  `PALETTE[floorMod(id.hashCode(), 12)]` default — deterministic already).
-- Persisted user overrides of hues (not a feature today; not added).
+- Re-tuning beyond the moves above (a wider coherence pass is a follow-up).
+- Auto-hue for frameworks (PALETTE default is deterministic already).
+- Persisted user hue overrides (not a feature today; not added).
 
 ## Migration order
 
 1. Framework classes (5 new + delete Comet) + registrations — green.
 2. Node re-annotations (~168) — compile + suite; the ij-3d/filaments/weka/
    ilastik/omnipose/omero/scene-3d modules compile against the new imports.
-3. `HueCategory` + `TaxonomyHue` + interface defaults — green.
-4. Function-class migration (delete 77 leaf overrides; 12 roots keep
-   explicit hue + add category; Filaments 40°→15°) — green; the presence
-   test's `validateFunctions().isEmpty()` keeps guarding duplicates.
+3. `HueCategory` + `TaxonomyHue` + interface default methods — green
+   (defaults change nothing yet: every root still has an explicit
+   `getColorHue()`).
+4. Function-class migration: 13 roots get categories (per B.5 table),
+   6 roots drop their explicit hue (auto-pick), 77 leaf overrides deleted,
+   Scripting promoted to top-level (4 leaves re-parent), Misc keeps 50°.
+   `validateFunctions().isEmpty()` guards hue collisions — green.
 5. Tests: `FrameworksTest` 16→20, `TaxonomyPluginTest` framework ids
    16→20, new `TaxonomyHueTest` — full core + launcher suites green.
-6. Grep gates: zero `CometFramework` refs; zero non-JIPipeDL-project
-   `JIPipeDLFramework` refs (i.e. none at all until the project merges).
+6. Grep gates: zero `CometFramework` refs; zero `JIPipeDLFramework` node
+   refs (until Dhruv's project merges).
 
 ## Success criteria
 
@@ -290,7 +309,12 @@ No rendering/Swing tests.
   the sanctioned exception).
 - The five new frameworks appear in the node browser with distinct chips;
   ilastik/Omnipose/Weka nodes no longer show JIPipeDL.
+- Filaments renders red, adjacent to ROIs; ML purple; Tracking/Statistics
+  orange; Plotting yellow; Export green — every family coherent
+  (user-verifiable in the running app).
 - A plugin author adding a top-level function overrides only
-  `getHueCategory()` and gets a deterministic, category-adjacent hue.
+  `getHueCategory()` and gets a deterministic, category-adjacent hue;
+  setting nothing yields transparent.
 - No saved project breaks (hue/framework never persisted per node; ids
   only added, except Comet which nothing references).
+
