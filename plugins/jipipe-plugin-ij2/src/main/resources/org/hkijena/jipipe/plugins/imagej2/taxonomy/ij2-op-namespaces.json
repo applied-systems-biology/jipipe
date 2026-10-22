@@ -1,0 +1,22 @@
+{
+  "coloc": "jipipe:function:image-moments",
+  "convert": "jipipe:function:image-type-conversion",
+  "copy": "jipipe:function:merging-splitting",
+  "create": "jipipe:function:image-pixel-manipulation",
+  "deconvolve": "jipipe:function:filtering",
+  "filter": "jipipe:function:filtering",
+  "geom": "jipipe:function:image-moments",
+  "hog": "jipipe:function:image-moments",
+  "image": "jipipe:function:image-statistics",
+  "imagemoments": "jipipe:function:image-moments",
+  "labeling": "jipipe:function:image-labeling",
+  "logic": "jipipe:function:image-comparison",
+  "math": "jipipe:function:image-arithmetic",
+  "morphology": "jipipe:function:filtering",
+  "stats": "jipipe:function:image-statistics",
+  "tamura": "jipipe:function:image-moments",
+  "threshold": "jipipe:function:thresholding",
+  "topology": "jipipe:function:image-moments",
+  "transform": "jipipe:function:image-transformations",
+  "zernike": "jipipe:function:image-moments"
+}

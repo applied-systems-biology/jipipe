@@ -18,8 +18,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotBarFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotLineFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotScatterFunction;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.plots.datatypes.JFreeChartPlotData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
@@ -47,6 +53,32 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     }
 
     @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // Runtime-registered "Plot Tables 2" node variants (one per JFreeChart
+        // plot data type; no @ConfigureJIPipeNode can reach them). The variant
+        // is defined by its plot data type id, so route each to the matching
+        // plotting leaf instead of dumping everything into "Other plots":
+        //   scatter  -> plot-xy-scatter
+        //   line     -> plot-xy-line, plot-category-line, plot-category-statistical-line
+        //   bar      -> plot-category-bar, plot-category-bar-stacked,
+        //               plot-category-statistical-bar, plot-box-and-whisker
+        //   other    -> plot-histogram, plot-pie-2d, plot-pie-3d, and any future type
+        String dataTypeId = plotDataType.getId();
+        return switch (dataTypeId) {
+            case "plot-xy-scatter" -> new PlotScatterFunction();
+            case "plot-xy-line", "plot-category-line", "plot-category-statistical-line" -> new PlotLineFunction();
+            case "plot-category-bar", "plot-category-bar-stacked",
+                 "plot-category-statistical-bar", "plot-box-and-whisker" -> new PlotBarFunction();
+            default -> new PlotMiscFunction();
+        };
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new JFreeChartFramework();
+    }
+
+    @Override
     public JIPipeGraphNode newInstance() {
         return new PlotTables2Algorithm(this);
     }
@@ -67,13 +99,14 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getMenuPath() {
-        return "Plot";
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return new TableNodeTypeCategory();
+    public Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
+        // The legacy "Analyze" alias (IJ "Analyze\nPlot (JFreeChart)") implied a
+        // MeasurementsFunction secondary per the 19.11b alias protocol. The
+        // static PlotTablesAlgorithm already declares {PlotMiscFunction,
+        // MeasurementsFunction}; the dynamic PlotTables2 variants lacked it
+        // (Task 20 refined ij2/clij, not plots), so preserve the taxonomy
+        // meaning of the removed alias here.
+        return Set.of(new MeasurementsFunction());
     }
 
     @Override
@@ -98,11 +131,6 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
     @Override
     public Set<JIPipeDependency> getDependencies() {
         return Collections.emptySet();
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), "Analyze\nPlot (JFreeChart)", null));
     }
 
     @Override

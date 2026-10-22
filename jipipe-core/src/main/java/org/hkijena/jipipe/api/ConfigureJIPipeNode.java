@@ -15,11 +15,11 @@ package org.hkijena.jipipe.api;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeClassification;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,26 +33,7 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface ConfigureJIPipeNode {
     /**
-     * A submenu where the entry should be located.
-     * This is valid for {@link JIPipeGraphNode} and {@link org.hkijena.jipipe.api.data.JIPipeData}
-     * Menu entries are separated via newlines.
-     *
-     * @return The menu path
-     */
-    String menuPath() default "";
-
-    /**
-     * Assigns a category to any {@link JIPipeNodeInfo} that listens to this annotation.
-     * Determines in which menus the nodes are placed and how the user can interact with it.
-     * Defaults to {@link InternalNodeTypeCategory}, which prevents users from creating such nodes and deleting them,
-     * so change this categorization
-     *
-     * @return the category
-     */
-    Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
-
-    /**
-     * Only used if the node type category is set to {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}.
+     * Only used for data source nodes (their function is under the Data sources branch).
      * Allows to re-assign the data source node into the menu of another data type
      * If set to {@link JIPipeEmptyData}, no re-allocation is applied.
      */
@@ -66,4 +47,27 @@ public @interface ConfigureJIPipeNode {
      * @return the node classification
      */
     JIPipeNodeClassification nodeClassification() default JIPipeNodeClassification.Standard;
+
+    /**
+     * The taxonomy functions this node appears under.
+     * The first entry is the node's primary function; any further entries are
+     * secondary locations where the node is additionally listed.
+     *
+     * @return the functions, in order; empty if the node is not yet assigned to the taxonomy
+     */
+    Class<? extends JIPipeNodeTaxonomyFunction>[] function() default {};
+
+    /**
+     * The spatial dimensions this node operates in.
+     *
+     * @return the declared spatial dimensions; empty if none are declared
+     */
+    JIPipeNodeTaxonomySpatialDimension[] spatialDimensions() default {};
+
+    /**
+     * The framework (external software or research project) this node implements.
+     *
+     * @return the framework; defaults to {@link NoFramework} when not set
+     */
+    Class<? extends JIPipeNodeTaxonomyFramework> framework() default NoFramework.class;
 }

@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.io.IOException;
@@ -64,16 +63,6 @@ public class JIPipeEmptyNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return new HTMLText();
-    }
-
-    @Override
-    public String getMenuPath() {
-        return "";
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return new InternalNodeTypeCategory();
     }
 
     @Override

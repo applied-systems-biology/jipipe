@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -52,7 +53,10 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
 
     @Override
     protected List<JIPipeNodeInfo> getFilteredItems() {
-        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getAliases().stream().map(location -> location.getCategory().getName() + location.getMenuPath() + location.getAlternativeName()).collect(Collectors.joining(" ")) + " " + info.getDescription() + " " + info.getMenuPath());
+        // Task 26a: search over name + description + secondary function names
+        // (the alias/menu-path terms are gone; secondary functions carry the
+        // alternate-location search terms).
+        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getSecondaryFunctions().stream().map(JIPipeNodeTaxonomyFunction::getName).collect(Collectors.joining(" ")));
 
         return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
@@ -65,16 +69,27 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
 
     @Override
     public MarkdownText generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
+        return buildAlgorithmDocumentation(info);
+    }
+
+    /**
+     * Builds the full documentation of a single algorithm node as markdown:
+     * the title, the description, the input/output slot table and the
+     * parameter documentation (grouped per source, in UI order).
+     * <p>
+     * This is the canonical node documentation used by the compendium and by
+     * any UI that shows "the node documentation" — keep the node finder's
+     * detail rail in sync by reusing this builder rather than re-implementing
+     * it.
+     *
+     * @param info the node to document
+     * @return the node's documentation as markdown
+     */
+    public static MarkdownText buildAlgorithmDocumentation(JIPipeNodeInfo info) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<p>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
-            }
-            builder.append("</p><br/>\n\n");
-        }
+        // Task 26a: alias rows removed (converted nodes have no aliases).
 
         // Write description
         String description = info.getDescription().getBody();
@@ -171,7 +186,7 @@ public class JIPipeDesktopAlgorithmCompendiumUI extends JIPipeDesktopCompendiumU
         return new MarkdownText(builder.toString());
     }
 
-    private void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
+    private static void generateParameterDocumentation(JIPipeParameterAccess access, StringBuilder builder) {
         builder.append("### ").append(access.getName()).append("\n\n");
         builder.append("<table>");
 

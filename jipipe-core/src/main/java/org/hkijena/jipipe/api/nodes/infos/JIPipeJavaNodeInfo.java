@@ -22,6 +22,7 @@ import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
+import org.hkijena.jipipe.api.JIPipeNodeTaxonomyTags;
 import org.hkijena.jipipe.api.LabelAsJIPipeHidden;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -29,7 +30,10 @@ import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.environments.RegisterJIPipeEnvironmentUsage;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.DocumentationUtils;
@@ -57,12 +61,19 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setId(id);
         setName(getNameOf(nodeClass));
         setDescription(getDescriptionOf(nodeClass));
-        setCategory(getCategoryOf(nodeClass));
-        setMenuPath(getMenuPathOf(nodeClass));
         setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
-        setAliases(getAliasesOf(nodeClass));
         setNodeClassification(getClassificationOf(nodeClass));
         setEnvironments(getEnvironmentsOf(nodeClass));
+        // Taxonomy: set the functions only if the node is converted (declares at least one);
+        // the framework defaults to NoFramework, spatial dimensions and tags may be empty.
+        List<JIPipeNodeTaxonomyFunction> functions = getFunctionOf(nodeClass);
+        if (!functions.isEmpty()) {
+            setPrimaryFunction(functions.get(0));
+            setSecondaryFunctions(new HashSet<>(functions.subList(1, functions.size())));
+        }
+        setFramework(getFrameworkOf(nodeClass));
+        setSpatialDimensions(getSpatialOf(nodeClass));
+        setTaxonomyTags(getTaxonomyTagsOf(nodeClass));
         if (nodeClass.getAnnotation(LabelAsJIPipeHidden.class) != null) {
             setHidden(true);
         }
@@ -115,39 +126,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     }
 
     /**
-     * Returns the category of an algorithm
-     *
-     * @param klass The algorithm class
-     * @return The category
-     */
-    public static JIPipeNodeTypeCategory getCategoryOf(Class<? extends JIPipeGraphNode> klass) {
-        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
-        if (annotations.length > 0) {
-            Class<? extends JIPipeNodeTypeCategory> categoryClass = annotations[0].nodeTypeCategory();
-            return (JIPipeNodeTypeCategory) ReflectionUtils.newInstance(categoryClass);
-        } else {
-            return new InternalNodeTypeCategory();
-        }
-    }
-
-    /**
-     * Returns the menu path of the algorithm
-     *
-     * @param klass The algorithm class
-     * @return The menu path
-     */
-    public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
-        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
-        if (annotations.length > 0) {
-            return annotations[0].menuPath();
-        } else {
-            return "";
-        }
-    }
-
-    /**
      * Returns the alternative assignment to another data source type menu for a node
-     * Only applicable if the node is of node category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}
+     * Only applicable for data source nodes (their function is under the Data sources branch)
      * {@link JIPipeEmptyData} means that no re-assignment should be applied
      *
      * @param klass The data class
@@ -178,15 +158,65 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     }
 
     /**
-     * Gets alternative menu locations
+     * Returns the taxonomy functions declared for an algorithm, in order.
+     * The first entry is the primary function; any further entries are
+     * secondary functions.
      *
-     * @param klass node class
-     * @return locations
+     * @param klass The algorithm class
+     * @return The functions, possibly empty if the node is not yet assigned to the taxonomy
      */
-    public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
-        List<JIPipeNodeMenuLocation> result = new ArrayList<>();
-        for (AddJIPipeNodeAlias location : klass.getAnnotationsByType(AddJIPipeNodeAlias.class)) {
-            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.aliasName()));
+    public static List<JIPipeNodeTaxonomyFunction> getFunctionOf(Class<? extends JIPipeGraphNode> klass) {
+        List<JIPipeNodeTaxonomyFunction> result = new ArrayList<>();
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
+        if (annotations.length > 0) {
+            for (Class<? extends JIPipeNodeTaxonomyFunction> functionClass : annotations[0].function()) {
+                result.add((JIPipeNodeTaxonomyFunction) ReflectionUtils.newInstance(functionClass));
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns the taxonomy framework declared for an algorithm.
+     *
+     * @param klass The algorithm class
+     * @return The framework, or {@link NoFramework} if the node declares none
+     */
+    public static JIPipeNodeTaxonomyFramework getFrameworkOf(Class<? extends JIPipeGraphNode> klass) {
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
+        if (annotations.length > 0) {
+            return (JIPipeNodeTaxonomyFramework) ReflectionUtils.newInstance(annotations[0].framework());
+        } else {
+            return new NoFramework();
+        }
+    }
+
+    /**
+     * Returns the spatial dimensions declared for an algorithm.
+     *
+     * @param klass The algorithm class
+     * @return The declared spatial dimensions, possibly empty
+     */
+    public static Set<JIPipeNodeTaxonomySpatialDimension> getSpatialOf(Class<? extends JIPipeGraphNode> klass) {
+        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
+        if (annotations.length > 0) {
+            return new HashSet<>(Arrays.asList(annotations[0].spatialDimensions()));
+        } else {
+            return new HashSet<>();
+        }
+    }
+
+    /**
+     * Returns the node-level taxonomy tags declared for an algorithm
+     * via {@link JIPipeNodeTaxonomyTags}.
+     *
+     * @param klass The algorithm class
+     * @return The node-level tags, possibly empty
+     */
+    public static Set<String> getTaxonomyTagsOf(Class<? extends JIPipeGraphNode> klass) {
+        Set<String> result = new HashSet<>();
+        for (JIPipeNodeTaxonomyTags annotation : klass.getAnnotationsByType(JIPipeNodeTaxonomyTags.class)) {
+            result.addAll(Arrays.asList(annotation.value()));
         }
         return result;
     }

@@ -1,9 +1,11 @@
 package org.hkijena.jipipe.desktop.app.customizer;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasResources;
 import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.nodepatterns.NodePatternRenderer;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopModernThemeStyle;
 import org.hkijena.jipipe.desktop.commons.theme.JIPipeDesktopUITheme;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -362,6 +364,16 @@ public class ThemePreviewPanel extends JPanel {
     public static class NodeViewportComponent extends JPanel {
         private final ThemePreviewPanel themePreviewPanel;
 
+        /**
+         * Representative framework used to demonstrate the node-pattern
+         * settings in the preview. TrackMate (style {@code net}) is chosen
+         * because its line-graph pattern reads clearly at the small preview
+         * scale; the preview node is otherwise a generic "Node", so a fixed
+         * framework is what makes the pattern/badge settings visible and
+         * tunable.
+         */
+        private static final TrackMateFramework PREVIEW_FRAMEWORK = new TrackMateFramework();
+
         public NodeViewportComponent(ThemePreviewPanel themePreviewPanel) {
             this.themePreviewPanel = themePreviewPanel;
         }
@@ -382,6 +394,16 @@ public class ThemePreviewPanel extends JPanel {
 
             g2d.setPaint(nodeFillColor);
             g2d.fillRect(nodeX, nodeY, nodeWidth, nodeHeight);
+
+            // Framework signature pattern over the body (mirrors the canvas node
+            // paint; the slot bands painted below cover it there, as in production).
+            // Driven by the live theme style so the pattern settings can be tuned
+            // in the editor.
+            if (style.isShowNodeFrameworkPattern()) {
+                NodePatternRenderer.paint(g2d, nodeX, nodeY, nodeWidth, nodeHeight,
+                        PREVIEW_FRAMEWORK.getPatternStyleId(), PREVIEW_FRAMEWORK.getId(),
+                        style.getNodePatternInk(), style.getNodePatternOpacity());
+            }
 
             g2d.setPaint(nodeSlotColor);
             g2d.fillRect(nodeX, nodeY, nodeWidth, nodeCellHeight);
@@ -412,7 +434,41 @@ public class ThemePreviewPanel extends JPanel {
 
             g2d.drawImage(dataTypeIconImage, (int) (nodeX + 32 * scale), nodeY + nodeCellHeight + iconStart, (int) (scale * 16), (int) (scale * 16), null);
             g2d.setFont(mainFont);
-            UIUtils.drawStringVerticallyCentered(g2d, "Node", (int) (nodeX + scale * 55), nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
+            int nameX = (int) (nodeX + scale * 55);
+            UIUtils.drawStringVerticallyCentered(g2d, "Node", nameX, nodeY + nodeCellHeight + nodeCellHeight / 2, mainFontMetrics);
+
+            // Framework abbreviation chip (mirrors the canvas node badge) so the
+            // "show badge" setting is visible and tunable in the editor.
+            if (style.isShowNodeFrameworkBadge()) {
+                // The node badge uses the tertiary font (font-size-tiny); match it
+                // so the chip size/width agrees with the canvas.
+                Font tertiaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) (scale * style.getFontSizeTiny()));
+                FontMetrics tertiaryFontMetrics = g2d.getFontMetrics(tertiaryFont);
+                String abbreviation = PREVIEW_FRAMEWORK.getAbbreviation();
+                double chipWidth = (tertiaryFontMetrics.stringWidth(abbreviation) / scale + 6) * scale;
+                double chipHeight = 14 * scale;
+                double chipX = nameX + mainFontMetrics.stringWidth("Node") + 4 * scale;
+                double chipY = nodeY + nodeCellHeight + nodeCellHeight / 2 - chipHeight / 2;
+                int cx = (int) Math.round(chipX);
+                int cy = (int) Math.round(chipY);
+                int cw = (int) Math.round(chipWidth);
+                int ch = (int) Math.round(chipHeight);
+                int arc = (int) Math.round(6 * scale);
+                g2d.setPaint(PREVIEW_FRAMEWORK.getColor());
+                g2d.fillRoundRect(cx, cy, cw, ch, arc, arc);
+                g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_UNIT);
+                g2d.setPaint(nodeBorderColor);
+                g2d.drawRoundRect(cx, cy, cw, ch, arc, arc);
+                Color chipColor = PREVIEW_FRAMEWORK.getColor();
+                float luminance = (0.2126f * chipColor.getRed() + 0.7152f * chipColor.getGreen() + 0.0722f * chipColor.getBlue()) / 255f;
+                g2d.setPaint(luminance < 0.6f ? Color.WHITE : Color.BLACK);
+                Font originalFont = g2d.getFont();
+                g2d.setFont(tertiaryFont);
+                UIUtils.drawStringVerticallyCentered(g2d, abbreviation,
+                        (int) Math.round(chipX + (chipWidth - tertiaryFontMetrics.stringWidth(abbreviation)) / 2.0),
+                        nodeY + nodeCellHeight + nodeCellHeight / 2, tertiaryFontMetrics);
+                g2d.setFont(originalFont);
+            }
 
             if (selected) {
                 g2d.setStroke(JIPipeDesktopGraphCanvasResources.STROKE_SELECTION);

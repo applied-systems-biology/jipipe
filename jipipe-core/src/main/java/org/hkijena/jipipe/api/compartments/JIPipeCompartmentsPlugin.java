@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.compartments;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaPlugin;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.compartments.algorithms.CompartmentNodeTypeCategory;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
@@ -60,7 +59,6 @@ public class JIPipeCompartmentsPlugin extends JIPipePrepackagedDefaultJavaPlugin
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        registerNodeTypeCategory(new CompartmentNodeTypeCategory());
         registerNodeType("jipipe:compartment-output", JIPipeProjectCompartmentOutput.class, JIPipe.RESOURCES.getIcon16URL("actions/graph-compartment.png"));
         registerNodeType("jipipe:project-compartment", JIPipeProjectCompartment.class, JIPipe.RESOURCES.getIcon16URL("actions/graph-compartment.png"));
 

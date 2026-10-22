@@ -15,6 +15,7 @@ package org.hkijena.jipipe.plugins.imagej2;
 
 import net.imagej.ops.OpInfo;
 import org.apache.commons.text.WordUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -22,7 +23,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyAutoAssignment;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ2Framework;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.plugins.imagej2.io.ImageJ2JIPipeModuleIOService;
 import org.hkijena.jipipe.plugins.imagej2.io.ImageJ2ModuleIO;
@@ -31,7 +36,6 @@ import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
 import org.scijava.module.ModuleItem;
 
@@ -44,12 +48,34 @@ import java.util.stream.Collectors;
  */
 public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
+    /**
+     * Op-id → function-id overrides, loaded once from the plugin's
+     * {@code taxonomy/ij2-op-ids.json} resource (package-relative to
+     * {@link ImageJ2Plugin}).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping OP_ID_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-ids.json");
+
+    /**
+     * Op-namespace → function-id defaults, loaded once from the plugin's
+     * {@code taxonomy/ij2-op-namespaces.json} resource (package-relative to
+     * {@link ImageJ2Plugin}).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping OP_NAMESPACE_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-namespaces.json");
+
+    /**
+     * Op name → tags mapping (tag-audit pipeline: per-node generation +
+     * embedding-based compression into a canonical vocabulary), loaded
+     * once from the plugin's taxonomy/ij2-op-tags.json resource.
+     */
+    private static final TaxonomyAutoAssignment.TagMapping OP_TAGS =
+            TaxonomyAutoAssignment.TagMapping.load(ImageJ2Plugin.class, "taxonomy/ij2-op-tags.json");
+
     private final Context context;
     private final String id;
     private final OpInfo opInfo;
-    private final String menuPath;
     private final String name;
-    private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new IdentityHashMap<>();
@@ -77,22 +103,17 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         this.context = context;
         this.id = "ij2:op:" + opInfo.getName();
         this.opInfo = opInfo;
-        this.nodeTypeCategory = new ImagesNodeTypeCategory();
         String title = opInfo.cInfo().getTitle();
         MenuPath menuPath = opInfo.cInfo().getMenuPath();
         if (menuPath.isEmpty() || title.contains(":")) {
             List<String> strings = Arrays.stream(title.split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
             if (strings.size() > 1) {
                 this.name = "IJ2: " + String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(strings.get(strings.size() - 1)));
-                strings.remove(strings.size() - 1);
-                this.menuPath = "IJ2\n" + String.join("\n", strings);
             } else {
                 this.name = "IJ2: " + title;
-                this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
             }
         } else {
             this.name = "IJ2: " + title;
-            this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
         }
         this.description = new HTMLText(StringUtils.orElse(opInfo.cInfo().getDescription(), "The developer provided no description") + "<br/><br/>This node was automatically imported from ImageJ2. " +
                 "Please be aware that JIPipe cannot guarantee that there are no issues.");
@@ -173,6 +194,62 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // Full-registry classification audit: the op's namespace and (where
+        // needed) the exact op name are mapped to the taxonomy function via
+        // the plugin's JSON resource (taxonomy/ij2-op-mapping.json; op-id
+        // entries win over op-namespace entries, both keyed by stable
+        // function-id literals). The resource mapping supersedes the
+        // taxonomy service's weighted name inference, which remains the
+        // fallback for unmapped ops, and (via its inference fallback)
+        // Miscellaneous unassigned the last resort.
+        String opName = opInfo.getName();
+        String mapped = OP_ID_MAPPING.functionIdOf(opName);
+        if (mapped == null) {
+            String namespace = opName.contains(".")
+                    ? opName.substring(0, opName.indexOf('.'))
+                    : opName;
+            mapped = OP_NAMESPACE_MAPPING.functionIdOf(namespace);
+        }
+        if (mapped != null) {
+            JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);
+            if (function != null) {
+                return function;
+            }
+        }
+        return JIPipe.getNodeTaxonomyService().inferFunction(getName());
+    }
+
+    @Override
+    public Set<String> getMergedTags() {
+        // Auto-discovered ops have no @JIPipeNodeTaxonomyTags annotation; the
+        // tag-audit mapping (resource) is their tag source.
+        String opName = opInfo.getName();
+        return OP_TAGS.tagsOf(opName);
+    }
+
+    @Override
+    public Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        // Task 20: derived from the first image input slot's data class
+        // (ANY ⇒ both 2D + 3D), never heuristic. Defensive: registration must
+        // not crash if the node service is not ready or a slot class is odd.
+        try {
+            List<Class<?>> inputClasses = new ArrayList<>();
+            for (AddJIPipeInputSlot slot : inputSlots) {
+                inputClasses.add(slot.value());
+            }
+            return TaxonomyAutoAssignment.spatialForFirstImageInput(inputClasses, JIPipe.getNodes()::inputProfileFor);
+        } catch (RuntimeException e) {
+            return Collections.emptySet();
+        }
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new ImageJ2Framework();
+    }
+
+    @Override
     public JIPipeGraphNode newInstance() {
         return new ImageJ2OpNode(this);
     }
@@ -190,16 +267,6 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return description;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return nodeTypeCategory;
     }
 
     @Override

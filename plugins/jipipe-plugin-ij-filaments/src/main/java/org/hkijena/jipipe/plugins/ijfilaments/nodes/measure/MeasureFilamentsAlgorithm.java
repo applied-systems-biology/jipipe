@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.measure;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
-import org.hkijena.jipipe.plugins.ijfilaments.FilamentsNodeTypeCategory;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 
@@ -43,7 +44,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
         "<li>min/max/avg radius/value</li>" +
         "</ul>" +
         "You can learn more about the generated measurements here: https://jipipe.hki-jena.de/documentation/filament-measurements.html")
-@ConfigureJIPipeNode(nodeTypeCategory = FilamentsNodeTypeCategory.class, menuPath = "Measure")
+@ConfigureJIPipeNode(function = FilamentQuantificationFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeCitation("https://jipipe.hki-jena.de/documentation/filament-measurements.html")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)

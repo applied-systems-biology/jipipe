@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.TableDataFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -44,7 +44,7 @@ import org.hkijena.jipipe.plugins.tables.parameters.processors.ExpressionTableCo
  */
 @SetJIPipeDocumentation(name = "Generate table rows from expressions", description = "Generates a table from expressions that are applied for each table row, given by a parameter. " +
         "Use 'Generate table columns from expression' if you want to do not know the number of rows.")
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableDataFunction.class)
 @AddJIPipeInputSlot(value = JIPipeData.class, name = "Annotations", create = true, optional = true, description = "Optional source for annotations")
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {

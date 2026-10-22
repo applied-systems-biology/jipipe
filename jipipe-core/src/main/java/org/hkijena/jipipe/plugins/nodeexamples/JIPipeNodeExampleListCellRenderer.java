@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.nodeexamples;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -27,7 +27,7 @@ import java.awt.*;
  */
 public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeExample> {
 
-    private SolidColorIcon nodeColor;
+    private NodeFrameworkPatternIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel descriptionLabel;
@@ -45,7 +45,7 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 50);
+        nodeColor = new NodeFrameworkPatternIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
@@ -99,6 +99,8 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
 
         if (info != null) {
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info.getNodeTemplate().getColorHue()));
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(info.getNodeInfo().getFramework());
             descriptionLabel.setText(info.getNodeTemplate().getDescription().getHtml());
             nameLabel.setText(info.getNodeTemplate().getName());
             nodeIcon.setIcon(JIPipe.RESOURCES.getIcon16(info.getNodeTemplate().getIcon().getIconName()));

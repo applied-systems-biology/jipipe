@@ -13,12 +13,12 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.columns;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableFilterModifyFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -32,9 +32,8 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 /**
  * Algorithm that removes columns
  */
-@SetJIPipeDocumentation(name = "Remove table column", description = "Removes one or multiple columns by name")
-@AddJIPipeNodeAlias(aliasName = "Filter table columns")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
+@SetJIPipeDocumentation(name = "Remove table column", description = "Takes a results table and removes one or more columns whose names match the configured filter expression, producing a new results table without those columns.")
+@ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class RemoveColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -1,0 +1,2 @@
+# javac build scratch (not a Maven module); compiled classes are not committed
+classes/

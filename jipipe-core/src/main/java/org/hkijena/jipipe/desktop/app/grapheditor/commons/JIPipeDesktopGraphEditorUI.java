@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.grapheditortool.JIPipeDesktopToggleableGraphEditor
 import org.hkijena.jipipe.api.grapheditortool.tools.DefaultGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbench;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopWorkbenchPanel;
@@ -1168,10 +1169,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
 
             if (value instanceof JIPipeNodeInfo) {
                 JIPipeNodeInfo info = (JIPipeNodeInfo) value;
-                String menuPath = info.getCategory().getName();
-                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
-                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
-                }
+                // Location (Task 21b): converted ⇒ "function chain > node",
+                // unconverted ⇒ legacy "category [> menuPath] > node".
+                String menuPath = TaxonomyView.locationPath(info);
 
                 icon.setFillColor(Color.WHITE);
                 icon.setBorderColor(ThemeUtils.getNodeFillColor(info));
@@ -1182,29 +1182,15 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
                 menuLabel.setText(menuPath);
 
                 alternativeLabel.setForeground(ThemeUtils.getCurrentStyle().getSecondaryColor());
-                if (info.getAliases().isEmpty()) {
-                    alternativeLabel.setText("");
-                } else {
-                    StringBuilder builder = new StringBuilder();
-                    builder.append("Alias: ");
-                    List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
-                    for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                        if (i > 0) {
-                            builder.append(", ");
-                        }
-                        JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
-                        builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n"))).append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
-                    }
-                    alternativeLabel.setText(builder.toString());
-                }
+                // Task 26a: alias rows removed (converted nodes have no aliases).
+                alternativeLabel.setText("");
 
             } else if (value instanceof JIPipeDesktopGraphNodeUI) {
                 JIPipeGraphNode node = ((JIPipeDesktopGraphNodeUI) value).getNode();
                 JIPipeNodeInfo info = node.getInfo();
-                String menuPath = info.getCategory().getName();
-                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
-                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
-                }
+                // Location (Task 21b): converted ⇒ "function chain > node",
+                // unconverted ⇒ legacy "category [> menuPath] > node".
+                String menuPath = TaxonomyView.locationPath(info);
 
                 icon.setFillColor(ThemeUtils.getNodeFillColor(info));
                 icon.setBorderColor(ThemeUtils.getNodeBorderColor(info));
@@ -1217,10 +1203,9 @@ public abstract class JIPipeDesktopGraphEditorUI extends JIPipeDesktopWorkbenchP
             } else if (value instanceof JIPipeNodeExample) {
                 JIPipeNodeExample example = (JIPipeNodeExample) value;
                 JIPipeNodeInfo info = example.getNodeInfo();
-                String menuPath = info.getCategory().getName();
-                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
-                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
-                }
+                // Location (Task 21b): converted ⇒ "function chain > node",
+                // unconverted ⇒ legacy "category [> menuPath] > node".
+                String menuPath = TaxonomyView.locationPath(info);
 
                 icon.setFillColor(Color.WHITE);
                 icon.setBorderColor(ThemeUtils.getNodeFillColor(info));

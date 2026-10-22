@@ -13,6 +13,10 @@
 
 package org.hkijena.jipipe.plugins.ijocr.nodes;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TextMarkupFunction;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 import ij.IJ;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
@@ -25,7 +29,7 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -59,7 +63,7 @@ import java.util.Objects;
 @AddJIPipeCitation("For additional guidance see: https://tesseract-ocr.github.io/tessdoc/ImproveQuality.html")
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Results", create = true, description = "The results obtained using the TSV exporter")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "OCR")
+@ConfigureJIPipeNode(function = TextMarkupFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @RegisterJIPipeEnvironmentUsage(TesseractOCREnvironment.class)
 public class TesseractOCRAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

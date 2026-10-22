@@ -16,6 +16,7 @@ package org.hkijena.jipipe.plugins.strings.nodes.json;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -46,7 +46,7 @@ import java.util.List;
 @SetJIPipeDocumentation(name = "Annotate with JSON values", description = "Extracts a value from the input JSON data (via JsonPath) and annotates the data with the result. " +
         "Please visit https://goessner.net/articles/JsonPath/ to learn more about JsonPath")
 @AddJIPipeCitation("JsonPath: https://goessner.net/articles/JsonPath/")
-@ConfigureJIPipeNode(menuPath = "For JSON", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
 @AddJIPipeInputSlot(value = JsonData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = JsonData.class, name = "Output", create = true)
 public class AnnotateWithJsonDataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

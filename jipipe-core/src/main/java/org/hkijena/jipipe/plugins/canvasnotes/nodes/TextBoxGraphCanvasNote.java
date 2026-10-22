@@ -16,7 +16,8 @@ package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.GraphAnnotationsFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
@@ -25,7 +26,7 @@ import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParamet
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Text box canvas note", description = "A canvas note that contains text")
-@ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class)
 public class TextBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ShapeParameters shapeParameters;
 

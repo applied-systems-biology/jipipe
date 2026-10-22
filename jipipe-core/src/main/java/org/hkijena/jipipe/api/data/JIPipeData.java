@@ -82,18 +82,19 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     }
 
     /**
-     * Returns the menu path of the data type
+     * Returns the menu path of the data type.
+     * <p>
+     * Historically this read the {@code menuPath} field of {@link ConfigureJIPipeNode};
+     * that field was removed with the legacy node-type-category system (6.0.0 break),
+     * and no data type ever set it, so it has always returned the empty string.
+     * The data-type menu path is now carried elsewhere; this API is kept for
+     * compatibility and returns no path.
      *
      * @param klass The data class
-     * @return The menu path of the data class
+     * @return The menu path of the data class (always empty)
      */
     static String getMenuPathOf(Class<? extends JIPipeData> klass) {
-        ConfigureJIPipeNode[] annotations = klass.getAnnotationsByType(ConfigureJIPipeNode.class);
-        if (annotations.length > 0) {
-            return annotations[0].menuPath();
-        } else {
-            return "";
-        }
+        return "";
     }
 
     /**

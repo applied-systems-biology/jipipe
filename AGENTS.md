@@ -62,6 +62,19 @@ The `plugins/` directory contains additional modules for functionality separatio
 - Data environments
 - etc.
 
+### Node taxonomy (6.0.0)
+
+Since 6.0.0, node categorization no longer uses the legacy `JIPipeNodeTypeCategory` / `menuPath` system (removed entirely). Nodes are assigned to a **function tree** + **framework** + **spatial dimensions** + **tags** (see the `api/nodes/taxonomy/` package):
+
+- **Functions** — `org.hkijena.jipipe.api.nodes.taxonomy.functions`: a tree of 13 top-level branches (Images, Tables, Data sources, Tracking, …) with 48 leaves. Assign a node with `@ConfigureJIPipeNode(function = {SomeLeafFunction.class, OptionalSecondaryFunction.class})` — the first entry is the primary function, the rest are secondary (analogous to former menu aliases).
+- **Frameworks** — `org.hkijena.jipipe.api.nodes.taxonomy.frameworks` (e.g. `CoreFramework`): `@ConfigureJIPipeNode(framework = CoreFramework.class)`.
+- **Spatial dimensions / tags** — `@ConfigureJIPipeNode(spatialDimensions = {SPATIAL_2D})` (constants of `JIPipeNodeTaxonomySpatialDimension`, a closed set: 2D/3D) and `@JIPipeNodeTaxonomyTags("…")`.
+
+Rules:
+- Function/framework IDs are registration IDs and are persisted in saved projects — use **stable string literals**, never code-derived values (the same rule as node/data-type IDs, below).
+- Every registered node **must** have a primary function. This is enforced by the branch gate `TaxonomyFullValidationTest` (jipipe-launcher; runs the production validation over the entire registry and fails on any unassigned node) and by the per-module `TaxonomyConversionReportTest` gates (run with `-Djipipe.taxonomy.report.module=<java-package-prefix>`).
+- Conversion decision record: `utils/taxonomy-conversion/conversion-map.md`. Design spec: `docs/superpowers/specs/2026-10-08-node-taxonomy-redesign-design.md`.
+
 ## Development Patterns
 
 ### Creating a New Algorithm Node
@@ -118,6 +131,55 @@ mvn test -Dtest=MyTestClass
 
 ### Adding Tests
 For new modules, add JUnit 5 dependencies and create `src/test/java` structure following the contrib module pattern.
+
+### Test Policy: Do Not Test Trivial Things (IMPORTANT)
+
+**Tests cover non-trivial behavior and contracts — not the re-verification of
+obvious code or UI structure** (ruling 2026-10-20; extends the "no Swing
+interaction tests" rule — the user verifies the Swing UI by eye in the app:
+"I test it myself", interaction tests were removed as "just messy").
+
+- **Swing UI structure: no tests.** Do NOT assert low-level component
+  structure — tab titles/order, component visibility or enabled toggles,
+  border/padding/insets, section collapse state, cell-renderer details,
+  dialog layout. If a UI change looks right in the code, it is done; the
+  user checks the running app and reports what is wrong.
+- **Trivial code: no tests.** No tests for getters/setters, pure
+  delegation, simple if/else, or constants — and no test whose assertion
+  just restates the implementation ("set X, assert X == X").
+- **What DOES warrant a test:** non-trivial logic — algorithms, data
+  transformations, serialization round-trips, ID stability, ordering/
+  concurrency contracts, idempotency (generators are byte-stable),
+  fail-closed guards, registry/ship-set contracts (e.g.
+  `SystemPatternTemplatesTest` count + deserialization pins, taxonomy
+  validation gates).
+- **Heuristic:** if deleting the test would not make it harder to catch a
+  regression the user actually cares about, do not write it. When in doubt,
+  skip the test.
+
+### Plugin-Aware Registry Tests: Presence, Not Exact Counts (IMPORTANT)
+
+**Tests that assert on a LIVE service-component registry must be designed
+aware that plugins contribute to that registry** (ruling 2026-10-22: "All
+tests should be designed aware of plugins").
+
+- **Never pin an exact registry size** for anything a plugin can register
+  into — nodes, datatypes, taxonomy functions/frameworks, expressions,
+  parameters, menu items, ... A test of the form
+  `assertEquals(N, JIPipe.getNodes().getFunctions().all().size())` breaks the
+  moment any dev adds one taxonomy member through their plugin, even though
+  the core set is intact. (This is what happened to
+  `TaxonomyPluginTest.allTaxonomyRegistered`, pinned at 89 while the registry
+  held 90.)
+- **Assert presence instead:** every expected ID (a curated list of the
+  core's stable string-literal IDs) is registered, and any structural
+  invariants hold (valid parent chains, unique top-level hues, ...). Extra
+  IDs contributed by plugins are legitimate, not failures.
+- **Exact counts are still correct for single-source ship sets:** artifacts
+  generated in one place whose membership is fully controlled by core
+  (e.g. the bundled `system-templates.json` + pattern files in
+  `SystemPatternTemplatesTest`). The distinction is *who can add entries*:
+  a generator output has one owner; a service registry has many.
 
 ### ImageJ Legacy Patcher Constraint (IMPORTANT)
 The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2 cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**

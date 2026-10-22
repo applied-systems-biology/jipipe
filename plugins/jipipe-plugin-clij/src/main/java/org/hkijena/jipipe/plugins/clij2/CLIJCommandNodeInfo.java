@@ -19,15 +19,18 @@ import net.haesleinhuepf.clij.macro.AbstractCLIJPlugin;
 import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.haesleinhuepf.clij.macro.documentation.HTMLDocumentationTemplate;
 import net.haesleinhuepf.clij.macro.documentation.OffersDocumentation;
-import net.haesleinhuepf.clij2.utilities.IsCategorized;
 import org.apache.commons.text.WordUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyAutoAssignment;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.plugins.clij2.datatypes.CLIJImageData;
@@ -42,7 +45,23 @@ import java.util.*;
 
 public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
-    private final JIPipeNodeTypeCategory nodeTypeCategory = new ImagesNodeTypeCategory();
+    /**
+     * Command name → function-id mapping, loaded once from the plugin's
+     * {@code taxonomy/clij-command-mapping.json} resource (values are stable
+     * function-id literals; unmapped commands fall back to the name-keyword
+     * heuristic).
+     */
+    private static final TaxonomyAutoAssignment.ResourceMapping COMMAND_MAPPING =
+            TaxonomyAutoAssignment.ResourceMapping.load(CLIJPlugin.RESOURCES, "taxonomy/clij-command-mapping.json");
+
+    /**
+     * Command name → tags mapping (tag-audit pipeline), loaded once from the
+     * plugin's taxonomy/clij-command-tags.json resource (same package-relative
+     * location as the command mapping).
+     */
+    private static final TaxonomyAutoAssignment.TagMapping COMMAND_TAGS =
+            TaxonomyAutoAssignment.TagMapping.load(CLIJCommandNodeInfo.class, "taxonomy/clij-command-tags.json");
+
     private final String nodeId;
     private final String nodeName;
     private final PluginInfo<CLIJMacroPlugin> pluginInfo;
@@ -57,9 +76,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final Map<String, Boolean> nodeParametersByRef = new HashMap<>();
     private final HTMLText nodeDescription;
     private int numArgs = 0;
-    private String menuPath = "CLIJ";
-
-    private String aliasMenuPath = "Plugins\nImageJ on GPU (CLIJ2)";
 
     public CLIJCommandNodeInfo(Context context, PluginInfo<CLIJMacroPlugin> pluginInfo, JIPipeProgressInfo moduleProgress) {
         this.nodeId = "clij:" + pluginInfo.getIdentifier();
@@ -69,10 +85,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // Information only available to an instance
         try {
             CLIJMacroPlugin pluginInstance = pluginInfo.createInstance();
-            if (pluginInstance instanceof IsCategorized) {
-                menuPath = "CLIJ\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
-                aliasMenuPath += "\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
-            }
             String description = "";
             String availableForDimensions = "";
             if (pluginInstance instanceof OffersDocumentation) {
@@ -87,11 +99,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         } catch (InstantiableException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.emptyList();
     }
 
     public Set<String> getIoInputSlots() {
@@ -268,6 +275,53 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // Full-registry classification audit: the CLIJ command's display name
+        // is mapped to the taxonomy function via the plugin's JSON resource
+        // (taxonomy/clij-command-mapping.json, keyed by command name; values
+        // are stable function-id literals). The resource mapping supersedes
+        // the taxonomy service's weighted name inference, which remains the
+        // fallback for unmapped commands, and (via its inference fallback)
+        // Miscellaneous unassigned the last resort.
+        String mapped = COMMAND_MAPPING.functionIdOf(getName());
+        if (mapped != null) {
+            JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);
+            if (function != null) {
+                return function;
+            }
+        }
+        return JIPipe.getNodeTaxonomyService().inferFunction(getName());
+    }
+
+    @Override
+    public Set<String> getMergedTags() {
+        // Auto-discovered CLIJ commands have no @JIPipeNodeTaxonomyTags
+        // annotation; the tag-audit mapping (resource) is their tag source.
+        return COMMAND_TAGS.tagsOf(getName());
+    }
+
+    @Override
+    public Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        // Task 20: derived from the first image input slot's data class
+        // (ANY ⇒ both 2D + 3D), never heuristic. Defensive: registration must
+        // not crash if the node service is not ready or a slot class is odd.
+        try {
+            List<Class<?>> inputClasses = new ArrayList<>();
+            for (AddJIPipeInputSlot slot : inputSlots) {
+                inputClasses.add(slot.value());
+            }
+            return TaxonomyAutoAssignment.spatialForFirstImageInput(inputClasses, JIPipe.getNodes()::inputProfileFor);
+        } catch (RuntimeException e) {
+            return Collections.emptySet();
+        }
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new ClijFramework();
+    }
+
+    @Override
     public JIPipeGraphNode newInstance() {
         return new CLIJCommandNode(this);
     }
@@ -285,16 +339,6 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return nodeDescription;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return nodeTypeCategory;
     }
 
     @Override

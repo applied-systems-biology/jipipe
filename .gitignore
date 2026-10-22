@@ -93,6 +93,11 @@ cmake-build-*/
 # IntelliJ
 out/
 
+# Taxonomy conversion tooling (task 14) — one-off scratch inputs/tools, not committed.
+# The committed decision record is utils/taxonomy-conversion/conversion-map.md.
+/utils/taxonomy-conversion/convert.py
+/utils/taxonomy-conversion/*.tsv
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -118,3 +123,23 @@ fabric.properties
 .idea/caches/build_file_checksums.ser
 /jcef-bundle/
 /config/
+
+# Taxonomy conversion scratch (19.2 mapping build) — one-off survey data + builder scripts.
+# The committed decision record is utils/taxonomy-conversion/conversion-map.md.
+/utils/taxonomy-conversion/*.json
+/utils/taxonomy-conversion/*_map.py
+/utils/taxonomy-conversion/survey*.py
+/utils/taxonomy-conversion/apply_chunk*.py
+# Taxonomy conversion scratch (19.4 ij-3d mapping build).
+/utils/taxonomy-conversion/survey_ij3d.py
+/utils/taxonomy-conversion/apply_ij3d.py
+# Taxonomy conversion scratch (19.6 filesystem+strings+utils applier).
+/utils/taxonomy-conversion/apply_196.py
+# Taxonomy conversion scratch (19.8 annotations+ij-omero applier + byte-identity check).
+/utils/taxonomy-conversion/apply-19-8.py
+/utils/taxonomy-conversion/bytecheck-19-8.py
+# Taxonomy conversion scratch (19.9 cellpose+omnipose applier).
+/utils/taxonomy-conversion/apply_19_9.py
+# Taxonomy conversion scratch (19.11a weka+ilastik+opencv+scene-3d applier + byte-identity check).
+/utils/taxonomy-conversion/apply_19_11a.py
+/utils/taxonomy-conversion/bytecheck-19-11a.py

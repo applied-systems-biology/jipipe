@@ -385,6 +385,8 @@ public class ImageJDataTypesPlugin extends JIPipePrepackagedDefaultJavaPlugin {
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
         registerApplicationSettingsSheet(new ImageJDataTypesApplicationSettings());
+        // Derive node input profiles from the @ImageTypeInfo dimension constraints
+        JIPipe.getNodes().registerInputProfileProvider(new ImageTypeInfoInputProfileProvider());
         registerEnumParameterType("ome-tiff-compression",
                 OMETIFFCompression.class,
                 "OME TIFF Compression",

@@ -99,13 +99,8 @@ public class TooltipUtils {
             builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<p>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
-            }
-            builder.append("</p><br/>\n\n");
-        }
+        // Task 26a: alias rows removed (converted nodes have no aliases); the
+        // tooltip keeps name/description.
 
 
         // Write description
@@ -178,13 +173,8 @@ public class TooltipUtils {
             builder.append("**This node was marked by the developer as unstable, meaning that it may not always behave as expected. Please review outputs carefully.**\n\n");
         }
 
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<p>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
-            }
-            builder.append("</p><br/>\n\n");
-        }
+        // Task 26a: alias rows removed (converted nodes have no aliases); the
+        // tooltip keeps name/description.
 
         // Write description
         String description = info.getDescription().getBody();
@@ -268,13 +258,8 @@ public class TooltipUtils {
         if (info.isDeprecated())
             builder.append("<u><i>This node is deprecated</i></u><br/>");
 
-        if (!info.getAliases().isEmpty()) {
-            builder.append("<p>");
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
-            }
-            builder.append("</p><br/>\n\n");
-        }
+        // Task 26a: alias rows removed (converted nodes have no aliases); the
+        // tooltip keeps name/description.
 
         // Write description
         String description = info.getDescription().wrap(50).getBody();

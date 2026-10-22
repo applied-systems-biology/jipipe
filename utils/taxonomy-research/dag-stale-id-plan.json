@@ -1,0 +1,60 @@
+{
+  "_note": "(D)-critical: shipped patterns referencing a node id not registered in the FULL 6.0.0 launcher (verified against the prepackaged launcher registry dump, 2026-10-19 review fix). The previous plan was computed against a code/test-classpath dump (cLij2 2.3.0.6, no clijx) that is structurally blind to the dynamically-registered cLij2/clijx kernels (the real launcher ships cLij2 2.5.3.5 + clijx 0.32.2.0) — 9 of the former 12 excludes resolved.",
+  "exclude": {
+    "cluster-0134": {
+      "clusterId": "cluster-0134",
+      "name": "Train and predict with a generative model",
+      "staleIds": [
+        "create-jipipe2ai-generation-model",
+        "jipipe2ai-predict-generation",
+        "jipipe2ai-train-generation-model"
+      ],
+      "support": 3
+    },
+    "cluster-0216": {
+      "clusterId": "cluster-0216",
+      "name": "Train and predict image segmentation",
+      "staleIds": [
+        "create-jipipe2ai-segmentation-model",
+        "jipipe2ai-predict-image",
+        "jipipe2ai-train-image-model"
+      ],
+      "support": 2
+    },
+    "cluster-0254": {
+      "clusterId": "cluster-0254",
+      "name": "Train a deep-learning model from labeled images",
+      "staleIds": [
+        "deep-learning-train-image-model"
+      ],
+      "support": 1
+    }
+  },
+  "registrySource": "full-launcher dump (jipipe-launcher 26-plugin classpath + dist cLij2 2.5.3.5 + clijx 0.32.2.0)",
+  "renamable": {
+    "cluster-0133": {
+      "clusterId": "cluster-0133",
+      "name": "Tile multiple images into a grid",
+      "staleIds": [
+        "ij1-transform-tile"
+      ],
+      "support": 3
+    },
+    "cluster-0242": {
+      "clusterId": "cluster-0242",
+      "name": "Detect lines in 2D images",
+      "staleIds": [
+        "ij1-transform-tile"
+      ],
+      "support": 1
+    },
+    "cluster-0318": {
+      "clusterId": "cluster-0318",
+      "name": "Batch export OME-ZARR images from folders",
+      "staleIds": [
+        "import-ome-zarr-from-directory-as-imgplus"
+      ],
+      "support": 1
+    }
+  }
+}

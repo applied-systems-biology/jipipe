@@ -20,11 +20,10 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
 import org.hkijena.jipipe.api.nodes.database.entries.*;
 import org.hkijena.jipipe.api.service.components.JIPipeNodesServiceComponent;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,7 +54,7 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
             // Add creation of nodes by info
             for (Map.Entry<String, JIPipeNodeInfo> entry : nodeRegistry.getRegisteredNodeInfos().entrySet()) {
                 JIPipeNodeInfo nodeInfo = entry.getValue();
-                if (nodeInfo.isHidden() || nodeInfo.getCategory() instanceof InternalNodeTypeCategory) {
+                if (nodeInfo.isHidden() || TaxonomyView.isUnderFunction(nodeInfo, GraphFunction.class)) {
                     continue;
                 }
                 {
@@ -70,17 +69,6 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
                     CreateNewNodeByExampleDatabaseEntry newEntry = new CreateNewNodeByExampleDatabaseEntry("create-node-by-example:" + entry.getKey() + ":[" + i + "]", example);
                     newEntries.add(newEntry);
                     CACHED_GLOBAL_ENTRIES.add(newEntry);
-                }
-                // Add node alias creation
-                List<JIPipeNodeMenuLocation> aliases = nodeInfo.getAliases();
-                for (int i = 0; i < aliases.size(); i++) {
-                    JIPipeNodeMenuLocation alias = aliases.get(i);
-                    if (!StringUtils.isNullOrEmpty(alias.getAlternativeName())) {
-                        // Add as alias if name is different
-                        CreateNewNodeByInfoAliasDatabaseEntry newEntry = new CreateNewNodeByInfoAliasDatabaseEntry("create-node-by-info:" + entry.getKey() + ":alias-" + i, nodeInfo, alias);
-                        newEntries.add(newEntry);
-                        CACHED_GLOBAL_ENTRIES.add(newEntry);
-                    }
                 }
             }
 
@@ -110,7 +98,13 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
         // Create from templates
         for (JIPipeNodeTemplate template : JIPipe.getNodeTemplates().getAllTemplates(database.getProject())) {
             try {
-                CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template);
+                // R7 call site (b): migrate project-scope (and re-affirm global)
+                // legacy "menu-path" at entry-build time, before the entry reads
+                // the migrated taxonomy function / footer. Idempotent +
+                // order-safe, so the double-call with the global-reload path
+                // (call site a) is harmless.
+                template.migrateLegacyMenuPath();
+                CreateNewNodesByTemplateDatabaseEntry newEntry = new CreateNewNodesByTemplateDatabaseEntry(template, determineTemplateScope(template));
                 newEntries.add(newEntry);
             } catch (Throwable ignored) {
             }
@@ -118,5 +112,29 @@ public class JIPipeNodeDatabaseBuilderRun extends DefaultJIPipeRunnable {
 
         database.setEntries(newEntries);
         database.buildIndex();
+        // Rebuild the Similar/Previous/Next relation index eagerly so that,
+        // after this rebuild, the first UI relations() query reads current
+        // family-step + template-graph data without a lazy re-mine.
+        database.rebuildRelationIndex();
+    }
+
+    /**
+     * Determines the {@link TemplateScope} of a template from its storage
+     * location: plugin-provided templates are {@link TemplateScope#System},
+     * repository-downloaded templates in the user's global store are
+     * {@link TemplateScope#Downloaded}, the remaining user-global templates
+     * are {@link TemplateScope#Global}, and everything else (which came from
+     * the project metadata) is {@link TemplateScope#Project}.
+     */
+    private TemplateScope determineTemplateScope(JIPipeNodeTemplate template) {
+        if (JIPipe.getNodeTemplates().isPluginTemplate(template)) {
+            return TemplateScope.System;
+        }
+        if (JIPipe.getNodeTemplates().isInGlobal(template)) {
+            return JIPipe.getNodeTemplates().isDownloadedTemplate(template)
+                ? TemplateScope.Downloaded
+                : TemplateScope.Global;
+        }
+        return TemplateScope.Project;
     }
 }

@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableTransformFunction;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
@@ -47,7 +48,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Convert tables to parameters", description = "Converts a table into a parameter table. Please note that you have to define how each individual column is converted into a parameter. " +
         "To do this, add an entry into the 'Table columns' list and provide the parameter key, parameter type, and from which table column the value is sourced.")
-@ConfigureJIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = TableTransformFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ParametersData.class, name = "Output", create = true)
 public class DefineParametersFromTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {

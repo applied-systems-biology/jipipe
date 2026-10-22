@@ -22,7 +22,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdgeControlPoint;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.GraphFunction;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWorkbench;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.canvas.JIPipeDesktopGraphCanvasGrid;
@@ -195,11 +196,11 @@ public class JIPipeDesktopGraphCanvasNodeManager {
 
         // Replace project compartment with IOInterface
         for (JIPipeGraphNode node : ImmutableList.copyOf(graph.getGraphNodes())) {
-            if (node instanceof IOInterfaceAlgorithm && node.getCategory() instanceof InternalNodeTypeCategory) {
+            if (node instanceof IOInterfaceAlgorithm && TaxonomyView.isUnderFunction(node.getInfo(), GraphFunction.class)) {
                 IOInterfaceAlgorithm replacement = new IOInterfaceAlgorithm((IOInterfaceAlgorithm) node);
                 replacement.setInfo(JIPipe.getNodes().getInfoById("io-interface"));
                 graph.replaceNode(node, replacement);
-            } else if (node.getCategory() instanceof InternalNodeTypeCategory) {
+            } else if (TaxonomyView.isUnderFunction(node.getInfo(), GraphFunction.class)) {
                 // Don't paste internal nodes
                 graph.removeNode(node, false);
             }

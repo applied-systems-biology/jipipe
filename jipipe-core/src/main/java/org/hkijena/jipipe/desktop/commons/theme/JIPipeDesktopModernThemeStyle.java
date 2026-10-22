@@ -170,16 +170,31 @@ public class JIPipeDesktopModernThemeStyle {
     private Color nodeSlotBackground = new Color(0xFAFAFA);
 
     @JsonProperty("node-fill-saturation")
-    private float nodeFillSaturation = 0.1f;
+    private float nodeFillSaturation = 0.15f;
 
     @JsonProperty("node-fill-brightness")
-    private float nodeFillBrightness = 0.9f;
+    private float nodeFillBrightness = 0.8f;
 
     @JsonProperty("node-border-saturation")
-    private float nodeBorderSaturation = 0.1f;
+    private float nodeBorderSaturation = 0.2f;
 
     @JsonProperty("node-border-brightness")
     private float nodeBorderBrightness = 0.5f;
+
+    /*
+     * Node framework pattern
+     */
+    @JsonProperty("show-node-framework-pattern")
+    private boolean showNodeFrameworkPattern = true;
+
+    @JsonProperty("node-pattern-ink")
+    private Color nodePatternInk = Color.WHITE;
+
+    @JsonProperty("node-pattern-opacity")
+    private float nodePatternOpacity = 0.3f;
+
+    @JsonProperty("show-node-framework-badge")
+    private boolean showNodeFrameworkBadge = true;
 
     @JsonProperty("edge-border-color-default")
     private Color edgeBorderColorDefault = new Color(0x737880);
@@ -254,6 +269,10 @@ public class JIPipeDesktopModernThemeStyle {
         this.nodeFillBrightness = other.nodeFillBrightness;
         this.nodeBorderSaturation = other.nodeBorderSaturation;
         this.nodeBorderBrightness = other.nodeBorderBrightness;
+        this.showNodeFrameworkPattern = other.showNodeFrameworkPattern;
+        this.nodePatternInk = other.nodePatternInk;
+        this.nodePatternOpacity = other.nodePatternOpacity;
+        this.showNodeFrameworkBadge = other.showNodeFrameworkBadge;
         this.edgeBorderColorDefault = other.edgeBorderColorDefault;
         this.edgeBorderColorConvert = other.edgeBorderColorConvert;
         this.islandsCornerRadius = other.islandsCornerRadius;
@@ -679,6 +698,38 @@ public class JIPipeDesktopModernThemeStyle {
 
     public void setNodeBorderBrightness(float nodeBorderBrightness) {
         this.nodeBorderBrightness = nodeBorderBrightness;
+    }
+
+    public boolean isShowNodeFrameworkPattern() {
+        return showNodeFrameworkPattern;
+    }
+
+    public void setShowNodeFrameworkPattern(boolean showNodeFrameworkPattern) {
+        this.showNodeFrameworkPattern = showNodeFrameworkPattern;
+    }
+
+    public Color getNodePatternInk() {
+        return nodePatternInk;
+    }
+
+    public void setNodePatternInk(Color nodePatternInk) {
+        this.nodePatternInk = nodePatternInk;
+    }
+
+    public float getNodePatternOpacity() {
+        return nodePatternOpacity;
+    }
+
+    public void setNodePatternOpacity(float nodePatternOpacity) {
+        this.nodePatternOpacity = nodePatternOpacity;
+    }
+
+    public boolean isShowNodeFrameworkBadge() {
+        return showNodeFrameworkBadge;
+    }
+
+    public void setShowNodeFrameworkBadge(boolean showNodeFrameworkBadge) {
+        this.showNodeFrameworkBadge = showNodeFrameworkBadge;
     }
 
     public int getIslandsCornerRadius() {

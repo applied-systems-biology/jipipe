@@ -22,7 +22,11 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyAutoAssignment;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tracking.TrackingDetectionFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -71,8 +75,31 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
+    public Set<String> getMergedTags() {
+        // Programmatic info (not enriched by TaxonomyResolver): the tag-audit
+        // resource (jipipe-core) is the tag source.
+        return TaxonomyAutoAssignment.CuratedNodeTags.tagsOf(getId());
+    }
+
+    @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
         return CreateSpotDetectorNode.class;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        // Spot detector factories (LoG, DoG, Hessian, mask, thresholding,
+        // label-image, manual) create the spot detectors that feed the
+        // "Detect spots" step ⇒ the Tracking detection leaf, next to their
+        // annotated siblings. (The "rule 6" data/misc default of the original
+        // conversion only reflected the emitted data type, not the role in the
+        // tracking workflow.)
+        return new TrackingDetectionFunction();
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return new TrackMateFramework();
     }
 
     public SpotDetectorFactory<?> getSpotDetectorFactory() {
@@ -101,16 +128,6 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     @Override
     public HTMLText getDescription() {
         return description;
-    }
-
-    @Override
-    public String getMenuPath() {
-        return "";
-    }
-
-    @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return new DataSourceNodeTypeCategory();
     }
 
     @Override

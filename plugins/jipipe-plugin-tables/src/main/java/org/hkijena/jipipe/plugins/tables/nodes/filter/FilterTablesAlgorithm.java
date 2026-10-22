@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.tables.nodes.filter;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableFilterModifyFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeWorkbench;
@@ -22,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -37,8 +37,8 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@SetJIPipeDocumentation(name = "Filter tables", description = "Filters tables by their properties.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Filter")
+@SetJIPipeDocumentation(name = "Filter tables", description = "Keeps only tables that match a condition you write, such as having at least 10 rows or containing a named column. It checks each input table's row count, column count, column names, and annotations, and passes the table through unchanged when the condition is true; otherwise it produces no table.")
+@ConfigureJIPipeNode(function = TableFilterModifyFunction.class)
 @AddJIPipeInputSlot(value = ResultsTableData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

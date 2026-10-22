@@ -17,7 +17,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.api.collections.ListParameterSettings;
@@ -33,9 +35,9 @@ import java.util.List;
 /**
  * Provides an input file
  */
-@SetJIPipeDocumentation(name = "File list", description = "Converts each provided path into file data.")
+@SetJIPipeDocumentation(name = "File list", description = "Creates a list of files from the files you specify. It takes the file names entered in the node settings and produces one file for each, ready for downstream file processing.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filenames", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class FileListDataSource extends AbstractPathDataSource {
 
     private PathList files = new PathList();

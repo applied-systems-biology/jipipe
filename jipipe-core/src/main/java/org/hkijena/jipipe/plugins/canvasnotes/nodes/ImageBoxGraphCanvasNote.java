@@ -16,7 +16,8 @@ package org.hkijena.jipipe.plugins.canvasnotes.nodes;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.GraphAnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.GraphAnnotationsFunction;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopAnnotationGraphNodeUI;
@@ -28,8 +29,8 @@ import org.hkijena.jipipe.utils.SizeFitMode;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-@SetJIPipeDocumentation(name = "Image box canvas note", description = "A canvas note that displays an image")
-@ConfigureJIPipeNode(nodeTypeCategory = GraphAnnotationsNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "Image box canvas note", description = "Places a static image box on the workflow canvas; it receives no data and outputs no data. It displays a selected image with configurable fit, anchor, scale, margins, background, and border.")
+@ConfigureJIPipeNode(function = GraphAnnotationsFunction.class)
 public class ImageBoxGraphCanvasNote extends DefaultTextBoxGraphCanvasNote {
     private final ImageParameters imageParameters;
 

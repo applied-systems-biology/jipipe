@@ -108,6 +108,10 @@ public final class JIPipe {
         return instance.getNodes();
     }
 
+    public static JIPipeNodeTaxonomyServiceComponent getNodeTaxonomyService() {
+        return instance.getNodeTaxonomyService();
+    }
+
     public static JIPipeDatatypesServiceComponent getDataTypes() {
         return instance.getDataTypes();
     }

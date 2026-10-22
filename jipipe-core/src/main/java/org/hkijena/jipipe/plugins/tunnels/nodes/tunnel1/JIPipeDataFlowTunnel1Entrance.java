@@ -6,11 +6,12 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.AddJIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.graph.GraphWrappersFunction;
 import org.hkijena.jipipe.plugins.tunnels.nodes.JIPipeDataFlowTunnelEntrance;
 
-@SetJIPipeDocumentation(name = "Tunnel entrance", description = "")
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Organization")
+@SetJIPipeDocumentation(name = "Tunnel entrance", description = "Forwards any incoming data set unchanged to the matching tunnel exit, producing no output at this node.")
+@ConfigureJIPipeNode(function = GraphWrappersFunction.class)
 @AddJIPipeInputSlot(name = "T1", value = JIPipeData.class, create = true, optional = true)
 public class JIPipeDataFlowTunnel1Entrance extends JIPipeDataFlowTunnelEntrance {
 

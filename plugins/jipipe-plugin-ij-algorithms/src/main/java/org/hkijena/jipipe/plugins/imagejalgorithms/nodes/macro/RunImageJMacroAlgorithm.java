@@ -29,11 +29,13 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingImageJMacroFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.*;
 import org.hkijena.jipipe.api.validation.contexts.ParameterValidationReportContext;
@@ -71,7 +73,7 @@ import java.util.Map;
         "<li>Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.</li>" +
         "<li>You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name.</li>" +
         "</ul>")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = ScriptingImageJMacroFunction.class, framework = ImageJ1Framework.class)
 @AddJIPipeInputSlot(ImagePlusData.class)
 @AddJIPipeInputSlot(Roi2dListData.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
@@ -79,7 +81,6 @@ import java.util.Map;
 @AddJIPipeOutputSlot(ImagePlusData.class)
 @AddJIPipeOutputSlot(Roi2dListData.class)
 @AddJIPipeOutputSlot(ResultsTableData.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
 public class RunImageJMacroAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeScriptAlgorithm {
     public static final JIPipeDataSlotInfo SLOT_SCRIPT = JIPipeDataSlotInfo.builder().slotType(JIPipeSlotType.Input).dataClass(ImageJMacroData.class).name("Script").userModifiable(false).role(JIPipeDataSlotRole.Parameters).build();
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{

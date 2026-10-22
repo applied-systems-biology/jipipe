@@ -19,10 +19,13 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFamilyStepAnnotation;
+import org.hkijena.jipipe.api.nodes.taxonomy.families.PlottingFamily;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.plotting.PlotMiscFunction;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
@@ -46,13 +49,13 @@ import java.util.*;
  *
  * @deprecated Instead, the new dynamically generated plotting should be utilized
  */
+@JIPipeNodeTaxonomyFamilyStepAnnotation(family = PlottingFamily.class, label = "Plot tables", purpose = "Create a JFreeChart plot from the incoming result tables")
 @SetJIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
         "will then show the available settings for this plot type, and a list of input columns for the plot. " +
         "Please ensure to correctly setup these input columns.")
-@ConfigureJIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = { PlotMiscFunction.class, MeasurementsFunction.class }, framework = JFreeChartFramework.class)
 @AddJIPipeInputSlot(ResultsTableData.class)
 @AddJIPipeOutputSlot(JFreeChartPlotData.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")
 @LabelAsJIPipeHidden
 @Deprecated
 public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {

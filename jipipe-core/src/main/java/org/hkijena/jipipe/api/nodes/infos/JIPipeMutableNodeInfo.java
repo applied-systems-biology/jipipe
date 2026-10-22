@@ -17,6 +17,11 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;
@@ -33,11 +38,9 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private String id;
     private String name;
     private HTMLText description = new HTMLText();
-    private JIPipeNodeTypeCategory category;
     private List<AddJIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<AddJIPipeOutputSlot> outputSlots = new ArrayList<>();
     private Set<Class<? extends JIPipeEnvironment>> environments = new HashSet<>();
-    private String menuPath;
 
     private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
     private boolean hidden = false;
@@ -47,7 +50,13 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private JIPipeNodeClassification nodeClassification = JIPipeNodeClassification.Standard;
     private List<String> additionalCitations = new ArrayList<>();
 
-    private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
+    private JIPipeNodeTaxonomyFunction primaryFunction = null;
+    private Set<JIPipeNodeTaxonomyFunction> secondaryFunctions = new HashSet<>();
+    private Set<JIPipeNodeTaxonomySpatialDimension> spatialDimensions = new HashSet<>();
+    private JIPipeNodeTaxonomyFramework framework = new NoFramework();
+    private Set<String> taxonomyTags = new HashSet<>();
+    private Set<String> mergedTags = new HashSet<>();
+    private JIPipeNodeTaxonomyInputProfile inputProfile = JIPipeNodeTaxonomyInputProfile.NA;
 
     @Override
     public Class<? extends JIPipeData> getDataSourceMenuLocation() {
@@ -101,21 +110,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public JIPipeNodeTypeCategory getCategory() {
-        return category;
-    }
-
-    /**
-     * Sets the category
-     *
-     * @param category The category
-     */
-    public void setCategory(JIPipeNodeTypeCategory category) {
-        this.category = category;
-    }
-
-
-    @Override
     public List<AddJIPipeInputSlot> getInputSlots() {
         return inputSlots;
     }
@@ -158,20 +152,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public String getMenuPath() {
-        return menuPath;
-    }
-
-    /**
-     * Sets the menu path. Menu items are separated by newlines
-     *
-     * @param menuPath The menu path
-     */
-    public void setMenuPath(String menuPath) {
-        this.menuPath = menuPath;
-    }
-
-    @Override
     public boolean isHidden() {
         return hidden;
     }
@@ -196,15 +176,6 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setAdditionalCitations(List<String> additionalCitations) {
         this.additionalCitations = additionalCitations;
-    }
-
-    @Override
-    public List<JIPipeNodeMenuLocation> getAliases() {
-        return aliases;
-    }
-
-    public void setAliases(List<JIPipeNodeMenuLocation> aliases) {
-        this.aliases = aliases;
     }
 
     @Override
@@ -241,5 +212,104 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
 
     public void setNodeClassification(JIPipeNodeClassification nodeClassification) {
         this.nodeClassification = nodeClassification;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        return primaryFunction;
+    }
+
+    /**
+     * Sets the primary taxonomy function of this node
+     *
+     * @param primaryFunction the primary function, or null if the node has none
+     */
+    public void setPrimaryFunction(JIPipeNodeTaxonomyFunction primaryFunction) {
+        this.primaryFunction = primaryFunction;
+    }
+
+    @Override
+    public Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
+        return secondaryFunctions;
+    }
+
+    /**
+     * Sets the secondary taxonomy functions of this node
+     *
+     * @param secondaryFunctions the secondary functions
+     */
+    public void setSecondaryFunctions(Set<JIPipeNodeTaxonomyFunction> secondaryFunctions) {
+        this.secondaryFunctions = secondaryFunctions;
+    }
+
+    @Override
+    public Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        return spatialDimensions;
+    }
+
+    /**
+     * Sets the spatial dimensions this node operates in
+     *
+     * @param spatialDimensions the declared spatial dimensions
+     */
+    public void setSpatialDimensions(Set<JIPipeNodeTaxonomySpatialDimension> spatialDimensions) {
+        this.spatialDimensions = spatialDimensions;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyFramework getFramework() {
+        return framework;
+    }
+
+    /**
+     * Sets the framework this node implements
+     *
+     * @param framework the framework, or {@link NoFramework} if the node declares none
+     */
+    public void setFramework(JIPipeNodeTaxonomyFramework framework) {
+        this.framework = framework;
+    }
+
+    @Override
+    public Set<String> getTaxonomyTags() {
+        return taxonomyTags;
+    }
+
+    /**
+     * Sets the node-level taxonomy tags of this node
+     *
+     * @param taxonomyTags the node-level tags
+     */
+    public void setTaxonomyTags(Set<String> taxonomyTags) {
+        this.taxonomyTags = taxonomyTags;
+    }
+
+    @Override
+    public Set<String> getMergedTags() {
+        return mergedTags;
+    }
+
+    /**
+     * Sets the merged taxonomy tags of this node
+     * (node-level tags plus the tags of every taxonomy function the node appears under)
+     *
+     * @param mergedTags the merged tags
+     */
+    public void setMergedTags(Set<String> mergedTags) {
+        this.mergedTags = mergedTags;
+    }
+
+    @Override
+    public JIPipeNodeTaxonomyInputProfile getInputProfile() {
+        return inputProfile;
+    }
+
+    /**
+     * Sets the derived input profile of this node
+     *
+     * @param inputProfile the input profile
+     */
+    public void setInputProfile(JIPipeNodeTaxonomyInputProfile inputProfile) {
+        this.inputProfile = inputProfile;
     }
 }

@@ -13,15 +13,17 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.features;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import imagescience.ImageScience;
 import imagescience.image.*;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -40,12 +42,11 @@ import java.util.Vector;
 @SetJIPipeDocumentation(name = "Hessian 2D/3D (FeatureJ)", description = "Computes Hessian the eigenvalues of the Hessian, which can be used for example to discriminate locally between plate-like, line-like, and blob-like image structures. " +
         "All largest eigenvalues are put in a separate image, as are all smallest, and in 3D all middle as well. " +
         "If the size of the image is unity in the z-dimension (single slice), the node computes 2D-Hessian eigenvalues, otherwise it computes 3D-Hessian eigenvalues (for each time frame and channel in a 5D image).")
-@ConfigureJIPipeNode(menuPath = "Features", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Smallest", create = true, description = "The largest eigenvalue of Hessian tensor")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Middle", create = true, description = "The middle eigenvalue of Hessian tensor. Only for 3D data")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Largest", create = true, description = "The largest eigenvalue of Hessian tensor")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Hessian")
 @AddJIPipeCitation("Y. Sato, S. Nakajima, N. Shiraga, H. Atsumi, S. Yoshida, T. Koller, G. Gerig, R. Kikinis Three-Dimensional Multi-Scale Line Filter for Segmentation and Visualization of Curvilinear Structures in Medical Images Medical Image Analysis, vol. 2, no. 2, June 1998, pp. 143-168")
 @AddJIPipeCitation("A. F. Frangi, W. J. Niessen, R. M. Hoogeveen, T. van Walsum, M. A. Viergever Model-Based Quantitation of 3D Magnetic Resonance Angiographic Images IEEE Transactions on Medical Imaging, vol. 18, no. 10, October 1999, pp. 946-956")
 @AddJIPipeCitation("K. Rohr Landmark-Based Image Analysis using Geometric and Intensity Models Kluwer Academic Publishers, 2001")

@@ -13,17 +13,23 @@
 
 package org.hkijena.jipipe.api.nodes.database;
 
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-
 public enum JIPipeNodeDatabasePipelineVisibility {
     Pipeline,
     Compartments,
     Both;
 
-    public static JIPipeNodeDatabasePipelineVisibility fromCategory(JIPipeNodeTypeCategory category) {
-        if (category.isVisibleInPipeline() && category.isVisibleInCompartments()) {
+    /**
+     * Derives the pipeline visibility from the node's two visibility
+     * behavior flags (see {@code TaxonomyView.behaviorFlags}).
+     *
+     * @param visibleInPipeline     whether the node is visible in the pipeline editor
+     * @param visibleInCompartments whether the node is visible in the compartment editor
+     * @return the corresponding visibility constant
+     */
+    public static JIPipeNodeDatabasePipelineVisibility fromFlags(boolean visibleInPipeline, boolean visibleInCompartments) {
+        if (visibleInPipeline && visibleInCompartments) {
             return Both;
-        } else if (category.isVisibleInCompartments()) {
+        } else if (visibleInCompartments) {
             return Compartments;
         } else {
             return Pipeline;

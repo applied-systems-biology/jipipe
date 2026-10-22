@@ -19,10 +19,10 @@ import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.database.DefaultJIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.WeightedTokens;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphCanvasUI;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGraphNodeUI;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
@@ -40,21 +40,14 @@ public class ExistingPipelineNodeDatabaseEntry extends DefaultJIPipeNodeDatabase
     private final WeightedTokens tokens = new WeightedTokens();
     private final Map<String, JIPipeDataSlotInfo> inputSlots = new HashMap<>();
     private final Map<String, JIPipeDataSlotInfo> outputSlots = new HashMap<>();
-    private final Set<String> categoryIds = new HashSet<>();
 
     public ExistingPipelineNodeDatabaseEntry(String id, JIPipeGraphNode graphNode) {
         this.id = id;
         this.graphNode = graphNode;
         initializeSlots();
         initializeTokens();
-        initializeCategoryIds();
-    }
-
-    private void initializeCategoryIds() {
-        categoryIds.add(graphNode.getCategory().getId());
-        for (JIPipeNodeMenuLocation alias : graphNode.getInfo().getAliases()) {
-            categoryIds.add(alias.getCategory().getId());
-        }
+        // Same node as the existing graph node: same taxonomy facets
+        CreateNewNodeByInfoDatabaseEntry.initializeTaxonomyFacets(this, graphNode.getInfo());
     }
 
     private void initializeSlots() {
@@ -71,19 +64,13 @@ public class ExistingPipelineNodeDatabaseEntry extends DefaultJIPipeNodeDatabase
         tokens.add(graphNode.getName(), WeightedTokens.WEIGHT_NAME);
         tokens.add(graphNode.getCustomDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
         tokens.add(nodeInfo.getName(), WeightedTokens.WEIGHT_MENU);
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getAlternativeName(), WeightedTokens.WEIGHT_MENU);
-        }
-        tokens.add(nodeInfo.getCategory().getName() + "\n" + nodeInfo.getMenuPath(), WeightedTokens.WEIGHT_MENU);
-        for (JIPipeNodeMenuLocation alias : nodeInfo.getAliases()) {
-            tokens.add(alias.getCategory().getName() + "\n" + alias.getMenuPath(), WeightedTokens.WEIGHT_MENU);
-        }
         tokens.add(nodeInfo.getDescription().getBody(), WeightedTokens.WEIGHT_DESCRIPTION);
     }
 
     @Override
     public JIPipeNodeDatabasePipelineVisibility getVisibility() {
-        return JIPipeNodeDatabasePipelineVisibility.fromCategory(graphNode.getCategory());
+        TaxonomyView.BehaviorFlags flags = TaxonomyView.behaviorFlags(graphNode.getInfo());
+        return JIPipeNodeDatabasePipelineVisibility.fromFlags(flags.isVisibleInPipeline(), flags.isVisibleInCompartments());
     }
 
     @Override
@@ -156,11 +143,6 @@ public class ExistingPipelineNodeDatabaseEntry extends DefaultJIPipeNodeDatabase
         } else {
             return Collections.singletonList("Compartments\n" + graphNode.getCompartmentDisplayName());
         }
-    }
-
-    @Override
-    public Set<String> getCategoryIds() {
-        return categoryIds;
     }
 
     @Override

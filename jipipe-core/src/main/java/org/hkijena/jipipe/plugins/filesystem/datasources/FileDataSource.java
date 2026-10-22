@@ -17,7 +17,9 @@ import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.parameters.library.filesystem.PathParameterSettings;
@@ -31,9 +33,9 @@ import java.util.List;
 /**
  * Provides an input file
  */
-@SetJIPipeDocumentation(name = "File", description = "Converts the path parameter into file data.")
+@SetJIPipeDocumentation(name = "File", description = "Loads a single file chosen in the node settings and makes it available to later steps as file data. It takes no input data and does not change the file contents; it only provides the selected file for later steps to open or process.")
 @AddJIPipeOutputSlot(value = FileData.class, name = "Filename", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 public class FileDataSource extends AbstractPathDataSource {
 
     private Path fileName;

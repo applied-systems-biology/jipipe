@@ -13,6 +13,9 @@
 
 package org.hkijena.jipipe.plugins.ijmultitemplatematching;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+
 import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.gui.ShapeRoi;
@@ -30,8 +33,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -77,8 +79,7 @@ import java.util.stream.Collectors;
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Assembled templates")
-@ConfigureJIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching")
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
 
     public static final JIPipeDataSlotInfo OUTPUT_SLOT_MATCHED_TEMPLATES = new JIPipeDataSlotInfo(JIPipeDataTable.class, JIPipeSlotType.Output, "Matched templates", "Measurements attached to the matched templates.");

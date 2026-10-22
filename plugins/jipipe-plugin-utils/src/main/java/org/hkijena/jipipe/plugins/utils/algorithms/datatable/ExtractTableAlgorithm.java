@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.utils.algorithms.datatable;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.tables.TableJoinSplitFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -26,7 +27,6 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.util.ArrayList;
@@ -36,7 +36,7 @@ import java.util.List;
         " If multiple tables are supplied, the rows are merged.")
 @AddJIPipeInputSlot(value = JIPipeDataTable.class, name = "Table", create = true)
 @AddJIPipeOutputSlot(value = JIPipeData.class, name = "Data", create = true)
-@ConfigureJIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
+@ConfigureJIPipeNode(function = TableJoinSplitFunction.class)
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean mergeAnnotations = true;

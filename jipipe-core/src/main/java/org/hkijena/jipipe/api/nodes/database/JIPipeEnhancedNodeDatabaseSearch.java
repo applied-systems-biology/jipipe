@@ -256,7 +256,16 @@ public class JIPipeEnhancedNodeDatabaseSearch implements JIPipeNodeDatabaseSearc
             extra.add(e.getDescription().getHtml().replaceAll("<[^>]*>", " "));
         }
         if (e.getLocationInfos() != null) extra.addAll(e.getLocationInfos());
-        if (e.getCategoryIds() != null) extra.addAll(e.getCategoryIds());
+        // Taxonomy function ids (Task 21b): every node-info-carrying entry is
+        // searchable by the ids of the taxonomy functions its node appears
+        // under. Uses the Task-15 functionIds facet already carried by the
+        // entry (no TaxonomyView needed here). Entries that do not wrap a node
+        // type (compartments, templates) legitimately contribute no id tokens;
+        // their name/description/location tokens remain.
+        Set<String> functionIds = e.getFunctionIds();
+        if (functionIds != null && !functionIds.isEmpty()) {
+            extra.addAll(functionIds);
+        }
         return String.join(" ", extra);
     }
 

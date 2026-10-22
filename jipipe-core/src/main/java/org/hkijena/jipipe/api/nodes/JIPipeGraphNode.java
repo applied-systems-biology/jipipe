@@ -381,15 +381,6 @@ public abstract class JIPipeGraphNode extends AbstractJIPipeParameterCollection 
     }
 
     /**
-     * Gets the algorithm category
-     *
-     * @return The category
-     */
-    public JIPipeNodeTypeCategory getCategory() {
-        return getInfo().getCategory();
-    }
-
-    /**
      * Gets the slot configuration
      *
      * @return Slot configuration

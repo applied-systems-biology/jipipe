@@ -15,21 +15,19 @@ package org.hkijena.jipipe.desktop.commons.components.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.desktop.commons.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyView;
+import org.hkijena.jipipe.desktop.commons.components.icons.NodeFrameworkPatternIcon;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Renderer for {@link JIPipeNodeInfo}
  */
 public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeInfo> {
 
-    private SolidColorIcon nodeColor;
+    private NodeFrameworkPatternIcon nodeColor;
     private JLabel nodeIcon;
     private JLabel nameLabel;
     private JLabel pathLabel;
@@ -46,7 +44,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 50);
+        nodeColor = new NodeFrameworkPatternIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         pathLabel = new JLabel();
@@ -102,29 +100,17 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
 
         if (info != null) {
             nodeColor.setFillColor(ThemeUtils.getNodeFillColor(info));
-            String menuPath = info.getCategory().getName();
-            menuPath += "\n" + info.getMenuPath();
-            menuPath = StringUtils.getCleanedMenuPath(menuPath).replace("\n", " > ");
-
-            pathLabel.setText(menuPath);
+            // Framework signature pattern over the swatch (the node's framework).
+            nodeColor.setFramework(info.getFramework());
+            // Location (Task 21b): converted ⇒ "function chain > node", unconverted
+            // ⇒ legacy "category [> menuPath] > node". The label keeps its position;
+            // only the value source changes from category/menuPath to the taxonomy.
+            pathLabel.setText(TaxonomyView.locationPath(info));
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
-            if (info.getAliases().isEmpty()) {
-                alternativeLabel.setText("");
-            } else {
-                StringBuilder builder = new StringBuilder();
-                builder.append("Alias: ");
-                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
-                for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                    if (i > 0) {
-                        builder.append(", ");
-                    }
-                    JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
-                    builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n"))).append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
-                }
-                alternativeLabel.setText(builder.toString());
-            }
+            // Task 26a: alias rows removed (converted nodes have no aliases).
+            alternativeLabel.setText("");
 
         } else {
             nameLabel.setText("<Null>");

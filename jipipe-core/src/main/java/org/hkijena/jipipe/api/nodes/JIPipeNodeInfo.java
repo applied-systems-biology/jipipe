@@ -18,8 +18,12 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.environments.JIPipeEnvironment;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInputProfile;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension;
+import org.hkijena.jipipe.api.nodes.taxonomy.NoFramework;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.net.URL;
@@ -30,41 +34,6 @@ import java.util.stream.Collectors;
  * Describes an {@link JIPipeGraphNode}
  */
 public interface JIPipeNodeInfo {
-
-    /**
-     * Gets the registered algorithms, grouped by their menu paths
-     *
-     * @param category the targeted category
-     * @param infos    The infos to group
-     * @return Map from menu path to algorithms with this menu path
-     */
-    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> infos) {
-        Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
-        for (JIPipeNodeInfo info : infos) {
-            if (Objects.equals(info.getCategory().getId(), category.getId())) {
-                String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-                Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-                if (group == null) {
-                    group = new HashSet<>();
-                    result.put(menuPath, group);
-                }
-                group.add(info);
-            }
-            for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if (Objects.equals(location.getCategory().getId(), category.getId())) {
-                    String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
-                    Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-                    if (group == null) {
-                        group = new HashSet<>();
-                        result.put(menuPath, group);
-                    }
-                    group.add(info);
-                }
-            }
-        }
-
-        return result;
-    }
 
     /**
      * Gets a sorted list of algorithms
@@ -84,7 +53,7 @@ public interface JIPipeNodeInfo {
     String getId();
 
     /**
-     * If the node is of category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}, allows to re-assign them to a new menu
+     * If the node is a data source (its function is under the Data sources branch), allows to re-assign them to a new menu
      * If {@link JIPipeEmptyData} is returned, no re-assignment is applied
      *
      * @return the re-assigned data type menu or {@link JIPipeEmptyData}
@@ -128,20 +97,6 @@ public interface JIPipeNodeInfo {
      * @return The description
      */
     HTMLText getDescription();
-
-    /**
-     * Gets the menu path of this algorithm
-     *
-     * @return String containing menu entries separated by new-lines
-     */
-    String getMenuPath();
-
-    /**
-     * Returns the algorithm category
-     *
-     * @return The category
-     */
-    JIPipeNodeTypeCategory getCategory();
 
     /**
      * Returns general input data.
@@ -257,24 +212,6 @@ public interface JIPipeNodeInfo {
     }
 
     /**
-     * A menu location that points towards the primary menu
-     *
-     * @return the primary menu location
-     */
-    default JIPipeNodeMenuLocation getPrimaryMenuLocation() {
-        return new JIPipeNodeMenuLocation(getCategory(), getMenuPath(), "");
-    }
-
-    /**
-     * A list of alternative menu locations
-     *
-     * @return alternative menu locations. might be empty.
-     */
-    default List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.emptyList();
-    }
-
-    /**
      * Returns the classification of this node, which affects search ranking.
      * Standard nodes are shown at full rank, AutoImport nodes are downranked,
      * and EdgeCase nodes are further downranked.
@@ -283,5 +220,85 @@ public interface JIPipeNodeInfo {
      */
     default JIPipeNodeClassification getNodeClassification() {
         return JIPipeNodeClassification.Standard;
+    }
+
+    // --- Node taxonomy ---
+
+    /**
+     * The primary function of this node in the node taxonomy,
+     * i.e. the hierarchical function under which the node is primarily
+     * grouped.
+     * <p>
+     * The default implementation returns {@code null} for node infos that
+     * are not backed by {@link JIPipeMutableNodeInfo}, meaning the node is
+     * not (yet) assigned to a taxonomy function.
+     *
+     * @return the primary function, or {@code null} if the node has none
+     */
+    default JIPipeNodeTaxonomyFunction getPrimaryFunction() {
+        return null;
+    }
+
+    /**
+     * The secondary functions of this node in the node taxonomy:
+     * additional hierarchical functions under which the node is listed
+     * besides its primary function.
+     *
+     * @return the secondary functions, possibly empty
+     */
+    default Set<JIPipeNodeTaxonomyFunction> getSecondaryFunctions() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The spatial dimensions this node operates in.
+     *
+     * @return the declared spatial dimensions, possibly empty
+     */
+    default Set<JIPipeNodeTaxonomySpatialDimension> getSpatialDimensions() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The framework (external software or research project) this node implements.
+     *
+     * @return the framework, or {@link NoFramework} if the node declares none
+     */
+    default JIPipeNodeTaxonomyFramework getFramework() {
+        return new NoFramework();
+    }
+
+    /**
+     * The node-level taxonomy tags of this node, declared via
+     * {@code @JIPipeNodeTaxonomyTags}.
+     * <p>
+     * These are distinct from the tags of the taxonomy functions the node
+     * appears under; both are combined in {@link #getMergedTags()}.
+     *
+     * @return the node-level tags, possibly empty
+     */
+    default Set<String> getTaxonomyTags() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The merged taxonomy tags of this node: the node-level tags
+     * ({@link #getTaxonomyTags()}) plus the tags of every taxonomy function
+     * the node appears under.
+     *
+     * @return the merged tags, possibly empty
+     */
+    default Set<String> getMergedTags() {
+        return Collections.emptySet();
+    }
+
+    /**
+     * The derived input profile of this node, describing what kind of data it consumes.
+     *
+     * @return the input profile; defaults to {@link JIPipeNodeTaxonomyInputProfile#NA}
+     * when the profile cannot be determined
+     */
+    default JIPipeNodeTaxonomyInputProfile getInputProfile() {
+        return JIPipeNodeTaxonomyInputProfile.NA;
     }
 }

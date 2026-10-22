@@ -105,11 +105,6 @@ public class ExistingCompartmentDatabaseEntry extends DefaultJIPipeNodeDatabaseE
     }
 
     @Override
-    public Set<String> getCategoryIds() {
-        return Collections.emptySet();
-    }
-
-    @Override
     public Map<String, JIPipeDataSlotInfo> getInputSlots() {
         return inputSlots;
     }

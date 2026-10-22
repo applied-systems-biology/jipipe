@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.plugins.filesystem.algorithms.local;
 
+
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -21,9 +22,9 @@ import org.hkijena.jipipe.api.nodes.AddJIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNodeRunContext;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.FileSystemNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FileSystemFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionVariablesMap;
 import org.hkijena.jipipe.plugins.expressions.PathQueryExpression;
@@ -42,8 +43,8 @@ import java.util.stream.Stream;
 /**
  * Algorithm that lists files in each folder
  */
-@SetJIPipeDocumentation(name = "List files", description = "Lists all files in the input folder")
-@ConfigureJIPipeNode(menuPath = "List", nodeTypeCategory = FileSystemNodeTypeCategory.class)
+@SetJIPipeDocumentation(name = "List files", description = "Takes each input folder and outputs the files it contains, optionally from a named subfolder and, if enabled, from all subfolders. A filter expression can keep only matching files, and recursive search can follow symbolic links.")
+@ConfigureJIPipeNode(function = FileSystemFunction.class)
 
 
 @AddJIPipeInputSlot(value = FolderData.class, name = "Folders", create = true)

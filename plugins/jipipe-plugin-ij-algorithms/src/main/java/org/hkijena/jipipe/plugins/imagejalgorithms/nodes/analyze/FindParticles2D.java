@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.plugins.imagejalgorithms.nodes.analyze;
 
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
+import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import ij.ImagePlus;
 import ij.Prefs;
 import ij.gui.Roi;
@@ -25,9 +27,9 @@ import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -55,12 +57,11 @@ import java.util.List;
         "This node requires a thresholded image as input and will extract measurements from the thresholded image. " +
         "If you already have ROI available and want measurements, use 'Extract ROI statistics'." +
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
-@ConfigureJIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI", description = "The extracted ROI", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Measurements", create = true, description = "The measurements of the ROI")
-@AddJIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
     private double maxParticleSize = Double.POSITIVE_INFINITY;
