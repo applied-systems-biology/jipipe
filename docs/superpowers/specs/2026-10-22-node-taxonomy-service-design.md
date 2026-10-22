@@ -130,7 +130,7 @@ List<JIPipeNodeTaxonomyFunction> childrenOf(JIPipeNodeTaxonomyFunction parent);
 float baseHue(JIPipeNodeTaxonomyFunction function);
 int shadeDepth(JIPipeNodeTaxonomyFunction function);
 Set<String> validateFunctions();                              // FunctionRegistry.validate()
-JIPipeNodeTaxonomyFunction inferFunction(String name);        // see §3
+JIPipeNodeTaxonomyFunction inferFunction(String name);        // see §4
 
 // frameworks
 void registerFramework(JIPipeNodeTaxonomyFramework framework);
@@ -150,7 +150,7 @@ rebuild on next `inferFunction`).
 
 **Wiring** — `JIPipeService`:
 - Constructor: `nodeTaxonomy = new JIPipeNodeTaxonomyServiceComponent(this);`
-  created **before** `nodes` (construction order matters, see §2), added to the
+  created **before** `nodes` (construction order matters, see §3), added to the
   `components[]` array so postprocess/dispose cover it.
 - Getter `getNodeTaxonomyService()` with `ensureInitialized()` (same shape as
   `getNodes()`).
@@ -161,7 +161,48 @@ rebuild on next `inferFunction`).
 parameter (its only construction site is `JIPipeService`) and forwards it to
 `TaxonomyResolver`.
 
-### 2. `TaxonomyResolver` integration
+### 2. Registration — through the established plugin idiom
+
+`JIPipeDefaultJavaPlugin` carries convenience registration methods that are
+one-line forwarders into the service component (e.g.
+`registerNodeType(task)` → `service.getNodes().scheduleRegister(task)`,
+`registerDatatype(...)` → `service.getDataTypes().register(...)`,
+`registerExpressionFunction(...)` →
+`service.getExpressionFunctions().registerExpressionFunction(...)`). Taxonomy
+registration follows the **same idiom**:
+
+```java
+// JIPipeDefaultJavaPlugin
+public void registerTaxonomyFunction(JIPipeNodeTaxonomyFunction function) {
+    service.getNodeTaxonomyService().registerFunction(function);
+}
+
+public void registerTaxonomyFramework(JIPipeNodeTaxonomyFramework framework) {
+    service.getNodeTaxonomyService().registerFramework(framework);
+}
+```
+
+(Names carry the `Taxonomy` prefix to avoid clashing with expression
+*functions*; the component methods stay `registerFunction`/
+`registerFramework`.) **Immediate registration, no task scheduling** —
+unlike nodes there is no dependency graph to wait on: a function's parent is
+resolved by id at read time and tree validity is checked by
+`validateFunctions()`, so registering a leaf before its parent is already
+safe (as today's arrays rely on). The convenience methods are sugar; the
+component API remains the canonical entry for any plugin, including
+non-`JIPipeDefaultJavaPlugin` ones.
+
+`TaxonomyPlugin.register()` swaps `JIPipe.getNodes().getFunctions()` /
+`getFrameworks()` for `registerTaxonomyFunction(...)` in the existing
+13-top-level + 77-leaf loops and `registerTaxonomyFramework(...)` for the 16
+frameworks. The arrays stay; that is the only registration-site change.
+**`TaxonomyAutoAssignment.functionForId` is deleted** — the IJ2/CLIJ callers
+do `JIPipe.getNodeTaxonomyService().functionById(id)` instead (null if not
+yet registered → they keep their existing fallback). This is what makes
+adding a function a pure "declare class + register it" with no second edit
+anywhere.
+
+### 3. `TaxonomyResolver` integration
 
 - Constructors take the `JIPipeNodeTaxonomyServiceComponent` (both overloads).
 - **Removes** the `functionRegistry`/`frameworkRegistry` fields; all accesses
@@ -175,7 +216,7 @@ parameter (its only construction site is `JIPipeService`) and forwards it to
   node-related taxonomy; the new accessor is the canonical one (no
   deprecation noise in a 6.0.0 branch for an internal API).
 
-### 3. Inference on the functions
+### 4. Inference on the functions
 
 **Interface addition** — `JIPipeNodeTaxonomyFunction`:
 
@@ -234,7 +275,7 @@ fallback, not an inference target.)
 Parity note: first-match-wins and weighted-summing diverge only for
 contrived multi-function keyword soup (e.g. a name stacking 6+ keywords from
 a later rule against one keyword of an earlier rule); the behavior-parity
-test (§5) runs the real IJ2/CLIJ name corpus and the existing unit-test
+test (§6) runs the real IJ2/CLIJ name corpus and the existing unit-test
 names, and any divergence found there is reviewed and either weight-tuned or
 accepted as an improvement — the keyword set itself must remain an exact
 migration.
@@ -265,7 +306,7 @@ full registry).
 `spatialForFirstImageInput`. Deleted: `functionForName`, `functionForId`,
 `functionForResource`.
 
-### 4. ID constants + interface cleanup
+### 5. ID constants + interface cleanup
 
 - **All 90 function classes + 16 framework classes** (plus
   `NoFramework`, done) get `public static final String ID = "<exact current
@@ -282,7 +323,7 @@ full registry).
   function/framework `getId()` body contains a string literal, and that
   every such class declares `public static final String ID`.
 
-### 5. Tests
+### 6. Tests
 
 Per the plugin-aware registry ruling (AGENTS.md): **no exact counts on live
 registries.**
@@ -321,8 +362,9 @@ per-class tests.
 1. **ID constants** (90 + 16 files, mechanical): no behavior change; suite
    must be green afterward (except the known-red count pin, untouched yet).
 2. **Service component + wiring** (new class, `JIPipeService`, `JIPipe`,
-   `TaxonomyResolver`, `JIPipeNodesServiceComponent` delegates,
-   `TaxonomyPlugin`): behavior identical; `functionForId` still exists.
+   `JIPipeDefaultJavaPlugin` convenience forwarders, `TaxonomyResolver`,
+   `JIPipeNodesServiceComponent` delegates, `TaxonomyPlugin`): behavior
+   identical; `functionForId` still exists.
 3. **Inference** (interface default + record, patterns on the 8 functions,
    service index + `inferFunction` + fallback, IJ2/CLIJ migration, deletion
    of `functionForName`/`functionForId`/`functionForResource`): the behavior
