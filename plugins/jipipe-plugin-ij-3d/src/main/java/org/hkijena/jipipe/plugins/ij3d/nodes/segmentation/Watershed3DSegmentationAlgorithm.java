@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.segmentation;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
 
 import ij.ImagePlus;
@@ -47,7 +47,7 @@ import java.util.Map;
         "that can be obtained from local maxima (see 3D filters), the other image containing signal data. " +
         "A first threshold1 is used for seeds (only seeds with value > threshold1 will be used). " +
         "A second threshold is used to cluster voxels with values > threshold2. In this implementation voxels are clustered to seeds in descending order of voxel values.")
-@ConfigureJIPipeNode(function = SegmentationFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = SegmentationFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)

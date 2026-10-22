@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiPropertiesFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "Set IJ3D ROI properties", description = "Updates every 3D ROI in a list of 3D ROIs by optionally setting its name, comment, center coordinates, channel, frame, and fill color, then outputs the updated list.")
-@ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ChangeRoi3dPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

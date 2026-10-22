@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -37,7 +37,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Color IJ3D ROI by name", description = "Sets the 3D ROI item colors by their name.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class ColorRoi3dByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {

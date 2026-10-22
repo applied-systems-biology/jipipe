@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.parameters.library.util.LogicalOperation;
 @SetJIPipeDocumentation(name = "IJ3D ROI calculator", description = "Applies logical operations to the input ROI list. The logical operations are applied to " +
         "the whole list, meaning that an AND operation will create the union of all ROI in the list. If you want to apply the operation only to a sub-set of ROI," +
         " preprocess using a ROI splitter algorithm.")
-@ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class Roi3dCalculatorAlgorithm extends JIPipeSimpleIteratingAlgorithm {

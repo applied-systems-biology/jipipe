@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijweka.nodes;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import ij.ImagePlus;
 import ij.ImageStack;
@@ -44,7 +44,7 @@ import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
-@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = WekaFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", description = "Image on which the classification should be applied", create = true)
 @AddJIPipeInputSlot(value = WekaModelData.class, name = "Model", description = "The model", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Classified image", description = "The classified image", create = true)

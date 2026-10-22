@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.binary;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 
 import ij.ImagePlus;
@@ -46,7 +46,7 @@ import java.util.Map;
         " the different objects, then compute zones around objects based on these lines. This can also be seen as the splitting of the background.\n" +
         "\n" +
         "Neighbouring objects can then be computed as objects having a line in common. ")
-@ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 public class Voronoi3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

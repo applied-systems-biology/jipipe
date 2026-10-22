@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.filter;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 
 import com.google.common.primitives.Doubles;
@@ -48,7 +48,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Filter IJ3D ROI by statistics", description = "Keeps 3D ROIs that meet a condition based on their measured statistics. It takes a list of 3D ROIs and an optional reference image, calculates the selected measurements, and outputs the matching 3D ROIs as a new list.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)

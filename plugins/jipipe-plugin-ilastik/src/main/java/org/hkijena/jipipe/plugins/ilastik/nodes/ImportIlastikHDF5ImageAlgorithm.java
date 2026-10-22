@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -45,7 +45,7 @@ import java.nio.file.Path;
 import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.DEFAULT_AXES;
 
 @SetJIPipeDocumentation(name = "Import Ilastik HDF5 image", description = "Imports an HDF5 image that was generated with Ilastik")
-@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = JIPipeDLFramework.class)
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = IlastikFramework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "HDF5 File", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Image", create = true)
 public class ImportIlastikHDF5ImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {

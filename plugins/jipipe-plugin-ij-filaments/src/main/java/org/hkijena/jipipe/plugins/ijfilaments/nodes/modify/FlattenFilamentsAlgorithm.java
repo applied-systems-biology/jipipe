@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -18,7 +18,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.util.FilamentVertex;
 import org.hkijena.jipipe.plugins.parameters.library.quantities.Quantity;
 
 @SetJIPipeDocumentation(name = "Flatten filaments to 2D", description = "Moves the Z of each filament vertex to zero and sets the Z voxel size to zero, which flattens 3D filaments into 2D filaments.")
-@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class FlattenFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

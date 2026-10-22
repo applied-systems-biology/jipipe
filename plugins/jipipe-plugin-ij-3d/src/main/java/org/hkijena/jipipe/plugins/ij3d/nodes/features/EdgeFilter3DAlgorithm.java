@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.features;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 
 import ij.ImagePlus;
@@ -44,7 +44,7 @@ import java.util.Map;
 
 @SetJIPipeDocumentation(name = "IJ3D 3D edge filter", description = "3D Canny-Deriche edge detection filter. " +
         "Will compute the gradients of the image based on the Canny edge detector. ")
-@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Edges X", create = true, description = "Edges in the X direction")

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.convert;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiFiltersFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -35,7 +35,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.awt.*;
 
 @SetJIPipeDocumentation(name = "IJ3D ROI to 3D scene", description = "Takes a list of 3D ROIs and turns each into a 3D mesh, producing a 3D scene for visualization or downstream processing. It can respect physical voxel sizes, force a mesh length unit, smooth surfaces, add a name prefix, and override mesh color.")
-@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiFiltersFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Scene3DData.class, name = "Output", create = true)
 public class Roi3dTo3DMeshAlgorithm extends JIPipeSimpleIteratingAlgorithm {

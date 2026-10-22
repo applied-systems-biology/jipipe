@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.omnipose.algorithms;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Pretrained Omnipose 0.x model", description = "Imports one or a selection of pretrained Omnipose 0.x models")
-@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = JIPipeDLFramework.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = OmniposeFramework.class)
 @AddJIPipeOutputSlot(value = CellposeModelData.class, name = "Output", create = true)
 public class ImportPretrainedOmnipose0ModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 

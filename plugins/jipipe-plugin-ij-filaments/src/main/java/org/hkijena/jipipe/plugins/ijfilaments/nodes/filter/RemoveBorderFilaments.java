@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijfilaments.nodes.filter;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 
 @SetJIPipeDocumentation(name = "Remove border filaments", description = "Removes filament components that are within a specified distance of the image borders.")
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

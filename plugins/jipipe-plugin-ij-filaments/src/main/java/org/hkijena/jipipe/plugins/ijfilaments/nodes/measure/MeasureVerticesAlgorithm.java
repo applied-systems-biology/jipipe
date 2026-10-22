@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.measure;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentQuantificationFunction;
 import org.hkijena.jipipe.api.AddJIPipeCitation;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.tables.datatypes.ResultsTableData;
 @SetJIPipeDocumentation(name = "Measure filament vertices", description = "Stores all available information about the vertices into a table. " +
         "You can learn more about the generated measurements here: https://jipipe.hki-jena.de/documentation/filament-measurements.html")
 @AddJIPipeCitation("https://jipipe.hki-jena.de/documentation/filament-measurements.html")
-@ConfigureJIPipeNode(function = FilamentQuantificationFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentQuantificationFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ResultsTableData.class, name = "Output", create = true)
 public class MeasureVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.omnipose.legacy.algorithms;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
@@ -92,7 +92,7 @@ import java.util.*;
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Flows d")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, name = "Probabilities")
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "ROI")
-@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = OmniposeFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @Deprecated
 @LabelAsJIPipeHidden
 @RegisterJIPipeEnvironmentUsage(Omnipose0Environment.class)

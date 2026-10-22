@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ilastik.nodes;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningInferenceFunction;
 import ij.ImagePlus;
 import org.apache.commons.io.FilenameUtils;
@@ -65,7 +65,7 @@ import static org.hkijena.jipipe.plugins.ilastik.utils.ImgUtils.*;
 @SetJIPipeDocumentation(name = "Ilastik object classification (prediction maps)", description = "The object classification workflow aims to classify full objects, based on object-level features and user annotations. " +
         "Supports projects that have the raw data and the prediction maps as input.")
 @AddJIPipeCitation("Object classification documentation: https://www.ilastik.org/documentation/objects/objects")
-@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = JIPipeDLFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MachineLearningInferenceFunction.class, framework = IlastikFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Image", create = true, description = "The image(s) to classify. Requires a data annotation that contains the segmentation image.")
 @AddJIPipeInputSlot(value = IlastikModelData.class, name = "Project", create = true, description = "The Ilastik project. Must support pixel classification.", role = JIPipeDataSlotRole.ParametersLooping)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Object Predictions", description = "A label image of the object class predictions")

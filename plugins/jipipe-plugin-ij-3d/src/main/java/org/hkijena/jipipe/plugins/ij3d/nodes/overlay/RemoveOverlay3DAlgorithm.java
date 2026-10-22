@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.overlay;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @SetJIPipeDocumentation(name = "IJ3D Remove 3D overlay", description = "Remove overlay ROIs")
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 public class RemoveOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RemoveOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);

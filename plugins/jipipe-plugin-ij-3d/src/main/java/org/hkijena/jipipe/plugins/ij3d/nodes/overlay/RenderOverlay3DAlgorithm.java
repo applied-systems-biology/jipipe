@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.overlay;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 
 import ij.ImagePlus;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.util.RoiDrawer;
  * Wrapper around {@link RoiDrawer}
  */
 @SetJIPipeDocumentation(name = "IJ3D Render 3D overlay", description = "Renders the 3D overlay to RGB")
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusColorRGBData.class, name = "Output", create = true)
 public class RenderOverlay3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

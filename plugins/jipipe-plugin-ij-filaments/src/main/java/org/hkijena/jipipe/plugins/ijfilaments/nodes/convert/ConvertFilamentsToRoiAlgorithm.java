@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.convert;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -34,7 +34,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @SetJIPipeDocumentation(name = "Convert filaments to 2D ROI", description = "Converts filaments into 2D line ImageJ ROI. Single vertices are converted into point ROI.")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Roi2dListData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 public class ConvertFilamentsToRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean ignoreNon2DEdges = false;

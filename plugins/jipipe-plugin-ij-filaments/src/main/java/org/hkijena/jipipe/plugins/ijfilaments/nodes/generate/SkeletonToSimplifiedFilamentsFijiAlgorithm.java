@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FilamentDataFunction;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -51,7 +51,7 @@ import java.util.Map;
         "Use 'Binary skeleton to 2D filaments' or 'Binary skeleton to 3D filaments' to if you are unsure about the functionality of this node.")
 @AddJIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
 @AddJIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
-@ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = FilamentsFramework.class, spatialDimensions = { SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, name = "Skeleton", create = true)
 @AddJIPipeInputSlot(value = Roi2dListData.class, name = "ROI", description = "ROI to exclude on pruning ends")
 @AddJIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, name = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")

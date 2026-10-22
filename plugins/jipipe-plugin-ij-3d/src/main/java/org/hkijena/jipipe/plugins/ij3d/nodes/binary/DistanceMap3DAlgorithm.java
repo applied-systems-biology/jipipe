@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.binary;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 
 import ij.ImagePlus;
@@ -37,7 +37,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.greyscale.ImagePlusG
 
 @SetJIPipeDocumentation(name = "IJ3D Euclidean Distance Map 3D", description = "Calculates the Euclidean distance map of a 3D image. " +
         "The calculated distances will be in the calibrated unit.")
-@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class DistanceMap3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.omero.OMEROCredentialsEnvironment;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROPlateReferenceData;
@@ -46,7 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate plate with OMERO metadata", description = "Annotates an OMERO plate ID with OMERO metadata.")
-@ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = OmeroFramework.class)
 @AddJIPipeInputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @AddJIPipeOutputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)

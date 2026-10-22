@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -44,7 +44,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Grow end vertices (direction)", description = "Iteratively adds vertices to end points (degree 1) and grows them in the direction determined by the neighbor")
-@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class GrowEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.metadata;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiPropertiesFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Remove/Filter IJ3D ROI metadata", description = "Allows to filter/remove specific ROI metadata entries")
-@ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiPropertiesFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class RemoveRoi3dMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {

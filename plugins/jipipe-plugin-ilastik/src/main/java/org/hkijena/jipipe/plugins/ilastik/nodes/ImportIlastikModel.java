@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ilastik.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -30,7 +30,7 @@ import org.hkijena.jipipe.plugins.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.plugins.ilastik.datatypes.IlastikModelData;
 
 @SetJIPipeDocumentation(name = "Import Ilastik project", description = "Imports an *.ilp file into the workflow")
-@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = JIPipeDLFramework.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = IlastikFramework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Project file", description = "The project file", create = true)
 @AddJIPipeOutputSlot(value = IlastikModelData.class, name = "Project", description = "The Ilastik project", create = true)
 public class ImportIlastikModel extends JIPipeSimpleIteratingAlgorithm {

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.generate;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
 
 import ij.ImagePlus;
@@ -41,7 +41,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "IJ3D Find particles 3D", description = "Finds 3D particles in a binary mask image and returns them as a list of 3D ROIs. It labels connected components, applies optional size, sphericity, edge, and background settings, and uses image calibration for physical measurements when available.")
-@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MeasurementsFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Mask", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 public class FindParticles3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

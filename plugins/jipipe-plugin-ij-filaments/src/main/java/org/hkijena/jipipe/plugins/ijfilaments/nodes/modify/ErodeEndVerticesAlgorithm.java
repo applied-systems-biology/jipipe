@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -35,7 +35,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Erode end vertices", description = "Iteratively removes vertices that have a degree of at most 1")
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class ErodeEndVerticesAlgorithm extends JIPipeSimpleIteratingAlgorithm {

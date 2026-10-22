@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 @SetJIPipeDocumentation(name = "List OMERO images in dataset", description = "Returns the ID(s) of images(s) according to search criteria.")
 @AddJIPipeInputSlot(value = OMERODatasetReferenceData.class, name = "Datasets", create = true)
 @AddJIPipeOutputSlot(value = OMEROImageReferenceData.class, name = "Images", create = true)
-@ConfigureJIPipeNode(function = OmeroFunction.class)
+@ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListDatasetImagesAlgorithm extends JIPipeSingleIterationAlgorithm {
 

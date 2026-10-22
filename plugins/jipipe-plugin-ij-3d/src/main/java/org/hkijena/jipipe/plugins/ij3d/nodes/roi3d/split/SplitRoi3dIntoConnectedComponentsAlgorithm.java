@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
 
 import mcib3d.image3d.ImageHandler;
@@ -52,7 +52,7 @@ import java.util.List;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Split IJ3D ROI into connected components", description = "Splits the input 3D ROI list into multiple ROI lists, one per connected component")
-@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Components", create = true)

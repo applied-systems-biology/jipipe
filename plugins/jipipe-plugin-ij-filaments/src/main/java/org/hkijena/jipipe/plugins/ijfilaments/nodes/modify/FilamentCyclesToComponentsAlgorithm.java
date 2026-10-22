@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.modify;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Set;
 
 @SetJIPipeDocumentation(name = "Filament cycles to components", description = "Finds all cycles in the input filament graph and makes each cycle a component. Unlike 'Split filaments into cycles', this node outputs one filament graph where each component is a cycle.")
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class FilamentCyclesToComponentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

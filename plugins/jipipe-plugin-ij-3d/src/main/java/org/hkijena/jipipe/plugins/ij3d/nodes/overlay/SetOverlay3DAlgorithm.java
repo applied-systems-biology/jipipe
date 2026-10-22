@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.overlay;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.plugins.imagejdatatypes.datatypes.ImagePlusData;
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = MergingSplittingFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 public class SetOverlay3DAlgorithm extends JIPipeIteratingAlgorithm {
     public SetOverlay3DAlgorithm(JIPipeNodeInfo info) {
         super(info);

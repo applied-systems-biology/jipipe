@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijweka.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.machinelearning.MachineLearningModelsFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,7 +32,7 @@ import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @SetJIPipeDocumentation(name = "Import Weka model", description = "Imports a Trainable Weka Segmentation model from a *.model/*.arff file")
-@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = JIPipeDLFramework.class)
+@ConfigureJIPipeNode(function = MachineLearningModelsFunction.class, framework = WekaFramework.class)
 @AddJIPipeInputSlot(value = FileData.class, name = "Model file", description = "The model file in *.model format", create = true)
 @AddJIPipeInputSlot(value = FileData.class, name = "Data file", description = "The data file in *.arff format", create = true, optional = true)
 @AddJIPipeOutputSlot(value = WekaModelData.class, name = "Output", description = "The model", create = true)

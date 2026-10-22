@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.convert;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,7 +33,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.Optiona
 @SetJIPipeDocumentation(name = "Convert filaments to 3D ROI", description = "Produces a list of 3D ROIs from 3D filament data, optionally drawing filament segments as 3D line ROIs and points as 3D point ROIs. You can override line thickness or point radius.")
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class)
 public class ConvertFilamentsToRoi3dAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean withEdges = true;
     private boolean withVertices = true;

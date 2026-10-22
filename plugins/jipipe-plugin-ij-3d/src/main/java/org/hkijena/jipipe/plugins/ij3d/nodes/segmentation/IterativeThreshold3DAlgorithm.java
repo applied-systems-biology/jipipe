@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.segmentation;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 
 import ij.ImagePlus;
@@ -51,7 +51,7 @@ import java.util.ArrayList;
         "linking them from one threshold to the next threshold, taking possible splits into account.")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/3D-Iterative-Segmentation/")
 @AddJIPipeCitation("Gul-Mohammed, J., Arganda-Carreras, I., Andrey, P., Galy, V., & Boudier, T. (2014). A generic classification-based method for segmentation of nuclei in 3D images of early embryos. BMC bioinformatics, 15(1), 1-12.")
-@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Markers", optional = true, description = "Optional seeds for the objects", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)

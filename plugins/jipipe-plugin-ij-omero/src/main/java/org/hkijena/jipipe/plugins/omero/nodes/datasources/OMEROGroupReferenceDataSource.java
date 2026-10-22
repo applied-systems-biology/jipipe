@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.plugins.omero.datatypes.OMEROProjectReferenceData;
@@ -31,7 +32,7 @@ import org.hkijena.jipipe.plugins.parameters.library.primitives.list.LongList;
 
 @SetJIPipeDocumentation(name = "Define group IDs", description = "Manually defines OMERO group ids.")
 @AddJIPipeOutputSlot(value = OMEROGroupReferenceData.class, name = "Output", create = true)
-@ConfigureJIPipeNode(function = OmeroFunction.class)
+@ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)
 public class OMEROGroupReferenceDataSource extends JIPipeSimpleIteratingAlgorithm {
 
     private LongList groupIds = new LongList();

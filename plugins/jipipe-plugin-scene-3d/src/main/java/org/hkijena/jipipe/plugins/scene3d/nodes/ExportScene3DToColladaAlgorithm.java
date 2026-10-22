@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.scene3d.nodes;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportScenesFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -48,7 +48,7 @@ import java.util.Set;
 @SetJIPipeDocumentation(name = "Export 3D scene", description = "Takes a 3D scene and writes it to a Collada 1.4.1 .dae file, producing a file you can open in 3D viewers or use in later analysis. It can name files from metadata and optionally index meshes to reduce file size.")
 @AddJIPipeInputSlot(value = Scene3DData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportScenesFunction.class)
+@ConfigureJIPipeNode(function = ExportScenesFunction.class, framework = Scene3DFramework.class)
 @Deprecated
 @LabelAsJIPipeHidden
 public class ExportScene3DToColladaAlgorithm extends JIPipeIteratingAlgorithm {

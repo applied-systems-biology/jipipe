@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijfilaments.nodes.generate;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.FilamentDataFunction;
 import com.google.common.collect.Multimap;
 import ij.IJ;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
         "TSOAX facilitates quantitative analysis of network dynamics of multi-dimensional biopolymer networks imaged by various microscopic imaging modalities. " +
         "The underlying methods of TSOAX includes multiple Stretching Open Active Contour Models for extraction and a combined local and global graph matching framework to establish temporal correspondence among all extracted structures.\n\n" +
         "Variant of TSOAX that is applied per 2D+T stack of the image and the results are combined.")
-@ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilamentDataFunction.class, framework = FilamentsFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeCitation("T. Xu, C. Langouras, M. Adeli Koudehi, B. Vos, N. Wang, G. H. Koenderink, X. Huang and D. Vavylonis, \"Automated Tracking of Biopolymer Growth and Network Deformation with TSOAX\": Scientific Reports 9:1717 (2019)")
 @AddJIPipeCitation("Website https://www.lehigh.edu/~div206/tsoax/index.html")
 @AddJIPipeCitation("Documentation (SOAX) https://www.lehigh.edu/~div206/soax/doc/soax_manual.pdf")

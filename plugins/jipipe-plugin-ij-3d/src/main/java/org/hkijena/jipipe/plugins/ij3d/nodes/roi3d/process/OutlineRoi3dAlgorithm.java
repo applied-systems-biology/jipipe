@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.process;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -29,7 +29,7 @@ import org.hkijena.jipipe.plugins.ij3d.utils.Roi3dOutline;
 
 
 @SetJIPipeDocumentation(name = "Outline IJ3D ROI", description = "Converts the ROI into bounding boxes, convex hulls, etc.")
-@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class OutlineRoi3dAlgorithm extends JIPipeSimpleIteratingAlgorithm {

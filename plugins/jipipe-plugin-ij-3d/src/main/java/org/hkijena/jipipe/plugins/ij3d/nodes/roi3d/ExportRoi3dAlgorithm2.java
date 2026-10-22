@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.export.ExportRoiFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -44,7 +44,7 @@ import java.util.Map;
 @SetJIPipeDocumentation(name = "Export IJ3D ROI", description = "Exports a 3D ROI list into one or multiple ROI files")
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = FileData.class, name = "Exported file", create = true)
-@ConfigureJIPipeNode(function = ExportRoiFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = ExportRoiFunction.class, framework = IJ3DFramework.class)
 public class ExportRoi3dAlgorithm2 extends JIPipeIteratingAlgorithm {
 
     private DataExportExpressionParameter filePath = new DataExportExpressionParameter();

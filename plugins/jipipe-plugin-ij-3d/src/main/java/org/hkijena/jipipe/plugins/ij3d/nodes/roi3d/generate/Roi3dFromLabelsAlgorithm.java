@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.generate;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
 
 import ij.ImagePlus;
@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "IJ3D Labels to 3D ROI", description = "Turns a grayscale label image, where each object is marked, into a list of 3D ROIs. It detects separate marked objects, applies optional size, sphericity, and edge filters, and uses image calibration when available.")
-@ConfigureJIPipeNode(function = ColorStackFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ColorStackFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 public class Roi3dFromLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

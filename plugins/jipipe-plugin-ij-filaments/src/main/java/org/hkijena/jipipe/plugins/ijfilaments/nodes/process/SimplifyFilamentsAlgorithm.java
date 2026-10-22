@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ijfilaments.nodes.process;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentSmoothingFunction;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeSingleIterationStep;
 import org.hkijena.jipipe.plugins.ijfilaments.datatypes.Filaments3DGraphData;
 
 @SetJIPipeDocumentation(name = "Simplify filaments", description = "Removes all intermediate vertices (degree 2) and thus produces a graph that contains only the endpoints and junctions.")
-@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = FilamentSmoothingFunction.class, framework = FilamentsFramework.class)
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)
 public class SimplifyFilamentsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -34,6 +34,7 @@ import org.hkijena.jipipe.api.nodes.algorithm.JIPipeSingleIterationAlgorithm;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeIterationContext;
 import org.hkijena.jipipe.api.nodes.iterationstep.JIPipeMultiIterationStep;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.OmeroFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.plugins.expressions.AddJIPipeExpressionParameterVariable;
 import org.hkijena.jipipe.plugins.expressions.JIPipeExpressionParameter;
@@ -51,7 +52,7 @@ import java.util.ArrayList;
 @SetJIPipeDocumentation(name = "List OMERO wells", description = "Returns the ID(s) of wells according to search criteria.")
 @AddJIPipeInputSlot(value = OMEROPlateReferenceData.class, name = "Plates", create = true)
 @AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
-@ConfigureJIPipeNode(function = OmeroFunction.class)
+@ConfigureJIPipeNode(function = OmeroFunction.class, framework = OmeroFramework.class)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)
 public class OMEROListWellsAlgorithm extends JIPipeSingleIterationAlgorithm {
 

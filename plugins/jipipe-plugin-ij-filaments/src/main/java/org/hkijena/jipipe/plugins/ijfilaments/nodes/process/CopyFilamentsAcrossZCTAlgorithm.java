@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ijfilaments.nodes.process;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.filaments.FilamentFilteringFunction;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -59,7 +59,7 @@ import org.hkijena.jipipe.plugins.parameters.api.collections.ParameterCollection
 import java.util.*;
 
 @SetJIPipeDocumentation(name = "Copy filaments across Z/C/T", description = "Copies a filament graph to other Z locations, channels, and frames. The newly created vertices can be optionally connected to the neighboring source vertex.")
-@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilamentFilteringFunction.class, framework = FilamentsFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Filaments3DGraphData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", optional = true, create = true)
 @AddJIPipeOutputSlot(value = Filaments3DGraphData.class, name = "Output", create = true)

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.merge;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiIntersectionsFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -28,7 +28,7 @@ import org.hkijena.jipipe.plugins.ij3d.datatypes.Ij3dSuiteRoiListData;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Merge IJ3D ROI", description = "Merges the input 3D ROI lists")
-@ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = ImageJ1Framework.class)
+@ConfigureJIPipeNode(function = RoiIntersectionsFunction.class, framework = IJ3DFramework.class)
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Output", create = true)
 public class MergeRoi3dAlgorithm extends JIPipeMergingAlgorithm {

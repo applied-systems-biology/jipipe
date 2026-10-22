@@ -26,6 +26,7 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.ImageData;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.data.ImageDataFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -58,7 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Download image from OMERO", description = "Downloads a selected OMERO image into the workflow as an OME image, using Bio-Formats to read its pixels and metadata. It can import OMERO tags and key-value pairs as metadata labels and, if enabled, extract 2D ROIs. The output is an OME image item ready for downstream analysis.")
-@ConfigureJIPipeNode(function = ImageDataFunction.class)
+@ConfigureJIPipeNode(function = ImageDataFunction.class, framework = OmeroFramework.class)
 @AddJIPipeInputSlot(value = OMEROImageReferenceData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = OMEImageData.class, name = "Output", create = true)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)

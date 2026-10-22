@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.binary;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
 
 import ij.IJ;
@@ -54,7 +54,7 @@ import java.util.Map;
         "This splitting is based on the computation of the Distance Map inside the mask of the merged objects. " +
         "The seeds are then the local maxima of the distance map, the farthest points from the boundaries, hence corresponding to the centres of the objects. " +
         "The bigger the object, the higher the values of the distance map at the centre, then the faster the growing of the seeds and the larger the resulting object.")
-@ConfigureJIPipeNode(function = FilteringFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = FilteringFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Input", create = true)
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, name = "Seeds", create = true, optional = true, description = "Optional seeds")
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Labels", create = true)

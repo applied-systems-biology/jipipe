@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.segmentation;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
 
 import ij.ImagePlus;
@@ -42,7 +42,7 @@ import org.hkijena.jipipe.utils.threshold.AutoThresholdMethod;
         "The method is based on a maximum Z-projection followed by a 2D Segmentation. " +
         "The segmentation for the 2D projection is based on a global thresholding. The nuclei are then segmented and separated using ImageJ watershed. ")
 @AddJIPipeCitation("https://mcib3d.frama.io/3d-suite-imagej/plugins/Segmentation/Custom/3D-Nuclei-Segmentation/")
-@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = ThresholdingFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = ImagePlusGreyscaleData.class, name = "Input", create = true)
 @AddJIPipeOutputSlot(value = ImagePlusGreyscaleData.class, name = "Output", create = true)
 public class NucleiSegmentation3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {

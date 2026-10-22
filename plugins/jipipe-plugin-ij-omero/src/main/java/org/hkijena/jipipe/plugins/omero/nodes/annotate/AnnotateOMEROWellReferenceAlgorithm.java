@@ -19,6 +19,7 @@ import omero.gateway.exception.DSAccessException;
 import omero.gateway.exception.DSOutOfServiceException;
 import omero.gateway.model.WellData;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.annotations.AnnotationsEditFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
@@ -48,7 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @SetJIPipeDocumentation(name = "Annotate well with OMERO metadata", description = "Annotates an OMERO well ID with OMERO metadata.")
-@ConfigureJIPipeNode(function = AnnotationsEditFunction.class)
+@ConfigureJIPipeNode(function = AnnotationsEditFunction.class, framework = OmeroFramework.class)
 @AddJIPipeInputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @AddJIPipeOutputSlot(value = OMEROWellReferenceData.class, name = "Wells", create = true)
 @RegisterJIPipeEnvironmentUsage(OMEROCredentialsEnvironment.class)

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.plugins.ij3d.nodes.roi3d.split;
 
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_3D;
 import static org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomySpatialDimension.SPATIAL_2D;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.rois.RoiMorphologyFunction;
 
 import org.hkijena.jipipe.api.ConfigureJIPipeNode;
@@ -46,7 +46,7 @@ import java.util.List;
 import java.util.Map;
 
 @SetJIPipeDocumentation(name = "Split IJ3D ROI lists by statistics", description = "Splits the incoming 3D ROI lists by a classifier value that is calculated based on statistics.")
-@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = ImageJ1Framework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
+@ConfigureJIPipeNode(function = RoiMorphologyFunction.class, framework = IJ3DFramework.class, spatialDimensions = { SPATIAL_2D, SPATIAL_3D })
 @AddJIPipeInputSlot(value = Ij3dSuiteRoiListData.class, name = "ROI", create = true)
 @AddJIPipeInputSlot(value = ImagePlusData.class, name = "Reference", create = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, all affected measurements are set to NaN.")
 @AddJIPipeOutputSlot(value = Ij3dSuiteRoiListData.class, name = "Split ROI", create = true)
