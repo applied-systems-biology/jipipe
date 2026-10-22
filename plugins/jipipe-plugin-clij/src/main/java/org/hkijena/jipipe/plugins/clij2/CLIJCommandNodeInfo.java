@@ -284,12 +284,12 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // fallback for unmapped commands, and Miscellaneous the last resort.
         String mapped = COMMAND_MAPPING.functionIdOf(getName());
         if (mapped != null) {
-            JIPipeNodeTaxonomyFunction function = TaxonomyAutoAssignment.functionForId(mapped);
+            JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);
             if (function != null) {
                 return function;
             }
         }
-        return TaxonomyAutoAssignment.functionForName(getName());
+        return JIPipe.getNodeTaxonomyService().inferFunction(getName());
     }
 
     @Override

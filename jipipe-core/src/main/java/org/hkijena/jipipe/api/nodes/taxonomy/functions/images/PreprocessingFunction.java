@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions.images;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,5 +76,17 @@ public final class PreprocessingFunction implements JIPipeNodeTaxonomyFunction {
     @Override
     public boolean isVisibleInCompartments() {
         return false;
+    }
+
+    @Override
+    public List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
+        return List.of(
+                new JIPipeNodeTaxonomyInferencePattern("inpaint", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("restore", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("denoise", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("deconvolv", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("preprocess", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("background", 5f),
+                new JIPipeNodeTaxonomyInferencePattern("flatten", 5f));
     }
 }

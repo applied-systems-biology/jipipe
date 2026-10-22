@@ -350,6 +350,12 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerTaxonomyFramework(new OpenCVFramework());
         registerTaxonomyFramework(new TrackMateFramework());
 
+        // Name-inference fallback (core policy, set in exactly this one place):
+        // discovered nodes whose names match no keyword pattern land in
+        // "Miscellaneous unassigned" — the deliberate 6.0.0 behavior change
+        // from the old Miscellaneous default of TaxonomyAutoAssignment.
+        JIPipe.getNodeTaxonomyService().setInferenceFallback(new MiscellaneousUnassignedFunction());
+
         // Ship the corpus-mined workflow patterns as System (plugin) node
         // templates. Runs at the END of registration: the function tree above
         // is fully populated so the icon/hue derivation below can resolve every

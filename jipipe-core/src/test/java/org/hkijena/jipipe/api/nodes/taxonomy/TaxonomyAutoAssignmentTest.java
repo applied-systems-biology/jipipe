@@ -13,13 +13,13 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageArithmeticFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageProjectionsFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
@@ -39,54 +39,76 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Pure tests for {@link TaxonomyAutoAssignment} (Task 20): the name heuristic
- * for the primary function and the input-profile-derived spatial dimensions
- * of the runtime-discovered IJ2/CLIJ nodes. No JIPipe instance is required.
+ * Tests for {@link TaxonomyAutoAssignment}: the input-profile-derived spatial
+ * dimensions and the JSON resource mappings for the runtime-discovered
+ * IJ2/CLIJ nodes, plus the behavior-parity corpus of the weighted name
+ * inference (now served by the taxonomy service: the display names of the
+ * retired {@code functionForName} tests are inferred on the live registry,
+ * whose fallback is {@link MiscellaneousUnassignedFunction} — the deliberate
+ * 6.0.0 behavior change from the old Miscellaneous default).
  */
 class TaxonomyAutoAssignmentTest {
 
+    @BeforeAll
+    static void boot() {
+        // The name-inference tests run against the LIVE taxonomy service
+        // (populated by TaxonomyPlugin, which also sets the inference
+        // fallback). The launcher listener pre-patches ImageJ, so booting
+        // here is safe.
+        JIPipe.ensureInstance();
+    }
+
     @Test
     void gaussianFilterNameMatchesFiltering() {
-        // "filter" (rule 2) wins before "gaussian" (rule 9)
-        assertEquals(FilteringFunction.class, TaxonomyAutoAssignment.functionForName("3D Gaussian filter").getClass());
+        // "filter"(8) + "gaussian"(1) both score filtering
+        assertEquals(FilteringFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("3D Gaussian filter").getClass());
     }
 
     @Test
     void medianFilterNameMatchesFiltering() {
-        // "filter" (rule 2) is reached before "median" (rule 9)
-        assertEquals(FilteringFunction.class, TaxonomyAutoAssignment.functionForName("Median filter").getClass());
+        // "filter"(8) + "median"(1) both score filtering
+        assertEquals(FilteringFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("Median filter").getClass());
     }
 
     @Test
     void segmentNameMatchesSegmentation() {
-        assertEquals(SegmentationFunction.class, TaxonomyAutoAssignment.functionForName("Segment cells").getClass());
+        assertEquals(SegmentationFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("Segment cells").getClass());
     }
 
     @Test
-    void unknownNameFallsBackToMiscellaneousWithoutThrowing() {
-        JIPipeNodeTaxonomyFunction function = TaxonomyAutoAssignment.functionForName("Some totally unknown operation xyz");
-        assertEquals(MiscellaneousFunction.class, function.getClass());
+    void unknownNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
+        JIPipeNodeTaxonomyFunction function =
+            JIPipe.getNodeTaxonomyService().inferFunction("Some totally unknown operation xyz");
+        assertEquals(MiscellaneousUnassignedFunction.class, function.getClass());
     }
 
     @Test
     void resampleNameMatchesResampling() {
-        assertEquals(ResamplingFunction.class, TaxonomyAutoAssignment.functionForName("Resample").getClass());
+        assertEquals(ResamplingFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("Resample").getClass());
     }
 
     @Test
-    void nameNotInTableFallsBackToMiscellaneous() {
-        // "watershed" is deliberately NOT in the table: asserts the default branch
-        assertEquals(MiscellaneousFunction.class, TaxonomyAutoAssignment.functionForName("Watershed").getClass());
+    void nameNotInPatternsFallsBackToMiscellaneousUnassigned() {
+        // "watershed" is deliberately NOT in any function's patterns:
+        // asserts the fallback branch (the 6.0.0 behavior change)
+        assertEquals(MiscellaneousUnassignedFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("Watershed").getClass());
     }
 
     @Test
     void colorNameMatchesColorStack() {
-        assertEquals(ColorStackFunction.class, TaxonomyAutoAssignment.functionForName("Color convert").getClass());
+        assertEquals(ColorStackFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction("Color convert").getClass());
     }
 
     @Test
-    void nullNameFallsBackToMiscellaneousWithoutThrowing() {
-        assertEquals(MiscellaneousFunction.class, TaxonomyAutoAssignment.functionForName(null).getClass());
+    void nullNameFallsBackToMiscellaneousUnassignedWithoutThrowing() {
+        assertEquals(MiscellaneousUnassignedFunction.class,
+            JIPipe.getNodeTaxonomyService().inferFunction(null).getClass());
     }
 
     @Test
@@ -157,35 +179,6 @@ class TaxonomyAutoAssignmentTest {
     // ------------------------------------------------------------------
     // Resource-file mapping (full-registry classification audit)
     // ------------------------------------------------------------------
-
-    @Test
-    void functionForIdInstantiatesTheAuditLeaves() {
-        assertEquals(ImageArithmeticFunction.class,
-            TaxonomyAutoAssignment.functionForId("jipipe:function:image-arithmetic").getClass());
-        assertEquals(ImageProjectionsFunction.class,
-            TaxonomyAutoAssignment.functionForId("jipipe:function:image-projections").getClass());
-        assertEquals(FilteringFunction.class,
-            TaxonomyAutoAssignment.functionForId(FilteringFunction.ID).getClass());
-        assertEquals(MiscellaneousFunction.class,
-            TaxonomyAutoAssignment.functionForId("jipipe:function:misc").getClass());
-        // Unknown and null ids yield null (callers fall back to the heuristic)
-        assertNull(TaxonomyAutoAssignment.functionForId("jipipe:function:does-not-exist"));
-        assertNull(TaxonomyAutoAssignment.functionForId(null));
-    }
-
-    @Test
-    void resourceMappingWinsOverTheNameHeuristic() {
-        // The heuristic would classify "Watershed" as Miscellaneous; the
-        // mapping (as bundled for CLIJ) assigns it to segmentation.
-        TaxonomyAutoAssignment.ResourceMapping mapping =
-            TaxonomyAutoAssignment.ResourceMapping.load(TaxonomyAutoAssignmentTest.class,
-                "taxonomy/test-command-mapping.json");
-        assertEquals(SegmentationFunction.class,
-            TaxonomyAutoAssignment.functionForResource(mapping, "CLIJ2 Watershed", "CLIJ2 Watershed").getClass());
-        // Unmapped key falls through to the heuristic
-        assertEquals(FilteringFunction.class,
-            TaxonomyAutoAssignment.functionForResource(mapping, "CLIJ2 Unmapped", "Median filter").getClass());
-    }
 
     @Test
     void missingResourceYieldsAnEmptyMapping() {

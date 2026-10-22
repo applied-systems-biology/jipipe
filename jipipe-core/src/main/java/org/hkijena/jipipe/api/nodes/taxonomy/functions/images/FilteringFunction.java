@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions.images;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,5 +76,18 @@ public final class FilteringFunction implements JIPipeNodeTaxonomyFunction {
     @Override
     public boolean isVisibleInCompartments() {
         return false;
+    }
+
+    @Override
+    public List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
+        return List.of(
+                new JIPipeNodeTaxonomyInferencePattern("filter", 8f),
+                new JIPipeNodeTaxonomyInferencePattern("blur", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("smooth", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("erode", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("dilate", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("morpholog", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("gaussian", 1f),
+                new JIPipeNodeTaxonomyInferencePattern("median", 1f));
     }
 }

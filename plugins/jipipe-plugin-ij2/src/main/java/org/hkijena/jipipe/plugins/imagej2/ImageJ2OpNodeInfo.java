@@ -211,12 +211,12 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
             mapped = OP_NAMESPACE_MAPPING.functionIdOf(namespace);
         }
         if (mapped != null) {
-            JIPipeNodeTaxonomyFunction function = TaxonomyAutoAssignment.functionForId(mapped);
+            JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);
             if (function != null) {
                 return function;
             }
         }
-        return TaxonomyAutoAssignment.functionForName(getName());
+        return JIPipe.getNodeTaxonomyService().inferFunction(getName());
     }
 
     @Override

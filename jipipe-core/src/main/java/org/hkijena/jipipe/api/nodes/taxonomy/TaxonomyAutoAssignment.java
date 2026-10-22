@@ -13,26 +13,6 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.MiscellaneousFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ColorStackFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.FilteringFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageArithmeticFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageComparisonFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageLabelingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageMomentsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageNeighborMeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImagePixelManipulationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageProjectionsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageStatisticsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTransformationsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ImageTypeConversionFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MeasurementsFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.MergingSplittingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.PreprocessingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ResamplingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.SegmentationFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.images.ThresholdingFunction;
-import org.hkijena.jipipe.api.nodes.taxonomy.functions.misc.MiscellaneousUnassignedFunction;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -50,14 +30,14 @@ import java.util.function.Function;
  * runtime-discovered (dynamic) nodes, i.e. the auto-imported ImageJ2 op nodes
  * and CLIJ command nodes.
  * <p>
- * This refines the flat defaults introduced in 19.11b (every discovered node
- * got {@code MiscellaneousFunction} and no spatial dimensions): the primary
- * function is derived from a small, best-effort <em>name heuristic</em>
- * (default {@code Miscellaneous}), while the spatial dimensions are
- * <em>derived</em> from the node's input profile — an unconstrained image
- * input ({@link JIPipeNodeTaxonomyInputProfile#ANY}) yields both 2D and 3D.
- * The framework is decided by the calling {@link JIPipeNodeInfo}
- * (ImageJ2 / CLIJ); this helper does not set it.
+ * The primary function is resolved by the taxonomy service: an exact
+ * resource mapping to a stable function id first, then weighted name
+ * inference ({@code JIPipeNodeTaxonomyServiceComponent#inferFunction}) as
+ * the fallback. This class keeps the mapping/tag resources and the spatial
+ * dimensions, which are <em>derived</em> from the node's input profile — an
+ * unconstrained image input ({@link JIPipeNodeTaxonomyInputProfile#ANY})
+ * yields both 2D and 3D. The framework is decided by the calling
+ * {@link JIPipeNodeInfo} (ImageJ2 / CLIJ); this helper does not set it.
  * <p>
  * All methods are pure and static: they never throw and require no JIPipe
  * instance, so they are unit-testable without the ImageJ context.
@@ -65,64 +45,6 @@ import java.util.function.Function;
 public final class TaxonomyAutoAssignment {
 
     private TaxonomyAutoAssignment() {
-    }
-
-    /**
-     * Heuristically assigns a primary taxonomy function from the display name
-     * of a discovered node. The name is lowercased and matched against the
-     * keyword table below; the <em>first</em> hit in priority order wins.
-     * Names without a hit (and {@code null}/empty names) fall back to
-     * {@link MiscellaneousFunction}. Never throws.
-     * <p>
-     * The ordering is deliberate: {@code "filter"} precedes the generic
-     * morphological keywords ({@code "gaussian"}, {@code "median"}, ...) so
-     * that e.g. "3D Gaussian filter" is classified as filtering, and
-     * {@code "segment"} is first so that "Segment cells" is classified as
-     * segmentation.
-     *
-     * @param name the node's display name, may be {@code null}
-     * @return the assigned function; never {@code null}
-     */
-    public static JIPipeNodeTaxonomyFunction functionForName(String name) {
-        if (name == null) {
-            return new MiscellaneousFunction();
-        }
-        String lower = name.toLowerCase(Locale.ROOT);
-        if (lower.contains("segment")) {
-            return new SegmentationFunction();
-        }
-        if (lower.contains("filter")) {
-            return new FilteringFunction();
-        }
-        if (lower.contains("threshold")) {
-            return new ThresholdingFunction();
-        }
-        if (lower.contains("resample") || lower.contains("interpolat") || lower.contains("resize")
-                || lower.contains("rescale") || lower.contains("upscale") || lower.contains("downscale")) {
-            return new ResamplingFunction();
-        }
-        if (lower.contains("inpaint") || lower.contains("restore") || lower.contains("denoise")
-                || lower.contains("deconvolv") || lower.contains("preprocess")
-                || lower.contains("background") || lower.contains("flatten")) {
-            return new PreprocessingFunction();
-        }
-        if (lower.contains("measure") || lower.contains("analyz") || lower.contains("profile")) {
-            return new MeasurementsFunction();
-        }
-        if (lower.contains("merge") || lower.contains("split") || lower.contains("stack")
-                || lower.contains("concatenat") || lower.contains("combine") || lower.contains("montage")) {
-            return new MergingSplittingFunction();
-        }
-        if (lower.contains("color") || lower.contains("rgb") || lower.contains("hsl")
-                || lower.contains("lut") || lower.contains("colormap")) {
-            return new ColorStackFunction();
-        }
-        if (lower.contains("blur") || lower.contains("smooth") || lower.contains("erode")
-                || lower.contains("dilate") || lower.contains("morpholog")
-                || lower.contains("gaussian") || lower.contains("median")) {
-            return new FilteringFunction();
-        }
-        return new MiscellaneousFunction();
     }
 
     // ------------------------------------------------------------------
@@ -326,67 +248,6 @@ public final class TaxonomyAutoAssignment {
          */
         public static Set<String> tagsOf(String nodeId) {
             return MAPPING.tagsOf(nodeId);
-        }
-    }
-
-    /**
-     * Resolves the primary taxonomy function for an auto-discovered node:
-     * (1) the exact key in the plugin's JSON mapping resource, then
-     * (2) the name-keyword heuristic, then
-     * (3) Miscellaneous.
-     *
-     * @param mapping the plugin's resource mapping (may be empty, never null)
-     * @param key     the mapping key (e.g. the ImageJ2 op name or the CLIJ
-     *                command name)
-     * @param name    the node's display name (the heuristic input)
-     * @return the primary function, never {@code null}
-     */
-    public static JIPipeNodeTaxonomyFunction functionForResource(ResourceMapping mapping, String key, String name) {
-        String id = mapping.functionIdOf(key);
-        if (id != null) {
-            JIPipeNodeTaxonomyFunction function = functionForId(id);
-            if (function != null) {
-                return function;
-            }
-        }
-        return functionForName(name);
-    }
-
-    /**
-     * Instantiates a taxonomy function from its stable registry id. Only the
-     * functions reachable for auto-discovered nodes are supported (the seed
-     * set plus the audit leaves); unknown ids yield {@code null} so callers
-     * fall back to the heuristic.
-     *
-     * @param id the function id (e.g. {@code jipipe:function:image-arithmetic})
-     * @return a new function instance, or {@code null} if the id is unknown
-     */
-    public static JIPipeNodeTaxonomyFunction functionForId(String id) {
-        if (id == null) {
-            return null;
-        }
-        switch (id) {
-            case ImageArithmeticFunction.ID -> { return new ImageArithmeticFunction(); }
-            case ImageComparisonFunction.ID -> { return new ImageComparisonFunction(); }
-            case ImageProjectionsFunction.ID -> { return new ImageProjectionsFunction(); }
-            case ImageTypeConversionFunction.ID -> { return new ImageTypeConversionFunction(); }
-            case ImageLabelingFunction.ID -> { return new ImageLabelingFunction(); }
-            case ImageStatisticsFunction.ID -> { return new ImageStatisticsFunction(); }
-            case ImageMomentsFunction.ID -> { return new ImageMomentsFunction(); }
-            case ImageTransformationsFunction.ID -> { return new ImageTransformationsFunction(); }
-            case ImagePixelManipulationFunction.ID -> { return new ImagePixelManipulationFunction(); }
-            case ImageNeighborMeasurementsFunction.ID -> { return new ImageNeighborMeasurementsFunction(); }
-            case FilteringFunction.ID -> { return new FilteringFunction(); }
-            case ThresholdingFunction.ID -> { return new ThresholdingFunction(); }
-            case SegmentationFunction.ID -> { return new SegmentationFunction(); }
-            case MeasurementsFunction.ID -> { return new MeasurementsFunction(); }
-            case ResamplingFunction.ID -> { return new ResamplingFunction(); }
-            case MergingSplittingFunction.ID -> { return new MergingSplittingFunction(); }
-            case ColorStackFunction.ID -> { return new ColorStackFunction(); }
-            case PreprocessingFunction.ID -> { return new PreprocessingFunction(); }
-            case MiscellaneousUnassignedFunction.ID ->  { return new MiscellaneousUnassignedFunction(); }
-            case "jipipe:function:misc" -> { return new MiscellaneousFunction(); }
-            default -> { return null; }
         }
     }
 

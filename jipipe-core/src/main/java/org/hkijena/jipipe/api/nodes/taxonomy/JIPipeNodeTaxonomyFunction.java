@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes.taxonomy;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -117,5 +118,18 @@ public interface JIPipeNodeTaxonomyFunction {
      */
     default boolean isRunnable() {
         return true;
+    }
+
+    /**
+     * Name-inference patterns of this function: weighted keywords matched as
+     * case-insensitive substrings of a discovered node's display name. The
+     * aggregate score is the sum of the weights of all matched keywords; the
+     * function with the highest total wins. Functions that declare no patterns
+     * cannot be inferred into. Empty by default.
+     *
+     * @return the inference patterns of this function; never {@code null}
+     */
+    default List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
+        return List.of();
     }
 }

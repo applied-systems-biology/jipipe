@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions.images;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,5 +76,16 @@ public final class MergingSplittingFunction implements JIPipeNodeTaxonomyFunctio
     @Override
     public boolean isVisibleInCompartments() {
         return false;
+    }
+
+    @Override
+    public List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
+        return List.of(
+                new JIPipeNodeTaxonomyInferencePattern("merge", 3f),
+                new JIPipeNodeTaxonomyInferencePattern("split", 3f),
+                new JIPipeNodeTaxonomyInferencePattern("stack", 3f),
+                new JIPipeNodeTaxonomyInferencePattern("concatenat", 3f),
+                new JIPipeNodeTaxonomyInferencePattern("combine", 3f),
+                new JIPipeNodeTaxonomyInferencePattern("montage", 3f));
     }
 }

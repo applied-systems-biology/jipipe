@@ -14,11 +14,13 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions.images;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyInferencePattern;
 import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.Icon;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -74,5 +76,15 @@ public final class ColorStackFunction implements JIPipeNodeTaxonomyFunction {
     @Override
     public boolean isVisibleInCompartments() {
         return false;
+    }
+
+    @Override
+    public List<JIPipeNodeTaxonomyInferencePattern> getInferencePatterns() {
+        return List.of(
+                new JIPipeNodeTaxonomyInferencePattern("color", 2f),
+                new JIPipeNodeTaxonomyInferencePattern("rgb", 2f),
+                new JIPipeNodeTaxonomyInferencePattern("hsl", 2f),
+                new JIPipeNodeTaxonomyInferencePattern("lut", 2f),
+                new JIPipeNodeTaxonomyInferencePattern("colormap", 2f));
     }
 }
