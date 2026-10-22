@@ -37,6 +37,7 @@ public class JIPipeDesktopCodeEditorRSyntaxTextEditorUI extends JIPipeDesktopWor
         textArea.setHighlightCurrentLine(false);
 
         textArea.setTabSize(4);
+        ThemeUtils.watchCaretMotion(textArea);
         editorUI.getWorkbench().getContext().inject(textArea);
         textArea.getDocument().addDocumentListener(new JIPipeDesktopDocumentChangeListener() {
             @Override
