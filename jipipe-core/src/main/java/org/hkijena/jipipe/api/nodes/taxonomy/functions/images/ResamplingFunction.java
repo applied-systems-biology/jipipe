@@ -31,7 +31,7 @@ public final class ResamplingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:resampling";
+        return ID;
     }
 
     @Override

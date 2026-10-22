@@ -36,9 +36,12 @@ import java.util.Set;
  */
 public final class RoiPropertiesFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:roi-properties";
+
     @Override
     public String getId() {
-        return "jipipe:function:roi-properties";
+        return ID;
     }
 
     @Override

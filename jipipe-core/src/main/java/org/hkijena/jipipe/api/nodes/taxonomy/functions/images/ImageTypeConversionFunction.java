@@ -35,7 +35,7 @@ public final class ImageTypeConversionFunction implements JIPipeNodeTaxonomyFunc
 
     @Override
     public String getId() {
-        return "jipipe:function:image-type-conversion";
+        return ID;
     }
 
     @Override

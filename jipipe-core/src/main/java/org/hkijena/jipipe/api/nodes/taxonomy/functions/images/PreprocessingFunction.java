@@ -31,7 +31,7 @@ public final class PreprocessingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:preprocessing";
+        return ID;
     }
 
     @Override

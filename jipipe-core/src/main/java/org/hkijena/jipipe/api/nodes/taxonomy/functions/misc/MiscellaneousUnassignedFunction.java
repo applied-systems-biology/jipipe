@@ -30,7 +30,7 @@ public final class MiscellaneousUnassignedFunction implements JIPipeNodeTaxonomy
 
     @Override
     public String getId() {
-        return "jipipe:function:misc-unassigned";
+        return ID;
     }
 
     @Override

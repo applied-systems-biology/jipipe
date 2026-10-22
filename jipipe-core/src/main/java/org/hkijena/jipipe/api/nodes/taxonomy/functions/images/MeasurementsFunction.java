@@ -31,7 +31,7 @@ public final class MeasurementsFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:measurements";
+        return ID;
     }
 
     @Override

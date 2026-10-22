@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class PlotScatterFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:plot-scatter";
+
     @Override
     public String getId() {
-        return "jipipe:function:plot-scatter";
+        return ID;
     }
 
     @Override

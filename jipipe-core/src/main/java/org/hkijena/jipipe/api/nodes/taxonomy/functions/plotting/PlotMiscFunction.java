@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class PlotMiscFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:plot-misc";
+
     @Override
     public String getId() {
-        return "jipipe:function:plot-misc";
+        return ID;
     }
 
     @Override

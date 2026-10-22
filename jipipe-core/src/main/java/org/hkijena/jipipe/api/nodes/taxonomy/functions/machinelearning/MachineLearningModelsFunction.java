@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class MachineLearningModelsFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:machine-learning-models";
+
     @Override
     public String getId() {
-        return "jipipe:function:machine-learning-models";
+        return ID;
     }
 
     @Override

@@ -27,9 +27,12 @@ import java.util.Set;
  */
 public final class MiscellaneousFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:misc";
+
     @Override
     public String getId() {
-        return "jipipe:function:misc";
+        return ID;
     }
 
     @Override

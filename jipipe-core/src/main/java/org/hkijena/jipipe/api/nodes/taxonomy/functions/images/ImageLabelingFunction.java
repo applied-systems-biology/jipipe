@@ -35,7 +35,7 @@ public final class ImageLabelingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:image-labeling";
+        return ID;
     }
 
     @Override

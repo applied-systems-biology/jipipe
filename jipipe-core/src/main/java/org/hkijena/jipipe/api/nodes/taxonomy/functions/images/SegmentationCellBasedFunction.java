@@ -25,9 +25,12 @@ import java.util.Set;
  */
 public final class SegmentationCellBasedFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:segmentation-cell-based";
+
     @Override
     public String getId() {
-        return "jipipe:function:segmentation-cell-based";
+        return ID;
     }
 
     @Override

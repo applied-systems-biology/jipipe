@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class StatisticsFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:statistics";
+
     @Override
     public String getId() {
-        return "jipipe:function:statistics";
+        return ID;
     }
 
     @Override

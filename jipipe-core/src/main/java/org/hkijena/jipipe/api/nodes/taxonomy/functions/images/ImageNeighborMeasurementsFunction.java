@@ -35,7 +35,7 @@ public final class ImageNeighborMeasurementsFunction implements JIPipeNodeTaxono
 
     @Override
     public String getId() {
-        return "jipipe:function:image-neighbor-measurements";
+        return ID;
     }
 
     @Override

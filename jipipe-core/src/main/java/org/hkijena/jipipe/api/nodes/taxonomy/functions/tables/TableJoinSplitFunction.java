@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class TableJoinSplitFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:table-join-split";
+
     @Override
     public String getId() {
-        return "jipipe:function:table-join-split";
+        return ID;
     }
 
     @Override

@@ -41,9 +41,12 @@ import java.util.Set;
  */
 public final class GraphAnnotationsFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:graph-annotations";
+
     @Override
     public String getId() {
-        return "jipipe:function:graph-annotations";
+        return ID;
     }
 
     @Override

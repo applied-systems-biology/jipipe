@@ -27,9 +27,12 @@ import java.util.Set;
  */
 public final class ExportFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:export";
+
     @Override
     public String getId() {
-        return "jipipe:function:export";
+        return ID;
     }
 
     @Override

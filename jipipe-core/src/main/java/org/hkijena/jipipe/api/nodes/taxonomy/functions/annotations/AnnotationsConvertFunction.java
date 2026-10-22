@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class AnnotationsConvertFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:annotations-convert";
+
     @Override
     public String getId() {
-        return "jipipe:function:annotations-convert";
+        return ID;
     }
 
     @Override

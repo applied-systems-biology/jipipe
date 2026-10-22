@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class FilamentFilteringFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:filament-filtering";
+
     @Override
     public String getId() {
-        return "jipipe:function:filament-filtering";
+        return ID;
     }
 
     @Override

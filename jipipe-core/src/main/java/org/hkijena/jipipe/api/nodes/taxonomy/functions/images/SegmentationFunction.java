@@ -31,7 +31,7 @@ public final class SegmentationFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:segmentation";
+        return ID;
     }
 
     @Override

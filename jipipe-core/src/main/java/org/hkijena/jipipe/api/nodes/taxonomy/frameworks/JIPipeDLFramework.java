@@ -20,9 +20,12 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
  */
 public final class JIPipeDLFramework implements JIPipeNodeTaxonomyFramework {
 
+    /** The stable registry id of this framework (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:framework:jipipedl";
+
     @Override
     public String getId() {
-        return "jipipe:framework:jipipedl";
+        return ID;
     }
 
     @Override

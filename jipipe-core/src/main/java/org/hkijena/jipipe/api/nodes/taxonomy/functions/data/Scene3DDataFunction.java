@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class Scene3DDataFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:scene-3d-data";
+
     @Override
     public String getId() {
-        return "jipipe:function:scene-3d-data";
+        return ID;
     }
 
     @Override

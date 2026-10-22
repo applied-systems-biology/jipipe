@@ -31,7 +31,7 @@ public final class ColorStackFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:color-stack";
+        return ID;
     }
 
     @Override

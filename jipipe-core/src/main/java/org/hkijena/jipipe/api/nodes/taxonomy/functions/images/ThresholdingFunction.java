@@ -31,7 +31,7 @@ public final class ThresholdingFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:thresholding";
+        return ID;
     }
 
     @Override

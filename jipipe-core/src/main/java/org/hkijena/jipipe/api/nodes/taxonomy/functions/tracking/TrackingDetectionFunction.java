@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class TrackingDetectionFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:tracking-detection";
+
     @Override
     public String getId() {
-        return "jipipe:function:tracking-detection";
+        return ID;
     }
 
     @Override

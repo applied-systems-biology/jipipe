@@ -20,9 +20,12 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
  */
 public final class JFreeChartFramework implements JIPipeNodeTaxonomyFramework {
 
+    /** The stable registry id of this framework (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:framework:jfreechart";
+
     @Override
     public String getId() {
-        return "jipipe:framework:jfreechart";
+        return ID;
     }
 
     @Override

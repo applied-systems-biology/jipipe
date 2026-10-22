@@ -35,7 +35,7 @@ public final class ImagePixelManipulationFunction implements JIPipeNodeTaxonomyF
 
     @Override
     public String getId() {
-        return "jipipe:function:image-pixel-manipulation";
+        return ID;
     }
 
     @Override

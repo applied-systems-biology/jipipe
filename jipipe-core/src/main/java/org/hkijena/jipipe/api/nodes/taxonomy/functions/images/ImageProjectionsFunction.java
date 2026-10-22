@@ -35,7 +35,7 @@ public final class ImageProjectionsFunction implements JIPipeNodeTaxonomyFunctio
 
     @Override
     public String getId() {
-        return "jipipe:function:image-projections";
+        return ID;
     }
 
     @Override

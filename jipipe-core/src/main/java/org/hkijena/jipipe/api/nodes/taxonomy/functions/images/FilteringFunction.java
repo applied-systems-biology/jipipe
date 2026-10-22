@@ -31,7 +31,7 @@ public final class FilteringFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:filtering";
+        return ID;
     }
 
     @Override

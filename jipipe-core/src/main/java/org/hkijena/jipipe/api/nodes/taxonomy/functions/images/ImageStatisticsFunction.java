@@ -35,7 +35,7 @@ public final class ImageStatisticsFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getId() {
-        return "jipipe:function:image-statistics";
+        return ID;
     }
 
     @Override

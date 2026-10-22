@@ -35,7 +35,7 @@ public final class ImageMomentsFunction implements JIPipeNodeTaxonomyFunction {
 
     @Override
     public String getId() {
-        return "jipipe:function:image-moments";
+        return ID;
     }
 
     @Override

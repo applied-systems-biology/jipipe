@@ -21,9 +21,12 @@ import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
  */
 public final class IlastikFramework implements JIPipeNodeTaxonomyFramework {
 
+    /** The stable registry id of this framework (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:framework:ilastik";
+
     @Override
     public String getId() {
-        return "jipipe:framework:ilastik";
+        return ID;
     }
 
     @Override

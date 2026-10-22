@@ -35,7 +35,7 @@ public final class ImageArithmeticFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getId() {
-        return "jipipe:function:image-arithmetic";
+        return ID;
     }
 
     @Override

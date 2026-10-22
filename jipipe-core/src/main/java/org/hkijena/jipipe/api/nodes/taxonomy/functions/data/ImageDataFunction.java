@@ -26,9 +26,12 @@ import java.util.Set;
  */
 public final class ImageDataFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:image-data";
+
     @Override
     public String getId() {
-        return "jipipe:function:image-data";
+        return ID;
     }
 
     @Override

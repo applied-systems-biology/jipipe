@@ -35,7 +35,7 @@ public final class ImageTransformationsFunction implements JIPipeNodeTaxonomyFun
 
     @Override
     public String getId() {
-        return "jipipe:function:image-transformations";
+        return ID;
     }
 
     @Override

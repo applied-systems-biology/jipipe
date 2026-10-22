@@ -35,7 +35,7 @@ public final class ImageComparisonFunction implements JIPipeNodeTaxonomyFunction
 
     @Override
     public String getId() {
-        return "jipipe:function:image-comparison";
+        return ID;
     }
 
     @Override

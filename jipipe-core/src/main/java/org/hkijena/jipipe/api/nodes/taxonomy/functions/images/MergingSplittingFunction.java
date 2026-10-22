@@ -31,7 +31,7 @@ public final class MergingSplittingFunction implements JIPipeNodeTaxonomyFunctio
 
     @Override
     public String getId() {
-        return "jipipe:function:merging-splitting";
+        return ID;
     }
 
     @Override

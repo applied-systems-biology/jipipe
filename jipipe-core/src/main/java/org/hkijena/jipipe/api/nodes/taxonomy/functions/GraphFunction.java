@@ -33,9 +33,12 @@ import java.util.Set;
  */
 public final class GraphFunction implements JIPipeNodeTaxonomyFunction {
 
+    /** The stable registry id of this function (a string literal per the stable-ID rule). */
+    public static final String ID = "jipipe:function:graph";
+
     @Override
     public String getId() {
-        return "jipipe:function:graph";
+        return ID;
     }
 
     @Override
