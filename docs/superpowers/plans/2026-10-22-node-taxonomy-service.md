@@ -206,15 +206,15 @@ public TaxonomyResolver(JIPipeNodeTaxonomyServiceComponent taxonomyService, Map<
 
 - [ ] **Step 5: Update the resolver construction site**
 
-`JIPipeNodesServiceComponent`: field becomes `private final TaxonomyResolver taxonomyResolver;`, constructor:
+`JIPipeNodesServiceComponent`: field becomes `private final TaxonomyResolver taxonomyResolver;`, constructor takes the taxonomy component **as a parameter** (do NOT call `service.getNodeTaxonomyService()` here — the getter's `ensureInitialized()` would re-entrantly boot the service in the middle of `JIPipeService`'s own constructor, where state is still `Uninitialized`; that path is fatal):
 ```java
-public JIPipeNodesServiceComponent(JIPipeService service) {
+public JIPipeNodesServiceComponent(JIPipeService service, JIPipeNodeTaxonomyServiceComponent taxonomyService) {
     super(service);
-    this.taxonomyResolver = new TaxonomyResolver(service.getNodeTaxonomyService());
-    this.defaultIconURL = JIPipe.RESOURCES.getIcon16("actions/configure.png");
+    this.taxonomyResolver = new TaxonomyResolver(taxonomyService);
+    this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
 }
 ```
-(the taxonomy field is initialized before `nodes` in `JIPipeService` — safe). Grep the whole repo (`new TaxonomyResolver`, all modules incl. tests) for other construction sites; update each to the new constructor — found: only the one here, verify don't assume.
+and `JIPipeService`'s constructor calls `nodes = new JIPipeNodesServiceComponent(this, nodeTaxonomy);` (the taxonomy field is initialized before `nodes`). Grep the whole repo (`new TaxonomyResolver`, `new JIPipeNodesServiceComponent`, all modules incl. tests) for other construction sites; update each — found: only the one here, verify don't assume.
 
 - [ ] **Step 6: Point `TaxonomyPlugin.register()` at the forwarders**
 
