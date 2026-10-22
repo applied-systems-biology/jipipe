@@ -116,8 +116,12 @@ import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose2Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ClijFramework;
-import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CoreFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework;
 import org.hkijena.jipipe.api.nodes.taxonomy.frameworks.ImageJ1Framework;
@@ -151,7 +155,7 @@ import java.util.Set;
 
 /**
  * Registers the curated node taxonomy into the live registries: the 84
- * functions (13 top-level branches + 71 seed leaves) and the 16 frameworks.
+ * functions (13 top-level branches + 71 seed leaves) and the 20 frameworks.
  * <p>
  * This is the single place that populates the {@code FunctionRegistry} and
  * {@code FrameworkRegistry}; node plugins only record their membership in
@@ -332,7 +336,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
             registerTaxonomyFunction(function);
         }
 
-        // 16 frameworks (flat set; order is irrelevant).
+        // 20 frameworks (flat set; order is irrelevant).
         registerTaxonomyFramework(new CoreFramework());
         registerTaxonomyFramework(new PythonFramework());
         registerTaxonomyFramework(new RFramework());
@@ -342,13 +346,17 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerTaxonomyFramework(new Cellpose3Framework());
         registerTaxonomyFramework(new Cellpose4Framework());
         registerTaxonomyFramework(new ClijFramework());
-        registerTaxonomyFramework(new CometFramework());
         registerTaxonomyFramework(new JFreeChartFramework());
         registerTaxonomyFramework(new JIPipeDLFramework());
         registerTaxonomyFramework(new OmniposeFramework());
         registerTaxonomyFramework(new IlastikFramework());
         registerTaxonomyFramework(new OpenCVFramework());
         registerTaxonomyFramework(new TrackMateFramework());
+        registerTaxonomyFramework(new WekaFramework());
+        registerTaxonomyFramework(new FilamentsFramework());
+        registerTaxonomyFramework(new IJ3DFramework());
+        registerTaxonomyFramework(new OmeroFramework());
+        registerTaxonomyFramework(new Scene3DFramework());
 
         // Name-inference fallback (core policy, set in exactly this one place):
         // discovered nodes whose names match no keyword pattern land in

@@ -16,12 +16,12 @@ package org.hkijena.jipipe.api.nodes.taxonomy.frameworks;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
 
 /**
- * The Comet tracking framework.
+ * The ImageJ 3D Suite (3D ROIs, 3D viewer, 3D filters).
  */
-public final class CometFramework implements JIPipeNodeTaxonomyFramework {
+public final class IJ3DFramework implements JIPipeNodeTaxonomyFramework {
 
     /** The stable registry id of this framework (a string literal per the stable-ID rule). */
-    public static final String ID = "jipipe:framework:comet";
+    public static final String ID = "jipipe:framework:ij3d";
 
     @Override
     public String getId() {
@@ -30,16 +30,16 @@ public final class CometFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getName() {
-        return "Comet";
+        return "IJ3D";
     }
 
     @Override
     public String getAbbreviation() {
-        return "CMET";
+        return "3D";
     }
 
     @Override
     public String getPatternStyleId() {
-        return "net";
+        return "hilbert";
     }
 }

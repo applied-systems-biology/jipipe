@@ -148,7 +148,7 @@ class TaxonomyPluginTest {
             "jipipe:function:tracking-linking");
 
     /**
-     * The 16 expected core framework ids, alphabetical by file path.
+     * The 20 expected core framework ids, alphabetical by file path.
      * This list is the ID-stability pin: every entry must remain registered
      * under exactly this id.
      */
@@ -157,18 +157,22 @@ class TaxonomyPluginTest {
             "jipipe:framework:cellpose3",
             "jipipe:framework:cellpose4",
             "jipipe:framework:clij",
-            "jipipe:framework:comet",
             "jipipe:framework:core",
+            "jipipe:framework:filaments",
+            "jipipe:framework:ij3d",
             "jipipe:framework:ilastik",
             "jipipe:framework:imagej1",
             "jipipe:framework:imagej2",
             "jipipe:framework:jfreechart",
             "jipipe:framework:jipipedl",
+            "jipipe:framework:omero",
             "jipipe:framework:omnipose",
             "jipipe:framework:opencv",
             "jipipe:framework:python",
             "jipipe:framework:r",
-            "jipipe:framework:trackmate");
+            "jipipe:framework:scene-3d",
+            "jipipe:framework:trackmate",
+            "jipipe:framework:weka");
 
     @BeforeAll
     static void ensureJIPipe() {

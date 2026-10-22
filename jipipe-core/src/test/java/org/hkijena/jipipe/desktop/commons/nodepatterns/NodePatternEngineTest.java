@@ -105,7 +105,6 @@ class NodePatternEngineTest {
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose3Framework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Cellpose4Framework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.TrackMateFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.CometFramework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JIPipeDLFramework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.JFreeChartFramework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OpenCVFramework(),
@@ -115,7 +114,12 @@ class NodePatternEngineTest {
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IlastikFramework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmniposeFramework(),
             new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.PythonFramework(),
-            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework()
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.RFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.WekaFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.FilamentsFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.IJ3DFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.OmeroFramework(),
+            new org.hkijena.jipipe.api.nodes.taxonomy.frameworks.Scene3DFramework()
         };
         for (var fw : fws) {
             assertNotNull(fw.getPatternStyleId(), fw.getId() + " has no style");
