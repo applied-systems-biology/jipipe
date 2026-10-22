@@ -56,7 +56,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
     // name inference (weighted keyword index over all registered functions)
     private String fallbackFunctionId;
     private List<IndexedKeyword> keywordIndex;
-    private volatile boolean indexDirty = true;
+    private long indexVersion = -1;
 
     public JIPipeNodeTaxonomyServiceComponent(JIPipeService service) {
         super(service);
@@ -70,7 +70,6 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      */
     public void registerFunction(JIPipeNodeTaxonomyFunction function) {
         functionRegistry.register(function);
-        indexDirty = true;
     }
 
     /**
@@ -80,7 +79,6 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      * @return the removed function, or {@code null} if none was registered under that id
      */
     public JIPipeNodeTaxonomyFunction unregisterFunction(String id) {
-        indexDirty = true;
         return functionRegistry.unregister(id);
     }
 
@@ -174,7 +172,9 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
     /**
      * @return the function registry owned by this component. Exists for the
      * {@code TaxonomyValidationReport} and the nodes-service delegates that
-     * need direct registry access
+     * need direct registry access. Direct registry mutations are safe for
+     * inference: the index detects them via the registry's
+     * {@link FunctionRegistry#mutationVersion()} and rebuilds lazily
      */
     public FunctionRegistry getFunctionRegistry() {
         return functionRegistry;
@@ -233,7 +233,7 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
      * would match every name).
      */
     private List<IndexedKeyword> ensureIndex() {
-        if (keywordIndex != null && !indexDirty) {
+        if (keywordIndex != null && indexVersion == functionRegistry.mutationVersion()) {
             return keywordIndex;
         }
         List<IndexedKeyword> index = new ArrayList<>();
@@ -248,8 +248,8 @@ public final class JIPipeNodeTaxonomyServiceComponent extends JIPipeServiceCompo
                         pattern.weight()));
             }
         }
+        indexVersion = functionRegistry.mutationVersion();
         keywordIndex = index;
-        indexDirty = false;
         return index;
     }
 

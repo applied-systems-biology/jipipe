@@ -23,6 +23,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * In-memory registry of {@link JIPipeNodeTaxonomyFunction}s, forming the
@@ -42,12 +43,19 @@ public class FunctionRegistry {
     private final Map<String, JIPipeNodeTaxonomyFunction> byId = new HashMap<>();
 
     /**
+     * Monotonic counter bumped on every structural mutation; used by the
+     * taxonomy service's inference index to detect direct-registry mutations.
+     */
+    private final AtomicLong version = new AtomicLong();
+
+    /**
      * Registers a function. Re-registering an existing id replaces the previous function.
      *
      * @param function the function to register
      */
     public void register(JIPipeNodeTaxonomyFunction function) {
         byId.put(function.getId(), function);
+        version.incrementAndGet();
     }
 
     /**
@@ -58,7 +66,16 @@ public class FunctionRegistry {
      */
     @Nullable
     public JIPipeNodeTaxonomyFunction unregister(String id) {
+        version.incrementAndGet();
         return byId.remove(id);
+    }
+
+    /**
+     * @return the current mutation version (see {@link #version}); the value
+     * increases monotonically with every {@link #register} / {@link #unregister}
+     */
+    public long mutationVersion() {
+        return version.get();
     }
 
     /**
