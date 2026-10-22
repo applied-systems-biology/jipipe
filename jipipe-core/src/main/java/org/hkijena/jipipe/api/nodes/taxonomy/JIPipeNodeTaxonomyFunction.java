@@ -27,8 +27,14 @@ import java.util.Set;
  * {@link #getParent() parent}; functions without a parent are top-level.
  * <p>
  * The {@link #getColorHue() color hue} is defined by top-level functions only.
- * Sub-branches return {@code null} and inherit the hue of their nearest
- * ancestor that defines one; {@link FunctionRegistry#baseHue(JIPipeNodeTaxonomyFunction)}
+ * A top-level function declares a {@link #getHueCategory() hue category} and
+ * gets a deterministic in-cell hue from the default {@link #getColorHue()}
+ * (see {@link TaxonomyHue#autoHue(HueCategory, String)}); without a category
+ * it is {@code null}, i.e. <em>transparent</em> (rendered with the theme's
+ * panel background). An explicit {@link #getColorHue()} override always wins
+ * over the category default. Sub-branches always return {@code null} and
+ * inherit the hue of their nearest ancestor that defines one;
+ * {@link FunctionRegistry#baseHue(JIPipeNodeTaxonomyFunction)}
  * resolves it, and {@link FunctionRegistry#shadeHsb(float, float, float, int)}
  * shades it by the tree depth below that ancestor.
  */
@@ -51,12 +57,36 @@ public interface JIPipeNodeTaxonomyFunction {
     JIPipeNodeTaxonomyFunction getParent();
 
     /**
-     * @return the base hue of this function in HSB hue units ({@code 0..1}),
-     * or {@code null} if this function is a sub-branch that inherits the hue
-     * from its nearest ancestor
+     * Conceptual hue family used by the deterministic auto-picker when this
+     * function is top-level and does not override {@link #getColorHue()}.
+     * Null category = transparent (no auto hue).
+     *
+     * @return the hue category of this function, or {@code null}
      */
     @Nullable
-    Float getColorHue();
+    default HueCategory getHueCategory() {
+        return null;
+    }
+
+    /**
+     * The base hue of this function in HSB hue units ({@code 0..1}),
+     * or {@code null} if it does not define one.
+     * <p>
+     * By default: top-level functions with a
+     * {@link #getHueCategory() hue category} get a deterministic in-cell hue
+     * ({@link TaxonomyHue#autoHue(HueCategory, String)}); functions without a
+     * category are {@code null} (transparent); sub-branches are always
+     * {@code null} (they inherit + depth-shade from their nearest ancestor).
+     * Override this method for a designed hue; an explicit override always
+     * wins over the category default.
+     *
+     * @return the hue in {@code 0..1}, or {@code null}
+     */
+    @Nullable
+    default Float getColorHue() {
+        if (getParent() != null || getHueCategory() == null) return null;
+        return TaxonomyHue.autoHue(getHueCategory(), getId());
+    }
 
     /**
      * @return a human-readable description of this function
