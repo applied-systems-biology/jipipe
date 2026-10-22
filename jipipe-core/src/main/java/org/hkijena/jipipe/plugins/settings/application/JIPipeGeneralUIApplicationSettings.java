@@ -45,6 +45,7 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     private JIPipeModernThemeStyleParameter themeStyle = new JIPipeModernThemeStyleParameter("JIPipe Light");
     private boolean switchToProjectInfoOnUnknownProject = true;
     private JIPipeNodeDatabaseSearchImplementation searchImplementation = JIPipeNodeDatabaseSearchImplementation.Enhanced;
+    private boolean reducedMotion = false;
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);
@@ -59,6 +60,20 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
     @JIPipeParameter("search-implementation-v2")
     public void setSearchImplementation(JIPipeNodeDatabaseSearchImplementation searchImplementation) {
         this.searchImplementation = searchImplementation;
+    }
+
+    @SetJIPipeDocumentation(name = "Reduced motion",
+            description = "If enabled, UI animations are disabled: the caret in text/script editors stays fixed, "
+                    + "progress spinners show a static hourglass, and the notification icon stays a static orange "
+                    + "icon instead of animating.")
+    @JIPipeParameter("reduced-motion")
+    public boolean isReducedMotion() {
+        return reducedMotion;
+    }
+
+    @JIPipeParameter("reduced-motion")
+    public void setReducedMotion(boolean reducedMotion) {
+        this.reducedMotion = reducedMotion;
     }
 
     @SetJIPipeDocumentation(name = "Switch to project overview if not author", description = "If enabled, switches to the project overview instead of restoring tabs in the case if a project doesn't have the current user as author.")

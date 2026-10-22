@@ -52,6 +52,21 @@ public class ThemeUtils {
         return CURRENT_STYLE;
     }
 
+    /**
+     * @return true when the user has enabled reduced motion. Safe to call at any time:
+     * returns false (animations on) when JIPipe is not initialized or the setting is unavailable.
+     */
+    public static boolean isReducedMotion() {
+        if (JIPipe.getInstance() == null) {
+            return false;
+        }
+        try {
+            return JIPipeGeneralUIApplicationSettings.getInstance().isReducedMotion();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
     public static void applyThemeFromSettings() {
 
         // Fix for macOS
