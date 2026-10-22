@@ -204,9 +204,6 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
     @Override
     public void register(JIPipeService service, Context context, JIPipeProgressInfo progressInfo) {
-        var functions = JIPipe.getNodes().getFunctions();
-        var frameworks = JIPipe.getNodes().getFrameworks();
-
         // 13 top-level branches first, so leaves' parents exist when the tree
         // is validated later (registration is idempotent and order-independent,
         // but this is cleaner).
@@ -226,7 +223,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new MiscellaneousFunction()
         };
         for (JIPipeNodeTaxonomyFunction function : topLevels) {
-            functions.register(function);
+            registerTaxonomyFunction(function);
         }
 
         // 48 seed leaves, grouped by sub-branch (order is irrelevant).
@@ -332,26 +329,26 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 new ScriptingExpressionFunction()
         };
         for (JIPipeNodeTaxonomyFunction function : leaves) {
-            functions.register(function);
+            registerTaxonomyFunction(function);
         }
 
         // 16 frameworks (flat set; order is irrelevant).
-        frameworks.register(new CoreFramework());
-        frameworks.register(new PythonFramework());
-        frameworks.register(new RFramework());
-        frameworks.register(new ImageJ1Framework());
-        frameworks.register(new ImageJ2Framework());
-        frameworks.register(new Cellpose2Framework());
-        frameworks.register(new Cellpose3Framework());
-        frameworks.register(new Cellpose4Framework());
-        frameworks.register(new ClijFramework());
-        frameworks.register(new CometFramework());
-        frameworks.register(new JFreeChartFramework());
-        frameworks.register(new JIPipeDLFramework());
-        frameworks.register(new OmniposeFramework());
-        frameworks.register(new IlastikFramework());
-        frameworks.register(new OpenCVFramework());
-        frameworks.register(new TrackMateFramework());
+        registerTaxonomyFramework(new CoreFramework());
+        registerTaxonomyFramework(new PythonFramework());
+        registerTaxonomyFramework(new RFramework());
+        registerTaxonomyFramework(new ImageJ1Framework());
+        registerTaxonomyFramework(new ImageJ2Framework());
+        registerTaxonomyFramework(new Cellpose2Framework());
+        registerTaxonomyFramework(new Cellpose3Framework());
+        registerTaxonomyFramework(new Cellpose4Framework());
+        registerTaxonomyFramework(new ClijFramework());
+        registerTaxonomyFramework(new CometFramework());
+        registerTaxonomyFramework(new JFreeChartFramework());
+        registerTaxonomyFramework(new JIPipeDLFramework());
+        registerTaxonomyFramework(new OmniposeFramework());
+        registerTaxonomyFramework(new IlastikFramework());
+        registerTaxonomyFramework(new OpenCVFramework());
+        registerTaxonomyFramework(new TrackMateFramework());
 
         // Ship the corpus-mined workflow patterns as System (plugin) node
         // templates. Runs at the END of registration: the function tree above
@@ -401,7 +398,7 @@ public class TaxonomyPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         if (sidecar == null) {
             return;
         }
-        FunctionRegistry functions = JIPipe.getNodes().getFunctions();
+        FunctionRegistry functions = JIPipe.getNodeTaxonomyService().getFunctionRegistry();
         Map<String, IconRef> iconCache = new HashMap<>();
         int registered = 0;
         for (String id : sortedKeys(sidecar)) {

@@ -50,12 +50,19 @@ public final class JIPipeNodesServiceComponent extends JIPipeServiceComponent im
     private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
     private final List<JIPipeNodeTemplate> scheduledRegisterTemplates = new ArrayList<>();
     private final URL defaultIconURL;
-    private final TaxonomyResolver taxonomyResolver = new TaxonomyResolver();
+    private final TaxonomyResolver taxonomyResolver;
     private boolean stateChanged;
     private boolean isRunning;
 
-    public JIPipeNodesServiceComponent(JIPipeService service) {
+    public JIPipeNodesServiceComponent(JIPipeService service, JIPipeNodeTaxonomyServiceComponent taxonomyService) {
         super(service);
+        // The taxonomy component is passed in explicitly (JIPipeService
+        // creates it before this one): this constructor runs inside
+        // JIPipeService's own constructor, where the service state is still
+        // Uninitialized — service.getNodeTaxonomyService() would call
+        // ensureInitialized() and re-entrantly start a full initialization
+        // here, before the remaining components exist.
+        this.taxonomyResolver = new TaxonomyResolver(taxonomyService);
         this.defaultIconURL = JIPipe.RESOURCES.getIcon16URL("actions/configure.png");
     }
 

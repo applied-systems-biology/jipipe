@@ -37,6 +37,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeGraphCanvasNote;
 import org.hkijena.jipipe.api.nodes.annotation.JIPipeAnnotationGraphNodeTool;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeJavaNodeInfo;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
+import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.hkijena.jipipe.api.parameters.JIPipeDefaultMutableParameterTypeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterArchetype;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
@@ -408,6 +410,24 @@ public abstract class JIPipeDefaultJavaPlugin extends AbstractService implements
      */
     public void registerNodeType(JIPipeNodeRegistrationTask task) {
         service.getNodes().scheduleRegister(task);
+    }
+
+    /**
+     * Registers a node taxonomy function with the taxonomy service.
+     *
+     * @param function the function to register (its stable id is the key)
+     */
+    public void registerTaxonomyFunction(JIPipeNodeTaxonomyFunction function) {
+        service.getNodeTaxonomyService().registerFunction(function);
+    }
+
+    /**
+     * Registers a node taxonomy framework with the taxonomy service.
+     *
+     * @param framework the framework to register (its stable id is the key)
+     */
+    public void registerTaxonomyFramework(JIPipeNodeTaxonomyFramework framework) {
+        service.getNodeTaxonomyService().registerFramework(framework);
     }
 
     /**

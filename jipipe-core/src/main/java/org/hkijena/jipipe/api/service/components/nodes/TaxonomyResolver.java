@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.infos.JIPipeMutableNodeInfo;
 import org.hkijena.jipipe.api.nodes.taxonomy.*;
+import org.hkijena.jipipe.api.service.components.JIPipeNodeTaxonomyServiceComponent;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.*;
@@ -27,9 +28,11 @@ import java.util.*;
  * Resolves the taxonomy views of the node service component:
  * <ul>
  * <li>the {@link FunctionRegistry} (the curated function tree, populated
- * once by the taxonomy plugin),</li>
+ * once by the taxonomy plugin) — read from the owning
+ * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the {@link FrameworkRegistry} (populated once by the taxonomy
- * plugin),</li>
+ * plugin) — read from the owning
+ * {@link JIPipeNodeTaxonomyServiceComponent},</li>
  * <li>the family step graph, assembled from the nodes'
  * {@link JIPipeNodeTaxonomyFamilyStepAnnotation}s via a
  * {@link FamilyAssembler},</li>
@@ -49,8 +52,7 @@ import java.util.*;
  */
 public class TaxonomyResolver {
 
-    private final FunctionRegistry functionRegistry = new FunctionRegistry();
-    private final FrameworkRegistry frameworkRegistry = new FrameworkRegistry();
+    private final JIPipeNodeTaxonomyServiceComponent taxonomyService;
     private final List<InputProfileProvider> inputProfileProviders = new ArrayList<>();
     private final Map<String, JIPipeNodeTaxonomyFamily> familiesById = new LinkedHashMap<>();
 
@@ -67,18 +69,29 @@ public class TaxonomyResolver {
 
     /**
      * Creates a resolver with no node classes known yet; the
-     * {@link FamilyAssembler} is created lazily on first use.
+     * {@link FamilyAssembler} is created lazily on first use. The
+     * function and framework registries are read from the given
+     * taxonomy service component.
+     *
+     * @param taxonomyService the taxonomy service component owning the
+     *                        function and framework registries
      */
-    public TaxonomyResolver() {
+    public TaxonomyResolver(JIPipeNodeTaxonomyServiceComponent taxonomyService) {
+        this.taxonomyService = taxonomyService;
     }
 
     /**
      * Creates a resolver that resolves family {@code after} classes
-     * through the given class→node-ids mapping.
+     * through the given class→node-ids mapping. The function and
+     * framework registries are read from the given taxonomy service
+     * component.
      *
-     * @param classToNodeIds node class → registered node ids (registration order)
+     * @param taxonomyService  the taxonomy service component owning the
+     *                         function and framework registries
+     * @param classToNodeIds   node class → registered node ids (registration order)
      */
-    public TaxonomyResolver(Map<Class<?>, List<String>> classToNodeIds) {
+    public TaxonomyResolver(JIPipeNodeTaxonomyServiceComponent taxonomyService, Map<Class<?>, List<String>> classToNodeIds) {
+        this.taxonomyService = taxonomyService;
         this.classToNodeIds = classToNodeIds == null ? null : new LinkedHashMap<>(classToNodeIds);
     }
 
@@ -86,14 +99,14 @@ public class TaxonomyResolver {
      * @return the function registry (the curated function tree)
      */
     public FunctionRegistry getFunctionRegistry() {
-        return functionRegistry;
+        return taxonomyService.getFunctionRegistry();
     }
 
     /**
      * @return the framework registry
      */
     public FrameworkRegistry getFrameworkRegistry() {
-        return frameworkRegistry;
+        return taxonomyService.getFrameworkRegistry();
     }
 
     /**
@@ -341,8 +354,8 @@ public class TaxonomyResolver {
      */
     public Set<String> validateTaxonomy(Map<String, ? extends JIPipeNodeInfo> registeredNodeInfos) {
         Set<String> errors = new LinkedHashSet<>();
-        errors.addAll(functionRegistry.validate());
-        errors.addAll(frameworkRegistry.validate());
+        errors.addAll(taxonomyService.getFunctionRegistry().validate());
+        errors.addAll(taxonomyService.getFrameworkRegistry().validate());
         if (familyAssembler != null) {
             errors.addAll(familyAssembler.validate(registeredNodeInfos.keySet()));
         }
@@ -353,13 +366,13 @@ public class TaxonomyResolver {
                 // Unconverted node: reported separately, not an error.
                 continue;
             }
-            if (functionRegistry.byId(primary.getId()) == null) {
+            if (taxonomyService.getFunctionRegistry().byId(primary.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy function '"
                     + primary.getId() + "' that is not registered in the function registry");
             }
             JIPipeNodeTaxonomyFramework framework = info.getFramework();
             if (framework != null && !(framework instanceof NoFramework)
-                && frameworkRegistry.byId(framework.getId()) == null) {
+                && taxonomyService.getFrameworkRegistry().byId(framework.getId()) == null) {
                 errors.add("Node '" + info.getId() + "' points at taxonomy framework '"
                     + framework.getId() + "' that is not registered in the framework registry");
             }

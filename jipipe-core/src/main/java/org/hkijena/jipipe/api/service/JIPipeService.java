@@ -45,6 +45,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     private final JIPipeInitializationReport initializationReport = new JIPipeInitializationReport();
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+    private final JIPipeNodeTaxonomyServiceComponent nodeTaxonomy;
     private final JIPipeNodesServiceComponent nodes;
     private final JIPipeDatatypesServiceComponent dataTypes;
     private final JIPipeImageJAdaptersServiceComponent imageJDataAdapters;
@@ -85,7 +86,12 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
     public JIPipeService() {
         recentProjects = new JIPipeRecentProjectsRegistry(this);
-        nodes = new JIPipeNodesServiceComponent(this);
+        // The taxonomy component is created before nodes and passed in
+        // explicitly: nodes' constructor runs inside JIPipeService's own
+        // constructor, where getNodeTaxonomyService() would call
+        // ensureInitialized() and re-entrantly start a full initialization.
+        nodeTaxonomy = new JIPipeNodeTaxonomyServiceComponent(this);
+        nodes = new JIPipeNodesServiceComponent(this, nodeTaxonomy);
         dataTypes = new JIPipeDatatypesServiceComponent(this);
         imageJDataAdapters = new JIPipeImageJAdaptersServiceComponent(this);
         customMenuItems = new JIPipeCustomMenuItemsServiceComponent(this);
@@ -111,7 +117,7 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
 
         // Add into components list so we can later postprocess them
         this.components = new JIPipeServiceComponent[] {
-                recentProjects, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
+                recentProjects, nodeTaxonomy, nodes, dataTypes, imageJDataAdapters, customMenuItems, parameterTypes, applicationSettings, projectSettings, expressionFunctions, utilityClasses,
                 environments, plugins, projectTemplates, artifacts, nodeTemplates, acceleration, cleanup, projectBackup, aiService, serverService, statistics, instrumentation
         };
     }
@@ -202,6 +208,11 @@ public class JIPipeService extends AbstractService implements JIPipeValidatable 
     public JIPipeNodesServiceComponent getNodes() {
         ensureInitialized();
         return nodes;
+    }
+
+    public JIPipeNodeTaxonomyServiceComponent getNodeTaxonomyService() {
+        ensureInitialized();
+        return nodeTaxonomy;
     }
 
     public JIPipeDatatypesServiceComponent getDataTypes() {
