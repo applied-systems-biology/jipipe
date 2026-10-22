@@ -45,12 +45,6 @@ public final class RoiMeasurementsFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Measuring ROI properties";
     }

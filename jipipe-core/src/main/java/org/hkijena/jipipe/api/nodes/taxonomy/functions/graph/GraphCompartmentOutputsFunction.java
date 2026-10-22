@@ -45,12 +45,6 @@ public final class GraphCompartmentOutputsFunction implements JIPipeNodeTaxonomy
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Outputs of graph compartments";
     }

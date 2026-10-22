@@ -45,12 +45,6 @@ public final class FilamentDataFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that produce or load filament data";
     }

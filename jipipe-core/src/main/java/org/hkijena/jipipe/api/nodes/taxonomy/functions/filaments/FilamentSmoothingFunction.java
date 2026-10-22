@@ -45,12 +45,6 @@ public final class FilamentSmoothingFunction implements JIPipeNodeTaxonomyFuncti
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Smoothing filament curves";
     }

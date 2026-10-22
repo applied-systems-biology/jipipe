@@ -100,15 +100,19 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the 75 seed {@link JIPipeNodeTaxonomyFunction} leaves (the exact
+ * Verifies the 74 seed {@link JIPipeNodeTaxonomyFunction} leaves (the exact
  * list in the Phase 1a plan for Task 10, plus the dual-visible
  * {@link GraphAnnotationsFunction} that restores the legacy
  * {@code GraphAnnotationsNodeTypeCategory}, the {@link RoiPropertiesFunction}
  * audit leaf, the 10 full-registry-audit Images leaves, the 7
  * curated-reorganization leaves of the full audit, and the 4 Scripting
- * language sub-leaves of the re-clustering audit):
- * the exact stable literal ids, parent wiring (the 13 top-level branches
- * plus the one deeper level: cell-based segmentation under segmentation),
+ * language sub-leaves of the re-clustering audit).
+ * {@link ScriptingFunction} was a seed leaf until the spec B.5 hue migration
+ * promoted it to a top-level branch, so it is no longer part of this set:
+ * the 14 top-level branches below plus the one deeper level
+ * (cell-based segmentation under segmentation, and the 4 scripting
+ * language leaves under scripting):
+ * the exact stable literal ids, parent wiring,
  * null hues (sub-branches inherit), null icons, visibility mirroring the
  * parent branch (false/false for the transparent Graph branch), the 3 seed
  * tags (all others empty), reachability of every leaf via its parent chain,
@@ -118,7 +122,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class FunctionLeavesTest {
 
     /**
-     * The 75 leaf class literals, grouped by subpackage.
+     * The 74 leaf class literals, grouped by subpackage.
+     * ({@link ScriptingFunction} itself moved to {@link #allTopLevels()} with
+     * the spec B.5 hue migration.)
      */
     private static List<Class<? extends JIPipeNodeTaxonomyFunction>> allLeaves() {
         return List.of(
@@ -158,7 +164,6 @@ class FunctionLeavesTest {
             // misc — full-registry audit leaves
             DataUtilitiesFunction.class,
             TextMarkupFunction.class,
-            ScriptingFunction.class,
             // scripting — language sub-leaves (re-clustering audit)
             ScriptingPythonFunction.class,
             ScriptingRFunction.class,
@@ -217,7 +222,8 @@ class FunctionLeavesTest {
     }
 
     /**
-     * The 13 top-level branches from Task 9.
+     * The 14 top-level branches from Task 9, plus the Scripting root promoted
+     * to top-level by the spec B.5 hue migration.
      */
     private static List<JIPipeNodeTaxonomyFunction> allTopLevels() {
         return List.of(
@@ -233,7 +239,8 @@ class FunctionLeavesTest {
             new PlottingFunction(),
             new ExportFunction(),
             new GraphFunction(),
-            new MiscellaneousFunction()
+            new MiscellaneousFunction(),
+            new ScriptingFunction()
         );
     }
 
@@ -254,7 +261,7 @@ class FunctionLeavesTest {
                 "Id of " + leaf.getName() + " must be a non-null literal starting with 'jipipe:function:', got: " + id);
             ids.add(id);
         }
-        assertEquals(75, ids.size(), "Expected 75 unique leaf ids, got " + ids.size() + " for: " + ids);
+        assertEquals(74, ids.size(), "Expected 74 unique leaf ids, got " + ids.size() + " for: " + ids);
     }
 
     @Test
@@ -351,10 +358,11 @@ class FunctionLeavesTest {
             .map(JIPipeNodeTaxonomyFunction::getClass)
             .collect(Collectors.toSet());
         allowedParents.add(SegmentationFunction.class);
-        // ScriptingFunction carries the four language sub-leaves of the
-        // re-clustering audit (Python, R, ImageJ macro, expressions), the
-        // same leaf-with-children pattern as SegmentationFunction above.
-        allowedParents.add(ScriptingFunction.class);
+        // The four scripting language sub-leaves (Python, R, ImageJ macro,
+        // expressions) parent to the Scripting root (top-level since the
+        // spec B.5 hue migration), the same leaf-with-children pattern as
+        // SegmentationFunction above.
+        // (ScriptingFunction is in allTopLevels() and thus already allowed.)
         for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
             JIPipeNodeTaxonomyFunction function = instantiate(leaf);
             assertTrue(allowedParents.contains(function.getParent().getClass()),
@@ -456,7 +464,7 @@ class FunctionLeavesTest {
         for (Class<? extends JIPipeNodeTaxonomyFunction> leaf : allLeaves()) {
             registry.register(instantiate(leaf));
         }
-        assertEquals(13 + 75, registry.all().size());
+        assertEquals(14 + 74, registry.all().size());
         Set<String> errors = registry.validate();
         assertTrue(errors.isEmpty(), "Expected no validation errors but got: " + errors);
     }

@@ -45,12 +45,6 @@ public final class GraphDebugFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Debugging graph execution";
     }

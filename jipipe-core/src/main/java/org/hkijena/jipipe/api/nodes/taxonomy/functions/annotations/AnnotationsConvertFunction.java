@@ -45,12 +45,6 @@ public final class AnnotationsConvertFunction implements JIPipeNodeTaxonomyFunct
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Converting between annotation types";
     }

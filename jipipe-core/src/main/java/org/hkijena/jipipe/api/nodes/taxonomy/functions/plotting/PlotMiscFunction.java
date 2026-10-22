@@ -45,12 +45,6 @@ public final class PlotMiscFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Creating other kinds of plots";
     }

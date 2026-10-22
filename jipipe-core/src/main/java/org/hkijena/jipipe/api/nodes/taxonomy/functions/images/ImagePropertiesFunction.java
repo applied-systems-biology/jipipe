@@ -48,12 +48,6 @@ public final class ImagePropertiesFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Editing image metadata and properties: set/get image properties and metadata, extract to or write from tables";
     }

@@ -48,12 +48,6 @@ public final class FileSystemFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that read and write the file system: files, folders, paths, directories";
     }

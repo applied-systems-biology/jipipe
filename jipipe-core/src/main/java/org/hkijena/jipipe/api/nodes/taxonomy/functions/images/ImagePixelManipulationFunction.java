@@ -49,12 +49,6 @@ public final class ImagePixelManipulationFunction implements JIPipeNodeTaxonomyF
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Direct pixel manipulation: set/replace values, invert, mask, flood fill, ramps, drawing, and image creation";
     }

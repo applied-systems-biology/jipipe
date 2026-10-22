@@ -45,12 +45,6 @@ public final class StatisticsDescriptiveFunction implements JIPipeNodeTaxonomyFu
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Computing descriptive statistics";
     }

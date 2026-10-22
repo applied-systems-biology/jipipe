@@ -50,12 +50,6 @@ public final class ScriptingImageJMacroFunction implements JIPipeNodeTaxonomyFun
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Running, defining and importing ImageJ macros";
     }

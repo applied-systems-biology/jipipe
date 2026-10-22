@@ -47,12 +47,6 @@ public final class ThresholdingFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Converting images into binary masks";
     }

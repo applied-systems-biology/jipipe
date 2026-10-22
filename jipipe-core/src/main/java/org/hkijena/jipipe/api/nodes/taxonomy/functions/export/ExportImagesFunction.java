@@ -45,12 +45,6 @@ public final class ExportImagesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Exporting images (TIFF, OME-TIFF, OME-ZARR, BMP, AVI, web formats, OMERO, …)";
     }

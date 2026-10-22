@@ -44,12 +44,6 @@ public final class MiscellaneousUnassignedFunction implements JIPipeNodeTaxonomy
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Functions that are likely not useful and have been automatically imported";
     }

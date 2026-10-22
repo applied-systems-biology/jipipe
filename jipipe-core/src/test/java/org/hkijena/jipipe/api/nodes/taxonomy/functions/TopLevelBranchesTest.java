@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
+import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.TaxonomyHue;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -27,16 +29,21 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Verifies the 13 top-level {@link JIPipeNodeTaxonomyFunction} branches:
- * instantiation, stable literal ids, table names, table hues (converted to
- * {@code 0..1}, {@code null} for the transparent Graph branch), pairwise hue
- * uniqueness among the colored branches, top-level-ness, and a clean
+ * Verifies the 14 top-level {@link JIPipeNodeTaxonomyFunction} branches
+ * (the 13 from the original function tree plus the Scripting root promoted
+ * by the spec B.5 hue migration): instantiation, stable literal ids, table
+ * names, hues (the four historic pins and Miscellaneous are asserted
+ * literally; the six drop-explicit roots and the promoted Scripting are
+ * asserted against the
+ * {@link TaxonomyHue#autoHue(HueCategory, String)} family cell; {@code null}
+ * for the transparent Graph branch), pairwise hue uniqueness among the
+ * colored branches, top-level-ness, and a clean
  * {@link FunctionRegistry#validate()} after registering all of them.
  */
 class TopLevelBranchesTest {
 
     /**
-     * The 13 top-level branch instances, one per class.
+     * The 14 top-level branch instances, one per class.
      */
     private static List<JIPipeNodeTaxonomyFunction> all() {
         return List.of(
@@ -52,13 +59,14 @@ class TopLevelBranchesTest {
             new PlottingFunction(),
             new ExportFunction(),
             new GraphFunction(),
-            new MiscellaneousFunction()
+            new MiscellaneousFunction(),
+            new ScriptingFunction()
         );
     }
 
     @Test
-    void allThirteenInstantiate() {
-        assertEquals(13, all().size());
+    void allFourteenInstantiate() {
+        assertEquals(14, all().size());
         for (JIPipeNodeTaxonomyFunction function : all()) {
             assertTrue(function instanceof JIPipeNodeTaxonomyFunction);
         }
@@ -79,6 +87,7 @@ class TopLevelBranchesTest {
         assertEquals("jipipe:function:export", new ExportFunction().getId());
         assertEquals("jipipe:function:graph", new GraphFunction().getId());
         assertEquals("jipipe:function:misc", new MiscellaneousFunction().getId());
+        assertEquals("jipipe:function:scripting", new ScriptingFunction().getId());
     }
 
     @Test
@@ -86,7 +95,7 @@ class TopLevelBranchesTest {
         Set<String> ids = all().stream()
             .map(JIPipeNodeTaxonomyFunction::getId)
             .collect(Collectors.toSet());
-        assertEquals(13, ids.size());
+        assertEquals(14, ids.size());
     }
 
     @Test
@@ -104,34 +113,49 @@ class TopLevelBranchesTest {
         assertEquals("Export", new ExportFunction().getName());
         assertEquals("Graph / Project", new GraphFunction().getName());
         assertEquals("Miscellaneous", new MiscellaneousFunction().getName());
+        assertEquals("Scripting", new ScriptingFunction().getName());
     }
 
     @Test
     void huesMatchTable() {
+        // Keep-explicit group: the historic pins (and the hard-coded
+        // Miscellaneous) are asserted literally.
         assertEquals(136.0f / 360.0f, new DataSourcesFunction().getColorHue());
         assertEquals(186.0f / 360.0f, new ImagesFunction().getColorHue());
         assertEquals(0.0f / 360.0f, new RoisFunction().getColorHue());
-        assertEquals(40.0f / 360.0f, new FilamentsFunction().getColorHue());
         assertEquals(216.0f / 360.0f, new TablesFunction().getColorHue());
-        assertEquals(60.0f / 360.0f, new StatisticsFunction().getColorHue());
-        assertEquals(165.0f / 360.0f, new TrackingFunction().getColorHue());
         assertEquals(264.0f / 360.0f, new AnnotationsFunction().getColorHue());
-        assertEquals(200.0f / 360.0f, new MachineLearningFunction().getColorHue());
-        assertEquals(155.0f / 360.0f, new PlottingFunction().getColorHue());
-        assertEquals(22.0f / 360.0f, new ExportFunction().getColorHue());
-        assertNull(new GraphFunction().getColorHue());
         assertEquals(50.0f / 360.0f, new MiscellaneousFunction().getColorHue());
+        // Drop-explicit group (spec B.5): the hue is the deterministic
+        // auto-pick of the family cell for the function's stable id.
+        assertEquals(TaxonomyHue.autoHue(HueCategory.GEOMETRY, FilamentsFunction.ID),
+            new FilamentsFunction().getColorHue());
+        assertEquals(TaxonomyHue.autoHue(HueCategory.ANALYSIS, StatisticsFunction.ID),
+            new StatisticsFunction().getColorHue());
+        assertEquals(TaxonomyHue.autoHue(HueCategory.ANALYSIS, TrackingFunction.ID),
+            new TrackingFunction().getColorHue());
+        assertEquals(TaxonomyHue.autoHue(HueCategory.VISUALIZATION, PlottingFunction.ID),
+            new PlottingFunction().getColorHue());
+        assertEquals(TaxonomyHue.autoHue(HueCategory.EXCHANGE, ExportFunction.ID),
+            new ExportFunction().getColorHue());
+        assertEquals(TaxonomyHue.autoHue(HueCategory.INTELLIGENCE, MachineLearningFunction.ID),
+            new MachineLearningFunction().getColorHue());
+        // Promoted root: the first in-tree user of the auto-picker.
+        assertEquals(TaxonomyHue.autoHue(HueCategory.INTELLIGENCE, ScriptingFunction.ID),
+            new ScriptingFunction().getColorHue());
+        // Graph stays transparent.
+        assertNull(new GraphFunction().getColorHue());
     }
 
     @Test
     void coloredHuesArePairwiseUnique() {
-        // The 12 colored branches must not share a hue (Review Focus #3);
+        // The 13 colored branches must not share a hue (Review Focus #3);
         // Graph is transparent (null) and excluded.
         Set<Float> hues = all().stream()
             .map(JIPipeNodeTaxonomyFunction::getColorHue)
             .filter(Objects::nonNull)
             .collect(Collectors.toSet());
-        assertEquals(12, hues.size());
+        assertEquals(13, hues.size());
     }
 
     @Test

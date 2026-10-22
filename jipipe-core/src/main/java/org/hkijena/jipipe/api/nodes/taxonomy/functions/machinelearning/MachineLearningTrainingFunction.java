@@ -45,12 +45,6 @@ public final class MachineLearningTrainingFunction implements JIPipeNodeTaxonomy
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Training machine learning models (deep learning and classical classifiers)";
     }

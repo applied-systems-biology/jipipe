@@ -49,12 +49,6 @@ public final class ImageTypeConversionFunction implements JIPipeNodeTaxonomyFunc
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Conversion of image pixel types: casts to unsigned 8/16/32-bit integer, float, and other pixel data types";
     }

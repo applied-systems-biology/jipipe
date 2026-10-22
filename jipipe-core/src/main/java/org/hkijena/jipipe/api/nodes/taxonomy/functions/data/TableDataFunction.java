@@ -45,12 +45,6 @@ public final class TableDataFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that produce or load table data";
     }

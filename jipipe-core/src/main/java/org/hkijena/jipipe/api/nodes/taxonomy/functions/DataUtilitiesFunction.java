@@ -48,12 +48,6 @@ public final class DataUtilitiesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "General data operations: convert, duplicate, merge, split, preview data, placeholders, iteration controls";
     }

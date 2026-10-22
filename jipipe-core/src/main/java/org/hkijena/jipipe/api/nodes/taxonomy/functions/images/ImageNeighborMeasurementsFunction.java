@@ -49,12 +49,6 @@ public final class ImageNeighborMeasurementsFunction implements JIPipeNodeTaxono
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Measurements between labeled objects: distance matrices, touching neighbors, neighbor counts, and adjacency";
     }

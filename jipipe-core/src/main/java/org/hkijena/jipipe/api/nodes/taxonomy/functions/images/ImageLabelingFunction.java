@@ -49,12 +49,6 @@ public final class ImageLabelingFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Labeling of images: connected components, Voronoi labeling, label maps, and label spots";
     }

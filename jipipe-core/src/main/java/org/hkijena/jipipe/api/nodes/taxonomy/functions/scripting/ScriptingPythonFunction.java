@@ -50,12 +50,6 @@ public final class ScriptingPythonFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Running, defining and importing Python scripts (CPython and Jython runtimes)";
     }

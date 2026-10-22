@@ -45,12 +45,6 @@ public final class MiscDataFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that produce or load other data types";
     }

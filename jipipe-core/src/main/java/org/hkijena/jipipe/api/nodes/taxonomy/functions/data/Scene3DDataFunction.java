@@ -45,12 +45,6 @@ public final class Scene3DDataFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Data sources that produce Scene 3D data";
     }

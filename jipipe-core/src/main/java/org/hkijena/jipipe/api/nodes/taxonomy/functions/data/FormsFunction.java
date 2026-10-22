@@ -48,12 +48,6 @@ public final class FormsFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that produce data from interactive or parameterized form inputs (values, strings, choices)";
     }

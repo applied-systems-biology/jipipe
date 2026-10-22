@@ -45,12 +45,6 @@ public final class MachineLearningInferenceFunction implements JIPipeNodeTaxonom
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Running machine learning models on data (deep learning and classical classifiers)";
     }

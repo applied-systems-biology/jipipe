@@ -59,12 +59,6 @@ public final class TemplatesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Node templates without an explicit taxonomy function (the catch-all placement)";
     }

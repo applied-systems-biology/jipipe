@@ -45,12 +45,6 @@ public final class StatisticsTestingFunction implements JIPipeNodeTaxonomyFuncti
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Running statistical tests";
     }

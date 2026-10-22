@@ -45,12 +45,6 @@ public final class TrackingDetectionFunction implements JIPipeNodeTaxonomyFuncti
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Detecting objects to track";
     }

@@ -45,12 +45,6 @@ public final class TableFilterModifyFunction implements JIPipeNodeTaxonomyFuncti
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Filtering and modifying table data";
     }

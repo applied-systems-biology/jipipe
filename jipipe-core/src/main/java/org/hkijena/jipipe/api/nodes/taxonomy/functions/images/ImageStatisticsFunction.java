@@ -49,12 +49,6 @@ public final class ImageStatisticsFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Statistics over whole images: mean, sum, minimum, maximum, standard deviation, histogram, entropy, center of mass";
     }

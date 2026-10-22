@@ -45,12 +45,6 @@ public final class ExportDataFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Exporting generic data (any data type, standard export, paths)";
     }

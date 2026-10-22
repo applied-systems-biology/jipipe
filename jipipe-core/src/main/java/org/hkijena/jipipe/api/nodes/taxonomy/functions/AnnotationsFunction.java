@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -44,6 +45,11 @@ public final class AnnotationsFunction implements JIPipeNodeTaxonomyFunction {
     @Nullable
     public JIPipeNodeTaxonomyFunction getParent() {
         return null;
+    }
+
+    @Override
+    public HueCategory getHueCategory() {
+        return HueCategory.INTELLIGENCE;
     }
 
     @Override

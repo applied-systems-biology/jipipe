@@ -45,12 +45,6 @@ public final class MachineLearningModelsFunction implements JIPipeNodeTaxonomyFu
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Managing machine learning models (importing, pretrained weights)";
     }

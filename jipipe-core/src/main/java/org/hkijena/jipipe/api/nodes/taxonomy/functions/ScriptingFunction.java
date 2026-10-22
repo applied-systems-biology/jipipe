@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
+import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,12 +22,16 @@ import java.util.Collections;
 import java.util.Set;
 
 /**
- * Leaf of the Miscellaneous branch: running scripts and processes.
+ * Top-level branch for running scripts and processes: the top-level member of
+ * the {@link HueCategory#INTELLIGENCE} family.
  * <p>
- * Added by the full-registry classification audit (Phase 3): the curated
- * script/process nodes previously fell into the Miscellaneous catch-all.
- * Under Miscellaneous (rather than Graph/Project, which is transparent) the
- * script nodes stay visible in the pipeline editor.
+ * Promoted from a leaf of the Miscellaneous branch (full-registry
+ * classification audit, Phase 3) to a first-class top-level branch ("Scripting
+ * is turned into a proper function", user ruling): its script/process leaves
+ * re-parented to it, and it is the first in-tree user of the deterministic
+ * hue auto-picker — its hue is not overridden but derived from the
+ * Intelligence family cell ({@link JIPipeNodeTaxonomyFunction#getColorHue()}
+ * default).
  */
 public final class ScriptingFunction implements JIPipeNodeTaxonomyFunction {
 
@@ -44,14 +49,14 @@ public final class ScriptingFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
+    @Nullable
     public JIPipeNodeTaxonomyFunction getParent() {
-        return new MiscellaneousFunction();
+        return null;
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
+    public HueCategory getHueCategory() {
+        return HueCategory.INTELLIGENCE;
     }
 
     @Override

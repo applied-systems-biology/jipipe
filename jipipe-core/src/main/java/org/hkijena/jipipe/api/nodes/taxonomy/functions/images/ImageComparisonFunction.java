@@ -49,12 +49,6 @@ public final class ImageComparisonFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Comparisons and logic between images: greater, smaller, equal, and, or, xor, not, and other binary combining operations";
     }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,10 @@ import java.util.Set;
 
 /**
  * Top-level branch for statistical operations.
+ * <p>
+ * Its hue is auto-picked deterministically from the {@link HueCategory#ANALYSIS}
+ * family (orange cell), per the spec B.5 migration: the historic 60° explicit
+ * hue was dropped in favor of the family cell.
  */
 public final class StatisticsFunction implements JIPipeNodeTaxonomyFunction {
 
@@ -46,8 +51,8 @@ public final class StatisticsFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    public Float getColorHue() {
-        return 60.0f / 360.0f;
+    public HueCategory getHueCategory() {
+        return HueCategory.ANALYSIS;
     }
 
     @Override

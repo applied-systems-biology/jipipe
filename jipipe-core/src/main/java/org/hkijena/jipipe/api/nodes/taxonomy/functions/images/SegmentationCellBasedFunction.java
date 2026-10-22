@@ -44,12 +44,6 @@ public final class SegmentationCellBasedFunction implements JIPipeNodeTaxonomyFu
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Segmenting cells in an image";
     }

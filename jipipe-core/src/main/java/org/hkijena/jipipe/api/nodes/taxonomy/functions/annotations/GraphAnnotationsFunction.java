@@ -60,12 +60,6 @@ public final class GraphAnnotationsFunction implements JIPipeNodeTaxonomyFunctio
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Canvas annotations that decorate a graph (text boxes, arrows, image boxes)";
     }

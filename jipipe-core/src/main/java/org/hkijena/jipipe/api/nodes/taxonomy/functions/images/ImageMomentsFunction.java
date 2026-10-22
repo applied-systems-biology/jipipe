@@ -49,12 +49,6 @@ public final class ImageMomentsFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Image moments and texture features: central moments, Hu/Zernike moments, Haralick/Tamura features, co-occurrence and colocalization statistics";
     }

@@ -45,12 +45,6 @@ public final class TrackingLinkingFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Linking detected objects into tracks";
     }

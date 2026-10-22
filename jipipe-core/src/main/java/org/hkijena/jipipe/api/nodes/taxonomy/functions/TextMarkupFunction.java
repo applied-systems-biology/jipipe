@@ -48,12 +48,6 @@ public final class TextMarkupFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Text, XML and JSON operations: extract text, import/export markup, process text with expressions";
     }

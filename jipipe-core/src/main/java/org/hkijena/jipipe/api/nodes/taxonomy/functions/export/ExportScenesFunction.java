@@ -45,12 +45,6 @@ public final class ExportScenesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Exporting Scene 3D data (e.g. COLLADA)";
     }

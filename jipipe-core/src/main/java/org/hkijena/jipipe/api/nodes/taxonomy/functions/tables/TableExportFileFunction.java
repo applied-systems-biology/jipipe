@@ -45,12 +45,6 @@ public final class TableExportFileFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Exporting tables to files";
     }

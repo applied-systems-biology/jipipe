@@ -47,12 +47,6 @@ public final class PreprocessingFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Preparing images for further processing";
     }

@@ -47,12 +47,6 @@ public final class MeasurementsFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Measuring properties of images and objects";
     }

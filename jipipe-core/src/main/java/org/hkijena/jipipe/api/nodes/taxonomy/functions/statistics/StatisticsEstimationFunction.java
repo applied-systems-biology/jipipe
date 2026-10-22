@@ -45,12 +45,6 @@ public final class StatisticsEstimationFunction implements JIPipeNodeTaxonomyFun
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Estimating statistical properties";
     }

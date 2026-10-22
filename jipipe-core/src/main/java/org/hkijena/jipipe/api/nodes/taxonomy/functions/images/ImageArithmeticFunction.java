@@ -49,12 +49,6 @@ public final class ImageArithmeticFunction implements JIPipeNodeTaxonomyFunction
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Pixel-wise arithmetic on images: add, subtract, multiply, divide, power, exponential, logarithm, and other math operations between images or with scalars";
     }

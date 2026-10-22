@@ -49,12 +49,6 @@ public final class ImageProjectionsFunction implements JIPipeNodeTaxonomyFunctio
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Projections of images along an axis: maximum, mean, sum, minimum, standard deviation projections along X, Y or Z";
     }

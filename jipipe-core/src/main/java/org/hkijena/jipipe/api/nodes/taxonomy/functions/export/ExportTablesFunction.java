@@ -45,12 +45,6 @@ public final class ExportTablesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Exporting tables (CSV, XLSX, data-table directories, OMERO, …)";
     }

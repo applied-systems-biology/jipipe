@@ -48,12 +48,6 @@ public final class OmeroFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Nodes that read OMERO server data: datasets, projects, plates, wells, screens, and groups";
     }

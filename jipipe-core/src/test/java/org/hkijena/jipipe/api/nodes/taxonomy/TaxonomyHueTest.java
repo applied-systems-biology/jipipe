@@ -13,6 +13,18 @@
 
 package org.hkijena.jipipe.api.nodes.taxonomy;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.AnnotationsFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.DataSourcesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ImagesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.RoisFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.ScriptingFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.TablesFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingExpressionFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingImageJMacroFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingPythonFunction;
+import org.hkijena.jipipe.api.nodes.taxonomy.functions.scripting.ScriptingRFunction;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import javax.swing.Icon;
@@ -36,6 +48,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * The Voronoi cells are computed here from the enum's anchors with an
  * independent copy of the cell formula — not from {@link TaxonomyHue}'s
  * helpers — so containment and tiling genuinely cross-check the implementation.
+ * <p>
+ * Tests (8)–(10) are ship-set integration tests over the real function
+ * classes (and the booted live service for the last two): the promoted
+ * Scripting root, its four inheriting leaves, the exact auto-picked group,
+ * and the boot-time fail-closed hue-collision guard.
  */
 class TaxonomyHueTest {
 
@@ -228,6 +245,133 @@ class TaxonomyHueTest {
         assertFalse(errors.isEmpty());
         assertTrue(errors.stream().anyMatch(e -> e.contains("Duplicate top-level color hue")),
             "expected a 'Duplicate top-level color hue' error, got: " + errors);
+    }
+
+    // ---------------------------------------------------------------------
+    // Ship-set integration (8)-(10): the real function classes, not
+    // test-local stand-ins
+    // ---------------------------------------------------------------------
+
+    @BeforeAll
+    static void ensureJIPipe() {
+        // Boots the live service for (9)/(10). The ImageJ legacy patcher is
+        // pre-patched by the module's LauncherSessionListener before any
+        // test class loads, so this is safe here.
+        JIPipe.ensureInstance();
+    }
+
+    // ---------------------------------------------------------------------
+    // (8) scriptingLeavesInheritTheAutoPickedHue
+    // ---------------------------------------------------------------------
+
+    @Test
+    void scriptingLeavesInheritTheAutoPickedHue() {
+        FunctionRegistry registry = new FunctionRegistry();
+        ScriptingFunction scripting = new ScriptingFunction();
+        registry.register(scripting);
+        // The four scripting language leaves, unchanged by the migration —
+        // they already parent to ScriptingFunction.
+        JIPipeNodeTaxonomyFunction[] leaves = {
+            new ScriptingPythonFunction(),
+            new ScriptingRFunction(),
+            new ScriptingImageJMacroFunction(),
+            new ScriptingExpressionFunction()
+        };
+        for (JIPipeNodeTaxonomyFunction leaf : leaves) {
+            registry.register(leaf);
+        }
+
+        // ScriptingFunction is top-level: the spec B.5 promotion.
+        assertNull(scripting.getParent(), "ScriptingFunction must be top-level after the promotion");
+        // It owns a hue via the auto-picker (default getColorHue() + category).
+        assertNotNull(scripting.getColorHue(), "ScriptingFunction must own an auto-picked hue");
+        // Every leaf resolves to the SAME base hue, without an exception:
+        // the inheritance chain leaf → Scripting is complete.
+        for (JIPipeNodeTaxonomyFunction leaf : leaves) {
+            assertEquals(registry.baseHue(scripting), registry.baseHue(leaf),
+                "base hue of " + leaf.getId() + " must equal the base hue of ScriptingFunction");
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // (9) shipSetAutoPicksAreDistinct
+    // ---------------------------------------------------------------------
+
+    @Test
+    void shipSetAutoPicksAreDistinct() {
+        Set<JIPipeNodeTaxonomyFunction> topLevels = JIPipe.getNodes().getFunctions().topLevel();
+        // Detection (per spec B.5): a top-level function relies on the
+        // default auto-pick iff it declares a hue category AND it is not in
+        // the keep-explicit group (whose explicit getColorHue() overrides
+        // win over the category). Miscellaneous and Graph declare no
+        // category and are excluded automatically.
+        Set<Class<? extends JIPipeNodeTaxonomyFunction>> keepExplicit = Set.of(
+            RoisFunction.class,
+            DataSourcesFunction.class,
+            ImagesFunction.class,
+            TablesFunction.class,
+            AnnotationsFunction.class
+        );
+        List<JIPipeNodeTaxonomyFunction> autoPicked = new ArrayList<>();
+        for (JIPipeNodeTaxonomyFunction function : topLevels) {
+            if (function.getHueCategory() != null && !keepExplicit.contains(function.getClass())) {
+                autoPicked.add(function);
+            }
+        }
+        Set<String> autoPickedIds = autoPicked.stream()
+            .map(JIPipeNodeTaxonomyFunction::getId)
+            .collect(java.util.stream.Collectors.toSet());
+        assertEquals(Set.of(
+            "jipipe:function:filaments",
+            "jipipe:function:statistics",
+            "jipipe:function:tracking",
+            "jipipe:function:plotting",
+            "jipipe:function:export",
+            "jipipe:function:machine-learning",
+            "jipipe:function:scripting"),
+            autoPickedIds,
+            "the auto-picked ship-set group must be exactly the six drop-explicit roots plus the promoted Scripting root, got: " + autoPickedIds);
+
+        // Each hue must be inside its own category's Voronoi cell — checked
+        // with this test's independent cell recomputation (cellStartDeg /
+        // cellWidthDeg above), not the implementation's helpers.
+        for (JIPipeNodeTaxonomyFunction function : autoPicked) {
+            HueCategory category = function.getHueCategory();
+            assertNotNull(function.getColorHue(),
+                "top-level function " + function.getId() + " with category " + category + " must own a hue");
+            double[] starts = cellStartDeg();
+            int index = java.util.Arrays.asList(HueCategory.values()).indexOf(category);
+            double start = starts[index];
+            double width = cellWidthDeg(index);
+            assertTrue(inCellDeg(hueDeg(function.getColorHue()), start, width),
+                "hue " + hueDeg(function.getColorHue()) + "° of " + function.getId()
+                    + " outside its " + category + " cell [" + start + ", " + (start + width) + ")");
+        }
+
+        // Pairwise distinct: no two auto-picked ship-set roots share a hue.
+        for (int i = 0; i < autoPicked.size(); i++) {
+            for (int j = i + 1; j < autoPicked.size(); j++) {
+                assertNotEquals(autoPicked.get(i).getColorHue(), autoPicked.get(j).getColorHue(),
+                    "auto-picked hues collide: " + autoPicked.get(i).getId() + " vs " + autoPicked.get(j).getId());
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // (10) noRegisteredTopLevelHueCollides
+    // ---------------------------------------------------------------------
+
+    @Test
+    void noRegisteredTopLevelHueCollides() {
+        // The boot-time fail-closed guard over the real ship set: the live
+        // registry's own validation must report no duplicate top-level hue —
+        // auto-picked AND explicit pins together.
+        Set<String> errors = JIPipe.getNodes().getFunctions().validate();
+        assertTrue(errors.stream().noneMatch(e -> e.contains("Duplicate top-level color hue")),
+            "expected no 'Duplicate top-level color hue' error on the live registry, got: " + errors);
+        // The whole tree validates clean on the booted service as well.
+        assertTrue(errors.isEmpty(),
+            "expected a fully valid live function registry, got: " + errors);
     }
 
     // ---------------------------------------------------------------------

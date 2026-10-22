@@ -55,12 +55,6 @@ public final class RoiPropertiesFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Editing ROI properties and metadata (set/get a property or image, extract to table)";
     }

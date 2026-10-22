@@ -49,12 +49,6 @@ public final class ImageTransformationsFunction implements JIPipeNodeTaxonomyFun
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Geometric transformations of images: flip, translate, rotate, reslice, transpose, crop, paste, and dimension reordering";
     }

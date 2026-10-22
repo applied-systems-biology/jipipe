@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes.taxonomy.functions;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.nodes.taxonomy.HueCategory;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +24,10 @@ import java.util.Set;
 
 /**
  * Top-level branch for operations on filaments.
+ * <p>
+ * Its hue is auto-picked deterministically from the {@link HueCategory#GEOMETRY}
+ * family (next to the ROIs pin at 0°), per the spec B.5 migration: the
+ * historic 40° explicit hue was dropped in favor of the family cell.
  */
 public final class FilamentsFunction implements JIPipeNodeTaxonomyFunction {
 
@@ -46,8 +51,8 @@ public final class FilamentsFunction implements JIPipeNodeTaxonomyFunction {
     }
 
     @Override
-    public Float getColorHue() {
-        return 40.0f / 360.0f;
+    public HueCategory getHueCategory() {
+        return HueCategory.GEOMETRY;
     }
 
     @Override

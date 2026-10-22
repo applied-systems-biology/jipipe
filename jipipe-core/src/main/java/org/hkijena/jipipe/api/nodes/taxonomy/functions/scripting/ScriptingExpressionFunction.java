@@ -50,12 +50,6 @@ public final class ScriptingExpressionFunction implements JIPipeNodeTaxonomyFunc
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Evaluating JIPipe's native expression language";
     }

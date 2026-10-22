@@ -45,12 +45,6 @@ public final class RoiIntersectionsFunction implements JIPipeNodeTaxonomyFunctio
     }
 
     @Override
-    @Nullable
-    public Float getColorHue() {
-        return null;
-    }
-
-    @Override
     public String getDescription() {
         return "Computing intersections of ROIs";
     }
