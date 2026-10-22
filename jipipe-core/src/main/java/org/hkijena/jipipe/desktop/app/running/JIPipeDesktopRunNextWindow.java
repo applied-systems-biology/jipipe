@@ -271,6 +271,7 @@ public class JIPipeDesktopRunNextWindow extends JFrame implements JIPipeDesktopP
         descriptionReader.setEditorKit(new JIPipeDesktopHTMLEditorKit());
         descriptionReader.setEditable(false);
         descriptionReader.setText(text);
+        ThemeUtils.watchCaretMotion(descriptionReader);
         UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReader.setBorder(UIUtils.createEmptyBorder(8));
         addPanelToStartingPageOptionsPanel(

@@ -124,6 +124,7 @@ public class JIPipeDesktopMarkdownReader extends JPanel {
 
         content = new JTextPane();
         content.setEditable(false);
+        ThemeUtils.watchCaretMotion(content);
         content.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 if (e.getDescription() != null && e.getDescription().startsWith("#")) {

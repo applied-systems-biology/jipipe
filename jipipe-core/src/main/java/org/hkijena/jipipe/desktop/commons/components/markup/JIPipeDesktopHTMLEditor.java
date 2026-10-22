@@ -259,6 +259,7 @@ public class JIPipeDesktopHTMLEditor extends JIPipeDesktopWorkbenchPanel {
         for (Action action : wysiwygEditorKit.getActions()) {
             availableEditorKitActions.put(action.getValue(Action.NAME) + "", action);
         }
+        ThemeUtils.watchCaretMotion(wysiwygEditorPane);
 
         wysiwygEditorPane.setEditorKit(wysiwygEditorKit);
         wysiwygEditorKit.getStyleSheet().addRule("body { font-family: Dialog; }" +
