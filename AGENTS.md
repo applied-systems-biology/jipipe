@@ -157,6 +157,30 @@ interaction tests" rule — the user verifies the Swing UI by eye in the app:
   regression the user actually cares about, do not write it. When in doubt,
   skip the test.
 
+### Plugin-Aware Registry Tests: Presence, Not Exact Counts (IMPORTANT)
+
+**Tests that assert on a LIVE service-component registry must be designed
+aware that plugins contribute to that registry** (ruling 2026-10-22: "All
+tests should be designed aware of plugins").
+
+- **Never pin an exact registry size** for anything a plugin can register
+  into — nodes, datatypes, taxonomy functions/frameworks, expressions,
+  parameters, menu items, ... A test of the form
+  `assertEquals(N, JIPipe.getNodes().getFunctions().all().size())` breaks the
+  moment any dev adds one taxonomy member through their plugin, even though
+  the core set is intact. (This is what happened to
+  `TaxonomyPluginTest.allTaxonomyRegistered`, pinned at 89 while the registry
+  held 90.)
+- **Assert presence instead:** every expected ID (a curated list of the
+  core's stable string-literal IDs) is registered, and any structural
+  invariants hold (valid parent chains, unique top-level hues, ...). Extra
+  IDs contributed by plugins are legitimate, not failures.
+- **Exact counts are still correct for single-source ship sets:** artifacts
+  generated in one place whose membership is fully controlled by core
+  (e.g. the bundled `system-templates.json` + pattern files in
+  `SystemPatternTemplatesTest`). The distinction is *who can add entries*:
+  a generator output has one owner; a service registry has many.
+
 ### ImageJ Legacy Patcher Constraint (IMPORTANT)
 The ImageJ2 legacy patcher (`net.imagej.patcher.LegacyInjector`) bytecode-patches ImageJ1 (`ij.*`) classes for ImageJ1/2 cross-compatibility. **Patching is only possible while the affected classes are not yet initialized.**
 
