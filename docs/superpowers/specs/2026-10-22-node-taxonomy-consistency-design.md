@@ -45,17 +45,18 @@ pattern style id, optional description), placed in
 
 | Class | ID | Name | Abbr | Pattern style | Notes |
 |---|---|---|---|---|---|
-| `WekaFramework` | `jipipe:framework:weka` | `Weka` | `WEKA` | `blobs` | IJ Trainable Weka Filter / Weka toolkit |
-| `FilamentsFramework` | `jipipe:framework:filaments` | `Filaments` | `FILA` | `web` | JIPipe-exclusive filament suite (51 nodes) |
-| `IJ3DFramework` | `jipipe:framework:ij3d` | `IJ3D` | `3D` | `grid` | ImageJ 3D Suite / 3D Viewer (62 nodes) |
+| `WekaFramework` | `jipipe:framework:weka` | `Weka` | `WEKA` | `cellular` | IJ Trainable Weka Filter / Weka toolkit |
+| `FilamentsFramework` | `jipipe:framework:filaments` | `Filaments` | `FILA` | `flow` | JIPipe-exclusive filament suite (51 nodes) |
+| `IJ3DFramework` | `jipipe:framework:ij3d` | `IJ3D` | `3D` | `hilbert` | ImageJ 3D Suite / 3D Viewer (62 nodes) |
 | `OmeroFramework` | `jipipe:framework:omero` | `OMERO` | `OMRO` | `stripes` | OMERO data platform (26 nodes) |
-| `Scene3DFramework` | `jipipe:framework:scene-3d` | `Scene 3D` | `S3D` | `web` | JIPipe-exclusive 3D-scene suite (7 nodes) |
+| `Scene3DFramework` | `jipipe:framework:scene-3d` | `Scene 3D` | `S3D` | `landscape` | JIPipe-exclusive 3D-scene suite (7 nodes) |
 
-Pattern styles reuse the existing `NodePatternStyle` catalog — the implementer
-picks from the existing style ids (`dots`, `blobs`, `net`, `carpet`,
-`patchwork`, `web`, `grid`, `stripes`, `weave`, …) to differentiate visually;
-exact choice per framework is listed in the plan's task table. Abbreviations
-must stay unique across the registry (`FrameworksTest` pins uniqueness).
+Pattern styles reuse the existing `NodePatternStyles` catalog (`stripes`,
+`net`, `cellular`, `carpet`, `hilbert`, `landscape`, `waves`, `weave`,
+`patchwork`, `loops`, `disco`, `triangles`, `blobs`, `dots`, `honeycomb`,
+`ripple`, `flow`); the style per framework is fixed in the table above.
+Abbreviations must stay unique across the registry
+(`FrameworksTest` pins uniqueness).
 
 ### A.3 Reassignments (~168 `@ConfigureJIPipeNode(framework = …)` edits)
 
