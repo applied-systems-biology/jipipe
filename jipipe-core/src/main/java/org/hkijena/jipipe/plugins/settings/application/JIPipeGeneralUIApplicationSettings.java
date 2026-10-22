@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.plugins.settings.application;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseSearchImplementation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationSettingsSheetCategory;
 import org.hkijena.jipipe.api.settings.JIPipeDefaultApplicationsSettingsSheet;
 import org.hkijena.jipipe.desktop.app.grapheditor.commons.JIPipeDesktopGraphEditorUI;
@@ -49,6 +51,20 @@ public class JIPipeGeneralUIApplicationSettings extends JIPipeDefaultApplication
 
     public static JIPipeGeneralUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGeneralUIApplicationSettings.class);
+    }
+
+    /**
+     * Reads the reduced-motion flag straight from the settings file, usable before JIPipe is
+     * initialized (e.g. on the splash screen). Returns false on any error or missing key.
+     */
+    public static boolean isReducedMotionFromRaw() {
+        try {
+            JsonNode node = JIPipeApplicationSettingsServiceComponent.getRawSheetsNode()
+                    .path(ID).path("reduced-motion");
+            return node.isBoolean() && node.asBoolean();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @SetJIPipeDocumentation(name = "Node search implementation", description = "The method responsible for handling the node search")

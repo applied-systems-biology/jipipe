@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.run.JIPipeRunnableExecutor;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
 import org.hkijena.jipipe.desktop.commons.components.textfield.JIPipeDesktopDocumentChangeListener;
 import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.debounce.StaticDebouncer;
 
@@ -228,8 +229,13 @@ public class JIPipeDesktopSearchTextField extends JPanel implements Predicate<St
     public void grabAttentionAnimation() {
         isProgrammaticFocusChange = true;
         try {
-            attentionAnimationStatus = 0;
-            attentionAnimationTimer.restart();
+            if (ThemeUtils.isReducedMotion()) {
+                attentionAnimationStatus = 1;
+                setBorder(UIUtils.createControlBorder());
+            } else {
+                attentionAnimationStatus = 0;
+                attentionAnimationTimer.restart();
+            }
             textField.requestFocusInWindow();
         } finally {
             isProgrammaticFocusChange = false;

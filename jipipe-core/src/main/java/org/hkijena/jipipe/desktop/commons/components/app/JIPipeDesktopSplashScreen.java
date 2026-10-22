@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginDiscoveredEventListener;
 import org.hkijena.jipipe.desktop.commons.components.icons.SpinnerIcon;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
@@ -61,9 +62,11 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
         this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
 
-        Timer iconTimer = new Timer(3000, e -> updateIconShowcase());
-        iconTimer.setRepeats(true);
-        iconTimer.start();
+        if (!JIPipeGeneralUIApplicationSettings.isReducedMotionFromRaw()) {
+            Timer iconTimer = new Timer(3000, e -> updateIconShowcase());
+            iconTimer.setRepeats(true);
+            iconTimer.start();
+        }
     }
 
     public static void main(String[] args) {
