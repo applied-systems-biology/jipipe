@@ -188,9 +188,9 @@ class FrameworksTest {
         assertEquals("IJ1", new ImageJ1Framework().getAbbreviation());
         assertEquals("IJ2", new ImageJ2Framework().getAbbreviation());
         assertEquals("WEKA", new WekaFramework().getAbbreviation());
-        assertEquals("FILA", new FilamentsFramework().getAbbreviation());
+        assertEquals("FIL", new FilamentsFramework().getAbbreviation());
         assertEquals("3D", new IJ3DFramework().getAbbreviation());
-        assertEquals("OMRO", new OmeroFramework().getAbbreviation());
+        assertEquals("OME", new OmeroFramework().getAbbreviation());
         assertEquals("S3D", new Scene3DFramework().getAbbreviation());
     }
 

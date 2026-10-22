@@ -35,7 +35,7 @@ public final class FilamentsFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getAbbreviation() {
-        return "FILA";
+        return "FIL";
     }
 
     @Override

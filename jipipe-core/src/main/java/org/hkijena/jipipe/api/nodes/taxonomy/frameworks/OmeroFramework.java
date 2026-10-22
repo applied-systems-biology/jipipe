@@ -35,7 +35,7 @@ public final class OmeroFramework implements JIPipeNodeTaxonomyFramework {
 
     @Override
     public String getAbbreviation() {
-        return "OMRO";
+        return "OME";
     }
 
     @Override
