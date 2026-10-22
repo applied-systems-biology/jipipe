@@ -199,9 +199,10 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         // needed) the exact op name are mapped to the taxonomy function via
         // the plugin's JSON resource (taxonomy/ij2-op-mapping.json; op-id
         // entries win over op-namespace entries, both keyed by stable
-        // function-id literals). The resource mapping supersedes the old
-        // Task-20 display-name heuristic; the heuristic remains the fallback
-        // for unmapped ops, and Miscellaneous the last resort.
+        // function-id literals). The resource mapping supersedes the
+        // taxonomy service's weighted name inference, which remains the
+        // fallback for unmapped ops, and (via its inference fallback)
+        // Miscellaneous unassigned the last resort.
         String opName = opInfo.getName();
         String mapped = OP_ID_MAPPING.functionIdOf(opName);
         if (mapped == null) {

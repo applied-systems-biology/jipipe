@@ -280,8 +280,9 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         // is mapped to the taxonomy function via the plugin's JSON resource
         // (taxonomy/clij-command-mapping.json, keyed by command name; values
         // are stable function-id literals). The resource mapping supersedes
-        // the old Task-20 display-name heuristic; the heuristic remains the
-        // fallback for unmapped commands, and Miscellaneous the last resort.
+        // the taxonomy service's weighted name inference, which remains the
+        // fallback for unmapped commands, and (via its inference fallback)
+        // Miscellaneous unassigned the last resort.
         String mapped = COMMAND_MAPPING.functionIdOf(getName());
         if (mapped != null) {
             JIPipeNodeTaxonomyFunction function = JIPipe.getNodeTaxonomyService().functionById(mapped);
