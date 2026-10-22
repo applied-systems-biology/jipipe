@@ -111,7 +111,7 @@ public final class TaxonomyHue {
     private static long fnv1a64(byte[] bytes) {
         long h = FNV_OFFSET_BASIS;
         for (byte b : bytes) {
-            h ^= b;
+            h ^= (b & 0xffL);
             h *= FNV_PRIME;
         }
         return h;

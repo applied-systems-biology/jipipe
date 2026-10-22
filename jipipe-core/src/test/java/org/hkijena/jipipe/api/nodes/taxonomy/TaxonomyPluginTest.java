@@ -30,8 +30,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  * {@code @Plugin} annotation during {@link JIPipe#ensureInstance()}) actually
  * registers the curated taxonomy into the live taxonomy service:
  * <ul>
- * <li>every expected core function id is present (13 top-level branches + 77 leaves),</li>
- * <li>every expected core framework id is present (16 frameworks),</li>
+ * <li>every expected core function id is present (14 top-level branches + 76 leaves),</li>
+ * <li>every expected core framework id is present (20 frameworks),</li>
  * <li>a valid function tree ({@link JIPipeNodeTaxonomyServiceComponent#validateFunctions()}
  * empty),</li>
  * <li>the inference fallback is the unassigned sink.</li>
