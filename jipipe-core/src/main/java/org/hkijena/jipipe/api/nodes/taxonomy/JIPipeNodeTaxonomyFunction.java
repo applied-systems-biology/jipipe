@@ -85,7 +85,7 @@ public interface JIPipeNodeTaxonomyFunction {
     boolean isVisibleInCompartments();
 
     /**
-     * Carried over from the node registration contract.
+     * Node behavior flag read by the UI and graph operations via `TaxonomyView.behaviorFlags`.
      *
      * @return whether instances of this function can be extracted from a project
      */
@@ -94,25 +94,7 @@ public interface JIPipeNodeTaxonomyFunction {
     }
 
     /**
-     * Carried over from the node registration contract.
-     *
-     * @return whether users can create instances of this function
-     */
-    default boolean userCanCreate() {
-        return true;
-    }
-
-    /**
-     * Carried over from the node registration contract.
-     *
-     * @return whether users can delete instances of this function
-     */
-    default boolean userCanDelete() {
-        return true;
-    }
-
-    /**
-     * Carried over from the node registration contract.
+     * Node behavior flag read by the UI and graph operations via `TaxonomyView.behaviorFlags`.
      *
      * @return whether instances of this function are runnable
      */
