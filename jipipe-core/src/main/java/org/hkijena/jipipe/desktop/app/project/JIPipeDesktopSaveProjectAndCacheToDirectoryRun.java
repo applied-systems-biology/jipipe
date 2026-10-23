@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Map;
 
 public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun extends DefaultJIPipeRunnable {
@@ -56,7 +57,11 @@ public class JIPipeDesktopSaveProjectAndCacheToDirectoryRun extends DefaultJIPip
         }
         try {
             Files.createDirectories(outputPath);
-            project.saveProject(outputPath.resolve("project.jip"), false);
+            // Re-save in the project's current format (JIPX spec §7)
+            Path projectFile = outputPath.resolve("project." +
+                    (project.getProjectFile() != null &&
+                            project.getProjectFile().getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx") ? "jipx" : "jip"));
+            project.saveProject(projectFile, false);
             if (addAsRecentProject) {
                 JIPipe.getInstance().getRecentProjects().add(outputPath);
             }
