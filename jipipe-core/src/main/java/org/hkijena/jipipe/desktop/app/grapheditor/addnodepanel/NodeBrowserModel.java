@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
@@ -95,6 +96,14 @@ public class NodeBrowserModel {
     private JIPipeNodeTaxonomyFunction patternsFunction;
     private boolean pinnedOnly;
     private boolean selectionOnly;
+    /**
+     * The selected result kinds (1340): plain nodes, node examples, and the
+     * template kinds split by pattern/custom badge and system/user origin.
+     * An empty set means "no kind filter" (show every entry kind). Entries
+     * without a kind (existing nodes / compartments, new compartments)
+     * always pass (see {@link #matchesKindFilter}).
+     */
+    private Set<NodeEntryKind> kindFilter = Set.of();
 
     public NodeBrowserModel() {
     }
@@ -438,6 +447,39 @@ public class NodeBrowserModel {
 
     public void setSelectionOnly(boolean selectionOnly) {
         this.selectionOnly = selectionOnly;
+    }
+
+    /**
+     * @return the selected result kinds (1340); empty means "no kind
+     * filter" (every entry kind passes)
+     */
+    public Set<NodeEntryKind> getKindFilter() {
+        return kindFilter;
+    }
+
+    /**
+     * @param kindFilter the result kinds to show; an empty (or {@code null})
+     *                   set clears the filter. Does not affect the other
+     *                   facets or toggles.
+     */
+    public void setKindFilter(@Nullable Set<NodeEntryKind> kindFilter) {
+        this.kindFilter = Collections.unmodifiableSet(kindFilter == null ? Set.of() : new LinkedHashSet<>(kindFilter));
+    }
+
+    /**
+     * The shared kind-filter predicate (1340): whether the given entry
+     * passes the currently selected result kinds. Delegates to
+     * {@link NodeEntryKind#matches(JIPipeNodeDatabaseEntry, Set)} — entries
+     * without a kind (existing nodes / compartments, new compartments)
+     * always pass, and an empty selection matches everything. Both node
+     * browser surfaces (the docked {@link JIPipeDesktopNodeBrowser} and the
+     * {@code JIPipeDesktopNodeFinderDialogUI}) apply this so they agree.
+     *
+     * @param entry the entry to test; must not be {@code null}
+     * @return {@code true} if the entry passes the kind filter
+     */
+    public boolean matchesKindFilter(JIPipeNodeDatabaseEntry entry) {
+        return NodeEntryKind.matches(entry, kindFilter);
     }
 
     // ------------------------------------------------------------------
