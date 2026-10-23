@@ -35,6 +35,7 @@ import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.stream.Stream;
 
@@ -96,12 +97,32 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
  * }
  * </pre>
  * Per project: the file is loaded, saved to S1, reloaded, and saved to S2.
- * <code>s1vs2SemanticallyEqual</code> is the semantic (key-order-insensitive)
- * JSON equality of S1 and S2 — the fixpoint property: saving a freshly
- * loaded project must be idempotent. <code>pvs1TopLevelChangedKeys</code> is
- * the sorted list of top-level keys that were added, removed, or changed
- * between the original file P and S1 (diagnostic only — expected for
- * version upgrades and regenerated caches, and never a failure).
+ * <code>s1vs2SemanticallyEqual</code> is the <b>canonical</b> JSON equality
+ * of S1 and S2 — the fixpoint property: saving a freshly loaded project must
+ * be idempotent. <code>pvs1TopLevelChangedKeys</code> is the sorted list of
+ * top-level keys that were added, removed, or changed between the original
+ * file P and S1 (diagnostic only — expected for version upgrades and
+ * regenerated caches, and never a failure).
+ * <p>
+ * <b>Canonical comparison (design decision, fix round 1).</b> Both the
+ * fixpoint check and the P→S1 key diff compare a <i>canonical form</i> of the
+ * JSON, not the raw trees: objects are re-emitted with fields sorted by key,
+ * arrays are canonicalized element-wise and then sorted by their canonical
+ * serialized string (i.e. array equality is multiset equality, not
+ * sequence equality). This is required because the current, unrefactored
+ * save path writes the {@code dependencies} and {@code compartments} arrays in
+ * <b>non-deterministic order</b>: {@code JIPipeProject.getSimplifiedMinimalDependencies()}
+ * calls {@code JIPipeDependency.simplifyAndMinimize(...)}, which builds a
+ * fresh {@code HashSet} of freshly copied {@code JIPipeMutableDependency}
+ * instances on every save, and that type has no value-based
+ * {@code equals}/{@code hashCode} — so iteration order depends on
+ * {@code identityHashCode} and differs between saves and between JVMs. Raw
+ * Jackson equality (key-order-insensitive for objects, but array-order
+ * sensitive) therefore flips on an ordering coin flip and the report would
+ * not be reproducible; array ordering is provably non-semantic in the
+ * current code, so erasing it does not hide any real value change (the
+ * deterministic content churn — e.g. {@code null} vs {@code "null"} — is
+ * still detected, identically, in both runs).
  */
 class CorpusRoundTripFixpointTest {
 
@@ -125,7 +146,13 @@ class CorpusRoundTripFixpointTest {
 
         Path reportPath = Path.of(System.getProperty("jipipe.jip.roundtrip.report",
             corpus.resolve(".roundtrip").resolve("report.json").toString())).toAbsolutePath().normalize();
-        int limit = Integer.getInteger("jipipe.jip.roundtrip.limit", -1);
+        // -1 (unbounded) only when the property is ABSENT; a present-but-malformed
+        // value must fail loudly rather than silently fall back.
+        int limit = -1;
+        String limitProp = System.getProperty("jipipe.jip.roundtrip.limit");
+        if (limitProp != null && !limitProp.isBlank()) {
+            limit = Integer.parseInt(limitProp.trim());
+        }
 
         // Discover inputs: all *.jip files (case-insensitive) below the
         // corpus root, sorted for deterministic ordering.
@@ -158,7 +185,8 @@ class CorpusRoundTripFixpointTest {
 
         UnspecifiedValidationReportContext context = new UnspecifiedValidationReportContext();
 
-        for (Path input : inputs) {
+        for (int i = 0; i < inputs.size(); i++) {
+            Path input = inputs.get(i);
             ObjectNode entry = JsonUtils.getObjectMapper().createObjectNode();
             entry.put("file", input.toString());
             String outcome;
@@ -167,32 +195,45 @@ class CorpusRoundTripFixpointTest {
             JsonNode s1Tree = null;
             int loadedNodesS1 = 0;
             int loadedNodesS2 = 0;
-
-            // Never touch the corpus file: all work happens on a copy in a
-            // fresh per-project working directory.
-            Path workDir = tmp.resolve("work-" + Math.abs(input.toString().hashCode()));
-            Files.createDirectories(workDir);
-            Path copy = workDir.resolve("project.jip");
-            Files.copy(input, copy);
+            // The stage about to be executed, updated immediately before each
+            // step so the catch block can map a failure to the correct
+            // outcome without relying on which locals happened to be assigned.
+            String stage = "COPY";
 
             try {
+                // Never touch the corpus file: all work happens on a copy in a
+                // fresh, index-named per-project working directory (the index
+                // is unique within the run, so no two projects can collide).
+                Path workDir = tmp.resolve("work-" + i);
+                Files.createDirectories(workDir);
+                Path copy = workDir.resolve("project.jip");
+                Files.copy(input, copy);
+
                 // P → parse the original (for the diagnostic P→S1 diff) and
                 // load it (cycle 1).
+                stage = "LOAD1";
                 pTree = JsonUtils.getObjectMapper().readTree(input.toFile());
                 JIPipeProject p1 = load(copy, context);
                 loadedNodesS1 = p1.getGraph().traverse().size();
+
+                stage = "SAVE1";
                 Path s1Path = workDir.resolve("s1.jip");
                 p1.saveProject(s1Path, false);
                 s1Tree = JsonUtils.getObjectMapper().readTree(s1Path.toFile());
 
                 // Cycle 2: reload S1, save S2 (fixpoint check S1 vs. S2).
+                stage = "LOAD2";
                 JIPipeProject p2 = load(s1Path, context);
                 loadedNodesS2 = p2.getGraph().traverse().size();
+
+                stage = "SAVE2";
                 Path s2Path = workDir.resolve("s2.jip");
                 p2.saveProject(s2Path, false);
                 JsonNode s2Tree = JsonUtils.getObjectMapper().readTree(s2Path.toFile());
 
-                entry.put("s1vs2SemanticallyEqual", s1Tree.equals(s2Tree));
+                // Canonical comparison (see class javadoc): array ordering is
+                // non-semantic in the current save path, so order is erased.
+                entry.put("s1vs2SemanticallyEqual", canonical(s1Tree).equals(canonical(s2Tree)));
                 ArrayNode changedKeys = entry.putArray("pvs1TopLevelChangedKeys");
                 for (String key : topLevelChangedKeys(pTree, s1Tree)) {
                     changedKeys.add(key);
@@ -203,12 +244,15 @@ class CorpusRoundTripFixpointTest {
                 outcome = "OK";
             } catch (Exception e) {
                 error = errorLine(e);
-                // PARSE_FAILED: the original file (or S1) could not be read
-                // as JSON; LOAD_FAILED: loadProject/fromJson threw;
-                // SAVE_FAILED: saveProject threw.
-                if (pTree == null) {
+                // Map the failing stage to an outcome:
+                //   PARSE_FAILED — the corpus file could not be read/copied
+                //                  (COPY) or parsed as JSON (start of LOAD1,
+                //                  before the project is loaded);
+                //   LOAD_FAILED  — loadProject/fromJson threw (LOAD1 or LOAD2);
+                //   SAVE_FAILED  — saveProject threw (SAVE1 or SAVE2).
+                if (stage.equals("COPY") || (stage.equals("LOAD1") && pTree == null)) {
                     outcome = "PARSE_FAILED";
-                } else if (s1Tree == null) {
+                } else if (stage.equals("LOAD1") || stage.equals("LOAD2")) {
                     outcome = "LOAD_FAILED";
                 } else {
                     outcome = "SAVE_FAILED";
@@ -256,7 +300,9 @@ class CorpusRoundTripFixpointTest {
 
     /**
      * Collects the top-level keys that are added, removed, or changed between
-     * the two trees (diagnostic only, never fails the run).
+     * the two trees (diagnostic only, never fails the run). Values are
+     * compared in their canonical form, so array-order-only differences do
+     * not count as changes.
      */
     private static List<String> topLevelChangedKeys(JsonNode a, JsonNode b) {
         TreeSet<String> changed = new TreeSet<>();
@@ -270,11 +316,43 @@ class CorpusRoundTripFixpointTest {
         for (String key : unionKeys) {
             JsonNode va = fieldsA.get(key);
             JsonNode vb = fieldsB.get(key);
-            if (va == null || vb == null || !va.equals(vb)) {
+            if (va == null || vb == null || !canonical(va).equals(canonical(vb))) {
                 changed.add(key);
             }
         }
         return new ArrayList<>(changed);
+    }
+
+    /**
+     * Canonical form of a JSON tree for order-insensitive comparison:
+     * objects are re-emitted with fields sorted by key; arrays have each
+     * element canonicalized and are then sorted by the element's canonical
+     * string form (multiset equality, order erased); scalars are unchanged.
+     */
+    private static JsonNode canonical(JsonNode node) {
+        if (node == null) {
+            return null;
+        }
+        if (node.isObject()) {
+            ObjectNode out = JsonUtils.getObjectMapper().createObjectNode();
+            for (Map.Entry<String, JsonNode> field : new TreeMap<>(fields(node)).entrySet()) {
+                out.set(field.getKey(), canonical(field.getValue()));
+            }
+            return out;
+        }
+        if (node.isArray()) {
+            ArrayNode out = JsonUtils.getObjectMapper().createArrayNode();
+            List<JsonNode> items = new ArrayList<>();
+            for (JsonNode element : node) {
+                items.add(canonical(element));
+            }
+            items.sort(Comparator.comparing(JsonNode::toString));
+            for (JsonNode element : items) {
+                out.add(element);
+            }
+            return out;
+        }
+        return node;
     }
 
     private static Map<String, JsonNode> fields(JsonNode object) {
