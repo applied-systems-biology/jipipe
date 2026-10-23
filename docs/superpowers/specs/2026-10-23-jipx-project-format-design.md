@@ -189,12 +189,15 @@ Decisions:
 1. Refresh `project.getProjectFile()` + authors merge (as legacy save does).
 2. Stage into a fresh temp directory under JIPipe's global tmp
    (`PathUtils.createTempDirectory`): write `project/*.json` parts by
-   delegating to the existing part serializers (one part per monolith
-   top-level field — the serializers themselves are unchanged); write
+   delegating to per-part serialization extracted from the monolith
+   `toJson` (each part's JSON output is identical to the monolith's
+   corresponding top-level field — the extraction is a code refactor, not a
+   format change); write
    `jipx.json`; generate `README.md`; build `ro-crate-metadata.json` with
    the contrib RO-Crate library (`RoCrateBuilder`).
 3. **Auto-fill + validate on save**: fill required-but-missing crate fields
-   (license default from application settings, `programmingLanguage`,
+   (license from a **new** `JIPipeProjectIOApplicationSettings` default-license
+   setting, `programmingLanguage`,
    `mainEntity` → `project/graph.json`, name/description from project
    metadata, keywords), run crate validation, collect violations.
 4. Zip the staging dir to `<target>.part`, self-verify by re-reading it,
@@ -252,7 +255,7 @@ v1 conforms to base RO-Crate 1.1-DRAFT + Workflow RO-Crate profile 1.0
 | Surface | Behavior |
 |---|---|
 | New project | Always `.jipx` (Save As filter order: jipx, jip) |
-| Save existing `.jip` (Ctrl+S / menu) | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" — per-save choice; `.jip` keeps round-tripping |
+| Save existing `.jip` (Ctrl+S / menu) | Office-style prompt **on save**: "Save as `.jipx` (recommended) / keep `.jip` / cancel" — per-save choice; choosing `.jipx` writes `<same-dir>/<same-name>.jipx`, updates the project's tracked file to it, and **leaves the old `.jip` untouched** on disk (no deletion); `.jip` keeps round-tripping |
 | Open | `readerFromPath` content sniff: `.jip` → legacy; `.jipx`/crate ZIP → JIPX; older projects keep opening |
 | CLI `run`, node loaders, templates | Accept both; template ZIPs (`.jip` inside) keep working |
 | Backups | New backups of `.jipx` projects are `.jipx` |
