@@ -46,6 +46,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectReader;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
@@ -58,7 +59,6 @@ import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParamete
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
@@ -209,16 +209,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
-        JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
-        JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, context, report, notifications, progressInfo);
-        project.setWorkDirectory(fileName.getParent());
-        project.validateUserPaths(notifications);
-        if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
-            project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
-        }
-        project.projectFile = fileName;
-        return project;
+        return new JIPipeLegacyProjectReader().read(fileName, context, report, notifications, progressInfo);
     }
 
     /**
