@@ -40,7 +40,6 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeHardwareAcceleratio
 import org.hkijena.jipipe.utils.CUDAUtils;
 import org.hkijena.jipipe.utils.JIPipeUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.plugin.PluginInfo;
 import org.scijava.service.AbstractService;
@@ -287,7 +286,6 @@ public class JIPipeServiceDefaultInitializer extends JIPipeServiceInitializer {
         getProgressInfo().setProgress(4);
         getProgressInfo().log("Loading settings ...");
         getService().getApplicationSettings().reload();
-        ThemeUtils.subscribeCaretMotionToSettingsChanges();
 
         // Required as the reload deletes the allowed values
         updateDefaultImporterSettings();

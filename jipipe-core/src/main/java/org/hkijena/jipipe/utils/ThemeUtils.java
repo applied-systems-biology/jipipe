@@ -85,7 +85,6 @@ public class ThemeUtils {
     }
 
     private static boolean CARET_MOTION_POLICY_INSTALLED = false;
-    private static boolean CARET_MOTION_SETTINGS_SUBSCRIBED = false;
 
     /**
      * Installs the global reduced-motion caret policy: a single "focusOwner" listener on the
@@ -93,6 +92,10 @@ public class ThemeUtils {
      * to whatever text component gains focus. A caret can only blink while its component is
      * focused, so applying the policy on every focus change covers every text component —
      * including ones created later by plugins — without per-component wiring.
+     * <p>
+     * The setting is read on every focus change rather than captured at install time: this
+     * policy is installed from {@link #applyThemeFromSettings()}, which runs before the JIPipe
+     * instance exists, and the app prompts a restart after changing the setting.
      * <p>
      * The listener runs before the caret's own focus handling, and {@code setBlinkRate(0)} on an
      * editable component clears the caret's saved rate, so the caret cannot re-arm the blink
@@ -108,31 +111,6 @@ public class ThemeUtils {
                             applyCaretMotion(component, isReducedMotion());
                         }
                     });
-        }
-        subscribeCaretMotionToSettingsChanges();
-    }
-
-    /**
-     * Live re-apply when the setting changes while a text component already has focus: the
-     * focus hook only fires on focus changes, so the currently focused component is updated
-     * directly. Retried lazily until JIPipe is initialized (the settings service does not
-     * exist during early startup).
-     */
-    public static void subscribeCaretMotionToSettingsChanges() {
-        if (CARET_MOTION_SETTINGS_SUBSCRIBED) {
-            return;
-        }
-        try {
-            JIPipe.getSettings().getChangedEventEmitter().subscribe(
-                    (JIPipeApplicationSettingsServiceComponent.ChangedEventListener) () -> {
-                        Component focusOwner = KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
-                        if (focusOwner instanceof JTextComponent component) {
-                            applyCaretMotion(component, isReducedMotion());
-                        }
-                    });
-            CARET_MOTION_SETTINGS_SUBSCRIBED = true;
-        } catch (Throwable ignored) {
-            // JIPipe not initialized yet — retried on the next install/policy call.
         }
     }
 
