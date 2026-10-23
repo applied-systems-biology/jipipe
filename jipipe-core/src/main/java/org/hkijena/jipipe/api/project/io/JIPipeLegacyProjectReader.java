@@ -70,6 +70,15 @@ public class JIPipeLegacyProjectReader implements JIPipeProjectReader {
             project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
         }
         project.setProjectFile(path);
+
+        // Materialize the project workspace (derived from the model).
+        // NEVER fails the legacy load: a legacy project is fully usable
+        // without its workspace; a later .jipx save regenerates it.
+        try {
+            project.getWorkspace().materializeFromModel(progressInfo.resolve("Materialize workspace"));
+        } catch (Exception e) {
+            progressInfo.log("Workspace materialization failed (legacy project still loaded): " + e);
+        }
         return project;
     }
 }

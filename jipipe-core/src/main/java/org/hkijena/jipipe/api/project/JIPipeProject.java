@@ -47,6 +47,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectReader;
+import org.hkijena.jipipe.api.project.jipx.JIPipeLocalProjectWorkspace;
+import org.hkijena.jipipe.api.project.jipx.JIPipeProjectWorkspace;
 import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
@@ -111,6 +113,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private String projectJIPipeVersion = JIPipe.getJIPipeVersion();
     private FileLocker temporaryBaseDirectoryLocker;
     private boolean disposed;
+    private JIPipeProjectWorkspace workspace;
 
     /**
      * A JIPipe project
@@ -367,6 +370,34 @@ public class JIPipeProject implements JIPipeValidatable {
     }
 
     /**
+     * Gets this project's workspace (spec §5.4) — the materialized
+     * working copy of the project's parts in the project's temporary
+     * base directory, at {@code <temp base>/jipx-workspace}.
+     * <p>
+     * <b>Ordering:</b> only call this <i>after</i>
+     * {@link #setWorkDirectory(Path)} has been called (or after the
+     * project has been loaded from a file, which sets the work
+     * directory): the temporary base directory is memoized based on the
+     * work directory, so accessing the workspace before that silently
+     * pins the workspace to the <i>global</i> temporary base.
+     * <p>
+     * The workspace is created lazily (the directory on first call) and
+     * cached. Returns {@code null} for disposed projects (the temporary
+     * base directory — and thus the workspace — is deleted on close).
+     *
+     * @return the workspace, or null if this project is disposed
+     */
+    public JIPipeProjectWorkspace getWorkspace() {
+        if (disposed) {
+            return null;
+        }
+        if (workspace == null) {
+            workspace = new JIPipeLocalProjectWorkspace(getTemporaryBaseDirectory().resolve("jipx-workspace"), this);
+        }
+        return workspace;
+    }
+
+    /**
      * Finds a compartment by UUID or alias
      *
      * @param uuidOrAlias UUID or alias
@@ -433,6 +464,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public void close(JIPipeProgressInfo progressInfo) {
 
         this.disposed = true;
+        this.workspace = null; // the temporary base directory (and thus the workspace directory) is deleted below
 
         // Clear the cache
         progressInfo.log("Clearing cache ...");
