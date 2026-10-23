@@ -3,7 +3,8 @@
 
 A pure, UI-free re-implementation of the arithmetic of
 ``SugiyamaGraphAutoLayoutImplementation.rearrangeSugiyamaVertical`` (the app's
-Sugiyama auto-layout), over the RAW edge list of a minimal graph
+Sugiyama auto-layout — layers flow TOP TO BOTTOM, the app's flow direction,
+1338), over the RAW edge list of a minimal graph
 (``{"nodes": {key: {...}}, "edges": [...]}``). For the shipped patterns it is
 deterministic and, per the global-constraints rule, identical in spacing to
 the Java impl's output.
@@ -22,20 +23,21 @@ Spacing rules (the global-constraints rule, the binding spec):
      earlier indices.
   2. Within a layer: index = node-key sort order (deterministic; the Java impl
      uses set order, which is irrelevant for equality of the spacing rules).
-  3. x(layer) = 1 + sum over l' < layer of (maxNodeWidthCells(l') + 2), where
-     maxNodeWidthCells(l) = max over the REAL nodes in layer l of the width
-     map value (cells; the caller supplies it, already ceil(estimate/25) —
-     see node_width_cells below).
-  4. y(index) = 1 + sum over i' < index of (nodeHeightCells(i') + 1), with
-     nodeHeightCells = 3 (a node is 3 grid rows tall).
+  3. y(layer) = 1 + sum over l' < layer of (NODE_HEIGHT_CELLS + 1) —
+     every real node is 3 grid rows tall, so each layer advances the row by
+     3 + 1 cells (the Java impl's per-row max of node heights + GRID_HEIGHT).
+  4. x(index) = 1 + sum over i' < index of (nodeWidthCells(i') + 2), where
+     nodeWidthCells comes from the width map (cells; the caller supplies it,
+     already ceil(estimate/25) — see node_width_cells below).
   5. The width map (node key -> cells) is the caller's: 7 cells for most
      nodes, 10 cells for nodes whose FINAL slot count (restored
      jipipe:slot-configuration if present, else registry inputSlots+outputSlots)
      is >= 4. It is computed AFTER the B1 restore pass, so the layout sees the
      final slot counts. This function NEVER touches the registry.
-  6. Free-floating nodes (no edge at all in the pattern): x = 1 + sum of all
-     real columns (the x just past the last layer), y = 1 + 3*(index+1),
-     mirroring the Java impl's free-floating stack. Only reachable if a
+  6. Free-floating nodes (no edge at all in the pattern): y = 1 + sum of all
+     real rows (the y just past the last layer), x = 1 + 7*(index+1)
+     (DEFAULT_WIDTH_CELLS pitch), mirroring the Java impl's free-floating
+     stack (right of the content, down from the top). Only reachable if a
      pattern with an isolated node ships (curation should prevent it); the
      rule exists so the function is total.
 
@@ -50,9 +52,9 @@ from collections import defaultdict
 
 #: A node occupies 3 grid rows (the Java impl's nodeHeight + spacing basis).
 NODE_HEIGHT_CELLS = 3
-#: Horizontal gap between columns, in grid cells (2 cells, mirroring the
-#: Java impl's 2 * GRID_WIDTH padding).
-COLUMN_GAP_CELLS = 2
+#: Horizontal gap between same-layer (parallel) nodes, in grid cells (2
+#: cells, mirroring the Java impl's 2 * GRID_WIDTH column padding).
+LAYER_GAP_CELLS = 2
 #: Vertical gap between rows, in grid cells (1 cell, mirroring the Java impl's
 #: 1 * GRID_HEIGHT padding).
 ROW_GAP_CELLS = 1
@@ -127,38 +129,33 @@ def layout(graph, node_width_cells):
     def width(k):
         return node_width_cells.get(k, DEFAULT_WIDTH_CELLS)
 
-    def max_w(l):
-        # Width of a column = the widest REAL node in that layer. A layer with
-        # no real node (pure virtual — cannot occur for these graphs, but keep
-        # it total) contributes 0, exactly like the Java impl's
-        # columnWidths.getOrDefault(column, 0).
-        return max(width(k) for k in by_layer[l]) if l in by_layer else 0
-
-    # x per layer (rule 3): start at 1, advance by (maxNodeWidthCells + 2).
+    # y per layer (rule 3): start at 1, advance by (NODE_HEIGHT_CELLS + 1).
+    # Every real node is 3 grid rows tall, so a layer's row height is always
+    # NODE_HEIGHT_CELLS (the Java impl's per-row max over node heights).
     max_layer = max(by_layer) if by_layer else -1
-    x_of_layer = {}
-    x = 1
+    y_of_layer = {}
+    y = 1
     for l in range(0, max_layer + 1):
-        x_of_layer[l] = x
-        x += max_w(l) + COLUMN_GAP_CELLS
+        y_of_layer[l] = y
+        y += NODE_HEIGHT_CELLS + ROW_GAP_CELLS
 
     result = {}
-    for k in sorted(nodes):
-        if k not in has_edge:
-            continue
-        l = layer[k]
-        idx = by_layer[l].index(k)  # 0-based position in the sorted layer
-        # rule 4: y = 1 + sum over i' < idx of (NODE_HEIGHT_CELLS + ROW_GAP)
-        y = 1 + idx * (NODE_HEIGHT_CELLS + ROW_GAP_CELLS)
-        result[k] = (x_of_layer[l], y)
+    for l in sorted(by_layer):
+        keys = by_layer[l]
+        # rule 4: x = 1 + sum over i' < idx of (width(i') + LAYER_GAP)
+        x = 1
+        for i, k in enumerate(keys):
+            result[k] = (x, y_of_layer[l])
+            x += width(k) + LAYER_GAP_CELLS
 
-    # Free-floating nodes (rule 6): a single column just past the last real
-    # column, stacked vertically with a 3-cell pitch.
+    # Free-floating nodes (rule 6): a single row just past the last real
+    # row (down from the top), laid out right of the content with a
+    # 7-cell (default width) pitch.
     free = [k for k in sorted(nodes) if k not in has_edge]
     if free:
-        ff_x = x  # == 1 + sum of all real columns (the x after the last layer)
+        ff_y = y  # == 1 + sum of all real rows (the y after the last layer)
         for i, k in enumerate(free):
-            result[k] = (ff_x, 1 + 3 * (i + 1))
+            result[k] = (1 + DEFAULT_WIDTH_CELLS * (i + 1), ff_y)
 
     return result
 
