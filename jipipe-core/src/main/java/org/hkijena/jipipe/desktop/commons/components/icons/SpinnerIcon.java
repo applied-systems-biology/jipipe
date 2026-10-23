@@ -94,7 +94,13 @@ public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceCompon
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         if(reducedMotion) {
-            ImageIcon hourglass = JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png");
+            ImageIcon hourglass;
+            if(getIconWidth() > 22 || getIconHeight() > 22 ) {
+                hourglass= JIPipe.RESOURCES.getIcon32("actions/hourglass-half.png");
+            }
+            else {
+                hourglass= JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png");
+            }
             graphics2D.drawImage(hourglass.getImage(), x, y, getIconWidth(), getIconHeight(), null);
         }
         else if(timer.isRunning()) {
