@@ -53,10 +53,23 @@ public class JIPipeGraphEditorUIApplicationSettings extends JIPipeDefaultApplica
 
     private int toolInfoDistance = 16;
 
+    private boolean followUpNodesExpanded = true;
+
     public static JIPipeGraphEditorUIApplicationSettings getInstance() {
         return JIPipe.getSettings().getById(ID, JIPipeGraphEditorUIApplicationSettings.class);
     }
 
+
+    @SetJIPipeDocumentation(name = "Follow-up nodes expanded", description = "If enabled, the follow-up nodes section in the add-nodes panel is expanded by default")
+    @JIPipeParameter("follow-up-nodes-expanded")
+    public boolean isFollowUpNodesExpanded() {
+        return followUpNodesExpanded;
+    }
+
+    @JIPipeParameter("follow-up-nodes-expanded")
+    public void setFollowUpNodesExpanded(boolean followUpNodesExpanded) {
+        this.followUpNodesExpanded = followUpNodesExpanded;
+    }
 
     @SetJIPipeDocumentation(name = "Auto-mute edges by selection", description = "If enabled, all edges that are not part of the selected nodes are muted")
     @JIPipeParameter("auto-mute-by-selection")
