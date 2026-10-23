@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingCompartmentDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.entries.ExistingPipelineNodeDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
@@ -37,6 +38,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.commons.nodeui.JIPipeDesktopGr
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeNodeStateChips;
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
+import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRichSelectionBox;
 import org.hkijena.jipipe.desktop.commons.components.slots.JIPipeDesktopAddAlgorithmSlotPanel;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
@@ -103,6 +105,13 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
     private final JScrollPane scrollPane = new JScrollPane(nodeList);
     private final JIPipeEphemeralRunnableExecutor executor = new JIPipeEphemeralRunnableExecutor("Node finder");
     private final NodeBrowserModel model = new NodeBrowserModel();
+    /**
+     * The result-kind filter box (1340): the SAME shared, persisted setting
+     * as the node browser's "Kinds" box (see {@link NodeEntryKind#loadKinds()}),
+     * so a selection made in one surface is honored by the other. An empty
+     * selection shows all kinds.
+     */
+    private JIPipeDesktopRichSelectionBox kindsBox;
 
     /**
      * Function-leaf tree rows to highlight because a search matched a node
@@ -432,6 +441,27 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         searchField.getTextField().addActionListener(e -> openFirstEntryMenu());
         mainToolBar.add(searchField);
 
+        // Result-kind filter (1340): the shared, persisted setting of the
+        // node browser's "Kinds" box. Restored into the model BEFORE the
+        // constructor's initial reloadList() so the first query already
+        // applies it (an empty selection shows all kinds).
+        kindsBox = new JIPipeDesktopRichSelectionBox("Kinds", true, NodeEntryKind::options, selection -> {
+            Set<NodeEntryKind> kinds = new HashSet<>();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
+                if (option.getValue() instanceof NodeEntryKind kind) {
+                    kinds.add(kind);
+                }
+            }
+            model.setKindFilter(kinds);
+            NodeEntryKind.saveKinds(kinds);
+            reloadList();
+        });
+        kindsBox.setToolTipText("Filter the results by entry kind (select one or more; empty shows all)");
+        Set<NodeEntryKind> persistedKinds = NodeEntryKind.loadKinds();
+        model.setKindFilter(persistedKinds);
+        kindsBox.setSelectedValues(persistedKinds);
+        mainToolBar.add(kindsBox);
+
         // AI-based search
         UIUtils.makeButtonFlatWithSize(aiSearchButton, 36);
         aiSearchButton.setSelected(AI_SEARCH);
@@ -675,6 +705,11 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
             FunctionRegistry registry = JIPipe.getNodes().getFunctions();
             filtered.removeIf(entry -> !model.matchesSelection(entry, registry));
         }
+        // Result-kind filter (1340): the shared, persisted setting. Applied
+        // in search mode too (a kind preference is independent of the
+        // search text); entries without a kind (existing nodes/compartments)
+        // always pass, and an empty selection matches everything.
+        filtered.removeIf(entry -> !model.matchesKindFilter(entry));
         // Down-ranked nodes (auto-imported, deprecated, unstable — the
         // generalized state classifiers, see JIPipeNodeStateChips) come
         // after the standard curated nodes (same rule as the node browser).

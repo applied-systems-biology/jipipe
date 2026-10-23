@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
@@ -153,6 +154,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JComboBox<Object> frameworkCombo = new JComboBox<>();
     private JIPipeDesktopRichSelectionBox tagsBox;
     private JIPipeDesktopRichSelectionBox dataTypeBox;
+    /** The result-kind filter box (1340); see {@link #initializeFilterBar()}. */
+    private JIPipeDesktopRichSelectionBox kindsBox;
     private final JToggleButton pinnedToggleButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
     private final JToggleButton selectionOnlyButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"));
 
@@ -517,6 +520,29 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         filterBar.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
         filterBar.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
+        // Result-kind filter (1340): plain nodes, node examples, and the
+        // template kinds split by Pattern/Custom badge and system/user
+        // origin. The selection is a PERSISTED, shared setting (the node
+        // finder dialog reads the same value), so restore it into the model
+        // before the constructor's initial reloadList() — an empty selection
+        // means "show all kinds".
+        kindsBox = new JIPipeDesktopRichSelectionBox("Kinds", true, NodeEntryKind::options, selection -> {
+            Set<NodeEntryKind> kinds = new LinkedHashSet<>();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
+                if (option.getValue() instanceof NodeEntryKind kind) {
+                    kinds.add(kind);
+                }
+            }
+            model.setKindFilter(kinds);
+            NodeEntryKind.saveKinds(kinds);
+            reloadList();
+        });
+        kindsBox.setToolTipText("Filter the results by entry kind (select one or more; empty shows all)");
+        Set<NodeEntryKind> persistedKinds = NodeEntryKind.loadKinds();
+        model.setKindFilter(persistedKinds);
+        kindsBox.setSelectedValues(persistedKinds);
+        filterBar.add(kindsBox);
+
         // Framework combo (first item = "all frameworks" sentinel). Only
         // frameworks with at least one node visible in THIS editor role are
         // listed — a framework nobody's nodes use (e.g. Comet) would just be
@@ -853,6 +879,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             // Selection-only (⊂) rule: candidate must be connectable to the
             // current canvas selection's output
             if (model.isSelectionOnly() && !passesSelectionOnlyRule(entry)) {
+                continue;
+            }
+            // Result-kind filter (1340): shared NodeBrowserModel predicate —
+            // entries without a kind (existing nodes/compartments, new
+            // compartments) always pass.
+            if (!model.matchesKindFilter(entry)) {
                 continue;
             }
             filtered.add(entry);
