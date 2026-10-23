@@ -526,7 +526,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // finder dialog reads the same value), so restore it into the model
         // before the constructor's initial reloadList() — an empty selection
         // means "show all kinds".
-        kindsBox = new JIPipeDesktopRichSelectionBox("Kinds", true, NodeEntryKind::options, selection -> {
+        kindsBox = new JIPipeDesktopRichSelectionBox("All kinds", "Kinds", true, NodeEntryKind::options, selection -> {
             Set<NodeEntryKind> kinds = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
                 if (option.getValue() instanceof NodeEntryKind kind) {

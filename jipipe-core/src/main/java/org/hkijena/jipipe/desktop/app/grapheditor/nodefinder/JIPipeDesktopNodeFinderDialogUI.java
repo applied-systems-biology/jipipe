@@ -445,7 +445,7 @@ public class JIPipeDesktopNodeFinderDialogUI extends JDialog {
         // node browser's "Kinds" box. Restored into the model BEFORE the
         // constructor's initial reloadList() so the first query already
         // applies it (an empty selection shows all kinds).
-        kindsBox = new JIPipeDesktopRichSelectionBox("Kinds", true, NodeEntryKind::options, selection -> {
+        kindsBox = new JIPipeDesktopRichSelectionBox("All kinds", "Kinds", true, NodeEntryKind::options, selection -> {
             Set<NodeEntryKind> kinds = new HashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
                 if (option.getValue() instanceof NodeEntryKind kind) {
