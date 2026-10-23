@@ -52,6 +52,7 @@ import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagem
 import org.hkijena.jipipe.desktop.app.grapheditor.templatemanage.TemplateManagementDialog;
 import org.hkijena.jipipe.desktop.commons.components.ai.JIPipeDesktopAISetupDialog;
 import org.hkijena.jipipe.desktop.commons.components.layouts.JIPipeDesktopWrapLayout;
+import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormPanel.GroupHeaderPanel;
 import org.hkijena.jipipe.desktop.commons.components.parameters.JIPipeDesktopParameterFormPanel;
 import org.hkijena.jipipe.desktop.commons.components.panels.JIPipeDesktopFormHelpPanel;
 import org.hkijena.jipipe.desktop.commons.components.renderers.JIPipeDesktopNodeDatabaseEntryListCellRenderer;
@@ -60,6 +61,7 @@ import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRich
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
@@ -120,6 +122,13 @@ import java.util.Set;
  */
 public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implements JIPipeDesktopGraphCanvasUINodeSelectionChangedEventListener {
 
+    /**
+     * Cap for the follow-up suggestion area in the "Add nodes" panel
+     * (1337): the wrapping list is unlimited in height otherwise and can
+     * crowd out the node list. Above this it scrolls internally.
+     */
+    private static final int MAX_FOLLOW_UP_BODY_PX = 110;
+
     /** The model holds all non-Swing browser state. */
     private final NodeBrowserModel model = new NodeBrowserModel();
     private final TemplateManagementController templateController = new TemplateManagementController();
@@ -152,7 +161,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     // --- Follow-up strip ---
     private final JPanel followUpStrip = new JPanel();
+    private final GroupHeaderPanel followUpHeader;
     private final JPanel followUpContent = new JPanel();
+    private final JScrollPane followUpScroll;
+    /** Expanded by default; collapses only while the user keeps it toggled off. */
+    private boolean followUpExpanded = true;
 
     // --- Layout containers (re-rendered per view) ---
     private final JPanel bodyPanel = new JPanel();
@@ -335,11 +348,48 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         resultScroll = new JScrollPane(resultList);
         resultScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        // Follow-up strip
+        // Follow-up strip: a compact toggleable header above a scrolling
+        // body. The wrap layout grows without bound as more suggestions
+        // match, so the body is capped (MAX_FOLLOW_UP_BODY_PX) and scrolls
+        // vertically instead; the header collapses the body to a thin bar.
         followUpStrip.setLayout(new BorderLayout());
-        followUpStrip.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, UIUtils.getControlBorderColor()));
+        followUpStrip.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+
+        followUpHeader = new GroupHeaderPanel("Follow-up nodes",
+            JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"), 0);
+        followUpHeader.setToolTipText("Suggested next steps for the selected node. Click the arrow to collapse or expand the list.");
+
         followUpContent.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
-        followUpStrip.add(followUpContent, BorderLayout.CENTER);
+        followUpScroll = new JScrollPane(followUpContent,
+            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        followUpScroll.setBorder(null);
+        followUpScroll.getVerticalScrollBar().setUnitIncrement(16);
+        Dimension cap = followUpScroll.getPreferredSize();
+        followUpScroll.setPreferredSize(new Dimension(cap.width, Math.min(cap.height, MAX_FOLLOW_UP_BODY_PX)));
+
+        followUpStrip.add(followUpHeader, BorderLayout.NORTH);
+        followUpStrip.add(followUpScroll, BorderLayout.CENTER);
+
+        final CustomStateLessToggleButton followUpToggle = new CustomStateLessToggleButton("",
+            JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
+            "",
+            JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
+            true);
+        UIUtils.makeButtonFlat25x25(followUpToggle);
+        followUpToggle.setOpaque(false);
+        followUpToggle.setFocusPainted(false);
+        followUpToggle.setToolTipText("Collapse the follow-up nodes");
+        followUpHeader.addToStartOfTitlePanel(followUpToggle);
+        followUpToggle.getToggledEventEmitter().subscribeLambda((emitter, event) -> {
+            boolean expanded = followUpToggle.getState();
+            followUpExpanded = expanded;
+            followUpScroll.setVisible(expanded);
+            followUpHeader.setCollapsed(!expanded);
+            followUpToggle.setToolTipText(expanded ? "Collapse the follow-up nodes" : "Expand the follow-up nodes");
+            followUpStrip.revalidate();
+            followUpStrip.repaint();
+        });
 
         initializeToolbar();
         initializeFilterBar();
@@ -1436,6 +1486,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
         }
         followUpStrip.setVisible(show);
+        // Recalculate the wrap at the new width (and only then) so the
+        // capped scroll body grows or shrinks with the actual suggestions.
+        if (show) {
+            followUpScroll.getViewport().revalidate();
+            followUpScroll.revalidate();
+        }
         followUpStrip.revalidate();
         followUpStrip.repaint();
     }
