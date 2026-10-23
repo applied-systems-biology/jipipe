@@ -112,6 +112,8 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     private static final int SCROLL_UNIT_INCREMENT = 48;
 
     private final String baseLabel;
+    /** The compact label of a non-empty selection (null = legacy label, see the constructor). */
+    private final String summaryLabel;
     private final Font baseFont;
     private final boolean multiSelect;
     private final boolean twoPaneGroups;
@@ -120,6 +122,8 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
 
     private final JPopupMenu popup = new JPopupMenu();
     private final JTextField searchField = new JTextField();
+    /** Resets the selection to empty ("show all"); sits right of the search bar. */
+    private final JButton clearButton = new JButton("Clear");
     /** One per distinct group (two-pane mode) or a single list (list mode). */
     private final List<JList<Option<?>>> paneLists = new ArrayList<>();
     private final List<DefaultListModel<Option<?>>> paneModels = new ArrayList<>();
@@ -156,13 +160,32 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
     public JIPipeDesktopRichSelectionBox(String baseLabel, boolean multiSelect,
                                          Supplier<List<Option<?>>> optionsSupplier,
                                          Consumer<List<Option<?>>> selectionHandler) {
-        this(baseLabel, multiSelect, false, optionsSupplier, selectionHandler);
+        this(baseLabel, null, multiSelect, false, optionsSupplier, selectionHandler);
+    }
+
+    /**
+     * Creates a rich selection box with a compact summary label (see the
+     * full constructor for the meaning of the parameters; single-pane list
+     * mode).
+     */
+    public JIPipeDesktopRichSelectionBox(String baseLabel, String summaryLabel, boolean multiSelect,
+                                         Supplier<List<Option<?>>> optionsSupplier,
+                                         Consumer<List<Option<?>>> selectionHandler) {
+        this(baseLabel, summaryLabel, multiSelect, false, optionsSupplier, selectionHandler);
     }
 
     /**
      * Creates a rich selection box.
      *
-     * @param baseLabel        the label shown when nothing is selected
+     * @param baseLabel        the label shown when nothing is selected (e.g.
+     *                          "All data")
+     * @param summaryLabel     the compact label used while options are
+     *                          selected, rendered as
+     *                          {@code "<summaryLabel> (<count>)"} (e.g.
+     *                          "Data" → "Data (3)"), so the button width
+     *                          stays bounded no matter how many options are
+     *                          picked; {@code null} keeps the legacy label
+     *                          (the first three selected option texts)
      * @param multiSelect      whether more than one option can be selected
      * @param twoPaneGroups    render the option groups as side-by-side panes
      *                          (e.g. "Input" | "Output") instead of a single
@@ -170,11 +193,12 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
      * @param optionsSupplier  evaluated every time the popup opens (fresh options)
      * @param selectionHandler called with the new selection on every change
      */
-    public JIPipeDesktopRichSelectionBox(String baseLabel, boolean multiSelect, boolean twoPaneGroups,
+    public JIPipeDesktopRichSelectionBox(String baseLabel, String summaryLabel, boolean multiSelect, boolean twoPaneGroups,
                                          Supplier<List<Option<?>>> optionsSupplier,
                                          Consumer<List<Option<?>>> selectionHandler) {
         super(baseLabel);
         this.baseLabel = baseLabel;
+        this.summaryLabel = summaryLabel;
         this.baseFont = getFont();
         this.multiSelect = multiSelect;
         this.twoPaneGroups = twoPaneGroups;
@@ -183,6 +207,23 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         setFocusable(false);
         setToolTipText(baseLabel);
         addActionListener(e -> showPopup());
+
+        // The popup's "Clear" button (resets the selection to empty =
+        // "show all"). Wired here — not in showPopup, which runs on every
+        // open and would accumulate listeners on the reused button — so the
+        // clear goes through the same path as a user toggle (handler +
+        // updateText) and callers persist/refresh exactly as for any other
+        // selection change.
+        clearButton.setToolTipText("Clear the selection (show all)");
+        clearButton.setFocusable(false);
+        clearButton.addActionListener(e -> {
+            if (selectedValues.isEmpty()) {
+                return;
+            }
+            selectedValues.clear();
+            fireSelectionChanged();
+            refreshListSelection();
+        });
     }
 
     /**
@@ -247,7 +288,18 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         panel.setBorder(BorderFactory.createEmptyBorder(6, 6, 6, 6));
         boolean wide = twoPaneGroups && paneLists.size() > 1;
         panel.setPreferredSize(new Dimension(wide ? POPUP_WIDTH * 2 : POPUP_WIDTH, POPUP_HEIGHT));
-        panel.add(searchField, BorderLayout.NORTH);
+
+        // Search bar + a "Clear" button next to it (resets the selection to
+        // empty = "show all"). The clear is fired through the same path as a
+        // user toggle (handler + updateText), so callers persist/refresh
+        // exactly as they do for any other selection change. The button is a
+        // REUSED instance (the popup panel is rebuilt on every show), so its
+        // listener is wired up exactly once in the constructor — adding it
+        // again here would accumulate one listener per popup open.
+        JPanel header = new JPanel(new BorderLayout(4, 0));
+        header.add(searchField, BorderLayout.CENTER);
+        header.add(clearButton, BorderLayout.EAST);
+        panel.add(header, BorderLayout.NORTH);
         panel.add(panesPanel, BorderLayout.CENTER);
 
         popup.removeAll();
@@ -284,6 +336,28 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
             }
         });
         list.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mousePressed(MouseEvent e) {
+                // The list UI's own (earlier-registered) selection handler
+                // collapses a multi-selection to the pressed row on mouse
+                // press. Restoring the SAVED selection in the same event
+                // dispatch makes the list paint once, in its final state —
+                // without this, the collapsed ("all off") state was painted
+                // for the few frames between press and click (the flicker).
+                if (multiSelect) {
+                    refreshListSelection();
+                }
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                // Same guard for the release (a selection change made here
+                // must not linger until the click handler runs).
+                if (multiSelect) {
+                    refreshListSelection();
+                }
+            }
+
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!SwingUtilities.isLeftMouseButton(e)) {
@@ -383,6 +457,13 @@ public class JIPipeDesktopRichSelectionBox extends JButton {
         if (selectedValues.isEmpty()) {
             setText(baseLabel);
             setFont(baseFont);
+            return;
+        }
+        if (summaryLabel != null) {
+            // Compact: "Data (3)" / "Tags (7)" — the button width stays
+            // bounded no matter how many options are selected.
+            setText(summaryLabel + " (" + selectedValues.size() + ")");
+            setFont(baseFont.deriveFont(Font.BOLD));
             return;
         }
         StringBuilder sb = new StringBuilder();

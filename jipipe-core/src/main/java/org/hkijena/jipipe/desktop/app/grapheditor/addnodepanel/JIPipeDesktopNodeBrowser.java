@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabase;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabaseEntry;
 import org.hkijena.jipipe.api.nodes.database.JIPipeNodeDatabasePipelineVisibility;
 import org.hkijena.jipipe.api.nodes.database.entries.CreateNewNodesByTemplateDatabaseEntry;
+import org.hkijena.jipipe.api.nodes.database.entries.NodeEntryKind;
 import org.hkijena.jipipe.api.nodes.database.entries.TemplateScope;
 import org.hkijena.jipipe.api.nodes.taxonomy.FunctionRegistry;
 import org.hkijena.jipipe.api.nodes.taxonomy.JIPipeNodeTaxonomyFramework;
@@ -153,6 +154,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JComboBox<Object> frameworkCombo = new JComboBox<>();
     private JIPipeDesktopRichSelectionBox tagsBox;
     private JIPipeDesktopRichSelectionBox dataTypeBox;
+    /** The result-kind filter box (1340); see {@link #initializeFilterBar()}. */
+    private JIPipeDesktopRichSelectionBox kindsBox;
     private final JToggleButton pinnedToggleButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/window-pin.png"));
     private final JToggleButton selectionOnlyButton = new JToggleButton(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"));
 
@@ -517,6 +520,29 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         filterBar.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
         filterBar.setBorder(BorderFactory.createEmptyBorder(4, 8, 4, 8));
 
+        // Result-kind filter (1340): plain nodes, node examples, and the
+        // template kinds split by Pattern/Custom badge and system/user
+        // origin. The selection is a PERSISTED, shared setting (the node
+        // finder dialog reads the same value), so restore it into the model
+        // before the constructor's initial reloadList() — an empty selection
+        // means "show all kinds".
+        kindsBox = new JIPipeDesktopRichSelectionBox("All kinds", "Kinds", true, NodeEntryKind::options, selection -> {
+            Set<NodeEntryKind> kinds = new LinkedHashSet<>();
+            for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
+                if (option.getValue() instanceof NodeEntryKind kind) {
+                    kinds.add(kind);
+                }
+            }
+            model.setKindFilter(kinds);
+            NodeEntryKind.saveKinds(kinds);
+            reloadList();
+        });
+        kindsBox.setToolTipText("Filter the results by entry kind (select one or more; empty shows all)");
+        Set<NodeEntryKind> persistedKinds = NodeEntryKind.loadKinds();
+        model.setKindFilter(persistedKinds);
+        kindsBox.setSelectedValues(persistedKinds);
+        filterBar.add(kindsBox);
+
         // Framework combo (first item = "all frameworks" sentinel). Only
         // frameworks with at least one node visible in THIS editor role are
         // listed — a framework nobody's nodes use (e.g. Comet) would just be
@@ -557,7 +583,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // Data types (input + output, multi) — a rich selection box with a
         // search bar and the data types' icons (replaces the former
         // "Spatial" + "Input" buttons and their checkbox popup)
-        dataTypeBox = new JIPipeDesktopRichSelectionBox("Data", true, true, this::dataTypeOptions, selection -> {
+        dataTypeBox = new JIPipeDesktopRichSelectionBox("All data", "Data", true, true, this::dataTypeOptions, selection -> {
             Set<Class<? extends JIPipeData>> inputs = new LinkedHashSet<>();
             Set<Class<? extends JIPipeData>> outputs = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
@@ -580,7 +606,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // tag vocabulary is far too long for a plain combo). Populated from
         // the merged tags (node-level + function-path tags) — the same set
         // the filter predicate matches against.
-        tagsBox = new JIPipeDesktopRichSelectionBox("Tags", true, this::tagOptions, selection -> {
+        tagsBox = new JIPipeDesktopRichSelectionBox("All tags", "Tags", true, this::tagOptions, selection -> {
             Set<String> selectedTags = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
                 if (option.getValue() instanceof String tag) {
@@ -853,6 +879,21 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             // Selection-only (⊂) rule: candidate must be connectable to the
             // current canvas selection's output
             if (model.isSelectionOnly() && !passesSelectionOnlyRule(entry)) {
+                continue;
+            }
+            // Result-kind filter (1340): shared NodeBrowserModel predicate —
+            // entries without a kind (existing nodes/compartments, new
+            // compartments) always pass.
+            if (!model.matchesKindFilter(entry)) {
+                continue;
+            }
+            // Taxonomy facets (framework / spatial / input profile / tags /
+            // input+output data types): the shared NodeBrowserModel
+            // predicate. The framework / spatial / input-profile / tags
+            // sides are already applied by queryWithFacets' post-filter
+            // (identical semantics), so this call is a no-op for them and
+            // adds the DATA-TYPE facet, which the query does not cover.
+            if (!model.matches(entry)) {
                 continue;
             }
             filtered.add(entry);
