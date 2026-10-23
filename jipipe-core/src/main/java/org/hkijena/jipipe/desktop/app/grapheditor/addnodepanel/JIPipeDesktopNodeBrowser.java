@@ -365,8 +365,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         followUpScroll.setBorder(null);
         followUpScroll.getVerticalScrollBar().setUnitIncrement(16);
-        Dimension cap = followUpScroll.getPreferredSize();
-        followUpScroll.setPreferredSize(new Dimension(cap.width, Math.min(cap.height, MAX_FOLLOW_UP_BODY_PX)));
 
         followUpStrip.add(followUpHeader, BorderLayout.NORTH);
         followUpStrip.add(followUpScroll, BorderLayout.CENTER);
@@ -1486,11 +1484,21 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             }
         }
         followUpStrip.setVisible(show);
-        // Recalculate the wrap at the new width (and only then) so the
-        // capped scroll body grows or shrinks with the actual suggestions.
         if (show) {
+            // The wrap layout's preferred size is width-dependent (it walks
+            // up the parent chain for the width) and counts only effectively
+            // visible buttons — so measure while the body is effectively
+            // visible: temporarily re-show it if the user had it collapsed
+            // (synchronous, nothing repaints in between). Then cap the
+            // height so the body scrolls instead of growing without bound
+            // (1337).
+            boolean wasVisible = followUpScroll.isVisible();
+            followUpScroll.setVisible(true);
             followUpScroll.getViewport().revalidate();
             followUpScroll.revalidate();
+            Dimension size = followUpScroll.getPreferredSize();
+            followUpScroll.setPreferredSize(new Dimension(size.width, Math.min(size.height, MAX_FOLLOW_UP_BODY_PX)));
+            followUpScroll.setVisible(wasVisible);
         }
         followUpStrip.revalidate();
         followUpStrip.repaint();
