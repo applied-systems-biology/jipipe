@@ -583,7 +583,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // Data types (input + output, multi) — a rich selection box with a
         // search bar and the data types' icons (replaces the former
         // "Spatial" + "Input" buttons and their checkbox popup)
-        dataTypeBox = new JIPipeDesktopRichSelectionBox("Data", true, true, this::dataTypeOptions, selection -> {
+        dataTypeBox = new JIPipeDesktopRichSelectionBox("All data", "Data", true, true, this::dataTypeOptions, selection -> {
             Set<Class<? extends JIPipeData>> inputs = new LinkedHashSet<>();
             Set<Class<? extends JIPipeData>> outputs = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
@@ -606,7 +606,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // tag vocabulary is far too long for a plain combo). Populated from
         // the merged tags (node-level + function-path tags) — the same set
         // the filter predicate matches against.
-        tagsBox = new JIPipeDesktopRichSelectionBox("Tags", true, this::tagOptions, selection -> {
+        tagsBox = new JIPipeDesktopRichSelectionBox("All tags", "Tags", true, this::tagOptions, selection -> {
             Set<String> selectedTags = new LinkedHashSet<>();
             for (JIPipeDesktopRichSelectionBox.Option<?> option : selection) {
                 if (option.getValue() instanceof String tag) {
@@ -885,6 +885,15 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             // entries without a kind (existing nodes/compartments, new
             // compartments) always pass.
             if (!model.matchesKindFilter(entry)) {
+                continue;
+            }
+            // Taxonomy facets (framework / spatial / input profile / tags /
+            // input+output data types): the shared NodeBrowserModel
+            // predicate. The framework / spatial / input-profile / tags
+            // sides are already applied by queryWithFacets' post-filter
+            // (identical semantics), so this call is a no-op for them and
+            // adds the DATA-TYPE facet, which the query does not cover.
+            if (!model.matches(entry)) {
                 continue;
             }
             filtered.add(entry);
