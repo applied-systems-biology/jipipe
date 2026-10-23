@@ -151,12 +151,18 @@ run both load **OK** (358 and 364 nodes) and their JIPX round-trips are
 `jipxViolations=0`).
 
 **Evidence the flip is environmental, not a Phase 1 regression:**
-1. **No Phase 1 commit touched the failing code.** `git diff` across the 6
-   Phase 1 commits (`39578b7176..bbe7d7a5ed`) is empty for the node
-   registry, `IOInterfaceAlgorithm`, `JIPipe.createNode`, `JIPipeProject`
-   legacy load, `JIPipeGraph.nodesFromJson`, and the `UtilitiesPlugin`
-   registration — the flip lives in the shared **legacy** load path (M0),
-   which Phase 1 did not modify.
+1. **No Phase 1 commit changed node registration, node creation, or the
+   legacy-load logic.** `JIPipeProject.java` *was* touched in Phase 1 — the
+   load body was relocated behind the dispatcher (into
+   `JIPipeLegacyProjectReader.read()`, byte-identical logic), plus a
+   workspace getter (`getWorkspace()`) and the save-dispatch change;
+   `JIPipeGraphRun.java` was touched for the re-save-format change. But
+   `git diff` across the 6 Phase 1 commits (`39578b7176..bbe7d7a5ed`) is
+   empty for the node registry, `IOInterfaceAlgorithm`,
+   `JIPipe.createNode` / `getNodeInfosFromClass`,
+   `JIPipeGraph.nodesFromJson`, and the `UtilitiesPlugin` registration —
+   the flip lives in the shared **legacy** load path (M0), whose *logic*
+   Phase 1 only relocated, not modified.
 2. **The unchanged Phase 0 harness reproduces the flip.** Running
    `CorpusRoundTripFixpointTest` (verified **byte-identical** to the
    Phase 0 baseline commit `c7f5`, `git diff` empty) on a mini-corpus of

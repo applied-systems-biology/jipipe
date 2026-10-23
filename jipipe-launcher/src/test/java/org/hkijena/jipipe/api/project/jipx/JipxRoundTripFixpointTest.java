@@ -325,6 +325,43 @@ class JipxRoundTripFixpointTest {
             "Corpus pollution: top-level *.jip count of " + corpus + " changed from "
                 + topLevelCountBefore + " to " + topLevelCountAfter);
 
+        // The done-gate assertion: for every project the legacy cycle loaded
+        // (outcome OK), the JIPX round trip must have been model-equivalent,
+        // crate-valid, and violation-free. A JIPX regression must turn the
+        // gated run RED, not merely write an ugly report.
+        // Scanned: entries with outcome "OK" only — non-OK entries carry
+        // false/0 by construction (their JIPX steps were skipped) and are
+        // triaged through their outcome, not this assertion.
+        // Checked: jipxModelEquivalent (must be true), jipxCrateValid (must
+        // be true), jipxViolations (must be 0).
+        // Deliberately NOT checked: legacyFixpoint (74 corpus files are
+        // legitimately false — pre-existing .jip save churn, baselined in
+        // Phase 0) and the error diagnostic (known JDK NPE flap).
+        // Safety (no added flakiness): the three JIPX booleans are
+        // deterministic given a successfully loaded model — the known
+        // environmental flakiness (IOInterface registry warmup) affects the
+        // LOAD outcome classification, not the equivalence of loaded models.
+        List<String> jipxGateFailures = new ArrayList<>();
+        for (ObjectNode entry : entries) {
+            if (!"OK".equals(entry.path("outcome").asText())) {
+                continue;
+            }
+            String file = entry.path("file").asText();
+            if (!entry.path("jipxModelEquivalent").asBoolean(false)) {
+                jipxGateFailures.add(file + " — jipxModelEquivalent=false");
+            }
+            if (!entry.path("jipxCrateValid").asBoolean(false)) {
+                jipxGateFailures.add(file + " — jipxCrateValid=false");
+            }
+            if (entry.path("jipxViolations").asInt(0) != 0) {
+                jipxGateFailures.add(file + " — jipxViolations=" + entry.path("jipxViolations").asInt());
+            }
+        }
+        assertTrue(jipxGateFailures.isEmpty(),
+            "JIPX round-trip gate FAILED for " + jipxGateFailures.size() + " entr"
+                + (jipxGateFailures.size() == 1 ? "y" : "ies") + ":\n  "
+                + String.join("\n  ", jipxGateFailures));
+
         report.put("totalFiles", entries.size());
         ArrayNode entriesNode = report.putArray("entries");
         for (ObjectNode entry : entries) {
