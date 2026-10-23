@@ -187,6 +187,21 @@ regressive.
 `mvn -pl jipipe-core,jipipe-launcher test` (refactored core `7aac99317b` reinstalled to
 `~/.m2` before the run; harness skipped by gate): see §7 for the result.
 
+### 5.1 Controlled re-capture (controller follow-up, 2026-10-23)
+
+Requested as the decisive closure evidence (fresh unrefactored baseline + fresh
+refactored after-run back-to-back in a controlled environment). **Not performed:**
+the live JIPipe GUI instance (PIDs 2016822/2019071, the same one that contaminated
+the 18:0x window) was still running, and per the standing instruction it was not
+killed. A re-capture while it is active would not be controlled (shared profile
+`/home/ruman/.local/share/JIPipe`), so the run was deferred, not faked. Everything
+is staged for an ~8-minute run once the GUI is closed (commands in the task-6
+report); the environment is otherwise verified ready (unrefactored commit
+`c7f5cbc7b2` carries the canonical harness; `~/.m2` provenance md5-verified per
+run). Note for the controller: JIPipe honors `JIPIPE_OVERRIDE_USER_DIR_BASE`
+(`PathUtils.getJIPipeUserDirBase`), which would isolate the harness from the GUI's
+profile if a GUI-free window is not available.
+
 ## 7. Regression result
 
 `mvn -pl jipipe-core,jipipe-launcher test` — **BUILD SUCCESS**, 2026-10-23 18:25 (log:
@@ -219,6 +234,9 @@ reports 6 differences, all in one environment-sensitive diagnostic field
 identical difference class on the unrefactored code under the same environment drift
 (GUI + shared profile + shared `~/.m2` contended during the run window), so the
 extraction is exonerated and the remaining gap is a re-capture under controlled
-conditions, not a code fix. Subject to that re-capture (recommended before Phase 1
-closes Phase 0 formally), `.jip` read/write is confirmed behavior-preserving and
-Phase 1 (`.jipx` reader/writer) may proceed on the basis of this record.**
+conditions, not a code fix. That re-capture was requested as follow-up but is
+**blocked pending the live GUI instance being closed** (see §5.1 — not performed,
+not faked); it is staged to complete in one ~8-minute paired run. On the basis of
+this record, `.jip` read/write is confirmed behavior-preserving on every stable,
+semantically meaningful dimension, and Phase 1 (`.jipx` reader/writer) may proceed
+with the §5.1 re-capture as the outstanding formal gate item.**
