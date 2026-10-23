@@ -13,7 +13,10 @@
 
 package org.hkijena.jipipe.api.project.io;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXManifest;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectReader;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -23,6 +26,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,11 +74,12 @@ class ProjectIOsDispatchTest {
     }
 
     @Test
-    void zipNamedJipIsRejectedAsReader() throws IOException {
+    void zipContentDispatchesToJipxReader() throws IOException {
+        // Reads are content-first: a ZIP-magic file goes to the JIPX reader
+        // regardless of its extension (the reader's read() rejects
+        // non-JIPX contents via the jipx.json check).
         Path zip = writeZipMagicFile(tmp, "x.jip");
-        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
-                () -> JIPipeProjectIOs.readerFromPath(zip));
-        assertTrue(e.getMessage().contains("not yet supported"));
+        assertTrue(JIPipeProjectIOs.readerFromPath(zip) instanceof JIPipeXProjectReader);
     }
 
     @Test
@@ -116,11 +122,76 @@ class ProjectIOsDispatchTest {
     }
 
     @Test
-    void peekRejectsZipFiles() throws IOException {
+    void peekRejectsZipsWithoutJipxManifest() throws IOException {
+        // A ZIP-magic file without a jipx.json entry is not a JIPipe 6
+        // project — the GUI's .crate.zip import path is handled by the GUI
+        // layer and never reaches peek.
         Path zip = writeZipMagicFile(tmp, "peek.zip");
         UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
                 () -> JIPipeProjectIOs.peek(zip));
-        assertTrue(e.getMessage().contains("not yet supported"));
+        assertTrue(e.getMessage().contains("not a JIPipe 6 project"));
+        assertTrue(e.getMessage().contains("jipx.json"));
+    }
+
+    @Test
+    void peekStreamsJipxWithoutExtraction() throws IOException {
+        // The content-stream peek contract: a proper JIPX container is peeked
+        // from its zip entries (no extraction, no temp dir) — metadata from
+        // project/metadata.json, dependencies from project/dependencies.json.
+        Path jipx = tmp.resolve("peek.jipx");
+        writeJipxZip(jipx, true);
+
+        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
+        assertTrue("Peek".equals(peek.getMetadata().getName()));
+        assertTrue(peek.getDependencies().isEmpty());
+    }
+
+    @Test
+    void peekJipxWithoutDependenciesEntryYieldsEmptySet() throws IOException {
+        // project/dependencies.json is optional in the container — a missing
+        // entry yields an empty dependency set (peek is best-effort: absent
+        // parts fall back to the loaders' defaults; it is the READER's
+        // corrupt-container contract that enforces listed-part presence).
+        Path jipx = tmp.resolve("peek-nodir.jipx");
+        writeJipxZip(jipx, false);
+
+        JIPipeProjectPeek peek = JIPipeProjectIOs.peek(jipx);
+        assertTrue(peek.getDependencies().isEmpty());
+        assertTrue("Peek".equals(peek.getMetadata().getName()));
+    }
+
+    /**
+     * Builds a minimal JIPX container (no wrapper root): {@code jipx.json}
+     * (the default manifest, pruned to the parts written), {@code
+     * project/metadata.json} ({@code {"name": "Peek"}}), and — when
+     * {@code withDependencies} — {@code project/dependencies.json}
+     * ({@code []}).
+     */
+    private static Path writeJipxZip(Path zipPath, boolean withDependencies) throws IOException {
+        JsonNode metadata = new com.fasterxml.jackson.databind.ObjectMapper()
+                .readTree("{\"name\": \"Peek\"}");
+        JsonNode dependencies = new com.fasterxml.jackson.databind.ObjectMapper()
+                .createArrayNode();
+        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
+        manifest.getParts().clear();
+        manifest.getParts().put("project/metadata.json", "metadata");
+        if (withDependencies) {
+            manifest.getParts().put("project/dependencies.json", "dependencies");
+        }
+        try (ZipOutputStream zos = new ZipOutputStream(Files.newOutputStream(zipPath))) {
+            putZipEntry(zos, "jipx.json", manifest.toJsonNode());
+            putZipEntry(zos, "project/metadata.json", metadata);
+            if (withDependencies) {
+                putZipEntry(zos, "project/dependencies.json", dependencies);
+            }
+        }
+        return zipPath;
+    }
+
+    private static void putZipEntry(ZipOutputStream zos, String entryName, JsonNode node) throws IOException {
+        zos.putNextEntry(new ZipEntry(entryName));
+        zos.write(node.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        zos.closeEntry();
     }
 
     private static Path writeZipMagicFile(Path dir, String fileName) throws IOException {

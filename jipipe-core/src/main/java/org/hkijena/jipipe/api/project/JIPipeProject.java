@@ -46,7 +46,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectReader;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
 import org.hkijena.jipipe.api.project.jipx.JIPipeLocalProjectWorkspace;
 import org.hkijena.jipipe.api.project.jipx.JIPipeProjectWorkspace;
 import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
@@ -190,7 +190,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads a project from a file
      *
-     * @param fileName     JSON file
+     * @param fileName     project file
      * @param context      the context
      * @param report       issue report
      * @param progressInfo the progress info
@@ -203,8 +203,14 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Loads a project from a file
+     * <p>
+     * Format-agnostic: the reader is resolved by
+     * {@link JIPipeProjectIOs#readerFromPath(Path)} (content-first
+     * dispatch — the legacy JSON reader for plain files, the JIPX
+     * container reader for ZIP files), so every load site in the code
+     * base picks up both project formats.
      *
-     * @param fileName      JSON file
+     * @param fileName      project file
      * @param context       the context
      * @param report        issue report
      * @param notifications notifications for the user
@@ -213,7 +219,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
-        return new JIPipeLegacyProjectReader().read(fileName, context, report, notifications, progressInfo);
+        return JIPipeProjectIOs.readerFromPath(fileName).read(fileName, context, report, notifications, progressInfo);
     }
 
     /**

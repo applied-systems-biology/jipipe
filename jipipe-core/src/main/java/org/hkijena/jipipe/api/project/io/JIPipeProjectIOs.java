@@ -14,26 +14,35 @@
 package org.hkijena.jipipe.api.project.io;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectReader;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.Locale;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 /**
  * Static format dispatcher for JIPipe project files.
  * <p>
- * Dispatch policy (the contract the .jipx format builds on in Phase 1):
+ * Dispatch policy:
  * <ul>
  * <li><b>Reads are content-first.</b> The file's bytes decide the reader:
- * a file with ZIP magic is rejected as a ZIP-based project format (not yet
- * implemented), and every non-ZIP file is handed to the
- * {@link JIPipeLegacyProjectReader}, regardless of its extension (the legacy
- * format is plain JSON, and its parser surfaces content errors).
+ * a file with ZIP magic is handed to the {@link JIPipeXProjectReader}
+ * (the JIPX container format, which rejects non-JIPX ZIP contents during
+ * {@link JIPipeProjectReader#read} via its {@code jipx.json} manifest
+ * check), and every non-ZIP file is handed to the
+ * {@link JIPipeLegacyProjectReader}, regardless of its extension (the
+ * legacy format is plain JSON, and its parser surfaces content errors).
  * {@link JIPipeProjectIO#supports(Path)} is <i>not</i> used for read
- * dispatch.</li>
+ * dispatch. The {@code .crate.zip} import flow is handled by the GUI
+ * layer and does not go through this dispatcher.</li>
  * <li><b>Writes are extension-driven.</b> The writer is selected purely
  * from the file extension: {@code .jip} →
  * {@link JIPipeLegacyProjectWriter}, {@code .jipx} → not yet supported,
@@ -50,17 +59,18 @@ public final class JIPipeProjectIOs {
      * <p>
      * Only dispatches — the file is not read by this method (the returned
      * reader's {@link JIPipeProjectReader#read} performs the actual load).
-     * ZIP-based project formats are rejected:
+     * Reads are content-first: a file with ZIP magic is handed to the
+     * {@link JIPipeXProjectReader} (which rejects non-JIPX ZIP contents
+     * during read via its {@code jipx.json} manifest check), everything
+     * else to the {@link JIPipeLegacyProjectReader}.
      *
      * @param path the project file
      * @return the reader for the file's content
-     * @throws IOException                       triggered by the ZIP magic-byte inspection
-     * @throws UnsupportedOperationException     if the file is ZIP-based (.jipx arrives in Phase 1)
+     * @throws IOException triggered by the ZIP magic-byte inspection
      */
     public static JIPipeProjectReader readerFromPath(Path path) throws IOException {
         if (ArchiveUtils.isZipFile(path)) {
-            throw new UnsupportedOperationException(
-                    "ZIP-based project formats are not yet supported (the .jipx format arrives with JIPipe 6.0 phase 1): " + path);
+            return new JIPipeXProjectReader();
         }
         return new JIPipeLegacyProjectReader();
     }
@@ -85,22 +95,96 @@ public final class JIPipeProjectIOs {
     }
 
     /**
-     * Peeks at a project file without loading it: parses only the JSON tree
-     * and extracts the metadata and the dependency set.
+     * Peeks at a project file without loading it: extracts only the
+     * metadata and the dependency set.
+     * <p>
+     * For the legacy JSON format this parses only the JSON tree. For a
+     * JIPX container this streams the {@code jipx.json},
+     * {@code project/metadata.json}, and {@code project/dependencies.json}
+     * entries directly out of the ZIP (no extraction, no temporary
+     * directory).
      *
      * @param path the project file
      * @return the extracted project dependencies and metadata
-     * @throws IOException                       triggered by the JSON parser
-     * @throws UnsupportedOperationException     if the file is ZIP-based (the .jipx format arrives in Phase 1)
+     * @throws IOException                 triggered by the JSON parser
+     * @throws UnsupportedOperationException if the file is a ZIP that is not
+     *                                       a JIPX container (no
+     *                                       {@code jipx.json} entry) — the
+     *                                       {@code .crate.zip} import path
+     *                                       is handled by the GUI layer and
+     *                                       never reaches {@code peek}
      */
     public static JIPipeProjectPeek peek(Path path) throws IOException {
         if (ArchiveUtils.isZipFile(path)) {
-            throw new UnsupportedOperationException(
-                    "ZIP-based project formats are not yet supported (the .jipx format arrives with JIPipe 6.0 phase 1): " + path);
+            return peekZip(path);
         }
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
         return new JIPipeProjectPeek(
                 JIPipeProject.loadDependenciesFromJson(jsonData),
                 JIPipeProject.loadMetadataFromJson(jsonData));
+    }
+
+    /**
+     * Peeks at a JIPX container by streaming its entries out of the ZIP
+     * without extracting it.
+     *
+     * @param path the JIPX container
+     * @return the extracted project dependencies and metadata
+     * @throws IOException                       triggered by the JSON parser
+     * @throws UnsupportedOperationException     if the ZIP has no
+     *                                           {@code jipx.json} entry
+     */
+    private static JIPipeProjectPeek peekZip(Path path) throws IOException {
+        try (ZipFile zip = openZipForPeek(path)) {
+            ZipEntry manifestEntry = zip.getEntry("jipx.json");
+            if (manifestEntry == null) {
+                throw new UnsupportedOperationException(
+                        "not a JIPipe 6 project (missing jipx.json): " + path);
+            }
+            JsonNode metadataPart = readZipEntryAsJson(zip, "project/metadata.json");
+            JsonNode dependenciesPart = readZipEntryAsJson(zip, "project/dependencies.json");
+            // The container parts are the monolith's top-level fields
+            // themselves (the JIPipeProjectParts fidelity contract), while
+            // the loaders below expect the monolith root — re-wrap the
+            // parts under their part keys. Absent parts yield the loaders'
+            // defaults (empty dependency set / empty metadata).
+            ObjectNode root = JsonUtils.getObjectMapper().createObjectNode();
+            if (metadataPart != null) {
+                root.set("metadata", metadataPart);
+            }
+            if (dependenciesPart != null) {
+                root.set("dependencies", dependenciesPart);
+            }
+            return new JIPipeProjectPeek(
+                    JIPipeProject.loadDependenciesFromJson(root),
+                    JIPipeProject.loadMetadataFromJson(root));
+        }
+    }
+
+    /**
+     * Reads a single ZIP entry as a JSON tree, returning {@code null} when
+     * the entry is absent.
+     */
+    private static JsonNode readZipEntryAsJson(ZipFile zip, String entryName) throws IOException {
+        ZipEntry entry = zip.getEntry(entryName);
+        if (entry == null) {
+            return null;
+        }
+        try (InputStream is = zip.getInputStream(entry)) {
+            return JsonUtils.getObjectMapper().readValue(is, JsonNode.class);
+        }
+    }
+
+    /**
+     * Opens a ZIP for peeking; a ZIP that cannot be opened at all (invalid
+     * or truncated archive — including files that only carry the ZIP magic
+     * bytes) is reported as not a JIPipe 6 project.
+     */
+    private static ZipFile openZipForPeek(Path path) throws IOException {
+        try {
+            return new ZipFile(path.toFile());
+        } catch (ZipException e) {
+            throw new UnsupportedOperationException("not a JIPipe 6 project (missing jipx.json): " + path, e);
+        }
     }
 }
