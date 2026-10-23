@@ -159,6 +159,23 @@ class JIPipeXProjectReaderTest {
     }
 
     @Test
+    void missingCompartmentsPartIsRejectedWithClearMessage() throws IOException, URISyntaxException {
+        // A manifest that omits the REQUIRED "compartments" part must be
+        // rejected with a clear validation error — not a NullPointerException
+        // from JIPipeProject.fromJson (which tolerates a missing graph but
+        // not a missing compartments object).
+        assertMissingRequiredPartRejected("compartments", "project/compartments.json");
+    }
+
+    @Test
+    void missingGraphPartIsRejectedWithClearMessage() throws IOException, URISyntaxException {
+        // The main project graph is mandatory (spec §4): without it the
+        // crate's mainEntity would point at a missing file and the project
+        // would silently load an empty graph.
+        assertMissingRequiredPartRejected("graph", "project/graph.json");
+    }
+
+    @Test
     void readerSupportsOnlyJipxZipFiles() throws IOException, URISyntaxException {
         JIPipeXProjectReader reader = new JIPipeXProjectReader();
         assertEquals("org.hkijena.jipipe.core:jipx", reader.getId());
@@ -178,6 +195,41 @@ class JIPipeXProjectReaderTest {
     // ---------------------------------------------------------------------
     // Helpers
     // ---------------------------------------------------------------------
+
+    /**
+     * Builds a container whose manifest omits the given required part
+     * (the part file is still written, just not listed) and asserts the
+     * reader rejects it with a clear exception naming the part — not an
+     * NPE from {@code JIPipeProject.fromJson}.
+     */
+    private void assertMissingRequiredPartRejected(String requiredPart, String omittedEntry)
+            throws IOException, URISyntaxException {
+        Map<String, JsonNode> parts = loadFixtureParts();
+        Path jipx = tmp.resolve("missing-" + requiredPart + ".jipx");
+        Path staging = tmp.resolve("missing-" + requiredPart + "-staging");
+        writeParts(staging, parts);
+        JIPipeXManifest manifest = JIPipeXManifest.defaultManifest(JIPipe.getJIPipeVersion());
+        // Only list the parts actually present in the fixture's slice
+        // (like buildJipxFromFixture), then drop the required part:
+        // its file stays on disk, just unlisted.
+        manifest.getParts().entrySet().removeIf(e -> !parts.containsKey(e.getValue()));
+        manifest.getParts().remove(omittedEntry);
+        writeJson(staging.resolve(JIPipeXManifest.MANIFEST_FILE_NAME), manifest.toJsonNode());
+        try (ZipFile zip = new ZipFile(jipx.toFile())) {
+            for (Path partFile : listFiles(staging)) {
+                zip.addFile(partFile.toFile(), fileNameInZipParams(staging, partFile));
+            }
+        }
+
+        RuntimeException e = assertThrows(RuntimeException.class,
+                () -> new JIPipeXProjectReader().read(jipx,
+                        new UnspecifiedValidationReportContext(), new JIPipeValidationReport(),
+                        new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT));
+        assertTrue(e.getMessage().contains(requiredPart),
+                "Expected the exception to name the missing required part '" + requiredPart + "', got: " + e.getMessage());
+        assertFalse(e instanceof NullPointerException,
+                "The reader must not reach a NullPointerException for a missing required part: " + e);
+    }
 
     private static Path fixturePath() throws URISyntaxException {
         return Path.of(JIPipeXProjectReaderTest.class.getResource(FIXTURE).toURI());

@@ -93,6 +93,14 @@ public final class JIPipeProjectCrate {
      */
     public static final String PERSON_ID_PREFIX = "urn:person:";
 
+    /**
+     * The Bioschemas ComputationalWorkflow profile the main workflow
+     * entity conforms to (same value as the reference
+     * {@code CreateROCrateRun}).
+     */
+    public static final String BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE =
+            "https://bioschemas.org/profiles/ComputationalWorkflow/1.0-RELEASE";
+
     private JIPipeProjectCrate() {
     }
 
@@ -191,6 +199,16 @@ public final class JIPipeProjectCrate {
                 .addProperty("version", JIPipe.getJIPipeVersion())
                 .build());
 
+        // The Bioschemas ComputationalWorkflow profile guide (mirrors
+        // CreateROCrateRun's contextual entity — spec §6).
+        builder.addContextualEntity(new ContextualEntity.ContextualEntityBuilder()
+                .setId(BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE)
+                .addType("Guide")
+                .addProperty("name", "ComputationalWorkflow Profile")
+                .addProperty("version", "1.0-RELEASE")
+                .addProperty("description", "Bioschemas specification for describing a Computational Workflow")
+                .build());
+
         // Organizations from the authors' affiliations (deduplicated by
         // unique id, mirroring CreateROCrateRun.addROCrateOrganizations).
         Set<String> organizationIds = new LinkedHashSet<>();
@@ -245,6 +263,7 @@ public final class JIPipeProjectCrate {
                 .setId(MAIN_ENTITY_ID)
                 .addType("File")
                 .addIdProperty("programmingLanguage", LANGUAGE_ENTITY_ID)
+                .addIdProperty("conformsTo", BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE)
                 .addProperty("encodingFormat", "application/json")
                 .addProperty("name", "JIPipe project graph")
                 .build());
@@ -266,7 +285,8 @@ public final class JIPipeProjectCrate {
      * well-formed save yields zero violations):
      * (1) license present on the root, (2) mainEntity present on the
      * root, (3) README.md data entity present, (4) programmingLanguage
-     * present on the main entity.
+     * present on the main entity, (5) Bioschemas conformsTo present on
+     * the main entity.
      */
     private static void checkCompliance(RoCrate crate, List<String> violationsOut) {
         if (crate.getRootDataEntity().getIdProperty("license") == null) {
@@ -281,6 +301,10 @@ public final class JIPipeProjectCrate {
         if (crate.getDataEntityById(MAIN_ENTITY_ID) == null
                 || crate.getDataEntityById(MAIN_ENTITY_ID).getIdProperty("programmingLanguage") == null) {
             violationsOut.add("programmingLanguage missing on the main workflow entity");
+        }
+        if (crate.getDataEntityById(MAIN_ENTITY_ID) == null
+                || crate.getDataEntityById(MAIN_ENTITY_ID).getIdProperty("conformsTo") == null) {
+            violationsOut.add("Bioschemas conformsTo missing on the main workflow entity");
         }
     }
 

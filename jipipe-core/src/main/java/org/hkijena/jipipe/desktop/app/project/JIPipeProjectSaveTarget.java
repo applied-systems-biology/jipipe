@@ -27,7 +27,9 @@ import java.nio.file.Path;
  * proceed directly: untitled projects go straight to the save chooser,
  * whose first filter is {@code .jipx} (so they default to the new
  * format), and {@code .jipx} projects keep round-tripping in the new
- * format.
+ * format. Autosaves (the {@code (avoidDialog, updateSavePath)}
+ * combination {@code (true, false)}) never prompt — they silently keep
+ * the project's current format.
  * <p>
  * The decision is a pure static so it is testable without a GUI
  * (the prompt dialog itself is verified by eye in the app, per the
@@ -64,18 +66,28 @@ public final class JIPipeProjectSaveTarget {
      * is a legacy {@code .jip} file, {@link SaveTarget#DIRECT} otherwise
      */
     public static SaveTarget decideSaveTarget(Path currentSavePath) {
-        if (currentSavePath == null || PathUtils.isJipxPath(currentSavePath)) {
-            return SaveTarget.DIRECT;
-        }
-        return PathUtils.isJipPath(currentSavePath) ? SaveTarget.JIPX_PROMPT : SaveTarget.DIRECT;
+        return shouldPrompt(currentSavePath, false, true)
+                ? SaveTarget.JIPX_PROMPT
+                : SaveTarget.DIRECT;
     }
 
     /**
      * Decides whether the JIPX migration prompt is shown for a save with
-     * the given parameters. Wraps {@link #decideSaveTarget(Path)}: the
-     * prompt never fires for autosaves (the {@code avoidDialog} && !
-     * {@code updateSavePath} combination) — a modal prompt on every
-     * autosave interval would break autosave.
+     * the given parameters (see the class Javadoc for the migration UX).
+     * <p>
+     * Rules:
+     * <ul>
+     * <li>{@code false} when {@code currentSavePath} is {@code null}
+     * (untitled project — the save chooser decides the format) or is
+     * already a {@code .jipx} file (it keeps round-tripping);</li>
+     * <li>{@code false} for autosaves — {@code avoidDialog} without
+     * {@code updateSavePath} ({@code (true, false)}): the prompt must
+     * not fire on every autosave interval;</li>
+     * <li>{@code true} when {@code currentSavePath} is a legacy
+     * {@code .jip} file (Ctrl+S and the chooser path);</li>
+     * <li>{@code false} for any other extension (a misnamed file — the
+     * write dispatch will reject it later).</li>
+     * </ul>
      *
      * @param currentSavePath the project's current save target, or
      *                        {@code null} for an untitled project
@@ -86,9 +98,13 @@ public final class JIPipeProjectSaveTarget {
      * @return whether the JIPX migration prompt is shown before saving
      */
     public static boolean shouldPrompt(Path currentSavePath, boolean avoidDialog, boolean updateSavePath) {
+        if (currentSavePath == null || PathUtils.isJipxPath(currentSavePath)) {
+            return false;
+        }
+        // Autosave (avoidDialog without updateSavePath): never prompt.
         if (avoidDialog && !updateSavePath) {
             return false;
         }
-        return decideSaveTarget(currentSavePath) == SaveTarget.JIPX_PROMPT;
+        return PathUtils.isJipPath(currentSavePath);
     }
 }

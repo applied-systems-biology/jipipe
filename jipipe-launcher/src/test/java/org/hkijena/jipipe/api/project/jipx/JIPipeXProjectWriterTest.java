@@ -203,6 +203,17 @@ class JIPipeXProjectWriterTest {
                 "The JIPipe contextual entity must be typed ComputerLanguage; got: " + jipipeLanguage.get("@type"));
         assertEquals(JIPipe.getJIPipeVersion(), jipipeLanguage.get("version").asText(),
                 "The JIPipe contextual entity must carry the JIPipe version");
+        // Bioschemas conformsTo on the main entity (spec §6), with the
+        // Guide contextual entity (mirrors CreateROCrateRun).
+        JsonNode mainConformsTo = mainEntity.get("conformsTo");
+        assertNotNull(mainConformsTo, "The main entity must declare Bioschemas conformsTo (spec §6)");
+        assertEquals(JIPipeProjectCrate.BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE,
+                mainConformsTo.path("@id").asText(),
+                "The main entity conformsTo must reference the Bioschemas ComputationalWorkflow profile; got: " + mainConformsTo);
+        JsonNode bioschemasGuide = entityWithId(graph, JIPipeProjectCrate.BIOSCHEMAS_COMPUTATIONAL_WORKFLOW_PROFILE);
+        assertNotNull(bioschemasGuide, "The Bioschemas ComputationalWorkflow profile Guide entity must be present");
+        assertTrue(typesContain(bioschemasGuide.get("@type"), "Guide"),
+                "The Bioschemas profile entity must be typed Guide; got: " + bioschemasGuide.get("@type"));
 
         // The README data entity.
         JsonNode readme = entityWithId(graph, "README.md");

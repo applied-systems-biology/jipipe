@@ -110,6 +110,23 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
         // is a corrupt container (the workspace's IOException names the
         // missing entry and propagates).
         Map<String, JsonNode> parts = project.getWorkspace().readParts();
+        // (d2) The main project parts are MANDATORY (spec §4): both
+        // "compartments" and "graph" must be present. A manifest that
+        // lacks them would otherwise reach JIPipeProject.fromJson with a
+        // NullPointerException (fromJson tolerates a missing graph but
+        // not a missing compartments object) or silently load an empty
+        // project while the crate's mainEntity points at a missing file.
+        for (String requiredPart : new String[]{"compartments", "graph"}) {
+            if (!parts.containsKey(requiredPart)) {
+                throw new JIPipeValidationRuntimeException(new IllegalStateException(
+                        "missing required part '" + requiredPart + "'"),
+                        "Invalid JIPipe 6 project",
+                        "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of '" + path + "' does not list the required part '"
+                                + requiredPart + "'.",
+                        "The container is not a valid JIPipe 6 project — it may be corrupt or was written by an incompatible tool. " +
+                                "Please check the file or re-save the project.");
+            }
+        }
         // (e) Reassemble the monolith tree and load it (full upgrade
         // machinery applies).
         project.fromJson(JIPipeProjectParts.assembleParts(parts, manifest.getJipipeVersion()),

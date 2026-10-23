@@ -198,6 +198,64 @@ class JIPipeXManifestTest {
     }
 
     @Test
+    void unknownManifestEntriesSurviveMaterializeOverExtractedWorkspace(@TempDir Path workDir) throws IOException, URISyntaxException {
+        // The spec §4 contract: "Unknown parts are preserved verbatim on
+        // round-trip." A foreign/future .jipx carrying custom entries is
+        // extracted into the workspace; a re-save re-materializes the
+        // model. The payload files survive (only-compress), but their
+        // manifest registration must survive too — otherwise they become
+        // unlisted duplicates in the re-saved container.
+        UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
+        Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
+        JIPipeProject project = JIPipeProject.loadProject(path, ctx, new JIPipeValidationReport(),
+            new JIPipeNotificationInbox(), JIPipeProgressInfo.SILENT);
+        project.setWorkDirectory(workDir);
+
+        JIPipeProjectWorkspace workspace = project.getWorkspace();
+        Path baseDir = workspace.getBaseDirectory();
+
+        // (1) Fresh materialization (no unknown entries yet).
+        workspace.materializeFromModel(JIPipeProgressInfo.SILENT);
+        assertTrue(workspace.getManifest().getUnknown().isEmpty(),
+            "Fresh materialization must have no unknown entries");
+
+        // (2) Simulate the EXTRACTION of a FOREIGN .jipx into this
+        // workspace: a container with a manifest carrying an unknown
+        // entry plus the payload file (the real reader path:
+        // extractFromZip resets the manifest cache).
+        Path foreignZip = workDir.resolve("foreign.jipx");
+        try (java.util.zip.ZipOutputStream zos =
+                     new java.util.zip.ZipOutputStream(Files.newOutputStream(foreignZip))) {
+            JIPipeXManifest foreignManifest = JIPipeXManifest.defaultManifest("foreign-version");
+            foreignManifest.getUnknown().put("data/foo.tiff", "data/foo.tiff");
+            zos.putNextEntry(new java.util.zip.ZipEntry(JIPipeXManifest.MANIFEST_FILE_NAME));
+            zos.write(foreignManifest.toJsonNode().toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            zos.closeEntry();
+            zos.putNextEntry(new java.util.zip.ZipEntry("data/foo.tiff"));
+            zos.write("foreign payload".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            zos.closeEntry();
+        }
+        workspace.extractFromZip(foreignZip, JIPipeProgressInfo.SILENT);
+        assertEquals("data/foo.tiff", workspace.getManifest().getUnknown().get("data/foo.tiff"),
+            "The extracted foreign manifest must carry the unknown entry");
+
+        // (3) Re-save = re-materialize from the model over the extracted
+        // workspace.
+        workspace.materializeFromModel(JIPipeProgressInfo.SILENT);
+
+        // (4) The unknown entry must still be registered in the manifest
+        // AND the payload file must be intact.
+        Path payload = baseDir.resolve("data/foo.tiff");
+        JIPipeXManifest result = workspace.getManifest();
+        assertEquals("data/foo.tiff", result.getUnknown().get("data/foo.tiff"),
+            "Unknown manifest entries from the extracted workspace must survive re-materialization");
+        assertTrue(Files.isRegularFile(payload),
+            "The foreign payload file must survive re-materialization");
+        assertEquals("foreign payload", Files.readString(payload),
+            "The foreign payload file must be rewritten verbatim (only-compress)");
+    }
+
+    @Test
     void readPartsReturnsEveryListedPart(@TempDir Path workDir) throws IOException, URISyntaxException {
         UnspecifiedValidationReportContext ctx = new UnspecifiedValidationReportContext();
         Path path = Path.of(JIPipeXManifestTest.class.getResource(FIXTURE).toURI());
