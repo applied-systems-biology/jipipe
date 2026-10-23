@@ -210,7 +210,7 @@ git commit -m "refactor(io): extract JIPipeLegacyProjectWriter behind JIPipeProj
 2. same JSON in a `.json` file → still `JIPipeLegacyProjectReader` (content wins over extension).
 3. ZIP-magic file named `x.jip` → `readerFromPath` throws `UnsupportedOperationException` containing `"not yet supported"` (`.jipx` arrives in Phase 1).
 4. `writerFromPath(path("a.jip"))` → `JIPipeLegacyProjectWriter`; `writerFromPath(path("a.jipx"))` → `UnsupportedOperationException` containing `"not yet supported"`.
-5. `peek` on a hand-written temp `.jip` (with `metadata: {"name": "Roundtrip"}` and an empty `dependencies` array) → `getMetadata().getName().equals("Roundtrip")`, `getDependencies().isEmpty()`; `peek` on `/data/JIPipe/grains.jip` (a real corpus file with a non-empty `dependencies` array — the module's test fixtures have zero dependencies) → `getDependencies()` non-empty; `peek` on the ZIP-magic file → `UnsupportedOperationException`. Note: `/data/JIPipe` is the sanctioned corpus (Task 1) — reading one file from it is fine, writing never is.
+5. `peek` on a hand-written temp `.jip` (with `metadata: {"name": "Roundtrip"}` and an empty `dependencies` array) → `getMetadata().getName().equals("Roundtrip")`, `getDependencies().isEmpty()`; `peek` on `/data/JIPipe/06072020a.jip` (a real corpus file with 7 dependencies — the module's test fixtures have zero) → `getDependencies().size()` is 7; `peek` on the ZIP-magic file → `UnsupportedOperationException`. Note: `/data/JIPipe` is the sanctioned corpus (Task 1) — reading one file from it is fine, writing never is.
 
 - [ ] **Step 2: Run test to verify it fails**
 
