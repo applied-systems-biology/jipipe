@@ -36,6 +36,15 @@ import java.util.Map;
  * ({@code workspace.json}), but never deletes or rewrites any other
  * entry of the workspace (payload files such as {@code data/foo.tiff}
  * survive re-materialization).
+ * <p>
+ * <b>Concurrency contract:</b> the workspace instance is the lock object
+ * for the JIPX save sequence. Concurrent saves of the SAME project (e.g.
+ * the EDT save and the backup-queue save) must synchronize the whole
+ * materialize → crate/README/manifest write → zip → self-verify → atomic
+ * move → markSaved sequence on the workspace
+ * ({@code synchronized (workspace) { ... }}) — otherwise a torn container
+ * can pass the self-verify (each part parses individually) and silently
+ * replace the target with a chimera.
  */
 public interface JIPipeProjectWorkspace {
 
@@ -53,7 +62,10 @@ public interface JIPipeProjectWorkspace {
      * <p>
      * Idempotent: existing unknown/payload files in the base directory
      * are never deleted or overwritten — only the listed part files,
-     * the manifest, and the state file are written.
+     * the manifest, and the state file are written. The manifest's
+     * {@code unknown} entries from a pre-existing manifest are merged
+     * into the new one (spec §4: unknown parts are preserved verbatim on
+     * round-trip).
      *
      * @param progressInfo the progress info
      * @throws IOException triggered by file or JSON I/O

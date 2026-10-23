@@ -76,6 +76,12 @@ import java.util.zip.ZipOutputStream;
  * saved. The target is never half-written.</li>
  * </ol>
  * <p>
+ * <b>Concurrency:</b> the workspace-touching sequence (materialize →
+ * crate/README/manifest writes → zip → self-verify → atomic move →
+ * markSaved) is synchronized on the {@link JIPipeProjectWorkspace}
+ * instance — concurrent saves of the same project (e.g. the EDT save and
+ * the backup-queue save) cannot interleave and produce a torn container.
+ * <p>
  * <b>Compliance seam:</b> the interface {@link #write} logs RO-Crate
  * compliance violations via the progress info. The package-visible
  * {@link #writeWithViolations(JIPipeProject, Path, JIPipeProgressInfo, List)}
@@ -168,60 +174,75 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                     "Re-open the project and try again.");
         }
 
-        workspace.materializeFromModel(progressInfo.resolve("Materialize JIPX workspace"));
+        // The whole workspace-touching sequence — materialize →
+        // crate/README/manifest writes → zip → self-verify → atomic move →
+        // markSaved — is synchronized on the WORKSPACE instance (see the
+        // JIPipeProjectWorkspace concurrency contract): the EDT save and
+        // the backup-queue save can target the SAME project, and without
+        // the lock the interleaved writes produce a torn container that
+        // still passes the self-verify (each part parses individually).
+        // No workspace state escapes the lock.
+        synchronized (workspace) {
+            // (2) Materialize the workspace from the model (idempotent;
+            // unknown/payload entries survive).
+            workspace.materializeFromModel(progressInfo.resolve("Materialize JIPX workspace"));
 
-        // (3) Build the crate and write its metadata + the generated
-        // README into the workspace.
-        List<String> violations = violationsOut != null ? violationsOut : new ArrayList<>();
-        RoCrate crate = JIPipeProjectCrate.buildCrate(project, violations);
-        if (violationsOut == null) {
-            for (String violation : violations) {
-                progressInfo.log("RO-Crate compliance warning: " + violation);
+            // (3) Build the crate and write its metadata + the generated
+            // README into the workspace.
+            List<String> violations = violationsOut != null ? violationsOut : new ArrayList<>();
+            RoCrate crate = JIPipeProjectCrate.buildCrate(project, violations);
+            if (violationsOut == null) {
+                for (String violation : violations) {
+                    progressInfo.log("RO-Crate compliance warning: " + violation);
+                }
             }
-        }
-        Files.writeString(workspace.getBaseDirectory().resolve(CRATE_METADATA_FILE_NAME),
-                crate.getJsonMetadata(), StandardCharsets.UTF_8);
-        Files.writeString(workspace.getBaseDirectory().resolve(README_FILE_NAME),
-                generateReadme(project), StandardCharsets.UTF_8);
+            Files.writeString(workspace.getBaseDirectory().resolve(CRATE_METADATA_FILE_NAME),
+                    crate.getJsonMetadata(), StandardCharsets.UTF_8);
+            Files.writeString(workspace.getBaseDirectory().resolve(README_FILE_NAME),
+                    generateReadme(project), StandardCharsets.UTF_8);
 
-        // (4) The manifest (jipx.json) was written by materializeFromModel
-        // and lists exactly the parts present — nothing to refresh here;
-        // markSaved runs AFTER the zip succeeds (step 8).
+            // (4) The manifest (jipx.json) was written by
+            // materializeFromModel and lists exactly the parts present —
+            // nothing to refresh here; markSaved runs AFTER the zip
+            // succeeds (step 8).
 
-        // (5) + (6) + (7): zip the workspace into a .part sibling of the
-        // target, self-verify it, and atomically replace the target.
-        Path part = target.getParent() == null
-                ? Path.of("." + target.getFileName() + PART_SUFFIX)
-                : target.getParent().resolve(target.getFileName() + PART_SUFFIX);
-        try {
-            zipWorkspace(workspace, part, progressInfo);
-            selfVerifyZip(part, progressInfo);
-            // Single atomic replace: Files.move with REPLACE_EXISTING is an
-            // OS-level rename — it atomically replaces an existing regular
-            // file (same parent directory → same filesystem) and FAILS
-            // when the target is a non-empty directory
-            // (DirectoryNotEmptyException),
-            // so the target can never end up half-written. A delete-first
-            // would remove an empty target directory instead of failing.
-            Files.move(part, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
+            // (5) + (6) + (7): zip the workspace into a .part sibling of
+            // the target, self-verify it, and atomically replace the
+            // target.
+            Path part = target.getParent() == null
+                    ? Path.of("." + target.getFileName() + PART_SUFFIX)
+                    : target.getParent().resolve(target.getFileName() + PART_SUFFIX);
             try {
-                Files.deleteIfExists(part);
-            } catch (IOException deleteFailed) {
-                e.addSuppressed(deleteFailed);
+                zipWorkspace(workspace, part, progressInfo);
+                selfVerifyZip(part, progressInfo);
+                // Single atomic replace: Files.move with REPLACE_EXISTING
+                // is an OS-level rename — it atomically replaces an
+                // existing regular file (same parent directory → same
+                // filesystem) and FAILS when the target is a non-empty
+                // directory (DirectoryNotEmptyException),
+                // so the target can never end up half-written. A
+                // delete-first would remove an empty target directory
+                // instead of failing.
+                Files.move(part, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            } catch (IOException e) {
+                try {
+                    Files.deleteIfExists(part);
+                } catch (IOException deleteFailed) {
+                    e.addSuppressed(deleteFailed);
+                }
+                throw e;
+            } catch (RuntimeException e) {
+                try {
+                    Files.deleteIfExists(part);
+                } catch (IOException deleteFailed) {
+                    e.addSuppressed(deleteFailed);
+                }
+                throw e;
             }
-            throw e;
-        } catch (RuntimeException e) {
-            try {
-                Files.deleteIfExists(part);
-            } catch (IOException deleteFailed) {
-                e.addSuppressed(deleteFailed);
-            }
-            throw e;
-        }
 
-        // (8) Mark the workspace saved from the new origin.
-        workspace.markSaved(project.getProjectFile() != null ? project.getProjectFile() : target);
+            // (8) Mark the workspace saved from the new origin.
+            workspace.markSaved(project.getProjectFile() != null ? project.getProjectFile() : target);
+        }
     }
 
     /**

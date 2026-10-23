@@ -568,8 +568,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // JIPX migration UX (spec §7): a save target that is still a legacy
         // .jip file gets the per-save Office-style prompt — even for
         // Ctrl+S (avoidDialog) and for files chosen in the save dialog
-        // that end in .jip.
-        if (JIPipeProjectSaveTarget.decideSaveTarget(savePath) == JIPipeProjectSaveTarget.SaveTarget.JIPX_PROMPT) {
+        // that end in .jip. Autosaves (avoidDialog without updateSavePath)
+        // never prompt.
+        if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
             int result = JOptionPane.showOptionDialog(this,
                     "This project was created in the legacy project format. The new JIPipe 6 project format is recommended: " +
                             "it is smaller, future-proof, and doubles as an RO-Crate.\n\n" +
@@ -581,14 +582,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     null,
                     new Object[]{"Save as JIPipe 6 project (*.jipx)", "Keep legacy project (*.jip)", "Cancel"},
                     "Save as JIPipe 6 project (*.jipx)");
-            switch (result) {
-                case JOptionPane.CANCEL_OPTION:
-                    return;
-                case JOptionPane.YES_OPTION:
-                    savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
-                    break;
-                case JOptionPane.NO_OPTION:
-                    break;
+            if (result != JOptionPane.YES_OPTION && result != JOptionPane.NO_OPTION) {
+                // CANCEL_OPTION, and CLOSED_OPTION (Escape / closing the
+                // dialog window): abort the save (spec §7).
+                return;
+            }
+            if (result == JOptionPane.YES_OPTION) {
+                // A sibling .jipx in the same directory: replace the
+                // extension, preserving the base name's original casing —
+                // the original .jip is never touched on disk.
+                savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
             }
         }
 
@@ -600,36 +603,96 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
-     * The JIPipe 6 (JIPX) save flow: the container writer is
-     * self-contained — it writes a {@code .jipx.part} sibling,
-     * self-verifies it, and atomically replaces the target, so the
-     * window must NOT create its own temp file. RO-Crate compliance
-     * violations are collected from the writer and surfaced as a
-     * non-blocking warning after the save (spec §5.2/§6).
+     * The JIPipe 6 (JIPX) save flow (spec §5.6): the workspace
+     * materialization, the crate build (incl. JSON-schema validation),
+     * the zip, and the full re-load of the saved container all run in a
+     * Swing worker with a progress dialog — no EDT hang. The legacy save
+     * stays synchronous (frozen behavior).
+     * <p>
+     * EDT pre-steps: setting the work directory and injecting the GUI
+     * tab metadata (reads the workbench UI state — done BEFORE the
+     * worker starts). EDT post-steps (after the dialog closes): on
+     * success, the title / modified flag / status bar /
+     * {@code ProjectSavedEvent} / recent projects, and the RO-Crate
+     * compliance warning (only when the save carried violations); on
+     * failure, an accurate error dialog (write failed → the existing
+     * file was not changed; write succeeded but the re-check load
+     * failed → the file WAS replaced) — and the modified flag is kept.
      *
      * @param savePath       the JIPX target file
      * @param updateSavePath if the internally tracked project file path should be updated to the new save path
      */
     private void saveProjectAsJipx(Path savePath, boolean updateSavePath) {
-        try {
-            getProject().setWorkDirectory(savePath.getParent());
-            getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
-            List<String> violations = new ArrayList<>();
-            new JIPipeXProjectWriter().writeWithViolations(getProject(), savePath, JIPipeProgressInfo.SILENT, violations);
-            if (updateSavePath) {
-                getProject().setProjectFile(savePath);
-                projectSavePath = savePath;
+        JIPipeProject project = getProject();
+        // EDT pre-steps: the work directory (it must be set before the
+        // first workspace access — temp-base memoization) and the GUI
+        // tab metadata (workbench UI state).
+        project.setWorkDirectory(savePath.getParent());
+        project.getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY,
+                new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
+
+        final List<String> violations = new ArrayList<>();
+        final Throwable[] failure = new Throwable[1];
+        // "write" = the container write itself; "recheck" = the container
+        // was written (the atomic replace succeeded) but the re-check
+        // load of the saved file failed.
+        final String[] failureStage = new String[]{"write"};
+
+        JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project saving");
+        final boolean[] interrupted = {false};
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Save JIPipe 6 project " + savePath;
             }
 
-            // Check if the saved project can be loaded (the format-agnostic
-            // "the file we just wrote actually loads" re-check — the writer
-            // already self-verified the container structurally)
-            JIPipeProject.loadProject(savePath,
-                    new UnspecifiedValidationReportContext(),
-                    new JIPipeValidationReport(),
-                    new JIPipeNotificationInbox(),
-                    JIPipeProgressInfo.STDOUT);
+            @Override
+            public void run() {
+                try {
+                    if (getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    // (1) Write: the writer materializes the workspace,
+                    // builds the crate and container, zips it,
+                    // self-verifies, and atomically replaces the target
+                    // (all synchronized on the project workspace).
+                    new JIPipeXProjectWriter().writeWithViolations(project, savePath, getProgressInfo(), violations);
+                    if (getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    // (2) Re-check: the file we just wrote must actually
+                    // load (the format-agnostic "the file we just wrote
+                    // loads" check — the writer already self-verified the
+                    // container structurally).
+                    failureStage[0] = "recheck";
+                    JIPipeProject.loadProject(savePath,
+                            new UnspecifiedValidationReportContext(),
+                            new JIPipeValidationReport(),
+                            new JIPipeNotificationInbox(),
+                            getProgressInfo().resolve("Re-check saved project"));
+                } catch (Exception e) {
+                    failure[0] = e;
+                }
+            }
+        };
+        localQueue.getInterruptedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
+            if (event.getRun() == run) {
+                interrupted[0] = true;
+            }
+        });
+        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
 
+        if (interrupted[0]) {
+            // The save was cancelled mid-run: the atomic replace may not
+            // have run — treat it as an aborted save and keep the
+            // modified flag.
+            projectWorkbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
+        } else if (failure[0] == null) {
+            // Everything succeeded: the EDT bookkeeping.
+            if (updateSavePath) {
+                project.setProjectFile(savePath);
+                projectSavePath = savePath;
+            }
             updateTitle();
             projectWorkbench.setProjectModified(false);
             projectWorkbench.sendStatusBarText("Saved project to " + savePath);
@@ -643,13 +706,26 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         "JIPipe 6 save",
                         JOptionPane.WARNING_MESSAGE);
             }
-        } catch (IOException e) {
-            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(e,
+        } else if ("recheck".equals(failureStage[0])) {
+            // The write succeeded (the target WAS replaced), but loading
+            // the saved file failed — say exactly that.
+            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(failure[0],
+                    "Error after saving!",
+                    "The JIPipe 6 project file was written to '" + savePath + "' (the existing file WAS replaced), " +
+                            "but loading the saved file failed: " + failure[0],
+                    "The container may be corrupt or not fully loadable by this JIPipe version. " +
+                            "Please check the file and re-save the project if necessary."));
+        } else {
+            // The write itself failed — the atomic replace never ran, so
+            // the existing file is untouched.
+            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(failure[0],
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +
                             "If this is the case, please contact the JIPipe authors."));
         }
+        // On failure the modified flag is kept: the project is still
+        // unsaved.
     }
 
     /**
