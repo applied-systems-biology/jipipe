@@ -270,17 +270,17 @@ public final class JIPipeProjectCrate {
      */
     private static void checkCompliance(RoCrate crate, List<String> violationsOut) {
         if (crate.getRootDataEntity().getIdProperty("license") == null) {
-            violationsOut.add("license missing on root/main entity (auto-fill failed?)");
+            violationsOut.add("license missing on the RO-Crate root entity (the default license setting and metadata license are both empty?)");
         }
         if (crate.getRootDataEntity().getIdProperty("mainEntity") == null) {
-            violationsOut.add("mainEntity missing on root/main entity (auto-fill failed?)");
+            violationsOut.add("mainEntity missing from the RO-Crate root entity");
         }
         if (crate.getDataEntityById("README.md") == null) {
-            violationsOut.add("README.md missing on root/main entity (auto-fill failed?)");
+            violationsOut.add("README.md data entity missing from the RO-Crate");
         }
         if (crate.getDataEntityById(MAIN_ENTITY_ID) == null
                 || crate.getDataEntityById(MAIN_ENTITY_ID).getIdProperty("programmingLanguage") == null) {
-            violationsOut.add("programmingLanguage missing on root/main entity (auto-fill failed?)");
+            violationsOut.add("programmingLanguage missing on the main workflow entity");
         }
     }
 

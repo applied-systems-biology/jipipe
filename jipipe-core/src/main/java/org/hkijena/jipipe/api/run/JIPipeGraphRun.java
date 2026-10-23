@@ -270,12 +270,18 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     }
                 }
 
+                Path projectReSavePath = null;
                 try {
-                    if (configuration.getOutputPath() != null && configuration.isStoreToDisk())
-                        project.saveProject(configuration.getOutputPath().resolve("project.jip"), false);
+                    if (configuration.getOutputPath() != null && configuration.isStoreToDisk()) {
+                        // Re-save in the project's current format
+                        projectReSavePath = configuration.getOutputPath().resolve("project." +
+                                (project.getProjectFile() != null &&
+                                        project.getProjectFile().getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx") ? "jipx" : "jip"));
+                        project.saveProject(projectReSavePath, false);
+                    }
                 } catch (IOException e) {
                     progressInfo.log(new JIPipeValidationRuntimeException(e,
-                            "Could not save project to '" + configuration.getOutputPath().resolve("project.jip") + "'!",
+                            "Could not save project to '" + projectReSavePath + "'!",
                             "Either the path is invalid, or you have no permission to write to the disk, or the disk space is full",
                             "Check if you can write to the output directory."));
                 }

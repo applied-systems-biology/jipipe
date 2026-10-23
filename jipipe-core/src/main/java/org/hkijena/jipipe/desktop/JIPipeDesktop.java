@@ -1102,8 +1102,8 @@ public class JIPipeDesktop {
     }
 
     /**
-     * Registers a path or URL to a *.jip *.crate.zip or https:// URL as next operation to open when the project window is opened the first time
-     * @param pathOrUrl path to an existing *.jip or *.crate.zip file or a URL
+     * Registers a path or URL to a *.jip, *.jipx, *.crate.zip or https:// URL as next operation to open when the project window is opened the first time
+     * @param pathOrUrl path to an existing *.jip, *.jipx or *.crate.zip file or a URL
      */
     public static void tryAddOpenProjectOnLoad(String pathOrUrl) {
         if(StringUtils.isNullOrEmpty(pathOrUrl)) {
@@ -1112,7 +1112,7 @@ public class JIPipeDesktop {
         try {
             Path path = Paths.get(pathOrUrl);
             String fileName = path.getFileName().toString();
-            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || fileName.endsWith(".crate.zip"))) {
+            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || fileName.toLowerCase(Locale.ROOT).endsWith(".jipx") || fileName.endsWith(".crate.zip"))) {
                 OPEN_ON_LOAD_FILE = path;
             }
         } catch (Exception ignored) {
@@ -1139,6 +1139,12 @@ public class JIPipeDesktop {
             if(Files.isRegularFile(file)) {
                 String fileName = file.getFileName().toString();
                 if(fileName.endsWith(".jip")) {
+                    window.openProject(file, true);
+                }
+                // .jipx is a ZIP container — this check MUST precede the
+                // ZIP-magic check below (which would misroute it to the
+                // RO-Crate import)
+                else if(fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
                     window.openProject(file, true);
                 }
                 else if(fileName.endsWith(".crate.zip")) {

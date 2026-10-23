@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.app;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import net.java.balloontip.BalloonTip;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
@@ -24,8 +23,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectPeek;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
@@ -48,7 +49,6 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicat
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
@@ -326,11 +326,17 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void openProject(Path path, boolean forceCurrentWindow) {
         if (Files.isRegularFile(path)) {
+            // .crate.zip files are imported through the RO-Crate flow
+            // BEFORE the project peek (peek refuses non-JIPX ZIPs; the
+            // open chooser offers crate.zip for imports)
+            if (path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".crate.zip")) {
+                importROCrate(path, true, true, forceCurrentWindow);
+                return;
+            }
             JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
-                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 JIPipeProjectPeek peek = JIPipeProjectIOs.peek(path);
                 Set<JIPipeDependency> dependencySet = peek.getDependencies();
 
@@ -366,19 +372,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     @Override
                     public void run() {
                         try {
-                            JIPipeProject project = new JIPipeProject();
                             getProgressInfo().log("Loading project " + path);
                             if (Files.size(path) > 3 * 1024 * 1024) {
                                 getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
                                 getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
                             }
-                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
-                            project.setWorkDirectory(path.getParent());
-                            project.validateUserPaths(notifications);
-                            project.setProjectFile(path);
-                            if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
-                                project.fixBrokenEnvironments(getProgressInfo().resolve("Fix environments"));
-                            }
+                            // The dispatcher picks the reader by content
+                            // (ZIP → JIPX, else legacy JSON) and the reader
+                            // performs the full load contract (work directory,
+                            // user path validation, environment fix gate,
+                            // project file)
+                            JIPipeProject project = JIPipeProjectIOs.readerFromPath(path)
+                                    .read(path, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
 
                             if (getProgressInfo().isCancelled()) {
                                 return;
@@ -429,7 +434,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
+                // The output-folder convention carries project.jip; the JIPX
+                // convention writes project.jipx — try the legacy name first
                 Path projectPath = path.resolve("project.jip");
+                if (!Files.isRegularFile(projectPath)) {
+                    Path legacyProjectPath = projectPath;
+                    projectPath = path.resolve("project.jipx");
+                    if (!Files.isRegularFile(projectPath)) {
+                        projectPath = legacyProjectPath;
+                    }
+                }
                 JIPipeProjectPeek peek = JIPipeProjectIOs.peek(projectPath);
                 Set<JIPipeDependency> dependencySet = peek.getDependencies();
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
@@ -451,7 +465,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
 
-                window.projectSavePath = path.resolve("project.jip");
+                window.projectSavePath = projectPath;
                 window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
@@ -506,8 +520,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         Path file = JIPipeDesktop.openFile(this,
                 getProjectWorkbench(),
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                "Open JIPipe project (*.jip)",
-                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
+                "Open JIPipe project",
+                HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JIP,
+                PathUtils.EXTENSION_FILTER_JIPX,
+                PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
         if (file != null) {
             openProject(file, false);
         }
@@ -541,18 +558,121 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             savePath = JIPipeDesktop.saveFile(this,
                     getProjectWorkbench(),
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                    "Save JIPipe project (*.jip)",
-                    HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
+                    "Save JIPipe project",
+                    HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIPX, PathUtils.EXTENSION_FILTER_JIP);
             if (savePath == null) {
                 return;
             }
         }
 
+        // JIPX migration UX (spec §7): a save target that is still a legacy
+        // .jip file gets the per-save Office-style prompt — even for
+        // Ctrl+S (avoidDialog) and for files chosen in the save dialog
+        // that end in .jip.
+        if (JIPipeProjectSaveTarget.decideSaveTarget(savePath) == JIPipeProjectSaveTarget.SaveTarget.JIPX_PROMPT) {
+            int result = JOptionPane.showOptionDialog(this,
+                    "This project was created in the legacy project format. The new JIPipe 6 project format is recommended: " +
+                            "it is smaller, future-proof, and doubles as an RO-Crate.\n\n" +
+                            "Choosing 'Save as JIPipe 6 project' saves a sibling .jipx file in the same directory " +
+                            "and keeps the existing .jip file on disk.",
+                    "Save project format",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"Save as JIPipe 6 project (*.jipx)", "Keep legacy project (*.jip)", "Cancel"},
+                    "Save as JIPipe 6 project (*.jipx)");
+            switch (result) {
+                case JOptionPane.CANCEL_OPTION:
+                    return;
+                case JOptionPane.YES_OPTION:
+                    savePath = PathUtils.ensureExtension(savePath, ".jipx", ".jip");
+                    break;
+                case JOptionPane.NO_OPTION:
+                    break;
+            }
+        }
+
+        if (savePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+            saveProjectAsJipx(savePath, updateSavePath);
+        } else {
+            saveProjectAsLegacy(savePath, updateSavePath);
+        }
+    }
+
+    /**
+     * The JIPipe 6 (JIPX) save flow: the container writer is
+     * self-contained — it writes a {@code .jipx.part} sibling,
+     * self-verifies it, and atomically replaces the target, so the
+     * window must NOT create its own temp file. RO-Crate compliance
+     * violations are collected from the writer and surfaced as a
+     * non-blocking warning after the save (spec §5.2/§6).
+     *
+     * @param savePath       the JIPX target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     */
+    private void saveProjectAsJipx(Path savePath, boolean updateSavePath) {
+        try {
+            getProject().setWorkDirectory(savePath.getParent());
+            getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
+            List<String> violations = new ArrayList<>();
+            new JIPipeXProjectWriter().writeWithViolations(getProject(), savePath, JIPipeProgressInfo.SILENT, violations);
+            if (updateSavePath) {
+                getProject().setProjectFile(savePath);
+                projectSavePath = savePath;
+            }
+
+            // Check if the saved project can be loaded (the format-agnostic
+            // "the file we just wrote actually loads" re-check — the writer
+            // already self-verified the container structurally)
+            JIPipeProject.loadProject(savePath,
+                    new UnspecifiedValidationReportContext(),
+                    new JIPipeValidationReport(),
+                    new JIPipeNotificationInbox(),
+                    JIPipeProgressInfo.STDOUT);
+
+            updateTitle();
+            projectWorkbench.setProjectModified(false);
+            projectWorkbench.sendStatusBarText("Saved project to " + savePath);
+            projectWorkbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(projectWorkbench));
+            JIPipe.getInstance().getRecentProjects().add(savePath);
+
+            if (!violations.isEmpty()) {
+                JOptionPane.showMessageDialog(getProjectWorkbench(),
+                        "RO-Crate compliance warnings:\n- " + String.join("\n- ", violations) +
+                                "\n\nThe project was saved.",
+                        "JIPipe 6 save",
+                        JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (IOException e) {
+            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(e,
+                    "Error during saving!",
+                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
+                    "Please check if you have write access to the temporary directory and the target directory. " +
+                            "If this is the case, please contact the JIPipe authors."));
+        }
+    }
+
+    /**
+     * The legacy .jip save flow, frozen: write to a {@code .part} temp
+     * file, self-verify by reloading it, then copy over the target.
+     * <p>
+     * The temp write goes directly through the legacy writer (not the
+     * extension-driven dispatch): the temp file's randomized
+     * {@code .part} name carries no format information, and the target
+     * of a save dialog may end in any of the chooser's extensions.
+     *
+     * @param savePath       the legacy target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     */
+    private void saveProjectAsLegacy(Path savePath, boolean updateSavePath) {
         try {
             Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
             getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
-            getProject().saveProject(tempFile, updateSavePath);
+            new JIPipeLegacyProjectWriter().write(getProject(), tempFile, JIPipeProgressInfo.SILENT);
+            if (updateSavePath) {
+                getProject().setProjectFile(tempFile);
+            }
 
             // Check if the saved project can be loaded
             JIPipeProject.loadProject(tempFile,
@@ -569,6 +689,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
             // Everything OK, now set the title
             if (updateSavePath) {
+                getProject().setProjectFile(savePath);
                 projectSavePath = savePath;
             }
             updateTitle();
@@ -875,7 +996,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 // Analyze the output file
                 boolean isRoCrate;
-                if (fileName.endsWith(".jip")) {
+                if (fileName.endsWith(".jip") || fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+                    // A JIPX container is opened directly as a project —
+                    // this check precedes the ZIP-magic check, because the
+                    // container IS a ZIP
                     isRoCrate = false;
                 } else if (fileName.endsWith(".crate.zip")) {
                     isRoCrate = true;
@@ -893,16 +1017,24 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 } else {
                     Path basePath = JIPipeProjectDefaultsApplicationSettings.getInstance().getAbsoluteDefaultProjectsDirectory();
 
-                    // Copy into unique file within the fallback dir
+                    // Copy into unique file within the fallback dir, preserving
+                    // the project's format (.jip/.jipx); truly unknown
+                    // extensions fall back to .jip
                     String fileNameNoExt;
+                    String extension;
                     if (fileName.endsWith(".jip")) {
                         fileNameNoExt = fileName.substring(0, fileName.length() - 4);
+                        extension = ".jip";
+                    } else if (fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+                        fileNameNoExt = fileName.substring(0, fileName.length() - 5);
+                        extension = ".jipx";
                     } else {
                         fileNameNoExt = fileName;
+                        extension = ".jip";
                     }
 
                     String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(basePath.resolve(str)));
-                    Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + ".jip");
+                    Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + extension);
                     PathUtils.copyFile(outputFile, finalProjectFile);
 
                     SwingUtilities.invokeLater(() -> { openProject(finalProjectFile, forceCurrentWindow); });

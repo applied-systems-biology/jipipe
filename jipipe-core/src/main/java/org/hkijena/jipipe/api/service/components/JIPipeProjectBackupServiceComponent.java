@@ -23,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 /**
  * Service responsible for handling project backups
@@ -163,7 +164,11 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
 
                 String baseName = finalName + "_" + dateTimeFormatted.replace(':', '-');
                 baseName = StringUtils.makeFilesystemCompatible(baseName);
-                Path targetFile = directory.resolve(baseName + ".jip");
+                // Backups follow the project's current format — the
+                // saveProject dispatch writes the right container
+                boolean projectIsJipx = window.getProjectSavePath() != null &&
+                        window.getProjectSavePath().getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx");
+                Path targetFile = directory.resolve(baseName + (projectIsJipx ? ".jipx" : ".jip"));
                 window.getProject().saveProject(targetFile, false);
 
                 SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup to " + targetFile));

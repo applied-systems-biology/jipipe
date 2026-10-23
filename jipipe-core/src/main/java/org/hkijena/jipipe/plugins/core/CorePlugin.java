@@ -184,6 +184,7 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
 
         // Common file types
         registerFileChooserKnownFileType("JIPipe project file", "apps/jipipe.png", ".jip");
+        registerFileChooserKnownFileType("JIPipe 6 project file", "apps/jipipe.png", ".jipx");
 
         registerFileChooserKnownFileType("JSON file", "mimetypes/application-json.png", ".json", ".json5");
         registerFileChooserKnownFileType("XML file", "mimetypes/text-xml.png", ".xml");
