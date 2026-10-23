@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXManifest;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectReader;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -88,11 +89,12 @@ class ProjectIOsDispatchTest {
         Files.writeString(jip, MINIMAL_PROJECT_JSON);
         assertTrue(JIPipeProjectIOs.writerFromPath(jip) instanceof JIPipeLegacyProjectWriter);
 
+        // Writes are extension-driven: .jipx selects the JIPX container
+        // writer (Task 4) — the save target may not exist yet, so the
+        // writer's supports() is not consulted here.
         Path jipx = tmp.resolve("a.jipx");
         Files.writeString(jipx, MINIMAL_PROJECT_JSON);
-        UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
-                () -> JIPipeProjectIOs.writerFromPath(jipx));
-        assertTrue(e.getMessage().contains("not yet supported"));
+        assertTrue(JIPipeProjectIOs.writerFromPath(jipx) instanceof JIPipeXProjectWriter);
 
         Path unknown = tmp.resolve("a.txt");
         Files.writeString(unknown, MINIMAL_PROJECT_JSON);

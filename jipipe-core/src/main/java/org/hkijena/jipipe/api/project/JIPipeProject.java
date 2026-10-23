@@ -431,13 +431,21 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Saves the project
+     * <p>
+     * Format-agnostic: the writer is resolved by
+     * {@link JIPipeProjectIOs#writerFromPath(Path)} (extension-driven
+     * dispatch — the legacy JSON writer for {@code .jip}, the JIPX
+     * container writer for {@code .jipx}), so every save site in the code
+     * base picks up both project formats. The writers are self-contained
+     * (e.g. the authors merge); this method only applies the
+     * {@code updateSavePath} side effect.
      *
      * @param fileName       Target file
      * @param updateSavePath if the internally tracked project file path should be updated to the new fileName
-     * @throws IOException Triggered by {@link ObjectMapper}
+     * @throws IOException triggered by the project writer
      */
     public void saveProject(Path fileName, boolean updateSavePath) throws IOException {
-        new JIPipeLegacyProjectWriter().write(this, fileName, JIPipeProgressInfo.SILENT);
+        JIPipeProjectIOs.writerFromPath(fileName).write(this, fileName, JIPipeProgressInfo.SILENT);
 
         if (updateSavePath) {
             projectFile = fileName;

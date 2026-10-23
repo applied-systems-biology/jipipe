@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectReader;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -45,8 +46,10 @@ import java.util.zip.ZipFile;
  * layer and does not go through this dispatcher.</li>
  * <li><b>Writes are extension-driven.</b> The writer is selected purely
  * from the file extension: {@code .jip} →
- * {@link JIPipeLegacyProjectWriter}, {@code .jipx} → not yet supported,
- * anything else → rejected.</li>
+ * {@link JIPipeLegacyProjectWriter}, {@code .jipx} →
+ * {@link JIPipeXProjectWriter}, anything else → rejected. (Unlike
+ * reads, the target's content plays no role — a save target may not
+ * exist yet.)</li>
  * </ul>
  */
 public final class JIPipeProjectIOs {
@@ -80,15 +83,14 @@ public final class JIPipeProjectIOs {
      *
      * @param path the target file
      * @return the writer for the target's extension
-     * @throws UnsupportedOperationException     if the target is {@code .jipx} (arrives in Phase 1)
-     * @throws IllegalArgumentException          if the extension cannot be mapped to a writer
+     * @throws IllegalArgumentException if the extension cannot be mapped to a writer
      */
     public static JIPipeProjectWriter writerFromPath(Path path) {
         String fileName = path.getFileName() == null ? "" : path.getFileName().toString().toLowerCase(Locale.ROOT);
         if (fileName.endsWith(".jip")) {
             return new JIPipeLegacyProjectWriter();
         } else if (fileName.endsWith(".jipx")) {
-            throw new UnsupportedOperationException(".jipx is not yet supported: " + path);
+            return new JIPipeXProjectWriter();
         } else {
             throw new IllegalArgumentException("Cannot determine project writer for: " + path);
         }
