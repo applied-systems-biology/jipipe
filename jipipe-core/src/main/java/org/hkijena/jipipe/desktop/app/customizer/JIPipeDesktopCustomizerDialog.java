@@ -28,6 +28,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
     private final JComboBox<String> themeStyleJComboBox = new JComboBox<>();
     private final JSlider scaleSlider = new JSlider(25, 500, 100);
     private final JLabel scaleLabel = new JLabel("100%");
+    private final JCheckBox reducedMotionCheckBox = new JCheckBox("Reduce motion (disable UI animations)");
     private final JComboBox<JIPipeFileChooserApplicationSettings.FileChooserType> fileChooserTypeJComboBox = new JComboBox<>(JIPipeFileChooserApplicationSettings.FileChooserType.values());
     private final JComboBox<JIPipeFileChooserApplicationSettings.FileChooserType> fallbackFileChooserTypeJComboBox = new JComboBox<>(JIPipeFileChooserApplicationSettings.FileChooserType.values());
     private final double systemScale;
@@ -54,6 +55,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         themeStyleJComboBox.setSelectedItem(uiSettings.getThemeStyle().getValue());
         fileChooserTypeJComboBox.setSelectedItem(fileChooserSettings.getFileChooserType());
         fallbackFileChooserTypeJComboBox.setSelectedItem(fileChooserSettings.getSafeFallbackFileChooserType());
+        reducedMotionCheckBox.setSelected(uiSettings.isReducedMotion());
         int scalePercent = (int) (systemScale * 100);
         scaleSlider.setValue(getRoundedScale(scalePercent));
     }
@@ -144,6 +146,9 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
         settingsPanel.addToForm(themeJComboBox, new JLabel("Theme"));
         settingsPanel.addToForm(themeStyleJComboBox, new JLabel("Style"));
 
+        settingsPanel.addGroupHeader("Motion", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
+        settingsPanel.addWideToForm(reducedMotionCheckBox);
+
         settingsPanel.addGroupHeader("UI Scale", JIPipe.RESOURCES.getIcon16("actions/configure.png"));
         settingsPanel.addWideToForm(UIUtils.createReadonlyBorderlessTextArea("If the interface is too large or too small, you can change the UI scale."));
 
@@ -172,6 +177,7 @@ public class JIPipeDesktopCustomizerDialog extends JDialog implements JIPipeDesk
 
         uiSettings.setTheme(getCurrentlySelectedTheme());
         uiSettings.setThemeStyle(new JIPipeModernThemeStyleParameter(getCurrentlySelectedThemeStyleId()));
+        uiSettings.setReducedMotion(reducedMotionCheckBox.isSelected());
 
         if (fileChooserTypeJComboBox.getSelectedItem() instanceof JIPipeFileChooserApplicationSettings.FileChooserType fileChooserType) {
             fileChooserSettings.setFileChooserType(fileChooserType);

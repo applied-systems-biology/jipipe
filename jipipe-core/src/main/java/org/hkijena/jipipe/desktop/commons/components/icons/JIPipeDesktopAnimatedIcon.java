@@ -13,10 +13,14 @@
 
 package org.hkijena.jipipe.desktop.commons.components.icons;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
+import org.hkijena.jipipe.utils.ThemeUtils;
+
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeDesktopAnimatedIcon implements Icon {
+public class JIPipeDesktopAnimatedIcon implements Icon, JIPipeApplicationSettingsServiceComponent.ChangedEventListener {
 
     private final ImageIcon topIcon;
     private final Timer timer;
@@ -24,6 +28,8 @@ public class JIPipeDesktopAnimatedIcon implements Icon {
     private ImageIcon bottomIcon;
     private double opacity;
     private double opacityStep;
+    private boolean reducedMotion;
+    private boolean shouldAnimate = false;
 
     public JIPipeDesktopAnimatedIcon(Component parent, ImageIcon bottomIcon, ImageIcon topIcon, int delay, double opacityStep) {
         this.parent = parent;
@@ -33,6 +39,12 @@ public class JIPipeDesktopAnimatedIcon implements Icon {
         this.opacityStep = opacityStep;
         this.timer.setRepeats(true);
         this.timer.setCoalesce(false);
+        setReducedMotion(ThemeUtils.isReducedMotion());
+        try {
+            JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
+        } catch (Throwable ignored) {
+            // JIPipe not initialized (headless/test) — no live re-apply needed.
+        }
     }
 
     public Component getParent() {
@@ -80,11 +92,50 @@ public class JIPipeDesktopAnimatedIcon implements Icon {
     }
 
     public void start() {
-        timer.start();
+        shouldAnimate = true;
+        if (!reducedMotion) {
+            timer.start();
+        }
+        if (parent != null) {
+            parent.repaint();
+        }
     }
 
     public void stop() {
+        shouldAnimate = false;
         timer.stop();
+    }
+
+    public boolean isReducedMotion() {
+        return reducedMotion;
+    }
+
+    public double getOpacity() {
+        return opacity;
+    }
+
+    public void setReducedMotion(boolean reducedMotion) {
+        this.reducedMotion = reducedMotion;
+        if (reducedMotion) {
+            if (timer.isRunning()) {
+                timer.stop();
+            }
+            opacity = 1.0; // static: show the top (orange) icon fully
+        } else {
+            opacity = 0.0; // restart the cross-fade from the bottom icon
+            if (shouldAnimate && !timer.isRunning()) {
+                // Setting turned off while a notification is still present: resume.
+                timer.start();
+            }
+        }
+        if (parent != null) {
+            parent.repaint();
+        }
+    }
+
+    @Override
+    public void onApplicationSettingsChanged() {
+        setReducedMotion(ThemeUtils.isReducedMotion());
     }
 
     @Override

@@ -22,6 +22,9 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.MetalLookAndFeel;
+import javax.swing.text.Caret;
+import javax.swing.text.DefaultCaret;
+import javax.swing.text.JTextComponent;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
@@ -52,7 +55,69 @@ public class ThemeUtils {
         return CURRENT_STYLE;
     }
 
+    /**
+     * @return true when the user has enabled reduced motion. Safe to call at any time:
+     * returns false (animations on) when JIPipe is not initialized or the setting is unavailable.
+     */
+    public static boolean isReducedMotion() {
+        if (JIPipe.getInstance() == null) {
+            return false;
+        }
+        try {
+            return JIPipeGeneralUIApplicationSettings.getInstance().isReducedMotion();
+        } catch (Throwable t) {
+            return false;
+        }
+    }
+
+    /**
+     * Applies or clears reduced-motion behavior on a text component's caret.
+     * Reduced motion: the caret stays solid (no blink) while its component is focused; it is
+     * hidden when unfocused, as usual. Otherwise: restore the standard 500 ms blink.
+     * No-op if the component's caret is not a {@link DefaultCaret}.
+     */
+    public static void applyCaretMotion(JTextComponent component, boolean reducedMotion) {
+        Caret caret = component.getCaret();
+        if (!(caret instanceof DefaultCaret defaultCaret)) {
+            return;
+        }
+        defaultCaret.setBlinkRate(reducedMotion ? 0 : 500);
+    }
+
+    private static boolean CARET_MOTION_POLICY_INSTALLED = false;
+
+    /**
+     * Installs the global reduced-motion caret policy: a single "focusOwner" listener on the
+     * current keyboard focus manager re-applies {@link #applyCaretMotion(JTextComponent, boolean)}
+     * to whatever text component gains focus. A caret can only blink while its component is
+     * focused, so applying the policy on every focus change covers every text component —
+     * including ones created later by plugins — without per-component wiring.
+     * <p>
+     * The setting is read on every focus change rather than captured at install time: this
+     * policy is installed from {@link #applyThemeFromSettings()}, which runs before the JIPipe
+     * instance exists, and the app prompts a restart after changing the setting.
+     * <p>
+     * The listener runs before the caret's own focus handling, and {@code setBlinkRate(0)} on an
+     * editable component clears the caret's saved rate, so the caret cannot re-arm the blink
+     * afterwards (verified against the Azul Zulu 21 sources shipped in the JIPipe distribution).
+     * Idempotent.
+     */
+    public static void installCaretMotionPolicy() {
+        if (!CARET_MOTION_POLICY_INSTALLED) {
+            CARET_MOTION_POLICY_INSTALLED = true;
+            KeyboardFocusManager.getCurrentKeyboardFocusManager()
+                    .addPropertyChangeListener("focusOwner", e -> {
+                        if (e.getNewValue() instanceof JTextComponent component) {
+                            applyCaretMotion(component, isReducedMotion());
+                        }
+                    });
+        }
+    }
+
     public static void applyThemeFromSettings() {
+
+        // Global reduced-motion caret policy — must be in place before any window can receive focus
+        installCaretMotionPolicy();
 
         // Fix for macOS
         System.setProperty("apple.laf.useScreenMenuBar", "false");

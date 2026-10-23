@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.desktop.commons.components.icons;
 
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.service.components.JIPipeApplicationSettingsServiceComponent;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ThemeUtils;
 
@@ -21,10 +23,12 @@ import java.awt.*;
 import java.awt.geom.Line2D;
 import java.util.Arrays;
 
-public class SpinnerIcon implements Icon {
+public class SpinnerIcon implements Icon, JIPipeApplicationSettingsServiceComponent.ChangedEventListener {
 
     public static final int ANIMATION_DELAY = 80;
     private final Timer timer;
+    private boolean reducedMotion;
+    private boolean shouldAnimate = false;
     private final int numLines = 14;
     private final double[] x1Locations = new double[numLines];
     private final double[] y1Locations = new double[numLines];
@@ -61,6 +65,13 @@ public class SpinnerIcon implements Icon {
                 new ColorUtils.GradientStop(0.0f, baseColor),
                 new ColorUtils.GradientStop(0.75f, ThemeUtils.getCurrentStyle().getPrimaryColor()),
                 new ColorUtils.GradientStop(1.0f, ThemeUtils.getCurrentStyle().getSecondaryColor())), numLines);
+
+        setReducedMotion(ThemeUtils.isReducedMotion());
+        try {
+            JIPipe.getSettings().getChangedEventEmitter().subscribeWeak(this);
+        } catch (Throwable ignored) {
+            // JIPipe not initialized (e.g. headless/test) — no live re-apply needed.
+        }
     }
 
     public static void main(String[] args) {
@@ -82,7 +93,17 @@ public class SpinnerIcon implements Icon {
         Graphics2D graphics2D = (Graphics2D) g;
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-        if(timer.isRunning()) {
+        if(reducedMotion) {
+            ImageIcon hourglass;
+            if(getIconWidth() > 22 || getIconHeight() > 22 ) {
+                hourglass= JIPipe.RESOURCES.getIcon32("actions/hourglass-half.png");
+            }
+            else {
+                hourglass= JIPipe.RESOURCES.getIcon16("actions/hourglass-half.png");
+            }
+            graphics2D.drawImage(hourglass.getImage(), x, y, getIconWidth(), getIconHeight(), null);
+        }
+        else if(timer.isRunning()) {
             for (int i = 0; i < numLines; i++) {
                 graphics2D.setColor(colors[(numLines - i - 1 + colorShift) % numLines]);
                 graphics2D.draw(new Line2D.Double(x + x1Locations[i], y + y1Locations[i], x + x2Locations[i], y + y2Locations[i]));
@@ -105,15 +126,47 @@ public class SpinnerIcon implements Icon {
     }
 
     public void start() {
-        timer.start();
+        shouldAnimate = true;
+        if (!reducedMotion) {
+            timer.start();
+        }
+        if (parent != null) {
+            parent.repaint();
+        }
     }
 
     public void stop() {
+        shouldAnimate = false;
         timer.stop();
 
         // Ensure status change
-        parent.repaint();
-        parent.getToolkit().sync();
+        if (parent != null) {
+            parent.repaint();
+        }
+    }
+
+    public boolean isReducedMotion() {
+        return reducedMotion;
+    }
+
+    public void setReducedMotion(boolean reducedMotion) {
+        this.reducedMotion = reducedMotion;
+        if (reducedMotion) {
+            if (timer.isRunning()) {
+                timer.stop();
+            }
+        } else if (shouldAnimate) {
+            // Setting turned off while a run is in flight: resume immediately.
+            timer.start();
+        }
+        if (parent != null) {
+            parent.repaint();
+        }
+    }
+
+    @Override
+    public void onApplicationSettingsChanged() {
+        setReducedMotion(ThemeUtils.isReducedMotion());
     }
 
     public Timer getTimer() {
