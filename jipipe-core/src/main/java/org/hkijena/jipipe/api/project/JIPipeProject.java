@@ -47,6 +47,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectReader;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
@@ -399,21 +400,20 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(Path fileName, boolean updateSavePath) throws IOException {
-
-        // Add authors from global list
-        if (metadata.isAutoAddAuthors()) {
-            addAuthorsFromGlobalList();
-        }
-
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+        new JIPipeLegacyProjectWriter().write(this, fileName, JIPipeProgressInfo.SILENT);
 
         if (updateSavePath) {
             projectFile = fileName;
         }
     }
 
-    private void addAuthorsFromGlobalList() {
+    /**
+     * Merges the global author list into this project's metadata
+     * (deduplicated, merged by fuzzy equality).
+     * No-op when the application settings disable automatic author
+     * addition. Used by the legacy project writer.
+     */
+    public void addAuthorsFromGlobalList() {
         JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
         if (settings.isAutomaticallyAddToProjects()) {
             for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
@@ -462,8 +462,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(Writer writer) throws IOException {
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(writer, this);
+        new JIPipeLegacyProjectWriter().write(this, writer);
     }
 
     /**
@@ -473,8 +472,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(OutputStream outputStream) throws IOException {
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, this);
+        new JIPipeLegacyProjectWriter().write(this, outputStream);
     }
 
     public JIPipeLocalProjectMemoryCache getCache() {
