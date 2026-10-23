@@ -62,6 +62,7 @@ import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchT
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
 import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
+import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JIPipePathMetadataStore;
@@ -129,7 +130,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private static final int MAX_FOLLOW_UP_BODY_PX = 110;
 
-    /** The model holds all non-Swing browser state. */
+    /**
+     * The model holds all non-Swing browser state.
+     */
     private final NodeBrowserModel model = new NodeBrowserModel();
     private final TemplateManagementController templateController = new TemplateManagementController();
 
@@ -161,15 +164,19 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     // --- Follow-up strip ---
     private final JPanel followUpStrip = new JPanel();
-    private final GroupHeaderPanel followUpHeader;
+    private final CustomStateLessToggleButton followUpToggle;
     private final JPanel followUpContent = new JPanel();
     private final JScrollPane followUpScroll;
-    /** Expanded by default; collapses only while the user keeps it toggled off. */
+    /**
+     * Expanded by default; collapses only while the user keeps it toggled off.
+     */
     private boolean followUpExpanded = true;
 
     // --- Layout containers (re-rendered per view) ---
     private final JPanel bodyPanel = new JPanel();
-    /** The tier at the last view render ({@code -1} = none yet). */
+    /**
+     * The tier at the last view render ({@code -1} = none yet).
+     */
     private int lastRenderedTier = -1;
 
     /**
@@ -206,7 +213,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         super(workbench);
         this.graphEditorUI = graphEditorUI;
         this.database = workbench instanceof JIPipeDesktopProjectWorkbench ?
-            ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
+                ((JIPipeDesktopProjectWorkbench) workbench).getNodeDatabase() : JIPipeNodeDatabase.getInstance();
         this.isCompartmentsEditor = graphEditorUI instanceof JIPipeDesktopCompartmentsGraphEditorUI;
 
         searchField = new JIPipeDesktopSearchTextField();
@@ -222,7 +229,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                     e.consume();
                     SwingUtilities.invokeLater(() -> {
                         if (!isCompartmentsEditor
-                            && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
+                                && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
                             // Compact single-pane: move the selection to the
                             // first node leaf of the tree, expanding its
                             // branches to reveal it
@@ -355,35 +362,35 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         followUpStrip.setLayout(new BorderLayout());
         followUpStrip.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
 
-        followUpHeader = new GroupHeaderPanel("Follow-up nodes",
-            JIPipe.RESOURCES.getIcon16("actions/diagram-next.png"), 0);
-        followUpHeader.setToolTipText("Suggested next steps for the selected node. Click the arrow to collapse or expand the list.");
-
         followUpContent.setLayout(new JIPipeDesktopWrapLayout(FlowLayout.LEFT));
         followUpScroll = new JScrollPane(followUpContent,
-            ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
-            ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
+                ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         followUpScroll.setBorder(null);
         followUpScroll.getVerticalScrollBar().setUnitIncrement(16);
 
-        followUpStrip.add(followUpHeader, BorderLayout.NORTH);
+        followUpToggle = new CustomStateLessToggleButton("Follow-ups",
+                JIPipe.RESOURCES.getIcon8("actions/caret-right.png"),
+                "Follow-ups",
+                JIPipe.RESOURCES.getIcon8("actions/caret-down.png"),
+                true);
+        followUpToggle.setBorder(
+                BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(8, 0, 3, 0),
+                        BorderFactory.createMatteBorder(1, 0, 1, 0, ThemeUtils.getCurrentStyle().getBorderColor())));
+
+        followUpToggle.setHorizontalAlignment(SwingConstants.LEFT);
+
+        followUpStrip.add(followUpToggle, BorderLayout.NORTH);
         followUpStrip.add(followUpScroll, BorderLayout.CENTER);
 
-        final CustomStateLessToggleButton followUpToggle = new CustomStateLessToggleButton("",
-            JIPipe.RESOURCES.getIcon16("actions/caret-right.png"),
-            "",
-            JIPipe.RESOURCES.getIcon16("actions/caret-down.png"),
-            true);
-        UIUtils.makeButtonFlat25x25(followUpToggle);
+
         followUpToggle.setOpaque(false);
         followUpToggle.setFocusPainted(false);
         followUpToggle.setToolTipText("Collapse the follow-up nodes");
-        followUpHeader.addToStartOfTitlePanel(followUpToggle);
         followUpToggle.getToggledEventEmitter().subscribeLambda((emitter, event) -> {
             boolean expanded = followUpToggle.getState();
             followUpExpanded = expanded;
             followUpScroll.setVisible(expanded);
-            followUpHeader.setCollapsed(!expanded);
             followUpToggle.setToolTipText(expanded ? "Collapse the follow-up nodes" : "Expand the follow-up nodes");
             followUpStrip.revalidate();
             followUpStrip.repaint();
@@ -402,8 +409,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         treeStateSavingSuspended = true;
         try {
             tree.populateTree(isCompartmentsEditor ?
-                JIPipeNodeDatabasePipelineVisibility.Compartments :
-                JIPipeNodeDatabasePipelineVisibility.Pipeline);
+                    JIPipeNodeDatabasePipelineVisibility.Compartments :
+                    JIPipeNodeDatabasePipelineVisibility.Pipeline);
             tree.restoreExpandedFunctionIds(loadTreeExpansionState());
         } finally {
             treeStateSavingSuspended = false;
@@ -432,7 +439,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // import / download), refresh this browser so the node list and the
         // template tree leaves reflect it immediately.
         JIPipe.getNodeTemplates().getNodeTemplatesRefreshedEventEmitter()
-            .subscribeWeak(event -> reloadList());
+                .subscribeWeak(event -> reloadList());
     }
 
     // ------------------------------------------------------------------
@@ -594,7 +601,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         filterBar.add(selectionOnlyButton);
     }
 
-    /** A data-type filter option value: (data class, input-side or output-side). */
+    /**
+     * A data-type filter option value: (data class, input-side or output-side).
+     */
     private record TypedDataValue(Class<? extends JIPipeData> dataClass, boolean input) {
     }
 
@@ -611,12 +620,12 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         for (String id : sortedIds) {
             Class<? extends JIPipeData> dataClass = dataTypes.get(id);
             options.add(new JIPipeDesktopRichSelectionBox.Option<>(new TypedDataValue(dataClass, true),
-                JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Input"));
+                    JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Input"));
         }
         for (String id : sortedIds) {
             Class<? extends JIPipeData> dataClass = dataTypes.get(id);
             options.add(new JIPipeDesktopRichSelectionBox.Option<>(new TypedDataValue(dataClass, false),
-                JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Output"));
+                    JIPipeDataInfo.getInstance(dataClass).getName(), JIPipe.getDataTypes().getIconFor(dataClass), "Output"));
         }
         return options;
     }
@@ -679,7 +688,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         // already the only body child.
         if (isCompartmentsEditor) {
             if (bodyPanel.getComponentCount() != 1
-                || bodyPanel.getComponent(0) != resultScroll) {
+                    || bodyPanel.getComponent(0) != resultScroll) {
                 bodyPanel.removeAll();
                 bodyPanel.add(resultScroll, BorderLayout.CENTER);
                 bodyPanel.revalidate();
@@ -960,7 +969,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
 
     private void insertFirstAtCursor() {
         if (!isCompartmentsEditor
-            && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
+                && model.getTier(getWidth()) == NodeBrowserModel.TIER_COMPACT) {
             // Compact single-pane: the current view is the tree, so the
             // first hit is its first node leaf (depth-first in tree order)
             TreePath firstLeaf = tree.findFirstNodeLeafPath();
@@ -974,7 +983,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         // Two-pane (or compartments): the first hit is list row 0
         JIPipeNodeDatabaseEntry entry = resultList.getModel().getSize() > 0
-            ? resultList.getModel().getElementAt(0) : null;
+                ? resultList.getModel().getElementAt(0) : null;
         if (entry != null) {
             insertAtCursor(entry);
         }
@@ -987,7 +996,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private JIPipeNodeDatabaseEntry referenceEntry() {
         Set<? extends JIPipeDesktopGraphInteractiveObjectUI> selection =
-            graphEditorUI.getCanvasUI().getSelectionManager().getSelection();
+                graphEditorUI.getCanvasUI().getSelectionManager().getSelection();
         if (!selection.isEmpty()) {
             JIPipeDesktopGraphInteractiveObjectUI first = selection.iterator().next();
             if (first instanceof JIPipeDesktopGraphNodeUI nodeUI) {
@@ -1195,8 +1204,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
             Set<String> pinned = getPinnedNodeDatabaseEntries();
             List<JIPipeNodeDatabaseEntry> selected = List.of(entry);
             JPopupMenu popupMenu = NodeEntryContextMenu.buildJPopupMenu(
-                NodeEntryContextMenu.specs(entry, pinned),
-                entryActionsMap(selected, pinned));
+                    NodeEntryContextMenu.specs(entry, pinned),
+                    entryActionsMap(selected, pinned));
             if (popupMenu.getComponentCount() > 0) {
                 popupMenu.revalidate();
                 // The event coords are relative to the inner JTree (the listener
@@ -1264,8 +1273,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                 // contextMenu that addRightClickPopupMenuToJList shows.
                 Set<String> pinned = getPinnedNodeDatabaseEntries();
                 JPopupMenu built = NodeEntryContextMenu.buildJPopupMenu(
-                    NodeEntryContextMenu.specsForSelection(selected, pinned),
-                    entryActionsMap(selected, pinned));
+                        NodeEntryContextMenu.specsForSelection(selected, pinned),
+                        entryActionsMap(selected, pinned));
                 for (Component component : built.getComponents()) {
                     contextMenu.add(component);
                 }
@@ -1334,7 +1343,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
      */
     private JIPipeProject currentProject() {
         return getDesktopWorkbench() instanceof JIPipeDesktopProjectWorkbench projectWorkbench ?
-            projectWorkbench.getProject() : null;
+                projectWorkbench.getProject() : null;
     }
 
     /**
@@ -1365,11 +1374,11 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
         if (JIPipeDesktopParameterFormPanel.showDialog(getDesktopWorkbench(), copy,
-            new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."),
-            "Edit template",
-            JIPipeDesktopParameterFormPanel.WITH_SCROLLING
-                | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
-                | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
+                new MarkdownText("# Node templates\n\nUse this user interface to modify node templates."),
+                "Edit template",
+                JIPipeDesktopParameterFormPanel.WITH_SCROLLING
+                        | JIPipeDesktopParameterFormPanel.WITH_SEARCH_BAR
+                        | JIPipeDesktopParameterFormPanel.WITH_DOCUMENTATION)) {
             JIPipe.getNodeTemplates().editTemplate(template, copy, currentProject());
             reloadList();
         }
@@ -1410,7 +1419,7 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         JIPipeNodeTemplate template = entry.getTemplate();
         TemplateScope scope = entry.getScope();
         if (JOptionPane.showConfirmDialog(this, "Do you really want to delete the template \"" + template.getName() + "\"?",
-            "Delete template", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
+                "Delete template", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) != JOptionPane.YES_OPTION) {
             return;
         }
         if (templateController.delete(currentProject(), scope, template)) {
@@ -1424,10 +1433,10 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         if (helpPanel == null) {
             helpPanel = new JIPipeDesktopFormHelpPanel();
             dockPanel.addDockPanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP,
-                "Documentation",
-                JIPipe.RESOURCES.getIcon24("actions/help-question.png"),
-                JIPipeDesktopDockPanel.PanelLocation.BottomRight,
-                true, 0, helpPanel);
+                    "Documentation",
+                    JIPipe.RESOURCES.getIcon24("actions/help-question.png"),
+                    JIPipeDesktopDockPanel.PanelLocation.BottomRight,
+                    true, 0, helpPanel);
         }
         dockPanel.activatePanel(JIPipeDesktopPipelineGraphEditorUI.DOCK_NODE_CONTEXT_HELP, false);
         helpPanel.showContent(entry.getName(), new MarkdownText("# " + entry.getName() + "\n\n" + entry.getDescription().getBody()));
@@ -1471,7 +1480,6 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
                     }
                     if (!suggestions.isEmpty()) {
                         show = true;
-                        followUpContent.add(new JLabel(JIPipe.RESOURCES.getIcon16("actions/diagram-next.png")));
                         for (JIPipeNodeDatabaseEntry suggestion : suggestions) {
                             JButton button = new JButton(suggestion.getName(), suggestion.getIcon());
                             button.setToolTipText("Suggested related step for the selected node");
@@ -1565,22 +1573,22 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         @Override
         public void run() {
             JIPipeNodeDatabasePipelineVisibility role = browser.isCompartmentsEditor ?
-                JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
+                    JIPipeNodeDatabasePipelineVisibility.Compartments : JIPipeNodeDatabasePipelineVisibility.Pipeline;
             Set<String> pinnedIds = browser.getPinnedNodeDatabaseEntries();
             boolean aiSearch = browser.aiSearch;
             NodeBrowserModel model = browser.model;
 
             List<JIPipeNodeDatabaseEntry> queryResult = browser.database.queryWithFacets(
-                browser.searchField.getText(),
-                role,
-                false,
-                true,
-                pinnedIds,
-                model.getFramework(),
-                model.getSpatial(),
-                model.getInput(),
-                model.getTags(),
-                aiSearch ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
+                    browser.searchField.getText(),
+                    role,
+                    false,
+                    true,
+                    pinnedIds,
+                    model.getFramework(),
+                    model.getSpatial(),
+                    model.getInput(),
+                    model.getTags(),
+                    aiSearch ? JIPipeNodeDatabase.FLAG_USE_AI_SEARCH : null);
 
             SwingUtilities.invokeLater(() -> browser.applyQueryResult(queryResult, pinnedIds));
         }
@@ -1659,7 +1667,9 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         }
     }
 
-    /** Sentinel for "no framework filter" in the framework combo. */
+    /**
+     * Sentinel for "no framework filter" in the framework combo.
+     */
     private static class AllFrameworksSentinel {
         @Override
         public String toString() {
