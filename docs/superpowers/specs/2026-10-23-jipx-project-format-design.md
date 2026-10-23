@@ -131,10 +131,10 @@ re-save can legitimately differ. The invariant is:
 
 Form: a JUnit 5 test in jipipe-core gated on a system property
 `-Djipipe.jip.roundtrip.corpus=<dir>` (assumeTrue; skipped when absent, CI
-stays green). Run locally against the full local corpus (~82 real projects
-under `/fastdata/Downloads`, largest ~1 MB). The same harness doubles as the
-JIPX verification in Phase 1: `load(.jip) → write(.jipx) → read(.jipx)` must
-equal the JIP fixpoint.
+stays green). **Default corpus on this machine: `/data/JIPipe/` (367 real
+projects)**; run locally over the full corpus. The same harness doubles as
+the JIPX verification in Phase 1: `load(.jip) → write(.jipx) → read(.jipx)`
+must equal the JIP fixpoint.
 
 ## 4. Phase 1 — JIPX container layout
 
