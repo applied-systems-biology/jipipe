@@ -61,6 +61,7 @@ import org.hkijena.jipipe.desktop.commons.components.selection.JIPipeDesktopRich
 import org.hkijena.jipipe.desktop.commons.components.search.JIPipeDesktopSearchTextField;
 import org.hkijena.jipipe.plugins.ai.AIApplicationSettings;
 import org.hkijena.jipipe.plugins.parameters.library.markup.MarkdownText;
+import org.hkijena.jipipe.plugins.settings.application.JIPipeGraphEditorUIApplicationSettings;
 import org.hkijena.jipipe.utils.CustomStateLessToggleButton;
 import org.hkijena.jipipe.utils.ThemeUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -168,7 +169,8 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
     private final JPanel followUpContent = new JPanel();
     private final JScrollPane followUpScroll;
     /**
-     * Expanded by default; collapses only while the user keeps it toggled off.
+     * Mirrors the persisted {@code follow-up-nodes-expanded} setting: applied
+     * on creation, updated on every toggle.
      */
     private boolean followUpExpanded = true;
 
@@ -383,13 +385,23 @@ public class JIPipeDesktopNodeBrowser extends JIPipeDesktopWorkbenchPanel implem
         followUpStrip.add(followUpToggle, BorderLayout.NORTH);
         followUpStrip.add(followUpScroll, BorderLayout.CENTER);
 
-
         followUpToggle.setOpaque(false);
         followUpToggle.setFocusPainted(false);
-        followUpToggle.setToolTipText("Collapse the follow-up nodes");
+
+        // Apply the persisted collapse state (setState does not fire the
+        // toggled event — only a user click does — so this cannot write the
+        // setting back).
+        boolean followUpInitiallyExpanded =
+                JIPipeGraphEditorUIApplicationSettings.getInstance().isFollowUpNodesExpanded();
+        followUpExpanded = followUpInitiallyExpanded;
+        followUpToggle.setState(followUpInitiallyExpanded);
+        followUpScroll.setVisible(followUpInitiallyExpanded);
+        followUpToggle.setToolTipText(followUpInitiallyExpanded ? "Collapse the follow-up nodes" : "Expand the follow-up nodes");
+
         followUpToggle.getToggledEventEmitter().subscribeLambda((emitter, event) -> {
             boolean expanded = followUpToggle.getState();
             followUpExpanded = expanded;
+            JIPipeGraphEditorUIApplicationSettings.getInstance().setFollowUpNodesExpanded(expanded);
             followUpScroll.setVisible(expanded);
             followUpToggle.setToolTipText(expanded ? "Collapse the follow-up nodes" : "Expand the follow-up nodes");
             followUpStrip.revalidate();
