@@ -59,6 +59,9 @@ public class JIPipeDesktopSplashScreen extends JWindow implements LogListener, C
 
     public JIPipeDesktopSplashScreen() {
         this.spinnerIcon = new SpinnerIcon(this);
+        // The splash is shown before JIPipe is initialized, so isReducedMotion() would return
+        // false and the settings subscription is not yet possible. Read the persisted value.
+        this.spinnerIcon.setReducedMotion(JIPipeGeneralUIApplicationSettings.isReducedMotionFromRaw());
         this.statusLabel = new JLabel("Please wait ...", spinnerIcon, JLabel.LEFT);
         initialize();
 

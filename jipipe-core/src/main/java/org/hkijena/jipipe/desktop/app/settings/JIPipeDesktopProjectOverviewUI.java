@@ -112,7 +112,6 @@ public class JIPipeDesktopProjectOverviewUI extends JIPipeDesktopProjectWorkbenc
         descriptionReader.setContentType("text/html");
         descriptionReader.setEditorKit(new JIPipeDesktopHTMLEditorKit());
         descriptionReader.setEditable(false);
-        ThemeUtils.watchCaretMotion(descriptionReader);
         UIUtils.registerHyperlinkHandler(descriptionReader);
 
         // Center panel

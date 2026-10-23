@@ -118,7 +118,6 @@ public class JIPipeDesktopScriptParameterEditorUI extends JIPipeDesktopParameter
 //            textArea.setAutoCompletionEnabled(true);
         }
         textArea.setTabSize(4);
-        ThemeUtils.watchCaretMotion(textArea);
         getContext().inject(textArea);
         textArea.setText(code.getCode());
         textArea.setSyntaxEditingStyle(code.getMimeType());
