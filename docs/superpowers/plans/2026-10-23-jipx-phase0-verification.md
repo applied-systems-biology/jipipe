@@ -132,7 +132,7 @@ in the **same field and mechanism** on a **disjoint file set (9 files**:
 `blobs-tunnel.jip`, `cellpose-test.jip`, `cellpose.jip`,
 `jsc2025_example_blobs_batch_processing.crate/project.jip`, `kidney-test.jip`,
 `project-dirs-with-files.jip`, `test123456.crate/project.jip` — all with
-`dependencies` added to the changed set). Zero overlap with the refactored run's set.
+`dependencies` dropped from the changed set). Zero overlap with the refactored run's set.
 
 **Interpretation:** the `dependencies` entry of `pvs1TopLevelChangedKeys` reflects
 whether the *computed* minimal dependency **membership** equals the stored one.

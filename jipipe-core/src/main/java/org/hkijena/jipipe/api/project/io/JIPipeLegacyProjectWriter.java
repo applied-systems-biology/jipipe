@@ -44,8 +44,11 @@ public class JIPipeLegacyProjectWriter implements JIPipeProjectWriter {
     /**
      * The stable id of the legacy .jip format.
      * Persisted in saved projects — never derive from code.
+     * <p>
+     * Alias of {@link JIPipeLegacyProjectReader#FORMAT_ID} — the single source
+     * of truth for the format id lives with the reader.
      */
-    public static final String FORMAT_ID = "org.hkijena.jipipe.core:jip";
+    public static final String FORMAT_ID = JIPipeLegacyProjectReader.FORMAT_ID;
 
     @Override
     public String getId() {
