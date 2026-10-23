@@ -21,12 +21,12 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReport;
 import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The legacy .jip project reader.
@@ -56,7 +56,7 @@ public class JIPipeLegacyProjectReader implements JIPipeProjectReader {
 
     @Override
     public boolean supports(Path path) {
-        return Files.isRegularFile(path) && path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jip");
+        return Files.isRegularFile(path) && PathUtils.isJipPath(path);
     }
 
     @Override

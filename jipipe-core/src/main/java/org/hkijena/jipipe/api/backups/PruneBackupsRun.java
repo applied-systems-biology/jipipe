@@ -46,13 +46,7 @@ public class PruneBackupsRun extends DefaultJIPipeRunnable {
                     if (Files.isDirectory(sessionPath)) {
                         Path infoFile = sessionPath.resolve("backup-info.json");
                         if (Files.isRegularFile(infoFile)) {
-                            boolean found = true;
-                            try (Stream<Path> stream1 = Files.list(sessionPath)) {
-                                found = stream1.anyMatch(backupFile -> Files.isRegularFile(backupFile) && backupFile.getFileName().toString().endsWith(".jip"));
-                            } catch (Exception e) {
-                                progressInfo.log("-> Error: " + e);
-                            }
-                            if (!found) {
+                            if (!sessionHasBackups(sessionPath, progressInfo)) {
                                 sessionsToDelete.add(sessionPath);
                             }
                         }
@@ -67,6 +61,26 @@ public class PruneBackupsRun extends DefaultJIPipeRunnable {
             progressInfo.log("Deleting: " + path);
             PathUtils.deleteDirectoryRecursively(path, progressInfo.resolve("Delete session"));
         }
+    }
+
+    /**
+     * Checks whether the given backup session directory contains at least
+     * one project backup file — in either format, {@code .jip} or
+     * {@code .jipx} (see {@link JIPipeProjectBackupUtils#isBackupFile}).
+     * A session with only .jipx backups is NOT empty (JIPX spec §7).
+     *
+     * @param sessionPath  the session directory
+     * @param progressInfo the progress info
+     * @return true if at least one backup file is present
+     */
+    public static boolean sessionHasBackups(Path sessionPath, JIPipeProgressInfo progressInfo) {
+        boolean found = true;
+        try (Stream<Path> stream1 = Files.list(sessionPath)) {
+            found = stream1.anyMatch(backupFile -> Files.isRegularFile(backupFile) && JIPipeProjectBackupUtils.isBackupFile(backupFile));
+        } catch (Exception e) {
+            progressInfo.log("-> Error: " + e);
+        }
+        return found;
     }
 
     @Override

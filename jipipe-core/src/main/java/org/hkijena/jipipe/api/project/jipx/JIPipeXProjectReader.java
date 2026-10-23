@@ -23,12 +23,12 @@ import org.hkijena.jipipe.api.validation.JIPipeValidationReportContext;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.ArchiveUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -83,7 +83,7 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
     @Override
     public boolean supports(Path path) {
         return Files.isRegularFile(path)
-                && path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx")
+                && PathUtils.isJipxPath(path)
                 && ArchiveUtils.isZipFile(path);
     }
 

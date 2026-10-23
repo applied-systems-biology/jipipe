@@ -275,8 +275,7 @@ public class JIPipeGraphRun extends DefaultJIPipeRunnable implements JIPipeGraph
                     if (configuration.getOutputPath() != null && configuration.isStoreToDisk()) {
                         // Re-save in the project's current format
                         projectReSavePath = configuration.getOutputPath().resolve("project." +
-                                (project.getProjectFile() != null &&
-                                        project.getProjectFile().getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx") ? "jipx" : "jip"));
+                                (PathUtils.isJipxPath(project.getProjectFile()) ? "jipx" : "jip"));
                         project.saveProject(projectReSavePath, false);
                     }
                 } catch (IOException e) {

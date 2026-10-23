@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.io.JIPipeProjectWriter;
 import org.hkijena.jipipe.api.validation.JIPipeValidationRuntimeException;
 import org.hkijena.jipipe.contrib.ro_crate.RoCrate;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -34,7 +35,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
@@ -126,8 +126,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
      */
     @Override
     public boolean supports(Path path) {
-        return path.getFileName() != null
-                && path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx");
+        return path.getFileName() != null && PathUtils.isJipxPath(path);
     }
 
     @Override
@@ -168,6 +167,7 @@ public class JIPipeXProjectWriter implements JIPipeProjectWriter {
                     "The project's workspace is unavailable (the project has been disposed) — it cannot be saved as a JIPX container.",
                     "Re-open the project and try again.");
         }
+
         workspace.materializeFromModel(progressInfo.resolve("Materialize JIPX workspace"));
 
         // (3) Build the crate and write its metadata + the generated

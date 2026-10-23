@@ -585,14 +585,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 case JOptionPane.CANCEL_OPTION:
                     return;
                 case JOptionPane.YES_OPTION:
-                    savePath = PathUtils.ensureExtension(savePath, ".jipx", ".jip");
+                    savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
                     break;
                 case JOptionPane.NO_OPTION:
                     break;
             }
         }
 
-        if (savePath.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+        if (PathUtils.isJipxPath(savePath)) {
             saveProjectAsJipx(savePath, updateSavePath);
         } else {
             saveProjectAsLegacy(savePath, updateSavePath);
@@ -996,7 +996,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 // Analyze the output file
                 boolean isRoCrate;
-                if (fileName.endsWith(".jip") || fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+                if (fileName.endsWith(".jip") || PathUtils.isJipxPath(outputFile)) {
                     // A JIPX container is opened directly as a project —
                     // this check precedes the ZIP-magic check, because the
                     // container IS a ZIP
@@ -1025,7 +1025,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     if (fileName.endsWith(".jip")) {
                         fileNameNoExt = fileName.substring(0, fileName.length() - 4);
                         extension = ".jip";
-                    } else if (fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+                    } else if (PathUtils.isJipxPath(outputFile)) {
                         fileNameNoExt = fileName.substring(0, fileName.length() - 5);
                         extension = ".jipx";
                     } else {

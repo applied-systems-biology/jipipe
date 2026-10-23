@@ -600,6 +600,67 @@ public class PathUtils {
     }
 
     /**
+     * Checks if the given path points to a JIPipe 6 (JIPX) project file.
+     *
+     * @param path the path (null-safe)
+     * @return true if the file name ends with {@code .jipx} (case-insensitive)
+     */
+    public static boolean isJipxPath(Path path) {
+        if (path == null || path.getFileName() == null) {
+            return false;
+        }
+        return path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx");
+    }
+
+    /**
+     * Checks if the given path points to a legacy JIPipe project file.
+     *
+     * @param path the path (null-safe)
+     * @return true if the file name ends with {@code .jip} (case-insensitive)
+     */
+    public static boolean isJipPath(Path path) {
+        if (path == null || path.getFileName() == null) {
+            return false;
+        }
+        return path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jip");
+    }
+
+    /**
+     * Replaces the file extension of the path, preserving the base name's
+     * original casing: {@code /a/Proj.jip} with {@code (".jip", ".jipx")}
+     * yields {@code /a/Proj.jipx}.
+     * <p>
+     * If the file name does not end with {@code oldExtension}
+     * (case-insensitive), the path is returned unchanged — in particular,
+     * {@code .jipx} is <b>not</b> treated as an acceptable alternative
+     * (unlike {@link #ensureExtension}).
+     *
+     * @param path           the path (null-safe)
+     * @param oldExtension   the extension to replace (should include the dot)
+     * @param newExtension   the replacement extension (should include the dot)
+     * @return the path with the replaced extension, or the path unchanged
+     */
+    public static Path replaceExtension(Path path, String oldExtension, String newExtension) {
+        if (path == null) {
+            return null;
+        }
+        Path fileName = path.getFileName();
+        if (fileName == null) {
+            return path;
+        }
+        String name = fileName.toString();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(oldExtension)) {
+            return path;
+        }
+        Path base = path.getParent();
+        String replaced = name.substring(0, name.length() - oldExtension.length()) + newExtension;
+        if (base != null) {
+            return base.resolve(replaced);
+        }
+        return Paths.get(replaced);
+    }
+
+    /**
      * Ensures that the parent directories of the path exist.
      * If the parent directory is null, nothing will be done
      *

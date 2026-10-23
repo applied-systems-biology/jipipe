@@ -1112,7 +1112,7 @@ public class JIPipeDesktop {
         try {
             Path path = Paths.get(pathOrUrl);
             String fileName = path.getFileName().toString();
-            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || fileName.toLowerCase(Locale.ROOT).endsWith(".jipx") || fileName.endsWith(".crate.zip"))) {
+            if(Files.isRegularFile(path) && (fileName.endsWith(".jip") || PathUtils.isJipxPath(path) || fileName.endsWith(".crate.zip"))) {
                 OPEN_ON_LOAD_FILE = path;
             }
         } catch (Exception ignored) {
@@ -1144,7 +1144,7 @@ public class JIPipeDesktop {
                 // .jipx is a ZIP container — this check MUST precede the
                 // ZIP-magic check below (which would misroute it to the
                 // RO-Crate import)
-                else if(fileName.toLowerCase(Locale.ROOT).endsWith(".jipx")) {
+                else if(PathUtils.isJipxPath(file)) {
                     window.openProject(file, true);
                 }
                 else if(fileName.endsWith(".crate.zip")) {

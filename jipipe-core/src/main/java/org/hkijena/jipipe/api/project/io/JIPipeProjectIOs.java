@@ -19,12 +19,12 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectReader;
 import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.hkijena.jipipe.utils.ArchiveUtils;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -86,10 +86,9 @@ public final class JIPipeProjectIOs {
      * @throws IllegalArgumentException if the extension cannot be mapped to a writer
      */
     public static JIPipeProjectWriter writerFromPath(Path path) {
-        String fileName = path.getFileName() == null ? "" : path.getFileName().toString().toLowerCase(Locale.ROOT);
-        if (fileName.endsWith(".jip")) {
+        if (PathUtils.isJipPath(path)) {
             return new JIPipeLegacyProjectWriter();
-        } else if (fileName.endsWith(".jipx")) {
+        } else if (PathUtils.isJipxPath(path)) {
             return new JIPipeXProjectWriter();
         } else {
             throw new IllegalArgumentException("Cannot determine project writer for: " + path);

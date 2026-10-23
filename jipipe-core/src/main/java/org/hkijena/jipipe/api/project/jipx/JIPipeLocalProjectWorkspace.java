@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.LinkedHashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -40,7 +39,7 @@ import java.util.function.Consumer;
  * default manifest paths (see {@link JIPipeXManifest#defaultManifest}),
  * the manifest at {@code jipx.json}, and the workspace state (origin
  * information + save/dirty flags) at {@code workspace.json}. Materializing
- * is a pure derivation from the project model and idempotent —
+ * re-derives the part files from the project model and is idempotent —
  * unknown/payload entries (e.g. {@code data/foo.tiff}) are never deleted
  * or rewritten (spec §5.4, "payload never regenerated" contract).
  */
@@ -200,11 +199,10 @@ public class JIPipeLocalProjectWorkspace implements JIPipeProjectWorkspace {
     private String deriveOriginFormat() {
         Path projectFile = project == null ? null : project.getProjectFile();
         if (projectFile != null) {
-            String name = projectFile.getFileName().toString().toLowerCase(Locale.ROOT);
-            if (name.endsWith(".jipx")) {
+            if (PathUtils.isJipxPath(projectFile)) {
                 return "jipx";
             }
-            if (name.endsWith(".jip")) {
+            if (PathUtils.isJipPath(projectFile)) {
                 return "jip";
             }
         }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.project.io;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -24,7 +25,6 @@ import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * The legacy .jip project writer.
@@ -62,7 +62,7 @@ public class JIPipeLegacyProjectWriter implements JIPipeProjectWriter {
 
     @Override
     public boolean supports(Path path) {
-        return Files.isRegularFile(path) && path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jip");
+        return Files.isRegularFile(path) && PathUtils.isJipPath(path);
     }
 
     @Override

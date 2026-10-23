@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.utils.PathUtils;
+
 import java.nio.file.Path;
-import java.util.Locale;
 
 /**
  * The save-target decision of the JIPX migration UX (JIPX spec §7).
@@ -63,13 +64,31 @@ public final class JIPipeProjectSaveTarget {
      * is a legacy {@code .jip} file, {@link SaveTarget#DIRECT} otherwise
      */
     public static SaveTarget decideSaveTarget(Path currentSavePath) {
-        if (currentSavePath == null) {
+        if (currentSavePath == null || PathUtils.isJipxPath(currentSavePath)) {
             return SaveTarget.DIRECT;
         }
-        String fileName = currentSavePath.getFileName().toString().toLowerCase(Locale.ROOT);
-        if (fileName.endsWith(".jip")) {
-            return SaveTarget.JIPX_PROMPT;
+        return PathUtils.isJipPath(currentSavePath) ? SaveTarget.JIPX_PROMPT : SaveTarget.DIRECT;
+    }
+
+    /**
+     * Decides whether the JIPX migration prompt is shown for a save with
+     * the given parameters. Wraps {@link #decideSaveTarget(Path)}: the
+     * prompt never fires for autosaves (the {@code avoidDialog} && !
+     * {@code updateSavePath} combination) — a modal prompt on every
+     * autosave interval would break autosave.
+     *
+     * @param currentSavePath the project's current save target, or
+     *                        {@code null} for an untitled project
+     * @param avoidDialog     the {@code avoidDialog} flag of
+     *                        {@code saveProjectAs(avoidDialog, updateSavePath)}
+     * @param updateSavePath  the {@code updateSavePath} flag of
+     *                        {@code saveProjectAs(avoidDialog, updateSavePath)}
+     * @return whether the JIPX migration prompt is shown before saving
+     */
+    public static boolean shouldPrompt(Path currentSavePath, boolean avoidDialog, boolean updateSavePath) {
+        if (avoidDialog && !updateSavePath) {
+            return false;
         }
-        return SaveTarget.DIRECT;
+        return decideSaveTarget(currentSavePath) == SaveTarget.JIPX_PROMPT;
     }
 }
