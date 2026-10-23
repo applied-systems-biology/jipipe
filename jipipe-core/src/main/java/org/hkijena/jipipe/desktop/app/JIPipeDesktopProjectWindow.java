@@ -23,8 +23,9 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectPeek;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
@@ -330,9 +331,8 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
-                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-
-                JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
+                JIPipeProjectPeek peek = JIPipeProjectIOs.peek(path);
+                Set<JIPipeDependency> dependencySet = peek.getDependencies();
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
 //                if (JIPipe.getInstance().getImageJPlugins() != null) {
@@ -430,8 +430,8 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 Path projectPath = path.resolve("project.jip");
-                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(projectPath.toFile(), JsonNode.class);
-                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+                JIPipeProjectPeek peek = JIPipeProjectIOs.peek(projectPath);
+                Set<JIPipeDependency> dependencySet = peek.getDependencies();
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
