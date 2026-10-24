@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.service.components.JIPipeProjectBackupServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.SwingUtilities;
 import java.io.IOException;
@@ -118,7 +119,13 @@ public class CreateBackupRun extends DefaultJIPipeRunnable {
                 getProgressInfo().log("Could not save files cache " + cacheFile + " (the backup itself was persisted): " + e);
             }
 
-            SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup to " + sessionDirectory + " at " + snapshot.getCreated()));
+            // A meaningful summary: how many files the snapshot holds and its
+            // total size (not the opaque session directory, which carries no
+            // information a biologist can act on).
+            int entryCount = snapshot.getEntries().size();
+            long totalSize = snapshot.getTotalSize();
+            SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Saved backup ("
+                    + entryCount + " files, " + StringUtils.formatSize(totalSize) + ") at " + snapshot.getCreated()));
         } catch (IOException e) {
             getProgressInfo().log("Failed to save backup: " + e);
             SwingUtilities.invokeLater(() -> window.getProjectWorkbench().sendStatusBarText("Failed to save backup: " + e.getMessage()));

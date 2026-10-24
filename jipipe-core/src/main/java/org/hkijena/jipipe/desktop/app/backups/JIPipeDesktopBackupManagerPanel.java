@@ -60,6 +60,7 @@ import java.time.Duration;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel implements JIPipeRunnable.FinishedEventListener {
 
@@ -68,6 +69,17 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     private final JIPipeDesktopFormPanel propertiesPanel = new JIPipeDesktopFormPanel(JIPipeDesktopFormPanel.WITH_SCROLLING);
     private final JTree backupTree = new JTree();
     private List<JIPipeProjectBackupItemCollection> backupCollections = new ArrayList<>();
+
+    /**
+     * Cached total size of the unique objects in the content-addressed store,
+     * recomputed once per collect cycle (off the EDT — it is a full recursive
+     * walk of {@code store/objects/} that would freeze the panel on a NAS path
+     * if run per tree selection). {@code null} = not yet computed (the first
+     * paint before the first collect finishes shows "unknown").
+     */
+    private volatile Long cachedStoreBytes;
+    /** Guards the background recompute so overlapping collect cycles don't stack store walks */
+    private final AtomicBoolean storeBytesComputing = new AtomicBoolean();
 
     public JIPipeDesktopBackupManagerPanel(JIPipeDesktopWorkbench workbench) {
         super(workbench);
@@ -198,10 +210,15 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
     /**
      * The stats footer label below the action buttons: "Backup data: X
      * (unique data: Y)". X is the sum of the sizes of all loaded backup
-     * items; Y is the total size of the unique files held by the
-     * content-addressed store (shared between backups is counted once).
-     * Computed synchronously — it is a directory walk and a size pass over
-     * the store, and the panel is opened on demand.
+     * items (cheap, in-memory); Y is the total size of the unique files held
+     * by the content-addressed store (shared between backups is counted
+     * once), read from {@link #cachedStoreBytes} — it is NEVER walked here,
+     * because this label is rebuilt on every tree selection and the walk is
+     * a full recursive pass over {@code store/objects/} (a NAS backup path
+     * would freeze the panel per click). The cache is recomputed once per
+     * collect cycle, in the background ({@link #refreshStoreBytes()});
+     * {@code null} renders "unknown" (the first paint before the first
+     * collect finishes).
      */
     private JLabel statsFooterLabel() {
         long total = 0;
@@ -210,13 +227,42 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 total += backupItem.getTotalSizeBytes();
             }
         }
-        long uniqueBytes;
-        try {
-            uniqueBytes = JIPipe.getInstance().getProjectBackup().getStore().totalObjectBytes();
-        } catch (Exception e) {
-            return new JLabel("Backup data: unknown");
+        Long uniqueBytes = cachedStoreBytes;
+        if (uniqueBytes == null) {
+            return new JLabel("Backup data: " + StringUtils.formatSize(total) + " (unique data: unknown)");
         }
         return new JLabel("Backup data: " + StringUtils.formatSize(total) + " (unique data: " + StringUtils.formatSize(uniqueBytes) + ")");
+    }
+
+    /**
+     * Recomputes the cached store size ({@link #cachedStoreBytes}) in the
+     * background: {@code totalObjectBytes()} walks the whole objects tree and
+     * is too heavy for the EDT. The footer is refreshed on the EDT once the
+     * value (or a failure) is in. Called once per collect cycle, when new
+     * collections arrive. A recompute already in flight is not stacked — the
+     * walk's result simply belongs to the next cycle then.
+     */
+    private void refreshStoreBytes() {
+        if (!storeBytesComputing.compareAndSet(false, true)) {
+            return;
+        }
+        new Thread(() -> {
+            try {
+                cachedStoreBytes = JIPipe.getInstance().getProjectBackup().getStore().totalObjectBytes();
+            } catch (Exception e) {
+                cachedStoreBytes = null;
+            } finally {
+                storeBytesComputing.set(false);
+                SwingUtilities.invokeLater(() -> {
+                    // The panel may be hidden/closed while the walk was in
+                    // flight; only refresh a live panel (same guard as
+                    // onRunnableFinished)
+                    if (isDisplayable()) {
+                        refreshSidebar();
+                    }
+                });
+            }
+        }, "backup-store-stats").start();
     }
 
     private void thinBackups() {
@@ -461,7 +507,7 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
             JIPipeBackupVerificationReport report = run.getReport();
             if (report.isHealthy()) {
                 getDesktopWorkbench().sendStatusBarText("Backups verified: " + report.snapshotsChecked
-                        + " snapshots, " + report.objectsChecked + " files (" + StringUtils.formatSize(report.bytesChecked) + "). All good.");
+                        + " backups, " + report.objectsChecked + " files (" + StringUtils.formatSize(report.bytesChecked) + "). All good.");
             } else {
                 getDesktopWorkbench().sendStatusBarText("Backup verification found " + report.problems.size()
                         + " problem(s) — see the notification inbox");
@@ -552,6 +598,10 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         if (event.getRun() instanceof CollectBackupsRun) {
             this.backupCollections = ((CollectBackupsRun) event.getRun()).getOutput();
             refreshTree();
+            // New collections arrived (a collect cycle finished) — recompute
+            // the cached store size in the background; the footer refreshes
+            // itself on the EDT when the value lands.
+            refreshStoreBytes();
         } else {
             reloadBackups();
         }

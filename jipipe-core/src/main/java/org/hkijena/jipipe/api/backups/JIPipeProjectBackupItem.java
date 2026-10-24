@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.api.backups;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupObjectStore;
 import org.hkijena.jipipe.api.backups.store.JIPipeBackupStoreOperations;
+import org.hkijena.jipipe.api.backups.store.JIPipeLocalBackupObjectStore;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -126,25 +128,44 @@ public class JIPipeProjectBackupItem {
         return snapshotId != null;
     }
 
+    /** Maximum time to wait for the store write lock before the deletion is reported as failed */
+    private static final long DELETE_LOCK_TIMEOUT_MILLIS = 60_000;
+
     /**
      * Deletes this backup item.
      * <ul>
      *     <li>a legacy file item deletes its project file;</li>
      *     <li>a snapshot item removes its manifest and its session-index entry via
      *     {@link JIPipeBackupStoreOperations#deleteSnapshot} — the objects are only
-     *     reclaimed later by a garbage collection run (the deletion itself is
-     *     lock-free: the manifest deletion and the index rewrite are each atomic).</li>
+     *     reclaimed later by a garbage collection run. The snapshot branch takes the
+     *     store write lock (this is the single choke point) so the session-index
+     *     rewrite cannot race a concurrent lock-held {@code persistSnapshot} append
+     *     (lost update).</li>
      * </ul>
      *
      * @param progressInfo progress logging
-     * @throws IOException if the file or manifest/index cannot be deleted
+     * @throws IOException if the file or manifest/index cannot be deleted, or the
+     *                     store write lock could not be acquired within the timeout
      */
     public void delete(JIPipeProgressInfo progressInfo) throws IOException {
         if (isSnapshot()) {
             // <backupRoot>/snapshots/<id>.json → parent = snapshots/, parent.parent = backupRoot
             Path backupRoot = snapshotManifestPath.getParent().getParent();
-            JIPipeBackupStoreOperations.deleteSnapshot(backupRoot, snapshotId,
-                    backupRoot.resolve(sessionId), progressInfo);
+            JIPipeBackupObjectStore store = new JIPipeLocalBackupObjectStore(backupRoot);
+            if (!store.acquireWriteLock(DELETE_LOCK_TIMEOUT_MILLIS)) {
+                // The lock is only needed for the index rewrite; a concurrent
+                // instance is writing, so this deletion is reported as failed
+                // (the caller logs it) rather than racing the session index.
+                throw new IOException("Could not delete backup snapshot " + snapshotId
+                        + ": another JIPipe instance is writing to the backup store (could not acquire the write lock within "
+                        + DELETE_LOCK_TIMEOUT_MILLIS + " ms)");
+            }
+            try {
+                JIPipeBackupStoreOperations.deleteSnapshot(store, snapshotId,
+                        backupRoot.resolve(sessionId), progressInfo);
+            } finally {
+                store.releaseWriteLock();
+            }
         } else {
             if (!Files.isRegularFile(projectPath)) {
                 progressInfo.log("Backup file is already gone, skipping: " + projectPath);

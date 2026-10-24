@@ -206,6 +206,40 @@ class JIPipeBackupRestoreTest {
     }
 
     /**
+     * A hand-crafted manifest whose entry path escapes the restore assembly
+     * directory (e.g. {@code ../evil.bin}) is rejected BEFORE anything is
+     * written: the target is never created and no temp leftovers survive.
+     */
+    @Test
+    void restoreRejectsEscapingEntryPath(@TempDir Path dir) throws Exception {
+        Path backupRoot = dir.resolve("backup");
+        JIPipeLocalBackupObjectStore store = new JIPipeLocalBackupObjectStore(backupRoot);
+
+        // Hand-built snapshot (NOT produced by a creator) with a path that
+        // normalizes outside the assembly directory. The object hash need not
+        // exist — the guard fires before any object is read.
+        JIPipeBackupSnapshot snapshot = new JIPipeBackupSnapshot();
+        snapshot.setSnapshotId("escape-test");
+        snapshot.setCreated(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME));
+        snapshot.setProjectFormat(JIPipeBackupStoreOperations.FORMAT_JIPX);
+        snapshot.setProjectName("evil.jipx");
+        JIPipeBackupSnapshot.SnapshotEntry entry = new JIPipeBackupSnapshot.SnapshotEntry();
+        entry.setPath("../evil.bin");
+        entry.setSize(4);
+        entry.setHash("0000000000000000000000000000000000000000000000000000000000000000");
+        snapshot.getEntries().add(entry);
+
+        Path target = dir.resolve("evil-restored.jipx");
+        IOException e = assertThrows(IOException.class,
+                () -> JIPipeBackupStoreOperations.restoreSnapshot(store, snapshot, target, JIPipeProgressInfo.SILENT),
+                "an entry path that escapes the restore directory must be rejected");
+        assertTrue(e.getMessage().contains("escapes the restore directory"), "got: " + e.getMessage());
+        assertTrue(e.getMessage().contains("../evil.bin"), "the error must name the offending path, got: " + e.getMessage());
+        assertFalse(Files.exists(target), "the target must not be written");
+        assertNoRestoreLeftovers(dir);
+    }
+
+    /**
      * verifyAll (lock-free dry run) reports problems and checked counts:
      * healthy store → no problems, exact counts; corrupted object → exactly
      * one checksum problem (the object still counts as checked); deleted

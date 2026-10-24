@@ -66,7 +66,10 @@ import java.util.stream.Stream;
  * the immutable objects ({@link JIPipeBackupObjectStore#get(String)} is
  * lock-free by design) and write to user-chosen paths OUTSIDE the store,
  * so a backup run holding the write lock can never block a restore or a
- * verification (and vice versa).
+ * verification (and vice versa). Deletion is the exception:
+ * {@link #deleteSnapshot} rewrites the session index and is NOT lock-free —
+ * its caller must hold the store write lock (the single choke point takes
+ * it, see {@code JIPipeProjectBackupItem.delete}).
  */
 public final class JIPipeBackupStoreOperations {
 
@@ -279,16 +282,20 @@ public final class JIPipeBackupStoreOperations {
      * only releases them via {@link JIPipeBackupObjectStore#garbageCollect(JIPipeProgressInfo)},
      * which the thinning runs trigger (Task 6).
      * <p>
-     * MUST be called while holding the store write lock.
+     * MUST be called while holding the store write lock — the session-index
+     * rewrite races a concurrent {@link #persistSnapshot} append otherwise
+     * (lost update). The single choke point —
+     * {@code JIPipeProjectBackupItem.delete} — takes it.
      *
-     * @param backupRoot       the backup root holding {@code snapshots/}
+     * @param store            the object store (the caller must hold its write lock)
      * @param snapshotId       the id of the snapshot to delete
      * @param sessionDirectory the per-session backup directory
      * @param progressInfo     progress logging / cancellation
      * @throws IOException if the manifest or the session index cannot be written
      */
-    public static void deleteSnapshot(Path backupRoot, String snapshotId, Path sessionDirectory,
+    public static void deleteSnapshot(JIPipeBackupObjectStore store, String snapshotId, Path sessionDirectory,
                                       JIPipeProgressInfo progressInfo) throws IOException {
+        Path backupRoot = store.getStoreDirectory().getParent();
         Path manifest = backupRoot.resolve("snapshots").resolve(snapshotId + ".json");
         Files.deleteIfExists(manifest);
 
@@ -412,7 +419,17 @@ public final class JIPipeBackupStoreOperations {
             }
         }
 
-        // Re-hash each unique object once
+        // Re-hash each unique object once, streaming (constant memory): a
+        // multi-GB payload object must not be buffered into an array.
+        MessageDigest digest;
+        try {
+            digest = MessageDigest.getInstance("SHA-256");
+        } catch (java.security.NoSuchAlgorithmException e) {
+            throw new IOException("SHA-256 is not available", e);
+        }
+        // Bounded buffer (not per-object): the read loop below hashes the
+        // stream without ever materializing the whole object in memory.
+        byte[] buffer = new byte[1024 * 1024];
         for (String hash : uniqueHashes) {
             if (progressInfo.isCancelled())
                 throw new IOException("Backup verification was cancelled");
@@ -420,18 +437,23 @@ public final class JIPipeBackupStoreOperations {
                 report.problems.add("Backup object " + hash + " is missing — the backup store is damaged");
                 continue;
             }
-            try (InputStream in = store.get(hash)) {
-                byte[] actual = in.readAllBytes();
+            try (InputStream in = store.get(hash);
+                 DigestInputStream digestIn = new DigestInputStream(in, digest)) {
+                long bytes = 0;
+                int read;
+                while ((read = digestIn.read(buffer)) != -1) {
+                    bytes += read;
+                }
                 report.objectsChecked++;
-                report.bytesChecked += actual.length;
-                if (!matchesHash(actual, hash))
+                report.bytesChecked += bytes;
+                if (!Arrays.equals(HEX.parseHex(hash), digest.digest()))
                     throw new IOException("Backup object " + hash + " does not match its checksum — the backup store is damaged");
             } catch (IOException e) {
                 report.problems.add(e.getMessage() != null ? e.getMessage()
                         : "Could not verify backup object " + hash);
             }
         }
-        progressInfo.log("Backup verification: " + report.snapshotsChecked + " snapshots, "
+        progressInfo.log("Backup verification: " + report.snapshotsChecked + " backups, "
                 + report.objectsChecked + " objects, " + report.bytesChecked + " bytes checked, "
                 + report.problems.size() + " problem(s)");
         return report;
@@ -485,7 +507,7 @@ public final class JIPipeBackupStoreOperations {
             for (JIPipeBackupSnapshot.SnapshotEntry entry : snapshot.getEntries()) {
                 if (progressInfo.isCancelled())
                     throw new IOException("Snapshot restore was cancelled");
-                copyObjectToTargetVerified(store, entry, tempDir.resolve(entry.getPath()));
+                copyObjectToTargetVerified(store, entry, resolveWithinAssemblyDir(tempDir, entry.getPath()));
             }
             zipDirectoryContentsFlat(tempDir, tempZip);
             atomicMove(tempZip, targetFile);
@@ -493,6 +515,27 @@ public final class JIPipeBackupStoreOperations {
             deleteTemp(tempZip);
             deleteTempDir(tempDir);
         }
+    }
+
+    /**
+     * Resolves a snapshot entry path INSIDE the assembly directory, guarding
+     * against a hand-crafted manifest that escapes it: an absolute entry path
+     * or one whose normalized form resolves outside {@code baseDir} (e.g.
+     * {@code ../} or {@code ..}) is rejected, so a damaged or malicious backup
+     * cannot write objects outside the restore directory.
+     *
+     * @param baseDir the restore assembly directory
+     * @param entryPath the (workspace-relative) entry path from the manifest
+     * @return the resolved target path, guaranteed to be under {@code baseDir}
+     * @throws IOException if the entry path escapes the restore directory
+     */
+    private static Path resolveWithinAssemblyDir(Path baseDir, String entryPath) throws IOException {
+        Path resolved = baseDir.resolve(entryPath);
+        if (!resolved.normalize().startsWith(baseDir)) {
+            throw new IOException("Backup entry path '" + entryPath
+                    + "' escapes the restore directory — the backup store is damaged");
+        }
+        return resolved;
     }
 
     /**
@@ -556,15 +599,6 @@ public final class JIPipeBackupStoreOperations {
                 Files.copy(file, zip);
                 zip.closeEntry();
             }
-        }
-    }
-
-    private static boolean matchesHash(byte[] bytes, String hash) {
-        try {
-            byte[] digest = MessageDigest.getInstance("SHA-256").digest(bytes);
-            return Arrays.equals(HEX.parseHex(hash), digest);
-        } catch (java.security.NoSuchAlgorithmException e) {
-            throw new IllegalStateException("SHA-256 is not available", e);
         }
     }
 

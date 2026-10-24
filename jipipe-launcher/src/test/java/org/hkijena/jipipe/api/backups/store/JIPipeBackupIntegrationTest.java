@@ -350,8 +350,15 @@ class JIPipeBackupIntegrationTest {
         assertTrue(Files.isRegularFile(backupRoot.resolve("snapshots").resolve(snapshotId + ".json")),
                 "the manifest must survive pruning");
 
-        // Delete the snapshot → the session becomes empty and IS pruned
-        JIPipeBackupStoreOperations.deleteSnapshot(backupRoot, snapshotId, sessionDir, JIPipeProgressInfo.SILENT);
+        // Delete the snapshot → the session becomes empty and IS pruned.
+        // deleteSnapshot rewrites the session index and therefore requires the
+        // caller to hold the store write lock (the new contract).
+        assertTrue(store.acquireWriteLock(5000), "the test must hold the store write lock");
+        try {
+            JIPipeBackupStoreOperations.deleteSnapshot(store, snapshotId, sessionDir, JIPipeProgressInfo.SILENT);
+        } finally {
+            store.releaseWriteLock();
+        }
         PruneBackupsRun.pruneEmptySessions(backupRoot, JIPipeProgressInfo.SILENT);
         assertFalse(Files.exists(sessionDir),
                 "after the last snapshot is deleted, the empty session must be pruned");

@@ -305,7 +305,7 @@ class JIPipeBackupSnapshotCreationTest {
             assertTrue(store.has(hash), "precondition: the object is stored");
             assertTrue(Files.isRegularFile(manifest), "precondition: the manifest is persisted");
 
-            JIPipeBackupStoreOperations.deleteSnapshot(backupRoot, snapshot.getSnapshotId(), sessionDir,
+            JIPipeBackupStoreOperations.deleteSnapshot(store, snapshot.getSnapshotId(), sessionDir,
                     JIPipeProgressInfo.SILENT);
 
             assertFalse(Files.exists(manifest), "the manifest must be deleted");
