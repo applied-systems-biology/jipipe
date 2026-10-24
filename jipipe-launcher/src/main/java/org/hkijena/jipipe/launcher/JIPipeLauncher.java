@@ -44,6 +44,10 @@ public class JIPipeLauncher {
             else if(argsList.contains("install-artifacts")) {
                 preprocessArgsListForSubCommand(argsList, "install-artifacts");
                 DeployArtifactsCommand.doInstallArtifacts(argsList);
+            } else if(argsList.contains("screenshot-ui")) {
+                preprocessArgsListForSubCommand(argsList, "screenshot-ui");
+                keepRunning = true;
+                ScreenshotUiCommand.doScreenshotUi(argsList);
             } else if (argsList.contains("gui")) {
                 preprocessArgsListForSubCommand(argsList, "gui");
                 keepRunning = true;
