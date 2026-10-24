@@ -142,6 +142,7 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private boolean projectModified;
     private JButton openProjectOverviewButton;
     private final ProjectSavedEventEmitter projectSavedEventEmitter = new ProjectSavedEventEmitter();
+    private final ProjectSavingEventEmitter projectSavingEventEmitter = new ProjectSavingEventEmitter();
 
     /**
      * @param window           Parent window
@@ -1335,6 +1336,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         return projectSavedEventEmitter;
     }
 
+    public ProjectSavingEventEmitter getProjectSavingEventEmitter() {
+        return projectSavingEventEmitter;
+    }
+
     public interface ProjectSavedEventListener {
         void onProjectSaved(ProjectSavedEvent event);
     }
@@ -1350,6 +1355,46 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         @Override
         protected void call(ProjectSavedEventListener listener, ProjectSavedEvent event) {
             listener.onProjectSaved(event);
+        }
+    }
+
+    /**
+     * Fired by the project window to tell the save button (and any other
+     * interested component) about the NON-MODAL JIPX save (feature #753):
+     * {@code saving=true} when the save started (stage = current phase, e.g.
+     * "writing"), {@code saving=false} when it finished (stage = the result
+     * flash text, e.g. "Saved ✓" / "Save failed ✗" / "Save cancelled").
+     * Emitted on the EDT (start) or from a worker thread for the live stage
+     * (the save button hops to the EDT before touching its components).
+     */
+    public interface ProjectSavingEventListener {
+        void onProjectSaving(ProjectSavingEvent event);
+    }
+
+    public static class ProjectSavingEvent extends AbstractJIPipeEvent {
+        private final boolean saving;
+        private final String stage;
+
+        public ProjectSavingEvent(JIPipeDesktopProjectWorkbench source, boolean saving, String stage) {
+            super(source);
+            this.saving = saving;
+            this.stage = stage;
+        }
+
+        public boolean isSaving() {
+            return saving;
+        }
+
+        public String getStage() {
+            return stage;
+        }
+    }
+
+    public static class ProjectSavingEventEmitter extends JIPipeEventEmitter<ProjectSavingEvent, ProjectSavingEventListener> {
+
+        @Override
+        protected void call(ProjectSavingEventListener listener, ProjectSavingEvent event) {
+            listener.onProjectSaving(event);
         }
     }
 }

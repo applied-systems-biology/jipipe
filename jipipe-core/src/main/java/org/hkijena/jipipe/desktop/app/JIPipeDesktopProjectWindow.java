@@ -37,6 +37,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
@@ -73,6 +74,15 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
+
+    /**
+     * Per-project queue for JIPX saves (feature #753). Lazily created on the
+     * first JIPX save; a NEW executor instance per window/project (NOT the
+     * global singleton), so a large save in one project never stalls a save
+     * in another, while same-project saves (manual vs. autosave) still
+     * serialize.
+     */
+    private JIPipeQueuedRunnableExecutor saveQueue;
 
     /**
      * @param context          context
@@ -603,21 +613,28 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
-     * The JIPipe 6 (JIPX) save flow (spec §5.6): the workspace
-     * materialization, the crate build (incl. JSON-schema validation),
-     * the zip, and the full re-load of the saved container all run in a
-     * Swing worker with a progress dialog — no EDT hang. The legacy save
-     * stays synchronous (frozen behavior).
+     * The JIPipe 6 (JIPX) save flow (spec §5.6) — NON-MODAL (feature #753):
+     * the workspace materialization, the crate build (incl. JSON-schema
+     * validation), the zip, and the full re-load of the saved container all
+     * run in a Swing worker on a PER-PROJECT queue — no modal log dialog, no
+     * EDT hang. The save button shows a "Saving…" state and a transient
+     * result flash; the user can keep working on other projects while a
+     * large save runs. The legacy save stays synchronous (frozen behavior).
      * <p>
-     * EDT pre-steps: setting the work directory and injecting the GUI
-     * tab metadata (reads the workbench UI state — done BEFORE the
-     * worker starts). EDT post-steps (after the dialog closes): on
-     * success, the title / modified flag / status bar /
-     * {@code ProjectSavedEvent} / recent projects, and the RO-Crate
-     * compliance warning (only when the save carried violations); on
-     * failure, an accurate error dialog (write failed → the existing
-     * file was not changed; write succeeded but the re-check load
-     * failed → the file WAS replaced) — and the modified flag is kept.
+     * EDT pre-steps: setting the work directory and injecting the GUI tab
+     * metadata (reads the workbench UI state — done BEFORE enqueue). The
+     * run body (write → self-verify → re-check) and the writer's
+     * {@code synchronized(workspace)} lock are unchanged.
+     * <p>
+     * Finish handling (worker thread → hop to EDT): on success, the title /
+     * modified flag / status bar / {@code ProjectSavedEvent} / recent
+     * projects + a "Saved" flash — NO compliance dialog (replaced by the
+     * publish button's static FAIR badge, see the workbench); on failure, an
+     * accurate error dialog (write failed → the existing file was not
+     * changed; write succeeded but the re-check load failed → the file WAS
+     * replaced) + a "Save failed" flash; on cancellation, a status-bar
+     * message. The modified flag is kept on failure/cancellation. The save
+     * is pushed to the run-logs marked read (the run is log-silent).
      *
      * @param savePath       the JIPX target file
      * @param updateSavePath if the internally tracked project file path should be updated to the new save path
@@ -626,24 +643,33 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         JIPipeProject project = getProject();
         // EDT pre-steps: the work directory (it must be set before the
         // first workspace access — temp-base memoization) and the GUI
-        // tab metadata (workbench UI state).
+        // tab metadata (workbench UI state) — done BEFORE enqueue.
         project.setWorkDirectory(savePath.getParent());
         project.getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY,
                 new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
 
+        final JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
         final List<String> violations = new ArrayList<>();
         final Throwable[] failure = new Throwable[1];
         // "write" = the container write itself; "recheck" = the container
         // was written (the atomic replace succeeded) but the re-check
         // load of the saved file failed.
         final String[] failureStage = new String[]{"write"};
+        final JIPipeQueuedRunnableExecutor queue = getOrCreateSaveQueue();
+        final String[] currentStage = {""};
 
-        JIPipeQueuedRunnableExecutor localQueue = new JIPipeQueuedRunnableExecutor("Project saving");
-        final boolean[] interrupted = {false};
         DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
             @Override
             public String getTaskLabel() {
                 return "Save JIPipe 6 project " + savePath;
+            }
+
+            @Override
+            public boolean isLogSilent() {
+                // Feature #753: the save is pushed to the run-logs, but is
+                // auto-marked read (no notification badge) because a normal
+                // save is not an error the user must react to.
+                return true;
             }
 
             @Override
@@ -675,57 +701,177 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 }
             }
         };
-        localQueue.getInterruptedEventEmitter().subscribeLambdaOnce((emitter, event) -> {
-            if (event.getRun() == run) {
-                interrupted[0] = true;
-            }
-        });
-        JIPipeDesktopRunExecuteUI.runInDialog(projectWorkbench, this, run, localQueue, JIPipeDesktopRunExecuteUI.GlobalLogMode.OnlyFailures);
 
-        if (interrupted[0]) {
-            // The save was cancelled mid-run: the atomic replace may not
-            // have run — treat it as an aborted save and keep the
-            // modified flag.
-            projectWorkbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
-        } else if (failure[0] == null) {
-            // Everything succeeded: the EDT bookkeeping.
+        // Live SAVING stage label: the writer logs "Materialize JIPX
+        // workspace", "Zipping JIPX workspace", "Self-verifying JIPX
+        // container"; the re-check resolves to "Re-check saved project".
+        // The button shows "Saving… <stage>" (indeterminate — no % bar).
+        final JIPipeProgressInfo.StatusUpdatedEventListener stageListener = event -> {
+            if (event.getProgressInfo() != null && event.getProgressInfo().isCancelled()) {
+                return;
+            }
+            String stage = mapSaveStage(event.getMessage());
+            if (stage == null) {
+                return;
+            }
+            currentStage[0] = stage;
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
+        };
+        run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(stageListener);
+
+        // The SAVING state is shown as soon as the run actually starts (not
+        // merely when it is enqueued — it may wait behind another save on
+        // this project's queue), and reverted when it finishes.
+        final JIPipeRunnable.StartedEventListener startListener = event -> {
+            if (event.getRun() == run) {
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, ""));
+            }
+        };
+        queue.getStartedEventEmitter().subscribe(startListener);
+
+        // Finish bookkeeping. A per-run, self-unsubscribing listener on the
+        // LONG-LIVED per-project queue (NOT subscribeLambdaOnce: on a queue
+        // reused across saves, a once-subscription is consumed by whichever
+        // run finishes first — the `event.getRun() == run` guard prevents a
+        // wrong run from triggering bookkeeping, but it does NOT prevent the
+        // once-flag from being consumed, which would drop a sibling save's
+        // bookkeeping). Self-unsubscribe keeps the long-lived queue's
+        // subscriber list clean (leak-free). The two completion listeners
+        // reference each other to unsubscribe, so they are held in arrays to
+        // break the forward-reference (each is subscribed before it is
+        // invoked, so the slot is always populated in practice).
+        final JIPipeRunnable.FinishedEventListener[] finishHolder = new JIPipeRunnable.FinishedEventListener[1];
+        final JIPipeRunnable.InterruptedEventListener[] interruptHolder = new JIPipeRunnable.InterruptedEventListener[1];
+        JIPipeRunnable.FinishedEventListener finishListener = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
+            queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
+            queue.getStartedEventEmitter().unsubscribe(startListener);
+            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            String stage = currentStage[0];
+            SwingUtilities.invokeLater(() -> onSaveFinished(run, stage, failure, failureStage, violations, savePath, updateSavePath));
+        };
+        JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
+            queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
+            queue.getStartedEventEmitter().unsubscribe(startListener);
+            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            String stage = currentStage[0];
+            SwingUtilities.invokeLater(() -> onSaveCancelled(run, stage, savePath));
+        };
+        finishHolder[0] = finishListener;
+        interruptHolder[0] = interruptListener;
+        queue.getFinishedEventEmitter().subscribe(finishListener);
+        queue.getInterruptedEventEmitter().subscribe(interruptListener);
+
+        queue.enqueue(run);
+    }
+
+    /**
+     * The SAVING stage label for the save button, derived from the writer's
+     * progress log. Returns {@code null} for log lines that do not indicate a
+     * new stage (e.g. the initial progress frame, per-part zips).
+     */
+    private static String mapSaveStage(String statusMessage) {
+        if (statusMessage == null) {
+            return null;
+        }
+        if (statusMessage.startsWith("Materialize")) {
+            return "writing";
+        }
+        if (statusMessage.startsWith("Zipping")) {
+            return "compressing";
+        }
+        if (statusMessage.startsWith("Self-verifying")) {
+            return "verifying";
+        }
+        if (statusMessage.startsWith("Re-check")) {
+            return "verifying";
+        }
+        return null;
+    }
+
+    /**
+     * EDT bookkeeping for a JIPX save that just finished (feature #753).
+     */
+    private void onSaveFinished(JIPipeRunnable run, String stage, Throwable[] failure, String[] failureStage,
+                                List<String> violations, Path savePath, boolean updateSavePath) {
+        JIPipeProject project = getProject();
+        JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+        if (failure[0] == null) {
+            // Everything succeeded: the EDT bookkeeping. NO compliance
+            // dialog — replaced by the publish button's static FAIR badge.
             if (updateSavePath) {
                 project.setProjectFile(savePath);
                 projectSavePath = savePath;
             }
             updateTitle();
-            projectWorkbench.setProjectModified(false);
-            projectWorkbench.sendStatusBarText("Saved project to " + savePath);
-            projectWorkbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(projectWorkbench));
+            workbench.setProjectModified(false);
+            workbench.sendStatusBarText("Saved project to " + savePath);
+            workbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(workbench));
             JIPipe.getInstance().getRecentProjects().add(savePath);
-
-            if (!violations.isEmpty()) {
-                JOptionPane.showMessageDialog(getProjectWorkbench(),
-                        "RO-Crate compliance warnings:\n- " + String.join("\n- ", violations) +
-                                "\n\nThe project was saved.",
-                        "JIPipe 6 save",
-                        JOptionPane.WARNING_MESSAGE);
-            }
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Saved ✓"));
         } else if ("recheck".equals(failureStage[0])) {
             // The write succeeded (the target WAS replaced), but loading
             // the saved file failed — say exactly that.
-            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(failure[0],
+            UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
                     "Error after saving!",
                     "The JIPipe 6 project file was written to '" + savePath + "' (the existing file WAS replaced), " +
                             "but loading the saved file failed: " + failure[0],
                     "The container may be corrupt or not fully loadable by this JIPipe version. " +
                             "Please check the file and re-save the project if necessary."));
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
         } else {
             // The write itself failed — the atomic replace never ran, so
             // the existing file is untouched.
-            UIUtils.showErrorDialog(getProjectWorkbench(), this, new JIPipeValidationRuntimeException(failure[0],
+            UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
                     "Error during saving!",
                     "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
                     "Please check if you have write access to the temporary directory and the target directory. " +
                             "If this is the case, please contact the JIPipe authors."));
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
         }
-        // On failure the modified flag is kept: the project is still
-        // unsaved.
+        // Push the save to the run-logs, marked read (feature #753). The
+        // per-project save queue is NOT the global singleton that the log
+        // collection auto-subscribes to, so a manual push is required and
+        // cannot double-add (see the log-collection wiring note in the
+        // report). isLogSilent()=true makes it auto-mark as read.
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, failure[0] == null);
+    }
+
+    /**
+     * EDT bookkeeping for a cancelled JIPX save (feature #753).
+     */
+    private void onSaveCancelled(JIPipeRunnable run, String stage, Path savePath) {
+        JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+        // The save was cancelled mid-run: the atomic replace may not have
+        // run — treat it as an aborted save and keep the modified flag.
+        workbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
+        workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save cancelled"));
+        // Push the cancellation to the run-logs, marked read.
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+    }
+
+    /**
+     * Lazily creates the per-project save queue. A NEW executor instance per
+     * window/project (NOT the global singleton) — feature #753.
+     */
+    private JIPipeQueuedRunnableExecutor getOrCreateSaveQueue() {
+        if (saveQueue == null) {
+            String projectName = project == null || project.getMetadata() == null
+                    ? "project"
+                    : StringUtils.nullToEmpty(project.getMetadata().getName()).trim();
+            if (projectName.isEmpty()) {
+                projectName = "project";
+            }
+            saveQueue = new JIPipeQueuedRunnableExecutor("Save " + projectName);
+        }
+        return saveQueue;
     }
 
     /**
