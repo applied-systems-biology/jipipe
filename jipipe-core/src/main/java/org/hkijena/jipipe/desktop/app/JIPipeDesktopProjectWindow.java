@@ -656,7 +656,6 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         // load of the saved file failed.
         final String[] failureStage = new String[]{"write"};
         final JIPipeQueuedRunnableExecutor queue = getOrCreateSaveQueue();
-        final String[] currentStage = {""};
 
         DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
             @Override
@@ -714,7 +713,6 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             if (stage == null) {
                 return;
             }
-            currentStage[0] = stage;
             workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
         };
         run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(stageListener);
@@ -750,8 +748,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
             run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
-            String stage = currentStage[0];
-            SwingUtilities.invokeLater(() -> onSaveFinished(run, stage, failure, failureStage, violations, savePath, updateSavePath));
+            SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
         };
         JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
             if (event.getRun() != run) {
@@ -761,8 +758,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
             queue.getStartedEventEmitter().unsubscribe(startListener);
             run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
-            String stage = currentStage[0];
-            SwingUtilities.invokeLater(() -> onSaveCancelled(run, stage, savePath));
+            SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
         };
         finishHolder[0] = finishListener;
         interruptHolder[0] = interruptListener;
@@ -799,42 +795,49 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     /**
      * EDT bookkeeping for a JIPX save that just finished (feature #753).
      */
-    private void onSaveFinished(JIPipeRunnable run, String stage, Throwable[] failure, String[] failureStage,
-                                List<String> violations, Path savePath, boolean updateSavePath) {
+    private void onSaveFinished(JIPipeRunnable run, Throwable[] failure, String[] failureStage,
+                                Path savePath, boolean updateSavePath) {
         JIPipeProject project = getProject();
-        JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
-        if (failure[0] == null) {
-            // Everything succeeded: the EDT bookkeeping. NO compliance
-            // dialog — replaced by the publish button's static FAIR badge.
-            if (updateSavePath) {
-                project.setProjectFile(savePath);
-                projectSavePath = savePath;
+        // The window may have been closed (the project disposed) while the save
+        // was still running on its per-project queue. A finished run is still
+        // worth logging (pushToLog below), but skip all UI bookkeeping — the
+        // workbench / title / status bar / recents / dialog would otherwise
+        // touch a dead workbench parented to a disposed frame.
+        if (!project.isDisposed()) {
+            JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+            if (failure[0] == null) {
+                // Everything succeeded: the EDT bookkeeping. NO compliance
+                // dialog — replaced by the publish button's static FAIR badge.
+                if (updateSavePath) {
+                    project.setProjectFile(savePath);
+                    projectSavePath = savePath;
+                }
+                updateTitle();
+                workbench.setProjectModified(false);
+                workbench.sendStatusBarText("Saved project to " + savePath);
+                workbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(workbench));
+                JIPipe.getInstance().getRecentProjects().add(savePath);
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Saved ✓"));
+            } else if ("recheck".equals(failureStage[0])) {
+                // The write succeeded (the target WAS replaced), but loading
+                // the saved file failed — say exactly that.
+                UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
+                        "Error after saving!",
+                        "The JIPipe 6 project file was written to '" + savePath + "' (the existing file WAS replaced), " +
+                                "but loading the saved file failed: " + failure[0],
+                        "The container may be corrupt or not fully loadable by this JIPipe version. " +
+                                "Please check the file and re-save the project if necessary."));
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
+            } else {
+                // The write itself failed — the atomic replace never ran, so
+                // the existing file is untouched.
+                UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
+                        "Error during saving!",
+                        "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
+                        "Please check if you have write access to the temporary directory and the target directory. " +
+                                "If this is the case, please contact the JIPipe authors."));
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
             }
-            updateTitle();
-            workbench.setProjectModified(false);
-            workbench.sendStatusBarText("Saved project to " + savePath);
-            workbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(workbench));
-            JIPipe.getInstance().getRecentProjects().add(savePath);
-            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Saved ✓"));
-        } else if ("recheck".equals(failureStage[0])) {
-            // The write succeeded (the target WAS replaced), but loading
-            // the saved file failed — say exactly that.
-            UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
-                    "Error after saving!",
-                    "The JIPipe 6 project file was written to '" + savePath + "' (the existing file WAS replaced), " +
-                            "but loading the saved file failed: " + failure[0],
-                    "The container may be corrupt or not fully loadable by this JIPipe version. " +
-                            "Please check the file and re-save the project if necessary."));
-            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
-        } else {
-            // The write itself failed — the atomic replace never ran, so
-            // the existing file is untouched.
-            UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
-                    "Error during saving!",
-                    "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
-                    "Please check if you have write access to the temporary directory and the target directory. " +
-                            "If this is the case, please contact the JIPipe authors."));
-            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
         }
         // Push the save to the run-logs, marked read (feature #753). The
         // per-project save queue is NOT the global singleton that the log
@@ -847,12 +850,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     /**
      * EDT bookkeeping for a cancelled JIPX save (feature #753).
      */
-    private void onSaveCancelled(JIPipeRunnable run, String stage, Path savePath) {
-        JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
-        // The save was cancelled mid-run: the atomic replace may not have
-        // run — treat it as an aborted save and keep the modified flag.
-        workbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
-        workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save cancelled"));
+    private void onSaveCancelled(JIPipeRunnable run, Path savePath) {
+        // Same disposed-guard as onSaveFinished: skip UI bookkeeping if the
+        // window was closed mid-save, but still log the cancellation.
+        if (!getProject().isDisposed()) {
+            JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+            // The save was cancelled mid-run: the atomic replace may not have
+            // run — treat it as an aborted save and keep the modified flag.
+            workbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save cancelled"));
+        }
         // Push the cancellation to the run-logs, marked read.
         JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
     }

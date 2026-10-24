@@ -170,18 +170,25 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
         // Feature #753: recompute the publish button's static FAIR badge when
         // project metadata changes and on open/load (the initial call below).
-        // The parameter-access commit path (JIPipeReflectionParameterAccess.set)
-        // emits a ParameterChangedEvent on the metadata emitter for scalar
-        // fields (license, summary, ...). Author LIST mutations do NOT fire the
-        // parameter-changed emitter (they mutate the JIPipeListParameter), so
-        // we ALSO watch the structural-change emitter as a safety net — see the
-        // report. A strong lambda (like the adjacent graph-changed watchers
-        // below) is correct: the workbench, project and window form one
-        // GC-able cluster that dies together, so no leak — and a weak lambda
-        // would be unsafe (the temporary lambda can be collected before it is
-        // ever invoked, silently dropping the subscription).
-        project.getMetadata().getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> updatePublishFairBadge());
-        project.getMetadata().getParameterStructureChangedEventEmitter().subscribeLambda((emitter, event) -> updatePublishFairBadge());
+        //  - The parameter-access commit path (JIPipeReflectionParameterAccess.set,
+        //    used by the Project-metadata settings sheet) fires a ParameterChangedEvent
+        //    on the metadata emitter for BOTH scalar fields (license, summary) and the
+        //    authors list (verified empirically: the list editor's access.set fires it
+        //    even though it mutates the JIPipeListParameter in place).
+        //  - JIPipeProject#addAuthorsFromGlobalList (auto-save) mutates the authors
+        //    list in place and fires NO emitter, so we ALSO subscribe to the
+        //    dedicated authors-changed emitter that it fires (guarded to no-ops).
+        // We do NOT use the parameter-structure-changed emitter: it never fires for
+        // the fields the badge cares about (no registerSubParameter is wired for
+        // authors, and list mutation is a plain ArrayList change).
+        // Strong lambdas (like the adjacent graph-changed watchers below) are
+        // correct and leak-free: the workbench, project and window form one GC-able
+        // cluster that dies together. A weak lambda would be unsafe (the temporary
+        // lambda can be collected before it is ever invoked, silently dropping the
+        // subscription). The recompute hops to the EDT so a future off-EDT metadata
+        // commit cannot touch the publish button from a worker thread.
+        project.getMetadata().getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> SwingUtilities.invokeLater(this::updatePublishFairBadge));
+        project.getMetadata().getAuthorsChangedEventEmitter().subscribeLambda((emitter, event) -> SwingUtilities.invokeLater(this::updatePublishFairBadge));
         updatePublishFairBadge();
 
         project.getCompartmentRemovedEventEmitter().subscribe(this);

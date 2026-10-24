@@ -461,6 +461,12 @@ public class JIPipeProject implements JIPipeValidatable {
     public void addAuthorsFromGlobalList() {
         JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
         if (settings.isAutomaticallyAddToProjects()) {
+            // Feature #753: capture the authors' JSON state before merging so
+            // we can fire the authors-changed signal only when the merge
+            // actually changed something — this runs on every auto-save, so
+            // the emitter must not spam (recomputing the FAIR badge on every
+            // auto-save for no reason).
+            String authorsBefore = JsonUtils.toJsonString(metadata.getAuthors());
             for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
                 if (projectAuthor_.isEnabled()) {
                     JIPipeAuthorMetadata projectAuthor = projectAuthor_.getContent();
@@ -471,6 +477,9 @@ public class JIPipeProject implements JIPipeValidatable {
                         metadata.getAuthors().add(projectAuthor);
                     }
                 }
+            }
+            if (!authorsBefore.equals(JsonUtils.toJsonString(metadata.getAuthors()))) {
+                metadata.getAuthorsChangedEventEmitter().emit(new JIPipeProjectMetadata.AuthorsChangedEvent(metadata));
             }
         }
     }

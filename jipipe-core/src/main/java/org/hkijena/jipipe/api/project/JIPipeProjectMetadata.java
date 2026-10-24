@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependencyList;
 import org.hkijena.jipipe.api.JIPipeNodeTemplateList;
 import org.hkijena.jipipe.api.JIPipeStandardMetadata;
+import org.hkijena.jipipe.api.events.AbstractJIPipeEvent;
+import org.hkijena.jipipe.api.events.JIPipeEventEmitter;
 import org.hkijena.jipipe.api.OptionalJIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.SetJIPipeDocumentation;
 import org.hkijena.jipipe.api.metadata.JIPipeAuthorMetadata;
@@ -40,6 +42,24 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     private boolean autoAddAuthors = true;
     private boolean showCompartmentsRunPanelInOverview = true;
     private boolean showCompartmentsInOverview = true;
+
+    /**
+     * Fired when the project's author list is mutated through a path that does
+     * NOT go through the parameter commit (feature #753). The canonical editor
+     * (the Project-metadata settings sheet) commits authors via the reflection
+     * parameter access, which fires the parameter-changed emitter on its own;
+     * but {@code JIPipeProject#addAuthorsFromGlobalList} (auto-save) mutates
+     * the list in place and fires nothing. This emitter lets UI (the publish
+     * button's FAIR badge) recompute when that happens. It is a non-serialized
+     * runtime field (the JSON mapper only serializes {@code @JsonGetter}
+     * members), mirroring the pattern of the parameter emitters on
+     * {@link JIPipeStandardMetadata}.
+     */
+    private final AuthorsChangedEventEmitter authorsChangedEventEmitter = new AuthorsChangedEventEmitter();
+
+    public AuthorsChangedEventEmitter getAuthorsChangedEventEmitter() {
+        return authorsChangedEventEmitter;
+    }
 
     @SetJIPipeDocumentation(name = "Automatically add new authors", description = "If enabled, automatically add the configured authors in " +
             "the application settings to the project if enabled.")
@@ -179,5 +199,25 @@ public class JIPipeProjectMetadata extends JIPipeStandardMetadata {
     @JIPipeParameter("show-compartments-panel-in-overview")
     public void setShowCompartmentsInOverview(boolean showCompartmentsInOverview) {
         this.showCompartmentsInOverview = showCompartmentsInOverview;
+    }
+
+    /**
+     * A change to the project's author list (feature #753).
+     */
+    public static class AuthorsChangedEvent extends AbstractJIPipeEvent {
+        public AuthorsChangedEvent(JIPipeProjectMetadata source) {
+            super(source);
+        }
+    }
+
+    public interface AuthorsChangedEventListener {
+        void onAuthorsChanged(AuthorsChangedEvent event);
+    }
+
+    public static class AuthorsChangedEventEmitter extends JIPipeEventEmitter<AuthorsChangedEvent, AuthorsChangedEventListener> {
+        @Override
+        protected void call(AuthorsChangedEventListener listener, AuthorsChangedEvent event) {
+            listener.onAuthorsChanged(event);
+        }
     }
 }
