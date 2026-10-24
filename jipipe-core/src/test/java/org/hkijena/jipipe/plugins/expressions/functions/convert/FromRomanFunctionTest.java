@@ -73,6 +73,15 @@ class FromRomanFunctionTest {
         assertThrows(IllegalArgumentException.class, () -> eval(5L));
     }
 
+    /**
+     * Extended/overflow-M notation (MMMM = 4000) is outside the documented 1–3999
+     * domain and would break the TO_ROMAN/FROM_ROMAN round-trip invariant.
+     */
+    @Test
+    void outOfDomainThrows() {
+        assertThrows(IllegalArgumentException.class, () -> eval("MMMM"));
+    }
+
     @Test
     void roundTrip() {
         ToRomanFunction toRoman = new ToRomanFunction();

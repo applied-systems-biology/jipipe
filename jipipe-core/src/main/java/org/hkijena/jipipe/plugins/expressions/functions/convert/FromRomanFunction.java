@@ -61,6 +61,11 @@ public class FromRomanFunction extends ExpressionFunction {
         if (!ToRomanFunction.toRomanCanonical(total).equals(s)) {
             throw new IllegalArgumentException("Not a valid Roman numeral: \"" + value + "\"");
         }
+        // Keep the pair symmetric with TO_ROMAN's documented 1–3999 domain
+        // (rejects extended/overflow-M notation such as "MMMM" = 4000)
+        if (total < 1 || total > 3999) {
+            throw new IllegalArgumentException("Roman numerals are defined for 1 to 3999, got " + total + ".");
+        }
         return (long) total;
     }
 

@@ -53,7 +53,8 @@ public class ToRomanFunction extends ExpressionFunction {
     }
 
     /**
-     * Encodes the given (in-range) number as a canonical Roman numeral.
+     * Encodes the given non-negative number as a Roman numeral. Values up to 3999 use
+     * standard notation; larger values use overflow-M notation (e.g. 4000 = MMMM).
      * Package-private for the canonical-form validation in {@link FromRomanFunction}.
      */
     static String toRomanCanonical(long n) {

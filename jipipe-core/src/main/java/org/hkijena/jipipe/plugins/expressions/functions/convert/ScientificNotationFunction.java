@@ -34,7 +34,7 @@ public class ScientificNotationFunction extends ExpressionFunction {
             case 0:
                 return new ParameterInfo("number", "The number to format.", Object.class);
             case 1:
-                return new ParameterInfo("decimals", "Mantissa precision (whole number ≥ 0). Default 1.", Object.class);
+                return new ParameterInfo("decimals", "Mantissa precision (whole number 0–100). Default 1.", Object.class);
             default:
                 return null;
         }
@@ -48,11 +48,14 @@ public class ScientificNotationFunction extends ExpressionFunction {
     @Override
     public Object evaluate(List<Object> parameters, JIPipeExpressionVariablesMap variables) {
         double value = toDouble(parameters.get(0));
+        if (Double.isNaN(value) || Double.isInfinite(value)) {
+            throw new IllegalArgumentException("Cannot format as scientific notation: " + value);
+        }
         int decimals = 1;
         if (parameters.size() > 1) {
             double d = toDouble(parameters.get(1));
-            if (d < 0 || d != Math.floor(d)) {
-                throw new IllegalArgumentException("decimals must be a whole number ≥ 0, got: " + d);
+            if (d < 0 || d > 100 || d != Math.floor(d)) {
+                throw new IllegalArgumentException("decimals must be a whole number between 0 and 100, got: " + d);
             }
             decimals = (int) d;
         }

@@ -67,6 +67,17 @@ class ScientificNotationFunctionTest {
         assertThrows(IllegalArgumentException.class, () -> eval("abc"));
     }
 
+    /**
+     * NaN / ±Infinity format without an exponent part; must fail closed with a
+     * clear error, not an internal string-index exception.
+     */
+    @Test
+    void nonFiniteThrows() {
+        assertThrows(IllegalArgumentException.class, () -> eval(Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> eval(Double.POSITIVE_INFINITY));
+        assertThrows(IllegalArgumentException.class, () -> eval(Double.NEGATIVE_INFINITY));
+    }
+
     @Test
     void fractionalDecimalsThrows() {
         assertThrows(IllegalArgumentException.class, () -> eval(1500.0, 2.5));
@@ -75,5 +86,14 @@ class ScientificNotationFunctionTest {
     @Test
     void negativeDecimalsThrows() {
         assertThrows(IllegalArgumentException.class, () -> eval(1500.0, -1L));
+    }
+
+    /**
+     * An absurd mantissa precision must fail closed, not overflow to an
+     * (int) precision that allocates gigabytes in String.format.
+     */
+    @Test
+    void absurdDecimalsThrows() {
+        assertThrows(IllegalArgumentException.class, () -> eval(1500.0, 1e30));
     }
 }
