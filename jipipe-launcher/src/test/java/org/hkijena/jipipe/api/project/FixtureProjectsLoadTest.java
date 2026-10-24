@@ -150,7 +150,12 @@ class FixtureProjectsLoadTest {
 
         // (5) Round-trip: save → reload → identical uuid → node-info-id
         // mapping (same nodes, same identities, no lost or added nodes).
-        Path out = tmp.resolve(fileName + "-rt.jipipe");
+        // The round-trip target uses the canonical legacy .jip extension —
+        // in 6.0, write dispatch is extension-driven (.jip → legacy
+        // writer, .jipx → container writer), and the fixture's historical
+        // .jipipe name is a 5.x-era extension the 6.0 writers do not
+        // accept.
+        Path out = tmp.resolve(fileName + "-rt.jip");
         p.saveProject(out, false);
         JIPipeProject p2 = JIPipeProject.loadProject(out,
             new UnspecifiedValidationReportContext(), new JIPipeValidationReport(), JIPipeProgressInfo.STDOUT);

@@ -50,7 +50,8 @@ public class PathUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_BMP = new FileNameExtensionFilter("Bitmap image (*.bmp)", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_TIFF = new FileNameExtensionFilter("TIFF image (*.tif, *.tiff)", "tif", "tiff");
     public static final FileNameExtensionFilter EXTENSION_FILTER_OME_TIFF = new FileNameExtensionFilter("OME TIFF image (*.ome.tif, *.ome.tiff)", "ome.tif", "ome.tiff");
-    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("JIPipe project (*.jip)", "jip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIP = new FileNameExtensionFilter("Legacy JIPipe project (*.jip)", "jip");
+    public static final FileNameExtensionFilter EXTENSION_FILTER_JIPX = new FileNameExtensionFilter("JIPipe project crate (*.jipx)", "jipx");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPE = new FileNameExtensionFilter("JIPipe extension (*.jipe)", "jipe");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JIPC = new FileNameExtensionFilter("JIPipe compartment (*.jipc)", "jipc");
     public static final FileNameExtensionFilter EXTENSION_FILTER_JSON = new FileNameExtensionFilter("JSON file (*.json)", "json");
@@ -596,6 +597,93 @@ public class PathUtils {
         } else {
             return Paths.get(path + extension);
         }
+    }
+
+    /**
+     * Checks if the given path points to a JIPipe 6 (JIPX) project file.
+     *
+     * @param path the path (null-safe)
+     * @return true if the file name ends with {@code .jipx} (case-insensitive)
+     */
+    public static boolean isJipxPath(Path path) {
+        if (path == null || path.getFileName() == null) {
+            return false;
+        }
+        return path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jipx");
+    }
+
+    /**
+     * Checks if the given path points to a legacy JIPipe project file.
+     *
+     * @param path the path (null-safe)
+     * @return true if the file name ends with {@code .jip} (case-insensitive)
+     */
+    public static boolean isJipPath(Path path) {
+        if (path == null || path.getFileName() == null) {
+            return false;
+        }
+        return path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".jip");
+    }
+
+    /**
+     * Replaces the file extension of the path, preserving the base name's
+     * original casing: {@code /a/Proj.jip} with {@code (".jip", ".jipx")}
+     * yields {@code /a/Proj.jipx}.
+     * <p>
+     * If the file name does not end with {@code oldExtension}
+     * (case-insensitive), the path is returned unchanged — in particular,
+     * {@code .jipx} is <b>not</b> treated as an acceptable alternative
+     * (unlike {@link #ensureExtension}).
+     *
+     * @param path           the path (null-safe)
+     * @param oldExtension   the extension to replace (should include the dot)
+     * @param newExtension   the replacement extension (should include the dot)
+     * @return the path with the replaced extension, or the path unchanged
+     */
+    public static Path replaceExtension(Path path, String oldExtension, String newExtension) {
+        if (path == null) {
+            return null;
+        }
+        Path fileName = path.getFileName();
+        if (fileName == null) {
+            return path;
+        }
+        String name = fileName.toString();
+        if (!name.toLowerCase(Locale.ROOT).endsWith(oldExtension)) {
+            return path;
+        }
+        Path base = path.getParent();
+        String replaced = name.substring(0, name.length() - oldExtension.length()) + newExtension;
+        if (base != null) {
+            return base.resolve(replaced);
+        }
+        return Paths.get(replaced);
+    }
+
+    /**
+     * Finds the JIPipe 6 ({@code .jipx}) sibling of the given legacy
+     * {@code .jip} project path, if it exists.
+     * <p>
+     * A legacy {@code .jip} save can produce a {@code .jipx} sibling
+     * (the migration prompt). When opening the {@code .jip}, its
+     * existing {@code .jipx} sibling is offered as an alternative — the
+     * user decides which version is current. The offer is purely
+     * existence-based on purpose: last-modified times are an unreliable
+     * signal (projects are frequently copied between NAS shares, SFTP
+     * and USB drives, which preserve or reset mtimes arbitrarily).
+     *
+     * @param jipPath the legacy project path (null-safe)
+     * @return the existing {@code .jipx} sibling, or {@code null}
+     */
+    public static Path findJipxSibling(Path jipPath) {
+        if (!isJipPath(jipPath)) {
+            return null;
+        }
+        Path jipxPath = replaceExtension(jipPath, ".jip", ".jipx");
+        if (!Files.isRegularFile(jipxPath)) {
+            return null;
+        }
+        return jipxPath;
     }
 
     /**

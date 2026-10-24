@@ -183,7 +183,8 @@ public class CorePlugin extends JIPipePrepackagedDefaultJavaPlugin {
                 "org.hkijena.jipipe.desktop.app.project.JIPipeDesktopJIPipeProjectTabMetadata");
 
         // Common file types
-        registerFileChooserKnownFileType("JIPipe project file", "apps/jipipe.png", ".jip");
+        registerFileChooserKnownFileType("Legacy JIPipe project file", "apps/jipipe.png", ".jip");
+        registerFileChooserKnownFileType("JIPipe project crate file", "apps/jipipe.png", ".jipx");
 
         registerFileChooserKnownFileType("JSON file", "mimetypes/application-json.png", ".json", ".json5");
         registerFileChooserKnownFileType("XML file", "mimetypes/text-xml.png", ".xml");

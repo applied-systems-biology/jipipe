@@ -10,13 +10,43 @@ import javax.swing.*;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implements JIPipeDesktopProjectWorkbench.ProjectSavedEventListener {
+/**
+ * The menubar save control. Besides the usual Unsaved / Save / Auto save /
+ * Saved states it now shows (feature #753):
+ * <ul>
+ *   <li>SAVING — while a NON-MODAL JIPX save runs: the main button is
+ *       disabled, a spinner icon is shown, and the text is
+ *       {@code Saving… <stage>} (stage ∈ writing / compressing / verifying,
+ *       from the save run's progress). Indeterminate — no % bar.</li>
+ *   <li>RESULT FLASH — when the save finishes: {@code "Saved ✓"} (green) or
+ *       {@code "Save failed ✗"} (red) shown for a few seconds by a single-shot
+ *       timer, then {@link #updateStatus()} reverts to the normal state.</li>
+ * </ul>
+ * The window signals the button through the workbench's
+ * {@link JIPipeDesktopProjectWorkbench.ProjectSavingEventEmitter}.
+ */
+public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implements JIPipeDesktopProjectWorkbench.ProjectSavedEventListener, JIPipeDesktopProjectWorkbench.ProjectSavingEventListener {
+    private static final int RESULT_FLASH_MILLIS = 4000;
     private final JIPipeDesktopProjectWorkbench workbench;
     private final JIPipeAutoSaveApplicationSettings settings;
     private LocalDateTime lastProjectSaveTime;
     private long lastAutoSaveTime = 0;
     private final JCheckBoxMenuItem autoSaveMenuItem = new JCheckBoxMenuItem("Auto save");
     private final Timer checkTimer;
+
+    /** Whether a save is currently running (SAVING state). */
+    private boolean saving = false;
+    /** The current save stage ("writing" / "compressing" / "verifying"). */
+    private String savingStage = "";
+
+    /** Transient result-flash state (single-shot timer reverts it). */
+    private boolean flashActive = false;
+    private Icon flashIcon;
+    private String flashText;
+    private final Timer flashTimer = new Timer(RESULT_FLASH_MILLIS, e -> {
+        flashActive = false;
+        updateStatus();
+    });
 
     public JIPipeDesktopProjectSaveManagerButton(JIPipeDesktopProjectWorkbench workbench) {
         this.workbench = workbench;
@@ -25,11 +55,14 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
 
         checkTimer.setRepeats(true);
         checkTimer.start();
+        // Single-shot: fire once to revert the flash.
+        flashTimer.setRepeats(false);
 
         initialize();
         updateStatus();
 
         workbench.getProjectSavedEventEmitter().subscribe(this);
+        workbench.getProjectSavingEventEmitter().subscribe(this);
         autoSaveMenuItem.setState(settings.isDefaultEnableAutoSave());
     }
 
@@ -37,6 +70,11 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
 
         if (workbench.getProject().isDisposed()) {
             checkTimer.stop();
+            // Leak-free: drop the event subscriptions once the project goes
+            // away (the workbench and its emitters share the button's
+            // lifecycle, but unsubscribe explicitly on dispose).
+            workbench.getProjectSavingEventEmitter().unsubscribe(this);
+            workbench.getProjectSavedEventEmitter().unsubscribe(this);
             return;
         }
 
@@ -76,6 +114,17 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     }
 
     private void updateStatus() {
+        getMainButton().setEnabled(!saving);
+        if (saving) {
+            setIcon(JIPipe.RESOURCES.getIcon16("actions/spinner.png"));
+            setText(savingStage.isEmpty() ? "Saving ..." : "Saving ... " + savingStage);
+            return;
+        }
+        if (flashActive) {
+            setIcon(flashIcon);
+            setText(flashText);
+            return;
+        }
         if (workbench.getProject().getProjectFile() == null) {
             setText("Unsaved");
             setIcon(JIPipe.RESOURCES.getIcon16("actions/save-red.png"));
@@ -92,6 +141,20 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
                 setIcon(JIPipe.RESOURCES.getIcon16(withAutoSave ? "actions/autosave.png" : "actions/save.png"));
             }
         }
+    }
+
+    /**
+     * Starts the transient result flash (single-shot timer reverts it).
+     *
+     * @param icon  the flash icon
+     * @param text  the flash text
+     */
+    private void showResultFlash(Icon icon, String text) {
+        flashIcon = icon;
+        flashText = text;
+        flashActive = true;
+        flashTimer.restart();
+        updateStatus();
     }
 
     private String formatTimeAgo() {
@@ -127,5 +190,35 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
     public void onProjectSaved(JIPipeDesktopProjectWorkbench.ProjectSavedEvent event) {
         lastProjectSaveTime = LocalDateTime.now();
         updateStatus();
+    }
+
+    @Override
+    public void onProjectSaving(JIPipeDesktopProjectWorkbench.ProjectSavingEvent event) {
+        // The live-stage emission can come from the save worker thread; hop
+        // to the EDT before touching the button's components.
+        SwingUtilities.invokeLater(() -> {
+            if (event.isSaving()) {
+                saving = true;
+                savingStage = event.getStage() == null ? "" : event.getStage();
+                updateStatus();
+            } else {
+                saving = false;
+                savingStage = "";
+                String stage = event.getStage();
+                if (stage != null) {
+                    if (stage.startsWith("Saved")) {
+                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-green.png"), "Saved");
+                        return;
+                    }
+                    if (stage.startsWith("Save failed")) {
+                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-red.png"), "Save failed");
+                        return;
+                    }
+                    // "Save cancelled" and other results: no flash, just
+                    // revert to the normal (modified) state.
+                }
+                updateStatus();
+            }
+        });
     }
 }

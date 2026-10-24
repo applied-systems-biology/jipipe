@@ -60,7 +60,7 @@ public class CollectBackupsRun extends DefaultJIPipeRunnable {
                             try (Stream<Path> stream1 = Files.list(sessionPath)) {
                                 stream1.forEach(backupFile -> {
                                     try {
-                                        if (Files.isRegularFile(backupFile) && backupFile.getFileName().toString().endsWith(".jip")) {
+                                        if (Files.isRegularFile(backupFile) && JIPipeProjectBackupUtils.isBackupFile(backupFile)) {
                                             JIPipeProjectBackupItem item = new JIPipeProjectBackupItem();
                                             item.setProjectPath(backupFile);
                                             item.setBackupTime(LocalDateTime.ofInstant(Files.getLastModifiedTime(backupFile).toInstant(), ZoneId.systemDefault()));
@@ -81,7 +81,7 @@ public class CollectBackupsRun extends DefaultJIPipeRunnable {
                             getProgressInfo().log(e.toString());
                         }
                     }
-                } else if (Files.isRegularFile(sessionPath) && sessionPath.getFileName().toString().endsWith(".jip")) {
+                } else if (Files.isRegularFile(sessionPath) && JIPipeProjectBackupUtils.isBackupFile(sessionPath)) {
                     try {
                         // Legacy backup
                         getProgressInfo().log("Adding legacy backup " + sessionPath);

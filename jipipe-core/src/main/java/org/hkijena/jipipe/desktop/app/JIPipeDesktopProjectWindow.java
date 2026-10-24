@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.desktop.app;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import net.java.balloontip.BalloonTip;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
@@ -23,8 +22,11 @@ import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeProject;
-import org.hkijena.jipipe.api.project.JIPipeProjectMetadata;
 import org.hkijena.jipipe.api.project.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectPeek;
+import org.hkijena.jipipe.api.project.jipx.JIPipeXProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.components.JIPipePluginsServiceComponent;
@@ -35,6 +37,7 @@ import org.hkijena.jipipe.desktop.JIPipeDesktop;
 import org.hkijena.jipipe.desktop.app.project.*;
 import org.hkijena.jipipe.desktop.app.resultanalysis.JIPipeDesktopResultUI;
 import org.hkijena.jipipe.desktop.app.running.JIPipeDesktopRunExecuteUI;
+import org.hkijena.jipipe.desktop.app.running.logs.JIPipeDesktopRunnableLogsCollection;
 import org.hkijena.jipipe.desktop.commons.components.app.JIPipeDesktopSplashScreen;
 import org.hkijena.jipipe.desktop.commons.components.tabs.JIPipeDesktopTabPane;
 import org.hkijena.jipipe.desktop.commons.events.WindowClosedEvent;
@@ -47,7 +50,6 @@ import org.hkijena.jipipe.plugins.settings.application.JIPipeFileChooserApplicat
 import org.hkijena.jipipe.plugins.settings.application.JIPipeGeneralUIApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.utils.*;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 
 import javax.swing.*;
@@ -72,6 +74,15 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     private JIPipeDesktopProjectWorkbench projectWorkbench;
     private Path projectSavePath;
     private UUID sessionId = UUID.randomUUID();
+
+    /**
+     * Per-project queue for JIPX saves (feature #753). Lazily created on the
+     * first JIPX save; a NEW executor instance per window/project (NOT the
+     * global singleton), so a large save in one project never stalls a save
+     * in another, while same-project saves (manual vs. autosave) still
+     * serialize.
+     */
+    private JIPipeQueuedRunnableExecutor saveQueue;
 
     /**
      * @param context          context
@@ -243,6 +254,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         "Load with data");
                 switch (result) {
                     case JOptionPane.CANCEL_OPTION:
+                    case JOptionPane.CLOSED_OPTION: // the window's X / Escape cancels, too
                         return;
                     case JOptionPane.NO_OPTION:
                         break;
@@ -325,14 +337,45 @@ public class JIPipeDesktopProjectWindow extends JFrame {
      */
     public void openProject(Path path, boolean forceCurrentWindow) {
         if (Files.isRegularFile(path)) {
+            // .crate.zip files are imported through the RO-Crate flow
+            // BEFORE the project peek (peek refuses non-JIPX ZIPs; the
+            // open chooser offers crate.zip for imports)
+            if (path.getFileName().toString().toLowerCase(Locale.ROOT).endsWith(".crate.zip")) {
+                importROCrate(path, true, true, forceCurrentWindow);
+                return;
+            }
+            // A legacy .jip with an existing .jipx sibling: offer the
+            // project crate (existence-based — mtimes are unreliable
+            // across NAS/SFTP/USB copies, the user decides which is current).
+            Path jipxSibling = PathUtils.findJipxSibling(path);
+            if (jipxSibling != null) {
+                int choice = JOptionPane.showOptionDialog(this,
+                        "A project crate of this project (" + jipxSibling.getFileName()
+                                + ") exists next to the legacy project. Open that one instead?",
+                        "Project crate available",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        new String[]{"Open project crate", "Open legacy project", "Cancel"},
+                        "Open project crate");
+                if (choice == JOptionPane.YES_OPTION) {
+                    openProject(jipxSibling, forceCurrentWindow);
+                    return;
+                }
+                // Anything that is not an explicit "open the legacy project"
+                // (NO_OPTION) aborts the open: CANCEL_OPTION (the Cancel
+                // button) and CLOSED_OPTION (the window's X / Escape) — a
+                // press of X must not be treated as a choice.
+                if (choice != JOptionPane.NO_OPTION) {
+                    return;
+                }
+                // NO_OPTION: continue with the legacy .jip
+            }
             JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
-                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
-                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-
-                JIPipeProjectMetadata metadata = JIPipeProject.loadMetadataFromJson(jsonData);
+                JIPipeProjectPeek peek = JIPipeProjectIOs.peek(path);
+                Set<JIPipeDependency> dependencySet = peek.getDependencies();
 
                 Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
 //                if (JIPipe.getInstance().getImageJPlugins() != null) {
@@ -366,19 +409,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     @Override
                     public void run() {
                         try {
-                            JIPipeProject project = new JIPipeProject();
                             getProgressInfo().log("Loading project " + path);
                             if (Files.size(path) > 3 * 1024 * 1024) {
                                 getProgressInfo().log("INFO: File size is " + (Files.size(path) / 1024 / 1024) + " MB. Loading this project may take long.");
                                 getProgressInfo().log("INFO: Consider down-sizing your projects if you experience performance issues.");
                             }
-                            project.fromJson(jsonData, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
-                            project.setWorkDirectory(path.getParent());
-                            project.validateUserPaths(notifications);
-                            project.setProjectFile(path);
-                            if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
-                                project.fixBrokenEnvironments(getProgressInfo().resolve("Fix environments"));
-                            }
+                            // The dispatcher picks the reader by content
+                            // (ZIP → JIPX, else legacy JSON) and the reader
+                            // performs the full load contract (work directory,
+                            // user path validation, environment fix gate,
+                            // project file)
+                            JIPipeProject project = JIPipeProjectIOs.readerFromPath(path)
+                                    .read(path, new UnspecifiedValidationReportContext(), report, notifications, getProgressInfo());
 
                             if (getProgressInfo().isCancelled()) {
                                 return;
@@ -429,9 +471,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
+                // The output-folder convention carries project.jip; the JIPX
+                // convention writes project.jipx — try the legacy name first
                 Path projectPath = path.resolve("project.jip");
-                JsonNode jsonData = JsonUtils.getObjectMapper().readValue(projectPath.toFile(), JsonNode.class);
-                Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
+                if (!Files.isRegularFile(projectPath)) {
+                    Path legacyProjectPath = projectPath;
+                    projectPath = path.resolve("project.jipx");
+                    if (!Files.isRegularFile(projectPath)) {
+                        projectPath = legacyProjectPath;
+                    }
+                }
+                JIPipeProjectPeek peek = JIPipeProjectIOs.peek(projectPath);
+                Set<JIPipeDependency> dependencySet = peek.getDependencies();
                 Set<JIPipeDependency> missingDependencies = JIPipePluginsServiceComponent.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!JIPipeDesktopInvalidProjectDependenciesInfoDialog.showDialog(getProjectWorkbench(), path, missingDependencies)) {
@@ -451,7 +502,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 JIPipeFileChooserApplicationSettings.getInstance().setLastDirectoryBy(JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, path);
 
-                window.projectSavePath = path.resolve("project.jip");
+                window.projectSavePath = projectPath;
                 window.getProjectWorkbench().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
 
@@ -506,8 +557,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         Path file = JIPipeDesktop.openFile(this,
                 getProjectWorkbench(),
                 JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                "Open JIPipe project (*.jip)",
-                HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
+                "Open JIPipe project",
+                HTMLText.EMPTY,
+                PathUtils.EXTENSION_FILTER_JIP,
+                PathUtils.EXTENSION_FILTER_JIPX,
+                PathUtils.EXTENSION_FILTER_WORKFLOW_RO_CRATE);
         if (file != null) {
             openProject(file, false);
         }
@@ -541,25 +595,356 @@ public class JIPipeDesktopProjectWindow extends JFrame {
             savePath = JIPipeDesktop.saveFile(this,
                     getProjectWorkbench(),
                     JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects,
-                    "Save JIPipe project (*.jip)",
-                    HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP);
+                    "Save JIPipe project",
+                    HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIPX, PathUtils.EXTENSION_FILTER_JIP);
             if (savePath == null) {
                 return;
             }
         }
 
+        // JIPX migration UX (spec §7): a save target that is still a legacy
+        // .jip file gets a per-save format prompt — even for
+        // Ctrl+S (avoidDialog) and for files chosen in the save dialog
+        // that end in .jip. Autosaves (avoidDialog without updateSavePath)
+        // never prompt. The compatibility gate overrides the prompt: a
+        // project that cannot be expressed in the legacy format (see
+        // JIPipeProjectSaveTarget.isLegacyCompatible) is always saved as
+        // .jipx (forward hook for future jipx-exclusive features).
+        if (!JIPipeProjectSaveTarget.isLegacyCompatible(getProject())) {
+            savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
+        } else if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
+            int result = JOptionPane.showOptionDialog(this,
+                    "This project uses the legacy file format.\n" +
+                            "Saving in the modern format writes a new file next to the legacy one, which is kept.",
+                    "Save project format",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    new Object[]{"Modern format (Recommended)", "Legacy format", "Cancel"},
+                    "Modern format (Recommended)");
+            if (result != JOptionPane.YES_OPTION && result != JOptionPane.NO_OPTION) {
+                // CANCEL_OPTION, and CLOSED_OPTION (Escape / closing the
+                // dialog window): abort the save (spec §7).
+                return;
+            }
+            if (result == JOptionPane.YES_OPTION) {
+                // A sibling .jipx in the same directory: replace the
+                // extension, preserving the base name's original casing —
+                // the original .jip is never touched on disk.
+                savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
+            }
+        }
+
+        if (PathUtils.isJipxPath(savePath)) {
+            saveProjectAsJipx(savePath, updateSavePath);
+        } else {
+            saveProjectAsLegacy(savePath, updateSavePath);
+        }
+    }
+
+    /**
+     * The JIPX (project crate) save flow (spec §5.6) — NON-MODAL (feature #753):
+     * the workspace materialization, the crate build (incl. JSON-schema
+     * validation), the zip, and the full re-load of the saved container all
+     * run in a Swing worker on a PER-PROJECT queue — no modal log dialog, no
+     * EDT hang. The save button shows a "Saving…" state and a transient
+     * result flash; the user can keep working on other projects while a
+     * large save runs. The legacy save stays synchronous (frozen behavior).
+     * <p>
+     * EDT pre-steps: setting the work directory and injecting the GUI tab
+     * metadata (reads the workbench UI state — done BEFORE enqueue). The
+     * run body (write → self-verify → re-check) and the writer's
+     * {@code synchronized(workspace)} lock are unchanged.
+     * <p>
+     * Finish handling (worker thread → hop to EDT): on success, the title /
+     * modified flag / status bar / {@code ProjectSavedEvent} / recent
+     * projects + a "Saved" flash — NO compliance dialog (replaced by the
+     * publish button's static FAIR badge, see the workbench); on failure, an
+     * accurate error dialog (write failed → the existing file was not
+     * changed; write succeeded but the re-check load failed → the file WAS
+     * replaced) + a "Save failed" flash; on cancellation, a status-bar
+     * message. The modified flag is kept on failure/cancellation. The save
+     * is pushed to the run-logs marked read (the run is log-silent).
+     *
+     * @param savePath       the JIPX target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     */
+    private void saveProjectAsJipx(Path savePath, boolean updateSavePath) {
+        JIPipeProject project = getProject();
+        // EDT pre-steps: the work directory (it must be set before the
+        // first workspace access — temp-base memoization) and the GUI
+        // tab metadata (workbench UI state) — done BEFORE enqueue.
+        project.setWorkDirectory(savePath.getParent());
+        project.getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY,
+                new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
+
+        final JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+        final List<String> violations = new ArrayList<>();
+        final Throwable[] failure = new Throwable[1];
+        // "write" = the container write itself; "recheck" = the container
+        // was written (the atomic replace succeeded) but the re-check
+        // load of the saved file failed.
+        final String[] failureStage = new String[]{"write"};
+        final JIPipeQueuedRunnableExecutor queue = getOrCreateSaveQueue();
+
+        DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
+            @Override
+            public String getTaskLabel() {
+                return "Save project crate " + savePath;
+            }
+
+            @Override
+            public boolean isLogSilent() {
+                // Feature #753: the save is pushed to the run-logs, but is
+                // auto-marked read (no notification badge) because a normal
+                // save is not an error the user must react to.
+                return true;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    if (getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    // (1) Write: the writer materializes the workspace,
+                    // builds the crate and container, zips it,
+                    // self-verifies, and atomically replaces the target
+                    // (all synchronized on the project workspace).
+                    new JIPipeXProjectWriter().writeWithViolations(project, savePath, getProgressInfo(), violations);
+                    if (getProgressInfo().isCancelled()) {
+                        return;
+                    }
+                    // (2) Re-check: the file we just wrote must actually
+                    // load (the format-agnostic "the file we just wrote
+                    // loads" check — the writer already self-verified the
+                    // container structurally).
+                    failureStage[0] = "recheck";
+                    // The re-check load is a THROWAWAY model: its
+                    // temporary base (and workspace) must be released —
+                    // without close(), every save leaks one JIPipe.tmp.dir
+                    // tree (feature #753 safety audit).
+                    JIPipeProject recheck = JIPipeProject.loadProject(savePath,
+                            new UnspecifiedValidationReportContext(),
+                            new JIPipeValidationReport(),
+                            new JIPipeNotificationInbox(),
+                            getProgressInfo().resolve("Re-check saved project"));
+                    recheck.close(getProgressInfo().resolve("Close re-check project"));
+                } catch (Exception e) {
+                    failure[0] = e;
+                }
+            }
+        };
+
+        // Live SAVING stage label: the writer logs "Materialize JIPX
+        // workspace", "Zipping JIPX workspace", "Self-verifying JIPX
+        // container"; the re-check resolves to "Re-check saved project".
+        // The button shows "Saving… <stage>" (indeterminate — no % bar).
+        final JIPipeProgressInfo.StatusUpdatedEventListener stageListener = event -> {
+            if (event.getProgressInfo() != null && event.getProgressInfo().isCancelled()) {
+                return;
+            }
+            String stage = mapSaveStage(event.getMessage());
+            if (stage == null) {
+                return;
+            }
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, stage));
+        };
+        run.getProgressInfo().getStatusUpdatedEventEmitter().subscribe(stageListener);
+
+        // The SAVING state is shown as soon as the run actually starts (not
+        // merely when it is enqueued — it may wait behind another save on
+        // this project's queue), and reverted when it finishes.
+        final JIPipeRunnable.StartedEventListener startListener = event -> {
+            if (event.getRun() == run) {
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, true, ""));
+            }
+        };
+        queue.getStartedEventEmitter().subscribe(startListener);
+
+        // Finish bookkeeping. A per-run, self-unsubscribing listener on the
+        // LONG-LIVED per-project queue (NOT subscribeLambdaOnce: on a queue
+        // reused across saves, a once-subscription is consumed by whichever
+        // run finishes first — the `event.getRun() == run` guard prevents a
+        // wrong run from triggering bookkeeping, but it does NOT prevent the
+        // once-flag from being consumed, which would drop a sibling save's
+        // bookkeeping). Self-unsubscribe keeps the long-lived queue's
+        // subscriber list clean (leak-free). The two completion listeners
+        // reference each other to unsubscribe, so they are held in arrays to
+        // break the forward-reference (each is subscribed before it is
+        // invoked, so the slot is always populated in practice).
+        final JIPipeRunnable.FinishedEventListener[] finishHolder = new JIPipeRunnable.FinishedEventListener[1];
+        final JIPipeRunnable.InterruptedEventListener[] interruptHolder = new JIPipeRunnable.InterruptedEventListener[1];
+        JIPipeRunnable.FinishedEventListener finishListener = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
+            queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
+            queue.getStartedEventEmitter().unsubscribe(startListener);
+            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            SwingUtilities.invokeLater(() -> onSaveFinished(run, failure, failureStage, savePath, updateSavePath));
+        };
+        JIPipeRunnable.InterruptedEventListener interruptListener = event -> {
+            if (event.getRun() != run) {
+                return;
+            }
+            queue.getFinishedEventEmitter().unsubscribe(finishHolder[0]);
+            queue.getInterruptedEventEmitter().unsubscribe(interruptHolder[0]);
+            queue.getStartedEventEmitter().unsubscribe(startListener);
+            run.getProgressInfo().getStatusUpdatedEventEmitter().unsubscribe(stageListener);
+            SwingUtilities.invokeLater(() -> onSaveCancelled(run, savePath));
+        };
+        finishHolder[0] = finishListener;
+        interruptHolder[0] = interruptListener;
+        queue.getFinishedEventEmitter().subscribe(finishListener);
+        queue.getInterruptedEventEmitter().subscribe(interruptListener);
+
+        queue.enqueue(run);
+    }
+
+    /**
+     * The SAVING stage label for the save button, derived from the writer's
+     * progress log. Returns {@code null} for log lines that do not indicate a
+     * new stage (e.g. the initial progress frame, per-part zips).
+     */
+    private static String mapSaveStage(String statusMessage) {
+        if (statusMessage == null) {
+            return null;
+        }
+        if (statusMessage.startsWith("Materialize")) {
+            return "writing";
+        }
+        if (statusMessage.startsWith("Zipping")) {
+            return "compressing";
+        }
+        if (statusMessage.startsWith("Self-verifying")) {
+            return "verifying";
+        }
+        if (statusMessage.startsWith("Re-check")) {
+            return "verifying";
+        }
+        return null;
+    }
+
+    /**
+     * EDT bookkeeping for a JIPX save that just finished (feature #753).
+     */
+    private void onSaveFinished(JIPipeRunnable run, Throwable[] failure, String[] failureStage,
+                                Path savePath, boolean updateSavePath) {
+        JIPipeProject project = getProject();
+        // The window may have been closed (the project disposed) while the save
+        // was still running on its per-project queue. A finished run is still
+        // worth logging (pushToLog below), but skip all UI bookkeeping — the
+        // workbench / title / status bar / recents / dialog would otherwise
+        // touch a dead workbench parented to a disposed frame.
+        if (!project.isDisposed()) {
+            JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+            if (failure[0] == null) {
+                // Everything succeeded: the EDT bookkeeping. NO compliance
+                // dialog — replaced by the publish button's static FAIR badge.
+                if (updateSavePath) {
+                    project.setProjectFile(savePath);
+                    projectSavePath = savePath;
+                }
+                updateTitle();
+                workbench.setProjectModified(false);
+                workbench.sendStatusBarText("Saved project to " + savePath);
+                workbench.getProjectSavedEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavedEvent(workbench));
+                JIPipe.getInstance().getRecentProjects().add(savePath);
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Saved ✓"));
+            } else if ("recheck".equals(failureStage[0])) {
+                // The write succeeded (the target WAS replaced), but loading
+                // the saved file failed — say exactly that.
+                UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
+                        "Error after saving!",
+                        "The project crate file was written to '" + savePath + "' (the existing file WAS replaced), " +
+                                "but loading the saved file failed: " + failure[0],
+                        "The container may be corrupt or not fully loadable by this JIPipe version. " +
+                                "Please check the file and re-save the project if necessary."));
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
+            } else {
+                // The write itself failed — the atomic replace never ran, so
+                // the existing file is untouched.
+                UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
+                        "Error during saving!",
+                        "While saving the project into '" + savePath + "'. Any existing file was not changed or overwritten." + " The issue cannot be determined. Please contact the JIPipe authors.",
+                        "Please check if you have write access to the temporary directory and the target directory. " +
+                                "If this is the case, please contact the JIPipe authors."));
+                workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save failed ✗"));
+            }
+        }
+        // Push the save to the run-logs, marked read (feature #753). The
+        // per-project save queue is NOT the global singleton that the log
+        // collection auto-subscribes to, so a manual push is required and
+        // cannot double-add (see the log-collection wiring note in the
+        // report). isLogSilent()=true makes it auto-mark as read.
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, failure[0] == null);
+    }
+
+    /**
+     * EDT bookkeeping for a cancelled JIPX save (feature #753).
+     */
+    private void onSaveCancelled(JIPipeRunnable run, Path savePath) {
+        // Same disposed-guard as onSaveFinished: skip UI bookkeeping if the
+        // window was closed mid-save, but still log the cancellation.
+        if (!getProject().isDisposed()) {
+            JIPipeDesktopProjectWorkbench workbench = getProjectWorkbench();
+            // The save was cancelled mid-run: the atomic replace may not have
+            // run — treat it as an aborted save and keep the modified flag.
+            workbench.sendStatusBarText("Saving to " + savePath + " was cancelled");
+            workbench.getProjectSavingEventEmitter().emit(new JIPipeDesktopProjectWorkbench.ProjectSavingEvent(workbench, false, "Save cancelled"));
+        }
+        // Push the cancellation to the run-logs, marked read.
+        JIPipeDesktopRunnableLogsCollection.getInstance().pushToLog(run, false);
+    }
+
+    /**
+     * Lazily creates the per-project save queue. A NEW executor instance per
+     * window/project (NOT the global singleton) — feature #753.
+     */
+    private JIPipeQueuedRunnableExecutor getOrCreateSaveQueue() {
+        if (saveQueue == null) {
+            String projectName = project == null || project.getMetadata() == null
+                    ? "project"
+                    : StringUtils.nullToEmpty(project.getMetadata().getName()).trim();
+            if (projectName.isEmpty()) {
+                projectName = "project";
+            }
+            saveQueue = new JIPipeQueuedRunnableExecutor("Save " + projectName);
+        }
+        return saveQueue;
+    }
+
+    /**
+     * The legacy .jip save flow, frozen: write to a {@code .part} temp
+     * file, self-verify by reloading it, then copy over the target.
+     * <p>
+     * The temp write goes directly through the legacy writer (not the
+     * extension-driven dispatch): the temp file's randomized
+     * {@code .part} name carries no format information, and the target
+     * of a save dialog may end in any of the chooser's extensions.
+     *
+     * @param savePath       the legacy target file
+     * @param updateSavePath if the internally tracked project file path should be updated to the new save path
+     */
+    private void saveProjectAsLegacy(Path savePath, boolean updateSavePath) {
         try {
             Path tempFile = PathUtils.createSubTempFilePath(savePath.getParent(), savePath.getFileName().toString(), ".part");
             getProject().setWorkDirectory(savePath.getParent());
             getProject().getAdditionalMetadata().put(JIPipeDesktopJIPipeProjectTabMetadata.METADATA_KEY, new JIPipeDesktopJIPipeProjectTabMetadata(getProjectWorkbench()));
-            getProject().saveProject(tempFile, updateSavePath);
+            new JIPipeLegacyProjectWriter().write(getProject(), tempFile, JIPipeProgressInfo.SILENT);
+            if (updateSavePath) {
+                getProject().setProjectFile(tempFile);
+            }
 
-            // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile,
+            // Check if the saved project can be loaded (a throwaway model
+            // — closed immediately so its temporary base is cleaned up).
+            JIPipeProject recheck = JIPipeProject.loadProject(tempFile,
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
                     new JIPipeNotificationInbox(),
                     JIPipeProgressInfo.STDOUT);
+            recheck.close(JIPipeProgressInfo.STDOUT);
 
             // Overwrite the target file
             if (Files.exists(savePath)) {
@@ -569,6 +954,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
             // Everything OK, now set the title
             if (updateSavePath) {
+                getProject().setProjectFile(savePath);
                 projectSavePath = savePath;
             }
             updateTitle();
@@ -767,7 +1153,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     "Continue");
         }
 
-        if (option == JOptionPane.CANCEL_OPTION) {
+        // Any result that is not an explicit choice (the window's X /
+        // Escape) cancels the import.
+        if (option != JOptionPane.YES_OPTION && option != JOptionPane.NO_OPTION) {
             return;
         }
 
@@ -875,7 +1263,10 @@ public class JIPipeDesktopProjectWindow extends JFrame {
 
                 // Analyze the output file
                 boolean isRoCrate;
-                if (fileName.endsWith(".jip")) {
+                if (fileName.endsWith(".jip") || PathUtils.isJipxPath(outputFile)) {
+                    // A JIPX container is opened directly as a project —
+                    // this check precedes the ZIP-magic check, because the
+                    // container IS a ZIP
                     isRoCrate = false;
                 } else if (fileName.endsWith(".crate.zip")) {
                     isRoCrate = true;
@@ -893,16 +1284,24 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 } else {
                     Path basePath = JIPipeProjectDefaultsApplicationSettings.getInstance().getAbsoluteDefaultProjectsDirectory();
 
-                    // Copy into unique file within the fallback dir
+                    // Copy into unique file within the fallback dir, preserving
+                    // the project's format (.jip/.jipx); truly unknown
+                    // extensions fall back to .jip
                     String fileNameNoExt;
+                    String extension;
                     if (fileName.endsWith(".jip")) {
                         fileNameNoExt = fileName.substring(0, fileName.length() - 4);
+                        extension = ".jip";
+                    } else if (PathUtils.isJipxPath(outputFile)) {
+                        fileNameNoExt = fileName.substring(0, fileName.length() - 5);
+                        extension = ".jipx";
                     } else {
                         fileNameNoExt = fileName;
+                        extension = ".jip";
                     }
 
                     String uniqueFileNameNoExt = StringUtils.makeUniqueString(fileNameNoExt, "-", str -> Files.exists(basePath.resolve(str)));
-                    Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + ".jip");
+                    Path finalProjectFile = basePath.resolve(uniqueFileNameNoExt + extension);
                     PathUtils.copyFile(outputFile, finalProjectFile);
 
                     SwingUtilities.invokeLater(() -> { openProject(finalProjectFile, forceCurrentWindow); });

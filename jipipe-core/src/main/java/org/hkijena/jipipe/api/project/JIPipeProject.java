@@ -46,6 +46,10 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.api.project.io.JIPipeProjectIOs;
+import org.hkijena.jipipe.api.project.jipx.JIPipeLocalProjectWorkspace;
+import org.hkijena.jipipe.api.project.jipx.JIPipeProjectWorkspace;
+import org.hkijena.jipipe.api.project.io.JIPipeLegacyProjectWriter;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartition;
 import org.hkijena.jipipe.api.runtimepartitioning.JIPipeRuntimePartitionConfiguration;
@@ -58,7 +62,6 @@ import org.hkijena.jipipe.plugins.parameters.api.optional.JIPipeOptionalParamete
 import org.hkijena.jipipe.plugins.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.plugins.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectAuthorsApplicationSettings;
-import org.hkijena.jipipe.plugins.settings.application.JIPipeProjectDefaultsApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeRuntimeApplicationSettings;
 import org.hkijena.jipipe.plugins.settings.project.JIPipeDataStorageProjectSettings;
 import org.hkijena.jipipe.utils.*;
@@ -104,12 +107,22 @@ public class JIPipeProject implements JIPipeValidatable {
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private Path temporaryBaseDirectory;
+    /**
+     * Every temporary base this project ever used (feature #753). The
+     * temporary base re-resolves when the work directory changes (e.g.
+     * "Save As" into another directory — the .jipx migration flow): the
+     * old base's lock is released, but its files (including the
+     * jipx-workspace with payload data) remain on disk.
+     * {@link #close(JIPipeProgressInfo)} deletes them all.
+     */
+    private final Set<Path> usedTemporaryBaseDirectories = new LinkedHashSet<>();
     private boolean isCleaningUp;
     private boolean isLoading;
     private Path projectFile;
     private String projectJIPipeVersion = JIPipe.getJIPipeVersion();
     private FileLocker temporaryBaseDirectoryLocker;
     private boolean disposed;
+    private JIPipeProjectWorkspace workspace;
 
     /**
      * A JIPipe project
@@ -186,7 +199,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads a project from a file
      *
-     * @param fileName     JSON file
+     * @param fileName     project file
      * @param context      the context
      * @param report       issue report
      * @param progressInfo the progress info
@@ -199,8 +212,14 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Loads a project from a file
+     * <p>
+     * Format-agnostic: the reader is resolved by
+     * {@link JIPipeProjectIOs#readerFromPath(Path)} (content-first
+     * dispatch — the legacy JSON reader for plain files, the JIPX
+     * container reader for ZIP files), so every load site in the code
+     * base picks up both project formats.
      *
-     * @param fileName      JSON file
+     * @param fileName      project file
      * @param context       the context
      * @param report        issue report
      * @param notifications notifications for the user
@@ -209,16 +228,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeValidationReportContext context, JIPipeValidationReport report, JIPipeNotificationInbox notifications, JIPipeProgressInfo progressInfo) throws IOException {
-        JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
-        JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, context, report, notifications, progressInfo);
-        project.setWorkDirectory(fileName.getParent());
-        project.validateUserPaths(notifications);
-        if(JIPipeProjectDefaultsApplicationSettings.getInstance().isAutoFixProjectEnvironments()) {
-            project.fixBrokenEnvironments(progressInfo.resolve("Fix environments"));
-        }
-        project.projectFile = fileName;
-        return project;
+        return JIPipeProjectIOs.readerFromPath(fileName).read(fileName, context, report, notifications, progressInfo);
     }
 
     /**
@@ -356,6 +366,10 @@ public class JIPipeProject implements JIPipeValidatable {
 
         PathUtils.createDirectories(output);
         temporaryBaseDirectory = output;
+        // Track every base this project uses — close() cleans them all
+        // (the base re-resolves when the work directory changes; the old
+        // base holds the jipx-workspace with its payload data).
+        usedTemporaryBaseDirectories.add(output);
 
         // Acquire new lock if necessary
         if(temporaryBaseDirectoryLocker == null) {
@@ -372,6 +386,34 @@ public class JIPipeProject implements JIPipeValidatable {
         }
 
         return output;
+    }
+
+    /**
+     * Gets this project's workspace (spec §5.4) — the materialized
+     * working copy of the project's parts in the project's temporary
+     * base directory, at {@code <temp base>/jipx-workspace}.
+     * <p>
+     * <b>Ordering:</b> only call this <i>after</i>
+     * {@link #setWorkDirectory(Path)} has been called (or after the
+     * project has been loaded from a file, which sets the work
+     * directory): the temporary base directory is memoized based on the
+     * work directory, so accessing the workspace before that silently
+     * pins the workspace to the <i>global</i> temporary base.
+     * <p>
+     * The workspace is created lazily (the directory on first call) and
+     * cached. Returns {@code null} for disposed projects (the temporary
+     * base directory — and thus the workspace — is deleted on close).
+     *
+     * @return the workspace, or null if this project is disposed
+     */
+    public JIPipeProjectWorkspace getWorkspace() {
+        if (disposed) {
+            return null;
+        }
+        if (workspace == null) {
+            workspace = new JIPipeLocalProjectWorkspace(getTemporaryBaseDirectory().resolve("jipx-workspace"), this);
+        }
+        return workspace;
     }
 
     /**
@@ -402,29 +444,42 @@ public class JIPipeProject implements JIPipeValidatable {
 
     /**
      * Saves the project
+     * <p>
+     * Format-agnostic: the writer is resolved by
+     * {@link JIPipeProjectIOs#writerFromPath(Path)} (extension-driven
+     * dispatch — the legacy JSON writer for {@code .jip}, the JIPX
+     * container writer for {@code .jipx}), so every save site in the code
+     * base picks up both project formats. The writers are self-contained
+     * (e.g. the authors merge); this method only applies the
+     * {@code updateSavePath} side effect.
      *
      * @param fileName       Target file
      * @param updateSavePath if the internally tracked project file path should be updated to the new fileName
-     * @throws IOException Triggered by {@link ObjectMapper}
+     * @throws IOException triggered by the project writer
      */
     public void saveProject(Path fileName, boolean updateSavePath) throws IOException {
-
-        // Add authors from global list
-        if (metadata.isAutoAddAuthors()) {
-            addAuthorsFromGlobalList();
-        }
-
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(fileName.toFile(), this);
+        JIPipeProjectIOs.writerFromPath(fileName).write(this, fileName, JIPipeProgressInfo.SILENT);
 
         if (updateSavePath) {
             projectFile = fileName;
         }
     }
 
-    private void addAuthorsFromGlobalList() {
+    /**
+     * Merges the global author list into this project's metadata
+     * (deduplicated, merged by fuzzy equality).
+     * No-op when the application settings disable automatic author
+     * addition. Used by the legacy project writer.
+     */
+    public void addAuthorsFromGlobalList() {
         JIPipeProjectAuthorsApplicationSettings settings = JIPipeProjectAuthorsApplicationSettings.getInstance();
         if (settings.isAutomaticallyAddToProjects()) {
+            // Feature #753: capture the authors' JSON state before merging so
+            // we can fire the authors-changed signal only when the merge
+            // actually changed something — this runs on every auto-save, so
+            // the emitter must not spam (recomputing the FAIR badge on every
+            // auto-save for no reason).
+            String authorsBefore = JsonUtils.toJsonString(metadata.getAuthors());
             for (OptionalJIPipeAuthorMetadata projectAuthor_ : settings.getProjectAuthors()) {
                 if (projectAuthor_.isEnabled()) {
                     JIPipeAuthorMetadata projectAuthor = projectAuthor_.getContent();
@@ -436,12 +491,16 @@ public class JIPipeProject implements JIPipeValidatable {
                     }
                 }
             }
+            if (!authorsBefore.equals(JsonUtils.toJsonString(metadata.getAuthors()))) {
+                metadata.getAuthorsChangedEventEmitter().emit(new JIPipeProjectMetadata.AuthorsChangedEvent(metadata));
+            }
         }
     }
 
     public void close(JIPipeProgressInfo progressInfo) {
 
         this.disposed = true;
+        this.workspace = null; // the temporary base directory (and thus the workspace directory) is deleted below
 
         // Clear the cache
         progressInfo.log("Clearing cache ...");
@@ -449,18 +508,28 @@ public class JIPipeProject implements JIPipeValidatable {
 
         if(temporaryBaseDirectoryLocker != null) {
             // Release temporary directory lock
-            progressInfo.log("Releasing temporary directory lock on " + getTemporaryBaseDirectory() + " ...");
+            progressInfo.log("Releasing temporary directory lock on " + temporaryBaseDirectory + " ...");
             temporaryBaseDirectoryLocker.releaseLock();
+            temporaryBaseDirectoryLocker = null;
         }
 
-        // Clear temporary directory
+        // Clear temporary directories: EVERY base this project ever used.
+        // The base re-resolves when the work directory changes (e.g. "Save
+        // As" into another directory — the .jipx migration flow): without
+        // this, the earlier base (holding the jipx-workspace with payload
+        // data) would leak on disk. This deliberately does NOT call
+        // getTemporaryBaseDirectory() — that would create and lock a FRESH
+        // base just to delete it.
         if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
             progressInfo.log("Clearing temporary directory ...");
-            try {
-                PathUtils.deleteDirectoryRecursively(getTemporaryBaseDirectory(), progressInfo.resolve("Delete temporary directory"));
-            } catch (Exception e) {
-                progressInfo.log(e);
+            for (Path base : usedTemporaryBaseDirectories) {
+                try {
+                    PathUtils.deleteDirectoryRecursively(base, progressInfo.resolve("Delete temporary directory"));
+                } catch (Exception e) {
+                    progressInfo.log(e);
+                }
             }
+            usedTemporaryBaseDirectories.clear();
         }
     }
 
@@ -471,8 +540,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(Writer writer) throws IOException {
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(writer, this);
+        new JIPipeLegacyProjectWriter().write(this, writer);
     }
 
     /**
@@ -482,8 +550,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @throws IOException Triggered by {@link ObjectMapper}
      */
     public void saveProject(OutputStream outputStream) throws IOException {
-        ObjectMapper mapper = JsonUtils.getObjectMapper();
-        mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, this);
+        new JIPipeLegacyProjectWriter().write(this, outputStream);
     }
 
     public JIPipeLocalProjectMemoryCache getCache() {
