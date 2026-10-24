@@ -343,6 +343,28 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 importROCrate(path, true, true, forceCurrentWindow);
                 return;
             }
+            // A legacy .jip with an existing .jipx sibling: offer the
+            // JIPipe 6 version (existence-based — mtimes are unreliable
+            // across NAS/SFTP/USB copies, the user decides which is current).
+            Path jipxSibling = PathUtils.findJipxSibling(path);
+            if (jipxSibling != null) {
+                int choice = JOptionPane.showOptionDialog(this,
+                        "A JIPipe 6 version of this project (" + jipxSibling.getFileName()
+                                + ") exists next to the legacy project. Open that one instead?",
+                        "JIPipe 6 version available",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE, null,
+                        new String[]{"Open JIPipe 6 version", "Open legacy project", "Cancel"},
+                        "Open JIPipe 6 version");
+                if (choice == JOptionPane.YES_OPTION) {
+                    openProject(jipxSibling, forceCurrentWindow);
+                    return;
+                }
+                if (choice == JOptionPane.CANCEL_OPTION) {
+                    return;
+                }
+                // NO_OPTION: continue with the legacy .jip
+            }
             JIPipeValidationReport report = new JIPipeValidationReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());

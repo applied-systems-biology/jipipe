@@ -661,6 +661,32 @@ public class PathUtils {
     }
 
     /**
+     * Finds the JIPipe 6 ({@code .jipx}) sibling of the given legacy
+     * {@code .jip} project path, if it exists.
+     * <p>
+     * A legacy {@code .jip} save can produce a {@code .jipx} sibling
+     * (the migration prompt). When opening the {@code .jip}, its
+     * existing {@code .jipx} sibling is offered as an alternative — the
+     * user decides which version is current. The offer is purely
+     * existence-based on purpose: last-modified times are an unreliable
+     * signal (projects are frequently copied between NAS shares, SFTP
+     * and USB drives, which preserve or reset mtimes arbitrarily).
+     *
+     * @param jipPath the legacy project path (null-safe)
+     * @return the existing {@code .jipx} sibling, or {@code null}
+     */
+    public static Path findJipxSibling(Path jipPath) {
+        if (!isJipPath(jipPath)) {
+            return null;
+        }
+        Path jipxPath = replaceExtension(jipPath, ".jip", ".jipx");
+        if (!Files.isRegularFile(jipxPath)) {
+            return null;
+        }
+        return jipxPath;
+    }
+
+    /**
      * Ensures that the parent directories of the path exist.
      * If the parent directory is null, nothing will be done
      *
