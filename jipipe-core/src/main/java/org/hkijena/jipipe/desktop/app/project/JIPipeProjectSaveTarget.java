@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.desktop.app.project;
 
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
@@ -20,18 +21,24 @@ import java.nio.file.Path;
 /**
  * The save-target decision of the JIPX migration UX (JIPX spec §7).
  * <p>
- * 6.0.0 behavior: existing legacy {@code .jip} projects get an
- * Office-style prompt on every save — "Save as JIPipe 6 project
- * ({@code .jipx}) / keep legacy project ({@code .jip}) / cancel".
- * New (untitled) projects and projects already saved as {@code .jipx}
- * proceed directly: untitled projects go straight to the save chooser,
- * whose first filter is {@code .jipx} (so they default to the new
- * format), and {@code .jipx} projects keep round-tripping in the new
+ * JIPipe 6.0 behavior: existing legacy {@code .jip} projects get a
+ * per-save prompt offering the modern format ({@code .jipx},
+ * recommended) or the legacy format ({@code .jip}). New (untitled)
+ * projects and projects already saved as {@code .jipx} proceed
+ * directly: untitled projects go straight to the save chooser, whose
+ * first filter is {@code .jipx} (so they default to the modern
+ * format), and {@code .jipx} projects keep round-tripping in the modern
  * format. Autosaves (the {@code (avoidDialog, updateSavePath)}
  * combination {@code (true, false)}) never prompt — they silently keep
  * the project's current format.
  * <p>
- * The decision is a pure static so it is testable without a GUI
+ * The compatibility gate ({@link #isLegacyCompatible(JIPipeProject)}):
+ * when a project carries state that only the modern format can express,
+ * it cannot be saved as {@code .jip} losslessly — the prompt is skipped
+ * and the project is always saved as {@code .jipx}. No such state exists
+ * yet; the gate is in place for when it lands.
+ * <p>
+ * The decisions are pure statics so they are testable without a GUI
  * (the prompt dialog itself is verified by eye in the app, per the
  * project's test policy).
  */
@@ -106,5 +113,41 @@ public final class JIPipeProjectSaveTarget {
             return false;
         }
         return PathUtils.isJipPath(currentSavePath);
+    }
+
+    /**
+     * Compatibility gate: can this project be FULLY EXRESSED in the legacy
+     * {@code .jip} format? (JIPX spec §7, forward hook.)
+     * <p>
+     * The save flow uses the answer:
+     * <ul>
+     * <li>{@code true} (the default — every project today is expressible
+     * in {@code .jip}) — the normal rules apply: legacy projects get the
+     * format prompt, modern projects save in place;</li>
+     * <li>{@code false} — the project carries state that only the modern
+     * format ({@code .jipx}) can hold. Saving it as {@code .jip} would
+     * lose data, so the prompt is skipped and the project is ALWAYS saved
+     * as {@code .jipx}.</li>
+     * </ul>
+     * No such state exists yet; when a jipx-exclusive feature lands
+     * (e.g. the multi-graph or history extensions), it checks the
+     * project here — the save flow and its tests already honor this
+     * decision, no further rewiring.
+     * <p>
+     * Null-safe: {@code null} returns {@code true} (an unknown project
+     * is not proven to carry modern-only state).
+     *
+     * @param project the project to check
+     * @return true if the project can be saved losslessly in the legacy
+     * format
+     */
+    public static boolean isLegacyCompatible(JIPipeProject project) {
+        if (project == null) {
+            return true;
+        }
+        // Forward hook: the first jipx-exclusive feature (e.g. multi-graph,
+        // history) reports its projects as incompatible here. Until then,
+        // every project is expressible in the legacy format.
+        return true;
     }
 }

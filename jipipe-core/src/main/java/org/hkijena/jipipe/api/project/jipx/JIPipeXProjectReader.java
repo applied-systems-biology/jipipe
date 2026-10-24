@@ -101,10 +101,10 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
         try {
             manifest = project.getWorkspace().getManifest();
         } catch (IOException e) {
-            throw new JIPipeValidationRuntimeException(e, "Not a JIPipe 6 project",
+            throw new JIPipeValidationRuntimeException(e, "Not a JIPipe project crate",
                     "The ZIP container '" + path + "' does not contain a valid " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest: " + e.getMessage(),
                     "JIPX project files are ZIP containers with a " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest at their root. " +
-                            "If this file is not a JIPipe 6 project, it cannot be opened by the JIPX reader.");
+                            "If this file is not a JIPipe project crate, it cannot be opened by the JIPX reader.");
         }
         // (d) Read the parts listed in the manifest; a missing listed part
         // is a corrupt container (the workspace's IOException names the
@@ -120,10 +120,10 @@ public class JIPipeXProjectReader implements JIPipeProjectReader {
             if (!parts.containsKey(requiredPart)) {
                 throw new JIPipeValidationRuntimeException(new IllegalStateException(
                         "missing required part '" + requiredPart + "'"),
-                        "Invalid JIPipe 6 project",
+                        "Invalid JIPipe project crate",
                         "The " + JIPipeXManifest.MANIFEST_FILE_NAME + " manifest of '" + path + "' does not list the required part '"
                                 + requiredPart + "'.",
-                        "The container is not a valid JIPipe 6 project — it may be corrupt or was written by an incompatible tool. " +
+                        "The container is not a valid JIPipe project crate — it may be corrupt or was written by an incompatible tool. " +
                                 "Please check the file or re-save the project.");
             }
         }

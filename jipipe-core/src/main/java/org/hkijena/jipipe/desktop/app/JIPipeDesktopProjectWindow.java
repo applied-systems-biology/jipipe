@@ -344,18 +344,18 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 return;
             }
             // A legacy .jip with an existing .jipx sibling: offer the
-            // JIPipe 6 version (existence-based — mtimes are unreliable
+            // project crate (existence-based — mtimes are unreliable
             // across NAS/SFTP/USB copies, the user decides which is current).
             Path jipxSibling = PathUtils.findJipxSibling(path);
             if (jipxSibling != null) {
                 int choice = JOptionPane.showOptionDialog(this,
-                        "A JIPipe 6 version of this project (" + jipxSibling.getFileName()
+                        "A project crate of this project (" + jipxSibling.getFileName()
                                 + ") exists next to the legacy project. Open that one instead?",
-                        "JIPipe 6 version available",
+                        "Project crate available",
                         JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null,
-                        new String[]{"Open JIPipe 6 version", "Open legacy project", "Cancel"},
-                        "Open JIPipe 6 version");
+                        new String[]{"Open project crate", "Open legacy project", "Cancel"},
+                        "Open project crate");
                 if (choice == JOptionPane.YES_OPTION) {
                     openProject(jipxSibling, forceCurrentWindow);
                     return;
@@ -598,22 +598,24 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         }
 
         // JIPX migration UX (spec §7): a save target that is still a legacy
-        // .jip file gets the per-save Office-style prompt — even for
+        // .jip file gets a per-save format prompt — even for
         // Ctrl+S (avoidDialog) and for files chosen in the save dialog
         // that end in .jip. Autosaves (avoidDialog without updateSavePath)
-        // never prompt.
-        if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
+        // never prompt. The compatibility gate overrides the prompt: a
+        // project that cannot be expressed in the legacy format (see
+        // JIPipeProjectSaveTarget.isLegacyCompatible) is always saved as
+        // .jipx (forward hook for future jipx-exclusive features).
+        if (!JIPipeProjectSaveTarget.isLegacyCompatible(getProject())) {
+            savePath = PathUtils.replaceExtension(savePath, ".jip", ".jipx");
+        } else if (JIPipeProjectSaveTarget.shouldPrompt(savePath, avoidDialog, updateSavePath)) {
             int result = JOptionPane.showOptionDialog(this,
-                    "This project was created in the legacy project format. The new JIPipe 6 project format is recommended: " +
-                            "it is smaller, future-proof, and doubles as an RO-Crate.\n\n" +
-                            "Choosing 'Save as JIPipe 6 project' saves a sibling .jipx file in the same directory " +
-                            "and keeps the existing .jip file on disk.",
+                    "This project uses the legacy file format.\n" +
+                            "Saving in the modern format writes a new file next to the legacy one, which is kept.",
                     "Save project format",
                     JOptionPane.YES_NO_CANCEL_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new Object[]{"Save as JIPipe 6 project (*.jipx)", "Keep legacy project (*.jip)", "Cancel"},
-                    "Save as JIPipe 6 project (*.jipx)");
+                    JOptionPane.QUESTION_MESSAGE, null,
+                    new Object[]{"Modern format (Recommended)", "Legacy format", "Cancel"},
+                    "Modern format (Recommended)");
             if (result != JOptionPane.YES_OPTION && result != JOptionPane.NO_OPTION) {
                 // CANCEL_OPTION, and CLOSED_OPTION (Escape / closing the
                 // dialog window): abort the save (spec §7).
@@ -635,7 +637,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
     }
 
     /**
-     * The JIPipe 6 (JIPX) save flow (spec §5.6) — NON-MODAL (feature #753):
+     * The JIPX (project crate) save flow (spec §5.6) — NON-MODAL (feature #753):
      * the workspace materialization, the crate build (incl. JSON-schema
      * validation), the zip, and the full re-load of the saved container all
      * run in a Swing worker on a PER-PROJECT queue — no modal log dialog, no
@@ -682,7 +684,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
         DefaultJIPipeRunnable run = new DefaultJIPipeRunnable() {
             @Override
             public String getTaskLabel() {
-                return "Save JIPipe 6 project " + savePath;
+                return "Save project crate " + savePath;
             }
 
             @Override
@@ -850,7 +852,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 // the saved file failed — say exactly that.
                 UIUtils.showErrorDialog(workbench, this, new JIPipeValidationRuntimeException(failure[0],
                         "Error after saving!",
-                        "The JIPipe 6 project file was written to '" + savePath + "' (the existing file WAS replaced), " +
+                        "The project crate file was written to '" + savePath + "' (the existing file WAS replaced), " +
                                 "but loading the saved file failed: " + failure[0],
                         "The container may be corrupt or not fully loadable by this JIPipe version. " +
                                 "Please check the file and re-save the project if necessary."));

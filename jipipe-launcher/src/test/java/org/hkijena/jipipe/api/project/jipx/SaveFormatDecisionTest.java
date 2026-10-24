@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.project.jipx;
 
+import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.desktop.app.project.JIPipeProjectSaveTarget;
 import org.junit.jupiter.api.Test;
 
@@ -113,5 +114,26 @@ public class SaveFormatDecisionTest {
                 JIPipeProjectSaveTarget.decideSaveTarget(JIPX));
         assertEquals(JIPipeProjectSaveTarget.SaveTarget.JIPX_PROMPT,
                 JIPipeProjectSaveTarget.decideSaveTarget(JIP));
+    }
+
+    // ------------------------------------------------------------------
+    // isLegacyCompatible (the format-compatibility gate, JIPipe spec §7):
+    // a project whose state cannot be expressed in the legacy format is
+    // ALWAYS saved as .jipx (the prompt is skipped)
+    // ------------------------------------------------------------------
+
+    @Test
+    public void legacyCompatibilityGateNullSafe() {
+        assertTrue(JIPipeProjectSaveTarget.isLegacyCompatible(null),
+                "an unknown project is not proven to carry modern-only state");
+    }
+
+    @Test
+    public void legacyCompatibilityGateCurrentlyEveryProjectIsCompatible() {
+        // No jipx-exclusive state exists yet — every project is still
+        // expressible in the legacy format, so the prompt and the legacy
+        // save path stay reachable. (That old-format projects round-trip
+        // losslessly is pinned by the corpus done-gate.)
+        assertTrue(JIPipeProjectSaveTarget.isLegacyCompatible(new JIPipeProject()));
     }
 }

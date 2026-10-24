@@ -140,7 +140,7 @@ public final class JIPipeProjectIOs {
             ZipEntry manifestEntry = zip.getEntry("jipx.json");
             if (manifestEntry == null) {
                 throw new UnsupportedOperationException(
-                        "not a JIPipe 6 project (missing jipx.json): " + path);
+                        "not a JIPipe project crate (missing jipx.json): " + path);
             }
             JsonNode metadataPart = readZipEntryAsJson(zip, "project/metadata.json");
             JsonNode dependenciesPart = readZipEntryAsJson(zip, "project/dependencies.json");
@@ -185,7 +185,7 @@ public final class JIPipeProjectIOs {
         try {
             return new ZipFile(path.toFile());
         } catch (ZipException e) {
-            throw new UnsupportedOperationException("not a JIPipe 6 project (missing jipx.json): " + path, e);
+            throw new UnsupportedOperationException("not a JIPipe project crate (missing jipx.json): " + path, e);
         }
     }
 }

@@ -131,7 +131,7 @@ class ProjectIOsDispatchTest {
         Path zip = writeZipMagicFile(tmp, "peek.zip");
         UnsupportedOperationException e = assertThrows(UnsupportedOperationException.class,
                 () -> JIPipeProjectIOs.peek(zip));
-        assertTrue(e.getMessage().contains("not a JIPipe 6 project"));
+        assertTrue(e.getMessage().contains("not a JIPipe project crate"));
         assertTrue(e.getMessage().contains("jipx.json"));
     }
 
