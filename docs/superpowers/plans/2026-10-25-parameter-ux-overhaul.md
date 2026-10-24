@@ -24,14 +24,63 @@
 
 These are the input classes / failure modes the spec implies but no unit test fully exercises — each gets a check in its owning task:
 
-1. **LAB out-of-gamut input** (e.g. L=100, a=+100, b=+100) — user expects a *clamped sRGB color*, never an exception; hex readout shows the clamped value. → Task 6 (clamp round-trip test) + Task 7 (manual: drag a/b rail to extremes, type hex of an out-of-gamut value).
-2. **8-digit hex with alpha** (`#RRGGBBAA`) on an *alpha-capable* parameter — must round-trip the alpha; on a non-alpha parameter the α UI is hidden and 8-digit input is normalized to 6-digit. → Task 7 (manual checklist).
-3. **Editable dynamic enum** (`JIPipeDynamicEnumParameter.isEditable() == true`, e.g. TrackMate feature params, `PluginCategoriesEnumParameter`) — must keep the editable combo with free text input even for >5 values. → Task 4 (decision unit test) + Task 4 manual check on a TrackMate node.
+1. **LAB out-of-gamut input** (e.g. L=100, a=+100, b=+100) — user expects a *clamped sRGB color*, never an exception; hex readout shows the clamped value. → Task 6 (clamp round-trip test) + Task 7 (VLM: LAB-tab screenshot shows in-range hex, no error dialog).
+2. **8-digit hex with alpha** (`#RRGGBBAA`) on an *alpha-capable* parameter — must round-trip the alpha; on a non-alpha parameter the α UI is hidden and 8-digit input is normalized to 6-digit. → Task 7 (manual checklist + VLM: alpha-capable screenshot shows α rail + checkerboard; plain screenshot shows no α rail).
+3. **Editable dynamic enum** (`JIPipeDynamicEnumParameter.isEditable() == true`, e.g. TrackMate feature params, `PluginCategoriesEnumParameter`) — must keep the editable combo with free text input even for >5 values. → Task 4 (decision unit test) + VLM screenshot of the editable-combo case if reachable via the showcase set (else manual).
 4. **Dynamic enum whose option count crosses the 5-value threshold at runtime** (values loaded asynchronously / from data) — editor must rebuild its control without losing the current value or crashing on a stale combo. → Task 4 (rebuild test) + manual.
 5. **Font migration on a node with *partial* legacy keys** (e.g. size set, no family key in an old project) — must compose with defaults for the missing keys, never NPE; idempotent on the second load. → Task 10 (migration test with one key omitted) + manual: open a pre-migration project.
 6. **Old project containing the removed `collapsed` key** on a dynamic set — loads without error; key gone after save. → Task 5 (leniency test).
-7. **`comboBoxStyle=true` booleans** (trueLabel/falseLabel, e.g. "By dilation"/"By erosion") — must still render as the 2-value combo, not a switch. → Task 3 (manual checklist across the listed nodes).
-8. **Settings sheets / run dialogs using `JIPipeDesktopFormPanel` directly** (non-parameter rows) — unchanged behavior (they call `addToForm`/`addWideToForm`; only parameter rows change). → Task 2 (manual: open settings + a run dialog).
+7. **`comboBoxStyle=true` booleans** (trueLabel/falseLabel, e.g. "By dilation"/"By erosion") — must still render as the 2-value combo, not a switch. → Task 3 (VLM: comboStyle node screenshot shows the two-value combo with its labels).
+8. **Settings sheets / run dialogs using `JIPipeDesktopFormPanel` directly** (non-parameter rows) — unchanged behavior (they call `addToForm`/`addWideToForm`; only parameter rows change). → Task 2 (VLM: settings-sheet screenshot unchanged vs. master baseline) + manual: open a run dialog.
+
+**VLM verification** (Task 0 harness): every screenshot task produces a *before/after pair* — the `before` rendered from the merge-base (`master`), the `after` from the feature branch — and the VLM (via `da_describe_image`) verifies the expected difference *is present* and no obvious regression (empty panel, overlapping/truncated controls, error text) *is visible*. The VLM verdict is a *signal*, not a gate: ambiguous findings are reported to the user, who remains the final judge of UI quality (standing ruling).
+
+---
+
+### Task 0: VLM screenshot harness — launcher `screenshot-ui` command
+
+**Files:**
+- Create: `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/ScreenshotUiCommand.java`
+- Modify: `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/JIPipeLauncher.java` (dispatch: `screenshot-ui` → `ScreenshotUiCommand.doScreenshotUi(argsList)`, `keepRunning = true` — the GUI needs the AWT thread alive during rendering; the command exits via `JIPipe.exitLater(0)` when done)
+- Create: `jipipe-launcher/src/main/java/org/hkijena/jipipe/launcher/commands/screenshotui/ScreenshotRenderer.java` (panel/dialog → PNG logic, reusable)
+
+**Interfaces:**
+- Consumes: `GuiCommand.startGui`-style boot (`new ImageJ()` + `ij.command().run(JIPipeGUICommand.class, true)` — see `JIPipeGUICommand.main`), `JIPipe.createNode(String id)`, `new JIPipeProject()`/`JIPipeProject.addNode`, `JIPipeDesktopParameterFormPanel` (construct directly: flags `WITH_SCROLLING | WITH_DOCUMENTATION`, no project window needed — it takes the workbench; use `JIPipeDesktopWorkbench`/`JIPipeDesktopDummyWorkbench` as the parameter panels' context — verify which is used by `JIPipeDesktopPipelineParametersPanel`), `java.awt.Robot` or `component.paint(Graphics2D)` (headless-safe offscreen: `new BufferedImage(...)`, `component.printAll(g)`).
+- Produces:
+  - CLI: `java … JIPipeLauncher screenshot-ui --out <dir> [--only <id>[,<id>…]]`
+  - PNG outputs (deterministic set, stable filenames — the VLM prompts key off these names):
+    - `panel-stack-to-montage.png` — `JIPipeDesktopParameterFormPanel` over a `StackToMontage2Algorithm` (`ij1-dimensions-stack2montage-v2`) instance: expressions, booleans, enums (incl. 9-value `Anchor` → box), optional colors/numbers
+    - `panel-import-file-list.png` — over `FileListDataSource` (`import-file-list`): the path-list editor
+    - `panel-roi3d-statistics.png` — over `ExtractRoi3dStatisticsAlgorithm` (`ij3d-measure-roi3d`): the dynamic-set editor (Weka feature set fallback: `Roi3dMeasurementSetParameter`)
+    - `panel-combo-boolean.png` — over a `comboBoxStyle=true` node (e.g. `MorphologicalReconstruction2DAlgorithm`)
+    - `dialog-color.png` — the color dialog at a fixed size over a plain color (once Task 7 exists; before that, render `JColorChooser` for the *before* baseline)
+    - `settings-appearance.png` — a representative settings sheet (form-panel consumer baseline)
+  - `ScreenshotRenderer.renderComponent(Component c, int width, Path outPng): void` — sizes the component (`c.setSize(width, c.getPreferredSize().height)`), `c.doLayout()` + `printAll` into a `BufferedImage(TYPE_INT_ARGB)`, writes PNG (`ImageIO.write`). Runs on the EDT.
+  - Exit code 0 on success; non-zero + stack trace on any render exception.
+
+**How it works (implementation guidance):**
+1. Parse args (`--out`, `--only`).
+2. Boot the GUI stack *in-process* exactly like `GuiCommand.startGui` (ImageJ context, `JIPipeGUICommand.run()` path — set the extension settings silent flag to skip dialogs; look at how `GuiCommand`/`HeadlessRunCommand` handle this — `JIPipeExtensionApplicationSettings.getInstanceFromRaw()`), then wait for `JIPipe.getInstance()` to be initialized (poll `JIPipe.isInstantiated()` + `ensureInitialized`).
+3. On the EDT, for each showcase node id: `JIPipe.createNode(id)`, wrap it (and for `JIPipeAlgorithm`s, no project needed if the parameter panel constructor allows — otherwise create a minimal `JIPipeProject` and `addNode` into its graph, mirroring `JIPipeCreatePipelineNodesFromDraggedDataDragAndDropBehavior` usage), build the `JIPipeDesktopParameterFormPanel`, `renderComponent(panel, 480, out)`.
+4. Dialogs: construct the dialog's content pane directly (no `setVisible(true)` needed for `printAll`), render at fixed 380×560.
+5. Write all PNGs, then `JIPipe.exitLater(0)`.
+
+**Before/after workflow (the plan's per-task VLM steps use this):**
+- *After* (feature branch): `mvn -q -pl jipipe-launcher -am package -DskipTests` then `java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.desktop/javax.swing=ALL-UNNAMED -cp <launcher classpath> org.hkijena.jipipe.launcher.JIPipeLauncher screenshot-ui --out /tmp/opencode/1339/after`
+- *Before* (baseline): `git stash`-free approach — `git worktree add ../jipipe-before master` (or the merge-base), build + run there with `--out /tmp/opencode/1339/before`. (The worktree exists only to render baselines; remove after.)
+- VLM check: `da_describe_image` on the pair (or a stitched side-by-side) with a per-screenshot expectation (see each task's step).
+
+- [ ] **Step 1: Implement the command + renderer** (no showcase panels beyond the 5 above; keep the set small and stable).
+- [ ] **Step 2: Build + smoke-run on the current branch** (pre-overhaul UI is the expected output — it *becomes* the "before" set):
+  Run: `mvn -q -pl jipipe-launcher -am package -DskipTests && java --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.desktop/javax.swing=ALL-UNNAMED -cp "$(mvn -q -pl jipipe-launcher dependency:build-classpath -Dmdep.outputFile=/dev/stdout)" org.hkijena.jipipe.launcher.JIPipeLauncher screenshot-ui --out /tmp/opencode/1339/before`
+  Expected: exit 0, 6 PNGs in `/tmp/opencode/1339/before` (current UI).
+- [ ] **Step 3: VLM sanity pass on the baseline** — `da_describe_image` on `panel-stack-to-montage.png` with prompt "Describe the parameter panel: list each row (name + control type)." Expected: recognizable rows (enum combos with 🔍 buttons, checkbox-list, etc.) — confirms the harness renders real content, not a blank panel.
+- [ ] **Step 4: Commit.**
+
+```bash
+git add jipipe-launcher/src/main
+git commit -m "feat(launcher): screenshot-ui command for VLM-driven UI verification (#1339)"
+```
 
 ---
 
@@ -85,10 +134,13 @@ git commit -m "feat(desktop): add JIPipeDesktopSwitch toggle component (#1339)"
   `addToFormStacked` (new, in `JIPipeDesktopFormPanel`): row 1 = label WEST + options component EAST (reuse `createAndAddEntryPropertiesComponent`), row 2 = editor with `gridx=0, gridwidth=3, weightx=1, fill=HORIZONTAL`. Group headers, pinning, documentation placement, and search filtering keep their existing behavior.
 - [ ] **Step 3: Update the sort comparator** (lines 495–507): remove the `!isUILabelEnabled()` grouping clause (no label-less editors anymore); keep `isPinned()` → `getUIOrder()` → `getUIControlStyleType()` → name.
 - [ ] **Step 4: Remove self-drawn name labels from the self-header editors.** Paths: `plugins/parameters/ui/api/JIPipeDesktopListParameterEditorUI.java`, `…/JIPipeDesktopParameterCollectionListEditorUI.java`, `…/JIPipeDesktopDynamicSetParameterEditorUI.java`, `…/JIPipeDesktopMatrix2DParameterEditorUI.java`, `plugins/parameters/ui/library/JIPipeDesktopMarginParameterEditorUI.java`, `…/JIPipeDesktopFixedMarginParameterEditorUI.java`, `plugins/parameters/library/roi/InnerMarginEditorUIDesktop.java` (boolean is handled in Task 3; script editors draw no name — skip). In this task only: delete the name `JLabel` from their toolbars/headers; keep their other chrome (buttons, collapse) until Tasks 4–5 rework those editors. If an editor's header becomes empty, remove the header.
-- [ ] **Step 5: Compile + targeted run.**
-  Run: `mvn -q -pl jipipe-core compile`
-  Then manual verification (user's standing ruling: they check the running app; you verify compile + no layout exceptions at startup):
-  - Open settings panel, a run dialog, and a node with a list parameter, a matrix parameter, and a script parameter — confirm: names come from the label column, stacked editors show label+`?` line then full-width body, no duplicate names. (Review Focus #8.)
+- [ ] **Step 5: Compile + screenshot verification (VLM).**
+  Run: `mvn -q -pl jipipe-core compile && mvn -q -pl jipipe-launcher -am package -DskipTests`
+  Run the Task 0 harness (`screenshot-ui --out /tmp/opencode/1339/after`) and compare with `da_describe_image`:
+  - `panel-stack-to-montage.png` (pair vs. before): stacked editors (list/matrix/script) show *name line on top, full-width control below*; no editor repeats its name inside the widget; enum/number/boolean rows keep the compact inline row.
+  - `settings-appearance.png` (pair vs. before): unchanged (Review Focus #8).
+  Expected VLM findings: stacked shape present, no double names, no empty panels.
+  Then manual verification in the app (user's standing ruling): settings panel, run dialog, list/matrix/script nodes.
 - [ ] **Step 6: Commit.**
 
 ```bash
@@ -109,9 +161,13 @@ git commit -m "refactor(desktop): form panel provides parameter names; stacked r
 
 - [ ] **Step 1: Rewrite the editor.**
   `isUILabelEnabled() = true`, `isUIInline() = true`. If `@BooleanParameterSettings(comboBoxStyle=true)` is present → build the 2-item combo using `trueLabel`/`falseLabel` (existing code path, keep the value mapping `index 0 = true` as today). Otherwise → single `JIPipeDesktopSwitch`, selected = current value, action listener pushes via existing `setParameter(...)`. No text on either control — the name is the label column.
-- [ ] **Step 2: Compile + manual verification.**
-  Run: `mvn -q -pl jipipe-core compile`
-  Manual: a plain boolean node (e.g. "Background is dark" on a threshold node) shows `name … switch … ?`; a `comboBoxStyle` node (e.g. `MorphologicalReconstruction2DAlgorithm` "By dilation/By erosion") shows the 2-value combo inline. No double name. (Review Focus #7.)
+- [ ] **Step 2: Compile + screenshot verification (VLM).**
+  Run: `mvn -q -pl jipipe-core compile && mvn -q -pl jipipe-launcher -am package -DskipTests`
+  Harness + `da_describe_image`:
+  - `panel-stack-to-montage.png`: the plain boolean ("Add ZCT annotations") is a pill *switch* (no checkbox text), name in the label column.
+  - `panel-combo-boolean.png`: the 2-value labeled combo ("By dilation"/"By erosion") is still a combo — not a switch. (Review Focus #7.)
+  Expected: switch present on plain booleans, labeled combos intact.
+  Then manual: same two checks in the app.
 - [ ] **Step 3: Commit.**
 
 ```bash
@@ -171,11 +227,12 @@ git commit -am "feat(desktop): boolean parameter editor — switch (inline), kee
 - [ ] **Step 8: Compile + full core test suite.**
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS, no regressions.
-- [ ] **Step 9: Manual verification.**
-  - An enum with ≤5 values (e.g. `InterpolationMethod`: None/Bilinear/Bicubic) → combo, no 🔍 button.
-  - A big enum (e.g. `Anchor`, 9 values) → button showing current value; popup has icons + search + Close-on-pick, no modal.
-  - A dynamic enum that loads values (verify in the app; if one with >5 values exists, check the combo→box flip keeps the value).
-  - An editable dynamic enum (TrackMate feature filter node, `PluginCategoriesEnumParameter`) → editable combo with free text. (Review Focus #3, #4.)
+- [ ] **Step 9: Screenshot verification (VLM).**
+  Harness + `da_describe_image` on `panel-stack-to-montage.png` (pair):
+  - `InterpolationMethod` (3 values) → plain combo, no 🔍 button.
+  - `Anchor` / `Label location` (9 values) → button showing the current value (icon + label), no modal.
+  Expected: no 🔍 search buttons remain; big enums render as value-buttons.
+  Then manual verification (in app): click the value-button → popup with icons + search + close-on-pick; editable dynamic enum (TrackMate feature filter / plugin categories) keeps free-text combo; a >5-value dynamic enum flips combo→box without losing the value. (Review Focus #3, #4.)
 - [ ] **Step 10: Commit.**
 
 ```bash
@@ -211,9 +268,10 @@ git commit -m "feat(desktop): enum editors — combo for <=5 values, rich select
 - [ ] **Step 6: Run tests to verify pass.**
   Run: `mvn -q -pl jipipe-core test -Dtest=DynamicSetParameterJsonTest`
   Expected: PASS. (Review Focus #6.)
-- [ ] **Step 7: Compile + manual verification.**
-  Run: `mvn -q -pl jipipe-core compile`
-  Manual: a node with a dynamic set (e.g. IJ3D measurement set or a Weka feature set) — button shows count, popup toggles live with group headers, Select all / Clear work; an old project file with `collapsed` in the set's JSON opens fine.
+- [ ] **Step 7: Compile + screenshot verification (VLM).**
+  Run: `mvn -q -pl jipipe-core compile && mvn -q -pl jipipe-launcher -am package -DskipTests`
+  Harness + `da_describe_image` on `panel-roi3d-statistics.png` (pair): the dynamic set renders as a compact **button with count summary** ("… (n)") — no vertical checkbox list, no Collapse button, no "items are hidden" label, no self-drawn header.
+  Then manual: popup toggles live with group headers, Select all / Clear work; an old project file with `collapsed` opens fine.
 - [ ] **Step 8: Commit.**
 
 ```bash
@@ -328,8 +386,13 @@ git commit -m "feat: color space math — RGB/HSB/LAB with sRGB gamut clamp (#13
 - [ ] **Step 6: Compile + full suite.**
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS.
-- [ ] **Step 7: Manual verification (user checks in app).**
-  - Color parameter (e.g. "Canvas background" on Stack to montage): dialog opens; switch spaces; type a hex; pick from GNOME HIG; save one; reopen — it's in Saved and Last selected.
+- [ ] **Step 7: Screenshot verification (VLM).**
+  Harness + `da_describe_image` on `dialog-color.png` (pair vs. the `JColorChooser` baseline):
+  - Space tabs RGB / HSB / LAB visible; hex field + swatch present; palette rows (pure colors, named GNOME HIG grid, recents, saved) below the picker.
+  - LAB tab: a/b plane with axes + L rail (switch the harness's dialog screenshot to render the LAB tab as a second file `dialog-color-lab.png` — extend `--only` as needed).
+  Expected: modern picker present, no Swing-internal chooser.
+  Then manual (user checks in app):
+  - Color parameter (e.g. "Canvas background" on Stack to montage): switch spaces; type a hex; pick from GNOME HIG; save one; reopen — it's in Saved and Last selected.
   - Alpha-capable color parameter: α rail + checkerboard visible; 8-digit hex round-trips. (Review Focus #2)
   - LAB: drag a/b to extremes — hex shows a clamped valid color, no crash. (Review Focus #1)
 - [ ] **Step 8: Commit.**
@@ -391,7 +454,9 @@ git commit -m "feat: dedicated FontParameter (family+size+style+color) with migr
 - [ ] **Step 3: Compile + full suite.**
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS.
-- [ ] **Step 4: Commit.**
+- [ ] **Step 4: Screenshot smoke test.**
+  Temporarily render the editor in the harness (e.g. a showcase entry over a parameter collection holding one `JIPipeFontParameter`) and `da_describe_image` it: the row shows the preview control, not a bunched cluster. (The full panel screenshot lands with Task 10's `panel-draw-text-roi.png`.)
+- [ ] **Step 5: Commit.**
 
 ```bash
 git commit -am "feat(desktop): FontParameter editor — inline preview + popout with embedded colors (#1339)"
@@ -435,8 +500,9 @@ git commit -am "feat(desktop): FontParameter editor — inline preview + popout 
 - [ ] **Step 6: Compile + full suite.**
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS.
-- [ ] **Step 7: Manual verification.**
-  Open a pre-migration project (user has some, e.g. an old montage/scale-bar pipeline) → font settings intact; save → legacy keys gone from the JSON. Migrated nodes show the Task 9 font editor: row shows the live preview; popout: change family (search), size, style, color (embedded + Custom → full dialog; back to popout without stacking); preview updates live. (Review Focus #5.)
+- [ ] **Step 7: Screenshot verification (VLM).**
+  Add `panel-draw-text-roi.png` to the harness showcase set (over `DrawTextRoiAlgorithm`, `ij1-roi-draw-text`). Harness + `da_describe_image` (pair): the split font rows ("Font family" / "Font size" / "Font style" / color) are gone, replaced by **one "…font" row with the preview control** (Task 9).
+  Then manual: open a pre-migration project (user has some, e.g. an old montage/scale-bar pipeline) → font settings intact; save → legacy keys gone from the JSON; popout works (family search, size, style, embedded color + Custom → full dialog, no stacking); preview updates live. (Review Focus #5.)
 - [ ] **Step 8: Commit** (one commit per 2–3 nodes is fine; message `feat: migrate <node> font params to FontParameter (#1339)`).
 
 ---
@@ -459,8 +525,9 @@ git commit -am "feat(desktop): FontParameter editor — inline preview + popout 
 - [ ] **Step 3: Compile + full suite.**
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS.
-- [ ] **Step 4: Manual verification.**
-  "File list" / "Folder list" data sources and a collection-list node: add/remove/clear/invert/select-all; reorder two rows (drag and via right-click); per-row editors work; with-scroll lists keep their fixed height; no self-drawn name. (Review Focus #8 for nested collection lists.)
+- [ ] **Step 4: Screenshot verification (VLM).**
+  Harness + `da_describe_image` on `panel-import-file-list.png` (pair): the always-visible Add/Remove/Reorder toolbar is gone; a compact footer (`＋ Add` + count + `⋯`) sits under the rows; rows keep grip + per-row editor; name comes from the label column.
+  Then manual: add/remove/clear/invert/select-all; reorder two rows (drag and via right-click); per-row editors work; with-scroll lists keep their fixed height.
 - [ ] **Step 5: Commit.**
 
 ```bash
@@ -483,5 +550,7 @@ git commit -am "feat(desktop): list parameter editors — compact footer, grip r
   Run: `mvn -q compile` (all modules)
   Run: `mvn -q -pl jipipe-core test`
   Expected: BUILD SUCCESS everywhere.
-- [ ] **Step 3: User verification pass** — the user walks the parameter panel in the app across a representative set of nodes (threshold, montage, file list, dynamic set node, expression/script node, settings sheets). Remaining nits become follow-ups, not blockers (standing ruling: the user checks the UI).
-- [ ] **Step 4: Commit** (per audit cluster; `style(desktop): parameter editor consistency audit (#1339)`).
+- [ ] **Step 3: Final VLM sweep.**
+  Re-run the harness on the full showcase set and walk every before/after pair with `da_describe_image` (one prompt per pair, same expectation list as the individual tasks) — a final consistency pass across all panels at once (catches cross-editor regressions the per-task checks miss).
+- [ ] **Step 4: User verification pass** — the user walks the parameter panel in the app across a representative set of nodes (threshold, montage, file list, dynamic set node, expression/script node, settings sheets). Remaining nits become follow-ups, not blockers (standing ruling: the user checks the UI).
+- [ ] **Step 5: Commit** (per audit cluster; `style(desktop): parameter editor consistency audit (#1339)`).
