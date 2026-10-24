@@ -185,6 +185,11 @@ public class ExpressionPlugin extends JIPipePrepackagedDefaultJavaPlugin {
         registerExpressionFunction(new ToIntegerFunction());
         registerExpressionFunction(new ToStringFunction());
         registerExpressionFunction(new ToBooleanFunction());
+        registerExpressionFunction(new NumToLettersFunction());
+        registerExpressionFunction(new ToRomanFunction());
+        registerExpressionFunction(new FromRomanFunction());
+        registerExpressionFunction(new ScientificNotationFunction());
+        registerExpressionFunction(new BaseConvertFunction());
         registerExpressionFunction(new CreateArrayFunction());
         registerExpressionFunction(new StringSplitFunction());
         registerExpressionFunction(new StringJoinFunction());
