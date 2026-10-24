@@ -119,3 +119,31 @@ Task 3: deleteSnapshot takes backupRoot as a param (must equal store.getStoreDir
 Task 4: path-traversal guard on manifest entry paths in .jipx restore (trusted-store threat model); empty-entry-list .get(0) throws IOOBE not IOException (unreachable via real path)
 Task 6: tests 2/4 call caller-holds-lock ops unlocked (benign single-threaded); size-limit assertions use 1 GB bound not 1 MB (directional only); deleteSnapshot Javadoc overstates lock requirement
 Task 7: totalObjectBytes() directory walk on every refreshSidebar (cache per collect cycle if it hitches); "Backup data" total excludes legacy file items by design (legacy-only store shows 0 B); FQN IOException style nit
+
+## Addendum: final whole-branch review + fix wave (2026-10-24)
+
+The final whole-branch review (cross-task seams, deferred-minors triage) returned
+"Ready with fixes" with 3 Important + 1 recommended finding; all were fixed in
+`34d3e1f823` (fix(backups): stream-hash verify, lock snapshot deletion, cache
+store stats, restore path guard, #1342) and verified by a scoped re-review:
+
+- `verifyAll` streamed (DigestInputStream, bounded 1 MB loop) — no more
+  readAllBytes OOM on multi-GB objects.
+- Snapshot deletion takes the store write lock (60 s bound) at the single choke
+  point (`JIPipeProjectBackupItem.delete`) — closes the lost-update race on
+  `snapshots.json` between unlocked deletes and locked persists.
+- Store stats cached per collect cycle, computed off the EDT — no
+  `totalObjectBytes()` walk on tree-selection paths (NAS-safe).
+- Restore assembly guards entry paths (normalize + containment) — `../` and
+  absolute manifest paths rejected; new test `restoreRejectsEscapingEntryPath`.
+- Tone: verify results say "backups" (not "snapshots"); backup success status
+  bar shows "Saved backup (N files, X) at …".
+
+Post-fix suites: 674 tests (core 551 + launcher 123), 0 failures, 0 errors,
+3 pre-existing gated skips. Lock nesting verified deadlock-free on every
+production and test path (the choke point is the only lock on delete paths;
+GC/persist never nest it).
+
+Deferred (post-review): `deleteSelection` performs deletions on the EDT — a
+concurrent instance holding the store lock for a long backup can block the EDT
+up to the 60 s bound; moving deletions onto the backup queue is the follow-up.
