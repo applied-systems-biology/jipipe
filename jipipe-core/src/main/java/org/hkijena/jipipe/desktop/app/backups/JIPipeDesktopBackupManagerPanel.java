@@ -15,7 +15,11 @@ package org.hkijena.jipipe.desktop.app.backups;
 
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.backups.*;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupObjectStore;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupSnapshot;
+import org.hkijena.jipipe.api.backups.store.JIPipeBackupStoreOperations;
 import org.hkijena.jipipe.api.project.JIPipeProject;
 import org.hkijena.jipipe.api.run.JIPipeRunnable;
 import org.hkijena.jipipe.desktop.JIPipeDesktop;
@@ -33,6 +37,7 @@ import org.hkijena.jipipe.utils.JIPipeDesktopSplitPane;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -195,13 +200,42 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         Path path = JIPipeDesktop.saveFile(this, getDesktopWorkbench(), JIPipeFileChooserApplicationSettings.LastDirectoryKey.Projects, "Restore backup as ...", HTMLText.EMPTY, PathUtils.EXTENSION_FILTER_JIP, PathUtils.EXTENSION_FILTER_JIPX);
         if (path != null) {
             try {
-                Files.copy(backupItem.getProjectPath(), path, StandardCopyOption.REPLACE_EXISTING);
+                if (backupItem.isSnapshot()) {
+                    // The content-addressed snapshot is assembled into the target
+                    // by the store (verify-on-read); the extension is aligned
+                    // with the snapshot format so the loader recognizes it
+                    path = targetForSnapshot(backupItem, path);
+                    JIPipeBackupObjectStore store = JIPipe.getInstance().getProjectBackup().getStore();
+                    JIPipeBackupSnapshot snapshot = JsonUtils.readFromFile(backupItem.getSnapshotManifestPath(), JIPipeBackupSnapshot.class);
+                    JIPipeBackupStoreOperations.restoreSnapshot(store, snapshot, path, JIPipeProgressInfo.SILENT);
+                } else {
+                    Files.copy(backupItem.getProjectPath(), path, StandardCopyOption.REPLACE_EXISTING);
+                }
                 JIPipeDesktopProjectWindow projectWindow = JIPipeDesktopProjectWindow.newWindow(getDesktopWorkbench().getContext(), new JIPipeProject(), false, true);
                 projectWindow.openProject(path, true);
             } catch (Exception e) {
                 IJ.handleException(e);
             }
         }
+    }
+
+    /**
+     * Aligns the extension of the user-chosen restore target with the
+     * snapshot's project format (a .jipx snapshot restored to a .jip name
+     * would not be recognized by the project loader)
+     */
+    private Path targetForSnapshot(JIPipeProjectBackupItem backupItem, Path chosen) {
+        String format = backupItem.getProjectFormat();
+        if (format == null) {
+            return chosen;
+        }
+        String name = chosen.getFileName().toString();
+        int dot = name.lastIndexOf('.');
+        if (dot >= 0 && name.substring(dot + 1).equalsIgnoreCase(format)) {
+            return chosen;
+        }
+        String base = dot >= 0 ? name.substring(0, dot) : name;
+        return chosen.resolveSibling(base + "." + format);
     }
 
     private void deleteSelection() {
@@ -229,16 +263,13 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
                 "Delete selection",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             try {
+                JIPipeProgressInfo progressInfo = JIPipeProgressInfo.SILENT;
                 for (JIPipeProjectBackupItem backupItem : itemSet) {
-                    if (Files.isRegularFile(backupItem.getProjectPath())) {
-                        Files.delete(backupItem.getProjectPath());
-                    }
+                    backupItem.delete(progressInfo);
                 }
                 for (JIPipeProjectBackupItemCollection collection : collectionSet) {
                     for (JIPipeProjectBackupItem backupItem : collection.getBackupItemList()) {
-                        if (Files.isRegularFile(backupItem.getProjectPath())) {
-                            Files.delete(backupItem.getProjectPath());
-                        }
+                        backupItem.delete(progressInfo);
                     }
                 }
             } catch (Exception e) {

@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.JIPipeService;
 import org.hkijena.jipipe.api.service.JIPipeServiceComponent;
 import org.hkijena.jipipe.desktop.app.JIPipeDesktopProjectWindow;
+import org.hkijena.jipipe.plugins.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.plugins.settings.application.JIPipeBackupApplicationSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -83,6 +84,17 @@ public class JIPipeProjectBackupServiceComponent extends JIPipeServiceComponent 
      */
     public JIPipeBackupObjectStore getStore() {
         return new JIPipeLocalBackupObjectStore(getCurrentBackupPath());
+    }
+
+    /**
+     * Overrides the backup path for the rest of the JIPipe instance
+     * (TESTING ONLY — lets registry-backed backup tests operate on a
+     * hand-built backup root instead of the user directory).
+     *
+     * @param path the new backup path
+     */
+    public void setCustomBackupPath(Path path) {
+        getSettings().setCustomBackupPath(new OptionalPathParameter(path, true));
     }
 
     public Path getCurrentBackupPath() {

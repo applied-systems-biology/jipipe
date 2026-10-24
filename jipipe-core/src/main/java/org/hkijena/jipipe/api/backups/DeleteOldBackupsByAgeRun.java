@@ -16,7 +16,6 @@ package org.hkijena.jipipe.api.backups;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -73,7 +72,7 @@ public class DeleteOldBackupsByAgeRun extends DefaultJIPipeRunnable {
         for (JIPipeProjectBackupItem backupItem : itemsToDelete) {
             try {
                 getProgressInfo().log("Delete: " + backupItem);
-                Files.delete(backupItem.getProjectPath());
+                backupItem.delete(getProgressInfo());
             } catch (Exception e) {
                 getProgressInfo().log("-> Error: " + e);
             }
