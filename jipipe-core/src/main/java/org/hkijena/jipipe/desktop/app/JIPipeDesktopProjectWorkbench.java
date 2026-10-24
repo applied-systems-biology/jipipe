@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToDirectoryRun;
 import org.hkijena.jipipe.api.project.JIPipeArchiveProjectToZIPRun;
 import org.hkijena.jipipe.api.project.JIPipeProject;
+import org.hkijena.jipipe.api.project.jipx.JIPipeProjectFairCheck;
 import org.hkijena.jipipe.api.run.JIPipeQueuedRunnableExecutor;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEvent;
 import org.hkijena.jipipe.api.service.events.JIPipePluginRegisteredEventListener;
@@ -145,6 +146,14 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     private final ProjectSavingEventEmitter projectSavingEventEmitter = new ProjectSavingEventEmitter();
 
     /**
+     * The publish toolbar button (feature #753). Only created when the
+     * publish menu has at least one entry. Carries the static FAIR badge:
+     * the base share icon, plus a small status dot (green = FAIR-complete,
+     * amber = metadata needs work).
+     */
+    private JButton publishProjectButton;
+
+    /**
      * @param window           Parent window
      * @param context          SciJava context
      * @param project          The project
@@ -158,6 +167,23 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         this.memoryOptionsControl = new JIPipeDesktopMemoryOptionsControl(this);
         this.nodeDatabase = new JIPipeNodeDatabase(project);
         initialize(showIntroduction, isNewProject);
+
+        // Feature #753: recompute the publish button's static FAIR badge when
+        // project metadata changes and on open/load (the initial call below).
+        // The parameter-access commit path (JIPipeReflectionParameterAccess.set)
+        // emits a ParameterChangedEvent on the metadata emitter for scalar
+        // fields (license, summary, ...). Author LIST mutations do NOT fire the
+        // parameter-changed emitter (they mutate the JIPipeListParameter), so
+        // we ALSO watch the structural-change emitter as a safety net — see the
+        // report. A strong lambda (like the adjacent graph-changed watchers
+        // below) is correct: the workbench, project and window form one
+        // GC-able cluster that dies together, so no leak — and a weak lambda
+        // would be unsafe (the temporary lambda can be collected before it is
+        // ever invoked, silently dropping the subscription).
+        project.getMetadata().getParameterChangedEventEmitter().subscribeLambda((emitter, event) -> updatePublishFairBadge());
+        project.getMetadata().getParameterStructureChangedEventEmitter().subscribeLambda((emitter, event) -> updatePublishFairBadge());
+        updatePublishFairBadge();
+
         project.getCompartmentRemovedEventEmitter().subscribe(this);
         JIPipe.getInstance().getExtensionRegisteredEventEmitter().subscribeWeak(this);
 
@@ -679,14 +705,138 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         JPopupMenu publishMenu = new JPopupMenu("Publish");
         UIUtils.installMenuExtension(this, publishMenu, JIPipeMenuExtensionTarget.ProjectPublishMenu, false);
         if (publishMenu.getComponentCount() > 0) {
-            JButton publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
+            publishProjectButton = new JButton("Publish", JIPipe.RESOURCES.getIcon16("actions/share-nodes.png"));
             publishProjectButton.setToolTipText("Publishes or shares the project");
             UIUtils.setStandardButtonBorder(publishProjectButton);
 
             UIUtils.addPopupMenuToButton(publishProjectButton, publishMenu);
 
+            // Feature #753: a "FAIR checker" entry that opens a NON-MODAL
+            // dialog listing the metadata items the project is still missing
+            // for FAIR sharing (replaces the old post-save modal compliance
+            // warning). The FAIR item is appended on every popup-show so it
+            // sits alongside the plugin-contributed publish entries and
+            // always reflects the current metadata.
+            publishMenu.addPopupMenuListener(new javax.swing.event.PopupMenuListener() {
+                @Override
+                public void popupMenuWillBecomeVisible(javax.swing.event.PopupMenuEvent e) {
+                    addFairCheckerItem(publishMenu);
+                }
+
+                @Override
+                public void popupMenuWillBecomeInvisible(javax.swing.event.PopupMenuEvent e) {
+                }
+
+                @Override
+                public void popupMenuCanceled(javax.swing.event.PopupMenuEvent e) {
+                }
+            });
+
             menu.add(publishProjectButton);
         }
+    }
+
+    /**
+     * Appends (idempotently) the "FAIR checker" item to the publish popup
+     * (feature #753).
+     */
+    private void addFairCheckerItem(JPopupMenu publishMenu) {
+        // Remove any previous FAIR item so re-showing doesn't duplicate it.
+        for (java.awt.Component component : publishMenu.getComponents()) {
+            if (component instanceof JMenuItem && Boolean.TRUE.equals(((JMenuItem) component).getClientProperty("jipipe.fairChecker"))) {
+                publishMenu.remove(component);
+            }
+        }
+        List<String> missing = JIPipeProjectFairCheck.missing(getProject());
+        String label = missing.isEmpty()
+                ? "FAIR checker (FAIR-ready)"
+                : "FAIR checker (" + missing.size() + " item" + (missing.size() > 1 ? "s" : "") + " to complete)";
+        JMenuItem item = UIUtils.createMenuItem(label,
+                "Checks the project metadata for the items needed to share the project (license, summary, authors).",
+                JIPipe.RESOURCES.getIcon16("actions/circle-info.png"),
+                () -> openFairCheckerDialog());
+        item.putClientProperty("jipipe.fairChecker", true);
+        publishMenu.add(item);
+    }
+
+    /**
+     * Recomputes the publish button's static FAIR badge (feature #753): the
+     * base share icon, plus a small status dot — green when the project is
+     * FAIR-complete (license + summary + at least one author), amber when it
+     * is missing items. The tooltip names the missing items. Must be called
+     * on the EDT. No-op if the publish button was not created (the publish
+     * menu was empty).
+     */
+    private void updatePublishFairBadge() {
+        if (publishProjectButton == null) {
+            return;
+        }
+        List<String> missing = JIPipeProjectFairCheck.missing(getProject());
+        Color dotColor = missing.isEmpty() ? IconUtils.DOT_OK : IconUtils.DOT_WARNING;
+        Icon base = JIPipe.RESOURCES.getIcon16("actions/share-nodes.png");
+        publishProjectButton.setIcon(IconUtils.addBottomRightDot(base, dotColor, 8));
+        String tooltip = missing.isEmpty()
+                ? "Publishes or shares the project. The project is FAIR-ready (license, summary and authors are set)."
+                : "Publishes or shares the project. Metadata incomplete for FAIR sharing:\n- " + String.join("\n- ", missing);
+        publishProjectButton.setToolTipText(tooltip);
+    }
+
+    /**
+     * Opens the NON-MODAL "FAIR checker" dialog (feature #753). Lists the
+     * metadata items the project is still missing for FAIR sharing, or
+     * "All good — the project is FAIR-ready".
+     */
+    private void openFairCheckerDialog() {
+        List<String> missing = JIPipeProjectFairCheck.missing(getProject());
+        JDialog dialog = new JDialog(window, "FAIR checker", false);
+        dialog.setModal(false);
+
+        JPanel content = new JPanel(new BorderLayout(8, 8));
+        content.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+
+        JLabel header;
+        if (missing.isEmpty()) {
+            header = UIUtils.createJLabel("All good — the project is FAIR-ready.", 14);
+            header.setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-check.png"));
+            header.putClientProperty("swing.iconTextGap", 8);
+        } else {
+            header = UIUtils.createJLabel("The project is missing items for FAIR sharing:", 14);
+            header.setIcon(JIPipe.RESOURCES.getIcon16("actions/circle-exclamation.png"));
+            header.putClientProperty("swing.iconTextGap", 8);
+        }
+        content.add(header, BorderLayout.NORTH);
+
+        JPanel listPanel = new JPanel();
+        listPanel.setLayout(new BoxLayout(listPanel, BoxLayout.Y_AXIS));
+        listPanel.setOpaque(false);
+        if (missing.isEmpty()) {
+            listPanel.add(UIUtils.createJLabel("A license, a summary and at least one author are all set.", 12));
+        } else {
+            for (String item : missing) {
+                JLabel label = UIUtils.createJLabel("•  " + item, 12);
+                label.setAlignmentX(Component.LEFT_ALIGNMENT);
+                listPanel.add(label);
+            }
+            listPanel.add(Box.createVerticalStrut(8));
+            JButton openMeta = UIUtils.createButton("Open project metadata",
+                    JIPipe.RESOURCES.getIcon16("actions/circle-info.png"),
+                    () -> openProjectSettings("/General/Project metadata"));
+            listPanel.add(openMeta);
+        }
+        content.add(listPanel, BorderLayout.CENTER);
+
+        JButton close = UIUtils.createButton("Close", JIPipe.RESOURCES.getIcon16("actions/cancel.png"), () -> dialog.dispose());
+        JPanel south = UIUtils.boxHorizontal();
+        south.setOpaque(false);
+        south.add(Box.createHorizontalGlue());
+        south.add(close);
+        content.add(south, BorderLayout.SOUTH);
+
+        dialog.setContentPane(content);
+        dialog.pack();
+        dialog.setSize(Math.max(420, (int) content.getPreferredSize().getWidth() + 48), 320);
+        dialog.setLocationRelativeTo(window);
+        dialog.setVisible(true);
     }
 
     private void initializeProjectMenu(JMenuBar menu) {
