@@ -60,7 +60,7 @@ The node parameter panel is the most-used UI surface in JIPipe. Its current stat
 
 | # | Decision |
 |---|----------|
-| D1 | **Layout: option B — rule by complexity.** Scalar editors (number, string, enum, boolean, color, expression, optional, quantity…) keep a compact inline row `label … control … ?`. Compound editors (list, dynamic set, matrix, collection, code) get name-above + full-width control. Every editor gets its name from the form panel; **no editor draws its own name anymore.** |
+| D1 | **Layout: option B — rule by complexity.** Scalar editors (number, string, enum, boolean, color, expression, optional, quantity…) keep a compact inline row `label … control … ?`. Compound editors (list, matrix, collection, code) get name-above + full-width control. Exception: the dynamic-set editor's *new* control is a compact selection box, so it stays inline (its old self-header disappears). Every editor gets its name from the form panel; **no editor draws its own name anymore.** |
 | D2 | **Enum:** values ≤ 5 → plain combo (no search button). Values > 5 → single-select `JIPipeDesktopRichSelectionBox` (closes on pick; no modal). Threshold constant `COMBO_MAX_VALUES = 5`. |
 | D3 | **Dynamic enums, editability per case:** `JIPipeDynamicEnumParameter.isEditable()` (overridden per class, default `false`) — editable ones **keep the (editable) combo** in all cases; non-editable ones follow D2. |
 | D4 | **Dynamic set:** multi-select `RichSelectionBox`; button shows count summary ("Measurements (3)"); Clear doubles as select-none; live toggle; grouped rows where the set's item info defines groups. **The persisted `collapsed` field is removed** from the model (lenient deserialization of old projects). |
