@@ -254,6 +254,7 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                         "Load with data");
                 switch (result) {
                     case JOptionPane.CANCEL_OPTION:
+                    case JOptionPane.CLOSED_OPTION: // the window's X / Escape cancels, too
                         return;
                     case JOptionPane.NO_OPTION:
                         break;
@@ -360,7 +361,11 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     openProject(jipxSibling, forceCurrentWindow);
                     return;
                 }
-                if (choice == JOptionPane.CANCEL_OPTION) {
+                // Anything that is not an explicit "open the legacy project"
+                // (NO_OPTION) aborts the open: CANCEL_OPTION (the Cancel
+                // button) and CLOSED_OPTION (the window's X / Escape) — a
+                // press of X must not be treated as a choice.
+                if (choice != JOptionPane.NO_OPTION) {
                     return;
                 }
                 // NO_OPTION: continue with the legacy .jip
@@ -1148,7 +1153,9 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     "Continue");
         }
 
-        if (option == JOptionPane.CANCEL_OPTION) {
+        // Any result that is not an explicit choice (the window's X /
+        // Escape) cancels the import.
+        if (option != JOptionPane.YES_OPTION && option != JOptionPane.NO_OPTION) {
             return;
         }
 
