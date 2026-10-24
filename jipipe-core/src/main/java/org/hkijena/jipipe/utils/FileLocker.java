@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
+import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -89,6 +90,62 @@ public class FileLocker {
                 Thread.sleep(1000);
             }
         } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Acquires the write lock, giving up after the timeout. Unlike
+     * {@link #tryWriteLock()} (a probe that releases immediately), the lock is
+     * HELD on success until {@link #releaseLock()}.
+     *
+     * @param timeoutMillis maximum time to wait
+     * @return true if the lock is held
+     */
+    public boolean acquireWriteLock(long timeoutMillis) {
+        try {
+            long deadline = System.currentTimeMillis() + Math.max(0, timeoutMillis);
+            boolean firstAttempt = true;
+            while (true) {
+                Files.createDirectories(lockFilePath.getParent());
+                progressInfo.log("Attempting to acquire WRITE lock " + lockFilePath + " (bounded, " + timeoutMillis + " ms)");
+                fileChannel = FileChannel.open(lockFilePath, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+                try {
+                    fileLock = fileChannel.tryLock();
+                } catch (OverlappingFileLockException e) {
+                    // The lock is held by another channel OF THIS JVM (FileLock is
+                    // per-JVM, not per-process): treat it as "held" and retry until
+                    // the deadline. Between processes the same contention surfaces
+                    // as a plain null return instead.
+                    fileLock = null;
+                }
+                if (fileLock != null) {
+                    return true;
+                }
+                // Close the channel (it does not hold the lock, but avoids leaking it)
+                try {
+                    fileChannel.close();
+                } catch (IOException ignored) {
+                }
+                fileChannel = null;
+                fileLock = null;
+
+                if (System.currentTimeMillis() >= deadline) {
+                    progressInfo.log("... giving up after " + timeoutMillis + " ms (bounded)");
+                    return false;
+                }
+
+                // Short first retry, then the standard 1 s interval
+                long sleepMillis = firstAttempt ? 100 : 1000;
+                firstAttempt = false;
+                progressInfo.log("... not successful, retrying in " + sleepMillis + " ms");
+                Thread.sleep(sleepMillis);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return false;
+        } catch (Exception e) {
+            e.printStackTrace();
             return false;
         }
     }
