@@ -16,7 +16,6 @@ package org.hkijena.jipipe.desktop.app.backups;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.DefaultJIPipeRunnable;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.backups.*;
 import org.hkijena.jipipe.api.backups.store.JIPipeBackupObjectStore;
 import org.hkijena.jipipe.api.backups.store.JIPipeBackupSnapshot;
@@ -420,22 +419,24 @@ public class JIPipeDesktopBackupManagerPanel extends JIPipeDesktopWorkbenchPanel
         }
 
         if (JOptionPane.showConfirmDialog(this,
-                "Dou you really want to delete " + collectionSet.size() + " collections and " + itemSet.size() + " items?",
+                "Do you really want to delete " + collectionSet.size() + " collections and " + itemSet.size() + " items?",
                 "Delete selection",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            try {
-                JIPipeProgressInfo progressInfo = JIPipeProgressInfo.SILENT;
-                for (JIPipeProjectBackupItem backupItem : itemSet) {
-                    backupItem.delete(progressInfo);
-                }
-                for (JIPipeProjectBackupItemCollection collection : collectionSet) {
-                    for (JIPipeProjectBackupItem backupItem : collection.getBackupItemList()) {
-                        backupItem.delete(progressInfo);
-                    }
-                }
-            } catch (Exception e) {
-                IJ.handleException(e);
+            // Flatten the selection (the items themselves plus every item of
+            // the selected collections) into one list; the deletion runs on
+            // the backup queue in the modal run dialog — never on the EDT,
+            // because a snapshot deletion takes the cross-process store write
+            // lock with a 60 s bound (a concurrent instance holding it must
+            // not freeze the UI). This mirrors the adjacent maintenance buttons.
+            List<JIPipeProjectBackupItem> items = new ArrayList<>(itemSet);
+            for (JIPipeProjectBackupItemCollection collection : collectionSet) {
+                items.addAll(collection.getBackupItemList());
             }
+            JIPipeDesktopRunExecuteUI.runInDialog(getDesktopWorkbench(), this, new DeleteBackupsRun(items),
+                    JIPipe.getInstance().getProjectBackup().getQueue(), JIPipeDesktopRunExecuteUI.GlobalLogMode.Everything);
+            // runInDialog is modal — by the time it returns the deletion has
+            // finished, so the tree (and the cached store stats) can be
+            // refreshed via the collect-finished listener.
             reloadBackups();
         }
     }

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.backups.store;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.backups.CollectBackupsRun;
+import org.hkijena.jipipe.api.backups.DeleteBackupsRun;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItem;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupItemCollection;
 import org.hkijena.jipipe.api.backups.JIPipeProjectBackupSessionInfo;
@@ -447,6 +448,88 @@ class JIPipeBackupIntegrationTest {
                 "the store must be under the size limit after GC");
         assertTrue(liveBytesOf(backupRoot) < 1024L * 1024 * 1024,
                 "the live backup data must be under the size limit");
+    }
+
+    /**
+     * {@link DeleteBackupsRun} deletes every item it is given — a legacy file
+     * (the file goes) and a snapshot (manifest + session-index entry go) — and
+     * a single item whose store cannot be locked does NOT abort the run: it is
+     * logged, the other items are still deleted, and the run completes without
+     * throwing. The "cannot be locked" case is fast by construction: the store
+     * root has {@code store} as a regular FILE, so {@code acquireWriteLock}'s
+     * {@code Files.createDirectories} throws {@code FileAlreadyExistsException}
+     * (caught → {@code false}) instead of retrying to the 60 s bound a real
+     * lock holder would cause.
+     */
+    @Test
+    void deleteBackupsRunDeletesItemsAndToleratesFailures(@TempDir Path backupRoot) throws Exception {
+        JIPipe.getInstance().getProjectBackup().setCustomBackupPath(backupRoot);
+        JIPipeLocalBackupObjectStore store = new JIPipeLocalBackupObjectStore(backupRoot);
+        Path sessionDir = backupRoot.resolve("del-session");
+
+        // (a) one persisted .jipx snapshot
+        JIPipeProject project = new JIPipeProject();
+        String snapshotId;
+        try {
+            project.getMetadata().setName("Delete run target");
+            Path payloadFile = project.getWorkspace().getBaseDirectory().resolve("data").resolve("payload.bin");
+            Files.createDirectories(payloadFile.getParent());
+            byte[] payload = new byte[16 * 1024];
+            new Random(7).nextBytes(payload);
+            Files.write(payloadFile, payload);
+
+            assertTrue(store.acquireWriteLock(5000), "the test must hold the store write lock");
+            try {
+                JIPipeBackupSnapshot snapshot = JIPipeBackupStoreOperations.createJipxSnapshot(
+                        store, project, new JIPipeBackupFilesCache(), "del-run-target.jipx", JIPipeProgressInfo.SILENT);
+                JIPipeBackupStoreOperations.persistSnapshot(store, snapshot, sessionDir,
+                        sessionInfo("del-session", "/original/del-run-target.jipx"));
+                snapshotId = snapshot.getSnapshotId();
+            } finally {
+                store.releaseWriteLock();
+            }
+        } finally {
+            project.close(JIPipeProgressInfo.SILENT);
+        }
+
+        // (b) one legacy file item
+        Path legacyFile = sessionDir.resolve("2026-01-01T10-00-00.jip");
+        Files.writeString(legacyFile, "legacy-delete-me");
+
+        // (c) one item that CANNOT be deleted: a snapshot whose store root has
+        //     'store' as a regular file → the write-lock acquisition fails fast
+        Path brokenRoot = backupRoot.resolve("del-broken");
+        Files.createDirectories(brokenRoot);
+        Files.writeString(brokenRoot.resolve("store"), "not a directory");
+        JIPipeProjectBackupItem brokenItem = new JIPipeProjectBackupItem();
+        brokenItem.setSnapshotId("broken");
+        brokenItem.setSnapshotManifestPath(brokenRoot.resolve("snapshots").resolve("broken.json"));
+        brokenItem.setSessionId("ghost");
+
+        JIPipeProjectBackupItem snapshotItem = new JIPipeProjectBackupItem();
+        snapshotItem.setSnapshotId(snapshotId);
+        snapshotItem.setSnapshotManifestPath(backupRoot.resolve("snapshots").resolve(snapshotId + ".json"));
+        snapshotItem.setSessionId("del-session");
+
+        JIPipeProjectBackupItem legacyItem = new JIPipeProjectBackupItem();
+        legacyItem.setProjectPath(legacyFile);
+        legacyItem.setSessionId("del-session");
+
+        // No lock is held here: the broken item's store cannot be locked, so
+        // the snapshot deletion (same store) proceeds without contention.
+        DeleteBackupsRun run = new DeleteBackupsRun(List.of(legacyItem, snapshotItem, brokenItem));
+        run.setProgressInfo(JIPipeProgressInfo.SILENT);
+        run.run(); // must complete WITHOUT throwing (the broken item is only logged)
+
+        // Both deletable items are gone, the un-deletable one is untouched
+        assertFalse(Files.exists(legacyFile), "the legacy file must be deleted from disk");
+        assertFalse(Files.exists(backupRoot.resolve("snapshots").resolve(snapshotId + ".json")),
+                "the snapshot manifest must be deleted");
+        assertEquals(List.of(), readSessionIndex(sessionDir),
+                "the deleted snapshot's id must be removed from the session index");
+        assertTrue(Files.isRegularFile(brokenRoot.resolve("store")),
+                "the un-deletable item's store must be left in place");
+        assertEquals(Set.of(), manifestIds(backupRoot), "no manifest may remain");
     }
 
     // ------------------------------------------------------------------
