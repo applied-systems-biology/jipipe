@@ -169,12 +169,29 @@ public interface JIPipeBackupObjectStore {
 - A single implementation (`JIPipeLocalBackupObjectStore`) over the directory
   layout above. The interface leaves the door open for a remote store later
   (the VFS-seam principle from the JIPX design, §5.4).
-- **Concurrency:** all backup runs are serialized by the existing single
-  `"Backups"` executor queue (timer + manual). The store directory additionally
-  carries a `FileLocker` (the existing project-lock utility) to protect against
-  *second JIPipe instances* — the same discipline as project temp bases.
-  Nesting order is fixed: workspace lock first (part materialization), store
-  lock second (object writes) — never inverted.
+- **Concurrency:** two levels, mirroring the project temp-base discipline:
+  - *Intra-process:* all backup runs are serialized by the existing single
+    `"Backups"` executor queue (timer + manual) — one backup at a time per
+    JIPipe instance, per process.
+  - *Cross-process (multiple JIPipe instances share the backup path):* the
+    store directory carries a `FileLocker` write lock (the existing
+    project-temp-base utility — OS-level file locks are cross-process) held
+    for the whole store *mutation*: object puts, snapshot write, files-cache
+    update, GC. Snapshot reads and `get(hash)` streams are lock-free (content
+    addressing makes object reads safe: an object file, once written, never
+    changes).
+    Lock-order discipline: workspace lock first (part materialization), store
+    lock second — never inverted.
+  - *GC is cross-process safe* because the store write lock is held for the
+    full mark (enumerate `snapshots/*.json`) and sweep (delete unreferenced
+    objects) — a concurrent instance's snapshot cannot appear mid-sweep, and
+    a running backup's snapshot is written only after its objects, under the
+    same lock.
+  - *Livelock avoidance:* `acquireWriteLock()` blocks forever on contention;
+    store mutations use **bounded waiting** (`tryWriteLock` + retry with a
+    cap, e.g. 60 s) and skip the cycle with a logged warning on timeout — a
+    stuck second instance must never freeze the first instance's save path.
+    The backup timer simply retries next cycle.
 - **GC is safe because** it only runs when the store lock is held and enumerates
   the current set of `snapshots/*.json` — a concurrent backup holds the store lock
   for its `put`s, and its snapshot file only becomes visible after the puts.
@@ -321,7 +338,12 @@ classpath), gated tests where heavy:
 5. **Thinning integration:** cascading rules operate on snapshot items; GC runs
    after thinning and frees exactly the objects of the thinned snapshots.
 6. **Concurrency:** two backup runs on the same store serialize on the store
-   lock (the queue-serialization test idiom from #753).
+   lock (the queue-serialization test idiom from #753); **two processes**
+   (two store instances on the same directory, the cross-process lock held by
+   a background process) → the second skips with a warning within the bounded
+   wait (never blocks indefinitely, never writes); and the GC-under-lock
+   invariant (an object referenced by a snapshot written by another instance
+   is never swept).
 7. **Legacy interop:** a pre-feature plain `.jip` backup in the backups root is
    still listed and restorable after the new code is in place.
 
@@ -344,7 +366,8 @@ classpath), gated tests where heavy:
 | Risk | Mitigation |
 |---|---|
 | Object-store corruption from disk failure | per-object SHA-256 naming = self-verifying path; verify-on-read at restore; "Verify all backups" action surfaces damage early. |
-| GC race deletes a live object | store lock held during GC; snapshot visibility is last-write; GC re-enumerates references at deletion time. |
+| **Multiple JIPipe instances sharing the backup path** | cross-process `FileLocker` write lock on the store for the whole mutation window (puts, snapshot write, cache update, GC); snapshot reads and object streams are lock-free (objects are immutable once written); bounded lock waiting with skip-and-retry (never freezes an instance); GC's mark-and-sweep runs entirely under the lock, so no instance can delete another's live objects. |
+| GC race deletes a live object | store lock held for mark + sweep; snapshot visibility is last-write; GC re-enumerates references at deletion time. |
 | Files cache staleness → wrong backup | §3.4 analysis: local JIPipe-managed files, verify-on-read backstop. |
 | Multi-GB single payload file re-hashed every backup after it changes | SHA-256 is ~1 GB/s — a 10 GB re-hash is ~10 s every 7 min in the worst (constantly-mutating) case; acceptable. CDC is the reserved fix if real data shows otherwise. |
 | Store growth on a small laptop disk | size-limit setting (§3.8) + GC after every thinning pass; stats visible in the panel. |
