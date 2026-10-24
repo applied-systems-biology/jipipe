@@ -117,7 +117,7 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
         getMainButton().setEnabled(!saving);
         if (saving) {
             setIcon(JIPipe.RESOURCES.getIcon16("actions/spinner.png"));
-            setText(savingStage.isEmpty() ? "Saving…" : "Saving… " + savingStage);
+            setText(savingStage.isEmpty() ? "Saving ..." : "Saving ... " + savingStage);
             return;
         }
         if (flashActive) {
@@ -207,11 +207,11 @@ public class JIPipeDesktopProjectSaveManagerButton extends SplitButton implement
                 String stage = event.getStage();
                 if (stage != null) {
                     if (stage.startsWith("Saved")) {
-                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-green.png"), "Saved ✓");
+                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-green.png"), "Saved");
                         return;
                     }
                     if (stage.startsWith("Save failed")) {
-                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-red.png"), "Save failed ✗");
+                        showResultFlash(JIPipe.RESOURCES.getIcon16("actions/save-red.png"), "Save failed");
                         return;
                     }
                     // "Save cancelled" and other results: no flash, just
