@@ -107,6 +107,15 @@ public class JIPipeProject implements JIPipeValidatable {
     private Map<String, JIPipeMetadataObject> additionalMetadata = new HashMap<>();
     private Path workDirectory;
     private Path temporaryBaseDirectory;
+    /**
+     * Every temporary base this project ever used (feature #753). The
+     * temporary base re-resolves when the work directory changes (e.g.
+     * "Save As" into another directory — the .jipx migration flow): the
+     * old base's lock is released, but its files (including the
+     * jipx-workspace with payload data) remain on disk.
+     * {@link #close(JIPipeProgressInfo)} deletes them all.
+     */
+    private final Set<Path> usedTemporaryBaseDirectories = new LinkedHashSet<>();
     private boolean isCleaningUp;
     private boolean isLoading;
     private Path projectFile;
@@ -357,6 +366,10 @@ public class JIPipeProject implements JIPipeValidatable {
 
         PathUtils.createDirectories(output);
         temporaryBaseDirectory = output;
+        // Track every base this project uses — close() cleans them all
+        // (the base re-resolves when the work directory changes; the old
+        // base holds the jipx-workspace with its payload data).
+        usedTemporaryBaseDirectories.add(output);
 
         // Acquire new lock if necessary
         if(temporaryBaseDirectoryLocker == null) {
@@ -495,18 +508,28 @@ public class JIPipeProject implements JIPipeValidatable {
 
         if(temporaryBaseDirectoryLocker != null) {
             // Release temporary directory lock
-            progressInfo.log("Releasing temporary directory lock on " + getTemporaryBaseDirectory() + " ...");
+            progressInfo.log("Releasing temporary directory lock on " + temporaryBaseDirectory + " ...");
             temporaryBaseDirectoryLocker.releaseLock();
+            temporaryBaseDirectoryLocker = null;
         }
 
-        // Clear temporary directory
+        // Clear temporary directories: EVERY base this project ever used.
+        // The base re-resolves when the work directory changes (e.g. "Save
+        // As" into another directory — the .jipx migration flow): without
+        // this, the earlier base (holding the jipx-workspace with payload
+        // data) would leak on disk. This deliberately does NOT call
+        // getTemporaryBaseDirectory() — that would create and lock a FRESH
+        // base just to delete it.
         if(JIPipeRuntimeApplicationSettings.getInstance().isAutoCleanClosedProjectTemporaryDirectories()) {
             progressInfo.log("Clearing temporary directory ...");
-            try {
-                PathUtils.deleteDirectoryRecursively(getTemporaryBaseDirectory(), progressInfo.resolve("Delete temporary directory"));
-            } catch (Exception e) {
-                progressInfo.log(e);
+            for (Path base : usedTemporaryBaseDirectories) {
+                try {
+                    PathUtils.deleteDirectoryRecursively(base, progressInfo.resolve("Delete temporary directory"));
+                } catch (Exception e) {
+                    progressInfo.log(e);
+                }
             }
+            usedTemporaryBaseDirectories.clear();
         }
     }
 

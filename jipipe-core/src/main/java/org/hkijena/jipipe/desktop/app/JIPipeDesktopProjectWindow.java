@@ -712,11 +712,16 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                     // loads" check — the writer already self-verified the
                     // container structurally).
                     failureStage[0] = "recheck";
-                    JIPipeProject.loadProject(savePath,
+                    // The re-check load is a THROWAWAY model: its
+                    // temporary base (and workspace) must be released —
+                    // without close(), every save leaks one JIPipe.tmp.dir
+                    // tree (feature #753 safety audit).
+                    JIPipeProject recheck = JIPipeProject.loadProject(savePath,
                             new UnspecifiedValidationReportContext(),
                             new JIPipeValidationReport(),
                             new JIPipeNotificationInbox(),
                             getProgressInfo().resolve("Re-check saved project"));
+                    recheck.close(getProgressInfo().resolve("Close re-check project"));
                 } catch (Exception e) {
                     failure[0] = e;
                 }
@@ -925,12 +930,14 @@ public class JIPipeDesktopProjectWindow extends JFrame {
                 getProject().setProjectFile(tempFile);
             }
 
-            // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile,
+            // Check if the saved project can be loaded (a throwaway model
+            // — closed immediately so its temporary base is cleaned up).
+            JIPipeProject recheck = JIPipeProject.loadProject(tempFile,
                     new UnspecifiedValidationReportContext(),
                     new JIPipeValidationReport(),
                     new JIPipeNotificationInbox(),
                     JIPipeProgressInfo.STDOUT);
+            recheck.close(JIPipeProgressInfo.STDOUT);
 
             // Overwrite the target file
             if (Files.exists(savePath)) {
