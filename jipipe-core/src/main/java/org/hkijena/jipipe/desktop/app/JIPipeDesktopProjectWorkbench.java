@@ -148,8 +148,8 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
     /**
      * The publish toolbar button (feature #753). Only created when the
      * publish menu has at least one entry. Carries the static FAIR badge:
-     * the base share icon, plus a small status dot (green = FAIR-complete,
-     * amber = metadata needs work).
+     * the share icon when FAIR-complete, the warning emblem when metadata
+     * needs work.
      */
     private JButton publishProjectButton;
 
@@ -758,9 +758,10 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
         String label = missing.isEmpty()
                 ? "FAIR checker (FAIR-ready)"
                 : "FAIR checker (" + missing.size() + " item" + (missing.size() > 1 ? "s" : "") + " to complete)";
+        publishMenu.addSeparator();
         JMenuItem item = UIUtils.createMenuItem(label,
                 "Checks the project metadata for the items needed to share the project (license, summary, authors).",
-                JIPipe.RESOURCES.getIcon16("actions/circle-info.png"),
+                JIPipe.RESOURCES.getIcon16("emblems/warning.png"),
                 () -> openFairCheckerDialog());
         item.putClientProperty("jipipe.fairChecker", true);
         publishMenu.add(item);
@@ -768,20 +769,20 @@ public class JIPipeDesktopProjectWorkbench extends JPanel implements JIPipeDeskt
 
     /**
      * Recomputes the publish button's static FAIR badge (feature #753): the
-     * base share icon, plus a small status dot — green when the project is
-     * FAIR-complete (license + summary + at least one author), amber when it
-     * is missing items. The tooltip names the missing items. Must be called
-     * on the EDT. No-op if the publish button was not created (the publish
-     * menu was empty).
+     * normal share icon when the project is FAIR-complete (license + summary
+     * + at least one author), the warning emblem when it is missing items —
+     * i.e. user interaction is needed. The tooltip names the missing items.
+     * Must be called on the EDT. No-op if the publish button was not created
+     * (the publish menu was empty).
      */
     private void updatePublishFairBadge() {
         if (publishProjectButton == null) {
             return;
         }
         List<String> missing = JIPipeProjectFairCheck.missing(getProject());
-        Color dotColor = missing.isEmpty() ? IconUtils.DOT_OK : IconUtils.DOT_WARNING;
-        Icon base = JIPipe.RESOURCES.getIcon16("actions/share-nodes.png");
-        publishProjectButton.setIcon(IconUtils.addBottomRightDot(base, dotColor, 8));
+        publishProjectButton.setIcon(JIPipe.RESOURCES.getIcon16(missing.isEmpty()
+                ? "actions/share-nodes.png"
+                : "emblems/emblem-warning.png"));
         String tooltip = missing.isEmpty()
                 ? "Publishes or shares the project. The project is FAIR-ready (license, summary and authors are set)."
                 : "Publishes or shares the project. Metadata incomplete for FAIR sharing:\n- " + String.join("\n- ", missing);
