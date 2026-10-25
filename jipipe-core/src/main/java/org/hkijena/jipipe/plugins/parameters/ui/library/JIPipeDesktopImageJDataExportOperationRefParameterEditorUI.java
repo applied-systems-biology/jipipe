@@ -45,6 +45,7 @@ public class JIPipeDesktopImageJDataExportOperationRefParameterEditorUI extends 
 
     private void initialize() {
         setLayout(new BorderLayout());
+        setBorder(UIUtils.createControlBorder());
 
         currentlyDisplayed = new JButton();
         currentlyDisplayed.addActionListener(e -> pick());

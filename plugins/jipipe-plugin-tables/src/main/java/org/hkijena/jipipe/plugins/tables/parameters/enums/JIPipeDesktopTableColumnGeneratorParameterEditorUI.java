@@ -62,6 +62,7 @@ public class JIPipeDesktopTableColumnGeneratorParameterEditorUI extends JIPipeDe
 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setBorder(UIUtils.createControlBorder());
         comboBox = new JComboBox<>(getAvailableGenerators());
         comboBox.setRenderer(new JIPipeDesktopDataInfoListCellRenderer());
         comboBox.addActionListener(e -> writeValueToParameter());
